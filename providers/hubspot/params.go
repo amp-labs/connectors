@@ -68,7 +68,3 @@ func WithModule(module common.ModuleID) Option {
 		params.WithModule(module, supportedModules, common.ModuleRoot)
 	}
 }
-
-func requiresFiltering(config common.ReadParams) bool {
-	return !config.Since.IsZero()
-}

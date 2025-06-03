@@ -113,6 +113,25 @@ func BuildLastModifiedFilterGroup(params *common.ReadParams) Filter {
 	}
 }
 
+// BuildUntilTimestampFilterGroup filters records modified until and including the given time.
+func BuildUntilTimestampFilterGroup(params *common.ReadParams) Filter {
+	if params.Until.IsZero() {
+		return Filter{}
+	}
+
+	// Use the lastmodifieddate field for contacts, and hs_lastmodifieddate for other objects.
+	lastModifiedField := ObjectFieldHsLastModifiedDate
+	if params.ObjectName == string(ObjectTypeContact) {
+		lastModifiedField = ObjectFieldLastModifiedDate
+	}
+
+	return Filter{
+		FieldName: string(lastModifiedField),
+		Operator:  FilterOperatorTypeLTE,
+		Value:     params.Until.Format(time.RFC3339),
+	}
+}
+
 // BuildIdFilterGroup filters records greater than the given id.
 func BuildIdFilterGroup(id string) Filter {
 	return Filter{
