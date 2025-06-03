@@ -66,6 +66,10 @@ func makeSOQL(config common.ReadParams) *soqlBuilder {
 		soql.Where("SystemModstamp > " + datautils.Time.FormatRFC3339inUTC(config.Since))
 	}
 
+	if !config.Until.IsZero() {
+		soql.Where("SystemModstamp <= " + datautils.Time.FormatRFC3339inUTC(config.Until))
+	}
+
 	if config.Deleted {
 		soql.Where("IsDeleted = true")
 	}
