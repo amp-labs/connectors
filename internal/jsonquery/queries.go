@@ -17,13 +17,36 @@ import (
 type Query struct {
 	node *ajson.Node
 	zoom []string
+	err  error
 }
 
-// New constructs query searching for key. Extra keys are preceding forming a zoom path.
-func New(node *ajson.Node, zoom ...string) *Query {
-	return &Query{
-		node: node,
-		zoom: zoom,
+type jsonType interface {
+	*ajson.Node | map[string]any
+}
+
+// New creates a Query object to search for a specific key within the given JSON input.
+// If multiple keys are provided, they form a zoom path to the target key.
+// The input can be either *ajson.Node or map[string]any.
+func New[T jsonType](json T, zoom ...string) *Query {
+	switch data := any(json).(type) {
+	case *ajson.Node:
+		return &Query{
+			node: data,
+			zoom: zoom,
+		}
+	case map[string]any:
+		node, err := convertMapToAjsonNode(data)
+		if err != nil {
+			// This shouldn't happen.
+			return &Query{err: err}
+		}
+
+		return &Query{
+			node: node,
+			zoom: zoom,
+		}
+	default:
+		return &Query{err: ErrUnknownJSONRepresentation}
 	}
 }
 
