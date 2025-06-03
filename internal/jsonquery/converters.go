@@ -3,6 +3,7 @@ package jsonquery
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/spyzhov/ajson"
 )
@@ -68,7 +69,41 @@ func (convertor) ObjectToMap(node *ajson.Node) (map[string]any, error) {
 	return result, nil
 }
 
-func ParseNode[T any](node *ajson.Node) (*T, error) {
+func convertMapToAjsonNode(jsonMap map[string]any) (result *ajson.Node, errOut error) {
+	defer func() {
+		if errOut != nil {
+			errOut = fmt.Errorf("%w:%w", ErrConversionFailed, errOut)
+		}
+	}()
+
+	raw, err := json.Marshal(jsonMap)
+	if err != nil {
+		return nil, err
+	}
+
+	return ajson.Unmarshal(raw)
+}
+
+// ParseNode attempts to convert the input JSON representation (either *ajson.Node or map[string]any)
+// into a concrete Go struct of type T. It handles both raw ajson nodes and generic maps by first
+// converting maps into ajson nodes before unmarshalling.
+func ParseNode[T any, J jsonType](jsonData J) (*T, error) {
+	switch data := any(jsonData).(type) {
+	case *ajson.Node:
+		return parseJSONNode[T](data)
+	case map[string]any:
+		node, err := convertMapToAjsonNode(data)
+		if err != nil {
+			return nil, err
+		}
+
+		return parseJSONNode[T](node)
+	default:
+		return nil, ErrUnknownJSONRepresentation
+	}
+}
+
+func parseJSONNode[T any](node *ajson.Node) (*T, error) {
 	var template T
 
 	raw, err := node.Unpack()

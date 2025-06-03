@@ -2,6 +2,7 @@
 package jsonquery
 
 import (
+	"encoding/json"
 	"errors"
 	"reflect"
 	"testing"
@@ -32,6 +33,7 @@ func TestQueryIntegerOptional(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	j := helperCreateJSON(t, testJSONData) // nolint:varnamelen
+	m := helperCreateMap(t, testJSONData)  // nolint:varnamelen
 
 	type inType struct {
 		key  string
@@ -113,7 +115,10 @@ func TestQueryIntegerOptional(t *testing.T) { // nolint:funlen
 			t.Parallel()
 
 			output, err := New(j, tt.input.zoom...).IntegerOptional(tt.input.key)
-			testutils.CheckOutputWithError(t, tt.name, tt.expected, tt.expectedErr, output, err)
+			testutils.CheckOutputWithError(t, tt.name+"[aJSON]", tt.expected, tt.expectedErr, output, err)
+
+			output2, err := New(m, tt.input.zoom...).IntegerOptional(tt.input.key)
+			testutils.CheckOutputWithError(t, tt.name+"[MAP]", tt.expected, tt.expectedErr, output2, err)
 		})
 	}
 }
@@ -122,6 +127,7 @@ func TestQueryIntegerRequired(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	j := helperCreateJSON(t, testJSONData) // nolint:varnamelen
+	m := helperCreateMap(t, testJSONData)  // nolint:varnamelen
 
 	type inType struct {
 		key  string
@@ -201,7 +207,10 @@ func TestQueryIntegerRequired(t *testing.T) { // nolint:funlen
 			t.Parallel()
 
 			output, err := New(j, tt.input.zoom...).IntegerRequired(tt.input.key)
-			testutils.CheckOutputWithError(t, tt.name, tt.expected, tt.expectedErr, output, err)
+			testutils.CheckOutputWithError(t, tt.name+"[aJSON]", tt.expected, tt.expectedErr, output, err)
+
+			output2, err := New(m, tt.input.zoom...).IntegerRequired(tt.input.key)
+			testutils.CheckOutputWithError(t, tt.name+"[MAP]", tt.expected, tt.expectedErr, output2, err)
 		})
 	}
 }
@@ -210,6 +219,7 @@ func TestQueryStringOptional(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	j := helperCreateJSON(t, testJSONData) // nolint:varnamelen
+	m := helperCreateMap(t, testJSONData)  // nolint:varnamelen
 
 	type inType struct {
 		key  string
@@ -284,7 +294,10 @@ func TestQueryStringOptional(t *testing.T) { // nolint:funlen
 			t.Parallel()
 
 			output, err := New(j, tt.input.zoom...).StringOptional(tt.input.key)
-			testutils.CheckOutputWithError(t, tt.name, tt.expected, tt.expectedErr, output, err)
+			testutils.CheckOutputWithError(t, tt.name+"[aJSON]", tt.expected, tt.expectedErr, output, err)
+
+			output2, err := New(m, tt.input.zoom...).StringOptional(tt.input.key)
+			testutils.CheckOutputWithError(t, tt.name+"[MAP]", tt.expected, tt.expectedErr, output2, err)
 		})
 	}
 }
@@ -293,6 +306,7 @@ func TestQueryStringRequired(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	j := helperCreateJSON(t, testJSONData) // nolint:varnamelen
+	m := helperCreateMap(t, testJSONData)  // nolint:varnamelen
 
 	type inType struct {
 		key  string
@@ -365,7 +379,10 @@ func TestQueryStringRequired(t *testing.T) { // nolint:funlen
 			t.Parallel()
 
 			output, err := New(j, tt.input.zoom...).StringRequired(tt.input.key)
-			testutils.CheckOutputWithError(t, tt.name, tt.expected, tt.expectedErr, output, err)
+			testutils.CheckOutputWithError(t, tt.name+"[aJSON]", tt.expected, tt.expectedErr, output, err)
+
+			output2, err := New(m, tt.input.zoom...).StringRequired(tt.input.key)
+			testutils.CheckOutputWithError(t, tt.name+"[MAP]", tt.expected, tt.expectedErr, output2, err)
 		})
 	}
 }
@@ -374,6 +391,7 @@ func TestQueryBoolOptional(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	j := helperCreateJSON(t, testJSONData) // nolint:varnamelen
+	m := helperCreateMap(t, testJSONData)  // nolint:varnamelen
 
 	type inType struct {
 		key  string
@@ -448,7 +466,10 @@ func TestQueryBoolOptional(t *testing.T) { // nolint:funlen
 			t.Parallel()
 
 			output, err := New(j, tt.input.zoom...).BoolOptional(tt.input.key)
-			testutils.CheckOutputWithError(t, tt.name, tt.expected, tt.expectedErr, output, err)
+			testutils.CheckOutputWithError(t, tt.name+"[aJSON]", tt.expected, tt.expectedErr, output, err)
+
+			output2, err := New(m, tt.input.zoom...).BoolOptional(tt.input.key)
+			testutils.CheckOutputWithError(t, tt.name+"[MAP]", tt.expected, tt.expectedErr, output2, err)
 		})
 	}
 }
@@ -457,6 +478,7 @@ func TestQueryBoolRequired(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	j := helperCreateJSON(t, testJSONData) // nolint:varnamelen
+	m := helperCreateMap(t, testJSONData)  // nolint:varnamelen
 
 	type inType struct {
 		key  string
@@ -529,7 +551,10 @@ func TestQueryBoolRequired(t *testing.T) { // nolint:funlen
 			t.Parallel()
 
 			output, err := New(j, tt.input.zoom...).BoolRequired(tt.input.key)
-			testutils.CheckOutputWithError(t, tt.name, tt.expected, tt.expectedErr, output, err)
+			testutils.CheckOutputWithError(t, tt.name+"[aJSON]", tt.expected, tt.expectedErr, output, err)
+
+			output2, err := New(m, tt.input.zoom...).BoolRequired(tt.input.key)
+			testutils.CheckOutputWithError(t, tt.name+"[MAP]", tt.expected, tt.expectedErr, output2, err)
 		})
 	}
 }
@@ -538,6 +563,7 @@ func TestQueryArrayOptional(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	j := helperCreateJSON(t, testJSONData) // nolint:varnamelen
+	m := helperCreateMap(t, testJSONData)  // nolint:varnamelen
 
 	type inType struct {
 		key  string
@@ -622,12 +648,23 @@ func TestQueryArrayOptional(t *testing.T) { // nolint:funlen
 			output, err := New(j, tt.input.zoom...).ArrayOptional(tt.input.key)
 
 			if !errors.Is(err, tt.expectedErr) {
-				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expectedErr, err)
+				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name+"[aJSON]", tt.expectedErr, err)
 			}
 
 			outputSize := len(output)
 			if !reflect.DeepEqual(outputSize, tt.expectedSize) {
-				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expectedSize, outputSize)
+				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name+"[aJSON]", tt.expectedSize, outputSize)
+			}
+
+			output2, err := New(m, tt.input.zoom...).ArrayOptional(tt.input.key)
+
+			if !errors.Is(err, tt.expectedErr) {
+				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name+"[MAP]", tt.expectedErr, err)
+			}
+
+			outputSize = len(output2)
+			if !reflect.DeepEqual(outputSize, tt.expectedSize) {
+				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name+"[MAP]", tt.expectedSize, outputSize)
 			}
 		})
 	}
@@ -637,6 +674,7 @@ func TestQueryArrayRequired(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	j := helperCreateJSON(t, testJSONData) // nolint:varnamelen
+	m := helperCreateMap(t, testJSONData)  // nolint:varnamelen
 
 	type inType struct {
 		key      string
@@ -729,12 +767,23 @@ func TestQueryArrayRequired(t *testing.T) { // nolint:funlen
 			output, err := New(j, tt.input.zoom...).ArrayRequired(tt.input.key)
 
 			if !errors.Is(err, tt.expectedErr) {
-				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expectedErr, err)
+				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name+"[aJSON]", tt.expectedErr, err)
 			}
 
 			outputSize := len(output)
 			if !reflect.DeepEqual(outputSize, tt.expectedSize) {
-				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expectedSize, outputSize)
+				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name+"[aJSON]", tt.expectedSize, outputSize)
+			}
+
+			output2, err := New(m, tt.input.zoom...).ArrayRequired(tt.input.key)
+
+			if !errors.Is(err, tt.expectedErr) {
+				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name+"[MAP]", tt.expectedErr, err)
+			}
+
+			outputSize = len(output2)
+			if !reflect.DeepEqual(outputSize, tt.expectedSize) {
+				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name+"[MAP]", tt.expectedSize, outputSize)
 			}
 		})
 	}
@@ -744,6 +793,7 @@ func TestQueryObjectOptional(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	j := helperCreateJSON(t, testJSONData) // nolint:varnamelen
+	m := helperCreateMap(t, testJSONData)  // nolint:varnamelen
 
 	type inType struct {
 		key  string
@@ -805,15 +855,20 @@ func TestQueryObjectOptional(t *testing.T) { // nolint:funlen
 		},
 	}
 
-	for _, tt := range tests {
-		// nolint:varnamelen
+	for _, tt := range tests { // nolint:varnamelen
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
 			_, err := New(j, tt.input.zoom...).ObjectOptional(tt.input.key)
 
 			if !errors.Is(err, tt.expectedErr) {
-				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expectedErr, err)
+				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name+"[aJSON]", tt.expectedErr, err)
+			}
+
+			_, err = New(m, tt.input.zoom...).ObjectOptional(tt.input.key)
+
+			if !errors.Is(err, tt.expectedErr) {
+				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name+"[MAP]", tt.expectedErr, err)
 			}
 		})
 	}
@@ -823,6 +878,7 @@ func TestQueryObjectRequired(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	j := helperCreateJSON(t, testJSONData) // nolint:varnamelen
+	m := helperCreateMap(t, testJSONData)  // nolint:varnamelen
 
 	type inType struct {
 		key  string
@@ -884,15 +940,20 @@ func TestQueryObjectRequired(t *testing.T) { // nolint:funlen
 		},
 	}
 
-	for _, tt := range tests {
-		// nolint:varnamelen
+	for _, tt := range tests { // nolint:varnamelen
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
 			_, err := New(j, tt.input.zoom...).ObjectRequired(tt.input.key)
 
 			if !errors.Is(err, tt.expectedErr) {
-				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expectedErr, err)
+				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name+"[aJSON]", tt.expectedErr, err)
+			}
+
+			_, err = New(m, tt.input.zoom...).ObjectRequired(tt.input.key)
+
+			if !errors.Is(err, tt.expectedErr) {
+				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name+"[MAP]", tt.expectedErr, err)
 			}
 		})
 	}
@@ -907,4 +968,15 @@ func helperCreateJSON(t *testing.T, text string) *ajson.Node {
 	}
 
 	return jsonBody
+}
+
+func helperCreateMap(t *testing.T, text string) map[string]any {
+	t.Helper()
+
+	var result map[string]any
+	if err := json.Unmarshal([]byte(text), &result); err != nil {
+		t.Fatalf("bad test, JSON object is invalid, cannot proceed with the test")
+	}
+
+	return result
 }
