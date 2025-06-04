@@ -62,6 +62,7 @@ const (
 	ReadHeaderTimeoutSeconds = 3
 
 	SubstitutionsFieldName = "Substitutions"
+	MetadataFieldName      = "metadata"
 )
 
 // ================================
