@@ -43,9 +43,13 @@ func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult)
 func ComparatorPagination(serverURL string, actual *common.ReadResult, expected *common.ReadResult) bool {
 	expectedNextPage := resolveTestServerURL(expected.NextPage.String(), serverURL)
 
-	return compareNextPageToken(actual.NextPage.String(), expectedNextPage) &&
-		actual.Rows == expected.Rows &&
-		actual.Done == expected.Done
+	a := compareNextPageToken(actual.NextPage.String(), expectedNextPage)
+	b := actual.Rows == expected.Rows
+	c := actual.Done == expected.Done
+
+	return a &&
+		b &&
+		c
 }
 
 func compareNextPageToken(actual, expected string) bool {
