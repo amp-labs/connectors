@@ -56,6 +56,17 @@ func testAddToLiveMeeting(ctx context.Context) error {
 		ObjectName: "liveMeeting",
 		RecordData: map[string]any{
 			"meeting_link": "https://meet.google.com/qdt-vccw-nzt",
+			// "title":            "demo",
+			// "meeting_password": "Ab34TRD",
+			// "duration":         60,
+			// "language":         "en",
+			// "attendees": []any{
+			// 	map[string]string{
+			// 		"displayName": "Fireflies Notetaker",
+			// 		"email":       "notetaker@fireflies.ai",
+			// 		"phoneNumber": "5522668874",
+			// 	},
+			// },
 		},
 		RecordId: "",
 	}
@@ -85,6 +96,10 @@ func testCreateBite(ctx context.Context) error {
 			"transcriptId": "01JSXJ9T9DCS3PH46ACCRSCAX2",
 			"startTime":    float64(3),
 			"endTime":      float64(4),
+			// "name":         "bite",
+			// "media_type":   "audio",
+			// "privacies":    []string{"team", "participants"},
+			// "summary":      "creating the bites",
 		},
 		RecordId: "",
 	}
@@ -140,15 +155,15 @@ func testUploadAudio(ctx context.Context) error {
 		ObjectName: "audio",
 		RecordData: map[string]any{
 			"input": map[string]any{
-				"url":   "https://www.nch.com.au/scribe/practice/audio-sample-4.mp3",
-				"title": "Medical Report",
-				"attendees": []any{
-					map[string]string{
-						"displayName": "Fireflies Notetaker",
-						"email":       "notetaker@fireflies.ai",
-						"phoneNumber": "5522668874",
-					},
-				},
+				"url": "https://www.nch.com.au/scribe/practice/audio-sample-4.mp3",
+				// "title": "Medical Report",
+				// "attendees": []any{
+				// 	map[string]string{
+				// 		"displayName": "Fireflies Notetaker",
+				// 		"email":       "notetaker@fireflies.ai",
+				// 		"phoneNumber": "5522668874",
+				// 	},
+				// },
 			},
 		},
 		RecordId: "",
