@@ -133,7 +133,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	var (
 		skip  = 0
 		limit int
-		query string
 	)
 
 	if params.NextPage != "" {
@@ -146,15 +145,9 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	limit = defaultPageSize
 
-	switch params.ObjectName {
-	case transcriptsObjectName:
-		query = getQuery(limit, skip, "graphql/transcripts.graphql", "transcriptsQuery")
-	case bitesObjectName:
-		query = getQuery(limit, skip, "graphql/bites.graphql", "bitesQuery")
-	case usersObjectName:
-		query = getQuery(0, 0, "graphql/users.graphql", "usersQuery")
-	default:
-		return nil, common.ErrObjectNotSupported
+	query, err := getQuery(limit, skip, params.ObjectName)
+	if err != nil {
+		return nil, err
 	}
 
 	requestBody := map[string]string{
@@ -174,15 +167,17 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	return req, nil
 }
 
-func getQuery(limit, skip int, filePath, queryName string) string {
+func getQuery(limit, skip int, queryName string) (string, error) {
+	filePath := fmt.Sprintf("graphql/query_%s.graphql", queryName)
+
 	queryBytes, err := queryFS.ReadFile(filePath)
 	if err != nil {
-		return ""
+		return "", err
 	}
 
 	tmpl, err := template.New(queryName).Parse(string(queryBytes))
 	if err != nil {
-		return ""
+		return "", err
 	}
 
 	var (
@@ -195,10 +190,10 @@ func getQuery(limit, skip int, filePath, queryName string) string {
 
 	err = tmpl.Execute(&queryBuf, pageInfo)
 	if err != nil {
-		return ""
+		return "", err
 	}
 
-	return queryBuf.String()
+	return queryBuf.String(), nil
 }
 
 func (c *Connector) parseReadResponse(
@@ -257,64 +252,9 @@ func (c *Connector) buildWriteRequest(
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
 
-	recordData, err := common.RecordDataToMap(params.RecordData)
+	mutation, err := getMutation(params.ObjectName, params.RecordData)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert record data to map: %w", err)
-	}
-
-	var mutation string
-
-	switch params.ObjectName {
-	case objectNameLiveMeeting:
-		if params.RecordId == "" {
-			mutation = getMutation("graphql/mutation_meeting.graphql", "liveMeeting", recordData)
-		} else {
-			return nil, ErrUpdateMeetingLinkNotSupported
-		}
-	case objectNameCreateBite:
-		if params.RecordId == "" {
-			mutation = getMutation("graphql/mutation_bite.graphql", "bite", recordData)
-		} else {
-			return nil, ErrUpdateBiteNotSupported
-		}
-	case objectNameSetUserRole:
-		if params.RecordId == "" {
-			mutation = getMutation("graphql/mutation_user_role.graphql", "userRole", recordData)
-		} else {
-			return nil, ErrUpdateRoleNotSupported
-		}
-	case objectNameUploadAudio:
-		if params.RecordId == "" {
-			mutationInput, err := ExtractAudioFields(params.RecordData)
-			if err != nil {
-				return nil, err
-			}
-
-			mutation = getMutation("graphql/mutation_audio.graphql", "audio", mutationInput)
-		} else {
-			return nil, ErrUpdateAudioSupported
-		}
-	case objectNameUpdateMeetingTitle:
-		if params.RecordId != "" {
-			input, ok := params.RecordData.(map[string]any)["input"].(map[string]any)
-			if !ok {
-				return nil, ErrInvalidResponseFormat
-			}
-
-			title, ok := input["title"].(string)
-			if !ok {
-				return nil, ErrTitleRequired
-			}
-
-			mutation = getMutation("graphql/mutation_meeting_title.graphql", "meetingTitle", map[string]string{
-				"id":    params.RecordId,
-				"title": title,
-			})
-		} else {
-			return nil, ErrCreateMeetingSupported
-		}
-	default:
-		return nil, common.ErrObjectNotSupported
+		return nil, fmt.Errorf("failed to get mutation: %w", err)
 	}
 
 	requestBody := map[string]string{
@@ -336,25 +276,27 @@ func (c *Connector) buildWriteRequest(
 	return req, nil
 }
 
-func getMutation(filePath, queryName string, data any) string {
+func getMutation(queryName string, data any) (string, error) {
+	filePath := fmt.Sprintf("graphql/mutation_%s.graphql", queryName)
+
 	queryBytes, err := queryFS.ReadFile(filePath)
 	if err != nil {
-		return ""
+		return "", err
 	}
 
 	tmpl, err := template.New(queryName).Parse(string(queryBytes))
 	if err != nil {
-		return ""
+		return "", err
 	}
 
 	var queryBuf bytes.Buffer
 
 	err = tmpl.Execute(&queryBuf, data)
 	if err != nil {
-		return ""
+		return "", err
 	}
 
-	return queryBuf.String()
+	return queryBuf.String(), nil
 }
 
 func (c *Connector) parseWriteResponse(
@@ -397,65 +339,17 @@ func (c *Connector) parseWriteResponse(
 	}, nil
 }
 
-// nolint
-func ExtractAudioFields(RecordData any) (map[string]any, error) {
-	input, ok := RecordData.(map[string]any)["input"].(map[string]any)
-	if !ok {
-		return nil, ErrInvalidResponseFormat
-	}
-
-	url, ok := input["url"].(string)
-	if !ok {
-		return nil, ErrURLIsRequired
-	}
-
-	inputParts := map[string]any{
-		"url": url,
-	}
-
-	// Optional fields: only include if non-zero
-	if title, ok := input["title"].(string); ok && title != "" {
-		inputParts["title"] = title
-	}
-
-	if customLanguage, ok := input["custom_language"].(string); ok && customLanguage != "" {
-		inputParts["custom_language"] = customLanguage
-	}
-
-	if clientReferenceId, ok := input["client_reference_id"].(string); ok && clientReferenceId != "" {
-		inputParts["client_reference_id"] = clientReferenceId
-	}
-
-	if saveVideo, ok := input["save_video"].(bool); ok && saveVideo {
-		inputParts["save_video"] = saveVideo
-	}
-
-	if attendees, ok := input["attendees"].([]any); ok && len(attendees) > 0 {
-		inputParts["attendees"] = attendees
-	}
-
-	return inputParts, nil
-}
-
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
 	if err != nil {
 		return nil, err
 	}
 
-	var mutation string
-
-	switch params.ObjectName {
-	case objectNamedeleteTranscript:
-		if params.RecordId != "" {
-			mutation = getMutation("graphql/mutation_transcript.graphql", "transcript", map[string]string{
-				"transcript_id": params.RecordId,
-			})
-		} else {
-			return nil, ErrUpdateMeetingLinkNotSupported
-		}
-	default:
-		return nil, common.ErrObjectNotSupported
+	// Generate the mutation string by injecting the record ID.
+	// Assumes the template uses a key "record_Id" that maps to params.RecordId
+	mutation, err := getMutation(params.ObjectName, map[string]string{"record_Id": params.RecordId})
+	if err != nil {
+		return nil, err
 	}
 
 	requestBody := map[string]string{

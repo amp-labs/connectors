@@ -151,22 +151,32 @@ func testUploadAudio(ctx context.Context) error {
 
 	slog.Info("Upload the audio file")
 
+	var attendees = []any{
+		map[string]string{
+			"displayName": "Fireflies Notetaker",
+			"email":       "notetaker@fireflies.ai",
+			"phoneNumber": "5522668874",
+		},
+		map[string]string{
+			"displayName": "Notetaker",
+			"email":       "notetaker@fireflies.ai",
+			"phoneNumber": "5246233652",
+		},
+	}
+
+	inputParts := map[string]any{
+		"url":        "https://www.nch.com.au/scribe/practice/audio-sample-4.mp3",
+		"title":      "Medical Report",
+		"attendees":  attendees,
+		"save_video": true,
+	}
+
+	fmt.Println("input", inputParts)
+
 	writeParams := common.WriteParams{
 		ObjectName: "audio",
-		RecordData: map[string]any{
-			"input": map[string]any{
-				"url": "https://www.nch.com.au/scribe/practice/audio-sample-4.mp3",
-				// "title": "Medical Report",
-				// "attendees": []any{
-				// 	map[string]string{
-				// 		"displayName": "Fireflies Notetaker",
-				// 		"email":       "notetaker@fireflies.ai",
-				// 		"phoneNumber": "5522668874",
-				// 	},
-				// },
-			},
-		},
-		RecordId: "",
+		RecordData: inputParts,
+		RecordId:   "",
 	}
 
 	writeRes, err := Write(ctx, conn, writeParams)
@@ -188,14 +198,13 @@ func testUpdateMeetingTitle(ctx context.Context) error {
 
 	slog.Info("Updating the meeting title")
 
+	inputParts := map[string]any{
+		"id":    "01JW6CPYTHM5DEFKH9X739BDPS",
+		"title": "Daily Standup",
+	}
 	writeParams := common.WriteParams{
 		ObjectName: "meetingTitle",
-		RecordData: map[string]any{
-			"input": map[string]any{
-				"title": "Daily Standup",
-			},
-		},
-		RecordId: "01JW6CPYTHM5DEFKH9X739BDPS",
+		RecordData: inputParts,
 	}
 
 	writeRes, err := Write(ctx, conn, writeParams)

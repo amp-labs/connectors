@@ -1,5 +1,5 @@
 mutation {
-    setUserRole(user_id: "{{.user_id}}", role: {{.role}}) { 
+    setUserRole(user_id: "{{.user_id}}", role: {{.role}}){ 
         user_id
 		email
 		name
