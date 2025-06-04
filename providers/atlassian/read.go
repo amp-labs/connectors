@@ -2,11 +2,10 @@ package atlassian
 
 import (
 	"context"
-	"fmt"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/providers/atlassian/internal/jql"
 )
 
 const (
@@ -94,6 +93,19 @@ func (c *Connector) buildReadURL() (*urlbuilder.URL, error) {
 	url, err := c.getModuleURL("search/jql")
 	if err != nil {
 		return nil, err
+	}
+
+	if len(config.NextPage) != 0 {
+		url.WithQueryParam("startAt", config.NextPage.String())
+	}
+
+	jqlQuery := jql.New().
+		SinceMinutes(config.Since).
+		UntilMinutes(config.Until).
+		String()
+
+	if jqlQuery != "" {
+		url.WithQueryParam("jql", jqlQuery)
 	}
 
 	return url, nil
