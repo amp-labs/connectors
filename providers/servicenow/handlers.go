@@ -100,7 +100,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	jsonData, err := json.Marshal(params.RecordData)
 	if err != nil {
-		return nil, fmt.Errorf("marshallig request body: %w", err)
+		return nil, fmt.Errorf("marshalling request body: %w", err)
 	}
 
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
@@ -121,13 +121,15 @@ func (c *Connector) parseWriteResponse(
 
 	result, err := jsonquery.New(body).ObjectRequired("result")
 	if err != nil {
-		logging.Logger(ctx).Error("failed to parse write response", "object", params.ObjectName, "body", body, "err", err.Error())
+		logging.Logger(ctx).Error("failed to parse write response", "object", params.ObjectName, "body", body, "err", err.Error()) //nolint:lll
+
 		return &common.WriteResult{Success: true}, nil
 	}
 
 	data, err := jsonquery.Convertor.ObjectToMap(result)
 	if err != nil {
 		logging.Logger(ctx).Error("failed to convert result object to map", "object", params.ObjectName, "err", err.Error())
+
 		return &common.WriteResult{Success: true}, nil
 	}
 
