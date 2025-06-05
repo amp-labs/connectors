@@ -145,6 +145,7 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("given_name"),
 				Since:      time.Date(2024, 3, 4, 8, 22, 56, 77*millisecondInNano, time.UTC),
+				Until:      time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -152,6 +153,7 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					If: mockcond.And{
 						mockcond.Path("/crm/rest/v1/contacts"),
 						mockcond.QueryParam("since", "2024-03-04T08:22:56.077Z"),
+						mockcond.QueryParam("until", "2025-01-01T00:00:00.000Z"),
 					},
 					Then: mockserver.Response(http.StatusOK, responseContactsEmptyPage),
 				}, {
