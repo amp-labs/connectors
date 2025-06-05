@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -22,12 +23,12 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetConstantContactConnector(ctx)
-	defer utils.Close(conn)
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "contacts",
-		Fields:     connectors.Fields("contact_id", "first_name", "hobby"),
-		// Since:      time.Now().Add(-300 * (24 * time.Hour)),
+		Fields:     connectors.Fields("updated_at", "contact_id", "first_name", "hobby"),
+		Since:      time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+		Until:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
 		// NextPage:  `https://api.cc.email/v3/contacts?cursor=bGltaXQ9MSZuZXh0PTI=`,
 		// NextPage:  `https://api.cc.email/v3/contacts?cursor=bGltaXQ9MSZuZXh0PTImdXBkYXRlZF9hZnRlcj0yMDIyLTAzLTExVDIyJTNBMDklM0EwMiUyQjAwJTNBMDA=`,
 		// NextPage:  `https://api.cc.email/v3/emails?limit=1&next=MQ**`,

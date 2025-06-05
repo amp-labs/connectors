@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -101,9 +102,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("first_name", "last_name"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseContactsLastPage),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v3/contact_custom_fields"),
+				Then:  mockserver.ResponseString(http.StatusOK, `{}`),
+				Else:  mockserver.Response(http.StatusOK, responseContactsLastPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -118,6 +121,35 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"contact_id":    "832444c0-4392-11ef-95d3-fa163e761ca9",
 					},
 				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read contacts second page without next cursor",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("first_name", "last_name"),
+				Since:      time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If:   mockcond.Path("/v3/contact_custom_fields"),
+					Then: mockserver.ResponseString(http.StatusOK, `{}`),
+				}, {
+					If: mockcond.And{
+						mockcond.QueryParam("updated_after", "2024-01-01T00:00:00Z"),
+						mockcond.QueryParam("updated_before", "2025-01-01T00:00:00Z"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseContactsLastPage),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
 				NextPage: "",
 				Done:     true,
 			},
