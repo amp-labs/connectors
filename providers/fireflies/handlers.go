@@ -6,7 +6,6 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
@@ -14,11 +13,12 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/graphql"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 //go:embed graphql/*.graphql
-var queryFS embed.FS
+var queryFiles embed.FS
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
@@ -145,7 +145,12 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	limit = defaultPageSize
 
-	query, err := getQuery(limit, skip, params.ObjectName)
+	pagination := graphql.PaginationParameter{
+		Limit: limit,
+		Skip:  skip,
+	}
+
+	query, err := graphql.GraphQLOperation(queryFiles, "query", params.ObjectName, pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -165,35 +170,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	return req, nil
-}
-
-func getQuery(limit, skip int, queryName string) (string, error) {
-	filePath := fmt.Sprintf("graphql/query_%s.graphql", queryName)
-
-	queryBytes, err := queryFS.ReadFile(filePath)
-	if err != nil {
-		return "", err
-	}
-
-	tmpl, err := template.New(queryName).Parse(string(queryBytes))
-	if err != nil {
-		return "", err
-	}
-
-	var (
-		pageInfo PageInfo
-		queryBuf bytes.Buffer
-	)
-
-	pageInfo.Limit = limit
-	pageInfo.Skip = skip
-
-	err = tmpl.Execute(&queryBuf, pageInfo)
-	if err != nil {
-		return "", err
-	}
-
-	return queryBuf.String(), nil
 }
 
 func (c *Connector) parseReadResponse(
@@ -252,7 +228,7 @@ func (c *Connector) buildWriteRequest(
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
 
-	mutation, err := getMutation(params.ObjectName, params.RecordData)
+	mutation, err := graphql.GraphQLOperation(queryFiles, "mutation", params.ObjectName, params.RecordData)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get mutation: %w", err)
 	}
@@ -274,29 +250,6 @@ func (c *Connector) buildWriteRequest(
 	req.Header.Set("Content-Type", "application/json")
 
 	return req, nil
-}
-
-func getMutation(queryName string, data any) (string, error) {
-	filePath := fmt.Sprintf("graphql/mutation_%s.graphql", queryName)
-
-	queryBytes, err := queryFS.ReadFile(filePath)
-	if err != nil {
-		return "", err
-	}
-
-	tmpl, err := template.New(queryName).Parse(string(queryBytes))
-	if err != nil {
-		return "", err
-	}
-
-	var queryBuf bytes.Buffer
-
-	err = tmpl.Execute(&queryBuf, data)
-	if err != nil {
-		return "", err
-	}
-
-	return queryBuf.String(), nil
 }
 
 func (c *Connector) parseWriteResponse(
@@ -347,7 +300,7 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 
 	// Generate the mutation string by injecting the record ID.
 	// Assumes the template uses a key "record_Id" that maps to params.RecordId
-	mutation, err := getMutation(params.ObjectName, map[string]string{"record_Id": params.RecordId})
+	mutation, err := graphql.GraphQLOperation(queryFiles, "mutation", params.ObjectName, map[string]string{"record_Id": params.RecordId})
 	if err != nil {
 		return nil, err
 	}
