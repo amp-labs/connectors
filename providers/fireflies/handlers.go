@@ -300,7 +300,8 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 
 	// Generate the mutation string by injecting the record ID.
 	// Assumes the template uses a key "record_Id" that maps to params.RecordId
-	mutation, err := graphql.GraphQLOperation(queryFiles, "mutation", params.ObjectName, map[string]string{"record_Id": params.RecordId})
+	mutation, err := graphql.GraphQLOperation(queryFiles, "mutation", params.ObjectName, map[string]string{
+		"record_Id": params.RecordId})
 	if err != nil {
 		return nil, err
 	}
