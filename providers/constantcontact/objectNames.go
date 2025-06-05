@@ -6,15 +6,20 @@ import (
 	"github.com/amp-labs/connectors/providers/constantcontact/metadata"
 )
 
+// nolint:lll
 const (
-	objectNameAccountEmails           = "account_emails"
-	objectNameContactCustomFields     = "contact_custom_fields"
-	objectNameContactLists            = "contact_lists"
-	objectNameContactTags             = "contact_tags"
-	objectNameContacts                = "contacts"
-	objectNameEmailCampaignActivities = "email_campaign_activities"
-	objectNameEmailCampaigns          = "email_campaigns"
-	objectNameSegments                = "segments"
+	objectNameContactCustomFields = "contact_custom_fields"
+	objectNameContactLists        = "contact_lists"
+	objectNameContactTags         = "contact_tags"
+	objectNameSegments            = "segments"
+
+	// https://developer.constantcontact.com/api_reference/index.html#tag/Contacts/operation/getContacts
+	objectNameContacts = "contacts"
+	// https://developer.constantcontact.com/api_reference/index.html#tag/Email-Campaigns/operation/retrieveEmailCampaignsUsingGET
+	objectNameEmailCampaigns = "email_campaigns" // TODO rename to `emails`
+
+	objectNameAccountEmails           = "account_emails"            // TODO rename to `account/emails`
+	objectNameEmailCampaignActivities = "email_campaign_activities" // TODO rename to emails/activities
 
 	// Partner accounts and subscriptions need special handling. Ignored for now.
 	// https://v3.developer.constantcontact.com/api_guide/partners_accts_get.html
