@@ -4,15 +4,16 @@ const Mixpanel Provider = "mixpanel"
 
 func init() {
 	// Mixpanel configuration
-	// apiserviceSubdomain cab either be [api, api-eu, data,data-eu].
+	// apiserviceSubdomain ca either be [api, api-eu, data,data-eu].
 	// Supported Mixpanel APIs
 	// -	Ingestion API
 	// -	Identity API
 	// -	Event Export API
 	// -	Data Pipelines API
 	SetInfo(Mixpanel, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://{{.apiserviceSubdomain}}.mixpanel.com",
+		DisplayName: "Mixpanel",
+		AuthType:    Basic,
+		BaseURL:     "https://{{.workspace}}.mixpanel.com",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722597081/media/mixpanel.com_1722597079.svg",
@@ -36,5 +37,13 @@ func init() {
 			Write:     false,
 		},
 		PostAuthInfoNeeded: false,
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "workspace",
+					DisplayName: "API Subdomain",
+				},
+			},
+		},
 	})
 }
