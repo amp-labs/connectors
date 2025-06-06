@@ -6,6 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
+// Implement error abstraction layers to streamline provider error handling.
 var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	[]interpreter.FormatTemplate{
 		{
@@ -15,6 +16,9 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	}...,
 )
 
+// ResponseError represents an error response from the Pinterest API.
+// Code contains the Pinterest-specific error code and Message contains
+// a human-readable description of the error.
 type ResponseError struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
