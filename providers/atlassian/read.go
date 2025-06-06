@@ -2,11 +2,10 @@ package atlassian
 
 import (
 	"context"
-	"fmt"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/providers/atlassian/internal/jql"
 )
 
 // Read only returns a list of Jira Issues.
@@ -48,17 +47,13 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		url.WithQueryParam("startAt", config.NextPage.String())
 	}
 
-	if !config.Since.IsZero() {
-		// Read URL supports time scoping. common.ReadParams.Since is used to get relative time frame.
-		// Here is an API example on how to request issues that were updated in the last 30 minutes.
-		// search?jql=updated > "-30m"
-		// The reason we use minutes is that it is the most granular API permits.
-		diff := time.Since(config.Since)
+	jqlQuery := jql.New().
+		SinceMinutes(config.Since).
+		UntilMinutes(config.Until).
+		String()
 
-		minutes := int64(diff.Minutes())
-		if minutes > 0 {
-			url.WithQueryParam("jql", fmt.Sprintf(`updated > "-%vm"`, minutes))
-		}
+	if jqlQuery != "" {
+		url.WithQueryParam("jql", jqlQuery)
 	}
 
 	return url, nil

@@ -169,7 +169,67 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				// server was asked to get issues that occurred in the last 5 min
-				If: mockcond.QueryParam("jql", `updated > "-5m"`),
+				If: mockcond.And{
+					mockcond.Path("/ex/jira/ebc887b2-7e61-4059-ab35-71f15cc16e12/rest/api/3/search"),
+					mockcond.QueryParam("jql", `updated > "-5m"`),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `
+					{
+					  "startAt": 0,
+					  "issues": [{"fields":{}, "id": "0"}]
+					}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: "1",
+				Done:     false,
+			},
+			ExpectedErrs: nil, // there must be no errors.
+		},
+		{
+			Name: "Until rounds to minute time frame",
+			Input: common.ReadParams{
+				ObjectName: "issues",
+				Fields:     connectors.Fields("id"),
+				Until:      time.Now().Add(-2 * time.Minute),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				// server was asked to get issues that occurred in the last 5 min
+				If: mockcond.And{
+					mockcond.Path("/ex/jira/ebc887b2-7e61-4059-ab35-71f15cc16e12/rest/api/3/search"),
+					mockcond.QueryParam("jql", `updated < "-2m"`),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `
+					{
+					  "startAt": 0,
+					  "issues": [{"fields":{}, "id": "0"}]
+					}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: "1",
+				Done:     false,
+			},
+			ExpectedErrs: nil, // there must be no errors.
+		},
+		{
+			Name: "Since and Until round to minute time frame",
+			Input: common.ReadParams{
+				ObjectName: "issues",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Now().Add(-5 * time.Minute),
+				Until:      time.Now().Add(-2 * time.Minute),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				// server was asked to get issues that occurred in the last 5 min
+				If: mockcond.And{
+					mockcond.Path("/ex/jira/ebc887b2-7e61-4059-ab35-71f15cc16e12/rest/api/3/search"),
+					mockcond.QueryParam("jql", `updated > "-5m" AND updated < "-2m"`),
+				},
 				Then: mockserver.ResponseString(http.StatusOK, `
 					{
 					  "startAt": 0,
