@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 )
 
@@ -15,5 +16,15 @@ func DumpJSON(v any, w io.Writer) {
 
 	if err := encoder.Encode(v); err != nil {
 		Fail("error marshaling to JSON: %w", "error", err)
+	}
+}
+
+func DumpErrorsMap(registry map[string]error, w io.Writer) {
+	if len(registry) != 0 {
+		_, _ = w.Write([]byte("Errors map is not empty:\n"))
+	}
+
+	for key, value := range registry {
+		_, _ = w.Write([]byte(fmt.Sprintf("[%v] => %v\n", key, value)))
 	}
 }
