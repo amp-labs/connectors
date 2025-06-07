@@ -5,6 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/ashby"
 	testUtils "github.com/amp-labs/connectors/test/utils"
@@ -21,7 +22,7 @@ func GetAshbyConnector(ctx context.Context) *ashby.Connector {
 	}
 
 	conn, err := ashby.NewConnector(
-		common.ConnectorParams{
+		parameters.Connector{
 			AuthenticatedClient: client,
 		},
 	)

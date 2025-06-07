@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/capsule"
 	"github.com/amp-labs/connectors/test/utils"
@@ -23,7 +23,7 @@ func GetCapsuleConnector(ctx context.Context) *capsule.Connector {
 	)
 
 	conn, err := capsule.NewConnector(
-		common.ConnectorParams{
+		parameters.Connector{
 			AuthenticatedClient: clientBuilder.AuthClient.Caller.Client,
 		},
 	)

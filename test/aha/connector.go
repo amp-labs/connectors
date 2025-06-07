@@ -3,8 +3,8 @@ package aha
 import (
 	"context"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/aha"
 	"github.com/amp-labs/connectors/test/utils"
@@ -16,7 +16,7 @@ func GetAhaConnector(ctx context.Context) *aha.Connector {
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := aha.NewConnector(
-		common.ConnectorParams{
+		parameters.Connector{
 			AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
 			Workspace:           reader.Get(credscanning.Fields.Workspace),
 		},

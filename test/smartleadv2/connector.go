@@ -5,6 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/smartleadv2"
 	"github.com/amp-labs/connectors/test/utils"
@@ -20,7 +21,7 @@ func GetSmartleadV2Connector(ctx context.Context) *smartleadv2.Connector {
 	}
 
 	conn, err := smartleadv2.NewConnector(
-		common.ConnectorParams{AuthenticatedClient: client},
+		parameters.Connector{AuthenticatedClient: client},
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
