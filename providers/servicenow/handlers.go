@@ -14,6 +14,7 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/spyzhov/ajson"
 )
 
@@ -83,7 +84,7 @@ func (c *Connector) parseReadResponse(
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	logging.With(ctx, "connector", "serviceNow")
+	logging.With(ctx, "connector", providers.ServiceNow)
 
 	method := http.MethodPost
 
