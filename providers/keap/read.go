@@ -63,11 +63,15 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	if c.moduleID == providers.ModuleKeapV1 {
+	if c.moduleID == providers.ModuleKeapV1 { // nolint:nestif
 		url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
 
 		if !config.Since.IsZero() {
 			url.WithQueryParam("since", datautils.Time.FormatRFC3339inUTCWithMilliseconds(config.Since))
+		}
+
+		if !config.Until.IsZero() {
+			url.WithQueryParam("until", datautils.Time.FormatRFC3339inUTCWithMilliseconds(config.Until))
 		}
 	} else if c.moduleID == providers.ModuleKeapV2 {
 		// Since parameter is not applicable to objects in Module V2.
