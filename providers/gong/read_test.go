@@ -107,7 +107,30 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				// Pacific time to UTC is achieved by adding 8 hours
-				If:   mockcond.QueryParam("fromDateTime", "2024-09-19T12:30:45Z"),
+				If: mockcond.And{
+					mockcond.Path("/v2/calls"),
+					mockcond.QueryParam("fromDateTime", "2024-09-19T12:30:45Z"),
+				},
+				Then: mockserver.Response(http.StatusOK, fakeServerResp),
+			}.Server(),
+			Comparator:   testroutines.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 2, NextPage: "", Done: true},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Until parameter is reflected in query parameter",
+			Input: common.ReadParams{
+				ObjectName: "calls",
+				Fields:     connectors.Fields("id"),
+				Until:      time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				// Pacific time to UTC is achieved by adding 8 hours
+				If: mockcond.And{
+					mockcond.Path("/v2/calls"),
+					mockcond.QueryParam("toDateTime", "2025-01-01T00:00:00Z"),
+				},
 				Then: mockserver.Response(http.StatusOK, fakeServerResp),
 			}.Server(),
 			Comparator:   testroutines.ComparatorPagination,
@@ -150,7 +173,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			},
 			ExpectedErrs: nil,
 		},
-
 		{
 			Name:  "Successful read with 2 entries and cursor for next page",
 			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
@@ -200,7 +222,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{jsonquery.ErrNotArray},
 		},
-
 		{
 			Name:  "Successful read transcripts using POST",
 			Input: common.ReadParams{ObjectName: "transcripts", Fields: connectors.Fields("callid")},
