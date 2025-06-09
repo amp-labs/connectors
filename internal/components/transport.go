@@ -2,6 +2,7 @@ package components
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -16,7 +17,7 @@ type Transport struct {
 // satisfy a common interface, and then hook them up in here.
 func NewTransport(
 	provider providers.Provider,
-	params common.ConnectorParams,
+	params parameters.Connector,
 ) (*Transport, error) {
 	providerContext, err := NewProviderContext(provider, params.Module, params.Workspace, params.Metadata)
 	if err != nil {

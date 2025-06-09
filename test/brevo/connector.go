@@ -5,6 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/brevo"
 	"github.com/amp-labs/connectors/test/utils"
@@ -22,7 +23,7 @@ func GetBrevoConnector(ctx context.Context) *brevo.Connector {
 	}
 
 	conn, err := brevo.NewConnector(
-		common.ConnectorParams{
+		parameters.Connector{
 			AuthenticatedClient: client,
 		},
 	)

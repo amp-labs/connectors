@@ -10,18 +10,18 @@ import (
 )
 
 // Option is a function which mutates the hubspot connector configuration.
-type Option = func(params *parameters)
+type Option = func(params *parametersInternal)
 
 // WithClient sets the http client to use for the connector. Saves some boilerplate.
 func WithClient(client *http.Client) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		WithAuthenticatedClient(client)(params)
 	}
 }
 
 // WithAuthenticatedClient sets the http client to use for the connector. Its usage is optional.
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.client = &common.JSONHTTPClient{
 			HTTPClient: &common.HTTPClient{
 				Client: client,
@@ -32,14 +32,14 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 
 // WithRead sets the read function for the connector.
 func WithRead(read func(ctx context.Context, params common.ReadParams) (*common.ReadResult, error)) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.read = read
 	}
 }
 
 // WithWrite sets the write function for the connector.
 func WithWrite(write func(ctx context.Context, params common.WriteParams) (*common.WriteResult, error)) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.write = write
 	}
 }
@@ -48,7 +48,7 @@ func WithWrite(write func(ctx context.Context, params common.WriteParams) (*comm
 func WithListObjectMetadata(
 	listObjectMetadata func(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error),
 ) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.listObjectMetadata = listObjectMetadata
 	}
 }
@@ -57,7 +57,7 @@ func WithListObjectMetadata(
 func WithGetURL(
 	getURL func(resource string, args map[string]any) (string, error),
 ) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.getURL = getURL
 	}
 }
@@ -66,7 +66,7 @@ func WithGetURL(
 func WithDelete(
 	deleteFunc func(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error),
 ) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.delete = deleteFunc
 	}
 }
@@ -75,7 +75,7 @@ func WithDelete(
 func WithGetPostAuthInfo(
 	getPostAuthInfo func(ctx context.Context) (*common.PostAuthInfo, error),
 ) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.getPostAuthInfo = getPostAuthInfo
 	}
 }
@@ -89,7 +89,7 @@ func WithGetRecordsByIds(getRecordsByIds func( //nolint:revive
 	associations []string,
 ) ([]common.ReadResultRow, error),
 ) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.getRecordsByIds = getRecordsByIds
 	}
 }
@@ -98,7 +98,7 @@ func WithGetRecordsByIds(getRecordsByIds func( //nolint:revive
 func WithVerifyWebhookMessage(
 	verifyWebhookMessage func(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error),
 ) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.verifyWebhookMessage = verifyWebhookMessage
 	}
 }
@@ -107,7 +107,7 @@ func WithVerifyWebhookMessage(
 func WithRegister(
 	register func(ctx context.Context, params common.SubscriptionRegistrationParams) (*common.RegistrationResult, error),
 ) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.register = register
 	}
 }
@@ -116,7 +116,7 @@ func WithRegister(
 func WithDeleteRegistration(
 	deleteRegistration func(ctx context.Context, previousResult common.RegistrationResult) error,
 ) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.deleteRegistration = deleteRegistration
 	}
 }
@@ -125,7 +125,7 @@ func WithDeleteRegistration(
 func WithEmptyRegistrationParams(
 	emptyRegistrationParams func() *common.SubscriptionRegistrationParams,
 ) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.emptyRegistrationParams = emptyRegistrationParams
 	}
 }
@@ -134,7 +134,7 @@ func WithEmptyRegistrationParams(
 func WithEmptyRegistrationResult(
 	emptyRegistrationResult func() *common.RegistrationResult,
 ) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.emptyRegistrationResult = emptyRegistrationResult
 	}
 }
@@ -143,7 +143,7 @@ func WithEmptyRegistrationResult(
 func WithSubscribe(
 	subscribe func(ctx context.Context, params common.SubscribeParams) (*common.SubscriptionResult, error),
 ) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.subscribe = subscribe
 	}
 }
@@ -155,7 +155,7 @@ func WithUpdateSubscription(updateSubscription func(
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error),
 ) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.updateSubscription = updateSubscription
 	}
 }
@@ -164,7 +164,7 @@ func WithUpdateSubscription(updateSubscription func(
 func WithDeleteSubscription(
 	deleteSubscription func(ctx context.Context, previousResult common.SubscriptionResult) error,
 ) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.deleteSubscription = deleteSubscription
 	}
 }
@@ -173,7 +173,7 @@ func WithDeleteSubscription(
 func WithEmptySubscriptionParams(
 	emptySubscriptionParams func() *common.SubscribeParams,
 ) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.emptySubscriptionParams = emptySubscriptionParams
 	}
 }
@@ -182,13 +182,13 @@ func WithEmptySubscriptionParams(
 func WithEmptySubscriptionResult(
 	emptySubscriptionResult func() *common.SubscriptionResult,
 ) Option {
-	return func(params *parameters) {
+	return func(params *parametersInternal) {
 		params.emptySubscriptionResult = emptySubscriptionResult
 	}
 }
 
 // parameters is the internal configuration for the mock connector.
-type parameters struct {
+type parametersInternal struct {
 	client             *common.JSONHTTPClient // required
 	read               func(ctx context.Context, params common.ReadParams) (*common.ReadResult, error)
 	write              func(ctx context.Context, params common.WriteParams) (*common.WriteResult, error)
@@ -228,7 +228,7 @@ type parameters struct {
 	emptySubscriptionResult func() *common.SubscriptionResult
 }
 
-func (p parameters) ValidateParams() error { //nolint:funlen,cyclop
+func (p parametersInternal) ValidateParams() error { //nolint:funlen,cyclop
 	if p.client == nil {
 		return fmt.Errorf("%w: %s", ErrMissingParam, "client")
 	}

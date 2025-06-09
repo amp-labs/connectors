@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/test/utils"
@@ -26,7 +27,7 @@ func GetServiceNowConnector(ctx context.Context) *servicenow.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := servicenow.NewConnector(common.ConnectorParams{
+	conn, err := servicenow.NewConnector(parameters.Connector{
 		AuthenticatedClient: client,
 		Workspace:           reader.Get(credscanning.Fields.Workspace),
 	})

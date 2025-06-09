@@ -36,7 +36,7 @@ func APIVersionSOAP() string {
 
 // NewConnector returns a new Salesforce connector.
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts,
+	params, err := paramsbuilder.Apply(parametersInternal{}, opts,
 		WithModule(providers.ModuleSalesforceCRM),
 	)
 	if err != nil {

@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/aha/metadata"
 )
@@ -16,8 +17,8 @@ type Connector struct {
 	*components.Connector
 
 	// Require authenticated client
-	common.RequireAuthenticatedClient
-	common.RequireWorkspace
+	parameters.RequireAuthenticatedClient
+	parameters.RequireWorkspace
 
 	// supported operations
 	components.SchemaProvider
@@ -25,7 +26,7 @@ type Connector struct {
 	components.Writer
 }
 
-func NewConnector(params common.ConnectorParams) (*Connector, error) {
+func NewConnector(params parameters.Connector) (*Connector, error) {
 	// Create base connector with provider info
 	return components.Initialize(providers.Aha, params, constructor)
 }
