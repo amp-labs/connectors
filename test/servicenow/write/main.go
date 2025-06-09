@@ -37,6 +37,11 @@ func run() error {
 		return err
 	}
 
+	err = testCreateContact(ctx, conn)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -100,6 +105,40 @@ func testUpdateMailServer(ctx context.Context, conn *ServiceNow.Connector) error
 		RecordId:   "280ffff1c0a8000b0083f5395b44bc97",
 		RecordData: map[string]any{
 			"due_in": "2025-10-10",
+		},
+	}
+
+	res, err := conn.Write(ctx, params)
+	if err != nil {
+		slog.Error(err.Error())
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testCreateContact(ctx context.Context, conn *ServiceNow.Connector) error {
+	params := common.WriteParams{
+		ObjectName: "now/contact",
+		RecordData: map[string]any{
+			"active":       true,
+			"agent_status": "On break",
+			"city":         "Liverpool",
+			"company":      "Withampersand",
+			"country":      "UK",
+			"email":        "ywnwa@lfc.com",
+			"first_name":   "Mohammed",
+			"last_name":    "Salah",
+			"phone":        "+17689673546",
+			"gender":       "male",
 		},
 	}
 
