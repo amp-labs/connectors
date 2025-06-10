@@ -31,6 +31,8 @@ import (
 	"github.com/amp-labs/connectors/providers/gitlab"
 	"github.com/amp-labs/connectors/providers/gong"
 	"github.com/amp-labs/connectors/providers/gorgias"
+	"github.com/amp-labs/connectors/providers/groove"
+	"github.com/amp-labs/connectors/providers/helpscout"
 	"github.com/amp-labs/connectors/providers/heyreach"
 	"github.com/amp-labs/connectors/providers/hubspot"
 	"github.com/amp-labs/connectors/providers/hunter"
@@ -176,6 +178,10 @@ func New( // nolint:gocyclo,cyclop,funlen,ireturn
 		connector, connectorErr = newInstantlyAIConnector(params)
 	case providers.GitLab:
 		connector, connectorErr = newGitLabConnector(params)
+	case providers.HelpScoutMailbox:
+		connector, connectorErr = newHelpScoutConnector(params)
+	case providers.Groove:
+		connector, connectorErr = newGrooveConnector(params)
 	default:
 		return nil, ErrInvalidProvider
 	}
@@ -560,4 +566,16 @@ func newGitLabConnector(
 	params common.ConnectorParams,
 ) (*gitlab.Connector, error) {
 	return gitlab.NewConnector(params)
+}
+
+func newHelpScoutConnector(
+	params common.ConnectorParams,
+) (*helpscout.Connector, error) {
+	return helpscout.NewConnector(params)
+}
+
+func newGrooveConnector(
+	params common.ConnectorParams,
+) (*groove.Connector, error) {
+	return groove.NewConnector(params)
 }
