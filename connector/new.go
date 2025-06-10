@@ -531,3 +531,15 @@ func newGrooveConnector(
 ) (*groove.Connector, error) {
 	return groove.NewConnector(params)
 }
+
+func newHelpScoutConnector(
+	params common.ConnectorParams,
+) (*helpscout.Connector, error) {
+	return helpscout.NewConnector(params)
+}
+
+func newGrooveConnector(
+	params common.ConnectorParams,
+) (*groove.Connector, error) {
+	return groove.NewConnector(params)
+}
