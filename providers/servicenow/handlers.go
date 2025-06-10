@@ -60,13 +60,30 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	return &objectMetadata, nil
 }
 
+func (c *Connector) constructReadURL(params common.ReadParams) (string, error) {
+	var url string
+
+	if params.NextPage != "" {
+		url = params.NextPage.String()
+	} else {
+		u, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, params.ObjectName)
+		if err != nil {
+			return "", err
+		}
+
+		url = u.String()
+	}
+
+	return url, nil
+}
+
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, params.ObjectName)
+	url, err := c.constructReadURL(params)
 	if err != nil {
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	return http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 }
 
 func (c *Connector) parseReadResponse(
