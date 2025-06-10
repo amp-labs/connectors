@@ -61,20 +61,16 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func (c *Connector) constructReadURL(params common.ReadParams) (string, error) {
-	var url string
-
 	if params.NextPage != "" {
-		url = params.NextPage.String()
-	} else {
-		u, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, params.ObjectName)
-		if err != nil {
-			return "", err
-		}
-
-		url = u.String()
+		return params.NextPage.String(), nil
 	}
 
-	return url, nil
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, params.ObjectName)
+	if err != nil {
+		return "", err
+	}
+
+	return url.String(), nil
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
