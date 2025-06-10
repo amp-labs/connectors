@@ -1,4 +1,4 @@
-package helpscout
+package helpscoutmailbox
 
 import (
 	"fmt"

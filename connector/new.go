@@ -33,7 +33,7 @@ import (
 	"github.com/amp-labs/connectors/providers/gong"
 	"github.com/amp-labs/connectors/providers/gorgias"
 	"github.com/amp-labs/connectors/providers/groove"
-	"github.com/amp-labs/connectors/providers/helpscout"
+	"github.com/amp-labs/connectors/providers/helpscoutmailbox"
 	"github.com/amp-labs/connectors/providers/heyreach"
 	"github.com/amp-labs/connectors/providers/hubspot"
 	"github.com/amp-labs/connectors/providers/hunter"
@@ -522,8 +522,8 @@ func newGitLabConnector(
 
 func newHelpScoutConnector(
 	params common.ConnectorParams,
-) (*helpscout.Connector, error) {
-	return helpscout.NewConnector(params)
+) (*helpscoutmailbox.Connector, error) {
+	return helpscoutmailbox.NewConnector(params)
 }
 
 func newGrooveConnector(

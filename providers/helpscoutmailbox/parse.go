@@ -1,4 +1,4 @@
-package helpscout
+package helpscoutmailbox
 
 import (
 	"github.com/amp-labs/connectors/common"

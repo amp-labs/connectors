@@ -1,4 +1,4 @@
-package helpscout
+package helpscoutmailbox
 
 import (
 	"context"
@@ -7,12 +7,12 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/helpscout"
+	"github.com/amp-labs/connectors/providers/helpscoutmailbox"
 	"github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )
 
-func GetHelpScoutConnector(ctx context.Context) *helpscout.Connector {
+func GetHelpScoutConnector(ctx context.Context) *helpscoutmailbox.Connector {
 	filePath := credscanning.LoadPath(providers.HelpScoutMailbox)
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
@@ -25,7 +25,7 @@ func GetHelpScoutConnector(ctx context.Context) *helpscout.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := helpscout.NewConnector(common.ConnectorParams{
+	conn, err := helpscoutmailbox.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {
