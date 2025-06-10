@@ -6,13 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/spyzhov/ajson"
@@ -90,7 +89,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(response,
 		common.ExtractRecordsFromPath("result"),
-		getNextRecordsURL(response.Headers.Get("Link")),
+		getNextRecordsURL(response),
 		common.GetMarshaledData,
 		params.Fields,
 	)
@@ -154,36 +153,8 @@ func (c *Connector) parseWriteResponse(
 	}, nil
 }
 
-func getNextRecordsURL(linkHeader string) common.NextPageFunc {
+func getNextRecordsURL(resp *common.JSONHTTPResponse) common.NextPageFunc {
 	return func(n *ajson.Node) (string, error) {
-		return ParseNexPageLinkHeader(linkHeader)
+		return httpkit.HeaderLink(resp, "next"), nil
 	}
-}
-
-// ParseNexPageLinkHeader extracts the next page URL from the Link Header response.
-func ParseNexPageLinkHeader(linkHeader string) (string, error) {
-	if linkHeader == "" {
-		return "", nil // this indicates we're done.
-	}
-
-	links := strings.Split(linkHeader, ",")
-	// [<https://dev269415.service-now.com/api/now/v2/table/incident?sysparm_limit=1&sysparm_offset=0>;rel="next" ...]
-	for _, link := range links {
-		if strings.Contains(link, `rel="next"`) {
-			parts := strings.Split(link, ";")
-			rawURL := strings.TrimSpace(parts[0])
-			rawURL = strings.TrimPrefix(rawURL, "<")
-			rawURL = strings.TrimSuffix(rawURL, ">")
-
-			// Parse the URL to ensure it's valid
-			parsedURL, err := url.Parse(rawURL)
-			if err != nil {
-				return "", fmt.Errorf("failed to parse URL: %w", err)
-			}
-
-			return parsedURL.String(), nil
-		}
-	}
-
-	return "", nil
 }
