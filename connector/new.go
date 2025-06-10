@@ -64,129 +64,71 @@ import (
 
 var ErrInvalidProvider = errors.New("invalid provider")
 
-func New( // nolint:gocyclo,cyclop,funlen,ireturn
-	provider providers.Provider,
-	params common.ConnectorParams,
-) (connectors.Connector, error) {
-	var (
-		connector    connectors.Connector
-		connectorErr error
-	)
+type constructorFunc func(common.ConnectorParams) (connectors.Connector, error)
 
-	switch provider {
-	case providers.Hubspot:
-		connector, connectorErr = newHubspotConnector(params)
-	case providers.Salesforce:
-		connector, connectorErr = newSalesforceConnector(params)
-	case providers.Docusign:
-		connector, connectorErr = newDocusignConnector(params)
-	case providers.Intercom:
-		connector, connectorErr = newIntercomConnector(params)
-	case providers.Salesloft:
-		connector, connectorErr = newSalesloftConnector(params)
-	case providers.DynamicsCRM:
-		connector, connectorErr = newDynamicsCRMConnector(params)
-	case providers.ZendeskSupport:
-		connector, connectorErr = newZendeskSupportConnector(params)
-	case providers.Outreach:
-		connector, connectorErr = newOutreachConnector(params)
-	case providers.Atlassian:
-		connector, connectorErr = newAtlassianConnector(params)
-	case providers.Pipeliner:
-		connector, connectorErr = newPipelinerConnector(params)
-	case providers.Smartlead:
-		connector, connectorErr = newSmartleadConnector(params)
-	case providers.Marketo:
-		connector, connectorErr = newMarketoConnector(params)
-	case providers.Instantly:
-		connector, connectorErr = newInstantlyConnector(params)
-	case providers.Apollo:
-		connector, connectorErr = newApolloConnector(params)
-	case providers.Gong:
-		connector, connectorErr = newGongConnector(params)
-	case providers.Attio:
-		connector, connectorErr = newAttioConnector(params)
-	case providers.Pipedrive:
-		connector, connectorErr = newPipedriveConnector(params)
-	case providers.Zoho:
-		connector, connectorErr = newZohoConnector(params)
-	case providers.Close:
-		connector, connectorErr = newCloseConnector(params)
-	case providers.Klaviyo:
-		connector, connectorErr = newKlaviyoConnector(params)
-	case providers.CustomerJourneysApp:
-		connector, connectorErr = newCustomerJourneysAppConnector(params)
-	case providers.ConstantContact:
-		connector, connectorErr = newConstantContactConnector(params)
-	case providers.Keap:
-		connector, connectorErr = newKeapConnector(params)
-	case providers.Kit:
-		connector, connectorErr = newKitConnector(params)
-	case providers.Iterable:
-		connector, connectorErr = newIterableConnector(params)
-	case providers.Asana:
-		connector, connectorErr = newAsanaConnector(params)
-	case providers.Stripe:
-		connector, connectorErr = newStripeConnector(params)
-	case providers.Zoom:
-		connector, connectorErr = newZoomConnector(params)
-	case providers.Brevo:
-		connector, connectorErr = newBrevoConnector(params)
-	case providers.Blueshift:
-		connector, connectorErr = newBlueshiftConnector(params)
-	case providers.Ashby:
-		connector, connectorErr = newAshbyConnector(params)
-	case providers.Github:
-		connector, connectorErr = newGithubConnector(params)
-	case providers.Aha:
-		connector, connectorErr = newAhaConnector(params)
-	case providers.ClickUp:
-		connector, connectorErr = newClickUpConnector(params)
-	case providers.Monday:
-		connector, connectorErr = newMondayConnector(params)
-	case providers.HeyReach:
-		connector, connectorErr = newHeyReachConnector(params)
-	case providers.AWS:
-		connector, connectorErr = newAWSConnector(params)
-	case providers.Drift:
-		connector, connectorErr = newDriftConnector(params)
-	case providers.Mixmax:
-		connector, connectorErr = newMixmaxConnector(params)
-	case providers.Dixa:
-		connector, connectorErr = newDixaConnector(params)
-	case providers.Front:
-		connector, connectorErr = newFrontConnector(params)
-	case providers.Freshdesk:
-		connector, connectorErr = newFreshdeskConnector(params)
-	case providers.ServiceNow:
-		connector, connectorErr = newServiceNowConnector(params)
-	case providers.ChiliPiper:
-		connector, connectorErr = newChiliPiperConnector(params)
-	case providers.Hunter:
-		connector, connectorErr = newHunterConnector(params)
-	case providers.Podium:
-		connector, connectorErr = newPodiumConnector(params)
-	case providers.Lemlist:
-		connector, connectorErr = newLemlistConnector(params)
-	case providers.Gorgias:
-		connector, connectorErr = newGorgiasConnector(params)
-	case providers.ZendeskChat:
-		connector, connectorErr = newZendeskChatConnector(params)
-	case providers.Capsule:
-		connector, connectorErr = newCapsuleConnector(params)
-	case providers.InstantlyAI:
-		connector, connectorErr = newInstantlyAIConnector(params)
-	case providers.GitLab:
-		connector, connectorErr = newGitLabConnector(params)
-	case providers.HelpScoutMailbox:
-		connector, connectorErr = newHelpScoutConnector(params)
-	case providers.Groove:
-		connector, connectorErr = newGrooveConnector(params)
-	default:
+var connectorConstructors = map[providers.Provider]constructorFunc{
+	providers.Hubspot:        func(p common.ConnectorParams) (connectors.Connector, error) { return newHubspotConnector(p) },
+	providers.Salesforce:     func(p common.ConnectorParams) (connectors.Connector, error) { return newSalesforceConnector(p) },
+	providers.Docusign:       func(p common.ConnectorParams) (connectors.Connector, error) { return newDocusignConnector(p) },
+	providers.Intercom:       func(p common.ConnectorParams) (connectors.Connector, error) { return newIntercomConnector(p) },
+	providers.Salesloft:      func(p common.ConnectorParams) (connectors.Connector, error) { return newSalesloftConnector(p) },
+	providers.DynamicsCRM:    func(p common.ConnectorParams) (connectors.Connector, error) { return newDynamicsCRMConnector(p) },
+	providers.ZendeskSupport: func(p common.ConnectorParams) (connectors.Connector, error) { return newZendeskSupportConnector(p) },
+	providers.Outreach:       func(p common.ConnectorParams) (connectors.Connector, error) { return newOutreachConnector(p) },
+	providers.Atlassian:      func(p common.ConnectorParams) (connectors.Connector, error) { return newAtlassianConnector(p) },
+	providers.Pipeliner:      func(p common.ConnectorParams) (connectors.Connector, error) { return newPipelinerConnector(p) },
+	providers.Smartlead:      func(p common.ConnectorParams) (connectors.Connector, error) { return newSmartleadConnector(p) },
+	providers.Marketo:        func(p common.ConnectorParams) (connectors.Connector, error) { return newMarketoConnector(p) },
+	providers.Instantly:      func(p common.ConnectorParams) (connectors.Connector, error) { return newInstantlyConnector(p) },
+	providers.Apollo:         func(p common.ConnectorParams) (connectors.Connector, error) { return newApolloConnector(p) },
+	providers.Gong:           func(p common.ConnectorParams) (connectors.Connector, error) { return newGongConnector(p) },
+	providers.Attio:          func(p common.ConnectorParams) (connectors.Connector, error) { return newAttioConnector(p) },
+	providers.Pipedrive:      func(p common.ConnectorParams) (connectors.Connector, error) { return newPipedriveConnector(p) },
+	providers.Zoho:           func(p common.ConnectorParams) (connectors.Connector, error) { return newZohoConnector(p) },
+	providers.Close:          func(p common.ConnectorParams) (connectors.Connector, error) { return newCloseConnector(p) },
+	providers.Klaviyo:        func(p common.ConnectorParams) (connectors.Connector, error) { return newKlaviyoConnector(p) },
+	providers.CustomerJourneysApp: func(p common.ConnectorParams) (connectors.Connector, error) {
+		return newCustomerJourneysAppConnector(p)
+	},
+	providers.ConstantContact: func(p common.ConnectorParams) (connectors.Connector, error) { return newConstantContactConnector(p) },
+	providers.Keap:            func(p common.ConnectorParams) (connectors.Connector, error) { return newKeapConnector(p) },
+	providers.Kit:             func(p common.ConnectorParams) (connectors.Connector, error) { return newKitConnector(p) },
+	providers.Iterable:        func(p common.ConnectorParams) (connectors.Connector, error) { return newIterableConnector(p) },
+	providers.Asana:           func(p common.ConnectorParams) (connectors.Connector, error) { return newAsanaConnector(p) },
+	providers.Stripe:          func(p common.ConnectorParams) (connectors.Connector, error) { return newStripeConnector(p) },
+	providers.Zoom:            func(p common.ConnectorParams) (connectors.Connector, error) { return newZoomConnector(p) },
+	providers.Brevo:           func(p common.ConnectorParams) (connectors.Connector, error) { return newBrevoConnector(p) },
+	providers.Blueshift:       func(p common.ConnectorParams) (connectors.Connector, error) { return newBlueshiftConnector(p) },
+	providers.Ashby:           func(p common.ConnectorParams) (connectors.Connector, error) { return newAshbyConnector(p) },
+	providers.Github:          func(p common.ConnectorParams) (connectors.Connector, error) { return newGithubConnector(p) },
+	providers.Aha:             func(p common.ConnectorParams) (connectors.Connector, error) { return newAhaConnector(p) },
+	providers.ClickUp:         func(p common.ConnectorParams) (connectors.Connector, error) { return newClickUpConnector(p) },
+	providers.Monday:          func(p common.ConnectorParams) (connectors.Connector, error) { return newMondayConnector(p) },
+	providers.HeyReach:        func(p common.ConnectorParams) (connectors.Connector, error) { return newHeyReachConnector(p) },
+	providers.AWS:             func(p common.ConnectorParams) (connectors.Connector, error) { return newAWSConnector(p) },
+	providers.Drift:           func(p common.ConnectorParams) (connectors.Connector, error) { return newDriftConnector(p) },
+	providers.Mixmax:          func(p common.ConnectorParams) (connectors.Connector, error) { return newMixmaxConnector(p) },
+	providers.Dixa:            func(p common.ConnectorParams) (connectors.Connector, error) { return newDixaConnector(p) },
+	providers.Front:           func(p common.ConnectorParams) (connectors.Connector, error) { return newFrontConnector(p) },
+	providers.Freshdesk:       func(p common.ConnectorParams) (connectors.Connector, error) { return newFreshdeskConnector(p) },
+	providers.ServiceNow:      func(p common.ConnectorParams) (connectors.Connector, error) { return newServiceNowConnector(p) },
+	providers.ChiliPiper:      func(p common.ConnectorParams) (connectors.Connector, error) { return newChiliPiperConnector(p) },
+	providers.Hunter:          func(p common.ConnectorParams) (connectors.Connector, error) { return newHunterConnector(p) },
+	providers.Podium:          func(p common.ConnectorParams) (connectors.Connector, error) { return newPodiumConnector(p) },
+	providers.Lemlist:         func(p common.ConnectorParams) (connectors.Connector, error) { return newLemlistConnector(p) },
+	providers.Gorgias:         func(p common.ConnectorParams) (connectors.Connector, error) { return newGorgiasConnector(p) },
+	providers.ZendeskChat:     func(p common.ConnectorParams) (connectors.Connector, error) { return newZendeskChatConnector(p) },
+	providers.Capsule:         func(p common.ConnectorParams) (connectors.Connector, error) { return newCapsuleConnector(p) },
+	providers.InstantlyAI:     func(p common.ConnectorParams) (connectors.Connector, error) { return newInstantlyAIConnector(p) },
+}
+
+func New(provider providers.Provider, params common.ConnectorParams) (connectors.Connector, error) {
+	constructor, ok := connectorConstructors[provider]
+	if !ok {
 		return nil, ErrInvalidProvider
 	}
 
-	return connector, connectorErr
+	return constructor(params)
 }
 
 func newSalesforceConnector(params common.ConnectorParams) (*salesforce.Connector, error) {
