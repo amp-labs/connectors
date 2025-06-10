@@ -2,7 +2,6 @@ package snapchatads
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -30,7 +29,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
 
-	node, ok := response.Body()
+	node, ok := response.Body() // nolint:varnamelen
 	if !ok {
 		return nil, common.ErrEmptyJSONHTTPResponse
 	}
@@ -50,7 +49,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	// Extract and assert the inner map
 	innerData, ok := data[0][objKey].(map[string]any)
 	if !ok {
-		return nil, fmt.Errorf("expected map structure under key %q in response", objKey)
+		return nil, ErrObjNotFound
 	}
 
 	for field := range innerData {
