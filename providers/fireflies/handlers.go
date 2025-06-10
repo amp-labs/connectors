@@ -150,7 +150,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		Skip:  skip,
 	}
 
-	query, err := graphql.GraphQLOperation(queryFiles, "query", params.ObjectName, pagination)
+	query, err := graphql.Operation(queryFiles, "query", params.ObjectName, pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -228,7 +228,7 @@ func (c *Connector) buildWriteRequest(
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
 
-	mutation, err := graphql.GraphQLOperation(queryFiles, "mutation", params.ObjectName, params.RecordData)
+	mutation, err := graphql.Operation(queryFiles, "mutation", params.ObjectName, params.RecordData)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get mutation: %w", err)
 	}
@@ -300,7 +300,7 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 
 	// Generate the mutation string by injecting the record ID.
 	// Assumes the template uses a key "record_Id" that maps to params.RecordId
-	mutation, err := graphql.GraphQLOperation(queryFiles, "mutation", params.ObjectName,
+	mutation, err := graphql.Operation(queryFiles, "mutation", params.ObjectName,
 		map[string]string{"record_Id": params.RecordId})
 	if err != nil {
 		return nil, err

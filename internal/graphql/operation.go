@@ -18,7 +18,7 @@ type PaginationParameter struct {
 // filesystem and executing it with provided data. It supports injecting pagination parameters for queries
 // (such as limit, offset, or cursor-based pagination) as well as input payloads for mutations
 // through data parameter.
-func GraphQLOperation(queryFS embed.FS, queryType, queryName string, data any) (string, error) {
+func Operation(queryFS embed.FS, queryType, queryName string, data any) (string, error) {
 	filePath := fmt.Sprintf("graphql/%s_%s.graphql", queryType, queryName)
 
 	queryBytes, err := queryFS.ReadFile(filePath)

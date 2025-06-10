@@ -171,8 +171,6 @@ func testUploadAudio(ctx context.Context) error {
 		"save_video": true,
 	}
 
-	fmt.Println("input", inputParts)
-
 	writeParams := common.WriteParams{
 		ObjectName: "audio",
 		RecordData: inputParts,
