@@ -1,3 +1,4 @@
+// nolint:ireturn
 package connector
 
 import (
@@ -64,129 +65,80 @@ import (
 
 var ErrInvalidProvider = errors.New("invalid provider")
 
-func New( // nolint:gocyclo,cyclop,funlen,ireturn
-	provider providers.Provider,
-	params common.ConnectorParams,
-) (connectors.Connector, error) {
-	var (
-		connector    connectors.Connector
-		connectorErr error
-	)
-
-	switch provider {
-	case providers.Hubspot:
-		connector, connectorErr = newHubspotConnector(params)
-	case providers.Salesforce:
-		connector, connectorErr = newSalesforceConnector(params)
-	case providers.Docusign:
-		connector, connectorErr = newDocusignConnector(params)
-	case providers.Intercom:
-		connector, connectorErr = newIntercomConnector(params)
-	case providers.Salesloft:
-		connector, connectorErr = newSalesloftConnector(params)
-	case providers.DynamicsCRM:
-		connector, connectorErr = newDynamicsCRMConnector(params)
-	case providers.ZendeskSupport:
-		connector, connectorErr = newZendeskSupportConnector(params)
-	case providers.Outreach:
-		connector, connectorErr = newOutreachConnector(params)
-	case providers.Atlassian:
-		connector, connectorErr = newAtlassianConnector(params)
-	case providers.Pipeliner:
-		connector, connectorErr = newPipelinerConnector(params)
-	case providers.Smartlead:
-		connector, connectorErr = newSmartleadConnector(params)
-	case providers.Marketo:
-		connector, connectorErr = newMarketoConnector(params)
-	case providers.Instantly:
-		connector, connectorErr = newInstantlyConnector(params)
-	case providers.Apollo:
-		connector, connectorErr = newApolloConnector(params)
-	case providers.Gong:
-		connector, connectorErr = newGongConnector(params)
-	case providers.Attio:
-		connector, connectorErr = newAttioConnector(params)
-	case providers.Pipedrive:
-		connector, connectorErr = newPipedriveConnector(params)
-	case providers.Zoho:
-		connector, connectorErr = newZohoConnector(params)
-	case providers.Close:
-		connector, connectorErr = newCloseConnector(params)
-	case providers.Klaviyo:
-		connector, connectorErr = newKlaviyoConnector(params)
-	case providers.CustomerJourneysApp:
-		connector, connectorErr = newCustomerJourneysAppConnector(params)
-	case providers.ConstantContact:
-		connector, connectorErr = newConstantContactConnector(params)
-	case providers.Keap:
-		connector, connectorErr = newKeapConnector(params)
-	case providers.Kit:
-		connector, connectorErr = newKitConnector(params)
-	case providers.Iterable:
-		connector, connectorErr = newIterableConnector(params)
-	case providers.Asana:
-		connector, connectorErr = newAsanaConnector(params)
-	case providers.Stripe:
-		connector, connectorErr = newStripeConnector(params)
-	case providers.Zoom:
-		connector, connectorErr = newZoomConnector(params)
-	case providers.Brevo:
-		connector, connectorErr = newBrevoConnector(params)
-	case providers.Blueshift:
-		connector, connectorErr = newBlueshiftConnector(params)
-	case providers.Ashby:
-		connector, connectorErr = newAshbyConnector(params)
-	case providers.Github:
-		connector, connectorErr = newGithubConnector(params)
-	case providers.Aha:
-		connector, connectorErr = newAhaConnector(params)
-	case providers.ClickUp:
-		connector, connectorErr = newClickUpConnector(params)
-	case providers.Monday:
-		connector, connectorErr = newMondayConnector(params)
-	case providers.HeyReach:
-		connector, connectorErr = newHeyReachConnector(params)
-	case providers.AWS:
-		connector, connectorErr = newAWSConnector(params)
-	case providers.Drift:
-		connector, connectorErr = newDriftConnector(params)
-	case providers.Mixmax:
-		connector, connectorErr = newMixmaxConnector(params)
-	case providers.Dixa:
-		connector, connectorErr = newDixaConnector(params)
-	case providers.Front:
-		connector, connectorErr = newFrontConnector(params)
-	case providers.Freshdesk:
-		connector, connectorErr = newFreshdeskConnector(params)
-	case providers.ServiceNow:
-		connector, connectorErr = newServiceNowConnector(params)
-	case providers.ChiliPiper:
-		connector, connectorErr = newChiliPiperConnector(params)
-	case providers.Hunter:
-		connector, connectorErr = newHunterConnector(params)
-	case providers.Podium:
-		connector, connectorErr = newPodiumConnector(params)
-	case providers.Lemlist:
-		connector, connectorErr = newLemlistConnector(params)
-	case providers.Gorgias:
-		connector, connectorErr = newGorgiasConnector(params)
-	case providers.ZendeskChat:
-		connector, connectorErr = newZendeskChatConnector(params)
-	case providers.Capsule:
-		connector, connectorErr = newCapsuleConnector(params)
-	case providers.InstantlyAI:
-		connector, connectorErr = newInstantlyAIConnector(params)
-	case providers.GitLab:
-		connector, connectorErr = newGitLabConnector(params)
-	case providers.HelpScoutMailbox:
-		connector, connectorErr = newHelpScoutConnector(params)
-	case providers.Groove:
-		connector, connectorErr = newGrooveConnector(params)
-	default:
+func New(provider providers.Provider, params common.ConnectorParams) (connectors.Connector, error) {
+	constructor, ok := connectorConstructors[provider]
+	if !ok {
 		return nil, ErrInvalidProvider
 	}
 
-	return connector, connectorErr
+	return constructor(params)
+}
+
+var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nolint:gochecknoglobals
+	providers.AWS:                 wrapper(newAWSConnector),
+	providers.Aha:                 wrapper(newAhaConnector),
+	providers.Apollo:              wrapper(newApolloConnector),
+	providers.Asana:               wrapper(newAsanaConnector),
+	providers.Ashby:               wrapper(newAshbyConnector),
+	providers.Atlassian:           wrapper(newAtlassianConnector),
+	providers.Attio:               wrapper(newAttioConnector),
+	providers.Blueshift:           wrapper(newBlueshiftConnector),
+	providers.Brevo:               wrapper(newBrevoConnector),
+	providers.Capsule:             wrapper(newCapsuleConnector),
+	providers.ChiliPiper:          wrapper(newChiliPiperConnector),
+	providers.ClickUp:             wrapper(newClickUpConnector),
+	providers.Close:               wrapper(newCloseConnector),
+	providers.ConstantContact:     wrapper(newConstantContactConnector),
+	providers.CustomerJourneysApp: wrapper(newCustomerJourneysAppConnector),
+	providers.Dixa:                wrapper(newDixaConnector),
+	providers.Docusign:            wrapper(newDocusignConnector),
+	providers.Drift:               wrapper(newDriftConnector),
+	providers.DynamicsCRM:         wrapper(newDynamicsCRMConnector),
+	providers.Freshdesk:           wrapper(newFreshdeskConnector),
+	providers.Front:               wrapper(newFrontConnector),
+	providers.GitLab:              wrapper(newGitLabConnector),
+	providers.Github:              wrapper(newGithubConnector),
+	providers.Gong:                wrapper(newGongConnector),
+	providers.Gorgias:             wrapper(newGorgiasConnector),
+	providers.Groove:              wrapper(newGrooveConnector),
+	providers.HelpScoutMailbox:    wrapper(newHelpScoutConnector),
+	providers.HeyReach:            wrapper(newHeyReachConnector),
+	providers.Hubspot:             wrapper(newHubspotConnector),
+	providers.Hunter:              wrapper(newHunterConnector),
+	providers.Instantly:           wrapper(newInstantlyConnector),
+	providers.InstantlyAI:         wrapper(newInstantlyAIConnector),
+	providers.Intercom:            wrapper(newIntercomConnector),
+	providers.Iterable:            wrapper(newIterableConnector),
+	providers.Keap:                wrapper(newKeapConnector),
+	providers.Kit:                 wrapper(newKitConnector),
+	providers.Klaviyo:             wrapper(newKlaviyoConnector),
+	providers.Lemlist:             wrapper(newLemlistConnector),
+	providers.Marketo:             wrapper(newMarketoConnector),
+	providers.Mixmax:              wrapper(newMixmaxConnector),
+	providers.Monday:              wrapper(newMondayConnector),
+	providers.Outreach:            wrapper(newOutreachConnector),
+	providers.Pipedrive:           wrapper(newPipedriveConnector),
+	providers.Pipeliner:           wrapper(newPipelinerConnector),
+	providers.Podium:              wrapper(newPodiumConnector),
+	providers.Salesforce:          wrapper(newSalesforceConnector),
+	providers.Salesloft:           wrapper(newSalesloftConnector),
+	providers.ServiceNow:          wrapper(newServiceNowConnector),
+	providers.Smartlead:           wrapper(newSmartleadConnector),
+	providers.Stripe:              wrapper(newStripeConnector),
+	providers.ZendeskChat:         wrapper(newZendeskChatConnector),
+	providers.ZendeskSupport:      wrapper(newZendeskSupportConnector),
+	providers.Zoho:                wrapper(newZohoConnector),
+	providers.Zoom:                wrapper(newZoomConnector),
+}
+
+type outputConstructorFunc func(p common.ConnectorParams) (connectors.Connector, error)
+
+type inputConstructorFunc[T connectors.Connector] func(p common.ConnectorParams) (T, error)
+
+func wrapper[T connectors.Connector](input inputConstructorFunc[T]) outputConstructorFunc {
+	return func(p common.ConnectorParams) (connectors.Connector, error) {
+		return input(p)
+	}
 }
 
 func newSalesforceConnector(params common.ConnectorParams) (*salesforce.Connector, error) {
