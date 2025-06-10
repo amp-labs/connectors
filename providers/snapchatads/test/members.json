@@ -1,0 +1,17 @@
+{
+    "request_status": "SUCCESS",
+    "request_id": "00d4dc5b-e58b-98ec-be0e-ecd28a1a8c06",
+    "members": [
+        {
+            "sub_request_status": "SUCCESS",
+            "member": {
+                "id": "82ebdbce-de88-4ba0-a6b4-e77d51a2ce99",
+                "email": "integration.user+snapchat@withampersand.com",
+                "organization_id": "5cf59a25-5063-40e1-826b-5ceaf369b207",
+                "display_name": "Integration User",
+                "snapchat_username": "ampersandonset",
+                "member_status": "MEMBER"
+            }
+        }
+    ]
+}
