@@ -57,7 +57,6 @@ func TestGetPostAuthInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 			})
 			if err != nil {
 				t.Fatalf("%s: failed to setup auth metadata connector %v", tt.name, err)
-
 			}
 
 			connector.SetBaseURL(tt.server.URL)

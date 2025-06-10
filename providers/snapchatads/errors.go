@@ -1,6 +1,7 @@
 package snapchatads
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/amp-labs/connectors/common/interpreter"
@@ -15,12 +16,14 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	}...,
 )
 
+var ErrObjNotFound = errors.New("object not found")
+
 type ResponseError struct {
-	RequestStatus  string `json:"request_status"`
-	RequestId      string `json:"request_id"`
-	DebugMessage   string `json:"debug_message"`
-	DisplayMessage string `json:"display_message"`
-	ErrorCode      string `json:"error_code"`
+	RequestStatus  string `json:"request_status"`  //nolint:tagliatelle
+	RequestId      string `json:"request_id"`      //nolint:tagliatelle
+	DebugMessage   string `json:"debug_message"`   //nolint:tagliatelle
+	DisplayMessage string `json:"display_message"` //nolint:tagliatelle
+	ErrorCode      string `json:"error_code"`      //nolint:tagliatelle
 }
 
 func (r ResponseError) CombineErr(base error) error {
