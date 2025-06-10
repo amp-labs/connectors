@@ -28,6 +28,7 @@ import (
 	"github.com/amp-labs/connectors/providers/freshdesk"
 	"github.com/amp-labs/connectors/providers/front"
 	"github.com/amp-labs/connectors/providers/github"
+	"github.com/amp-labs/connectors/providers/gitlab"
 	"github.com/amp-labs/connectors/providers/gong"
 	"github.com/amp-labs/connectors/providers/gorgias"
 	"github.com/amp-labs/connectors/providers/heyreach"
@@ -173,6 +174,8 @@ func New( // nolint:gocyclo,cyclop,funlen,ireturn
 		connector, connectorErr = newCapsuleConnector(params)
 	case providers.InstantlyAI:
 		connector, connectorErr = newInstantlyAIConnector(params)
+	case providers.GitLab:
+		connector, connectorErr = newGitLabConnector(params)
 	default:
 		return nil, ErrInvalidProvider
 	}
@@ -551,4 +554,10 @@ func newInstantlyAIConnector(
 	params common.ConnectorParams,
 ) (*instantlyai.Connector, error) {
 	return instantlyai.NewConnector(params)
+}
+
+func newGitLabConnector(
+	params common.ConnectorParams,
+) (*gitlab.Connector, error) {
+	return gitlab.NewConnector(params)
 }
