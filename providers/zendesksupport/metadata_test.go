@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -15,7 +14,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen,gocognit,cyclop
+func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	responseTicketsCustomFields := testutils.DataFromFile(t, "read/custom_fields/ticket_fields.json")
@@ -28,7 +27,7 @@ func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:       "Object coming from different module is unknown",
+			Name:       "Unknown object",
 			Input:      []string{"articles"},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -170,35 +169,6 @@ func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen
 			},
 			ExpectedErrs: nil,
 		},
-	}
-
-	for _, tt := range tests {
-		// nolint:varnamelen
-		t.Run(tt.Name, func(t *testing.T) {
-			t.Parallel()
-
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleZendeskTicketing)
-			})
-		})
-	}
-}
-
-func TestListObjectMetadataHelpCenterModule(t *testing.T) { // nolint:funlen,gocognit,cyclop
-	t.Parallel()
-
-	tests := []testroutines.Metadata{
-		{
-			Name:       "Object coming from different module is unknown",
-			Input:      []string{"brands"},
-			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
-			Expected: &common.ListObjectMetadataResult{
-				Errors: map[string]error{
-					"brands": common.ErrObjectNotSupported,
-				},
-			},
-		},
 		{
 			Name:       "Successfully describe one object with metadata",
 			Input:      []string{"articles/labels"},
@@ -229,7 +199,7 @@ func TestListObjectMetadataHelpCenterModule(t *testing.T) { // nolint:funlen,goc
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleZendeskHelpCenter)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}
