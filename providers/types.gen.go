@@ -26,6 +26,7 @@ const (
 	Jwt    AuthType = "jwt"
 	None   AuthType = "none"
 	Oauth2 AuthType = "oauth2"
+	ClariCopilotAuth AuthType = "clariCopilotAuth"
 )
 
 // Defines values for Oauth2OptsGrantType.

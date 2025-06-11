@@ -125,7 +125,6 @@ func createProviderProxy(
 		if info.Oauth2Opts == nil {
 			log.Fatalf("Missing OAuth options for provider %s", factory.Provider)
 		}
-
 		switch info.Oauth2Opts.GrantType {
 		case providers.ClientCredentials:
 			return factory.CreateProxyOAuth2ClientCreds(ctx)
@@ -137,11 +136,14 @@ func createProviderProxy(
 			return factory.CreateProxyOAuth2Password(ctx)
 		default:
 			log.Fatalf("Unsupported OAuth2 grant type: %s", info.Oauth2Opts.GrantType)
+
 		}
 	case providers.ApiKey:
 		return factory.CreateProxyAPIKey(ctx)
 	case providers.Basic:
 		return factory.CreateProxyBasic(ctx)
+	case providers.ClariCopilotAuth:
+		return factory.CreateProxyClariCopilotAPIKey(ctx)
 	default:
 		log.Fatalf("Unsupported auth type: %s", info.AuthType)
 	}
