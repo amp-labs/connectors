@@ -39,7 +39,7 @@ Below object having the urlpath format: act_{ad_account_id}/objectName
 |  Targetingbrowse             | targetingbrowse             | read   |
 |  Tracking                    | tracking                    | read   |
 |  Adcreatives                 | adcreatives                 | read   |
-|  Campaings                   | campaings                   | read   |
+|  Campaigns                   | campaigns                   | read   |
 |  Customaudience              | customaudience              | read   |
 -----------------------------------------------------------------------
 
