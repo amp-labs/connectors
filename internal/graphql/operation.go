@@ -7,17 +7,24 @@ import (
 	"html/template"
 )
 
+// PaginationParameter holds a flexible set of fields to support both offset-based and cursor-based
+// pagination in GraphQL queries.
+//
+// This struct can be passed into a GraphQL template to dynamically populate pagination parameters.
+//
+// If any expected pagination parameter is not present in this struct, you can extend it
+// by adding the required fields as needed based on the GraphQL schema or API design.
 type PaginationParameter struct {
 	Limit, Skip, Offset, First, Last, Page, PageSize int
 	Before, After, HasNextPage, HasPreviousPage      bool
 	StartCursor, EndCursor                           string
 }
 
-// GraphQLOperation loads and renders a GraphQL operation (query or mutation) from a template file.
-// This function supports dynamic GraphQL operations by loading a .graphql template from the embedded
-// filesystem and executing it with provided data. It supports injecting pagination parameters for queries
-// (such as limit, offset, or cursor-based pagination) as well as input payloads for mutations
-// through data parameter.
+// Operation loads and renders a GraphQL query or mutation from a template file.
+//
+// It reads a .graphql template from the embedded filesystem and executes it using the provided `data`.
+// The `data` parameter can include pagination values (e.g., limit, offset, cursors) for queries,
+// as well as input payloads for mutations, enabling dynamic and reusable GraphQL operations.
 func Operation(queryFS embed.FS, queryType, queryName string, data any) (string, error) {
 	filePath := fmt.Sprintf("graphql/%s_%s.graphql", queryType, queryName)
 

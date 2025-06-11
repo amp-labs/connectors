@@ -230,7 +230,7 @@ func (c *Connector) buildWriteRequest(
 
 	mutation, err := graphql.Operation(queryFiles, "mutation", params.ObjectName, params.RecordData)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get mutation: %w", err)
+		return nil, err
 	}
 
 	requestBody := map[string]string{
@@ -258,11 +258,6 @@ func (c *Connector) parseWriteResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.WriteResult, error) {
-	var (
-		recordID string
-		err      error
-	)
-
 	node, ok := resp.Body()
 	if !ok {
 		return &common.WriteResult{Success: true}, nil
@@ -273,8 +268,10 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
+	var recordID string
+
 	if params.ObjectName == "bite" {
-		recordID, err = jsonquery.New(objectResponse, params.ObjectName).StrWithDefault("id", "")
+		recordID, err = jsonquery.New(objectResponse, "bite").StrWithDefault("id", "")
 		if err != nil {
 			return nil, err
 		}
