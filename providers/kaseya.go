@@ -10,11 +10,11 @@ func init() {
 
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1749053435/menu-logo_mf2wiq.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1749625465/Image_1749625448_0_vbpxez.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1749053435/menu-logo_mf2wiq.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1749053597/logo-03615157_c5wzua.png",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1749625465/Image_1749625448_0_vbpxez.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1749053597/logo-03615157_c5wzua.png",
 			},
 		},
