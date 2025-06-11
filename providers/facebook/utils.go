@@ -47,7 +47,7 @@ var EndpointWithAdAccountIdInURLPath = datautils.NewSet( //nolint:gochecknogloba
 	"targetingbrowse",
 	"tracking",
 	"adcreatives",
-	"campaings",
+	"campaigns",
 	"customaudiences",
 )
 
