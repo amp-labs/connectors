@@ -9,7 +9,6 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -17,13 +16,14 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
+func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	responseErrorFormat := testutils.DataFromFile(t, "resource-not-found.json")
 	responseForbiddenError := testutils.DataFromFile(t, "forbidden.json")
 	responseTriggersFirstPage := testutils.DataFromFile(t, "read/triggers-1-first-page.json")
 	responseTriggersLastPage := testutils.DataFromFile(t, "read/triggers-2-last-page.json")
+	responseReadPosts := testutils.DataFromFile(t, "read/help-center-posts.json")
 
 	tests := []testroutines.Read{
 		{
@@ -36,12 +36,6 @@ func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclo
 			Input:        common.ReadParams{ObjectName: "triggers"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingFields},
-		},
-		{
-			Name:         "Object coming from different module is unknown",
-			Input:        common.ReadParams{ObjectName: "user_segments", Fields: connectors.Fields("id")},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
 			Name:  "Correct error message is understood from JSON response",
@@ -121,6 +115,41 @@ func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclo
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Successful read of help desk's posts with chosen fields",
+			Input: common.ReadParams{
+				ObjectName: "posts",
+				Fields:     connectors.Fields("title", "topic_id", "status"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v2/community/posts"),
+					mockcond.QueryParam("page[size]", "100"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseReadPosts),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"title":    "How do I get around the community?",
+						"topic_id": float64(27980065395091),
+						"status":   "none",
+					},
+					Raw: map[string]any{
+						"id":         float64(27980065413139),
+						"created_at": "2024-04-01T13:01:11Z",
+						"updated_at": "2024-04-01T13:01:11Z",
+					},
+				}},
+				NextPage: "https://d3v-ampersand.zendesk.com" +
+					"/api/v2/help_center/community/posts.json?page=2&per_page=30",
+				Done: false,
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {
@@ -129,13 +158,13 @@ func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclo
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleZendeskTicketing)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}
 }
 
-func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
+func TestIncrementalRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	responseTickets := testutils.DataFromFile(t, "read/incremental/tickets.json")
@@ -302,75 +331,16 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleZendeskTicketing)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}
 }
 
-func TestReadHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
-	t.Parallel()
-
-	responseReadPosts := testutils.DataFromFile(t, "read-posts.json")
-
-	tests := []testroutines.Read{
-		{
-			Name:         "Object coming from different module is unknown",
-			Input:        common.ReadParams{ObjectName: "triggers", Fields: connectors.Fields("id")},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
-			Name: "Successful read with chosen fields",
-			Input: common.ReadParams{
-				ObjectName: "posts",
-				Fields:     connectors.Fields("title", "topic_id", "status"),
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/api/v2/community/posts"),
-				Then:  mockserver.Response(http.StatusOK, responseReadPosts),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"title":    "How do I get around the community?",
-						"topic_id": float64(27980065395091),
-						"status":   "none",
-					},
-					Raw: map[string]any{
-						"id":         float64(27980065413139),
-						"created_at": "2024-04-01T13:01:11Z",
-						"updated_at": "2024-04-01T13:01:11Z",
-					},
-				}},
-				NextPage: "https://d3v-ampersand.zendesk.com" +
-					"/api/v2/help_center/community/posts.json?page=2&per_page=30",
-				Done: false,
-			},
-			ExpectedErrs: nil,
-		},
-	}
-
-	for _, tt := range tests {
-		// nolint:varnamelen
-		t.Run(tt.Name, func(t *testing.T) {
-			t.Parallel()
-
-			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleZendeskHelpCenter)
-			})
-		})
-	}
-}
-
-func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connector, error) {
+func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),
 		WithWorkspace("test-workspace"),
-		WithModule(moduleID),
 	)
 	if err != nil {
 		return nil, err
