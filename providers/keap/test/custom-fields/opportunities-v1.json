@@ -1,0 +1,16 @@
+{
+  "custom_fields": [
+    {
+      "id": 18,
+      "label": "color",
+      "options": [],
+      "record_type": "OPPORTUNITY",
+      "field_type": "Text",
+      "field_name": "color",
+      "default_value": null
+    }
+  ],
+  "optional_properties": [
+    "custom_fields"
+  ]
+}

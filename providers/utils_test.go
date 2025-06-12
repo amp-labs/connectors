@@ -266,22 +266,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 		},
 		{
-			name: "Keap root module",
-			input: inType{
-				provider: Keap,
-				moduleID: common.ModuleRoot,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.infusionsoft.com",
-				DisplayName: "Keap",
-				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
 			name: "Marketo root module",
 			input: inType{
 				provider: Marketo,
@@ -384,19 +368,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			// expectedErr: common.ErrMissingModule,
 		},
 		{
-			name: "Keap unknown module",
-			input: inType{
-				provider: Keap,
-				moduleID: "random-module-name",
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.infusionsoft.com/v1",
-				DisplayName: "Keap Version 1",
-				Support:     Support{},
-			},
-			// expectedErr: common.ErrMissingModule,
-		},
-		{
 			name: "Marketo unknown module",
 			input: inType{
 				provider: Marketo,
@@ -465,30 +436,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 					Read:  true,
 					Write: true,
 				},
-			},
-		},
-		{
-			name: "Keap V1 module",
-			input: inType{
-				provider: Keap,
-				moduleID: ModuleKeapV1,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.infusionsoft.com/v1",
-				DisplayName: "Keap Version 1",
-				Support:     Support{},
-			},
-		},
-		{
-			name: "Keap V2 module",
-			input: inType{
-				provider: Keap,
-				moduleID: ModuleKeapV2,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.infusionsoft.com/v2",
-				DisplayName: "Keap Version 2",
-				Support:     Support{},
 			},
 		},
 		// Empty module for providers that have no modules defaults to root.
