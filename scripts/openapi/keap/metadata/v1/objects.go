@@ -42,19 +42,17 @@ var (
 		"/v1/locales/countries",                 // countries is an object not array
 	}
 	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
-		// "/v1/products/sync": "synced_products",
+		"/v1/affiliates/redirectlinks": "affiliates/redirectlinks",
 	}
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
 		"commissions": "Commissions",
 		"emails":      "Emails",
 		"merchants":   "Merchants",
 		"programs":    "Programs",
-		// "summaries":   "Summaries",
 	}
 	objectNameToResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
-		"merchants":     "merchant_accounts",
-		"redirectlinks": "redirects",
-		// "synced_products": "product_statuses",
+		"merchants":                "merchant_accounts",
+		"affiliates/redirectlinks": "redirects",
 	},
 		func(objectName string) (fieldName string) {
 			return objectName
