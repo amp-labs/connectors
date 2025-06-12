@@ -101,7 +101,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Gong:                wrapper(newGongConnector),
 	providers.Gorgias:             wrapper(newGorgiasConnector),
 	providers.Groove:              wrapper(newGrooveConnector),
-	providers.HelpScoutMailbox:    wrapper(newHelpScoutConnector),
+	providers.HelpScoutMailbox:    wrapper(newHelpScoutMailboxConnector),
 	providers.HeyReach:            wrapper(newHeyReachConnector),
 	providers.Hubspot:             wrapper(newHubspotConnector),
 	providers.Hunter:              wrapper(newHunterConnector),
@@ -520,22 +520,10 @@ func newGitLabConnector(
 	return gitlab.NewConnector(params)
 }
 
-func newHelpScoutConnector(
+func newHelpScoutMailboxConnector(
 	params common.ConnectorParams,
 ) (*helpscoutmailbox.Connector, error) {
 	return helpscoutmailbox.NewConnector(params)
-}
-
-func newGrooveConnector(
-	params common.ConnectorParams,
-) (*groove.Connector, error) {
-	return groove.NewConnector(params)
-}
-
-func newHelpScoutConnector(
-	params common.ConnectorParams,
-) (*helpscout.Connector, error) {
-	return helpscout.NewConnector(params)
 }
 
 func newGrooveConnector(
