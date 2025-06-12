@@ -48,6 +48,7 @@ var testPreset = []Reader{
 func TestCredentialOptions(t *testing.T) {
 	t.Parallel()
 
+	//nolint:usetesting
 	if os.Setenv("TEST_ENV_CLIENT_ID", "clientId") != nil {
 		t.Fatal("Error setting environment variable")
 	}

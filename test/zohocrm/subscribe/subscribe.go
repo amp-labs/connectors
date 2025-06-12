@@ -49,16 +49,6 @@ func main() {
 					"phone",
 				},
 			},
-			"Contacts": common.ObjectEvents{
-				Events: []common.SubscriptionEventType{
-					common.SubscriptionEventTypeCreate,
-					common.SubscriptionEventTypeUpdate,
-					common.SubscriptionEventTypeDelete,
-				},
-				WatchFields: []string{
-					"phone",
-				},
-			},
 		},
 		Request: &zohocrm.SubscriptionRequest{
 			UniqueRef:       uniqueRef,
@@ -111,9 +101,6 @@ func main() {
 	updateResult, err := conn.UpdateSubscription(ctx, updateParams, subscribeResult)
 	if err != nil {
 		logging.Logger(ctx).Error("Error updating subscription", "error", err, "subscribeResult", prettyPrint(subscribeResult))
-
-		return
-	}
 
 		return
 	}
