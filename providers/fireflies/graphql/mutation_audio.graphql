@@ -1,12 +1,31 @@
 mutation {
     uploadAudio(input: {
-         url:"{{.url}}"{{if .title}},
-         title:"{{.title}}"{{end}}{{if .attendees}},
-         attendees:[{{range $i, $a := .attendees}}{{if $i}},{{end}}{displayName:"{{$a.displayName}}", email:"{{$a.email}}", phoneNumber:"{{$a.phoneNumber}}"}{{end}}]{{end}}{{if .custom_language}},
-         custom_language:"{{.custom_language}}"{{end}}{{if .client_reference_id}},
-         client_reference_id:"{{.client_reference_id}}"{{end}}{{if ne .save_video nil}},
-         save_video:{{.save_video}}{{end}}}
-    ){
+         url: "{{.url}}"
+         {{if .title}}
+         title: "{{.title}}"
+         {{end}}
+         {{if .attendees}},
+         attendees: [
+            {{range $i, $a := .attendees}}
+              {{if $i}},{{end}}
+                {
+                    displayName: "{{$a.displayName}}",
+                    email: "{{$a.email}}",
+                    phoneNumber: "{{$a.phoneNumber}}"
+                }
+              {{end}}
+        ]
+        {{end}}
+        {{if .custom_language}}
+        custom_language: "{{.custom_language}}"
+        {{end}}
+        {{if .client_reference_id}}
+        client_reference_id: "{{.client_reference_id}}"
+        {{end}}
+        {{if ne .save_video nil}}
+        save_video: {{.save_video}}
+        {{end}}
+    }) {
         success
         title
         message
