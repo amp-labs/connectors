@@ -15,7 +15,7 @@ func init() {
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1749627816/media/vtiger.com_1749627825.jpg",
-				LogoURL: "https://upload.wikimedia.org/wikipedia/en/thumb/1/13/Vtiger_Logo.svg/250px-Vtiger_Logo.svg.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1749627849/media/vtiger.com_1749627859.png",
 			},
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1749627816/media/vtiger.com_1749627825.jpg",
