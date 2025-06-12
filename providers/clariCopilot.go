@@ -4,8 +4,8 @@ const ClariCopilot Provider = "clariCopilot"
 
 func init() {
 	SetInfo(ClariCopilot, ProviderInfo{
-		DisplayName: "ClariCopilot",
-		AuthType:    ApiKey,
+		DisplayName: "Clari Copilot",
+		AuthType:    ApiKey, // This needs to be changes to new Auth Type
 		BaseURL:     "https://rest-api.copilot.clari.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
