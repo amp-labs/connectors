@@ -62,15 +62,15 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 func constructWriteResult(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 	identifierHolder := body
-	// Object "files" is the only exception where the identifier is located, it is nested.
-	if config.ObjectName == objectNameFiles {
-		var err error
-		// Identifier is nested under "file_descriptor" object.
-		identifierHolder, err = jsonquery.New(body).ObjectRequired("file_descriptor")
-		if err != nil {
-			return nil, err
-		}
-	}
+	//// Object "files" is the only exception where the identifier is located, it is nested.
+	// if config.ObjectName == objectNameFiles {
+	//	var err error
+	//	// Identifier is nested under "file_descriptor" object.
+	//	identifierHolder, err = jsonquery.New(body).ObjectRequired("file_descriptor")
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	// }
 
 	writeIdentifier := objectNameToWriteResponseIdentifier[common.ModuleRoot].Get(config.ObjectName)
 

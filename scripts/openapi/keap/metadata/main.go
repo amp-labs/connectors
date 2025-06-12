@@ -9,7 +9,6 @@ import (
 	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/keap/metadata"
-	keapv1 "github.com/amp-labs/connectors/scripts/openapi/keap/metadata/v1"
 	keapv2 "github.com/amp-labs/connectors/scripts/openapi/keap/metadata/v2"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
@@ -49,9 +48,10 @@ func main() {
 func getObjects() []metadatadef.Schema {
 	registry := datautils.Map[string, metadatadef.Schema]{}
 
-	for _, obj := range keapv1.Objects() {
-		registry[obj.ObjectName] = obj
-	}
+	// V1 is ignored. Uncomment if V1 objects are needed!
+	// for _, obj := range keapv1.Objects() {
+	// 	 registry[obj.ObjectName] = obj
+	// }
 
 	for _, obj := range keapv2.Objects() {
 		registry[obj.ObjectName] = obj

@@ -64,21 +64,11 @@ func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
-	version := Version1
-	if version2ObjectNames.Has(objectName) {
-		version = Version2
-	}
-
-	return c.getURL(version, objectName)
+	return c.getURL(Version2, objectName)
 }
 
 func (c *Connector) getModelURL(objectName string) (*urlbuilder.URL, error) {
-	version := Version1
-	if version2ObjectNames.Has(objectName) {
-		version = Version2
-	}
-
-	return c.getURL(version, objectName, "model")
+	return c.getURL(Version2, objectName, "model")
 }
 
 func (c *Connector) getURL(args ...string) (*urlbuilder.URL, error) {

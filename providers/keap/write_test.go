@@ -61,9 +61,9 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Files are updated using PUT",
+			Name: "Automation categories are updated using PUT",
 			Input: common.WriteParams{
-				ObjectName: "files",
+				ObjectName: "automationCategory",
 				RecordId:   "123",
 				RecordData: "dummy",
 			},

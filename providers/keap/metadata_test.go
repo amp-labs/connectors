@@ -39,7 +39,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name: "Successfully describe multiple objects with metadata",
 			Input: []string{
-				"campaigns", "products", "contacts",
+				"campaigns", "contacts",
 				"automationCategory", "tags",
 			},
 			Server: mockserver.Conditional{
@@ -57,15 +57,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"name":   "name",
 							"locked": "locked",
 							"goals":  "goals",
-						},
-					},
-					"products": {
-						DisplayName: "Products",
-						FieldsMap: map[string]string{
-							"id":            "id",
-							"sku":           "sku",
-							"status":        "status",
-							"product_price": "product_price",
 						},
 					},
 					"contacts": {

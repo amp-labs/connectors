@@ -23,8 +23,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	errorBadRequest := testutils.DataFromFile(t, "get-with-req-body-not-allowed.html")
 	errorNotFound := testutils.DataFromFile(t, "url-not-found.html")
 	// Version1: Opportunities.
-	responseOpportunitiesModel := testutils.DataFromFile(t, "custom-fields/opportunities-v1.json")
-	responseOpportunities := testutils.DataFromFile(t, "read/opportunities/v1.json")
+	// responseOpportunitiesModel := testutils.DataFromFile(t, "custom-fields/opportunities-v1.json")
+	// responseOpportunities := testutils.DataFromFile(t, "read/opportunities/v1.json")
 	// Version 2: Contacts.
 	responseContactsModel := testutils.DataFromFile(t, "custom-fields/contacts-v2.json")
 	responseContactsFirstPage := testutils.DataFromFile(t, "read/contacts/1-first-page-v2.json")
@@ -78,47 +78,47 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				errors.New("Keap - Page Not Found"), // nolint:goerr113
 			},
 		},
-		{
-			Name: "Opportunities uses custom fields V1",
-			Input: common.ReadParams{
-				ObjectName: "opportunities",
-				Fields: connectors.Fields("opportunity_title",
-					// Custom fields:
-					"color"),
-			},
-			Server: mockserver.Switch{
-				Setup: mockserver.ContentJSON(),
-				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/crm/rest/v1/opportunities"),
-					Then: mockserver.Response(http.StatusOK, responseOpportunities),
-				}, {
-					If:   mockcond.Path("/crm/rest/v1/opportunities/model"),
-					Then: mockserver.Response(http.StatusOK, responseOpportunitiesModel),
-				}},
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"opportunity_title": "First Opportunity",
-						"color":             "purple",
-					},
-					Raw: map[string]any{
-						"id":           float64(2),
-						"date_created": "2025-05-28T18:30:05.000+0000",
-						"last_updated": "2025-05-28T18:30:05.000+0000",
-						"custom_fields": []any{map[string]any{
-							"id":      float64(18),
-							"content": "purple",
-						}},
-					},
-				}},
-				NextPage: "https://api.infusionsoft.com/crm/rest/v1/opportunities/?limit=1&offset=1000",
-				Done:     false,
-			},
-			ExpectedErrs: nil,
-		},
+		// {
+		//	Name: "Opportunities uses custom fields V1",
+		//	Input: common.ReadParams{
+		//		ObjectName: "opportunities",
+		//		Fields: connectors.Fields("opportunity_title",
+		//			// Custom fields:
+		//			"color"),
+		//	},
+		//	Server: mockserver.Switch{
+		//		Setup: mockserver.ContentJSON(),
+		//		Cases: []mockserver.Case{{
+		//			If:   mockcond.Path("/crm/rest/v1/opportunities"),
+		//			Then: mockserver.Response(http.StatusOK, responseOpportunities),
+		//		}, {
+		//			If:   mockcond.Path("/crm/rest/v1/opportunities/model"),
+		//			Then: mockserver.Response(http.StatusOK, responseOpportunitiesModel),
+		//		}},
+		//	}.Server(),
+		//	Comparator: testroutines.ComparatorSubsetRead,
+		//	Expected: &common.ReadResult{
+		//		Rows: 1,
+		//		Data: []common.ReadResultRow{{
+		//			Fields: map[string]any{
+		//				"opportunity_title": "First Opportunity",
+		//				"color":             "purple",
+		//			},
+		//			Raw: map[string]any{
+		//				"id":           float64(2),
+		//				"date_created": "2025-05-28T18:30:05.000+0000",
+		//				"last_updated": "2025-05-28T18:30:05.000+0000",
+		//				"custom_fields": []any{map[string]any{
+		//					"id":      float64(18),
+		//					"content": "purple",
+		//				}},
+		//			},
+		//		}},
+		//		NextPage: "https://api.infusionsoft.com/crm/rest/v1/opportunities/?limit=1&offset=1000",
+		//		Done:     false,
+		//	},
+		//	ExpectedErrs: nil,
+		// },
 		{
 			Name: "Contacts first page has a link to next",
 			Input: common.ReadParams{

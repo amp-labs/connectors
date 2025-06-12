@@ -1,3 +1,4 @@
+// nolint:gocritic,godot
 package keap
 
 import (
@@ -9,14 +10,14 @@ import (
 const (
 	// Version 1
 	// https://developer.keap.com/docs/rest/
-	objectNameAppointments  = "appointments"
-	objectNameFiles         = "files"
-	objectNameHooks         = "hooks"
-	objectNameNotes         = "notes"
-	objectNameOpportunities = "opportunities"
-	objectNameOrders        = "orders"
-	objectNameProducts      = "products"
-	objectNameUsers         = "users"
+	// objectNameAppointments  = "appointments"
+	// objectNameFiles         = "files"
+	// objectNameHooks         = "hooks"
+	// objectNameNotes         = "notes"
+	// objectNameOpportunities = "opportunities"
+	// objectNameOrders        = "orders"
+	// objectNameProducts      = "products"
+	// objectNameUsers         = "users"
 
 	// Version 2
 	// https://developer.keap.com/docs/restv2/
@@ -58,22 +59,22 @@ var supportedObjectsByRead = metadata.Schemas.ObjectNames() //nolint:gochecknogl
 
 var supportedObjectsByCreate = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
 	common.ModuleRoot: datautils.NewSet(
-		// https://developer.infusionsoft.com/docs/rest/#tag/Appointment/operation/createAppointmentUsingPOST
-		objectNameAppointments,
-		// https://developer.infusionsoft.com/docs/rest/#tag/E-Commerce/operation/createOrderUsingPOST
-		objectNameOrders,
-		// https://developer.infusionsoft.com/docs/rest/#tag/File/operation/createFileUsingPOST
-		objectNameFiles,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Note/operation/createNoteUsingPOST
-		objectNameNotes,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Opportunity/operation/createOpportunityUsingPOST
-		objectNameOpportunities,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Product/operation/createProductUsingPOST
-		objectNameProducts,
-		// https://developer.infusionsoft.com/docs/rest/#tag/REST-Hooks/operation/create_a_hook_subscription
-		objectNameHooks,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Users/operation/createUserUsingPOST
-		objectNameUsers,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/Appointment/operation/createAppointmentUsingPOST
+		//objectNameAppointments,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/E-Commerce/operation/createOrderUsingPOST
+		//objectNameOrders,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/File/operation/createFileUsingPOST
+		//objectNameFiles,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/Note/operation/createNoteUsingPOST
+		//objectNameNotes,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/Opportunity/operation/createOpportunityUsingPOST
+		//objectNameOpportunities,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/Product/operation/createProductUsingPOST
+		//objectNameProducts,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/REST-Hooks/operation/create_a_hook_subscription
+		//objectNameHooks,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/Users/operation/createUserUsingPOST
+		//objectNameUsers,
 		// https://developer.keap.com/docs/restv2/#tag/Affiliate/operation/addAffiliateUsingPOST
 		objectNameAffiliatesV2,
 		// https://developer.keap.com/docs/restv2/#tag/AutomationCategory/operation/createCategoryUsingPOST
@@ -100,14 +101,14 @@ var supportedObjectsByCreate = map[common.ModuleID]datautils.StringSet{ //nolint
 // Every update performed using PATCH is not present in the PUT set.
 var supportedObjectsByUpdatePATCH = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
 	common.ModuleRoot: datautils.NewSet(
-		// https://developer.infusionsoft.com/docs/rest/#tag/Appointment/operation/updatePropertiesOnAppointmentUsingPATCH
-		objectNameAppointments,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Note/operation/updatePropertiesOnNoteUsingPATCH
-		objectNameNotes,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Opportunity/operation/updatePropertiesOnOpportunityUsingPATCH
-		objectNameOpportunities,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Product/operation/updateProductUsingPATCH
-		objectNameProducts,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/Appointment/operation/updatePropertiesOnAppointmentUsingPATCH
+		//objectNameAppointments,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/Note/operation/updatePropertiesOnNoteUsingPATCH
+		//objectNameNotes,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/Opportunity/operation/updatePropertiesOnOpportunityUsingPATCH
+		//objectNameOpportunities,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/Product/operation/updateProductUsingPATCH
+		//objectNameProducts,
 		// https://developer.keap.com/docs/restv2/#tag/Affiliate/operation/updateAffiliateUsingPATCH
 		objectNameAffiliatesV2,
 		// https://developer.keap.com/docs/restv2/#tag/Company/operation/patchCompanyUsingPATCH
@@ -126,10 +127,10 @@ var supportedObjectsByUpdatePATCH = map[common.ModuleID]datautils.StringSet{ //n
 // Every update performed using PUT is not present in the PATCH set.
 var supportedObjectsByUpdatePUT = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
 	common.ModuleRoot: datautils.NewSet(
-		// https://developer.infusionsoft.com/docs/rest/#tag/File/operation/updateFileUsingPUT
-		objectNameFiles,
-		// https://developer.infusionsoft.com/docs/rest/#tag/REST-Hooks/operation/update_a_hook_subscription
-		objectNameHooks,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/File/operation/updateFileUsingPUT
+		//objectNameFiles,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/REST-Hooks/operation/update_a_hook_subscription
+		//objectNameHooks,
 		// https://developer.keap.com/docs/restv2/#tag/AutomationCategory/operation/saveCategoryUsingPUT
 		objectNameAutomationCategoriesV2,
 	),
@@ -137,18 +138,18 @@ var supportedObjectsByUpdatePUT = map[common.ModuleID]datautils.StringSet{ //nol
 
 var supportedObjectsByDelete = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
 	common.ModuleRoot: datautils.NewSet(
-		// https://developer.infusionsoft.com/docs/rest/#tag/Appointment/operation/deleteAppointmentUsingDELETE
-		objectNameAppointments,
-		// https://developer.infusionsoft.com/docs/rest/#tag/E-Commerce/operation/deleteOrderUsingDELETE
-		objectNameOrders,
-		// https://developer.infusionsoft.com/docs/rest/#tag/File/operation/deleteFileUsingDELETE
-		objectNameFiles,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Note/operation/deleteNoteUsingDELETE
-		objectNameNotes,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Product/operation/deleteProductUsingDELETE
-		objectNameProducts,
-		// https://developer.infusionsoft.com/docs/rest/#tag/REST-Hooks/operation/delete_a_hook_subscription
-		objectNameHooks,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/Appointment/operation/deleteAppointmentUsingDELETE
+		//objectNameAppointments,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/E-Commerce/operation/deleteOrderUsingDELETE
+		//objectNameOrders,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/File/operation/deleteFileUsingDELETE
+		//objectNameFiles,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/Note/operation/deleteNoteUsingDELETE
+		//objectNameNotes,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/Product/operation/deleteProductUsingDELETE
+		//objectNameProducts,
+		//// https://developer.infusionsoft.com/docs/rest/#tag/REST-Hooks/operation/delete_a_hook_subscription
+		//objectNameHooks,
 		// https://developer.keap.com/docs/restv2/#tag/AutomationCategory/operation/deleteCategoriesUsingDELETE
 		objectNameAutomationCategoriesV2,
 		// https://developer.keap.com/docs/restv2/#tag/Company/operation/deleteCompanyUsingDELETE
@@ -166,8 +167,8 @@ var supportedObjectsByDelete = map[common.ModuleID]datautils.StringSet{ //nolint
 
 var objectNameToWriteResponseIdentifier = common.ModuleObjectNameToFieldName{ //nolint:gochecknoglobals
 	common.ModuleRoot: datautils.NewDefaultMap(map[string]string{
-		objectNameFiles:                  "id",
-		objectNameHooks:                  "key",
+		// objectNameFiles:                  "id",
+		// objectNameHooks:                  "key",
 		objectNamePaymentMethodConfigsV2: "session_key",
 	},
 		func(objectName string) (id string) {
@@ -178,10 +179,10 @@ var objectNameToWriteResponseIdentifier = common.ModuleObjectNameToFieldName{ //
 
 var objectsWithCustomFields = map[common.ModuleID]datautils.StringSet{ // nolint:gochecknoglobals
 	common.ModuleRoot: datautils.NewStringSet(
-		objectNameAppointments,
-		objectNameNotes,
-		objectNameOpportunities,
-		objectNameOrders,
+		// objectNameAppointments,
+		// objectNameNotes,
+		// objectNameOpportunities,
+		// objectNameOrders,
 		objectNameAffiliatesV2,
 		objectNameContactsV2,
 		objectNameSubscriptionsV2,
