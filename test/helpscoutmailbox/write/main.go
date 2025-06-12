@@ -9,8 +9,8 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/helpscout"
-	hs "github.com/amp-labs/connectors/test/helpscout"
+	hm "github.com/amp-labs/connectors/providers/helpscoutmailbox"
+	"github.com/amp-labs/connectors/test/helpscoutmailbox"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -22,7 +22,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := hs.GetHelpScoutConnector(ctx)
+	conn := helpscoutmailbox.GetHelpScoutConnector(ctx)
 
 	if err := createConversations(ctx, conn); err != nil {
 		slog.Error(err.Error())
@@ -37,7 +37,7 @@ func main() {
 	}
 }
 
-func createConversations(ctx context.Context, conn *helpscout.Connector) error {
+func createConversations(ctx context.Context, conn *hm.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "conversations",
 		RecordData: map[string]any{
@@ -76,7 +76,7 @@ func createConversations(ctx context.Context, conn *helpscout.Connector) error {
 	return nil
 }
 
-func createCustomers(ctx context.Context, conn *helpscout.Connector) error {
+func createCustomers(ctx context.Context, conn *hm.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "customers",
 		RecordData: map[string]any{
@@ -109,7 +109,7 @@ func createCustomers(ctx context.Context, conn *helpscout.Connector) error {
 	return nil
 }
 
-func updateConversations(ctx context.Context, conn *helpscout.Connector) error {
+func updateConversations(ctx context.Context, conn *hm.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "conversations",
 		RecordId:   "2855294683",
