@@ -6,7 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/test/helpscout"
+	"github.com/amp-labs/connectors/test/helpscoutmailbox"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -18,7 +18,7 @@ func main() {
 
 func run() error {
 	ctx := context.Background()
-	connector := helpscout.GetHelpScoutConnector(ctx)
+	connector := helpscoutmailbox.GetHelpScoutConnector(ctx)
 
 	res, err := connector.Read(ctx, common.ReadParams{
 		ObjectName: "mailboxes",
