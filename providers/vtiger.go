@@ -8,9 +8,8 @@ func init() {
 		AuthType:    Basic,
 		// Every vtiger customer can have a full custom domain.
 		BaseURL: "https://{{.workspace}}/restapi",
-		//nolint:lll
 		BasicOpts: &BasicAuthOpts{
-			DocsURL: "https://help.vtiger.com/faq/140159403-What-is-Access-Key#:~:text=Access%20Key%20is%20a%20unique,key%20under%20Settings%20%3E%20My%20Preferences.",
+			DocsURL: "https://help.vtiger.com/faq/140159403-What-is-Access-Key",
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
