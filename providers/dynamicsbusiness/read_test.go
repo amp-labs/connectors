@@ -62,7 +62,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Cases: mockserver.Cases{{
 					// Probing request succeeds to indicate incremental reading is supported by the object.
 					If: mockcond.And{
-						mockcond.PathSuffix(
+						mockcond.Path(
 							"/v2.0/test-workspace/test-environment/api/v2.0/companies(test-company-id)/Customers"),
 						mockcond.QueryParam("$filter", "lastModifiedDateTime ge 2024-09-19T12:30:45.621Z"),
 						mockcond.Header(http.Header{"Prefer": []string{"odata.maxpagesize=1"}}),
@@ -70,7 +70,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Then: mockserver.Response(http.StatusOK, responseCustomersFirstPage),
 				}, {
 					If: mockcond.And{
-						mockcond.PathSuffix(
+						mockcond.Path(
 							"/v2.0/test-workspace/test-environment/api/v2.0/companies(test-company-id)/Customers"),
 						mockcond.QueryParam("$filter", "lastModifiedDateTime ge 2024-09-19T12:30:45.621Z"),
 						mockcond.Header(http.Header{"Prefer": []string{"odata.maxpagesize=100"}}),
@@ -115,7 +115,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.PathSuffix(
+				If: mockcond.Path(
 					"/v2.0/test-workspace/test-environment/api/v2.0/companies(test-company-id)/Customers"),
 				Then: mockserver.Response(http.StatusOK, responseCustomersLastPage),
 			}.Server(),
@@ -142,7 +142,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Cases: mockserver.Cases{{
 					// Probing request fails, BalanceSheets doesn't have `lastModifiedDateTime` property.
 					If: mockcond.And{
-						mockcond.PathSuffix(
+						mockcond.Path(
 							"/v2.0/test-workspace/test-environment/api/v2.0/companies(test-company-id)/BalanceSheets"),
 						mockcond.QueryParam("$filter", "lastModifiedDateTime ge 2024-09-19T12:30:45.621Z"),
 						mockcond.Header(http.Header{"Prefer": []string{"odata.maxpagesize=1"}}),
@@ -150,7 +150,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Then: mockserver.Response(http.StatusBadRequest, responseErrorFormat),
 				}, {
 					If: mockcond.And{
-						mockcond.PathSuffix(
+						mockcond.Path(
 							"/v2.0/test-workspace/test-environment/api/v2.0/companies(test-company-id)/BalanceSheets"),
 						mockcond.QueryParamsMissing("$filter"),
 						mockcond.Header(http.Header{"Prefer": []string{"odata.maxpagesize=100"}}),
