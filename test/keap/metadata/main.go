@@ -23,7 +23,7 @@ func main() {
 	defer utils.Close(conn)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		"v2/contacts",
+		"contacts",
 	})
 	if err != nil {
 		utils.Fail("error listing metadata for Keap", "error", err)

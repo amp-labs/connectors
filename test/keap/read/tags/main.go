@@ -25,7 +25,7 @@ func main() {
 	defer utils.Close(conn)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "v2/tags",
+		ObjectName: "tags",
 		Fields:     connectors.Fields("name"),
 		// Since:      time.Now(),
 	})

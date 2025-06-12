@@ -9,35 +9,48 @@ import (
 const (
 	// Version 1
 	// https://developer.keap.com/docs/rest/
-	objectNameAffiliates    = "v1/affiliates"
-	objectNameAppointments  = "v1/appointments"
-	objectNameCompanies     = "v1/companies"
-	objectNameContacts      = "v1/contacts"
-	objectNameOrders        = "v1/orders"
-	objectNameSubscriptions = "v1/subscriptions"
-	objectNameEmails        = "v1/emails"
-	objectNameFiles         = "v1/files"
-	objectNameNotes         = "v1/notes"
-	objectNameOpportunities = "v1/opportunities"
-	objectNameProducts      = "v1/products"
-	objectNameHooks         = "v1/hooks"
-	objectNameTags          = "v1/tags"
-	objectNameTagCategories = "v1/tags/categories"
-	objectNameTasks         = "v1/tasks"
-	objectNameUsers         = "v1/users"
+	objectNameAppointments  = "appointments"
+	objectNameFiles         = "files"
+	objectNameHooks         = "hooks"
+	objectNameNotes         = "notes"
+	objectNameOpportunities = "opportunities"
+	objectNameOrders        = "orders"
+	objectNameProducts      = "products"
+	objectNameUsers         = "users"
 
 	// Version 2
 	// https://developer.keap.com/docs/restv2/
-	objectNameAffiliatesV2           = "v2/affiliates"
-	objectNameAutomationCategoriesV2 = "v2/automationCategory"
-	objectNameCompaniesV2            = "v2/companies"
-	objectNameContactsV2             = "v2/contacts"
-	objectNameSubscriptionsV2        = "v2/subscriptions"
-	objectNameEmailsV2               = "v2/emails"
-	objectNamePaymentMethodConfigsV2 = "v2/paymentMethodConfigs"
-	objectNameTagsV2                 = "v2/tags"
-	objectNameTagCategoriesV2        = "v2/tags/categories"
-	objectNameTasksV2                = "v2/tasks"
+	objectNameAffiliatesV2           = "affiliates"
+	objectNameAutomationCategoriesV2 = "automationCategory"
+	objectNameAutomationsV2          = "automations"
+	objectNameCampaignsV2            = "campaigns"
+	objectNameCompaniesV2            = "companies"
+	objectNameContactLinkTypesV2     = "contacts/links/types"
+	objectNameContactsV2             = "contacts"
+	objectNameEmailsV2               = "emails"
+	objectNamePaymentMethodConfigsV2 = "paymentMethodConfigs"
+	objectNameSubscriptionsV2        = "subscriptions"
+	objectNameTagCategoriesV2        = "tags/categories"
+	objectNameTagsV2                 = "tags"
+	objectNameTasksV2                = "tasks"
+)
+
+var version2ObjectNames = datautils.NewSet( // nolint:gochecknoglobals
+	// Version 2:
+	// https://developer.keap.com/docs/restv2/
+	objectNameAffiliatesV2,
+	objectNameAutomationCategoriesV2,
+	objectNameAutomationsV2,
+	objectNameCampaignsV2,
+	objectNameCompaniesV2,
+	objectNameContactLinkTypesV2,
+	objectNameContactsV2,
+	objectNameEmailsV2,
+	objectNamePaymentMethodConfigsV2,
+	objectNameSubscriptionsV2,
+	objectNameTagCategoriesV2,
+	objectNameTagsV2,
+	objectNameTasksV2,
 )
 
 // Supported object names can be found under schemas.json.
@@ -45,20 +58,10 @@ var supportedObjectsByRead = metadata.Schemas.ObjectNames() //nolint:gochecknogl
 
 var supportedObjectsByCreate = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
 	common.ModuleRoot: datautils.NewSet(
-		// https://developer.infusionsoft.com/docs/rest/#tag/Affiliate/operation/createAffiliateUsingPOST
-		objectNameAffiliates,
 		// https://developer.infusionsoft.com/docs/rest/#tag/Appointment/operation/createAppointmentUsingPOST
 		objectNameAppointments,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Company/operation/createCompanyUsingPOST
-		objectNameCompanies,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Contact/operation/createContactUsingPOST
-		objectNameContacts,
 		// https://developer.infusionsoft.com/docs/rest/#tag/E-Commerce/operation/createOrderUsingPOST
 		objectNameOrders,
-		// https://developer.infusionsoft.com/docs/rest/#tag/E-Commerce/operation/createSubscriptionUsingPOST
-		objectNameSubscriptions,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Email/operation/createEmailUsingPOST
-		objectNameEmails,
 		// https://developer.infusionsoft.com/docs/rest/#tag/File/operation/createFileUsingPOST
 		objectNameFiles,
 		// https://developer.infusionsoft.com/docs/rest/#tag/Note/operation/createNoteUsingPOST
@@ -69,12 +72,6 @@ var supportedObjectsByCreate = map[common.ModuleID]datautils.StringSet{ //nolint
 		objectNameProducts,
 		// https://developer.infusionsoft.com/docs/rest/#tag/REST-Hooks/operation/create_a_hook_subscription
 		objectNameHooks,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Tags/operation/createTagUsingPOST
-		objectNameTags,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Tags/operation/createTagCategoryUsingPOST
-		objectNameTagCategories,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Task/operation/createTaskUsingPOST
-		objectNameTasks,
 		// https://developer.infusionsoft.com/docs/rest/#tag/Users/operation/createUserUsingPOST
 		objectNameUsers,
 		// https://developer.keap.com/docs/restv2/#tag/Affiliate/operation/addAffiliateUsingPOST
@@ -105,18 +102,12 @@ var supportedObjectsByUpdatePATCH = map[common.ModuleID]datautils.StringSet{ //n
 	common.ModuleRoot: datautils.NewSet(
 		// https://developer.infusionsoft.com/docs/rest/#tag/Appointment/operation/updatePropertiesOnAppointmentUsingPATCH
 		objectNameAppointments,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Company/operation/updateCompanyUsingPATCH
-		objectNameCompanies,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Contact/operation/updatePropertiesOnContactUsingPATCH
-		objectNameContacts,
 		// https://developer.infusionsoft.com/docs/rest/#tag/Note/operation/updatePropertiesOnNoteUsingPATCH
 		objectNameNotes,
 		// https://developer.infusionsoft.com/docs/rest/#tag/Opportunity/operation/updatePropertiesOnOpportunityUsingPATCH
 		objectNameOpportunities,
 		// https://developer.infusionsoft.com/docs/rest/#tag/Product/operation/updateProductUsingPATCH
 		objectNameProducts,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Task/operation/updatePropertiesOnTaskUsingPATCH
-		objectNameTasks,
 		// https://developer.keap.com/docs/restv2/#tag/Affiliate/operation/updateAffiliateUsingPATCH
 		objectNameAffiliatesV2,
 		// https://developer.keap.com/docs/restv2/#tag/Company/operation/patchCompanyUsingPATCH
@@ -148,12 +139,8 @@ var supportedObjectsByDelete = map[common.ModuleID]datautils.StringSet{ //nolint
 	common.ModuleRoot: datautils.NewSet(
 		// https://developer.infusionsoft.com/docs/rest/#tag/Appointment/operation/deleteAppointmentUsingDELETE
 		objectNameAppointments,
-		// https://developer.keap.com/docs/rest/#tag/Contact/operation/deleteContactUsingDELETE
-		objectNameContacts,
 		// https://developer.infusionsoft.com/docs/rest/#tag/E-Commerce/operation/deleteOrderUsingDELETE
 		objectNameOrders,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Email/operation/deleteEmailUsingDELETE
-		objectNameEmails,
 		// https://developer.infusionsoft.com/docs/rest/#tag/File/operation/deleteFileUsingDELETE
 		objectNameFiles,
 		// https://developer.infusionsoft.com/docs/rest/#tag/Note/operation/deleteNoteUsingDELETE
@@ -162,8 +149,6 @@ var supportedObjectsByDelete = map[common.ModuleID]datautils.StringSet{ //nolint
 		objectNameProducts,
 		// https://developer.infusionsoft.com/docs/rest/#tag/REST-Hooks/operation/delete_a_hook_subscription
 		objectNameHooks,
-		// https://developer.infusionsoft.com/docs/rest/#tag/Task/operation/deleteTaskUsingDELETE
-		objectNameTasks,
 		// https://developer.keap.com/docs/restv2/#tag/AutomationCategory/operation/deleteCategoriesUsingDELETE
 		objectNameAutomationCategoriesV2,
 		// https://developer.keap.com/docs/restv2/#tag/Company/operation/deleteCompanyUsingDELETE
@@ -193,15 +178,10 @@ var objectNameToWriteResponseIdentifier = common.ModuleObjectNameToFieldName{ //
 
 var objectsWithCustomFields = map[common.ModuleID]datautils.StringSet{ // nolint:gochecknoglobals
 	common.ModuleRoot: datautils.NewStringSet(
-		objectNameAffiliates,
 		objectNameAppointments,
-		objectNameCompanies,
-		objectNameContacts,
 		objectNameNotes,
 		objectNameOpportunities,
 		objectNameOrders,
-		objectNameSubscriptions,
-		objectNameTasks,
 		objectNameAffiliatesV2,
 		objectNameContactsV2,
 		objectNameSubscriptionsV2,

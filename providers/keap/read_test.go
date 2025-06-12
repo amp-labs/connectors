@@ -56,7 +56,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Error cannot send request body on GET operation",
-			Input: common.ReadParams{ObjectName: "v2/contacts", Fields: connectors.Fields("id")},
+			Input: common.ReadParams{ObjectName: "contacts", Fields: connectors.Fields("id")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentHTML(),
 				Always: mockserver.Response(http.StatusBadRequest, errorBadRequest),
@@ -68,7 +68,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Error page not found",
-			Input: common.ReadParams{ObjectName: "v2/contacts", Fields: connectors.Fields("id")},
+			Input: common.ReadParams{ObjectName: "contacts", Fields: connectors.Fields("id")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentHTML(),
 				Always: mockserver.Response(http.StatusNotFound, errorNotFound),
@@ -81,7 +81,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Opportunities uses custom fields V1",
 			Input: common.ReadParams{
-				ObjectName: "v1/opportunities",
+				ObjectName: "opportunities",
 				Fields: connectors.Fields("opportunity_title",
 					// Custom fields:
 					"color"),
@@ -122,7 +122,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Contacts first page has a link to next",
 			Input: common.ReadParams{
-				ObjectName: "v2/contacts",
+				ObjectName: "contacts",
 				Fields: connectors.Fields("given_name",
 					// Next fields are custom fields which do NOT exist inside raw.
 					// However, they are surfaced to the user via ListObjectMetadata,
@@ -188,7 +188,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Incremental read of contacts, empty page",
 			Input: common.ReadParams{
-				ObjectName: "v2/contacts",
+				ObjectName: "contacts",
 				Fields:     connectors.Fields("given_name"),
 				Since:      time.Date(2024, 3, 4, 8, 22, 56, 77*millisecondInNano, time.UTC),
 			},
@@ -211,7 +211,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Tags page has a link to next",
 			Input: common.ReadParams{
-				ObjectName: "v2/tags",
+				ObjectName: "tags",
 				Fields:     connectors.Fields("name"),
 			},
 			Server: mockserver.Conditional{

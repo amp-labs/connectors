@@ -40,7 +40,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Successful delete",
-			Input: common.DeleteParams{ObjectName: "v2/contacts", RecordId: "18"},
+			Input: common.DeleteParams{ObjectName: "contacts", RecordId: "18"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
@@ -54,7 +54,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Error on deleting missing record",
-			Input: common.DeleteParams{ObjectName: "v2/contacts", RecordId: "18"},
+			Input: common.DeleteParams{ObjectName: "contacts", RecordId: "18"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusNotFound, errorNotFound),

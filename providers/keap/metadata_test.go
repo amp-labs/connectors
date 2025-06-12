@@ -39,8 +39,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name: "Successfully describe multiple objects with metadata",
 			Input: []string{
-				"v2/campaigns", "v1/products", "v2/contacts",
-				"v2/automationCategory", "v2/tags",
+				"campaigns", "products", "contacts",
+				"automationCategory", "tags",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -50,7 +50,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"v2/campaigns": {
+					"campaigns": {
 						DisplayName: "Campaigns",
 						FieldsMap: map[string]string{
 							"id":     "id",
@@ -59,7 +59,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"goals":  "goals",
 						},
 					},
-					"v1/products": {
+					"products": {
 						DisplayName: "Products",
 						FieldsMap: map[string]string{
 							"id":            "id",
@@ -68,7 +68,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"product_price": "product_price",
 						},
 					},
-					"v2/contacts": {
+					"contacts": {
 						DisplayName: "Contacts",
 						FieldsMap: map[string]string{
 							"addresses":        "addresses",
@@ -111,7 +111,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"age":            "age",
 						},
 					},
-					"v2/automationCategory": {
+					"automationCategory": {
 						DisplayName: "Automation Categories",
 						FieldsMap: map[string]string{
 							"id":               "id",
@@ -119,7 +119,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"automation_count": "automation_count",
 						},
 					},
-					"v2/tags": {
+					"tags": {
 						DisplayName: "Tags",
 						FieldsMap: map[string]string{
 							"id":          "id",
@@ -136,7 +136,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Metadata error due to failed custom data requests",
-			Input: []string{"v2/contacts"},
+			Input: []string{"contacts"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.Path("/crm/rest/v2/contacts/model"),
@@ -145,7 +145,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Errors: map[string]error{
-					"v2/contacts": mockutils.ExpectedSubsetErrors{
+					"contacts": mockutils.ExpectedSubsetErrors{
 						common.ErrResolvingCustomFields,
 						common.ErrServer,
 					},

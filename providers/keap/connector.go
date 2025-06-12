@@ -9,7 +9,11 @@ import (
 	"github.com/amp-labs/connectors/providers/keap/metadata"
 )
 
-const ApiPathPrefix = "crm/rest"
+const (
+	ApiPathPrefix = "crm/rest"
+	Version1      = "v1"
+	Version2      = "v2"
+)
 
 // Connector implements API for V1 and V2:
 // https://developer.keap.com/docs/rest/
@@ -54,11 +58,27 @@ func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 		return nil, err
 	}
 
+	// Path already includes Version from the schema.json.
+
 	return c.getURL(path)
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
-	return c.getURL(objectName)
+	version := Version1
+	if version2ObjectNames.Has(objectName) {
+		version = Version2
+	}
+
+	return c.getURL(version, objectName)
+}
+
+func (c *Connector) getModelURL(objectName string) (*urlbuilder.URL, error) {
+	version := Version1
+	if version2ObjectNames.Has(objectName) {
+		version = Version2
+	}
+
+	return c.getURL(version, objectName, "model")
 }
 
 func (c *Connector) getURL(args ...string) (*urlbuilder.URL, error) {

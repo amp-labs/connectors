@@ -5,13 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/providers/keap/metadata"
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -65,10 +63,10 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	if strings.HasPrefix(params.ObjectName, "v1") {
-		readURLVersion1(params, url)
-	} else if strings.HasPrefix(params.ObjectName, "v2") {
+	if version2ObjectNames.Has(params.ObjectName) {
 		readURLVersion2(params, url)
+	} else {
+		readURLVersion1(params, url)
 	}
 
 	return url, nil
@@ -98,8 +96,8 @@ func readURLVersion2(params common.ReadParams, url *urlbuilder.URL) {
 		)
 	}
 
-	if params.ObjectName == objectNameContacts {
-		url.WithQueryParam("fields", "addresses,anniversary_date,birth_date,company,contact_type,create_time,email_addresses,fax_numbers,job_title,leadsource_id,links,middle_name,notes,origin,owner_id,phone_numbers,preferred_locale,preferred_name,prefix,referral_code,score_value,social_accounts,source_type,spouse_name,suffix,tag_ids,time_zone,update_time,website") // nolint:lll
+	if params.ObjectName == objectNameContactsV2 {
+		url.WithQueryParam("fields", "addresses,anniversary_date,birth_date,company,contact_type,create_time,custom_fields,email_addresses,family_name,fax_numbers,given_name,id,job_title,leadsource_id, links,middle_name,notes,origin,owner_id,phone_numbers,preferred_locale,preferred_name,prefix, referral_code,score_value,social_accounts,source_type,spouse_name,suffix,tag_ids,time_zone,update_time,utm_parameters,website") // nolint:lll
 	}
 }
 
@@ -114,9 +112,7 @@ func (c *Connector) requestCustomFields(
 		return map[string]modelCustomField{}, nil
 	}
 
-	modulePath := metadata.Schemas.LookupModuleURLPath(common.ModuleRoot)
-
-	url, err := c.getURL(modulePath, objectName, "model")
+	url, err := c.getModelURL(objectName)
 	if err != nil {
 		return nil, errors.Join(common.ErrResolvingCustomFields, err)
 	}

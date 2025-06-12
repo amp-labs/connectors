@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os/signal"
-	"strconv"
 	"syscall"
 
 	"github.com/amp-labs/connectors"
@@ -17,7 +16,7 @@ import (
 	"github.com/brianvoe/gofakeit/v6"
 )
 
-var objectName = "v1/contacts"
+var objectName = "contacts"
 
 type ContactPayload struct {
 	EmailAddresses []EmailAddress `json:"email_addresses"`
@@ -72,8 +71,7 @@ func main() {
 	slog.Info("View that contact has changed accordingly")
 
 	res = readContacts(ctx, conn)
-	idAsInt, _ := strconv.ParseInt(contactID, 10, 64)
-	contact = searchContactByID(res, idAsInt)
+	contact = searchContactByID(res, contactID)
 	addresses := contact["email_addresses"].([]any)
 
 	actual := addresses[0].(map[string]any)["email"].(string)
@@ -86,9 +84,9 @@ func main() {
 	slog.Info("> Successful test completion")
 }
 
-func searchContactByID(res *common.ReadResult, value int64) map[string]any {
+func searchContactByID(res *common.ReadResult, value string) map[string]any {
 	return searcher.Find(res, []searcher.Key{{
-		Type: searcher.Integer,
+		Type: searcher.String,
 		At:   "id",
 	}}, value)
 }
