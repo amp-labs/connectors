@@ -5,7 +5,6 @@ import (
 	"context"
 	"embed"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -410,42 +409,29 @@ func ExtractAudioFields(RecordData any) (map[string]any, error) {
 		return nil, ErrURLIsRequired
 	}
 
-	// below fields are not required , so handle the error
-	title, _ := input["title"].(string)
-	customLanguage, _ := input["cusotm_language"].(string)
-	clientReferenceId, _ := input["client_reference_id"].(string)
-	saveVideo, _ := input["save_video"].(bool)
-	attendees, _ := input["attendees"].([]any)
-
-	var attendeeStrings []string
-	if attendees != nil {
-		for _, attendee := range attendees {
-			// attendees is one of the arguments in the uploadAudio object; it contains details of attendees.
-			// Here, type assertion is used to extract the attendee value and convert it into the expected below format.
-			// attendees": [
-			//   {
-			//     displayName: "Fireflies Notetaker",
-			//     email: "notetaker@fireflies.ai",
-			//     phoneNumber: "xxxxxxxxxxxxxxxx"
-			//   }
-			// ]
-			attMap, ok := attendee.(map[string]string)
-			if !ok {
-				return nil, errors.New("invalid attendee format")
-			}
-			displayName, email, phoneNumber := attMap["displayName"], attMap["email"], attMap["phoneNumber"]
-			attendeeStr := fmt.Sprintf(`{displayName: %q, email: %q, phoneNumber: %q}`, displayName, email, phoneNumber)
-			attendeeStrings = append(attendeeStrings, attendeeStr)
-		}
+	inputParts := map[string]any{
+		"url": url,
 	}
 
-	inputParts := map[string]any{
-		"URL":                 url,
-		"title":               title,
-		"attendees":           fmt.Sprintf(`[%s]`, strings.Join(attendeeStrings, ", ")),
-		"custom_language":     customLanguage,
-		"client_reference_id": clientReferenceId,
-		"save_video":          saveVideo,
+	// Optional fields: only include if non-zero
+	if title, ok := input["title"].(string); ok && title != "" {
+		inputParts["title"] = title
+	}
+
+	if customLanguage, ok := input["custom_language"].(string); ok && customLanguage != "" {
+		inputParts["custom_language"] = customLanguage
+	}
+
+	if clientReferenceId, ok := input["client_reference_id"].(string); ok && clientReferenceId != "" {
+		inputParts["client_reference_id"] = clientReferenceId
+	}
+
+	if saveVideo, ok := input["save_video"].(bool); ok && saveVideo {
+		inputParts["save_video"] = saveVideo
+	}
+
+	if attendees, ok := input["attendees"].([]any); ok && len(attendees) > 0 {
+		inputParts["attendees"] = attendees
 	}
 
 	return inputParts, nil
