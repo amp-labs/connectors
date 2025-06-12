@@ -84,6 +84,13 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
+	if params.NextPage != "" {
+		url, err = urlbuilder.New(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
