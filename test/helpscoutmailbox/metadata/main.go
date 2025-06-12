@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/amp-labs/connectors/test/helpscout"
+	"github.com/amp-labs/connectors/test/helpscoutmailbox"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -16,7 +16,7 @@ func main() {
 
 func run() error {
 	ctx := context.Background()
-	connector := helpscout.GetHelpScoutConnector(ctx)
+	connector := helpscoutmailbox.GetHelpScoutConnector(ctx)
 
 	m, err := connector.ListObjectMetadata(ctx, []string{"conversations", "customers", "mailboxes"})
 	if err != nil {
