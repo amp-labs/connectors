@@ -1,7 +1,6 @@
 package fireflies
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -16,21 +15,6 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 			Template: func() interpreter.ErrorDescriptor { return &ResponseError{} },
 		},
 	}...,
-)
-
-var (
-	ErrMeetingLinkRequired           = errors.New("meeting link field is required")
-	ErrUpdateMeetingLinkNotSupported = errors.New("updation of meeting link not supported")
-	ErrStartTimeRequired             = errors.New("start time field is required for create bite")
-	ErrEndTimeRequired               = errors.New("end time field is required for create bite")
-	ErrUpdateBiteNotSupported        = errors.New("updation of bite is not supported")
-	ErrRoleRequired                  = errors.New("role field is required")
-	ErrUpdateRoleNotSupported        = errors.New("updating the role is not supported")
-	ErrUpdateAudioSupported          = errors.New("updating the audio is not supported")
-	ErrTitleRequired                 = errors.New("title field is required")
-	ErrCreateMeetingSupported        = errors.New("creating the meeting is not supported")
-	ErrInvalidResponseFormat         = errors.New("invalid input format")
-	ErrURLIsRequired                 = errors.New("url field is required")
 )
 
 // ResponseError represents an error response from the fireflies API.

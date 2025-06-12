@@ -10,7 +10,8 @@ Below is an exhaustive list of objects & methods supported on the objects
 | users              | users                                 | read            |
 | transcripts        | transcripts(read),                    | read            |
 | transcript         | deleteTranscript(delete)              | write           |
-| bites              | bites (read), createBite (write)      | read, write     |
+| bites              | bites                                 | read            |
+| bite               | createBite                            | write           | 
 | liveMeeting        | addToLiveMeeting                      | write           |
 | meetingTitle       | updateMeetingTitle                    | write           |
 | userRole           | setUserRole                           | write           |

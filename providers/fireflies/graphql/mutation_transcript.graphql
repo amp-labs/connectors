@@ -1,5 +1,5 @@
 mutation {
-    deleteTranscript(id:"{{.transcript_id}}") {
+    deleteTranscript(id:"{{.record_id}}") {
         id
         title
         host_email

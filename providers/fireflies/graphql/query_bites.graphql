@@ -1,5 +1,12 @@
 query {
-    bites(mine: false, my_team: true, limit: {{.Limit}}{{if .Skip}}, skip: {{.Skip}}{{end}}) {
+    bites(
+        mine: false
+        my_team: true
+        limit: {{.Limit}}
+        {{if .Skip}}
+        skip: {{.Skip}}
+        {{end}}
+    ) {
         transcript_id
         name
         id
