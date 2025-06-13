@@ -28,12 +28,14 @@ var (
 		"/v2/settings/applications:getConfiguration",
 	}
 	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
-		"/v2/tags/categories":      "tag_categories",
-		"/v2/contacts/links/types": "contact_link_types",
-		"/v2/automationCategory":   "automation_categories",
+		"/v2/tags/categories":      "tags/categories",
+		"/v2/contacts/links/types": "contacts/links/types",
+		"/v2/automationCategory":   "automationCategory",
 	}
 	objectNameToResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
-		// no exceptions
+		"tags/categories":      "tag_categories",
+		"contacts/links/types": "contact_link_types",
+		"automationCategory":   "automation_categories",
 	},
 		func(objectName string) (fieldName string) {
 			return objectName

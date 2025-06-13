@@ -96,7 +96,10 @@ func parseXMLResponse(res *http.Response, body []byte) (*XMLHTTPResponse, error)
 	// Unmarshall the response body into XML
 	xmlBody, err := xquery.NewXML(body)
 	if err != nil {
-		return nil, NewHTTPStatusError(res.StatusCode, fmt.Errorf("failed to unmarshall response body into XML: %w", err))
+		headers := GetResponseHeaders(res)
+
+		return nil, NewHTTPError(res.StatusCode, body, headers,
+			fmt.Errorf("failed to unmarshall response body into XML: %w", err))
 	}
 
 	return &XMLHTTPResponse{

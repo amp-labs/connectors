@@ -705,7 +705,7 @@ func (i *ProviderInfo) Override(override *ProviderInfo) *ProviderInfo {
 }
 
 func (i *ProviderInfo) RequiresWorkspace() bool {
-	if i.Metadata.Input == nil {
+	if i.Metadata == nil || i.Metadata.Input == nil {
 		return false
 	}
 

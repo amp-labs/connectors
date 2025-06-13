@@ -12,7 +12,7 @@ import (
 
 func GetInstantlyAIConnector(ctx context.Context) *instantlyai.Connector {
 	filePath := credscanning.LoadPath(providers.InstantlyAI)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client := utils.NewAPIKeyClient(ctx, reader, providers.InstantlyAI)
 

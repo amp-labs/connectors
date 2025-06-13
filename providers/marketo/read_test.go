@@ -113,7 +113,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						"createdAt": "2024-03-20T06:45:12Z",
 					},
 				}},
-				NextPage: "2",
+				Done: true,
 			},
 		},
 	}

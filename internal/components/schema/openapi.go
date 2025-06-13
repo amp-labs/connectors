@@ -29,3 +29,7 @@ func (p *OpenAPISchemaProvider[F, C]) ListObjectMetadata(
 ) (*common.ListObjectMetadataResult, error) {
 	return p.schemas.Select(p.module, objects)
 }
+
+func (p *OpenAPISchemaProvider[F, C]) String() string {
+	return "OpenAPISchemaProvider"
+}

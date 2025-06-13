@@ -12,7 +12,7 @@ import (
 
 func GetConnector(ctx context.Context) *mixmax.Connector {
 	filePath := credscanning.LoadPath(providers.Mixmax)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, "X-API-Token", reader.Get(credscanning.Fields.ApiKey))
 	if err != nil {

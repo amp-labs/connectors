@@ -13,7 +13,7 @@ import (
 
 func GetGongConnector(ctx context.Context) *gong.Connector {
 	filePath := credscanning.LoadPath(providers.Gong)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := gong.NewConnector(
 		gong.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),

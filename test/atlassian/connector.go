@@ -16,7 +16,7 @@ const cloudId = "35745fff-f0de-466c-b08e-a63f69888611"
 
 func GetAtlassianConnector(ctx context.Context) *atlassian.Connector {
 	filePath := credscanning.LoadPath(providers.Atlassian)
-	reader := utils.MustCreateProvCredJSON(filePath, true, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := atlassian.NewConnector(
 		atlassian.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
@@ -38,7 +38,7 @@ func GetAtlassianConnector(ctx context.Context) *atlassian.Connector {
 
 func GetAtlassianConnectConnector(ctx context.Context, claims map[string]any) *atlassian.Connector {
 	filePath := credscanning.LoadPath(providers.Atlassian)
-	reader := utils.MustCreateProvCredJSON(filePath, true, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	opts := []common.HeaderAuthClientOption{
 		common.WithHeaderClient(http.DefaultClient),

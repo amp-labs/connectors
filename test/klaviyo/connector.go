@@ -13,7 +13,7 @@ import (
 
 func GetKlaviyoConnector(ctx context.Context) *klaviyo.Connector {
 	filePath := credscanning.LoadPath(providers.Klaviyo)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := klaviyo.NewConnector(
 		klaviyo.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),

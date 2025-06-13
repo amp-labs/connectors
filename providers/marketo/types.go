@@ -23,7 +23,7 @@ var (
 	marketoGUIDResponseObjects = []string{"namedAccountLists", "namedaccounts", "opportunities"}
 
 	// idFilteringObjects represents objects that uses id as filtering values in read connector.
-	idFilteringObjects = []string{"leads", "salespersons", "companies"}
+	idFilteringObjects = []string{"salespersons", "companies"}
 
 	// metadataPaths represents a map of a few objects in Marketo that has unique resource for returning metadata fields.
 	metadataPaths = map[string]string{
