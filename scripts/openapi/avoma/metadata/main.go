@@ -12,6 +12,8 @@ import (
 	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 var (
@@ -66,6 +68,8 @@ func main() {
 	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
 	registry := datautils.NamedLists[string]{}
 
+	titleCaser := cases.Title(language.English)
+
 	for _, object := range readObjects {
 		if object.Problem != nil {
 			slog.Error("schema not extracted",
@@ -77,7 +81,7 @@ func main() {
 		for _, field := range object.Fields {
 			objName := strings.TrimPrefix(object.ObjectName, "v1/")
 			objName = strings.TrimSuffix(objName, "/")
-			displayName := strings.Title(objName)
+			displayName := titleCaser.String(objName)
 
 			schemas.Add("", objName, displayName, object.URLPath, object.ResponseKey,
 				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
