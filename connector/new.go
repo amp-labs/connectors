@@ -49,6 +49,7 @@ import (
 	"github.com/amp-labs/connectors/providers/mixmax"
 	"github.com/amp-labs/connectors/providers/monday"
 	"github.com/amp-labs/connectors/providers/outreach"
+	"github.com/amp-labs/connectors/providers/pinterest"
 	"github.com/amp-labs/connectors/providers/pipedrive"
 	"github.com/amp-labs/connectors/providers/pipeliner"
 	"github.com/amp-labs/connectors/providers/podium"
@@ -119,6 +120,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Outreach:            wrapper(newOutreachConnector),
 	providers.Pipedrive:           wrapper(newPipedriveConnector),
 	providers.Pipeliner:           wrapper(newPipelinerConnector),
+	providers.Pinterest:           wrapper(newPinterestConnector),
 	providers.Podium:              wrapper(newPodiumConnector),
 	providers.Salesforce:          wrapper(newSalesforceConnector),
 	providers.Salesloft:           wrapper(newSalesloftConnector),
@@ -530,4 +532,10 @@ func newGrooveConnector(
 	params common.ConnectorParams,
 ) (*groove.Connector, error) {
 	return groove.NewConnector(params)
+}
+
+func newPinterestConnector(
+	params common.ConnectorParams,
+) (*pinterest.Connector, error) {
+	return pinterest.NewConnector(params)
 }
