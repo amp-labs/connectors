@@ -227,7 +227,6 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	unsupportedResponse := testutils.DataFromFile(t, "unsupported.txt")
-	updateWrite := testutils.DataFromFile(t, "update-write.json")
 
 	tests := []testroutines.Write{
 		{
@@ -264,7 +263,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, updateWrite),
+				Then:  mockserver.Response(http.StatusOK, []byte{}),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success: true,
@@ -285,7 +284,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPATCH(),
-				Then:  mockserver.Response(http.StatusOK, updateWrite),
+				Then:  mockserver.Response(http.StatusOK, []byte{}),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success: true,
