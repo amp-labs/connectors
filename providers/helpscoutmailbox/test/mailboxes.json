@@ -1,0 +1,26 @@
+{
+  "_embedded": {
+    "mailboxes": []
+  },
+  "_links": {
+    "self": {
+      "href": "https://api.helpscout.net/v2/mailboxes"
+    },
+    "first": {
+      "href": "https://api.helpscout.net/v2/mailboxes?page=1"
+    },
+    "last": {
+      "href": "https://api.helpscout.net/v2/mailboxes?page=1"
+    },
+    "page": {
+      "href": "https://api.helpscout.net/v2/mailboxes{?page}",
+      "templated": true
+    }
+  },
+  "page": {
+    "size": 50,
+    "totalElements": 0,
+    "totalPages": 0,
+    "number": 0
+  }
+}
