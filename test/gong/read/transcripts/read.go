@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -26,6 +27,7 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "transcripts",
 		Fields:     connectors.Fields("callId"),
+		Until:      timestamp("2025-03-01T05:43:33.157Z"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Gong", "error", err)
@@ -33,4 +35,13 @@ func main() {
 
 	slog.Info("Reading transcripts..")
 	utils.DumpJSON(res, os.Stdout)
+}
+
+func timestamp(timeText string) time.Time {
+	result, err := time.Parse("2006-01-02T15:04:05.000Z", timeText)
+	if err != nil {
+		utils.Fail("bad timestamp", "error", err)
+	}
+
+	return result
 }
