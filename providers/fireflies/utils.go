@@ -12,10 +12,16 @@ import (
 )
 
 const (
-	defaultPageSize       = 50
-	usersObjectName       = "users"
-	transcriptsObjectName = "transcripts"
-	bitesObjectName       = "bites"
+	defaultPageSize        = 50
+	usersObjectName        = "users"
+	transcriptsObjectName  = "transcripts"
+	bitesObjectName        = "bites"
+	objectNameLiveMeeting  = "liveMeeting"
+	objectNameBite         = "bite"
+	objectNameUserRole     = "userRole"
+	objectNameAudio        = "audio"
+	objectNameMeetingTitle = "meetingTitle"
+	objectNameTranscript   = "transcript"
 )
 
 var supportLimitAndSkip = datautils.NewSet( //nolint:gochecknoglobals
@@ -54,12 +60,22 @@ func makeNextRecordsURL(params common.ReadParams, count int) func(*ajson.Node) (
 func supportedOperations() components.EndpointRegistryInput {
 	// We support reading everything under schema.json, so we get all the objects and join it into a pattern.
 	readSupport := []string{usersObjectName, transcriptsObjectName, bitesObjectName}
+	writeSupport := []string{objectNameLiveMeeting, objectNameBite, objectNameUserRole, objectNameAudio, objectNameMeetingTitle} // nolint
+	deleteSupport := []string{objectNameTranscript}
 
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(deleteSupport, ",")),
+				Support:  components.DeleteSupport,
 			},
 		},
 	}
