@@ -29,8 +29,8 @@ type identifier struct {
 }
 
 const (
-	projectID   = "10001"
-	issueTypeID = "10005"
+	projectID   = "10000"
+	issueTypeID = "10004"
 )
 
 // For this script replace project id and issue types with your values.
@@ -108,7 +108,8 @@ func searchIssue(res *common.ReadResult, key, value string) map[string]any {
 
 func readIssue(ctx context.Context, conn *atlassian.Connector) *common.ReadResult {
 	res, err := conn.Read(ctx, common.ReadParams{
-		Fields: connectors.Fields("id", "fields"),
+		ObjectName: "issues",
+		Fields:     connectors.Fields("id", "fields"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Atlassian", "error", err)
@@ -119,6 +120,7 @@ func readIssue(ctx context.Context, conn *atlassian.Connector) *common.ReadResul
 
 func createIssue(ctx context.Context, conn *atlassian.Connector, payload *issuePayload) *common.WriteResult {
 	res, err := conn.Write(ctx, common.WriteParams{
+		ObjectName: "issues",
 		RecordId:   "",
 		RecordData: payload,
 	})
@@ -135,6 +137,7 @@ func createIssue(ctx context.Context, conn *atlassian.Connector, payload *issueP
 
 func updateIssue(ctx context.Context, conn *atlassian.Connector, viewID string, payload *issuePayload) *common.WriteResult {
 	res, err := conn.Write(ctx, common.WriteParams{
+		ObjectName: "issues",
 		RecordId:   viewID,
 		RecordData: payload,
 	})
@@ -151,7 +154,8 @@ func updateIssue(ctx context.Context, conn *atlassian.Connector, viewID string, 
 
 func removeIssue(ctx context.Context, conn *atlassian.Connector, viewID string) {
 	res, err := conn.Delete(ctx, common.DeleteParams{
-		RecordId: viewID,
+		ObjectName: "issues",
+		RecordId:   viewID,
 	})
 	if err != nil {
 		utils.Fail("error deleting for Atlassian", "error", err)

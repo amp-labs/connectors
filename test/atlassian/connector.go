@@ -12,11 +12,19 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const cloudId = "35745fff-f0de-466c-b08e-a63f69888611"
+var (
+	fieldCloudId = credscanning.Field{
+		Name:      "cloudId",
+		PathJSON:  "metadata.cloudId",
+		SuffixENV: "CLOUD_ID",
+	}
+)
 
 func GetAtlassianConnector(ctx context.Context) *atlassian.Connector {
 	filePath := credscanning.LoadPath(providers.Atlassian)
-	reader := utils.MustCreateProvCredJSON(filePath, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true, fieldCloudId)
+
+	cloudId := reader.Get(fieldCloudId)
 
 	conn, err := atlassian.NewConnector(
 		atlassian.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
