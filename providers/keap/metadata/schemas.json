@@ -21,9 +21,11 @@
           "fields": {
             "active_contacts": "active_contacts",
             "categories": "categories",
+            "current_edit_lock_status": "current_edit_lock_status",
             "error_message": "error_message",
             "id": "id",
             "locked": "locked",
+            "publication_date": "publication_date",
             "published_by": "published_by",
             "published_date": "published_date",
             "published_timezone": "published_timezone",
@@ -45,6 +47,7 @@
             "id": "id",
             "locked": "locked",
             "name": "name",
+            "publication_date": "publication_date",
             "published_date": "published_date",
             "published_status": "published_status",
             "published_time_zone": "published_time_zone",
@@ -120,6 +123,74 @@
             "name": "name"
           }
         },
+        "files": {
+          "displayName": "Files",
+          "path": "/v2/files",
+          "responseKey": "files",
+          "fields": {
+            "category": "category",
+            "contact_id": "contact_id",
+            "created_by_id": "created_by_id",
+            "created_time": "created_time",
+            "file_box_type": "file_box_type",
+            "file_name": "file_name",
+            "file_size": "file_size",
+            "id": "id",
+            "is_public": "is_public",
+            "remote_file_key": "remote_file_key",
+            "updated_time": "updated_time"
+          }
+        },
+        "opportunities": {
+          "displayName": "Opportunities",
+          "path": "/v2/opportunities",
+          "responseKey": "opportunities",
+          "fields": {
+            "affiliate_id": "affiliate_id",
+            "contact": "contact",
+            "created_time": "created_time",
+            "custom_fields": "custom_fields",
+            "estimated_close_time": "estimated_close_time",
+            "id": "id",
+            "include_in_forecast": "include_in_forecast",
+            "last_updated_time": "last_updated_time",
+            "next_action_notes": "next_action_notes",
+            "next_action_time": "next_action_time",
+            "opportunity_notes": "opportunity_notes",
+            "opportunity_title": "opportunity_title",
+            "projected_revenue_high": "projected_revenue_high",
+            "projected_revenue_low": "projected_revenue_low",
+            "stage": "stage",
+            "user": "user"
+          }
+        },
+        "reports": {
+          "displayName": "Reports",
+          "path": "/v2/reporting/reports",
+          "responseKey": "reports",
+          "fields": {
+            "created_time": "created_time",
+            "id": "id",
+            "name": "name",
+            "updated_time": "updated_time",
+            "user_ids": "user_ids"
+          }
+        },
+        "stages": {
+          "displayName": "Opportunity Stages",
+          "path": "/v2/opportunities/stages",
+          "responseKey": "stages",
+          "fields": {
+            "checklist_items": "checklist_items",
+            "created_time": "created_time",
+            "id": "id",
+            "name": "name",
+            "order": "order",
+            "probability": "probability",
+            "target_number_days": "target_number_days",
+            "updated_time": "updated_time"
+          }
+        },
         "tags": {
           "displayName": "Tags",
           "path": "/v2/tags",
@@ -140,6 +211,55 @@
             "description": "description",
             "id": "id",
             "name": "name"
+          }
+        },
+        "tasks": {
+          "displayName": "Tasks",
+          "path": "/v2/tasks",
+          "responseKey": "tasks",
+          "fields": {
+            "assigned_to_user_id": "assigned_to_user_id",
+            "completed": "completed",
+            "completion_time": "completion_time",
+            "contact_id": "contact_id",
+            "create_time": "create_time",
+            "created_by_user_id": "created_by_user_id",
+            "description": "description",
+            "due_time": "due_time",
+            "id": "id",
+            "modification_time": "modification_time",
+            "priority": "priority",
+            "remind_time_mins": "remind_time_mins",
+            "title": "title",
+            "type": "type"
+          }
+        },
+        "users": {
+          "displayName": "Users Paginateds",
+          "path": "/v2/users",
+          "responseKey": "users",
+          "fields": {
+            "address": "address",
+            "admin": "admin",
+            "company_name": "company_name",
+            "create_time": "create_time",
+            "created_by": "created_by",
+            "email_addresses": "email_addresses",
+            "family_name": "family_name",
+            "fax_numbers": "fax_numbers",
+            "given_name": "given_name",
+            "global_user_id": "global_user_id",
+            "id": "id",
+            "keap_id": "keap_id",
+            "partner": "partner",
+            "phone_numbers": "phone_numbers",
+            "social_accounts": "social_accounts",
+            "status": "status",
+            "time_zone": "time_zone",
+            "title": "title",
+            "update_time": "update_time",
+            "updated_by": "updated_by",
+            "website": "website"
           }
         }
       }
