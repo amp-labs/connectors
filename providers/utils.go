@@ -156,7 +156,19 @@ func (c CustomCatalog) ReadInfo(provider Provider, vars ...catalogreplacer.Catal
 	return &providerInfo, nil
 }
 
-func (i *ProviderInfo) SubstituteWith(vars []catalogreplacer.CatalogVariable) error {
+func (i *ProviderInfo) SubstituteWith(vars catalogreplacer.CatalogVariables) error {
+	// Take care of default metadata values.
+	if i.Metadata != nil {
+		for _, metadatInput := range i.Metadata.Input {
+			if metadatInput.DefaultValue != "" {
+				vars.AddDefaults(catalogreplacer.CustomCatalogVariable{Plan: catalogreplacer.SubstitutionPlan{
+					From: metadatInput.Name,
+					To:   metadatInput.DefaultValue,
+				}})
+			}
+		}
+	}
+
 	return catalogreplacer.NewCatalogSubstitutionRegistry(vars).Apply(i)
 }
 
@@ -908,7 +920,9 @@ func (i *ProviderInfo) RequiresWorkspace() bool {
 
 	for _, input := range i.Metadata.Input {
 		if input.Name == "workspace" {
-			return true
+			// When default value is present then workspace is not required.
+			// Missing the default makes workspace required.
+			return input.DefaultValue == ""
 		}
 	}
 
