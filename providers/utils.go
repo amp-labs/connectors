@@ -597,6 +597,7 @@ func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
 	info *ProviderInfo,
 	cfg *CustomAuthParams,
 ) (common.AuthenticatedHTTPClient, error) {
+	// Make sure that all the inputs are provided in the config values.
 	for _, input := range info.CustomOpts.Inputs {
 		val, ok := cfg.Values[input.Name]
 		if !ok || val == "" {
@@ -605,11 +606,13 @@ func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
 		}
 	}
 
+	// Get the static headers
 	headers, err := getCustomHeaders(info, cfg)
 	if err != nil {
 		return nil, err
 	}
 
+	// Get the static query parameters
 	queryParams, err := getCustomParams(info, cfg)
 	if err != nil {
 		return nil, err
