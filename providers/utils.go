@@ -596,7 +596,7 @@ func createCustomHTTPClient(ctx context.Context,
 	unauth UnauthorizedHandler,
 	info *ProviderInfo,
 	cfg *CustomAuthParams,
-) (common.AuthenticatedHTTPClient, error) {
+) (common.AuthenticatedHTTPClient, error) { //nolint:funlen
 	for _, input := range info.CustomOpts.Inputs {
 		val, ok := cfg.Values[input.Name]
 		if !ok || val == "" {
