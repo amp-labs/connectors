@@ -51,7 +51,7 @@ func main() {
 			},
 		},
 		Request: &zohocrm.SubscriptionRequest{
-			UniqueRef:       uniqueRef,
+			UniqueRef:       "amp_" + uniqueRef,
 			WebhookEndPoint: "https://play.svix.com/in/e_BVbta2ttNmjqeA1md230npV13f5/",
 			Duration:        &dur,
 		},
@@ -92,11 +92,13 @@ func main() {
 			},
 		},
 		Request: &zohocrm.SubscriptionRequest{
-			UniqueRef:       uniqueRef,
+			UniqueRef:       "amp_" + uniqueRef,
 			WebhookEndPoint: "https://play.svix.com/in/e_BVbta2ttNmjqeA1md230npV13f5/",
 			Duration:        &dur,
 		},
 	}
+
+	time.Sleep(time.Minute * 1)
 
 	updateResult, err := conn.UpdateSubscription(ctx, updateParams, subscribeResult)
 	if err != nil {
@@ -104,6 +106,8 @@ func main() {
 
 		return
 	}
+
+	time.Sleep(time.Minute * 1)
 
 	err = conn.DeleteSubscription(ctx, *updateResult)
 	if err != nil {
