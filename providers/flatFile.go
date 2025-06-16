@@ -1,0 +1,41 @@
+package providers
+
+const flatFile Provider = "flatFile"
+
+func init() {
+	SetInfo(flatFile, ProviderInfo{
+		DisplayName: "FlatFile",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.x.flatfile.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name:        "Authorization",
+				ValuePrefix: "Bearer ",
+			},
+			DocsURL: "https://reference.flatfile.com/overview/welcome",
+		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: " https://res.cloudinary.com/dycvts6vp/image/upload/v1750081977/media/flatfile.com_1750081977.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1750082071/media/flatfile.com_1750082071.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1750081956/media/flatfile.com_1750081954.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1750082112/media/flatfile.com_1750082111.svg",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	})
+}
