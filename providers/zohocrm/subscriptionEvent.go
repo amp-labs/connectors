@@ -207,17 +207,11 @@ func (evt SubscriptionEvent) ObjectName() (string, error) {
 	return module, nil
 }
 
+var errNotImplemented = errors.New("not implemented")
+
 // Workspace returns the workspace ID.
 func (evt SubscriptionEvent) Workspace() (string, error) {
-	m := evt.asMap()
-
-	// In Zoho CRM, the channel_id can be used as the workspace identifier
-	channelID, err := m.GetString("channel_id")
-	if err != nil {
-		return "", err
-	}
-
-	return channelID, nil
+	return "", fmt.Errorf("%w: %s", errNotImplemented, "workspace")
 }
 
 // RecordId returns the ID of the record that triggered the event.

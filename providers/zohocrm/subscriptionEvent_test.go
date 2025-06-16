@@ -90,15 +90,6 @@ func TestCollapsedSubscriptionEvent(t *testing.T) {
 
 	logger("objectName", objectName)
 
-	workspace, err := subevt.Workspace()
-	if err != nil {
-		t.Fatalf("failed to get workspace: %v", err)
-	}
-
-	assert.Equal(t, workspace, "")
-
-	logger("workspace", workspace)
-
 	recordId, err := subevt.RecordId()
 	if err != nil {
 		t.Fatalf("failed to get record id: %v", err)
@@ -124,4 +115,18 @@ func TestCollapsedSubscriptionEvent(t *testing.T) {
 	}
 
 	logger("updatedFields", updatedFields)
+
+	referenceIdentifiableSubevt, ok := subevt.(common.ReferenceIdentifiableSubscriptionEvent)
+	if !ok {
+		t.Fatalf("failed to cast to reference identifiable subscription event")
+	}
+
+	reference, err := referenceIdentifiableSubevt.Reference()
+	if err != nil {
+		t.Fatalf("failed to get reference: %v", err)
+	}
+
+	assert.Equal(t, reference, "c3504777-db15-4332-8286-478a1b5006bc")
+
+	logger("reference", reference)
 }
