@@ -462,6 +462,11 @@ type SubscriptionUpdateEvent interface {
 	UpdatedFields() ([]string, error)
 }
 
+type ReferenceIdentifiableSubscriptionEvent interface {
+	SubscriptionEvent
+	Reference() (string, error)
+}
+
 // Some providers send multiple events in a single webhook payload.
 // This interface is used to extract individual events to SubscriptionEvent type
 // from a collapsed event for webhook parsing and processing.
@@ -476,6 +481,7 @@ type WebhookVerificationParameters struct {
 	URL          string
 	ClientSecret string
 	Method       string
+	MatcherRef   any // optional, depends on the provider
 }
 
 func inferDeprecatedFieldsMap(fields FieldsMetadata) map[string]string {
