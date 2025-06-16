@@ -339,7 +339,7 @@ type NewClientParams struct {
 }
 
 // NewClient will create a new authenticated client based on the provider's auth type.
-func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (common.AuthenticatedHTTPClient, error) { //nolint:lll,cyclop,ireturn
+func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (common.AuthenticatedHTTPClient, error) { //nolint:lll,cyclop,ireturn,funlen
 	if params == nil {
 		params = &NewClientParams{}
 	}
@@ -628,7 +628,12 @@ func createCustomHTTPClient(ctx context.Context,
 	if unauth != nil {
 		opts = append(opts,
 			common.WithCustomUnauthorizedHandler(
-				func(hdrs []common.Header, params []common.QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error) {
+				func(
+					hdrs []common.Header,
+					params []common.QueryParam,
+					req *http.Request,
+					rsp *http.Response,
+				) (*http.Response, error) {
 					return unauth(oauthClient, &UnauthorizedEvent{
 						Headers:     hdrs,
 						QueryParams: params,
@@ -647,7 +652,11 @@ func createCustomHTTPClient(ctx context.Context,
 }
 
 func getCustomParams(info *ProviderInfo, cfg *CustomAuthParams) (common.QueryParams, error) {
-	var params []common.QueryParam
+	if len(info.CustomOpts.QueryParams) == 0 {
+		return nil, nil
+	}
+
+	params := make([]common.QueryParam, 0, len(info.CustomOpts.QueryParams))
 
 	for _, param := range info.CustomOpts.QueryParams {
 		value, err := evalTemplate(param.ValueTemplate, cfg.Values)
@@ -666,7 +675,11 @@ func getCustomParams(info *ProviderInfo, cfg *CustomAuthParams) (common.QueryPar
 }
 
 func getCustomHeaders(info *ProviderInfo, cfg *CustomAuthParams) (common.Headers, error) {
-	var headers []common.Header
+	if len(info.CustomOpts.Headers) == 0 {
+		return nil, nil
+	}
+
+	headers := make([]common.Header, 0, len(info.CustomOpts.Headers))
 
 	for _, hdr := range info.CustomOpts.Headers {
 		value, err := evalTemplate(hdr.ValueTemplate, cfg.Values)
