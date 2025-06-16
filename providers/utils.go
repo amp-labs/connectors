@@ -597,6 +597,14 @@ func createCustomHTTPClient(ctx context.Context,
 	info *ProviderInfo,
 	cfg *CustomAuthParams,
 ) (common.AuthenticatedHTTPClient, error) {
+	for _, input := range info.CustomOpts.Inputs {
+		val, ok := cfg.Values[input.Name]
+		if !ok || val == "" {
+			return nil, fmt.Errorf("%w: missing value for custom client input %q",
+				ErrClient, input.Name)
+		}
+	}
+
 	headers, err := getCustomHeaders(info, cfg)
 	if err != nil {
 		return nil, err

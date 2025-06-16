@@ -157,7 +157,7 @@ func getFields(info providers.ProviderInfo,
 	case providers.Jwt:
 		lists.Add(requiredType, Fields.Secret)
 	case providers.Custom:
-		return nil, fmt.Errorf("%w: custom auth not yet supported", ErrProviderInfo)
+		// Custom auth may have different fields, so we skip adding any default fields here.
 	default:
 		return nil, ErrProviderInfo
 	}
