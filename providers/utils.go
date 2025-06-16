@@ -7,11 +7,13 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/go-playground/validator"
+	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -297,6 +299,11 @@ type OAuth2ClientCredentialsParams struct {
 	Options []common.OAuthOption
 }
 
+type CustomAuthParams struct {
+	Values  map[string]string
+	Options []common.CustomAuthClientOption
+}
+
 // NewClientParams is the parameters to create a new HTTP client.
 type NewClientParams struct {
 	// Debug will enable debug mode for the client.
@@ -325,6 +332,10 @@ type NewClientParams struct {
 	// ApiKeyCreds is the api key to use for the client. If the provider uses
 	// api-key auth, this field must be set.
 	ApiKeyCreds *ApiKeyParams
+
+	// CustomCreds is the custom auth credentials to use for the client. If the provider uses
+	// custom auth, this field must be set.
+	CustomCreds *CustomAuthParams
 }
 
 // NewClient will create a new authenticated client based on the provider's auth type.
@@ -378,7 +389,17 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 		}
 
 		return createApiKeyHTTPClient(ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.ApiKeyCreds)
-	case Jwt, Custom:
+	case Custom:
+		if i.CustomOpts == nil {
+			return nil, fmt.Errorf("%w: custom options not found", ErrClient)
+		}
+
+		if params.CustomCreds == nil {
+			return nil, fmt.Errorf("%w: custom credentials not found", ErrClient)
+		}
+
+		return createCustomHTTPClient(ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.CustomCreds)
+	case Jwt:
 		// We shouldn't hit this case, because no providerInfo has auth type set to JWT yet.
 		fallthrough
 	default:
@@ -567,6 +588,114 @@ func createOAuth2PasswordHTTPClient(
 	// Refresh method works the same as with auth code method.
 	// Relies on access and refresh tokens created by Oauth2 password method.
 	return createOAuth2AuthCodeHTTPClient(ctx, client, dbg, unauth, info, cfg)
+}
+
+func createCustomHTTPClient(ctx context.Context,
+	client *http.Client,
+	dbg bool,
+	unauth UnauthorizedHandler,
+	info *ProviderInfo,
+	cfg *CustomAuthParams,
+) (common.AuthenticatedHTTPClient, error) {
+	headers, err := getCustomHeaders(info, cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	queryParams, err := getCustomParams(info, cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	var opts []common.CustomAuthClientOption
+
+	if len(headers) > 0 {
+		opts = append(opts, common.WithCustomHeaders(headers...))
+	}
+
+	if len(queryParams) > 0 {
+		opts = append(opts, common.WithCustomQueryParams(queryParams...))
+	}
+
+	opts = append(opts, common.WithCustomClient(getClient(client)))
+
+	if dbg {
+		opts = append(opts, common.WithCustomDebug(common.PrintRequestAndResponse))
+	}
+
+	var oauthClient common.AuthenticatedHTTPClient
+
+	if unauth != nil {
+		opts = append(opts,
+			common.WithCustomUnauthorizedHandler(
+				func(hdrs []common.Header, params []common.QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error) {
+					return unauth(oauthClient, &UnauthorizedEvent{
+						Headers:     hdrs,
+						QueryParams: params,
+						Provider:    info,
+						Request:     req,
+						Response:    rsp,
+					})
+				}))
+	}
+
+	if len(cfg.Options) > 0 {
+		opts = append(opts, cfg.Options...)
+	}
+
+	return common.NewCustomAuthHTTPClient(ctx, opts...)
+}
+
+func getCustomParams(info *ProviderInfo, cfg *CustomAuthParams) (common.QueryParams, error) {
+	var params []common.QueryParam
+
+	for _, param := range info.CustomOpts.QueryParams {
+		value, err := evalTemplate(param.ValueTemplate, cfg.Values)
+		if err != nil {
+			return nil, fmt.Errorf("%w: failed to evaluate query param template for param %q: %w",
+				ErrClient, param.Name, err)
+		}
+
+		params = append(params, common.QueryParam{
+			Key:   param.Name,
+			Value: value,
+		})
+	}
+
+	return params, nil
+}
+
+func getCustomHeaders(info *ProviderInfo, cfg *CustomAuthParams, ) (common.Headers, error) {
+	var headers []common.Header
+
+	for _, hdr := range info.CustomOpts.Headers {
+		value, err := evalTemplate(hdr.ValueTemplate, cfg.Values)
+		if err != nil {
+			return nil, fmt.Errorf("%w: failed to evaluate header template for header %q: %w",
+				ErrClient, hdr.Name, err)
+		}
+
+		headers = append(headers, common.Header{
+			Key:   hdr.Name,
+			Value: value,
+		})
+	}
+
+	return headers, nil
+}
+
+func evalTemplate(input string, vars map[string]string) (string, error) {
+	tmpl, err := template.New("-").Option("missingkey=error").Parse(input)
+	if err != nil {
+		return "", err
+	}
+
+	var sb strings.Builder
+	if err := tmpl.Execute(&sb, vars); err != nil {
+		return "", err
+	}
+
+	return sb.String(), nil
 }
 
 func createApiKeyHTTPClient( //nolint:ireturn,cyclop,funlen

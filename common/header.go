@@ -84,7 +84,7 @@ func WithDynamicHeaders(f DynamicHeadersGenerator) HeaderAuthClientOption {
 	}
 }
 
-type DynamicHeadersGenerator func(http.Request) ([]Header, error)
+type DynamicHeadersGenerator func(*http.Request) ([]Header, error)
 
 // oauthClientParams is the internal configuration for the oauth http client.
 type headerClientParams struct {
@@ -134,7 +134,7 @@ func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	if c.dynamicHeaders != nil {
-		hdrs, err := c.dynamicHeaders(*req2)
+		hdrs, err := c.dynamicHeaders(req2)
 		if err != nil {
 			return nil, err
 		}

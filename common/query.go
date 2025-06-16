@@ -129,6 +129,8 @@ func WithQueryParamDebug(f func(req *http.Request, rsp *http.Response)) QueryPar
 	}
 }
 
+type DynamicQueryParamsGenerator func(*http.Request) (QueryParams, error)
+
 // queryParamClientParams is the internal configuration for the oauth http client.
 type queryParamClientParams struct {
 	client       *http.Client
@@ -186,8 +188,8 @@ func (c *queryParamAuthClient) Do(req *http.Request) (*http.Response, error) {
 		c.debug(req2, cloneResponse(rsp))
 	}
 
-	// Certain providers return 401 when the credentials has been invalidated.
-	// This may indicate that the credentials needs to be forcefully refreshed.
+	// Certain providers return 401 when the credentials have been invalidated.
+	// This may indicate that the credentials need to be forcefully refreshed.
 	// Since this is per-provider, the caller can provide a custom handler.
 	if rsp.StatusCode == http.StatusUnauthorized {
 		if c.unauthorized != nil {
