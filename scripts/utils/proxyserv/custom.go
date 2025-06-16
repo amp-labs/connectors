@@ -23,19 +23,20 @@ func (f Factory) CreateProxyCustom(ctx context.Context) *Proxy {
 	return newProxy(baseURL, httpClient)
 }
 
-func forEachField(fn func(name string, f credscanning.Field)) {
+func forEachField(callback func(name string, f credscanning.Field)) {
 	v := reflect.ValueOf(credscanning.Fields)
 	t := reflect.TypeOf(credscanning.Fields)
 
 	for i := range v.NumField() {
 		name := t.Field(i).Name
+
 		f, ok := v.Field(i).Interface().(credscanning.Field)
 		if !ok {
 			// If the field is not of type credscanning.Field, skip it
 			continue
 		}
 
-		fn(name, f)
+		callback(name, f)
 	}
 }
 
