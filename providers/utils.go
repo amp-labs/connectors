@@ -590,7 +590,7 @@ func createOAuth2PasswordHTTPClient(
 	return createOAuth2AuthCodeHTTPClient(ctx, client, dbg, unauth, info, cfg)
 }
 
-func createCustomHTTPClient(ctx context.Context, //nolint:funlen
+func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
 	client *http.Client,
 	dbg bool,
 	unauth UnauthorizedHandler,

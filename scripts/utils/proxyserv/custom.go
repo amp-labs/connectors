@@ -27,9 +27,14 @@ func forEachField(fn func(name string, f credscanning.Field)) {
 	v := reflect.ValueOf(credscanning.Fields)
 	t := reflect.TypeOf(credscanning.Fields)
 
-	for i := 0; i < v.NumField(); i++ {
+	for i := range v.NumField() {
 		name := t.Field(i).Name
-		f := v.Field(i).Interface().(credscanning.Field)
+		f, ok := v.Field(i).Interface().(credscanning.Field)
+		if !ok {
+			// If the field is not of type credscanning.Field, skip it
+			continue
+		}
+
 		fn(name, f)
 	}
 }
@@ -41,6 +46,7 @@ func getCustomFields(prov *providers.ProviderInfo) []credscanning.Field {
 
 	for _, input := range prov.CustomOpts.Inputs {
 		added := false
+
 		forEachField(func(name string, f credscanning.Field) {
 			if input.Name != f.Name {
 				return
@@ -63,7 +69,7 @@ func getCustomFields(prov *providers.ProviderInfo) []credscanning.Field {
 	return fields
 }
 
-func setupCustomHTTPClient(
+func setupCustomHTTPClient( //nolint:ireturn
 	ctx context.Context,
 	prov *providers.ProviderInfo,
 	secretValues map[string]string,
