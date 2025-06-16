@@ -8,12 +8,12 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
+	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/go-playground/validator"
-	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -665,7 +665,7 @@ func getCustomParams(info *ProviderInfo, cfg *CustomAuthParams) (common.QueryPar
 	return params, nil
 }
 
-func getCustomHeaders(info *ProviderInfo, cfg *CustomAuthParams, ) (common.Headers, error) {
+func getCustomHeaders(info *ProviderInfo, cfg *CustomAuthParams) (common.Headers, error) {
 	var headers []common.Header
 
 	for _, hdr := range info.CustomOpts.Headers {
