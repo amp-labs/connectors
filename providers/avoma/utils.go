@@ -18,7 +18,7 @@ var avomaQueryEncodingExceptions = map[string]string{ //nolint:gochecknoglobals
 	"%3A": ":",
 }
 
-var EndpointsWithResultsPath = datautils.NewSet(
+var EndpointsWithResultsPath = datautils.NewSet( //nolint:gochecknoglobals
 	"meetings",
 	"calls",
 	"custom_categories",
@@ -36,7 +36,7 @@ func makeNextRecordsURL() common.NextPageFunc {
 
 		url, err := urlbuilder.New(nextPage)
 		if err != nil {
-			return "", nil
+			return "", err
 		}
 
 		url.AddEncodingExceptions(avomaQueryEncodingExceptions)
