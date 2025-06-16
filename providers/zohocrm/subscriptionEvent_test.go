@@ -104,6 +104,7 @@ func TestCollapsedSubscriptionEvent(t *testing.T) {
 
 	logger("evtTimeStampNano", evtTimeStampNano)
 
+	//nolint:varnamelen
 	subevtUpdateEvent, ok := subevt.(common.SubscriptionUpdateEvent)
 	if !ok {
 		t.Fatalf("failed to cast to subscription update event")

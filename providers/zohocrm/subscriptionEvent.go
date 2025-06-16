@@ -44,12 +44,17 @@ func (*Connector) VerifyWebhookMessage(
 		return false, fmt.Errorf("%w: %s, expected string, got %T", errTypeMismatch, "token", token)
 	}
 
-	matcherRef, ok := params.MatcherRef.(string)
+	matcherRef, ok := params.MatcherRefs["uniqueRef"]
 	if !ok {
-		return false, fmt.Errorf("%w: %s, expected string, got %T", errTypeMismatch, "matcherRef", params.MatcherRef)
+		return false, fmt.Errorf("%w: %s", errFieldNotFound, "uniqueRef")
 	}
 
-	if tokenStr != matcherRef {
+	matcherRefStr, ok := matcherRef.(string)
+	if !ok {
+		return false, fmt.Errorf("%w: %s, expected string, got %T", errTypeMismatch, "matcherRef", matcherRef)
+	}
+
+	if tokenStr != matcherRefStr {
 		return false, errMatcherDiff
 	}
 
@@ -57,8 +62,9 @@ func (*Connector) VerifyWebhookMessage(
 }
 
 var (
-	_ common.SubscriptionEvent       = SubscriptionEvent{}
-	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
+	_ common.SubscriptionEvent                      = SubscriptionEvent{}
+	_ common.SubscriptionUpdateEvent                = SubscriptionEvent{}
+	_ common.ReferenceIdentifiableSubscriptionEvent = SubscriptionEvent{}
 )
 
 type CollapsedSubscriptionEvent map[string]any
