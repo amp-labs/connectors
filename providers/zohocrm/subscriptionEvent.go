@@ -2,8 +2,10 @@ package zohocrm
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -12,6 +14,9 @@ import (
 var (
 	_ common.SubscriptionEvent       = SubscriptionEvent{}
 	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
+
+	errTypeMismatch = errors.New("type mismatch")
+	errMatcherDiff  = errors.New("matcher ref does not match token")
 )
 
 // SubscriptionEvent represents a webhook event from Zoho CRM.
@@ -21,10 +26,143 @@ type SubscriptionEvent map[string]any
 func (*Connector) VerifyWebhookMessage(
 	_ context.Context, params *common.WebhookVerificationParameters,
 ) (bool, error) {
+	var body map[string]any
+
+	err := json.Unmarshal(params.Body, &body)
+	if err != nil {
+		return false, err
+	}
+
+	//nolint:varnamelen
+	token, ok := body["token"]
+	if !ok {
+		return false, fmt.Errorf("%w: %s", errFieldNotFound, "token")
+	}
+
+	tokenStr, ok := token.(string)
+	if !ok {
+		return false, fmt.Errorf("%w: %s, expected string, got %T", errTypeMismatch, "token", token)
+	}
+
+	matcherRef, ok := params.MatcherRef.(string)
+	if !ok {
+		return false, fmt.Errorf("%w: %s, expected string, got %T", errTypeMismatch, "matcherRef", params.MatcherRef)
+	}
+
+	if tokenStr != matcherRef {
+		return false, errMatcherDiff
+	}
+
 	return true, nil
 }
 
-var _ common.SubscriptionEvent = SubscriptionEvent{}
+var (
+	_ common.SubscriptionEvent       = SubscriptionEvent{}
+	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
+)
+
+type CollapsedSubscriptionEvent map[string]any
+
+var _ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
+
+//nolint:funlen
+func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.SubscriptionEvent, error) {
+	/*
+		{
+			"server_time": 1750102639787,
+			"affected_values": [
+				{
+					"record_id": "6756839000000575405",
+					"values": {
+						"Company": "Rangoni Of Test",
+						"Phone": "555-555-1111"
+					}
+				}
+			],
+			"query_params": {},
+			"module": "Leads",
+			"resource_uri": "https://www.zohoapis.com/crm/v2/Leads",
+			"ids": [
+				"6756839000000575405"
+			],
+			"affected_fields": [
+				{
+					"6756839000000575405": [
+						"Company",
+						"Phone"
+					]
+				}
+			],
+			"operation": "update",
+			"channel_id": "1105420521999070702",
+			"token": "c3504777-db15-4332-8286-478a1b5006bc"
+		}
+	*/
+	evts := make([]common.SubscriptionEvent, 0)
+
+	//nolint:varnamelen
+	m := common.StringMap(e)
+
+	affectedValues, err := m.Get("affected_values")
+	if err != nil {
+		return nil, err
+	}
+
+	affectedValuesArr, ok := affectedValues.([]any)
+	if !ok {
+		return nil, fmt.Errorf("%w: %s, expected []any, got %T", errTypeMismatch, "affectedValues", affectedValues)
+	}
+
+	//nolint:varnamelen
+	for _, affectedValue := range affectedValuesArr {
+		affectedValueMap, ok := affectedValue.(map[string]any)
+		if !ok {
+			return nil, fmt.Errorf("%w: %s, expected map[string]any, got %T", errTypeMismatch, "affectedValue", affectedValue)
+		}
+
+		vm := common.StringMap(affectedValueMap)
+
+		recordId, err := vm.GetString("record_id")
+		if err != nil {
+			return nil, err
+		}
+
+		valuesAny, err := vm.Get("values")
+		if err != nil {
+			return nil, err
+		}
+
+		values, ok := valuesAny.(map[string]any)
+		if !ok {
+			return nil, fmt.Errorf("%w: %s, expected map[string]any, got %T", errTypeMismatch, "values", valuesAny)
+		}
+
+		subscriptionEvent := maps.Clone(m)
+
+		subscriptionEvent["affected_values"] = []any{
+			values,
+		}
+
+		subscriptionEvent["affected_fields"] = []any{}
+
+		fieldsMap := make(map[string][]string)
+		for field := range values {
+			fieldsMap[recordId] = append(fieldsMap[recordId], field)
+		}
+
+		subscriptionEvent["affected_fields"] = []any{
+			fieldsMap,
+		}
+
+		subscriptionEvent["ids"] = []string{
+			recordId,
+		}
+
+		evts = append(evts, SubscriptionEvent(subscriptionEvent))
+	}
+
+	return evts, nil
+}
 
 // EventType returns the type of event (create, update, delete).
 func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
@@ -88,20 +226,17 @@ func (evt SubscriptionEvent) RecordId() (string, error) {
 
 	idsAny, err := m.Get("ids")
 	if err != nil {
-		return "", fmt.Errorf("errror getting record id: %w", err) //nolint:err113
+		return "", fmt.Errorf("error getting record id: %w", err) //nolint:err113
 	}
 
 	// convert it to array
-	ids, ok := idsAny.([]any)
+	ids, ok := idsAny.([]string)
 	if !ok || len(ids) == 0 {
-		return "", errors.New("invalid or empty ids array") //nolint:err113
+		return "", fmt.Errorf("%w: %s, expected []string, got %T", errTypeMismatch, "ids", idsAny) //nolint:err113
 	}
 
 	// Get the first ID.
-	id, ok := ids[0].(string)
-	if !ok {
-		return "", errors.New("invalid record id format") //nolint:err113
-	}
+	id := ids[0]
 
 	return id, nil
 }
@@ -127,16 +262,18 @@ func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
 		return nil, err
 	}
 
-	//nolint:varnamelen
 	affectedFieldsArr, ok := affectedFieldsAny.([]any)
-	if !ok || len(affectedFieldsArr) == 0 {
-		return nil, errors.New("invalid or empty affected_fields array") //nolint:err113
+	if !ok {
+		return nil, fmt.Errorf("%w: %s, expected []any, got %T", errTypeMismatch, "affectedFieldsAny", affectedFieldsAny)
 	}
 
-	// Get the first element which should be a map.
-	firstElement, ok := affectedFieldsArr[0].(map[string]any)
+	affectedFieldsMap, ok := affectedFieldsArr[0].(map[string][]string)
 	if !ok {
-		return nil, errInvalidField
+		return nil, fmt.Errorf("%w: %s, expected map[string][]string, got %T",
+			errTypeMismatch,
+			"affectedFieldsArr",
+			affectedFieldsArr,
+		)
 	}
 
 	recordId, err := evt.RecordId()
@@ -144,68 +281,19 @@ func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
 		return nil, err
 	}
 
-	fieldsAny, ok := firstElement[recordId].([]any)
-	if !ok {
-		//nolint:err113
-		return nil, fmt.Errorf(
-			"no fields for the record ID %s",
-			recordId)
-	}
+	fields := affectedFieldsMap[recordId]
 
-	fields := make([]string, 0, len(fieldsAny))
+	// fieldsStr := make([]string, 0, len(fields))
 
-	for _, fieldAny := range fieldsAny {
-		field, ok := fieldAny.(string)
-		if !ok {
-			return nil, errInvalidField
-		}
-
-		fields = append(fields, field)
-	}
+	// for _, field := range fields {
+	// 	fieldStr, ok := field.(string)
+	// 	if !ok {
+	// 		return nil, errors.New("invalid field")
+	// 	}
+	// 	fieldsStr = append(fieldsStr, fieldStr)
+	// }
 
 	return fields, nil
-}
-
-// UpdatedFieldWithvalues returns the fields that were updated in the event along with their values.
-func (evt SubscriptionEvent) UpdatedFieldWithValues() (map[string]string, error) {
-	m := evt.asMap()
-
-	affectedValuesAny, err := m.Get("affected_values")
-	if err != nil {
-		return nil, fmt.Errorf("failed to get affected values: %w", err)
-	}
-
-	affectedValuesArr, ok := affectedValuesAny.([]any) //nolint:varnamelen
-	if !ok {
-		return nil, errInvalidField
-	}
-
-	// get first element
-	firstElement, ok := affectedValuesArr[0].(map[string]any) //nolint:varnamelen
-	if !ok {
-		return nil, errInvalidField
-	}
-
-	affectedValuesRecordID, ok := firstElement["record_id"].(string) //nolint:varnamelen
-	if !ok {
-		return nil, errInvalidField
-	}
-
-	recordID, err := evt.RecordId()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get record id: %w", err)
-	}
-
-	if recordID != affectedValuesRecordID {
-		return nil, errValuesIdMismatch
-	}
-
-	values, ok := firstElement["values"].(map[string]string)
-	if !ok {
-		return nil, errInvalidField
-	}
-
-	return values, nil
 }
 
 // asMap returns the event as a StringMap.
@@ -250,3 +338,19 @@ func (evt SubscriptionEvent) asMap() common.StringMap {
 }
 
 */
+
+func (evt SubscriptionEvent) Reference() (string, error) {
+	m := evt.asMap()
+
+	token, err := m.Get("token")
+	if err != nil {
+		return "", fmt.Errorf("error getting token: %w", err)
+	}
+
+	tokenStr, ok := token.(string)
+	if !ok {
+		return "", fmt.Errorf("%w: %s, expected string, got %T", errTypeMismatch, "token", token)
+	}
+
+	return tokenStr, nil
+}
