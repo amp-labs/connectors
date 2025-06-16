@@ -17,6 +17,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	if EndpointsWithResultsPath.Has(params.ObjectName) {
 		url.WithQueryParam("page_size", pageSize)
+
 		if !params.Since.IsZero() && !params.Until.IsZero() {
 			url.WithQueryParam("from_date", datautils.Time.FormatRFC3339inUTC(params.Since))
 			url.WithQueryParam("to_date", datautils.Time.FormatRFC3339inUTC(params.Until))
