@@ -11,11 +11,11 @@ func init() {
 			Headers: []CustomAuthHeader{
 				{
 					Name:          "X-Api-Key",
-					ValueTemplate: "{{ .apiKey }}",
+					ValueTemplate: "{{ `{{` }} .apiKey {{ `}}` }}",
 				},
 				{
 					Name:          "X-Api-Password",
-					ValueTemplate: "{{ .apiSecret }}",
+					ValueTemplate: "{{ `{{` }} .apiSecret {{ `}}` }}",
 				},
 			},
 			Inputs: []CustomAuthInput{
