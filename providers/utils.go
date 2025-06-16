@@ -8,12 +8,12 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
-	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/go-playground/validator"
+	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -590,13 +590,13 @@ func createOAuth2PasswordHTTPClient(
 	return createOAuth2AuthCodeHTTPClient(ctx, client, dbg, unauth, info, cfg)
 }
 
-func createCustomHTTPClient(ctx context.Context,
+func createCustomHTTPClient(ctx context.Context, //nolint:funlen
 	client *http.Client,
 	dbg bool,
 	unauth UnauthorizedHandler,
 	info *ProviderInfo,
 	cfg *CustomAuthParams,
-) (common.AuthenticatedHTTPClient, error) { //nolint:funlen
+) (common.AuthenticatedHTTPClient, error) {
 	for _, input := range info.CustomOpts.Inputs {
 		val, ok := cfg.Values[input.Name]
 		if !ok || val == "" {
