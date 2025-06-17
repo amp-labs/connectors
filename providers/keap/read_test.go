@@ -8,7 +8,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -16,16 +15,22 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
+func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	millisecondInNano := int(time.Millisecond.Nanoseconds())
-
+	// Errors.
 	errorBadRequest := testutils.DataFromFile(t, "get-with-req-body-not-allowed.html")
 	errorNotFound := testutils.DataFromFile(t, "url-not-found.html")
-	responseContactsModel := testutils.DataFromFile(t, "custom-fields-contacts.json")
-	responseContactsFirstPage := testutils.DataFromFile(t, "read-contacts-1-first-page-v1.json")
-	responseContactsEmptyPage := testutils.DataFromFile(t, "read-contacts-2-empty-page-v1.json")
+	// Version1: Opportunities.
+	// responseOpportunitiesModel := testutils.DataFromFile(t, "custom-fields/opportunities-v1.json")
+	// responseOpportunities := testutils.DataFromFile(t, "read/opportunities/v1.json")
+	// Version 2: Contacts.
+	responseContactsModel := testutils.DataFromFile(t, "custom-fields/contacts-v2.json")
+	responseContactsFirstPage := testutils.DataFromFile(t, "read/contacts/1-first-page-v2.json")
+	responseContactsEmptyPage := testutils.DataFromFile(t, "read/contacts/2-empty-page-v2.json")
+	// Tags
+	responseTags := testutils.DataFromFile(t, "read/tags/v2.json")
 
 	tests := []testroutines.Read{
 		{
@@ -73,6 +78,47 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				errors.New("Keap - Page Not Found"), // nolint:goerr113
 			},
 		},
+		// {
+		//	Name: "Opportunities uses custom fields V1",
+		//	Input: common.ReadParams{
+		//		ObjectName: "opportunities",
+		//		Fields: connectors.Fields("opportunity_title",
+		//			// Custom fields:
+		//			"color"),
+		//	},
+		//	Server: mockserver.Switch{
+		//		Setup: mockserver.ContentJSON(),
+		//		Cases: []mockserver.Case{{
+		//			If:   mockcond.Path("/crm/rest/v1/opportunities"),
+		//			Then: mockserver.Response(http.StatusOK, responseOpportunities),
+		//		}, {
+		//			If:   mockcond.Path("/crm/rest/v1/opportunities/model"),
+		//			Then: mockserver.Response(http.StatusOK, responseOpportunitiesModel),
+		//		}},
+		//	}.Server(),
+		//	Comparator: testroutines.ComparatorSubsetRead,
+		//	Expected: &common.ReadResult{
+		//		Rows: 1,
+		//		Data: []common.ReadResultRow{{
+		//			Fields: map[string]any{
+		//				"opportunity_title": "First Opportunity",
+		//				"color":             "purple",
+		//			},
+		//			Raw: map[string]any{
+		//				"id":           float64(2),
+		//				"date_created": "2025-05-28T18:30:05.000+0000",
+		//				"last_updated": "2025-05-28T18:30:05.000+0000",
+		//				"custom_fields": []any{map[string]any{
+		//					"id":      float64(18),
+		//					"content": "purple",
+		//				}},
+		//			},
+		//		}},
+		//		NextPage: "https://api.infusionsoft.com/crm/rest/v1/opportunities/?limit=1&offset=1000",
+		//		Done:     false,
+		//	},
+		//	ExpectedErrs: nil,
+		// },
 		{
 			Name: "Contacts first page has a link to next",
 			Input: common.ReadParams{
@@ -86,10 +132,10 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/crm/rest/v1/contacts"),
+					If:   mockcond.Path("/crm/rest/v2/contacts"),
 					Then: mockserver.Response(http.StatusOK, responseContactsFirstPage),
 				}, {
-					If:   mockcond.Path("/crm/rest/v1/contacts/model"),
+					If:   mockcond.Path("/crm/rest/v2/contacts/model"),
 					Then: mockserver.Response(http.StatusOK, responseContactsModel),
 				}},
 			}.Server(),
@@ -134,7 +180,7 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"family_name": "Doe",
 					},
 				}},
-				NextPage: "https://api.infusionsoft.com/crm/rest/v1/contacts/?limit=2&offset=2&since=2024-06-03T22:17:59.039Z&order=id", // nolint:lll
+				NextPage: "https://api.infusionsoft.com/crm/rest/v2/contacts/?limit=2&offset=2&since=2024-06-03T22:17:59.039Z&order=id", // nolint:lll
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -150,38 +196,18 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
 					If: mockcond.And{
-						mockcond.Path("/crm/rest/v1/contacts"),
-						mockcond.QueryParam("since", "2024-03-04T08:22:56.077Z"),
+						mockcond.Path("/crm/rest/v2/contacts"),
+						mockcond.QueryParam("filter", "start_update_time==2024-03-04T08:22:56.077Z"),
 					},
 					Then: mockserver.Response(http.StatusOK, responseContactsEmptyPage),
 				}, {
-					If:   mockcond.Path("/crm/rest/v1/contacts/model"),
+					If:   mockcond.Path("/crm/rest/v2/contacts/model"),
 					Then: mockserver.Response(http.StatusOK, []byte{}), // no custom fields
 				}},
 			}.Server(),
 			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
-	}
-
-	for _, tt := range tests {
-		// nolint:varnamelen
-		t.Run(tt.Name, func(t *testing.T) {
-			t.Parallel()
-
-			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleKeapV1)
-			})
-		})
-	}
-}
-
-func TestReadV2(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
-	t.Parallel()
-
-	responseTags := testutils.DataFromFile(t, "read-tags-v2.json")
-
-	tests := []testroutines.Read{
 		{
 			Name: "Tags page has a link to next",
 			Input: common.ReadParams{
@@ -221,16 +247,15 @@ func TestReadV2(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleKeapV2)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}
 }
 
-func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connector, error) {
+func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),
-		WithModule(moduleID),
 	)
 	if err != nil {
 		return nil, err

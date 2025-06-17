@@ -1,0 +1,72 @@
+{
+  "_embedded": {
+    "conversations": [
+      {
+        "id": 2967917399,
+        "number": 2,
+        "threads": 0,
+        "type": "email",
+        "folderId": 8731038,
+        "status": "active",
+        "state": "published",
+        "subject": "See things in action",
+        "preview": "Help Scout is designed to help you manage all of your support requests in a shared Inbox, with collaborative features so your team can work together effectively.  Ready to test out a few features in y",
+        "mailboxId": 346219,
+        "createdBy": {
+          "type": "customer",
+          "first": "Help",
+          "last": "Scout",
+          "photoUrl": "https://d33v4339jhl8k0.cloudfront.net/customer-avatar/hs.png",
+          "email": "help@helpscout.com"
+        },
+        "createdAt": "2025-06-12T12:29:49Z",
+        "closedByUser": {
+          "type": "user",
+          "first": "unknown",
+          "last": "unknown",
+          "email": "unknown"
+        },
+        "userUpdatedAt": "2025-06-12T12:29:49Z",
+        "customerWaitingSince": {
+          "time": "2025-06-12T12:29:49Z",
+          "friendly": "31 min ago"
+        },
+        "source": {
+          "type": "web",
+          "via": "customer"
+        },
+        "primaryCustomer": {
+          "type": "customer",
+          "first": "Help",
+          "last": "Scout",
+          "photoUrl": "https://d33v4339jhl8k0.cloudfront.net/customer-avatar/hs.png",
+          "email": "help@helpscout.com"
+        }
+      }
+    ]
+  },
+  "_links": {
+    "next": {
+      "href": "https://api.helpscout.net/v2/conversations?page=2"
+    },
+    "self": {
+      "href": "https://api.helpscout.net/v2/conversations"
+    },
+    "first": {
+      "href": "https://api.helpscout.net/v2/conversations?page=1"
+    },
+    "last": {
+      "href": "https://api.helpscout.net/v2/conversations?page=2"
+    },
+    "page": {
+      "href": "https://api.helpscout.net/v2/conversations{?page}",
+      "templated": true
+    }
+  },
+  "page": {
+    "size": 25,
+    "totalElements": 34,
+    "totalPages": 2,
+    "number": 1
+  }
+}

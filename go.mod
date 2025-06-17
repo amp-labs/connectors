@@ -27,7 +27,7 @@ require (
 	github.com/stretchr/testify v1.10.0
 	gitlab.com/c0b/go-ordered-json v0.0.0-20201030195603-febf46534d5a
 	golang.org/x/oauth2 v0.30.0
-	golang.org/x/text v0.24.0
+	golang.org/x/text v0.26.0
 )
 
 require (

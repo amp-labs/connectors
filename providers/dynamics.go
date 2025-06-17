@@ -49,6 +49,17 @@ func init() { // nolint:funlen
 				{
 					Name:        "workspace",
 					DisplayName: "Tenant ID",
+					DocsURL:     "https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/tenant-admin-center",
+				},
+				{
+					Name:        "companyId",
+					DisplayName: "Company ID",
+					DocsURL:     "https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/api-reference/v2.0/api/dynamics_company_get",
+				},
+				{
+					Name:        "environmentName",
+					DisplayName: "Environment Name",
+					DocsURL:     "https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/tenant-admin-center-environments",
 				},
 			},
 		},

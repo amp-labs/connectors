@@ -34,14 +34,8 @@ type CustomProperties struct {
 	Incremental bool   `json:"incremental,omitempty"`
 }
 
-func (s ZendeskSchemas) LookupPaginationType(
-	moduleID common.ModuleID, objectName string,
-) string {
-	if len(moduleID) == 0 {
-		moduleID = common.ModuleRoot
-	}
-
-	ptype := s.Modules[moduleID].Objects[objectName].Custom.Pagination
+func (s ZendeskSchemas) LookupPaginationType(objectName string) string {
+	ptype := s.Modules[common.ModuleRoot].Objects[objectName].Custom.Pagination
 	if len(ptype) == 0 {
 		// If no pagination type is found, the API assumes offset pagination.
 		return "offset"
@@ -50,19 +44,13 @@ func (s ZendeskSchemas) LookupPaginationType(
 	return ptype
 }
 
-func (s ZendeskSchemas) IsIncrementalRead(
-	moduleID common.ModuleID, objectName string,
-) bool {
-	if len(moduleID) == 0 {
-		moduleID = common.ModuleRoot
-	}
-
-	return s.Modules[moduleID].Objects[objectName].Custom.Incremental
+func (s ZendeskSchemas) IsIncrementalRead(objectName string) bool {
+	return s.Modules[common.ModuleRoot].Objects[objectName].Custom.Incremental
 }
 
 // nolint:lll
 var pageSizes = map[common.ModuleID]datautils.DefaultMap[string, string]{ //nolint:gochecknoglobals
-	"ticketing": datautils.NewDefaultMap(map[string]string{
+	common.ModuleRoot: datautils.NewDefaultMap(map[string]string{
 		// Every object below was verified.
 		// Increasing any of them would result in Bad Request error.
 		// Note some objects couldn't be tested due to account permissions.
@@ -100,25 +88,18 @@ var pageSizes = map[common.ModuleID]datautils.DefaultMap[string, string]{ //noli
 		"users":                      "1000",
 		"user_fields":                "100",
 		"views":                      "100",
+		// Every Help Center object uses 100 as a page size.
+		"articles/labels": "100",
+		"posts":           "100",
+		"topics":          "100",
+		"user_segments":   "100",
 	}, func(objectName string) string {
 		// Any large page size is accepted by API without an error.
 		return "2000"
 	}),
-	"help-center": datautils.NewDefaultMap(nil,
-		func(objectName string) string {
-			// Every object uses 100 as a page size.
-			return "100"
-		},
-	),
 }
 
-func (s ZendeskSchemas) PageSize(
-	moduleID common.ModuleID, objectName string,
-) string {
-	if len(moduleID) == 0 {
-		moduleID = common.ModuleRoot
-	}
-
+func (s ZendeskSchemas) PageSize(objectName string) string {
 	// TODO the map should be part of schema.json.
-	return pageSizes[moduleID].Get(objectName)
+	return pageSizes[common.ModuleRoot].Get(objectName)
 }

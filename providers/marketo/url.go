@@ -117,10 +117,17 @@ func (c *Connector) constructReadURL(ctx context.Context, params common.ReadPara
 	}
 
 	// The only objects in Assets API supporting this are: Emails, Programs, SmartCampaigns,SmartLists
-	if !params.Since.IsZero() && assetsObjects.Has(params.ObjectName) {
-		fmtTime := params.Since.Format(time.RFC3339)
-		url.WithQueryParam(earliestUpdatedQuery, fmtTime)
-		url.WithQueryParam(latestUpdatedAtQuery, time.Now().Format(time.RFC3339))
+	// https://developer.adobe.com/marketo-apis/api/mapi/#operation/getProgramMembershipUsingGET
+	if assetsObjects.Has(params.ObjectName) {
+		if !params.Since.IsZero() {
+			fmtTime := params.Since.Format(time.RFC3339)
+			url.WithQueryParam(earliestUpdatedQuery, fmtTime)
+		}
+
+		if !params.Until.IsZero() {
+			fmtTime := params.Until.Format(time.RFC3339)
+			url.WithQueryParam(latestUpdatedAtQuery, fmtTime)
+		}
 	}
 
 	return url, nextPageToken, nil
@@ -169,7 +176,7 @@ func (c *Connector) generateLeadIDs(ctx context.Context, params common.ReadParam
 	if params.NextPage == "" {
 		if params.Since.IsZero() {
 			// use 1970 when we are doing backfill for Leads
-			// similar to what we did witha ctivities.
+			// similar to what we did with activities.
 			params.Since = time.Unix(0, 0).UTC()
 		}
 

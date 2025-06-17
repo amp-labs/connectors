@@ -378,7 +378,7 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 		}
 
 		return createApiKeyHTTPClient(ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.ApiKeyCreds)
-	case Jwt:
+	case Jwt, Custom:
 		// We shouldn't hit this case, because no providerInfo has auth type set to JWT yet.
 		fallthrough
 	default:

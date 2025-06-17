@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -62,9 +61,9 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Files are updated using PUT",
+			Name: "Automation categories are updated using PUT",
 			Input: common.WriteParams{
-				ObjectName: "files",
+				ObjectName: "automationCategory",
 				RecordId:   "123",
 				RecordData: "dummy",
 			},
@@ -82,7 +81,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/crm/rest/v1/contacts"),
+					mockcond.Path("/crm/rest/v2/contacts"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContacts),
@@ -111,7 +110,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleKeapV1)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}
