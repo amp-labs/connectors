@@ -1,12 +1,15 @@
 package avoma
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -53,4 +56,58 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodPost, url.String()+"/", bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{ // nolint:nilerr
+			Success: true,
+		}, nil
+	}
+
+	var searchValue string
+
+	switch params.ObjectName {
+	case "smart_categories":
+		searchValue = "uuid"
+	case "calls":
+		searchValue = "external_id"
+	}
+
+	recordID, err := jsonquery.New(body).StrWithDefault(searchValue, "")
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     resp,
+	}, nil
 }
