@@ -395,7 +395,8 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 			return nil, fmt.Errorf("%w: api key not given", ErrClient)
 		}
 
-		return createApiKeyHTTPClient(ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.ApiKeyCreds)
+		return createApiKeyHTTPClient(ctx, params.Client, params.Debug, params.OnUnauthorized,
+			params.IsUnauthorized, i, params.ApiKeyCreds)
 	case Custom:
 		if i.CustomOpts == nil {
 			return nil, fmt.Errorf("%w: custom options not found", ErrClient)
@@ -761,6 +762,7 @@ func createApiKeyHTTPClient( //nolint:ireturn,cyclop,funlen
 	client *http.Client,
 	dbg bool,
 	unauth UnauthorizedHandler,
+	isUnauth IsUnauthorizedDecider,
 	info *ProviderInfo,
 	cfg *ApiKeyParams,
 ) (common.AuthenticatedHTTPClient, error) {
@@ -780,6 +782,10 @@ func createApiKeyHTTPClient( //nolint:ireturn,cyclop,funlen
 		}
 
 		var authClient common.AuthenticatedHTTPClient
+
+		if isUnauth != nil {
+			opts = append(opts, common.WithHeaderIsUnauthorizedHandler(isUnauth))
+		}
 
 		if unauth != nil {
 			opts = append(opts,
@@ -816,6 +822,10 @@ func createApiKeyHTTPClient( //nolint:ireturn,cyclop,funlen
 		}
 
 		var authClient common.AuthenticatedHTTPClient
+
+		if isUnauth != nil {
+			opts = append(opts, common.WithQueryParamIsUnauthorizedHandler(isUnauth))
+		}
 
 		if unauth != nil {
 			opts = append(opts,

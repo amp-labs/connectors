@@ -165,12 +165,20 @@ func (c *headerAuthClient) CloseIdleConnections() {
 	c.client.CloseIdleConnections()
 }
 
+func (c *headerAuthClient) isUnauthorizedResponse(rsp *http.Response) bool {
+	if c.isUnauthorized != nil {
+		return c.isUnauthorized(rsp)
+	}
+
+	return rsp.StatusCode == http.StatusUnauthorized
+}
+
 // handleUnauthorizedResponse handles 401 responses or custom unauthorized conditions.
 func (c *headerAuthClient) handleUnauthorizedResponse(
 	req *http.Request,
 	rsp *http.Response,
 ) (*http.Response, error) {
-	if rsp.StatusCode == http.StatusUnauthorized || (c.isUnauthorized != nil && c.isUnauthorized(rsp)) {
+	if c.isUnauthorizedResponse(rsp) {
 		if c.unauthorized != nil {
 			return c.unauthorized(c.headers, req, rsp)
 		}
