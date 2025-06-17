@@ -187,7 +187,7 @@ func extractPropertiesArrayType(schema *openapi3.Schema) []Array {
 		schema.Properties,
 	}
 
-	compositeSchemas := append(schema.AllOf, append(schema.OneOf, schema.AnyOf...)...)
+	compositeSchemas := append(schema.AllOf, append(schema.OneOf, schema.AnyOf...)...) //nolint:gocritic
 	// Item schema will likely be inside composite schema
 	for _, comp := range compositeSchemas {
 		if comp != nil && comp.Value != nil {
