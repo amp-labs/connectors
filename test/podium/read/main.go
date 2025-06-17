@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -43,6 +44,7 @@ func testRead(ctx context.Context, conn *pd.Connector, objectName string, fields
 	params := common.ReadParams{
 		ObjectName: objectName,
 		Fields:     connectors.Fields(fields...),
+		Since:      time.Now().Add(-10000 * time.Hour),
 	}
 
 	res, err := conn.Read(ctx, params)

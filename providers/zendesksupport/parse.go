@@ -39,7 +39,7 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 	}
 
 	// Next page can be found under different location.
-	// This format was noticed via Zendesk HelpCenter module.
+	// This format was noticed via Zendesk HelpCenter provider-module.
 	nextPage, err = jsonquery.New(node).StrWithDefault("next_page", "")
 	if err != nil {
 		return "", err
@@ -52,9 +52,9 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 	return jsonquery.New(node).StrWithDefault("after_url", "")
 }
 
-func getRecords(moduleID common.ModuleID, objectName string) common.NodeRecordsFunc {
+func getRecords(objectName string) common.NodeRecordsFunc {
 	return func(node *ajson.Node) ([]*ajson.Node, error) {
-		responseFieldName := metadata.Schemas.LookupArrayFieldName(moduleID, objectName)
+		responseFieldName := metadata.Schemas.LookupArrayFieldName(common.ModuleRoot, objectName)
 
 		return jsonquery.New(node).ArrayRequired(responseFieldName)
 	}

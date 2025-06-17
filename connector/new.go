@@ -33,7 +33,7 @@ import (
 	"github.com/amp-labs/connectors/providers/gong"
 	"github.com/amp-labs/connectors/providers/gorgias"
 	"github.com/amp-labs/connectors/providers/groove"
-	"github.com/amp-labs/connectors/providers/helpscout"
+	"github.com/amp-labs/connectors/providers/helpscoutmailbox"
 	"github.com/amp-labs/connectors/providers/heyreach"
 	"github.com/amp-labs/connectors/providers/hubspot"
 	"github.com/amp-labs/connectors/providers/hunter"
@@ -49,6 +49,7 @@ import (
 	"github.com/amp-labs/connectors/providers/mixmax"
 	"github.com/amp-labs/connectors/providers/monday"
 	"github.com/amp-labs/connectors/providers/outreach"
+	"github.com/amp-labs/connectors/providers/pinterest"
 	"github.com/amp-labs/connectors/providers/pipedrive"
 	"github.com/amp-labs/connectors/providers/pipeliner"
 	"github.com/amp-labs/connectors/providers/podium"
@@ -101,7 +102,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Gong:                wrapper(newGongConnector),
 	providers.Gorgias:             wrapper(newGorgiasConnector),
 	providers.Groove:              wrapper(newGrooveConnector),
-	providers.HelpScoutMailbox:    wrapper(newHelpScoutConnector),
+	providers.HelpScoutMailbox:    wrapper(newHelpScoutMailboxConnector),
 	providers.HeyReach:            wrapper(newHeyReachConnector),
 	providers.Hubspot:             wrapper(newHubspotConnector),
 	providers.Hunter:              wrapper(newHunterConnector),
@@ -119,6 +120,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Outreach:            wrapper(newOutreachConnector),
 	providers.Pipedrive:           wrapper(newPipedriveConnector),
 	providers.Pipeliner:           wrapper(newPipelinerConnector),
+	providers.Pinterest:           wrapper(newPinterestConnector),
 	providers.Podium:              wrapper(newPodiumConnector),
 	providers.Salesforce:          wrapper(newSalesforceConnector),
 	providers.Salesloft:           wrapper(newSalesloftConnector),
@@ -520,14 +522,20 @@ func newGitLabConnector(
 	return gitlab.NewConnector(params)
 }
 
-func newHelpScoutConnector(
+func newHelpScoutMailboxConnector(
 	params common.ConnectorParams,
-) (*helpscout.Connector, error) {
-	return helpscout.NewConnector(params)
+) (*helpscoutmailbox.Connector, error) {
+	return helpscoutmailbox.NewConnector(params)
 }
 
 func newGrooveConnector(
 	params common.ConnectorParams,
 ) (*groove.Connector, error) {
 	return groove.NewConnector(params)
+}
+
+func newPinterestConnector(
+	params common.ConnectorParams,
+) (*pinterest.Connector, error) {
+	return pinterest.NewConnector(params)
 }

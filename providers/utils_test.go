@@ -266,22 +266,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 		},
 		{
-			name: "Keap root module",
-			input: inType{
-				provider: Keap,
-				moduleID: common.ModuleRoot,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.infusionsoft.com",
-				DisplayName: "Keap",
-				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
 			name: "Marketo root module",
 			input: inType{
 				provider: Marketo,
@@ -291,23 +275,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			expected: &ModuleInfo{
 				BaseURL:     "https://london.mktorest.com",
 				DisplayName: "Marketo",
-				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
-			name: "Zendesk root module",
-			input: inType{
-				provider: ZendeskSupport,
-				vars:     createCatalogVars("workspace", "london"),
-				moduleID: common.ModuleRoot,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://london.zendesk.com",
-				DisplayName: "Zendesk Support",
 				Support: Support{
 					Proxy: true,
 					Read:  true,
@@ -401,19 +368,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			// expectedErr: common.ErrMissingModule,
 		},
 		{
-			name: "Keap unknown module",
-			input: inType{
-				provider: Keap,
-				moduleID: "random-module-name",
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.infusionsoft.com/v1",
-				DisplayName: "Keap Version 1",
-				Support:     Support{},
-			},
-			// expectedErr: common.ErrMissingModule,
-		},
-		{
 			name: "Marketo unknown module",
 			input: inType{
 				provider: Marketo,
@@ -434,23 +388,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 					Read:      true,
 					Subscribe: false,
 					Write:     true,
-				},
-			},
-			// expectedErr: common.ErrMissingModule,
-		},
-		{
-			name: "Zendesk unknown module",
-			input: inType{
-				provider: ZendeskSupport,
-				vars:     createCatalogVars("workspace", "london"),
-				moduleID: "random-module-name",
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://london.zendesk.com/api/v2",
-				DisplayName: "Zendesk Ticketing",
-				Support: Support{
-					Read:  true,
-					Write: true,
 				},
 			},
 			// expectedErr: common.ErrMissingModule,
@@ -495,60 +432,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			expected: &ModuleInfo{
 				BaseURL:     "https://api.hubapi.com/crm/v3",
 				DisplayName: "HubSpot CRM",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
-			name: "Keap V1 module",
-			input: inType{
-				provider: Keap,
-				moduleID: ModuleKeapV1,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.infusionsoft.com/v1",
-				DisplayName: "Keap Version 1",
-				Support:     Support{},
-			},
-		},
-		{
-			name: "Keap V2 module",
-			input: inType{
-				provider: Keap,
-				moduleID: ModuleKeapV2,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.infusionsoft.com/v2",
-				DisplayName: "Keap Version 2",
-				Support:     Support{},
-			},
-		},
-		{
-			name: "Zendesk Ticketing module",
-			input: inType{
-				provider: ZendeskSupport,
-				moduleID: ModuleZendeskTicketing,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
-				DisplayName: "Zendesk Ticketing",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
-			name: "Zendesk Help Center module",
-			input: inType{
-				provider: ZendeskSupport,
-				moduleID: ModuleZendeskHelpCenter,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
-				DisplayName: "Zendesk Help Center",
 				Support: Support{
 					Read:  true,
 					Write: true,
