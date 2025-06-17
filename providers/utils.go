@@ -634,7 +634,7 @@ func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
 		opts = append(opts, common.WithCustomDebug(common.PrintRequestAndResponse))
 	}
 
-	var oauthClient common.AuthenticatedHTTPClient
+	var customClient common.AuthenticatedHTTPClient
 
 	if unauth != nil {
 		opts = append(opts,
@@ -645,7 +645,7 @@ func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
 					req *http.Request,
 					rsp *http.Response,
 				) (*http.Response, error) {
-					return unauth(oauthClient, &UnauthorizedEvent{
+					return unauth(customClient, &UnauthorizedEvent{
 						Headers:     hdrs,
 						QueryParams: params,
 						Provider:    info,
@@ -659,7 +659,12 @@ func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
 		opts = append(opts, cfg.Options...)
 	}
 
-	return common.NewCustomAuthHTTPClient(ctx, opts...)
+	customClient, err = common.NewCustomAuthHTTPClient(ctx, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create custom auth client: %w", ErrClient, err)
+	}
+
+	return customClient, nil
 }
 
 func getCustomParams(info *ProviderInfo, cfg *CustomAuthParams) (common.QueryParams, error) {
