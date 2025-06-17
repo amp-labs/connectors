@@ -66,9 +66,8 @@ func (*Connector) VerifyWebhookMessage(
 }
 
 var (
-	_ common.SubscriptionEvent                      = SubscriptionEvent{}
-	_ common.SubscriptionUpdateEvent                = SubscriptionEvent{}
-	_ common.ReferenceIdentifiableSubscriptionEvent = SubscriptionEvent{}
+	_ common.SubscriptionEvent       = SubscriptionEvent{}
+	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
 )
 
 type CollapsedSubscriptionEvent map[string]any
@@ -342,19 +341,3 @@ func (evt SubscriptionEvent) asMap() common.StringMap {
 }
 
 */
-
-func (evt SubscriptionEvent) Reference() (string, error) {
-	m := evt.asMap()
-
-	token, err := m.Get("token")
-	if err != nil {
-		return "", fmt.Errorf("error getting token: %w", err)
-	}
-
-	tokenStr, ok := token.(string)
-	if !ok {
-		return "", fmt.Errorf("%w: %s, expected string, got %T", errTypeMismatch, "token", token)
-	}
-
-	return tokenStr, nil
-}
