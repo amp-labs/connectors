@@ -26,7 +26,8 @@ var Fields = struct { // nolint:gochecknoglobals
 	Username Field
 	Password Field
 	// Key
-	ApiKey Field
+	ApiKey    Field
+	ApiSecret Field
 	// Catalog variables
 	Workspace Field
 	// Oauth2
@@ -83,6 +84,11 @@ var Fields = struct { // nolint:gochecknoglobals
 		Name:      "apiKey",
 		PathJSON:  "apiKey",
 		SuffixENV: "API_KEY",
+	},
+	ApiSecret: Field{
+		Name:      "apiSecret",
+		PathJSON:  "apiSecret",
+		SuffixENV: "API_SECRET",
 	},
 	Workspace: Field{
 		Name:      "workspace",
@@ -157,7 +163,7 @@ func getFields(info providers.ProviderInfo,
 	case providers.Jwt:
 		lists.Add(requiredType, Fields.Secret)
 	case providers.Custom:
-		return nil, fmt.Errorf("%w: custom auth not yet supported", ErrProviderInfo)
+		// Custom auth may have different fields, so we skip adding any default fields here.
 	default:
 		return nil, ErrProviderInfo
 	}
