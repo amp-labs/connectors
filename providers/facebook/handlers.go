@@ -50,6 +50,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
+	if len(resp.Data) == 0 {
+		return nil, common.ErrEmptyJSONHTTPResponse
+	}
+
 	for field := range resp.Data[0] {
 		objectMetadata.FieldsMap[field] = field
 	}
