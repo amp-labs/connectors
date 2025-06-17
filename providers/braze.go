@@ -41,7 +41,7 @@ func init() {
 			Input: []MetadataItemInput{
 				{
 					Name:        "workspace",
-					DisplayName: "Rest Instance Id",
+					DisplayName: "Instance ID",
 				},
 			},
 		},
