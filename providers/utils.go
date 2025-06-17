@@ -405,7 +405,8 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 			return nil, fmt.Errorf("%w: custom credentials not found", ErrClient)
 		}
 
-		return createCustomHTTPClient(ctx, params.Client, params.Debug, params.OnUnauthorized, params.IsUnauthorized, i, params.CustomCreds)
+		return createCustomHTTPClient(ctx, params.Client, params.Debug, params.OnUnauthorized,
+			params.IsUnauthorized, i, params.CustomCreds)
 	case Jwt:
 		// We shouldn't hit this case, because no providerInfo has auth type set to JWT yet.
 		fallthrough
