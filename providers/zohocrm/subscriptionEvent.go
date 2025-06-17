@@ -26,6 +26,10 @@ type SubscriptionEvent map[string]any
 func (*Connector) VerifyWebhookMessage(
 	_ context.Context, params *common.WebhookVerificationParameters,
 ) (bool, error) {
+	if params.MatcherRefs == nil {
+		return false, fmt.Errorf("%w: %s", errFieldNotFound, "matcherRefs")
+	}
+
 	var body map[string]any
 
 	err := json.Unmarshal(params.Body, &body)
