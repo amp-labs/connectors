@@ -186,9 +186,13 @@ func extractPropertiesArrayType(schema *openapi3.Schema) []Array {
 	definitions := []openapi3.Schemas{
 		schema.Properties,
 	}
-	for _, allOf := range schema.AllOf {
-		// Item schema will likely be inside composite schema
-		definitions = append(definitions, allOf.Value.Properties)
+
+	compositeSchemas := append(schema.AllOf, append(schema.OneOf, schema.AnyOf...)...)
+	// Item schema will likely be inside composite schema
+	for _, comp := range compositeSchemas {
+		if comp != nil && comp.Value != nil {
+			definitions = append(definitions, comp.Value.Properties)
+		}
 	}
 
 	arrays := make([]Array, 0)
