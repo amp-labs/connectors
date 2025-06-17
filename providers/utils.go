@@ -262,6 +262,9 @@ func (i *ProviderInfo) defaultModuleOrRoot() common.ModuleID {
 // the non-401 response to the original caller.
 type UnauthorizedHandler func(client common.AuthenticatedHTTPClient, event *UnauthorizedEvent) (*http.Response, error)
 
+// IsUnauthorizedDecider is a function called to determine if a response is unauthorized.
+type IsUnauthorizedDecider func(rsp *http.Response) bool
+
 // UnauthorizedEvent is the event that is triggered when an unauthorized response (http 401) is received.
 type UnauthorizedEvent struct {
 	Provider    *ProviderInfo
@@ -317,6 +320,10 @@ type NewClientParams struct {
 	// unauthorized response.
 	OnUnauthorized UnauthorizedHandler
 
+	// IsUnauthorized is the function to call to determine if the response is unauthorized.
+	// If not set, it will default to the dumb logic of checking for 401 status codes.
+	IsUnauthorized IsUnauthorizedDecider
+
 	// BasicCreds is the basic auth credentials to use for the client.
 	// If the provider uses basic auth, this field must be set.
 	BasicCreds *BasicParams
@@ -357,13 +364,13 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 			fallthrough
 		case AuthorizationCode:
 			return createOAuth2AuthCodeHTTPClient(
-				ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.OAuth2AuthCodeCreds)
+				ctx, params.Client, params.Debug, params.OnUnauthorized, params.IsUnauthorized, i, params.OAuth2AuthCodeCreds)
 		case ClientCredentials:
 			return createOAuth2ClientCredentialsHTTPClient(
-				ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.OAuth2ClientCreds)
+				ctx, params.Client, params.Debug, params.OnUnauthorized, params.IsUnauthorized, i, params.OAuth2ClientCreds)
 		case Password:
 			return createOAuth2PasswordHTTPClient(
-				ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.OAuth2AuthCodeCreds)
+				ctx, params.Client, params.Debug, params.OnUnauthorized, params.IsUnauthorized, i, params.OAuth2AuthCodeCreds)
 		default:
 			return nil, fmt.Errorf("%w: unsupported grant type %q", ErrClient, i.Oauth2Opts.GrantType)
 		}
@@ -373,7 +380,7 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 		}
 
 		return createBasicAuthHTTPClient(
-			ctx, params.Client, params.Debug, params.OnUnauthorized, i,
+			ctx, params.Client, params.Debug, params.OnUnauthorized, params.IsUnauthorized, i,
 			params.BasicCreds.User, params.BasicCreds.Pass, params.BasicCreds.Options)
 	case ApiKey:
 		if i.ApiKeyOpts == nil {
@@ -398,7 +405,7 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 			return nil, fmt.Errorf("%w: custom credentials not found", ErrClient)
 		}
 
-		return createCustomHTTPClient(ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.CustomCreds)
+		return createCustomHTTPClient(ctx, params.Client, params.Debug, params.OnUnauthorized, params.IsUnauthorized, i, params.CustomCreds)
 	case Jwt:
 		// We shouldn't hit this case, because no providerInfo has auth type set to JWT yet.
 		fallthrough
@@ -436,6 +443,7 @@ func createBasicAuthHTTPClient( //nolint:ireturn
 	client *http.Client,
 	dbg bool,
 	unauth UnauthorizedHandler,
+	isUnauth IsUnauthorizedDecider,
 	info *ProviderInfo,
 	user string,
 	pass string,
@@ -450,6 +458,10 @@ func createBasicAuthHTTPClient( //nolint:ireturn
 	}
 
 	var authClient common.AuthenticatedHTTPClient
+
+	if isUnauth != nil {
+		opts = append(opts, common.WithHeaderIsUnauthorizedHandler(isUnauth))
+	}
 
 	if unauth != nil {
 		opts = append(opts,
@@ -483,6 +495,7 @@ func createOAuth2AuthCodeHTTPClient( //nolint:ireturn
 	client *http.Client,
 	dbg bool,
 	unauth UnauthorizedHandler,
+	isUnauth IsUnauthorizedDecider,
 	info *ProviderInfo,
 	cfg *OAuth2AuthCodeParams,
 ) (common.AuthenticatedHTTPClient, error) {
@@ -501,6 +514,10 @@ func createOAuth2AuthCodeHTTPClient( //nolint:ireturn
 	}
 
 	var oauthClient common.AuthenticatedHTTPClient
+
+	if isUnauth != nil {
+		options = append(options, common.WithOAuthIsUnauthorizedHandler(isUnauth))
+	}
 
 	if unauth != nil {
 		options = append(options,
@@ -532,6 +549,7 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 	client *http.Client,
 	dbg bool,
 	unauth UnauthorizedHandler,
+	isUnauth IsUnauthorizedDecider,
 	info *ProviderInfo,
 	cfg *OAuth2ClientCredentialsParams,
 ) (common.AuthenticatedHTTPClient, error) {
@@ -551,6 +569,10 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 	}
 
 	var oauthClient common.AuthenticatedHTTPClient
+
+	if isUnauth != nil {
+		options = append(options, common.WithOAuthIsUnauthorizedHandler(isUnauth))
+	}
 
 	if unauth != nil {
 		options = append(options,
@@ -582,18 +604,20 @@ func createOAuth2PasswordHTTPClient(
 	client *http.Client,
 	dbg bool,
 	unauth UnauthorizedHandler,
+	isUnauth IsUnauthorizedDecider,
 	info *ProviderInfo,
 	cfg *OAuth2AuthCodeParams,
 ) (common.AuthenticatedHTTPClient, error) {
 	// Refresh method works the same as with auth code method.
 	// Relies on access and refresh tokens created by Oauth2 password method.
-	return createOAuth2AuthCodeHTTPClient(ctx, client, dbg, unauth, info, cfg)
+	return createOAuth2AuthCodeHTTPClient(ctx, client, dbg, unauth, isUnauth, info, cfg)
 }
 
 func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
 	client *http.Client,
 	dbg bool,
 	unauth UnauthorizedHandler,
+	isUnauth IsUnauthorizedDecider,
 	info *ProviderInfo,
 	cfg *CustomAuthParams,
 ) (common.AuthenticatedHTTPClient, error) {
@@ -635,6 +659,10 @@ func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
 	}
 
 	var customClient common.AuthenticatedHTTPClient
+
+	if isUnauth != nil {
+		opts = append(opts, common.WithCustomIsUnauthorizedHandler(isUnauth))
+	}
 
 	if unauth != nil {
 		opts = append(opts,
