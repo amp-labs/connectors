@@ -19,10 +19,19 @@ func substituteStruct(input interface{}, substitutions map[string]string) error 
 		return nil
 	}
 
+	typ := val.Type()
+
 	for i := range val.NumField() {
 		field := val.Field(i)
 		// skip unexported or unsettable fields
 		if !field.CanSet() {
+			continue
+		}
+
+		structField := typ.Field(i)
+
+		skip, ok := structField.Tag.Lookup("skipSubstitutions")
+		if ok && skip == "true" {
 			continue
 		}
 

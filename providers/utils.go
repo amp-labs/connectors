@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
+	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
@@ -260,6 +262,9 @@ func (i *ProviderInfo) defaultModuleOrRoot() common.ModuleID {
 // the non-401 response to the original caller.
 type UnauthorizedHandler func(client common.AuthenticatedHTTPClient, event *UnauthorizedEvent) (*http.Response, error)
 
+// IsUnauthorizedDecider is a function called to determine if a response is unauthorized.
+type IsUnauthorizedDecider func(rsp *http.Response) bool
+
 // UnauthorizedEvent is the event that is triggered when an unauthorized response (http 401) is received.
 type UnauthorizedEvent struct {
 	Provider    *ProviderInfo
@@ -297,6 +302,11 @@ type OAuth2ClientCredentialsParams struct {
 	Options []common.OAuthOption
 }
 
+type CustomAuthParams struct {
+	Values  map[string]string
+	Options []common.CustomAuthClientOption
+}
+
 // NewClientParams is the parameters to create a new HTTP client.
 type NewClientParams struct {
 	// Debug will enable debug mode for the client.
@@ -309,6 +319,10 @@ type NewClientParams struct {
 	// OnUnauthorized is the handler to call when the client receives an
 	// unauthorized response.
 	OnUnauthorized UnauthorizedHandler
+
+	// IsUnauthorized is the function to call to determine if the response is unauthorized.
+	// If not set, it will default to the dumb logic of checking for 401 status codes.
+	IsUnauthorized IsUnauthorizedDecider
 
 	// BasicCreds is the basic auth credentials to use for the client.
 	// If the provider uses basic auth, this field must be set.
@@ -325,10 +339,14 @@ type NewClientParams struct {
 	// ApiKeyCreds is the api key to use for the client. If the provider uses
 	// api-key auth, this field must be set.
 	ApiKeyCreds *ApiKeyParams
+
+	// CustomCreds is the custom auth credentials to use for the client. If the provider uses
+	// custom auth, this field must be set.
+	CustomCreds *CustomAuthParams
 }
 
 // NewClient will create a new authenticated client based on the provider's auth type.
-func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (common.AuthenticatedHTTPClient, error) { //nolint:lll,cyclop,ireturn
+func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (common.AuthenticatedHTTPClient, error) { //nolint:lll,cyclop,ireturn,funlen
 	if params == nil {
 		params = &NewClientParams{}
 	}
@@ -346,13 +364,13 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 			fallthrough
 		case AuthorizationCode:
 			return createOAuth2AuthCodeHTTPClient(
-				ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.OAuth2AuthCodeCreds)
+				ctx, params.Client, params.Debug, params.OnUnauthorized, params.IsUnauthorized, i, params.OAuth2AuthCodeCreds)
 		case ClientCredentials:
 			return createOAuth2ClientCredentialsHTTPClient(
-				ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.OAuth2ClientCreds)
+				ctx, params.Client, params.Debug, params.OnUnauthorized, params.IsUnauthorized, i, params.OAuth2ClientCreds)
 		case Password:
 			return createOAuth2PasswordHTTPClient(
-				ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.OAuth2AuthCodeCreds)
+				ctx, params.Client, params.Debug, params.OnUnauthorized, params.IsUnauthorized, i, params.OAuth2AuthCodeCreds)
 		default:
 			return nil, fmt.Errorf("%w: unsupported grant type %q", ErrClient, i.Oauth2Opts.GrantType)
 		}
@@ -362,7 +380,7 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 		}
 
 		return createBasicAuthHTTPClient(
-			ctx, params.Client, params.Debug, params.OnUnauthorized, i,
+			ctx, params.Client, params.Debug, params.OnUnauthorized, params.IsUnauthorized, i,
 			params.BasicCreds.User, params.BasicCreds.Pass, params.BasicCreds.Options)
 	case ApiKey:
 		if i.ApiKeyOpts == nil {
@@ -377,8 +395,20 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 			return nil, fmt.Errorf("%w: api key not given", ErrClient)
 		}
 
-		return createApiKeyHTTPClient(ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.ApiKeyCreds)
-	case Jwt, Custom:
+		return createApiKeyHTTPClient(ctx, params.Client, params.Debug, params.OnUnauthorized,
+			params.IsUnauthorized, i, params.ApiKeyCreds)
+	case Custom:
+		if i.CustomOpts == nil {
+			return nil, fmt.Errorf("%w: custom options not found", ErrClient)
+		}
+
+		if params.CustomCreds == nil {
+			return nil, fmt.Errorf("%w: custom credentials not found", ErrClient)
+		}
+
+		return createCustomHTTPClient(ctx, params.Client, params.Debug, params.OnUnauthorized,
+			params.IsUnauthorized, i, params.CustomCreds)
+	case Jwt:
 		// We shouldn't hit this case, because no providerInfo has auth type set to JWT yet.
 		fallthrough
 	default:
@@ -415,6 +445,7 @@ func createBasicAuthHTTPClient( //nolint:ireturn
 	client *http.Client,
 	dbg bool,
 	unauth UnauthorizedHandler,
+	isUnauth IsUnauthorizedDecider,
 	info *ProviderInfo,
 	user string,
 	pass string,
@@ -429,6 +460,10 @@ func createBasicAuthHTTPClient( //nolint:ireturn
 	}
 
 	var authClient common.AuthenticatedHTTPClient
+
+	if isUnauth != nil {
+		opts = append(opts, common.WithHeaderIsUnauthorizedHandler(isUnauth))
+	}
 
 	if unauth != nil {
 		opts = append(opts,
@@ -462,6 +497,7 @@ func createOAuth2AuthCodeHTTPClient( //nolint:ireturn
 	client *http.Client,
 	dbg bool,
 	unauth UnauthorizedHandler,
+	isUnauth IsUnauthorizedDecider,
 	info *ProviderInfo,
 	cfg *OAuth2AuthCodeParams,
 ) (common.AuthenticatedHTTPClient, error) {
@@ -480,6 +516,10 @@ func createOAuth2AuthCodeHTTPClient( //nolint:ireturn
 	}
 
 	var oauthClient common.AuthenticatedHTTPClient
+
+	if isUnauth != nil {
+		options = append(options, common.WithOAuthIsUnauthorizedHandler(isUnauth))
+	}
 
 	if unauth != nil {
 		options = append(options,
@@ -511,6 +551,7 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 	client *http.Client,
 	dbg bool,
 	unauth UnauthorizedHandler,
+	isUnauth IsUnauthorizedDecider,
 	info *ProviderInfo,
 	cfg *OAuth2ClientCredentialsParams,
 ) (common.AuthenticatedHTTPClient, error) {
@@ -530,6 +571,10 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 	}
 
 	var oauthClient common.AuthenticatedHTTPClient
+
+	if isUnauth != nil {
+		options = append(options, common.WithOAuthIsUnauthorizedHandler(isUnauth))
+	}
 
 	if unauth != nil {
 		options = append(options,
@@ -561,12 +606,155 @@ func createOAuth2PasswordHTTPClient(
 	client *http.Client,
 	dbg bool,
 	unauth UnauthorizedHandler,
+	isUnauth IsUnauthorizedDecider,
 	info *ProviderInfo,
 	cfg *OAuth2AuthCodeParams,
 ) (common.AuthenticatedHTTPClient, error) {
 	// Refresh method works the same as with auth code method.
 	// Relies on access and refresh tokens created by Oauth2 password method.
-	return createOAuth2AuthCodeHTTPClient(ctx, client, dbg, unauth, info, cfg)
+	return createOAuth2AuthCodeHTTPClient(ctx, client, dbg, unauth, isUnauth, info, cfg)
+}
+
+func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
+	client *http.Client,
+	dbg bool,
+	unauth UnauthorizedHandler,
+	isUnauth IsUnauthorizedDecider,
+	info *ProviderInfo,
+	cfg *CustomAuthParams,
+) (common.AuthenticatedHTTPClient, error) {
+	// Make sure that all the inputs are provided in the config values.
+	for _, input := range info.CustomOpts.Inputs {
+		val, ok := cfg.Values[input.Name]
+		if !ok || val == "" {
+			return nil, fmt.Errorf("%w: missing value for custom client input %q",
+				ErrClient, input.Name)
+		}
+	}
+
+	// Get the static headers
+	headers, err := getCustomHeaders(info, cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the static query parameters
+	queryParams, err := getCustomParams(info, cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	var opts []common.CustomAuthClientOption
+
+	if len(headers) > 0 {
+		opts = append(opts, common.WithCustomHeaders(headers...))
+	}
+
+	if len(queryParams) > 0 {
+		opts = append(opts, common.WithCustomQueryParams(queryParams...))
+	}
+
+	opts = append(opts, common.WithCustomClient(getClient(client)))
+
+	if dbg {
+		opts = append(opts, common.WithCustomDebug(common.PrintRequestAndResponse))
+	}
+
+	var customClient common.AuthenticatedHTTPClient
+
+	if isUnauth != nil {
+		opts = append(opts, common.WithCustomIsUnauthorizedHandler(isUnauth))
+	}
+
+	if unauth != nil {
+		opts = append(opts,
+			common.WithCustomUnauthorizedHandler(
+				func(
+					hdrs []common.Header,
+					params []common.QueryParam,
+					req *http.Request,
+					rsp *http.Response,
+				) (*http.Response, error) {
+					return unauth(customClient, &UnauthorizedEvent{
+						Headers:     hdrs,
+						QueryParams: params,
+						Provider:    info,
+						Request:     req,
+						Response:    rsp,
+					})
+				}))
+	}
+
+	if len(cfg.Options) > 0 {
+		opts = append(opts, cfg.Options...)
+	}
+
+	customClient, err = common.NewCustomAuthHTTPClient(ctx, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create custom auth client: %w", ErrClient, err)
+	}
+
+	return customClient, nil
+}
+
+func getCustomParams(info *ProviderInfo, cfg *CustomAuthParams) (common.QueryParams, error) {
+	if len(info.CustomOpts.QueryParams) == 0 {
+		return nil, nil
+	}
+
+	params := make([]common.QueryParam, 0, len(info.CustomOpts.QueryParams))
+
+	for _, param := range info.CustomOpts.QueryParams {
+		value, err := evalTemplate(param.ValueTemplate, cfg.Values)
+		if err != nil {
+			return nil, fmt.Errorf("%w: failed to evaluate query param template for param %q: %w",
+				ErrClient, param.Name, err)
+		}
+
+		params = append(params, common.QueryParam{
+			Key:   param.Name,
+			Value: value,
+		})
+	}
+
+	return params, nil
+}
+
+func getCustomHeaders(info *ProviderInfo, cfg *CustomAuthParams) (common.Headers, error) {
+	if len(info.CustomOpts.Headers) == 0 {
+		return nil, nil
+	}
+
+	headers := make([]common.Header, 0, len(info.CustomOpts.Headers))
+
+	for _, hdr := range info.CustomOpts.Headers {
+		value, err := evalTemplate(hdr.ValueTemplate, cfg.Values)
+		if err != nil {
+			return nil, fmt.Errorf("%w: failed to evaluate header template for header %q: %w",
+				ErrClient, hdr.Name, err)
+		}
+
+		headers = append(headers, common.Header{
+			Key:   hdr.Name,
+			Value: value,
+		})
+	}
+
+	return headers, nil
+}
+
+func evalTemplate(input string, vars map[string]string) (string, error) {
+	tmpl, err := template.New("-").Option("missingkey=error").Parse(input)
+	if err != nil {
+		return "", err
+	}
+
+	var sb strings.Builder
+	if err := tmpl.Execute(&sb, vars); err != nil {
+		return "", err
+	}
+
+	return sb.String(), nil
 }
 
 func createApiKeyHTTPClient( //nolint:ireturn,cyclop,funlen
@@ -574,6 +762,7 @@ func createApiKeyHTTPClient( //nolint:ireturn,cyclop,funlen
 	client *http.Client,
 	dbg bool,
 	unauth UnauthorizedHandler,
+	isUnauth IsUnauthorizedDecider,
 	info *ProviderInfo,
 	cfg *ApiKeyParams,
 ) (common.AuthenticatedHTTPClient, error) {
@@ -593,6 +782,10 @@ func createApiKeyHTTPClient( //nolint:ireturn,cyclop,funlen
 		}
 
 		var authClient common.AuthenticatedHTTPClient
+
+		if isUnauth != nil {
+			opts = append(opts, common.WithHeaderIsUnauthorizedHandler(isUnauth))
+		}
 
 		if unauth != nil {
 			opts = append(opts,
@@ -629,6 +822,10 @@ func createApiKeyHTTPClient( //nolint:ireturn,cyclop,funlen
 		}
 
 		var authClient common.AuthenticatedHTTPClient
+
+		if isUnauth != nil {
+			opts = append(opts, common.WithQueryParamIsUnauthorizedHandler(isUnauth))
+		}
 
 		if unauth != nil {
 			opts = append(opts,
