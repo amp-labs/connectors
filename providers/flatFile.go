@@ -4,7 +4,7 @@ const flatFile Provider = "flatFile"
 
 func init() {
 	SetInfo(flatFile, ProviderInfo{
-		DisplayName: "FlatFile",
+		DisplayName: "Flatfile",
 		AuthType:    ApiKey,
 		BaseURL:     "https://api.x.flatfile.com",
 		ApiKeyOpts: &ApiKeyOpts{
