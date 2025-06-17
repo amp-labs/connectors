@@ -44,6 +44,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, err
 	}
 
+	if len(data) == 0 {
+		return nil, common.ErrEmptyJSONHTTPResponse
+	}
+
 	objKey := naming.NewSingularString(objectName).String()
 
 	// Extract and assert the inner map
