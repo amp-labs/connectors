@@ -147,7 +147,7 @@ type CustomAuthHeader struct {
 	Name string `json:"name"`
 
 	// ValueTemplate The value of the header, represented as a Golang text/template expression. Only the backend will interpret this.
-	ValueTemplate string `json:"valueTemplate"`
+	ValueTemplate string `json:"valueTemplate" skipSubstitutions:"true"`
 }
 
 // CustomAuthInput A custom input field for authentication. This is used by the frontend to dynamically render input fields for custom auth. The backend will not interpret this. It will however receive the value of this field before making a request (in the connection secrets).
@@ -183,7 +183,7 @@ type CustomAuthQueryParam struct {
 	Name string `json:"name"`
 
 	// ValueTemplate The value of the query parameter, represented as a Golang text/template expression. Only the backend will interpret this.
-	ValueTemplate string `json:"valueTemplate"`
+	ValueTemplate string `json:"valueTemplate" skipSubstitutions:"true"`
 }
 
 // Labels defines model for Labels.
