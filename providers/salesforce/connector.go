@@ -20,7 +20,6 @@ const (
 
 // Connector is a Salesforce connector.
 type Connector struct {
-	BaseURL   string
 	Client    *common.JSONHTTPClient
 	XMLClient *common.XMLHTTPClient
 
@@ -61,7 +60,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
 
-	conn.setBaseURL(conn.providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
 		JSON: &interpreter.DirectFaultyResponder{Callback: conn.interpretJSONError},
 		XML:  &interpreter.DirectFaultyResponder{Callback: conn.interpretXMLError},
@@ -96,15 +94,28 @@ func (c *Connector) getRestApiURL(paths ...string) (*urlbuilder.URL, error) {
 		restAPISuffix, // scope URLs to API version
 	}, paths...)
 
-	return urlbuilder.New(c.BaseURL, parts...)
+	return urlbuilder.New(c.getModuleURL(), parts...)
 }
 
 func (c *Connector) getDomainURL(paths ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, paths...)
+	return urlbuilder.New(c.getModuleURL(), paths...)
 }
 
 func (c *Connector) getSoapURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, "services/Soap/m", APIVersionSOAP())
+	return urlbuilder.New(c.getModuleURL(), "services/Soap/m", APIVersionSOAP())
+}
+
+// SetBaseURL
+// TODO use components.Connector to inherit this method.
+func (c *Connector) SetBaseURL(newURL string) {
+	c.providerInfo.BaseURL = newURL
+	c.moduleInfo.BaseURL = newURL
+	c.HTTPClient().Base = newURL
+}
+
+// Gateway access to URLs.
+func (c *Connector) getModuleURL() string {
+	return c.moduleInfo.BaseURL
 }
 
 // nolint: lll
@@ -115,11 +126,6 @@ func (c *Connector) getURIPartEventRelayConfig(paths ...string) (*urlbuilder.URL
 
 func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(uriSobjects, objectName, "describe")
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
 }
 
 func (c *Connector) isPardotModule() bool {
