@@ -98,16 +98,12 @@ func main() {
 		},
 	}
 
-	time.Sleep(time.Minute * 1)
-
 	updateResult, err := conn.UpdateSubscription(ctx, updateParams, subscribeResult)
 	if err != nil {
 		logging.Logger(ctx).Error("Error updating subscription", "error", err, "subscribeResult", prettyPrint(subscribeResult))
 
 		return
 	}
-
-	time.Sleep(time.Minute * 1)
 
 	err = conn.DeleteSubscription(ctx, *updateResult)
 	if err != nil {

@@ -286,16 +286,6 @@ func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
 
 	fields := affectedFieldsMap[recordId]
 
-	// fieldsStr := make([]string, 0, len(fields))
-
-	// for _, field := range fields {
-	// 	fieldStr, ok := field.(string)
-	// 	if !ok {
-	// 		return nil, errors.New("invalid field")
-	// 	}
-	// 	fieldsStr = append(fieldsStr, fieldStr)
-	// }
-
 	return fields, nil
 }
 
