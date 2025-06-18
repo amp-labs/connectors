@@ -12,11 +12,6 @@ import (
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
-const (
-	businessHours = "business-hours/schedules"
-	data          = "data"
-)
-
 // nolint:gochecknoglobals
 var (
 	//go:embed schemas.json
@@ -41,7 +36,7 @@ type Connector struct {
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
-	return components.Initialize(providers.Facebook, params, constructor)
+	return components.Initialize(providers.FlatFile, params, constructor)
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
