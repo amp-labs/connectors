@@ -218,6 +218,9 @@ type MediaTypeRegular struct {
 
 // MetadataItemInput defines model for MetadataItemInput.
 type MetadataItemInput struct {
+	// DefaultValue Default value for this metadata item
+	DefaultValue string `json:"defaultValue,omitempty"`
+
 	// DisplayName The human-readable name for the field
 	DisplayName string `json:"displayName,omitempty"`
 
