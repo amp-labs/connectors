@@ -148,6 +148,117 @@
                         "partExecution": "partExecution",
                         "subject": "subject"
                     }
+                },
+                "mapping": {
+                    "displayName": "Mapping",
+                    "path": "/mapping",
+                    "docs": "https://reference.flatfile.com/api-reference/mapping/list-mapping-programs",
+                    "responseKey": "data",
+                    "fields": {
+                        "rules": "rules",
+                        "sourceKeys": "sourceKeys",
+                        "destinationKeys": "destinationKeys",
+                        "id": "id",
+                        "namespace": "namespace",
+                        "familyId": "familyId",
+                        "createdAt": "createdAt",
+                        "createdBy": "createdBy",
+                        "summary": "summary",
+                        "accessToken": "accessToken",
+                        "acceptedAt": "acceptedAt",
+                        "acceptedBy": "acceptedBy"
+                    }
+                },
+                "roles": {
+                    "displayName": "Roles",
+                    "path": "/roles",
+                    "docs": "https://reference.flatfile.com/api-reference/roles/list",
+                    "responseKey": "data",
+                    "fields": {
+                        "id": "id",
+                        "name": "name",
+                        "accountId": "accountId",
+                        "createdAt": "createdAt",
+                        "updatedAt": "updatedAt"
+                    }
+                },
+                "spaces": {
+                    "displayName": "Spaces",
+                    "path": "/spaces",
+                    "docs": "https://reference.flatfile.com/api-reference/spaces/list",
+                    "responseKey": "data",
+                    "fields": {
+                        "createdAt": "createdAt",
+                        "guestAuthentication": "guestAuthentication",
+                        "id": "id",
+                        "name": "name",
+                        "updatedAt": "updatedAt",
+                        "access": "access",
+                        "accessToken": "accessToken",
+                        "actions": "actions",
+                        "appId": "appId",
+                        "archivedAt": "archivedAt",
+                        "autoConfigure": "autoConfigure",
+                        "createdByUserId": "createdByUserId",
+                        "createdByUserName": "createdByUserName",
+                        "createdFrom": "createdFrom",
+                        "displayOrder": "displayOrder",
+                        "environmentId": "environmentId",
+                        "expiredAt": "expiredAt",
+                        "filesCount": "filesCount",
+                        "guestLink": "guestLink",
+                        "isAppTemplate": "isAppTemplate",
+                        "isCollaborative": "isCollaborative",
+                        "labels": "labels",
+                        "languageOverride": "languageOverride",
+                        "lastActivityAt": "lastActivityAt",
+                        "lastPropagatedAt": "lastPropagatedAt",
+                        "metadata": "metadata",
+                        "namespace": "namespace",
+                        "primaryWorkbookId": "primaryWorkbookId",
+                        "settings": "settings",
+                        "size": "size",
+                        "spaceConfigId": "spaceConfigId",
+                        "translationsPath": "translationsPath",
+                        "upgradedAt": "upgradedAt",
+                        "workbooksCount": "workbooksCount"
+                    }
+                },
+                "users": {
+                    "displayName": "Users",
+                    "path": "/users",
+                    "docs": "https://reference.flatfile.com/api-reference/users/list",
+                    "responseKey": "data",
+                    "fields": {
+                        "id": "id",
+                        "name": "name",
+                        "email": "email",
+                        "metadata": "metadata",
+                        "accountId": "accountId",
+                        "idp": "idp",
+                        "idpRef": "idpRef",
+                        "createdAt": "createdAt",
+                        "updatedAt": "updatedAt",
+                        "lastSeenAt": "lastSeenAt",
+                        "dashboard": "dashboard"
+                    }
+                },
+                "workbooks": {
+                    "displayName": "Workbooks",
+                    "path": "/workbooks",
+                    "docs": "https://reference.flatfile.com/api-reference/workbooks/list",
+                    "responseKey": "data",
+                    "fields": {
+                        "id": "id",
+                        "name": "name",
+                        "labels": "labels",
+                        "spaceId": "spaceId",
+                        "environmentId": "environmentId",
+                        "createdAt": "createdAt",
+                        "updatedAt": "updatedAt",
+                        "sheets": "sheets",
+                        "storageType": "storageType"
+                    }
                 }
             }
         }
