@@ -13,6 +13,8 @@ type CatalogVariable interface {
 	GetSubstitutionPlan() SubstitutionPlan
 }
 
+type CatalogVariables []CatalogVariable
+
 // SubstitutionPlan defines an intent to replace `from` with `to`.
 type SubstitutionPlan struct {
 	From string
@@ -40,4 +42,21 @@ var _ CatalogVariable = CustomCatalogVariable{}
 
 func (c CustomCatalogVariable) GetSubstitutionPlan() SubstitutionPlan {
 	return c.Plan
+}
+
+func (c *CatalogVariables) AddDefaults(defaults ...CatalogVariable) {
+	registry := make(map[string]CatalogVariable)
+
+	for _, variable := range *c {
+		plan := variable.GetSubstitutionPlan()
+		registry[plan.From] = variable
+	}
+
+	for _, variable := range defaults {
+		plan := variable.GetSubstitutionPlan()
+
+		if _, found := registry[plan.From]; !found {
+			*c = append(*c, CustomCatalogVariable{Plan: plan})
+		}
+	}
 }
