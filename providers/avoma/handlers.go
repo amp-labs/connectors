@@ -69,7 +69,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, http.MethodPost, url.String()+"/", bytes.NewReader(jsonData))
+	return http.NewRequestWithContext(ctx, http.MethodPost, url.String()+common.WithTrailingSlash, bytes.NewReader(jsonData))
 }
 
 func (c *Connector) parseWriteResponse(
