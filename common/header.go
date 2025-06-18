@@ -7,7 +7,7 @@ import (
 
 type HeaderAuthClientOption func(params *headerClientParams)
 
-var WithTrailingSlash = "/"
+var WithTrailingSlash = "/" //nolint:gochecknoglobals
 
 // NewHeaderAuthHTTPClient returns a new http client, which will
 // do generic header-based authentication. It does this by automatically
