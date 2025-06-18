@@ -1,9 +1,9 @@
 package providers
 
-const flatFile Provider = "flatFile"
+const FlatFile Provider = "flatFile"
 
 func init() {
-	SetInfo(flatFile, ProviderInfo{
+	SetInfo(FlatFile, ProviderInfo{
 		DisplayName: "Flatfile",
 		AuthType:    ApiKey,
 		BaseURL:     "https://api.x.flatfile.com",
