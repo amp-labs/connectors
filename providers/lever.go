@@ -45,6 +45,14 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1733231953/media/lever.co_1733231938.svg",
 			},
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "opportunity",
+					DisplayName: "Opportunity ID",
+				},
+			},
+		},
 	})
 
 	// Lever Sandbox configuration
@@ -83,6 +91,14 @@ func init() {
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1733231877/media/lever.co_1733231842.svg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1733231953/media/lever.co_1733231938.svg",
+			},
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "opportunity",
+					DisplayName: "Opportunity ID",
+				},
 			},
 		},
 	})
