@@ -1,0 +1,48 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "apps": {
+          "displayName": "Apps",
+          "path": "/apps",
+          "docs": "https://reference.flatfile.com/api-reference/apps/list",
+          "fields": {
+            "id": "id",
+            "name": "name",
+            "namespace": "namespace",
+            "type": "type",
+            "entity": "entity",
+            "entityPlural": "entityPlural",
+            "metadata": "metadata",
+            "environmentFilters": "environmentFilters",
+            "createdAt": "createdAt",
+            "updatedAt": "updatedAt",
+            "icon": "icon",
+            "blueprint": "blueprint",
+            "deletedAt": "deletedAt",
+            "activatedAt": "activatedAt"
+          }
+        },
+        "prompts": {
+          "displayName": "Prompts",
+          "path": "/prompts",
+          "docs": "https://reference.flatfile.com/api-reference/assistant/list",
+          "fields": {
+            "id": "id",
+            "createdById": "createdById",
+            "accountId": "accountId",
+            "promptType": "promptType",
+            "prompt": "prompt",
+            "createdAt": "createdAt",
+            "updatedAt": "updatedAt",
+            "environmentId": "environmentId",
+            "spaceId": "spaceId",
+            "deletedAt": "deletedAt"
+          }
+        }
+      }
+    }
+  }
+}
