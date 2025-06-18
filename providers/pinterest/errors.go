@@ -1,10 +1,13 @@
 package pinterest
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/amp-labs/connectors/common/interpreter"
 )
+
+var ErrNoMetadataFound = errors.New("no metadata found in response")
 
 // Implement error abstraction layers to streamline provider error handling.
 var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals

@@ -47,7 +47,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	if len(data.Items) == 0 {
-		return nil, common.ErrEmptyJSONHTTPResponse
+		return nil, ErrNoMetadataFound
 	}
 
 	for field := range data.Items[0] {
