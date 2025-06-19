@@ -2,7 +2,7 @@ package braze
 
 import "github.com/amp-labs/connectors/internal/datautils"
 
-var dataFields = datautils.NewDefaultMap(datautils.Map[string, string]{
+var dataFields = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
 	"catalogs":                      "catalogs",
 	"cdi/integrations":              "results",
 	"email/hard_bounces":            "emails",
