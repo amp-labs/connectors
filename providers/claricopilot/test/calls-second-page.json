@@ -1,0 +1,82 @@
+{
+    "calls": [
+        {
+            "id": "7b891784-ba59-47bd-9f19-62247e9e6484",
+            "title": "Ampersand test",
+            "users": [
+                {
+                    "userId": "e04483dd-fb82-460a-a14e-b6f3e6a2b7a4",
+                    "userEmail": "integration.user+clari@withampersand.com",
+                    "isOrganizer": true,
+                    "personId": 0
+                }
+            ],
+            "externalParticipants": [],
+            "joinedParticipants": [
+                {
+                    "name": "Dipu Chaurasiya"
+                }
+            ],
+            "status": "NO_DATA_INCALL",
+            "bot_not_join_reason": [],
+            "type": "ZOOM",
+            "time": "2025-06-10T10:26:38.681Z",
+            "calendar_id": "195bf7b8-5c6b-4992-9adf-2c2fd5ce3e94",
+            "last_modified_time": "2025-06-10T10:29:51.937Z",
+            "audio_url": null,
+            "video_url": null,
+            "disposition": "UNKNOWN_CALL_DISPOSITION",
+            "metrics": {
+                "talk_listen_ratio": 0,
+                "num_questions_asked": 0,
+                "num_questions_asked_by_reps": 0,
+                "call_duration": 0,
+                "total_speak_duration": 0,
+                "longest_monologue_duration": 0,
+                "longest_monologue_start_time": 0,
+                "engaging_questions": 0,
+                "categories": []
+            },
+            "call_review_page_url": "https://copilot.clari.com/call/7b891784-ba59-47bd-9f19-62247e9e6484"
+        },
+        {
+            "id": "31f12970-040d-4186-9b6f-ad0a08afbfb8",
+            "source_id": "REQUESTED_POST",
+            "title": "Ampersand Demo",
+            "users": [
+                {
+                    "userId": "e04483dd-fb82-460a-a14e-b6f3e6a2b7a4",
+                    "userEmail": "integration.user+clari@withampersand.com",
+                    "isOrganizer": false,
+                    "personId": 0
+                }
+            ],
+            "externalParticipants": [],
+            "joinedParticipants": [],
+            "status": "POST_PROCESSING_DONE",
+            "bot_not_join_reason": [],
+            "type": "RECORDING",
+            "time": "2025-06-10T08:14:00.000Z",
+            "last_modified_time": "2025-06-10T10:39:36.637Z",
+            "audio_url": null,
+            "video_url": null,
+            "disposition": "CALL_DID_NOT_CONNECT_WITH_PROSPECT",
+            "metrics": {
+                "talk_listen_ratio": 1,
+                "num_questions_asked": 0,
+                "num_questions_asked_by_reps": 1,
+                "call_duration": 104,
+                "total_speak_duration": 98.23999786376953,
+                "longest_monologue_duration": 98.23999786376953,
+                "longest_monologue_start_time": 2.3499999046325684,
+                "engaging_questions": 0,
+                "categories": []
+            },
+            "call_review_page_url": "https://copilot.clari.com/call/31f12970-040d-4186-9b6f-ad0a08afbfb8"
+        }
+    ],
+    "pagination": {
+        "matched": 3,
+        "hasMore": false
+    }
+}
