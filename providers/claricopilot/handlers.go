@@ -15,10 +15,22 @@ const (
 	metadataPageSize = "1"
 	pageSize         = "100"
 	skipKey          = "skip"
+	apiVersionV2     = "v2"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
+
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	if supportedObjectV2.Has(objectName) {
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersionV2, objectName)
+	} else {
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
@@ -80,7 +92,12 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		err error
 	)
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	if supportedObjectV2.Has(params.ObjectName) {
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersionV2, params.ObjectName)
+	} else {
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}

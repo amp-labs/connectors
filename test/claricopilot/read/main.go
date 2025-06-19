@@ -24,8 +24,8 @@ func main() {
 	conn := claricopilot.GetConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "users",
-		Fields:     connectors.Fields("id", "email", "name"),
+		ObjectName: "topics",
+		Fields:     connectors.Fields("topic_name", "type"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Clari Copilot", "error", err)

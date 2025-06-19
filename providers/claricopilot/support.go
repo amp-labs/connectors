@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 func responseField(objectName string) string {
@@ -18,6 +19,10 @@ func responseField(objectName string) string {
 		return objectName
 	}
 }
+
+var supportedObjectV2 = datautils.NewSet(
+	"topics",
+)
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
