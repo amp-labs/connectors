@@ -37,7 +37,7 @@ func init() {
 			Input: []MetadataItemInput{
 				{
 					Name:        "workspace",
-					DisplayName: "Domain",
+					DisplayName: "Full Domain",
 				},
 			},
 		},
