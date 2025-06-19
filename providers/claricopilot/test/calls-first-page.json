@@ -1,0 +1,20 @@
+{
+    "calls": [
+        {
+            "id": "7549847e-4e97-4650-a20d-87791520e529",
+            "source_id": "REQUESTED_POST",
+            "title": "Ampersand promo",
+            "status": "POST_PROCESSING_DONE",
+            "type": "RECORDING",
+            "time": "2025-06-11T14:25:00.000Z",
+            "last_modified_time": "2025-06-11T14:53:06.310Z",
+            "disposition": "CALL_DID_NOT_CONNECT_WITH_PROSPECT",
+            "call_review_page_url": "https://copilot.clari.com/call/7549847e-4e97-4650-a20d-87791520e529"
+        }
+    ],
+    "pagination": {
+        "matched": 3,
+        "nextPageSkip": 1,
+        "hasMore": true
+    }
+}
