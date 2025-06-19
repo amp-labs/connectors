@@ -18,6 +18,7 @@ import (
 	"github.com/amp-labs/connectors/providers/brevo"
 	"github.com/amp-labs/connectors/providers/capsule"
 	"github.com/amp-labs/connectors/providers/chilipiper"
+	"github.com/amp-labs/connectors/providers/claricopilot"
 	"github.com/amp-labs/connectors/providers/clickup"
 	"github.com/amp-labs/connectors/providers/closecrm"
 	"github.com/amp-labs/connectors/providers/constantcontact"
@@ -87,6 +88,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Brevo:               wrapper(newBrevoConnector),
 	providers.Capsule:             wrapper(newCapsuleConnector),
 	providers.ChiliPiper:          wrapper(newChiliPiperConnector),
+	providers.ClariCopilot:        wrapper(newClariCopilotConnector),
 	providers.ClickUp:             wrapper(newClickUpConnector),
 	providers.Close:               wrapper(newCloseConnector),
 	providers.ConstantContact:     wrapper(newConstantContactConnector),
@@ -291,6 +293,12 @@ func newZohoConnector(
 	return zohocrm.NewConnector(
 		zohocrm.WithAuthenticatedClient(params.AuthenticatedClient),
 	)
+}
+
+func newClariCopilotConnector(
+	params common.ConnectorParams,
+) (*claricopilot.Connector, error) {
+	return claricopilot.NewConnector(params)
 }
 
 func newCloseConnector(
