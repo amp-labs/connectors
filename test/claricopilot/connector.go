@@ -12,9 +12,12 @@ import (
 
 func GetConnector(ctx context.Context) *claricopilot.Connector {
 	filePath := credscanning.LoadPath(providers.ClariCopilot)
-	reader := utils.MustCreateProvCredJSON(filePath, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false, credscanning.Fields.ApiKey, credscanning.Fields.Secret)
 
-	client, err := common.NewCustomAuthHTTPClient(ctx, reader.Get(credscanning.Fields.ApiKey))
+	apiKey := reader.Get(credscanning.Fields.ApiKey)
+	apiSecret := reader.Get(credscanning.Fields.Secret)
+
+	client, err := common.NewCustomAuthHTTPClient(ctx, common.WithCustomHeaders(common.Header{Key: "X-Api-Key", Value: apiKey}, common.Header{Key: "X-Api-Password", Value: apiSecret}))
 	if err != nil {
 		utils.Fail("error creating client", "error", err)
 	}
@@ -22,6 +25,7 @@ func GetConnector(ctx context.Context) *claricopilot.Connector {
 	conn, err := claricopilot.NewConnector(
 		common.ConnectorParams{AuthenticatedClient: client},
 	)
+
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
 	}
