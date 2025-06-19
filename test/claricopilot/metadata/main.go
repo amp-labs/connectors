@@ -19,7 +19,7 @@ func run() error {
 	ctx := context.Background()
 	connector := claricopilot.GetConnector(ctx)
 
-	m, err := connector.ListObjectMetadata(ctx, []string{"users", "calls"})
+	m, err := connector.ListObjectMetadata(ctx, []string{"users", "calls", "topics"})
 
 	if err != nil {
 		log.Fatal(err)
