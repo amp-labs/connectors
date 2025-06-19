@@ -19,7 +19,6 @@ const (
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-
 	var (
 		url *urlbuilder.URL
 		err error

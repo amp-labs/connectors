@@ -12,7 +12,6 @@ import (
 
 func nextRecordsURL(previousURL *url.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-
 		pagination, err := jsonquery.New(node).ObjectOptional("pagination")
 		if err != nil {
 			return "", err

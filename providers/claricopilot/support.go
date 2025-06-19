@@ -20,7 +20,7 @@ func responseField(objectName string) string {
 	}
 }
 
-var supportedObjectV2 = datautils.NewSet(
+var supportedObjectV2 = datautils.NewSet( //nolint:gochecknoglobals
 	"topics",
 )
 
