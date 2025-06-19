@@ -14,12 +14,13 @@ const (
 	limitQuery       = "limit"
 	metadataPageSize = "1"
 	pageSize         = "100"
+	skipKey          = "skip"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
 	if err != nil {
-		return nil, fmt.Errorf("failed to build URL: '%w", err)
+		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
 
 	url.WithQueryParam(limitQuery, metadataPageSize)
@@ -71,4 +72,42 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build URL: %w", err)
+	}
+
+	url.WithQueryParam(limitQuery, pageSize)
+
+	if params.NextPage != "" {
+		url, err = urlbuilder.New(params.NextPage.String())
+		if err != nil {
+			return nil, fmt.Errorf("failed to build URL from next page: %w", err)
+		}
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath(responseField(params.ObjectName)),
+		nextRecordsURL(request.URL),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
