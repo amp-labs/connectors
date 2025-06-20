@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -102,6 +103,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to build URL: %w", err)
+	}
+
+	if !params.Since.IsZero() {
+		url.WithQueryParam("filterModifiedGt", params.Since.Format(time.RFC3339))
 	}
 
 	url.WithQueryParam(limitQuery, pageSize)
