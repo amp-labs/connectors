@@ -65,9 +65,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		if !hasEndpoint {
 			return
 		}
+
 		if !params.Since.IsZero() {
 			url.WithQueryParam(prefix+"_start", strconv.Itoa(int(params.Since.UnixMilli())))
 		}
+
 		if !params.Until.IsZero() {
 			url.WithQueryParam(prefix+"_end", strconv.Itoa(int(params.Until.UnixMilli())))
 		}
