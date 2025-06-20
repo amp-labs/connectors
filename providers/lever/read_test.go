@@ -101,7 +101,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				NextPage: testroutines.URLTestServer + "/v1/opportunities?limit=100" +
-					"&updated_at_start=1748802600&updated_at_end=1751221800" +
+					"&updated_at_start=1748822400000&updated_at_end=1751241600000" +
 					"&offset=%255B1%252C1750233409740%252C%252248dd4e94-fea0-4f9a-be5f-95b1853cbbbe%2522%255D",
 				Done: false,
 			},
