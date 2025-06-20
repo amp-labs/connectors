@@ -20,13 +20,41 @@ func responseField(objectName string) string {
 	}
 }
 
+//nolint:gochecknoglobals
+var (
+	objectNameCalls             = "calls"
+	objectNameUsers             = "users"
+	objectNameTopics            = "topics"
+	objectNameScorecard         = "scorecard"
+	objectNameScorecardTemplate = "scorecard-template"
+	objectNameContact           = "contacts"
+	objectNameDeal              = "deals"
+	objectNameAccount           = "accounts"
+)
+
 var supportedObjectV2 = datautils.NewSet( //nolint:gochecknoglobals
-	"topics",
+	objectNameTopics,
+)
+
+//nolint:gochecknoglobals
+var writeObjectMapping = datautils.NewDefaultMap(map[string]string{
+	objectNameCalls:   "create-call",
+	objectNameContact: "create-contact",
+	objectNameDeal:    "create-deal",
+	objectNameAccount: "create-account",
+},
+	func(objectName string) (fieldName string) {
+		return objectName
+	},
 )
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
-		"calls", "users", "topics", "scorecard", "scorecard-template",
+		objectNameCalls, objectNameUsers, objectNameTopics, objectNameScorecard, objectNameScorecardTemplate,
+	}
+
+	writeSupport := []string{
+		objectNameCalls, objectNameContact, objectNameDeal, objectNameAccount,
 	}
 
 	return components.EndpointRegistryInput{
@@ -34,6 +62,10 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}

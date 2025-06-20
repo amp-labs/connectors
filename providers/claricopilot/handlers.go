@@ -1,13 +1,16 @@
 package claricopilot
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 const (
@@ -126,4 +129,53 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	method := http.MethodPost
+
+	objectName := writeObjectMapping.Get(params.ObjectName)
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
+	if err != nil {
+		return nil, err
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	recordID, err := jsonquery.New(body).StrWithDefault("id", "")
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     resp,
+	}, nil
 }
