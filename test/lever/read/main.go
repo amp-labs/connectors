@@ -35,7 +35,7 @@ func MainFn() int {
 		return 1
 	}
 
-	err = testRead(context.Background(), conn, "opportunities", []string{""}, time.Date(2025, time.June, 19, 19, 0, 0, 0, time.Local), time.Date(2025, time.June, 19, 20, 30, 0, 0, time.Local)) //nolint:111
+	err = testRead(context.Background(), conn, "opportunities", []string{""}, time.Date(2025, time.June, 2, 0, 0, 0, 0, time.UTC), time.Date(2025, time.June, 30, 0, 0, 0, 0, time.UTC))
 	if err != nil {
 		return 1
 	}
