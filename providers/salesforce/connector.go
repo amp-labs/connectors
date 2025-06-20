@@ -20,7 +20,6 @@ const (
 
 // Connector is a Salesforce connector.
 type Connector struct {
-	BaseURL   string
 	Client    *common.JSONHTTPClient
 	XMLClient *common.XMLHTTPClient
 
@@ -61,7 +60,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
 
-	conn.setBaseURL(conn.providerInfo.BaseURL)
+	// Proxy actions use the base URL set on the HTTP client, so we need to set it here.
+	conn.SetBaseURL(conn.moduleInfo.BaseURL)
+
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
 		JSON: &interpreter.DirectFaultyResponder{Callback: conn.interpretJSONError},
 		XML:  &interpreter.DirectFaultyResponder{Callback: conn.interpretXMLError},
@@ -96,30 +97,38 @@ func (c *Connector) getRestApiURL(paths ...string) (*urlbuilder.URL, error) {
 		restAPISuffix, // scope URLs to API version
 	}, paths...)
 
-	return urlbuilder.New(c.BaseURL, parts...)
+	return urlbuilder.New(c.getModuleURL(), parts...)
 }
 
 func (c *Connector) getDomainURL(paths ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, paths...)
+	return urlbuilder.New(c.getModuleURL(), paths...)
 }
 
 func (c *Connector) getSoapURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, "services/Soap/m", APIVersionSOAP())
+	return urlbuilder.New(c.getModuleURL(), "services/Soap/m", APIVersionSOAP())
 }
 
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
-func (c *Connector) getURIPartEventRelayConfig(paths ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(uriToolingEventRelayConfig, paths...)
+func (c *Connector) getURLEventRelayConfig(identifier string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.getModuleURL(), uriToolingEventRelayConfig, identifier)
+}
+
+// SetBaseURL
+// TODO use components.Connector to inherit this method.
+func (c *Connector) SetBaseURL(newURL string) {
+	c.providerInfo.BaseURL = newURL
+	c.moduleInfo.BaseURL = newURL
+	c.HTTPClient().Base = newURL
+}
+
+// Gateway access to URLs.
+func (c *Connector) getModuleURL() string {
+	return c.moduleInfo.BaseURL
 }
 
 func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(uriSobjects, objectName, "describe")
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
 }
 
 func (c *Connector) isPardotModule() bool {
