@@ -27,22 +27,20 @@ var ErrMissingUntilTimestamp = errors.New("messages/scheduled_broadcasts require
 // specifically from the response samples in the Endpoints section of their respective object APIs.
 // https://www.braze.com/docs/api/home
 var dataFields = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
-	"catalogs":         "catalogs", // default limit == unknown
-	"cdi/integrations": "results",  // cursor, Link
-	// "email/hard_bounces":            "emails",               // limit is by default  100, max 500
-	// "email/unsubscribes":            "emails",               // limit is by default  100, max 500
-	"campaigns/list":                "campaigns",            // uses page, max,default 100 records, if rcds =100 go nex
-	"canvas/list":                   "canvases",             // uses page, max,default 100 records, if rcds =100 go nex
-	"events/list":                   "events",               // uses page, max,default 250 records, if rcds =250 go nex
-	"events":                        "events",               // cursor, Link
-	"purchases/product_list":        "products",             // uses page, max and default  unknown.
-	"segments/list":                 "segments",             // uses page default  100, max 100
-	"custom_attributes":             "attributes",           // cursor, Link
-	"sms/invalid_phone_numbers":     "sms",                  // limit is by default  100, max 500
-	"messages/scheduled_broadcasts": "scheduled_broadcasts", // will need until Timestamp
-	"preference_center/v1/list":     "preference_centers",   // None
-	"content_blocks/list":           "content_blocks",       // limit is by default  100, max 1000
-	"templates/email/list":          "templates",            // limit is by default  100, max 1000
+	"catalogs":                      "catalogs",
+	"cdi/integrations":              "results",
+	"campaigns/list":                "campaigns",
+	"canvas/list":                   "canvases",
+	"events/list":                   "events",
+	"events":                        "events",
+	"purchases/product_list":        "products",
+	"segments/list":                 "segments",
+	"custom_attributes":             "attributes",
+	"sms/invalid_phone_numbers":     "sms",
+	"messages/scheduled_broadcasts": "scheduled_broadcasts",
+	"preference_center/v1/list":     "preference_centers",
+	"content_blocks/list":           "content_blocks",
+	"templates/email/list":          "templates",
 }, func(key string) string {
 	return "data"
 })
