@@ -60,6 +60,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
 
+	// Proxy actions use the base URL set on the HTTP client, so we need to set it here.
+	conn.SetBaseURL(conn.moduleInfo.BaseURL)
+
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
 		JSON: &interpreter.DirectFaultyResponder{Callback: conn.interpretJSONError},
 		XML:  &interpreter.DirectFaultyResponder{Callback: conn.interpretXMLError},
