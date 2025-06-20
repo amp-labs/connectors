@@ -476,6 +476,7 @@ type WebhookVerificationParameters struct {
 	URL          string
 	ClientSecret string
 	Method       string
+	MatcherRefs  map[string]any // optional, depends on the provider
 }
 
 func inferDeprecatedFieldsMap(fields FieldsMetadata) map[string]string {
