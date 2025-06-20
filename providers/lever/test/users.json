@@ -1,0 +1,20 @@
+{
+    "data": [
+        {
+            "id": "e0a9f3e3-bd9b-4eb1-8d2c-0d9a572bf641",
+            "name": "sample@gmail.com",
+            "username": "sample",
+            "email": "sample@gmail.com",
+            "accessRole": "super admin",
+            "photo": null,
+            "createdAt": 1743625450829,
+            "deactivatedAt": null,
+            "externalDirectoryId": null,
+            "linkedContactIds": null,
+            "jobTitle": null,
+            "managerId": null
+        }
+    ],
+    "hasNext": true,
+    "next": "%5B1733206956064%2C%22c21d911f-8292-49b7-b135-f7cc233b43fd%22%5D"
+}
