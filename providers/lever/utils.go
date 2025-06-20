@@ -25,6 +25,11 @@ var (
 		"postings",
 		"opportunities",
 	)
+
+	EndpointWithPutMethodNoRecordId = datautils.NewSet( //nolint:gochecknoglobals
+		"stage",
+		"archived",
+	)
 )
 
 func makeNextRecordsURL(reqLink *url.URL) common.NextPageFunc {
