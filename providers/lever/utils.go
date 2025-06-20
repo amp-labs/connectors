@@ -42,6 +42,19 @@ var (
 		"forms",
 		"referrals",
 		"resumes",
+		"addLinks",
+		"removeLinks",
+		"addTags",
+		"removeTags",
+		"addSources",
+		"removeSources",
+		"stage",
+		"archived",
+	)
+
+	EndpointWithPutMethodNoRecordId = datautils.NewSet( //nolint:gochecknoglobals
+		"stage",
+		"archived",
 	)
 )
 
