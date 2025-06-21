@@ -24,7 +24,12 @@ func run() error {
 
 	conn := claricopilot.GetConnector(ctx)
 
-	err := testCreatingContacts(ctx, conn)
+	id, err := testCreatingContacts(ctx, conn)
+	if err != nil {
+		return err
+	}
+
+	err = testUpdateContacts(ctx, conn, id)
 	if err != nil {
 		return err
 	}
@@ -84,11 +89,11 @@ func testCreatingCalls(ctx context.Context, conn *cc.Connector) error {
 	return nil
 }
 
-func testCreatingContacts(ctx context.Context, conn *cc.Connector) error {
+func testCreatingContacts(ctx context.Context, conn *cc.Connector) (string, error) {
 	params := common.WriteParams{
 		ObjectName: "contacts",
 		RecordData: map[string]any{
-			"crm_id":         "1232434",
+			"crm_id":         gofakeit.UUID(),
 			"account_crm_id": "salesorcefd",
 			"first_name":     "John",
 			"last_name":      "Run",
@@ -102,19 +107,19 @@ func testCreatingContacts(ctx context.Context, conn *cc.Connector) error {
 	slog.Info("Creating contact...")
 	res, err := conn.Write(ctx, params)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	// Print the results
 	jsonStr, err := json.MarshalIndent(res, "", "  ")
 	if err != nil {
-		return fmt.Errorf("error marshalling JSON: %w", err)
+		return "", fmt.Errorf("error marshalling JSON: %w", err)
 	}
 
 	_, _ = os.Stdout.Write(jsonStr)
 	_, _ = os.Stdout.WriteString("\n")
 
-	return nil
+	return res.Data["crm_id"].(string), nil
 }
 
 func testCreateDeals(ctx context.Context, conn *cc.Connector) error {
@@ -164,6 +169,35 @@ func testCreateAccounts(ctx context.Context, conn *cc.Connector) error {
 	}
 
 	slog.Info("Creating account...")
+	res, err := conn.Write(ctx, params)
+	if err != nil {
+		return err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testUpdateContacts(ctx context.Context, conn *cc.Connector, id string) error {
+	params := common.WriteParams{
+		ObjectName: "contacts",
+		RecordId:   id,
+		RecordData: map[string]any{
+			"crm_id":     id,
+			"first_name": gofakeit.FirstName(),
+			"last_name":  gofakeit.LastName(),
+		},
+	}
+
+	slog.Info("Updating contact...")
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return err

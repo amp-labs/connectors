@@ -38,10 +38,10 @@ var supportedObjectV2 = datautils.NewSet( //nolint:gochecknoglobals
 
 //nolint:gochecknoglobals
 var writeObjectMapping = datautils.NewDefaultMap(map[string]string{
-	objectNameCalls:   "create-call",
-	objectNameContact: "create-contact",
-	objectNameDeal:    "create-deal",
-	objectNameAccount: "create-account",
+	objectNameCalls:   "call",
+	objectNameContact: "contact",
+	objectNameDeal:    "deal",
+	objectNameAccount: "account",
 },
 	func(objectName string) (fieldName string) {
 		return objectName

@@ -20,6 +20,8 @@ const (
 	pageSize         = "100"
 	skipKey          = "skip"
 	apiVersionV2     = "v2"
+	createPrefix     = "create"
+	updatePrefix     = "update"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -141,7 +143,14 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	objectName := writeObjectMapping.Get(params.ObjectName)
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
+	fullObjectName := fmt.Sprintf("%s-%s", createPrefix, objectName)
+
+	if params.RecordId != "" {
+		method = http.MethodPut
+		fullObjectName = fmt.Sprintf("%s-%s", updatePrefix, objectName)
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, fullObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -167,7 +176,7 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	recordID, err := jsonquery.New(body).StrWithDefault("id", "")
+	recordID, err := jsonquery.New(body).StrWithDefault("crm_id", "")
 	if err != nil {
 		return nil, err
 	}
