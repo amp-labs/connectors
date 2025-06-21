@@ -26,3 +26,11 @@ func (timing) FormatRFC3339inUTCWithMilliseconds(input time.Time) string {
 
 	return utcTime.Format("2006-01-02T15:04:05.000Z")
 }
+
+// FormatRFC3339inUTCWithMicrosecondsAndOffset similar to FormatRFC3339inUTCWithMilliseconds but uses microseconds.
+// It is more granular and has timezone offset.
+func (timing) FormatRFC3339inUTCWithMicrosecondsAndOffset(input time.Time) string {
+	utcTime := input.UTC()
+
+	return utcTime.Format("2006-01-02T15:04:05.000000-07:00")
+}
