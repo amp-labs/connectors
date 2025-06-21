@@ -27,9 +27,24 @@ const (
 )
 
 var supportSince = datautils.NewSet( //nolint:gochecknoglobals
+	// https://www.aha.io/api/resources/audits/retrieve_record_history
 	objectNameAudits,
+	// https://www.aha.io/api/resources/historical_audits/create_an_audit_search
 	objectNameHistoricalAudits,
+	// https://www.aha.io/api/resources/idea_votes/list_votes_for_an_account
 	objectNameIdeasEndorsements,
+	// https://www.aha.io/api/resources/ideas/list_ideas
+	objectNameIdeas,
+)
+
+var supportUntil = datautils.NewSet( //nolint:gochecknoglobals
+	// https://www.aha.io/api/resources/audits/retrieve_record_history
+	objectNameAudits,
+	// https://www.aha.io/api/resources/historical_audits/create_an_audit_search
+	objectNameHistoricalAudits,
+	// https://www.aha.io/api/resources/idea_votes/list_votes_for_an_account
+	objectNameIdeasEndorsements,
+	// https://www.aha.io/api/resources/ideas/list_ideas
 	objectNameIdeas,
 )
 
