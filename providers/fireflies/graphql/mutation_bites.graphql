@@ -1,7 +1,23 @@
-query {
-    bites(mine: false, my_team: true, limit: {{.Limit}}{{if .Skip}}, skip: {{.Skip}}{{end}}) {
+mutation {
+    createBite(
+        transcript_Id: "{{.transcriptId}}"
+        start_time: {{.startTime}}
+        end_time: {{.endTime}}
+        {{if .name}}
+        name:"{{.name}}"
+        {{end}}
+        {{if .media_type}}
+        media_type:"{{.media_type}}"
+        {{end}}
+        {{if .privacies}}
+        privacies:{{.privacies}}
+        {{end}}
+        {{if .summary}}
+        summary: "{{.summary}}"
+        {{end}}
+    ) {
         transcript_id
-        name
+		name
         id
         thumbnail
         preview
@@ -19,7 +35,7 @@ query {
             name
             type
         }
-        captions {
+    	captions {
             end_time
             index
             speaker_id
@@ -39,5 +55,5 @@ query {
             name
             id
         }
-    }
+	}
 }
