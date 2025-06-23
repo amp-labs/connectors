@@ -69,7 +69,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	// TODO (good) validate underlying getURL
 	rsp, err := c.Client.Get(ctx, url)
 	if err != nil {
 		return nil, err

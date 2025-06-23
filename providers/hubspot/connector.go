@@ -46,7 +46,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 }
 
 // This method must be used only by the unit tests.
-func (c *Connector) setBaseURL(newURL string) {
-	c.providerInfo.BaseURL = newURL
-	c.moduleInfo.BaseURL = newURL
+func (c *Connector) setBaseURL(rootURL, moduleURL string) {
+	c.providerInfo.BaseURL = rootURL
+	c.moduleInfo.BaseURL = moduleURL
 }

@@ -31,7 +31,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 	relativeURL := strings.Join([]string{"objects", config.ObjectName}, "/")
 
-	url, err := c.getURL(relativeURL)
+	url, err := c.getModuleURL(relativeURL)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,6 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	data["properties"] = config.RecordData
 	data["associations"] = config.Associations
 
-	// TODO (good) validate getURL
 	json, err := write(ctx, url, data)
 	if err != nil {
 		return nil, err

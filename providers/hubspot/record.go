@@ -65,7 +65,6 @@ func (c *Connector) GetRecordsByIds(
 		"properties": fields,
 	}
 
-	// TODO (good) validate getURL
 	resp, err := c.Client.Post(ctx, url, body)
 	if err != nil {
 		return nil, err
@@ -88,8 +87,8 @@ func (c *Connector) getBatchRecordsURL(objectName string, associations []string)
 	relativePath := strings.Join([]string{"/objects", objectName, "batch", "read"}, "/")
 
 	if len(associations) > 0 {
-		return c.getURL(relativePath, "associations", strings.Join(associations, ","))
-	} else {
-		return c.getURL(relativePath)
+		return c.getModuleURL(relativePath, "associations", strings.Join(associations, ","))
 	}
+
+	return c.getURLFromModule(relativePath)
 }

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"path"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -13,12 +12,10 @@ import (
 
 var errMissingValue = errors.New("missing value for query parameter")
 
-// getURL is a helper to return the full URL considering the base URL & module.
+// getModuleURL is a helper to return the full URL considering the base URL & module.
 // TODO: replace queryArgs with urlbuilder.New().WithQueryParam().
-func (c *Connector) getURL(arg string, queryArgs ...string) (string, error) {
-	modulePath := supportedModules[c.moduleID].Path()
-
-	urlBase, err := c.getURLFromRoot("/" + path.Join(modulePath, arg))
+func (c *Connector) getModuleURL(arg string, queryArgs ...string) (string, error) {
+	urlBase, err := c.getURLFromModule("/" + arg)
 	if err != nil {
 		return "", err
 	}
@@ -50,25 +47,28 @@ func (c *Connector) getURLFromRoot(href string) (string, error) { // nolint:unpa
 	return c.providerInfo.BaseURL + href, nil
 }
 
+// TODO change to return (*urlbuilder.URL, error).
+func (c *Connector) getURLFromModule(href string) (string, error) { // nolint:unparam
+	return c.moduleInfo.BaseURL + href, nil
+}
+
 func (c *Connector) getCRMObjectsReadURL(config common.ReadParams) (string, error) {
-	// NB: The final slash is just to emulate prior behavior in earlier versions
-	// of this code. If it turns out to be unnecessary, remove it.
-	relativeURL := "objects/" + config.ObjectName + "/"
+	relativeURL := "objects/" + config.ObjectName
 
 	// TODO c.getURL() doesn't make a module assumption. It is not important until Hubspot will have 2+ modules.
-	return c.getURL(relativeURL, makeCRMObjectsQueryValues(config)...)
+	return c.getModuleURL(relativeURL, makeCRMObjectsQueryValues(config)...)
 }
 
 func (c *Connector) getCRMObjectsSearchURL(config SearchParams) (string, error) {
 	relativeURL := strings.Join([]string{"objects", config.ObjectName, "search"}, "/")
 
-	return c.getURL(relativeURL)
+	return c.getModuleURL(relativeURL)
 }
 
 func (c *Connector) getCRMSearchURL(config searchCRMParams) (string, error) {
 	relativeURL := strings.Join([]string{config.ObjectName, "search"}, "/")
 
-	return c.getURL(relativeURL)
+	return c.getModuleURL(relativeURL)
 }
 
 // Endpoint to batch all Associations.

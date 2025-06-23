@@ -96,12 +96,11 @@ func (c *Connector) getObjectMetadataFromPropertyAPI(
 ) (*common.ObjectMetadata, error) {
 	relativeURL := strings.Join([]string{"properties", objectName}, "/")
 
-	url, err := c.getURL(relativeURL)
+	url, err := c.getModuleURL(relativeURL)
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO (good) validate getURL
 	rsp, err := c.Client.Get(ctx, url)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching HubSpot fields: %w", err)
