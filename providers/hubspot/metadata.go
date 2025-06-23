@@ -101,6 +101,7 @@ func (c *Connector) getObjectMetadataFromPropertyAPI(
 		return nil, err
 	}
 
+	// TODO validate getURL
 	rsp, err := c.Client.Get(ctx, url)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching HubSpot fields: %w", err)

@@ -35,6 +35,7 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		return nil, err
 	}
 
+	// TODO validate underlying getURL
 	rsp, err := c.Client.Post(ctx, url, makeFilterBody(config))
 	if err != nil {
 		return nil, err
@@ -76,6 +77,7 @@ func (c *Connector) searchCRM(
 		return nil, err
 	}
 
+	// TODO validate underlying getURL
 	rsp, err := c.Client.Post(ctx, url, payload)
 	if err != nil {
 		return nil, err

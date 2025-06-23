@@ -50,6 +50,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	data["properties"] = config.RecordData
 	data["associations"] = config.Associations
 
+	// TODO validate getURL
 	json, err := write(ctx, url, data)
 	if err != nil {
 		return nil, err

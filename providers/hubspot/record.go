@@ -65,6 +65,7 @@ func (c *Connector) GetRecordsByIds(
 		"properties": fields,
 	}
 
+	// TODO validate getURL
 	resp, err := c.Client.Post(ctx, url, body)
 	if err != nil {
 		return nil, err
