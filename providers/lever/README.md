@@ -64,5 +64,3 @@ Notes:
     - feedback_templates
 	- notes
 	- form_templates
-	- requisitions
-	- requisition_fields
