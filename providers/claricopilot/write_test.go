@@ -33,7 +33,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 		{
 			Name: "Successfully creation of an call",
-			Input: common.WriteParams{ObjectName: "contacts", RecordData: map[string]any{
+			Input: common.WriteParams{ObjectName: "calls", RecordData: map[string]any{
 				"source_id": "12345",
 				"title":     "Test Call",
 				"type":      "RECORDING",
