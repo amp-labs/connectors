@@ -8,10 +8,10 @@ import (
 
 // Connector is a Hubspot connector.
 type Connector struct {
-	BaseURL    string
-	Client     *common.JSONHTTPClient
-	moduleInfo *providers.ModuleInfo
-	moduleID   common.ModuleID
+	Client       *common.JSONHTTPClient
+	providerInfo *providers.ProviderInfo
+	moduleInfo   *providers.ModuleInfo
+	moduleID     common.ModuleID
 }
 
 // NewConnector returns a new Hubspot connector.
@@ -23,12 +23,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	// Read provider info & replace catalog variables with given substitutions, if any
-	providerInfo, err := providers.ReadInfo(providers.Hubspot)
-	if err != nil {
-		return nil, err
-	}
-
 	conn = &Connector{
 		Client: &common.JSONHTTPClient{
 			HTTPClient: params.Client.Caller,
@@ -36,15 +30,23 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		moduleID: params.Module.Selection.ID,
 	}
 
-	conn.setBaseURL(providerInfo.BaseURL)
+	// Read provider info & replace catalog variables with given substitutions, if any
+	conn.providerInfo, err = providers.ReadInfo(providers.Hubspot)
+	if err != nil {
+		return nil, err
+	}
+
+	// HTTPClient will soon not store Base URL.
+	conn.Client.HTTPClient.Base = conn.providerInfo.BaseURL
 	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
 
-	conn.moduleInfo = providerInfo.ReadModuleInfo(conn.moduleID)
+	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
 
 	return conn, nil
 }
 
+// This method must be used only by the unit tests.
 func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
+	c.providerInfo.BaseURL = newURL
+	c.moduleInfo.BaseURL = newURL
 }

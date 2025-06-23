@@ -55,7 +55,7 @@ func (c *Connector) GetRecordsByIds(
 
 	pluralObjectName := naming.NewPluralString(objectName).String()
 
-	u, err := c.getBatchRecordsURL(pluralObjectName, associations)
+	url, err := c.getBatchRecordsURL(pluralObjectName, associations)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (c *Connector) GetRecordsByIds(
 		"properties": fields,
 	}
 
-	resp, err := c.Client.Post(ctx, u, body)
+	resp, err := c.Client.Post(ctx, url, body)
 	if err != nil {
 		return nil, err
 	}

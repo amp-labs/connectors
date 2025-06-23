@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 var errMissingValue = errors.New("missing value for query parameter")
@@ -17,7 +18,10 @@ var errMissingValue = errors.New("missing value for query parameter")
 func (c *Connector) getURL(arg string, queryArgs ...string) (string, error) {
 	modulePath := supportedModules[c.moduleID].Path()
 
-	urlBase := c.BaseURL + "/" + path.Join(modulePath, arg)
+	urlBase, err := c.getURLFromRoot("/" + path.Join(modulePath, arg))
+	if err != nil {
+		return "", err
+	}
 
 	if len(queryArgs) > 0 {
 		vals := url.Values{}
@@ -40,9 +44,10 @@ func (c *Connector) getURL(arg string, queryArgs ...string) (string, error) {
 	return urlBase, nil
 }
 
-func (c *Connector) getRawURL() string {
+// TODO change to return (*urlbuilder.URL, error).
+func (c *Connector) getURLFromRoot(href string) (string, error) { // nolint:unparam
 	// This URL is module independent.
-	return c.BaseURL
+	return c.providerInfo.BaseURL + href, nil
 }
 
 func (c *Connector) getCRMObjectsReadURL(config common.ReadParams) (string, error) {
@@ -64,4 +69,16 @@ func (c *Connector) getCRMSearchURL(config searchCRMParams) (string, error) {
 	relativeURL := strings.Join([]string{config.ObjectName, "search"}, "/")
 
 	return c.getURL(relativeURL)
+}
+
+// Endpoint to batch all Associations.
+// https://developers.hubspot.com/docs/guides/api/crm/associations/associations-v4#retrieve-associated-records
+func (c *Connector) getAssociationsURL(fromObject, toObject string) (*urlbuilder.URL, error) {
+	// TODO getURLFromRoot should return *urlbuilder.URL
+	fullURL, err := c.getURLFromRoot("/crm/v4/associations/" + fromObject + "/" + toObject + "/batch/read")
+	if err != nil {
+		return nil, err
+	}
+
+	return urlbuilder.New(fullURL)
 }
