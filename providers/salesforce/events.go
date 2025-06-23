@@ -202,7 +202,7 @@ func (c *Connector) DeleteEventRelayConfig(ctx context.Context, cfgId string) (*
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
 func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) error {
-	location, err := c.getURIPartEventRelayConfig(cfg.Id)
+	url, err := c.getURLEventRelayConfig(cfg.Id)
 	if err != nil {
 		return err
 	}
@@ -215,7 +215,7 @@ func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) er
 	}
 
 	// patch returns no content with 204. If it fails, it will return an error.
-	_, err = c.Client.Patch(ctx, location.String(), config)
+	_, err = c.Client.Patch(ctx, url.String(), config)
 	if err != nil {
 		return fmt.Errorf("error running event relay: %w", err)
 	}
@@ -228,7 +228,12 @@ func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) er
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_responses_organization.htm?q=organization
 func (c *Connector) getOrganization(ctx context.Context) (map[string]*ajson.Node, error) {
-	resp, err := c.Client.Get(ctx, restAPISuffix+"/connect/organization")
+	url, err := c.getRestApiURL("connect/organization")
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.Client.Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
