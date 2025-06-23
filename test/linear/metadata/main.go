@@ -14,7 +14,7 @@ func main() {
 
 	conn := linear.GetLinearConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"Template"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"teams", "users"})
 
 	if err != nil {
 		log.Fatal(err)
