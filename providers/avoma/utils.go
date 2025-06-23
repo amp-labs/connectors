@@ -18,7 +18,7 @@ var avomaQueryEncodingExceptions = map[string]string{ //nolint:gochecknoglobals
 	"%3A": ":",
 }
 
-var EndpointsWithResultsPath = datautils.NewSet( //nolint:gochecknoglobals
+var endpointsWithResultsPath = datautils.NewSet( //nolint:gochecknoglobals
 	"meetings",
 	"calls",
 	"custom_categories",
