@@ -12,35 +12,36 @@ Lever API version : v1
 | audit_events            | audit_events       | read         |
 | sources                 | sources            | read         |
 | stages                  | stages             | read         |
-| tags                    | tags               | read         |
+| tags                    | tags               | read, write  |
 | users                   | users              | read. write  |
 | feedback_templates      | feedback_templates | read, write  |
-| opportunities           | opportunities      | read         |
-| postings                | postings           | read         |
+| opportunities           | opportunities      | read, write  |
+| postings                | postings           | read, write  |
 | form_templates          | form_templates     | read, write  |
 | requisitions            | requisitions       | read, write  |
 | requisition_fields      | requisition_fields | read, write  |
+| uploads                 | uploads            | write        |
+| contacts                | contacts           | write        |
+
+Below endpoints having url path like users/:userId/Object
+
+| Object                  | Resource         | Method       |
+| ----------------------- | ---------------- | ------------ |
+| deactivate              | deactivate       | write        |
+| reactivate              | reactivate       | write        |
+
+Below endpoints having url path like postings/:postingId/Object
+
+| Object                  | Resource         | Method       |
+| ----------------------- | ---------------- | ------------ |
+| apply                   | apply            | write        |
 
 
 Notes:
 - Excluded the endpoints /eeo/responses/pii and /eeo/responses because they are not direct endpoints, and their responses are embedded within their respective objectName under data. Other endpoints follow a consistent structure where responses are contained under data.
 - Excluded the endpoint /surveys/diversity/:posting because it includes a posting ID in the URL path, only one endpoints with posting in the connector.
-- Neglected below write endpoints due to query param perform_as required
-    - feedback
-    - files
-    - interviews
-    - panels
-    - opportunities
-    - postings
-
-- Only one endpoint contains :posting (posting ID) in the URL path:
-    - postings/:posting/apply
-
-- Only two endpoints contain :user (user ID) in the URL path:
-    - users/:user/deactivate
-    - users/:user/reactivate
-
 - Below delete endpoints cannot be delete that were created within the Lever application. Only endpoints that were created via API can be deleted via API.
     - feedback_templates
 	- notes
 	- form_templates
+    - interviews

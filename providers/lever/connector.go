@@ -26,7 +26,15 @@ type Connector struct {
 	components.Reader
 	components.Writer
 	components.Deleter
+
+	userId    string
+	postingId string
 }
+
+const (
+	metadataKeyUserID    = "userId"
+	metadataKeyPostingID = "postingId"
+)
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
@@ -34,6 +42,9 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	conn.userId = params.Metadata[metadataKeyUserID]
+	conn.postingId = params.Metadata[metadataKeyPostingID]
 
 	return conn, nil
 }

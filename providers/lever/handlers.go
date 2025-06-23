@@ -122,7 +122,10 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	if len(params.RecordId) > 0 {
 		url.AddPath(params.RecordId)
 
-		method = http.MethodPut
+		// Except postings object, other objects use PUT.
+		if params.ObjectName != "postings" {
+			method = http.MethodPut
+		}
 	}
 
 	jsonData, err := json.Marshal(params.RecordData)
