@@ -44,6 +44,14 @@ func supportedOperations() components.EndpointRegistryInput {
 		"archived",
 	}
 
+	deleteSupport := []string{
+		"feedback_templates",
+		"notes",
+		"form_templates",
+		"requisitions",
+		"requisition_fields",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
@@ -53,6 +61,10 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
 				Support:  components.WriteSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(deleteSupport, ",")),
+				Support:  components.DeleteSupport,
 			},
 		},
 	}

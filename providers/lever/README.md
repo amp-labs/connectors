@@ -39,3 +39,10 @@ Notes:
 - Only two endpoints contain :user (user ID) in the URL path:
     - users/:user/deactivate
     - users/:user/reactivate
+
+- Below delete endpoints cannot be delete that were created within the Lever application. Only endpoints that were created via API can be deleted via API.
+    - feedback_templates
+	- notes
+	- form_templates
+	- requisitions
+	- requisition_fields
