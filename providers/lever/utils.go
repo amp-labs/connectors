@@ -50,17 +50,43 @@ var (
 		"removeSources",
 		"stage",
 		"archived",
+		"apply",
 	)
 
+	// Below endpoints having PUT method but no recordID.
 	EndpointWithPutMethodNoRecordId = datautils.NewSet( //nolint:gochecknoglobals
 		"stage",
 		"archived",
+	)
+
+	// Below endpoints having "userId" in the URL Path.
+	EndpointWithUserId = datautils.NewSet( //nolint:gochecknoglobals
+		"deactivate",
+		"reactivate",
+	)
+
+	// Below write endpoints requires QueryParam "perform_as" in the URL.
+	EndPointWithPerformAsQueryParam = datautils.NewSet( //nolint:gochecknoglobals
+		"feedback",
+		"files",
+		"interviews",
+		"panels",
+		"opportunities",
+		"postings",
 	)
 )
 
 func (c *Connector) constructURL(objName string) string {
 	if EndpointWithOpportunityID.Has(objName) {
 		return fmt.Sprintf("opportunities/%s/%s", c.opportunityId, objName)
+	}
+
+	if EndpointWithUserId.Has(objName) {
+		return fmt.Sprintf("users/%s/%s", c.userId, objName)
+	}
+
+	if objName == "apply" {
+		return fmt.Sprintf("postings/%s/%s", c.postingId, objName)
 	}
 
 	return objName

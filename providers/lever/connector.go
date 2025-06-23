@@ -28,10 +28,14 @@ type Connector struct {
 	components.Deleter
 
 	opportunityId string
+	userId        string
+	postingId     string
 }
 
 const (
 	metadataKeyopportunityID = "opportunityId"
+	metadataKeyUserID        = "userId"
+	metadataKeyPostingID     = "postingId"
 )
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -42,6 +46,8 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	}
 
 	conn.opportunityId = params.Metadata[metadataKeyopportunityID]
+	conn.userId = params.Metadata[metadataKeyUserID]
+	conn.postingId = params.Metadata[metadataKeyPostingID]
 
 	return conn, nil
 }
