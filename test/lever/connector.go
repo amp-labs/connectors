@@ -18,11 +18,21 @@ var (
 		PathJSON:  "metadata.opportunityId",
 		SuffixENV: "OPPORTUNITY_ID",
 	}
+	fieldUserId = credscanning.Field{
+		Name:      "userId",
+		PathJSON:  "metadata.userId",
+		SuffixENV: "USER_ID",
+	}
+	fieldPostingId = credscanning.Field{
+		Name:      "postingId",
+		PathJSON:  "metadata.postingId",
+		SuffixENV: "POSTING_ID",
+	}
 )
 
 func GetConnector(ctx context.Context) *lever.Connector {
 	filePath := credscanning.LoadPath(providers.LeverSandbox)
-	reader := utils.MustCreateProvCredJSON(filePath, true, fieldOpportunityId)
+	reader := utils.MustCreateProvCredJSON(filePath, true, fieldOpportunityId, fieldUserId, fieldPostingId)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),
@@ -37,6 +47,8 @@ func GetConnector(ctx context.Context) *lever.Connector {
 		AuthenticatedClient: client,
 		Metadata: map[string]string{
 			"opportunityId": reader.Get(fieldOpportunityId),
+			"userId":        reader.Get(fieldUserId),
+			"postingId":     reader.Get(fieldPostingId),
 		},
 	})
 	if err != nil {
