@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 )
 
-func supportedOperations() components.EndpointRegistryInput {
+func supportedOperations() components.EndpointRegistryInput { // nolint:funlen
 	readSupport := []string{
 		"archive_reasons",
 		"audit_events",
@@ -44,7 +44,13 @@ func supportedOperations() components.EndpointRegistryInput {
 		"archived",
 	}
 
-	deleteSupport := []string{"feedback_templates", "notes", "form_templates", "requisitions", "requisition_fields"}
+	deleteSupport := []string{
+		"feedback_templates",
+		"notes",
+		"form_templates",
+		"requisitions",
+		"requisition_fields",
+	}
 
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
