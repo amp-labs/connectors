@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/getkin/kin-openapi/openapi3"
 )
@@ -187,7 +188,7 @@ func extractPropertiesArrayType(schema *openapi3.Schema) []Array {
 		schema.Properties,
 	}
 
-	compositeSchemas := append(schema.AllOf, append(schema.OneOf, schema.AnyOf...)...) //nolint:gocritic
+	compositeSchemas := datautils.MergeSlices(schema.AllOf, schema.OneOf, schema.AnyOf)
 	// Item schema will likely be inside composite schema
 	for _, comp := range compositeSchemas {
 		if comp != nil && comp.Value != nil {
