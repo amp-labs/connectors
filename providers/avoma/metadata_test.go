@@ -60,7 +60,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					"template": {
 						DisplayName: "Template",
 						Fields: map[string]common.FieldMetadata{
-
 							"email": {
 								DisplayName:  "email",
 								ValueType:    "string",
