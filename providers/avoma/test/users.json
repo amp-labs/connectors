@@ -1,0 +1,26 @@
+[
+    {
+        "uuid": "bbe512ba-5eb8-48c7-ab1f-9c069836436a",
+        "user": {
+            "email": "beadko@gmail.com",
+            "first_name": "Beatrise",
+            "last_name": "",
+            "profile_pic": "https://lh3.googleusercontent.com/a/ACg8ocJIua6Ibz2UjwZN2QJrouKsGokM0b8-myrfCzhZLMuBP_7kRe6UIw=s96-c",
+            "position": "developer",
+            "is_active": false,
+            "job_function": "Engineering",
+            "upn": null
+        },
+        "role": {
+            "name": "member",
+            "display_name": "member",
+            "description": "Full access to your meetings. Can listen to meetings of other members from the same team",
+            "uuid": "051b16a4-039d-4422-97f6-2d7337542741",
+            "role_type": "sys"
+        },
+        "position": "developer",
+        "teams": [],
+        "status": "active",
+        "active": false
+    }
+]
