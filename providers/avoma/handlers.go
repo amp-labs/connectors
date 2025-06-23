@@ -13,24 +13,28 @@ import (
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName, "/")
+	if params.NextPage != "" {
+		url, err := urlbuilder.New(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+
+		return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName, common.WithTrailingSlash)
 	if err != nil {
 		return nil, err
 	}
 
-	if EndpointsWithResultsPath.Has(params.ObjectName) {
+	if endpointsWithResultsPath.Has(params.ObjectName) {
 		url.WithQueryParam("page_size", pageSize)
 
+		// Query parameters `from_date` and `to_date` are required for paginated objects in Avoma.
 		if !params.Since.IsZero() && !params.Until.IsZero() {
 			url.WithQueryParam("from_date", datautils.Time.FormatRFC3339inUTC(params.Since))
 			url.WithQueryParam("to_date", datautils.Time.FormatRFC3339inUTC(params.Until))
-		}
-	}
-
-	if params.NextPage != "" {
-		url, err = urlbuilder.New(params.NextPage.String())
-		if err != nil {
-			return nil, err
 		}
 	}
 
@@ -45,7 +49,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	nodePath := ""
 
-	if EndpointsWithResultsPath.Has(params.ObjectName) {
+	if endpointsWithResultsPath.Has(params.ObjectName) {
 		nodePath = "results"
 	}
 
