@@ -3,8 +3,10 @@ package linear
 import (
 	"bytes"
 	"context"
+	"embed"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strings"
 
@@ -12,6 +14,9 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
+
+//go:embed graphql/*.graphql
+var queryFS embed.FS
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
@@ -115,4 +120,79 @@ func getFieldValueType(field string) common.ValueType {
 	default:
 		return common.ValueTypeOther
 	}
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build URL: %w", err)
+	}
+
+	var (
+		query string
+	)
+
+	if params.NextPage != "" {
+		url, err = urlbuilder.New(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	query = getQuery("graphql/"+params.ObjectName+".graphql", params.ObjectName)
+
+	requestBody := map[string]string{
+		"query": query,
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+
+}
+
+func getQuery(filepath, queryName string) string {
+	queryBytes, err := queryFS.ReadFile(filepath)
+	if err != nil {
+		return ""
+	}
+
+	tmpl, err := template.New(queryName).Parse(string(queryBytes))
+	if err != nil {
+		return ""
+	}
+
+	var (
+		queryBuf bytes.Buffer
+	)
+
+	err = tmpl.Execute(&queryBuf, nil)
+	if err != nil {
+		return ""
+	}
+
+	return queryBuf.String()
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		records(params.ObjectName),
+		nextRecordsURL(),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
