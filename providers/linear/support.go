@@ -10,7 +10,23 @@ import (
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
+		"attachments",
+		"auditEntries",
+		"comments",
+		"customers",
+		"cycles",
+		"documents",
+		"favorites",
+		"initiatives",
+		"issues",
+		"notifications",
+		"projects",
+		"projectStatuses",
+		"teamMemberships",
+		"teams",
+		"triageResponsibilities",
 		"users",
+		"workflowStates",
 	}
 
 	return components.EndpointRegistryInput{

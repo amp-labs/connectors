@@ -1,5 +1,5 @@
-query {
-  users {
+query GetUsers($filter: UserFilter, $first: Int, $after: String) {
+  users(filter: $filter, first: $first, after: $after) {
     nodes {
       id
       createdAt

@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -24,14 +25,26 @@ func main() {
 	conn := linear.GetLinearConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "users",
-		Fields:     connectors.Fields("email", "name", "id"),
+		ObjectName: "issues",
+		Fields:     connectors.Fields("id", "title"),
+		Since:      time.Date(2025, 06, 23, 0, 0, 0, 0, time.UTC),
 	})
 	if err != nil {
 		utils.Fail("error reading from Linear", "error", err)
 	}
 
-	slog.Info("Reading users..")
+	slog.Info("Reading issues..")
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "projectStatuses",
+		Fields:     connectors.Fields("id"),
+	})
+	if err != nil {
+		utils.Fail("error reading from Linear", "error", err)
+	}
+
+	slog.Info("Reading project statuses..")
 	utils.DumpJSON(res, os.Stdout)
 
 }

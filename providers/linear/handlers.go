@@ -9,11 +9,14 @@ import (
 	"html/template"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
+
+var perPage = 100 //nolint:gochecknoglobals
 
 //go:embed graphql/*.graphql
 var queryFS embed.FS
@@ -23,7 +26,6 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	if err != nil {
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
-
 	// Use introspection query to get field information
 	query := fmt.Sprintf(`{
 		__type(name: "%s") {
@@ -128,21 +130,18 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
 
-	var (
-		query string
-	)
+	query := getQuery("graphql/"+params.ObjectName+".graphql", params.ObjectName)
 
-	if params.NextPage != "" {
-		url, err = urlbuilder.New(params.NextPage.String())
-		if err != nil {
-			return nil, err
-		}
+	// Create request body with query and variables
+	requestBody := map[string]any{
+		"query": query,
 	}
 
-	query = getQuery("graphql/"+params.ObjectName+".graphql", params.ObjectName)
+	// Add variables if there are filters for incremental reads
+	variables := buildGraphQLVariables(params)
 
-	requestBody := map[string]string{
-		"query": query,
+	if len(variables) > 0 {
+		requestBody["variables"] = variables
 	}
 
 	jsonBody, err := json.Marshal(requestBody)
@@ -156,7 +155,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	return req, nil
-
 }
 
 func getQuery(filepath, queryName string) string {
@@ -170,9 +168,7 @@ func getQuery(filepath, queryName string) string {
 		return ""
 	}
 
-	var (
-		queryBuf bytes.Buffer
-	)
+	var queryBuf bytes.Buffer
 
 	err = tmpl.Execute(&queryBuf, nil)
 	if err != nil {
@@ -191,8 +187,46 @@ func (c *Connector) parseReadResponse(
 	return common.ParseResult(
 		response,
 		records(params.ObjectName),
-		nextRecordsURL(),
+		nextRecordsURL(params.ObjectName),
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+// buildGraphQLVariables creates GraphQL variables for filtering.
+func buildGraphQLVariables(params common.ReadParams) map[string]any {
+	variables := make(map[string]any)
+
+	variables["first"] = perPage
+
+	if !params.Since.IsZero() {
+		filter := map[string]any{
+			"updatedAt": map[string]any{
+				"gte": params.Since.Format(time.RFC3339Nano),
+			},
+		}
+		variables["filter"] = filter
+	}
+
+	if !params.Until.IsZero() {
+		filter, exists := variables["filter"].(map[string]any)
+		if !exists {
+			filter = make(map[string]any)
+			variables["filter"] = filter
+		}
+
+		if updatedAt, exists := filter["updatedAt"].(map[string]any); exists {
+			updatedAt["lte"] = params.Until.Format(time.RFC3339Nano)
+		} else {
+			filter["updatedAt"] = map[string]any{
+				"lte": params.Until.Format(time.RFC3339Nano),
+			}
+		}
+	}
+
+	if params.NextPage != "" {
+		variables["after"] = params.NextPage
+	}
+
+	return variables
 }

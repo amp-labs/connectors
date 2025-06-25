@@ -1,6 +1,8 @@
 package linear
 
 import (
+	"log"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
@@ -17,22 +19,29 @@ func records(objectName string) common.RecordsFunc {
 	}
 }
 
-func nextRecordsURL() common.NextPageFunc {
+func nextRecordsURL(objectName string) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		meta, err := jsonquery.New(node).ObjectOptional("meta")
+		meta, err := jsonquery.New(node, "data", objectName).ObjectRequired("pageInfo")
 		if err != nil {
 			return "", err
 		}
 
-		nextCrs, err := jsonquery.New(meta).StringOptional("next")
+		nextPageExists, err := jsonquery.New(meta).BoolRequired("hasNextPage")
 		if err != nil {
 			return "", err
 		}
 
-		if nextCrs == nil {
+		if !nextPageExists {
 			return "", err
 		}
 
-		return *nextCrs, nil
+		nextCursor, err := jsonquery.New(meta).StringRequired("endCursor")
+		if err != nil {
+			return "", err
+		}
+
+		log.Printf("Next cursor for %s: %s", objectName, nextCursor)
+
+		return nextCursor, nil
 	}
 }
