@@ -474,9 +474,14 @@ type WebhookVerificationParameters struct {
 	Headers      http.Header
 	Body         []byte
 	URL          string
-	ClientSecret string
+	ClientSecret string // TODO: deprecate this field and add to client secret
 	Method       string
-	MatcherRefs  map[string]any // optional, depends on the provider
+	// MatcherRefs is a map of matcher references to the provider.
+	// Some providers do not send signing mechanism,
+	// but instead, they ask us to provide tokens of our choice that they attach to webhook messages
+	// Instead of simple token field, it is better to just to have map for backward compatibility
+	// so that we can add custom data to the webhook message as needed.
+	MatcherRefs map[string]any
 }
 
 func inferDeprecatedFieldsMap(fields FieldsMetadata) map[string]string {
