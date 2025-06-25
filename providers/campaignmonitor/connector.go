@@ -14,18 +14,37 @@ type Connector struct {
 
 	// Require authenticated client
 	common.RequireAuthenticatedClient
+	common.RequireMetadata
 
 	// Supported operations
 	components.SchemaProvider
+
+	clientID string
 }
+
+const (
+	metadataKeyClientID = "clientId"
+)
 
 func NewConnector(params common.Parameters) (*Connector, error) {
 	// Create base connector with provider info
-	return components.Initialize(providers.CampaignMonitor, params, constructor)
+	conn, err := components.Initialize(providers.CampaignMonitor, params, constructor)
+	if err != nil {
+		return nil, err
+	}
+
+	conn.clientID = params.Metadata[metadataKeyClientID]
+
+	return conn, nil
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
-	connector := &Connector{Connector: base}
+	connector := &Connector{
+		Connector: base,
+		RequireMetadata: common.RequireMetadata{
+			ExpectedMetadataKeys: []string{metadataKeyClientID},
+		},
+	}
 
 	// Set the metadata provider for the connector
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(

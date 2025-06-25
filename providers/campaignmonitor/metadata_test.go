@@ -17,11 +17,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 
 	clientsResponse := testutils.DataFromFile(t, "clients.json")
 	adminsResponse := testutils.DataFromFile(t, "admins.json")
+	campaignsResponse := testutils.DataFromFile(t, "campaigns.json")
 
 	tests := []testroutines.Metadata{
 		{
 			Name:  "Successfully describe multiple objects with metadata",
-			Input: []string{"clients", "admins"},
+			Input: []string{"clients", "admins", "campaigns"},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
@@ -30,6 +31,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				}, {
 					If:   mockcond.PathSuffix("api/v3.3/admins.json"),
 					Then: mockserver.Response(http.StatusOK, adminsResponse),
+				}, {
+					If:   mockcond.PathSuffix("api/v3.3/clients/744cdce058fc61d9ef5e2492f8d8fbaf/campaigns.json"),
+					Then: mockserver.Response(http.StatusOK, campaignsResponse),
 				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -52,6 +56,23 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							"Status":       "Status",
 						},
 					},
+					"campaigns": {
+						DisplayName: "Campaigns",
+						Fields:      map[string]common.FieldMetadata{},
+						FieldsMap: map[string]string{
+							"Name":              "Name",
+							"FromName":          "FromName",
+							"FromEmail":         "FromEmail",
+							"ReplyTo":           "ReplyTo",
+							"SentDate":          "SentDate",
+							"TotalRecipients":   "TotalRecipients",
+							"CampaignID":        "CampaignID",
+							"Subject":           "Subject",
+							"Tags":              "Tags",
+							"WebVersionURL":     "WebVersionURL",
+							"WebVersionTextURL": "WebVersionTextURL",
+						},
+					},
 				},
 				Errors: nil,
 			},
@@ -72,8 +93,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.Parameters{
-		Module:              common.ModuleRoot,
 		AuthenticatedClient: http.DefaultClient,
+		Metadata: map[string]string{
+			"clientId": "744cdce058fc61d9ef5e2492f8d8fbaf",
+		},
 	})
 	if err != nil {
 		return nil, err

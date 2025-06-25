@@ -2,22 +2,20 @@ package campaignmonitor
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 const APIVersion = "v3.3"
 
-func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	if JSONExtensionEndpoint.Has(objectName) {
-		objectName += ".json"
-	}
+type ResponseData struct {
+	Results []map[string]any `json:"Results,omitempty"`
+}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "api", APIVersion, objectName)
+func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
+	url, err := c.constructURL(objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -36,19 +34,37 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
 
-	resp, err := common.UnmarshalJSON[[]map[string]any](response)
-	if err != nil {
-		return nil, common.ErrFailedToUnmarshalBody
-	}
+	switch objectName {
+	// Below two objects having the response which is embedded with the "Results" key.
+	case "suppressionlist", "campaigns":
+		resp, err := common.UnmarshalJSON[ResponseData](response)
+		if err != nil {
+			return nil, err
+		}
 
-	if len(*resp) == 0 {
-		return nil, fmt.Errorf("%w: could not find a record to sample fields from", common.ErrMissingExpectedValues)
-	}
+		if len(resp.Results) == 0 {
+			return nil, common.ErrMissingExpectedValues
+		}
 
-	record := *resp
+		for field := range resp.Results[0] {
+			objectMetadata.FieldsMap[field] = field
+		}
+	default:
+		// Direct Response
+		resp, err := common.UnmarshalJSON[[]map[string]any](response)
+		if err != nil {
+			return nil, err
+		}
 
-	for fld := range record[0] {
-		objectMetadata.FieldsMap[fld] = fld
+		if len(*resp) == 0 {
+			return nil, common.ErrMissingExpectedValues
+		}
+
+		record := *resp
+
+		for field := range record[0] {
+			objectMetadata.FieldsMap[field] = field
+		}
 	}
 
 	return &objectMetadata, nil
