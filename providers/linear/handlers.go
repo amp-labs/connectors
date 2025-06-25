@@ -137,7 +137,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		"query": query,
 	}
 
-	// Add variables if there are filters for incremental reads
 	variables := buildGraphQLVariables(params)
 
 	if len(variables) > 0 {
