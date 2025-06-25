@@ -16,13 +16,15 @@ var (
 	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
 
 	errTypeMismatch = errors.New("type mismatch")
-	errMatcherDiff  = errors.New("matcher ref does not match token")
 )
 
 // SubscriptionEvent represents a webhook event from Zoho CRM.
 type SubscriptionEvent map[string]any
 
 // VerifyWebhookMessage verifies the signature of a webhook message from Zoho CRM.
+// Zoho does not send a signature, but instead,
+// they ask us to provide tokens of our choice that they attach to webhook messages
+// they call it "token", in the response body.
 func (*Connector) VerifyWebhookMessage(
 	_ context.Context, params *common.WebhookVerificationParameters,
 ) (bool, error) {
@@ -30,39 +32,57 @@ func (*Connector) VerifyWebhookMessage(
 		return false, fmt.Errorf("%w: %s", errFieldNotFound, "matcherRefs")
 	}
 
+	tokenStr, err := parseToken(params)
+	if err != nil {
+		return false, fmt.Errorf("error parsing token: %w", err)
+	}
+
+	matcherRefStr, err := getUniqueRef(params)
+	if err != nil {
+		return false, fmt.Errorf("error getting unique ref: %w", err)
+	}
+
+	return tokenStr == matcherRefStr, nil
+}
+
+func parseToken(params *common.WebhookVerificationParameters) (string, error) {
 	var body map[string]any
 
 	err := json.Unmarshal(params.Body, &body)
 	if err != nil {
-		return false, err
+		return "", err
 	}
 
 	//nolint:varnamelen
 	token, ok := body["token"]
 	if !ok {
-		return false, fmt.Errorf("%w: %s", errFieldNotFound, "token")
+		return "", fmt.Errorf("%w: %s", errFieldNotFound, "token")
 	}
 
 	tokenStr, ok := token.(string)
 	if !ok {
-		return false, fmt.Errorf("%w: %s, expected string, got %T", errTypeMismatch, "token", token)
+		return "", fmt.Errorf("%w: %s, expected string, got %T", errTypeMismatch, "token", token)
 	}
 
-	matcherRef, ok := params.MatcherRefs["uniqueRef"]
+	return tokenStr, nil
+}
+
+func getUniqueRef(params *common.WebhookVerificationParameters) (string, error) {
+	if params.MatcherRefs == nil {
+		return "", fmt.Errorf("%w: %s", errFieldNotFound, "matcherRefs")
+	}
+
+	uniqueRef, ok := params.MatcherRefs["uniqueRef"]
 	if !ok {
-		return false, fmt.Errorf("%w: %s", errFieldNotFound, "uniqueRef")
+		return "", fmt.Errorf("%w: %s", errFieldNotFound, "uniqueRef")
 	}
 
-	matcherRefStr, ok := matcherRef.(string)
+	uniqueRefStr, ok := uniqueRef.(string)
 	if !ok {
-		return false, fmt.Errorf("%w: %s, expected string, got %T", errTypeMismatch, "matcherRef", matcherRef)
+		return "", fmt.Errorf("%w: %s, expected string, got %T", errTypeMismatch, "uniqueRef", uniqueRef)
 	}
 
-	if tokenStr != matcherRefStr {
-		return false, errMatcherDiff
-	}
-
-	return true, nil
+	return uniqueRefStr, nil
 }
 
 var (
@@ -123,6 +143,12 @@ func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.Subscripti
 	}
 
 	//nolint:varnamelen
+	// "affected_values" from the original event has all the list of records and field values
+	// we use them to convert it to a list of subscription events
+	// This loop will fan out and create list of subscription events for all the records by record id
+	// each record will preserve exact same data structure
+	// except for the "affected_values" and "affected_fields" fields
+	// which will be replaced with an array of one record for each record id
 	for _, affectedValue := range affectedValuesArr {
 		affectedValueMap, ok := affectedValue.(map[string]any)
 		if !ok {
@@ -146,13 +172,13 @@ func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.Subscripti
 			return nil, fmt.Errorf("%w: %s, expected map[string]any, got %T", errTypeMismatch, "values", valuesAny)
 		}
 
+		// clone the original event and replace the affected_values, affected_fields and ids fields
+		// with the new values for the current record
 		subscriptionEvent := maps.Clone(m)
 
 		subscriptionEvent["affected_values"] = []any{
 			values,
 		}
-
-		subscriptionEvent["affected_fields"] = []any{}
 
 		fieldsMap := make(map[string][]string)
 		for field := range values {
