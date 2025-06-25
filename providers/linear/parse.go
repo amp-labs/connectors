@@ -30,7 +30,7 @@ func nextRecordsURL(objectName string) common.NextPageFunc {
 		}
 
 		if !nextPageExists {
-			return "", err
+			return "", nil
 		}
 
 		nextCursor, err := jsonquery.New(meta).StringRequired("endCursor")
