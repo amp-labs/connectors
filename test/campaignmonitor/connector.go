@@ -23,7 +23,7 @@ var (
 
 func GetCampaignMonitorConnector(ctx context.Context) *campaignmonitor.Connector {
 	filePath := credscanning.LoadPath(providers.CampaignMonitor)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false, fieldClientID)
+	reader := utils.MustCreateProvCredJSON(filePath, true, fieldClientID)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),
@@ -34,7 +34,7 @@ func GetCampaignMonitorConnector(ctx context.Context) *campaignmonitor.Connector
 		utils.Fail(err.Error())
 	}
 
-	conn, err := campaignmonitor.NewConnector(common.Parameters{
+	conn, err := campaignmonitor.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 		Metadata: map[string]string{
 			"clientId": reader.Get(fieldClientID),
