@@ -22,6 +22,28 @@ func GetAtlassianConnector(ctx context.Context) *atlassian.Connector {
 	return makeAtlassianConnector(ctx, providers.ModuleAtlassianJira)
 }
 
+func makeAtlassianConnector(ctx context.Context, module common.ModuleID) *atlassian.Connector {
+	filePath := credscanning.LoadPath(providers.Atlassian)
+	reader := utils.MustCreateProvCredJSON(filePath, true, fieldCloudID)
+
+	conn, err := atlassian.NewConnector(
+		atlassian.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
+		atlassian.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
+		atlassian.WithModule(module),
+		atlassian.WithMetadata(map[string]string{
+			// This value can be obtained by following this API reference.
+			// https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
+			// Another simplest solution is to run `connectors/test/atlassian/auth-metadata/main.go` script.
+			"cloudId": reader.Get(fieldCloudID),
+		}),
+	)
+	if err != nil {
+		utils.Fail("error creating connector", "error", err)
+	}
+
+	return conn
+}
+
 // GetAtlassianConnectConnector
 // Context:
 // https://developer.atlassian.com/cloud/jira/platform/getting-started-with-connect/
@@ -74,26 +96,4 @@ func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 	}
 
 	return cfg
-}
-
-func makeAtlassianConnector(ctx context.Context, module common.ModuleID) *atlassian.Connector {
-	filePath := credscanning.LoadPath(providers.Atlassian)
-	reader := utils.MustCreateProvCredJSON(filePath, true, fieldCloudID)
-
-	conn, err := atlassian.NewConnector(
-		atlassian.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		atlassian.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
-		atlassian.WithModule(module),
-		atlassian.WithMetadata(map[string]string{
-			// This value can be obtained by following this API reference.
-			// https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
-			// Another simplest solution is to run `connectors/test/atlassian/auth-metadata/main.go` script.
-			"cloudId": reader.Get(fieldCloudID),
-		}),
-	)
-	if err != nil {
-		utils.Fail("error creating connector", "error", err)
-	}
-
-	return conn
 }
