@@ -11,7 +11,7 @@ import (
 const APIVersion = "v3.3"
 
 type ResponseData struct {
-	Results []map[string]any `json:"Results,omitempty"`
+	Results []map[string]any `json:"Results,omitempty"` // nolint:tagliatelle
 }
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {

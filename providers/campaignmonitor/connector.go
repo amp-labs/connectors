@@ -26,7 +26,7 @@ const (
 	metadataKeyClientID = "clientId"
 )
 
-func NewConnector(params common.Parameters) (*Connector, error) {
+func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
 	conn, err := components.Initialize(providers.CampaignMonitor, params, constructor)
 	if err != nil {

@@ -26,13 +26,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("api/v3.3/clients.json"),
+					If:   mockcond.Path("api/v3.3/clients.json"),
 					Then: mockserver.Response(http.StatusOK, clientsResponse),
 				}, {
-					If:   mockcond.PathSuffix("api/v3.3/admins.json"),
+					If:   mockcond.Path("api/v3.3/admins.json"),
 					Then: mockserver.Response(http.StatusOK, adminsResponse),
 				}, {
-					If:   mockcond.PathSuffix("api/v3.3/clients/744cdce058fc61d9ef5e2492f8d8fbaf/campaigns.json"),
+					If:   mockcond.Path("api/v3.3/clients/744cdce058fc61d9ef5e2492f8d8fbaf/campaigns.json"),
 					Then: mockserver.Response(http.StatusOK, campaignsResponse),
 				}},
 			}.Server(),
@@ -92,7 +92,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(common.Parameters{
+	connector, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: http.DefaultClient,
 		Metadata: map[string]string{
 			"clientId": "744cdce058fc61d9ef5e2492f8d8fbaf",

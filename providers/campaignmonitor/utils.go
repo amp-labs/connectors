@@ -12,7 +12,7 @@ var DirectEndpoints = datautils.NewSet( //nolint:gochecknoglobals
 	"admins",
 )
 
-var EndpointsWithClientId = datautils.NewSet( //nolin:gochecknoglobals
+var endpointsWithClientId = datautils.NewSet( //nolint:gochecknoglobals
 	"lists",
 	"segments",
 	"suppressionlist",
@@ -27,7 +27,7 @@ var EndpointsWithClientId = datautils.NewSet( //nolin:gochecknoglobals
 
 func (c *Connector) constructURL(objName string) (*urlbuilder.URL, error) {
 	// Endpoint with clinet id in the url
-	if EndpointsWithClientId.Has(objName) {
+	if endpointsWithClientId.Has(objName) {
 		objName = fmt.Sprintf("clients/%s/%s.json", c.clientID, objName)
 	}
 
