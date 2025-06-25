@@ -5,17 +5,7 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const (
-	// ModuleJira
-	// Deprecated.
-	ModuleJira = providers.ModuleAtlassianJira
-	// ModuleAtlassianJiraConnect
-	// Deprecated.
-	ModuleAtlassianJiraConnect = providers.ModuleAtlassianJiraConnect
-)
-
-// supportedModules represents currently working and supported modules within the Atlassian connector.
-// Any added module should be appended here.
+// Deprecated.
 var supportedModules = common.Modules{ // nolint: gochecknoglobals
 	common.ModuleRoot: {
 		ID:      common.ModuleRoot,

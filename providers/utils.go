@@ -159,13 +159,20 @@ func (c CustomCatalog) ReadInfo(provider Provider, vars ...catalogreplacer.Catal
 func (i *ProviderInfo) SubstituteWith(vars catalogreplacer.CatalogVariables) error {
 	// Take care of default metadata values.
 	if i.Metadata != nil {
-		for _, metadatInput := range i.Metadata.Input {
-			if metadatInput.DefaultValue != "" {
+		for _, metadataInput := range i.Metadata.Input {
+			if metadataInput.DefaultValue != "" {
 				vars.AddDefaults(catalogreplacer.CustomCatalogVariable{Plan: catalogreplacer.SubstitutionPlan{
-					From: metadatInput.Name,
-					To:   metadatInput.DefaultValue,
+					From: metadataInput.Name,
+					To:   metadataInput.DefaultValue,
 				}})
 			}
+		}
+
+		for _, authData := range i.Metadata.PostAuthentication {
+			vars.AddDefaults(catalogreplacer.CustomCatalogVariable{Plan: catalogreplacer.SubstitutionPlan{
+				From: authData.Name,
+				To:   "UNDEFINED_PRE_AUTH",
+			}})
 		}
 	}
 
