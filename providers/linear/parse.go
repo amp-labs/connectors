@@ -1,8 +1,6 @@
 package linear
 
 import (
-	"log"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
@@ -39,8 +37,6 @@ func nextRecordsURL(objectName string) common.NextPageFunc {
 		if err != nil {
 			return "", err
 		}
-
-		log.Printf("Next cursor for %s: %s", objectName, nextCursor)
 
 		return nextCursor, nil
 	}
