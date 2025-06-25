@@ -10,6 +10,11 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+const (
+	userAgentHeader = "User-Agent"
+	partnerAgent    = "partner-Ampersand-Connectors/v1"
+)
+
 func (c *Connector) metadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
 	if err != nil {
@@ -22,6 +27,8 @@ func (c *Connector) metadataRequest(ctx context.Context, objectName string) (*ht
 	if err != nil {
 		return nil, err
 	}
+
+	req.Header.Add(userAgentHeader, partnerAgent)
 
 	return req, nil
 }
