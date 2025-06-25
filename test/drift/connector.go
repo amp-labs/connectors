@@ -14,7 +14,7 @@ import (
 
 func GetConnector(ctx context.Context) *drift.Connector {
 	filePath := credscanning.LoadPath(providers.Drift)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),
@@ -25,7 +25,7 @@ func GetConnector(ctx context.Context) *drift.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := drift.NewConnector(common.Parameters{
+	conn, err := drift.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

@@ -15,6 +15,10 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
+	if c.isPardotModule() {
+		return c.pardotAdapter.Read(ctx, config)
+	}
+
 	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
@@ -60,6 +64,10 @@ func makeSOQL(config common.ReadParams) *soqlBuilder {
 	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 	if !config.Since.IsZero() {
 		soql.Where("SystemModstamp > " + datautils.Time.FormatRFC3339inUTC(config.Since))
+	}
+
+	if !config.Until.IsZero() {
+		soql.Where("SystemModstamp <= " + datautils.Time.FormatRFC3339inUTC(config.Until))
 	}
 
 	if config.Deleted {

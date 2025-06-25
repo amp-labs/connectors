@@ -14,7 +14,7 @@ import (
 
 func GetConnector(ctx context.Context) *groove.Connector {
 	filePath := credscanning.LoadPath(providers.Groove)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),
@@ -25,7 +25,7 @@ func GetConnector(ctx context.Context) *groove.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := groove.NewConnector(common.Parameters{
+	conn, err := groove.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

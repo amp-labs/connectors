@@ -58,7 +58,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodDELETE(),
-					mockcond.PathSuffix("custom-tag/5043"),
+					mockcond.Path("/api/v1/custom-tag/5043"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseTag),
 			}.Server(),

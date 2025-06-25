@@ -13,7 +13,7 @@ import (
 
 func GetKitConnector(ctx context.Context) *kit.Connector {
 	filePath := credscanning.LoadPath(providers.Kit)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := kit.NewConnector(
 		kit.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),

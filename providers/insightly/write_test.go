@@ -40,7 +40,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.PathSuffix("/v3.1/Contacts"),
+					mockcond.Path("/v3.1/Contacts"),
 				},
 				Then: mockserver.Response(http.StatusOK, writeContactsResponse),
 			}.Server(),
@@ -69,7 +69,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPUT(),
-					mockcond.PathSuffix("/v3.1/Contacts/366638973"),
+					mockcond.Path("/v3.1/Contacts/366638973"),
 					// Identifier is inserted.
 					mockcond.Body(`{
 						"EMAIL_ADDRESS": "pamela@mail.com",
@@ -103,7 +103,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPUT(),
-					mockcond.PathSuffix("/v3.1/Leads/78572651"),
+					mockcond.Path("/v3.1/Leads/78572651"),
 					// Identifier is inserted.
 					mockcond.Body(`{
   						"FIRST_NAME": "Henrietta",

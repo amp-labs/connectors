@@ -123,7 +123,7 @@ func TestBulkWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/services/data/v59.0/jobs/ingest"),
+					mockcond.Path("/services/data/v59.0/jobs/ingest"),
 					mockcond.Body(bodyRequest),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateJob),
@@ -186,19 +186,19 @@ func createBulkJobServer(
 		Cases: []mockserver.Case{
 			{ // Create job if body matches.
 				If: mockcond.And{
-					mockcond.PathSuffix("/services/data/v59.0/jobs/ingest"),
+					mockcond.Path("/services/data/v59.0/jobs/ingest"),
 					mockcond.Body(bodyRequest),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateJob),
 			},
 			{ // We expect CSV to be uploaded via this endpoint.
-				If:   mockcond.PathSuffix(fmt.Sprintf("/services/data/v59.0/jobs/ingest/%v/batches", jobID)),
+				If:   mockcond.Path(fmt.Sprintf("/services/data/v59.0/jobs/ingest/%v/batches", jobID)),
 				Then: mockserver.Response(http.StatusCreated, []byte{}),
 			},
 			{ // Mark job Completed.
 				If: mockcond.And{
 					mockcond.MethodPATCH(),
-					mockcond.PathSuffix(fmt.Sprintf("/services/data/v59.0/jobs/ingest/%v", jobID)),
+					mockcond.Path(fmt.Sprintf("/services/data/v59.0/jobs/ingest/%v", jobID)),
 					mockcond.Body(`{"state":"UploadComplete"}`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseUpdateJob),

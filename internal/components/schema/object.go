@@ -42,6 +42,10 @@ func (p *ObjectSchemaProvider) ListObjectMetadata(
 		return nil, fmt.Errorf("%w: %s", common.ErrNotImplemented, "schema provider is not implemented")
 	}
 
+	if len(objects) == 0 {
+		return nil, common.ErrMissingObjects
+	}
+
 	for _, object := range objects {
 		if object == "" {
 			return nil, fmt.Errorf("%w: object name cannot be empty", common.ErrMissingObjects)
@@ -146,4 +150,8 @@ func (p *ObjectSchemaProvider) fetchSerial(
 	}
 
 	return result, nil
+}
+
+func (p *ObjectSchemaProvider) String() string {
+	return "ObjectSchemaProvider." + p.fetchType
 }

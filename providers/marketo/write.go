@@ -79,9 +79,10 @@ func constructId(objectName string, resp *writeResponse) (string, error) {
 		if err != nil {
 			return "", err
 		}
-
+	case resp.Success:
+		return "", nil
 	default:
-		return "", common.ErrOperationNotSupportedForObject
+		return "", checkErr(resp, "", resp.Success)
 	}
 
 	return fmt.Sprint(recordId), nil

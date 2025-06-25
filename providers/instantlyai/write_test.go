@@ -30,7 +30,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v2/custom-tags"),
+					mockcond.Path("/api/v2/custom-tags"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, customTagsResponse),
@@ -60,7 +60,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v2/custom-tags/0196837f-d659-7496-854c-84187bb6f708"),
+					mockcond.Path("/api/v2/custom-tags/0196837f-d659-7496-854c-84187bb6f708"),
 					mockcond.MethodPATCH(),
 				},
 				Then: mockserver.Response(http.StatusOK, customTagsResponse),
@@ -86,7 +86,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v2/accounts"),
+					mockcond.Path("/api/v2/accounts"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, accountsResponse),

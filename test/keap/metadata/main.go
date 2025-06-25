@@ -11,8 +11,6 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-var objectName = "contacts"
-
 func main() {
 	// Handle Ctrl-C gracefully.
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -25,7 +23,7 @@ func main() {
 	defer utils.Close(conn)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		objectName,
+		"contacts",
 	})
 	if err != nil {
 		utils.Fail("error listing metadata for Keap", "error", err)

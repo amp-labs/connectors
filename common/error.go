@@ -21,28 +21,30 @@ func InterpretError(res *http.Response, body []byte) error {
 		}
 	}
 
+	headers := GetResponseHeaders(res)
+
 	switch res.StatusCode {
 	case http.StatusUnauthorized:
 		// Access token invalid, refresh token and retry
-		return NewHTTPStatusError(res.StatusCode, createError(ErrAccessToken))
+		return NewHTTPError(res.StatusCode, body, headers, createError(ErrAccessToken))
 	case http.StatusForbidden:
 		// Forbidden, not retryable
-		return NewHTTPStatusError(res.StatusCode, createError(ErrForbidden))
+		return NewHTTPError(res.StatusCode, body, headers, createError(ErrForbidden))
 	case http.StatusNotFound:
 		// Semantics are debatable (temporarily missing vs. permanently gone), but for now treat this as a retryable error
-		return NewHTTPStatusError(res.StatusCode, createError(ErrRetryable))
+		return NewHTTPError(res.StatusCode, body, headers, createError(ErrRetryable))
 	case http.StatusTooManyRequests:
 		// Too many requests, retryable
-		return NewHTTPStatusError(res.StatusCode, createError(ErrRetryable))
+		return NewHTTPError(res.StatusCode, body, headers, createError(ErrRetryable))
 	}
 
 	if res.StatusCode >= 400 && res.StatusCode < 500 {
-		return NewHTTPStatusError(res.StatusCode, createError(ErrCaller))
+		return NewHTTPError(res.StatusCode, body, headers, createError(ErrCaller))
 	} else if res.StatusCode >= 500 && res.StatusCode < 600 {
-		return NewHTTPStatusError(res.StatusCode, createError(ErrServer))
+		return NewHTTPError(res.StatusCode, body, headers, createError(ErrServer))
 	}
 
-	return NewHTTPStatusError(res.StatusCode, createError(ErrUnknown))
+	return NewHTTPError(res.StatusCode, body, headers, createError(ErrUnknown))
 }
 
 type ErrorPostProcessor struct {

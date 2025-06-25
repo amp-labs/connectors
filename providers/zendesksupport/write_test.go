@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -121,7 +120,7 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v2/brands"),
+					mockcond.Path("/api/v2/brands"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, createBrand),
@@ -152,7 +151,7 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.PathSuffix("/api/v2/tickets"),
+					mockcond.Path("/api/v2/tickets"),
 				},
 				Then: mockserver.Response(http.StatusOK),
 			}.Server(),
@@ -167,7 +166,7 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleZendeskTicketing)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}
@@ -185,7 +184,7 @@ func TestWriteHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,m
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v2/community/posts"),
+					mockcond.Path("/api/v2/community/posts"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreatePost),
@@ -211,7 +210,7 @@ func TestWriteHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,m
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleZendeskHelpCenter)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}

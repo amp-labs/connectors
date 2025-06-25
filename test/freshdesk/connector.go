@@ -12,7 +12,7 @@ import (
 
 func GetFreshdeskConnector(ctx context.Context) *freshdesk.Connector {
 	filePath := credscanning.LoadPath(providers.Freshdesk)
-	reader := testUtils.MustCreateProvCredJSON(filePath, false, true)
+	reader := testUtils.MustCreateProvCredJSON(filePath, false)
 
 	conn, err := freshdesk.NewConnector(
 		freshdesk.WithClient(ctx, http.DefaultClient, reader.Get(credscanning.Fields.Username), reader.Get(credscanning.Fields.Password)),

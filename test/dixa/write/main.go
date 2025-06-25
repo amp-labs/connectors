@@ -39,6 +39,11 @@ func run() error {
 		return err
 	}
 
+	err = testCreatingQueue(ctx, conn)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -102,6 +107,45 @@ func testCreatingTeams(ctx context.Context, conn *dx.Connector) error {
 		ObjectName: "teams",
 		RecordData: map[string]any{
 			"name": "Integration Team",
+		},
+	}
+
+	res, err := conn.Write(ctx, params)
+	if err != nil {
+		return err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testCreatingQueue(ctx context.Context, conn *dx.Connector) error {
+	params := common.WriteParams{
+		ObjectName: "queues",
+		RecordData: map[string]any{
+			"name":              "MyCorp main queue",
+			"callFunctionality": false,
+			"isDefault":         true,
+			"queueThresholds": map[string]any{
+				"WaitingConversations": 10,
+			},
+			"offerTimeout":                10,
+			"offerAlgorithm":              "AllAtOnce",
+			"wrapupTimeout":               10,
+			"priority":                    1,
+			"offerAbandonedConversations": false,
+			"doNotOfferTimeouts": map[string]any{
+				"WidgetChat": 1,
+			},
+			"isDoNotOfferEnabled": true,
 		},
 	}
 

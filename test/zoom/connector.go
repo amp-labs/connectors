@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zoom"
@@ -12,13 +11,12 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func GetZoomConnector(ctx context.Context, moduleID common.ModuleID) *zoom.Connector {
+func GetZoomConnector(ctx context.Context) *zoom.Connector {
 	filePath := credscanning.LoadPath(providers.Zoom)
 
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
-	conn, err := zoom.NewConnector(zoom.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		zoom.WithModule(moduleID))
+	conn, err := zoom.NewConnector(zoom.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()))
 	if err != nil {
 		utils.Fail("error creating zoom connector", "error", err)
 	}
