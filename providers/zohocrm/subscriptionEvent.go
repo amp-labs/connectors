@@ -157,46 +157,70 @@ func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.Subscripti
 
 		vm := common.StringMap(affectedValueMap)
 
-		recordId, err := vm.GetString("record_id")
+		recordId, err := parseIdFromValueMap(vm)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error parsing record id for record %v: %w", affectedValueMap, err)
 		}
 
-		valuesAny, err := vm.Get("values")
+		values, err := parseValuesFromValueMap(vm)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error parsing values for record %s: %w", recordId, err)
 		}
 
-		values, ok := valuesAny.(map[string]any)
-		if !ok {
-			return nil, fmt.Errorf("%w: %s, expected map[string]any, got %T", errTypeMismatch, "values", valuesAny)
+		fieldsMap, err := parseFieldsFromValueMap(vm)
+		if err != nil {
+			return nil, fmt.Errorf("error parsing fields for record %s: %w", recordId, err)
 		}
 
 		// clone the original event and replace the affected_values, affected_fields and ids fields
 		// with the new values for the current record
 		subscriptionEvent := maps.Clone(m)
 
-		subscriptionEvent["affected_values"] = []any{
-			values,
-		}
-
-		fieldsMap := make(map[string][]string)
-		for field := range values {
-			fieldsMap[recordId] = append(fieldsMap[recordId], field)
-		}
-
-		subscriptionEvent["affected_fields"] = []any{
-			fieldsMap,
-		}
-
-		subscriptionEvent["ids"] = []string{
-			recordId,
-		}
+		subscriptionEvent["affected_values"] = []any{values}
+		subscriptionEvent["affected_fields"] = []any{fieldsMap}
+		subscriptionEvent["ids"] = []string{recordId}
 
 		evts = append(evts, SubscriptionEvent(subscriptionEvent))
 	}
 
 	return evts, nil
+}
+
+func parseIdFromValueMap(valueMap common.StringMap) (string, error) {
+	recordId, err := valueMap.GetString("record_id")
+	if err != nil {
+		return "", err
+	}
+
+	return recordId, nil
+}
+
+func parseValuesFromValueMap(valueMap common.StringMap) (map[string]any, error) {
+	values, err := valueMap.Get("values")
+	if err != nil {
+		return nil, err
+	}
+
+	valuesMap, ok := values.(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("%w: %s, expected map[string]any, got %T", errTypeMismatch, "values", values)
+	}
+
+	return valuesMap, nil
+}
+
+func parseFieldsFromValueMap(valueMap common.StringMap) (map[string][]string, error) {
+	fields, err := valueMap.Get("affected_fields")
+	if err != nil {
+		return nil, err
+	}
+
+	fieldsMap, ok := fields.(map[string][]string)
+	if !ok {
+		return nil, fmt.Errorf("%w: %s, expected map[string][]string, got %T", errTypeMismatch, "fields", fields)
+	}
+
+	return fieldsMap, nil
 }
 
 // EventType returns the type of event (create, update, delete).
