@@ -2,6 +2,7 @@ package linear
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
@@ -51,7 +52,9 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
-			ErrorHandler:  common.InterpretError,
+			ErrorHandler: interpreter.ErrorHandler{
+				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+			}.Handle,
 		},
 	)
 
