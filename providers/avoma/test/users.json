@@ -2,10 +2,10 @@
     {
         "uuid": "bbe512ba-5eb8-48c7-ab1f-9c069836436a",
         "user": {
-            "email": "beadko@gmail.com",
-            "first_name": "Beatrise",
+            "email": "sample@gmail.com",
+            "first_name": "sample",
             "last_name": "",
-            "profile_pic": "https://lh3.googleusercontent.com/a/ACg8ocJIua6Ibz2UjwZN2QJrouKsGokM0b8-myrfCzhZLMuBP_7kRe6UIw=s96-c",
+            "profile_pic": "https://samplepic",
             "position": "developer",
             "is_active": false,
             "job_function": "Engineering",
