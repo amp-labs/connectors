@@ -24,11 +24,27 @@ func supportedOperations() components.EndpointRegistryInput {
 		"journeys",
 	}
 
+	writeSupport := []string{
+		"admins",
+		"clients",
+		"campaigns",
+		"templates",
+		"lists",
+		"suppress",
+		"credits",
+		"people",
+		"sendingdomains",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}

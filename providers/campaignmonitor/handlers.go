@@ -1,7 +1,9 @@
 package campaignmonitor
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"time"
@@ -9,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 const APIVersion = "v3.3"
@@ -123,4 +126,58 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	url, err := c.constructWriteURL(params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	value, err := body.Value()
+	if err != nil {
+		return nil, err
+	}
+
+	switch v := value.(type) {
+	case string:
+		return &common.WriteResult{
+			Success:  true,
+			RecordId: v,
+			Errors:   nil,
+		}, nil
+
+	default:
+		data, err := jsonquery.Convertor.ObjectToMap(body)
+		if err != nil {
+			return nil, err
+		}
+
+		return &common.WriteResult{
+			Success: true,
+			Errors:  nil,
+			Data:    data,
+		}, nil
+	}
 }

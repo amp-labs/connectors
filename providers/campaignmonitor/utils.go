@@ -37,9 +37,45 @@ var endpointsWtihResultsPath = datautils.NewSet( //nolint:gochecknoglobals
 	"suppressionlist",
 )
 
+var endpointsWithClientIdAfterObjName = datautils.NewSet( //nolint:gochecknoglobals
+	"campaigns",
+	"templates",
+	"lists",
+)
+
+var writeEndpointsWithClientId = datautils.NewSet( //nolint:gochecknoglobals
+	"suppress",
+	"credits",
+	"sendingdomains",
+	"people",
+)
+
 func (c *Connector) constructURL(objName string) (*urlbuilder.URL, error) {
-	// Endpoint with clinet id in the url
+	// Endpoint with client id in the url
 	if endpointsWithClientId.Has(objName) {
+		objName = fmt.Sprintf("clients/%s/%s.json", c.clientID, objName)
+	}
+
+	// Endpoint without client id in the url.
+	if DirectEndpoints.Has(objName) {
+		objName += ".json"
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "api", APIVersion, objName)
+	if err != nil {
+		return nil, err
+	}
+
+	return url, nil
+}
+
+func (c *Connector) constructWriteURL(objName string) (*urlbuilder.URL, error) {
+	// Endpoint with client id in the url
+	if endpointsWithClientIdAfterObjName.Has(objName) {
+		objName = fmt.Sprintf("%s/%s.json", objName, c.clientID)
+	}
+
+	if writeEndpointsWithClientId.Has(objName) {
 		objName = fmt.Sprintf("clients/%s/%s.json", c.clientID, objName)
 	}
 
