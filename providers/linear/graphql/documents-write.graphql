@@ -1,0 +1,20 @@
+mutation DocumentCreate($input: DocumentCreateInput!) {
+  documentCreate(input: $input) {
+    success
+    document {
+      id
+      updatedAt
+      title
+      hiddenAt
+      createdAt
+      content
+      creator {
+        name
+        id
+        email
+        displayName
+        description
+      }
+    }
+  }
+}
