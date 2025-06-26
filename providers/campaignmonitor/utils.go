@@ -32,7 +32,7 @@ var endpointsWithClientId = datautils.NewSet( //nolint:gochecknoglobals
 	"journeys",
 )
 
-var endpointsWtihResultsPath = datautils.NewSet(
+var endpointsWtihResultsPath = datautils.NewSet( //nolint:gochecknoglobals
 	"campaigns",
 	"suppressionlist",
 )
@@ -81,7 +81,6 @@ func makeNextRecordsURL(reqLink *url.URL) common.NextPageFunc {
 
 				return url.String(), nil
 			}
-
 		}
 
 		return "", nil
