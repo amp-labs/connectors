@@ -39,7 +39,6 @@ import (
 	"github.com/amp-labs/connectors/providers/hubspot"
 	"github.com/amp-labs/connectors/providers/hunter"
 	"github.com/amp-labs/connectors/providers/instantly"
-	"github.com/amp-labs/connectors/providers/instantlyai"
 	"github.com/amp-labs/connectors/providers/intercom"
 	"github.com/amp-labs/connectors/providers/iterable"
 	"github.com/amp-labs/connectors/providers/keap"
@@ -109,7 +108,6 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Hubspot:             wrapper(newHubspotConnector),
 	providers.Hunter:              wrapper(newHunterConnector),
 	providers.Instantly:           wrapper(newInstantlyConnector),
-	providers.InstantlyAI:         wrapper(newInstantlyAIConnector),
 	providers.Intercom:            wrapper(newIntercomConnector),
 	providers.Iterable:            wrapper(newIterableConnector),
 	providers.Keap:                wrapper(newKeapConnector),
@@ -244,14 +242,6 @@ func newMarketoConnector(
 	return marketo.NewConnector(
 		marketo.WithWorkspace(params.Workspace),
 		marketo.WithAuthenticatedClient(params.AuthenticatedClient),
-	)
-}
-
-func newInstantlyConnector(
-	params common.ConnectorParams,
-) (*instantly.Connector, error) {
-	return instantly.NewConnector(
-		instantly.WithAuthenticatedClient(params.AuthenticatedClient),
 	)
 }
 
@@ -518,10 +508,10 @@ func newCapsuleConnector(
 	return capsule.NewConnector(params)
 }
 
-func newInstantlyAIConnector(
+func newInstantlyConnector(
 	params common.ConnectorParams,
-) (*instantlyai.Connector, error) {
-	return instantlyai.NewConnector(params)
+) (*instantly.Connector, error) {
+	return instantly.NewConnector(params)
 }
 
 func newGitLabConnector(
