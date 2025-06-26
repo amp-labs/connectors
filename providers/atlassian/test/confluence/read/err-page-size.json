@@ -1,0 +1,10 @@
+{
+  "errors": [
+    {
+      "status": 400,
+      "code": "INVALID_REQUEST_PARAMETER",
+      "title": "Provided size {300} for 'limit' is greater than the max allowed: 250",
+      "detail": null
+    }
+  ]
+}
