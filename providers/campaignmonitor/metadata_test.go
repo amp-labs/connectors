@@ -95,7 +95,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: http.DefaultClient,
 		Metadata: map[string]string{
-			"clientId": "744cdce058fc61d9ef5e2492f8d8fbaf",
+			"clientid": "744cdce058fc61d9ef5e2492f8d8fbaf",
 		},
 	})
 	if err != nil {
