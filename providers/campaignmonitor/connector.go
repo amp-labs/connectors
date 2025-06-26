@@ -23,7 +23,7 @@ type Connector struct {
 }
 
 const (
-	metadataKeyClientID = "clientId"
+	metadataKeyClientID = "clientid"
 )
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {

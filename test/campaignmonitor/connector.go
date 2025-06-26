@@ -15,9 +15,9 @@ import (
 // nolint:gochecknoglobals
 var (
 	fieldClientID = credscanning.Field{
-		Name:      "clientId",
-		PathJSON:  "metadata.clientId",
-		SuffixENV: "CLIENT_ID",
+		Name:      "clientid",
+		PathJSON:  "metadata.clientid",
+		SuffixENV: "CLIENTID",
 	}
 )
 
@@ -37,7 +37,7 @@ func GetCampaignMonitorConnector(ctx context.Context) *campaignmonitor.Connector
 	conn, err := campaignmonitor.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 		Metadata: map[string]string{
-			"clientId": reader.Get(fieldClientID),
+			"clientid": reader.Get(fieldClientID),
 		},
 	})
 	if err != nil {
@@ -52,7 +52,8 @@ func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 		ClientID:     reader.Get(credscanning.Fields.ClientId),
 		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
 		Endpoint: oauth2.Endpoint{
-			TokenURL:  "https://api.createsend.com",
+			AuthURL:   "https://api.createsend.com/oauth",
+			TokenURL:  "https://api.createsend.com/oauth/token",
 			AuthStyle: oauth2.AuthStyleInParams,
 		},
 	}
