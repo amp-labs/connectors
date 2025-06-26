@@ -239,7 +239,6 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	query := getQuery("graphql/"+params.ObjectName+"-write.graphql", params.ObjectName)
 
-	// Create request body with query and variables
 	requestBody := map[string]any{
 		"query": query,
 		"variables": map[string]any{
@@ -271,18 +270,20 @@ func (c *Connector) parseWriteResponse(
 		return &common.WriteResult{Success: true}, nil
 	}
 
-	objectResponse, err := jsonquery.New(node).ObjectRequired("data")
+	singularObjName := params.ObjectName[:len(params.ObjectName)-1]
+
+	// Construct the response key based on the singular object name
+	// For example, if the object name is "issues", the response key will be "issueCreate"
+	responseKey := singularObjName + "Create"
+
+	objectResponse, err := jsonquery.New(node, "data", responseKey).ObjectOptional(singularObjName)
 	if err != nil {
 		return nil, err
 	}
 
-	var recordID string
-
-	if params.ObjectName == "bite" {
-		recordID, err = jsonquery.New(objectResponse, "bite").StrWithDefault("id", "")
-		if err != nil {
-			return nil, err
-		}
+	recordID, err := jsonquery.New(objectResponse).StrWithDefault("id", "")
+	if err != nil {
+		return nil, err
 	}
 
 	response, err := jsonquery.Convertor.ObjectToMap(objectResponse)
