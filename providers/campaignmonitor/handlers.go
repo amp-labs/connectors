@@ -3,9 +3,12 @@ package campaignmonitor
 import (
 	"context"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 const APIVersion = "v3.3"
@@ -68,4 +71,56 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	if params.NextPage != "" {
+		url, err := urlbuilder.New(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+
+		return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	}
+
+	url, err := c.constructURL(params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("pageSize", strconv.Itoa(defaultPageSize))
+
+	// Only campaigns objects supports pagination with query param sentFromDate and sentToDate.
+	if params.ObjectName == "campaigns" {
+		if !params.Since.IsZero() {
+			url.WithQueryParam("sentFromDate", params.Since.Format(time.DateOnly))
+		}
+
+		if !params.Until.IsZero() {
+			url.WithQueryParam("sentToDate", params.Until.Format(time.DateOnly))
+		}
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	nodePath := ""
+
+	if endpointsWtihResultsPath.Has(params.ObjectName) {
+		nodePath = "Results"
+	}
+
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath(nodePath),
+		makeNextRecordsURL(request.URL),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
