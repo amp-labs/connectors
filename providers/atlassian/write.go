@@ -18,6 +18,10 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
+	if c.isConfluenceModule() {
+		return c.confluenceAdapter.Write(ctx, config)
+	}
+
 	url, err := c.getModuleURL("issue")
 	if err != nil {
 		return nil, err

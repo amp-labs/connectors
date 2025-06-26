@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/atlassian/internal/confluence"
 )
 
 type Connector struct {
@@ -19,6 +20,8 @@ type Connector struct {
 	providerInfo *providers.ProviderInfo
 	moduleInfo   *providers.ModuleInfo
 	moduleID     common.ModuleID
+
+	confluenceAdapter *confluence.Adapter
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -55,11 +58,31 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		HTML: &interpreter.DirectFaultyResponder{Callback: conn.interpretHTMLError},
 	}.Handle
 
+	if isConfluenceModule(conn.moduleID) {
+		conn.confluenceAdapter, err = confluence.NewAdapter(common.ConnectorParams{
+			Module:              conn.moduleID,
+			AuthenticatedClient: conn.HTTPClient().Client,
+			Workspace:           conn.workspace,
+			Metadata:            nil,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return conn, nil
 }
 
 func (c *Connector) Provider() providers.Provider {
 	return providers.Atlassian
+}
+
+func isConfluenceModule(moduleID common.ModuleID) bool {
+	return moduleID == providers.ModuleAtlassianConfluence
+}
+
+func (c *Connector) isConfluenceModule() bool {
+	return c.confluenceAdapter != nil
 }
 
 func (c *Connector) String() string {
