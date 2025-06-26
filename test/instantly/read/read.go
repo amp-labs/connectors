@@ -9,8 +9,8 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	ap "github.com/amp-labs/connectors/providers/instantlyai"
-	"github.com/amp-labs/connectors/test/instantlyai"
+	ap "github.com/amp-labs/connectors/providers/instantly"
+	"github.com/amp-labs/connectors/test/instantly"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 }
 
 func MainFn() int {
-	conn := instantlyai.GetInstantlyAIConnector(context.Background())
+	conn := instantly.GetInstantlyConnector(context.Background())
 
 	err := testRead(context.Background(), conn, "campaigns", []string{""}, time.Time{})
 	if err != nil {
@@ -47,6 +47,7 @@ func testRead(ctx context.Context, conn *ap.Connector, objName string, fields []
 	params := common.ReadParams{
 		ObjectName: objName,
 		Fields:     connectors.Fields(fields...),
+		Since:      since,
 	}
 
 	res, err := conn.Read(ctx, params)

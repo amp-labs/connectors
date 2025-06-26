@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"log"
 
-	instantlyai "github.com/amp-labs/connectors/test/instantlyai"
+	"github.com/amp-labs/connectors/test/instantly"
 )
 
 func main() {
 	ctx := context.Background()
 
-	conn := instantlyai.GetInstantlyAIConnector(ctx)
+	conn := instantly.GetInstantlyConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"accounts", "campaigns", "emails", "lead-lists", "inbox-placement-tests", "background-jobs", "custom-tags", "block-lists-entries", "lead-labels", "workspace-group-members", "workspace-members", "leads/list", "campaigns/analytics", "campaigns/analytics/daily", "campaigns/analytics/steps", "inbox-placement-tests/email-service-provider-options", "audit-logs"})
 

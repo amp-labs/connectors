@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/amp-labs/connectors/common"
-	ap "github.com/amp-labs/connectors/providers/instantlyai"
-	"github.com/amp-labs/connectors/test/instantlyai"
+	ap "github.com/amp-labs/connectors/providers/instantly"
+	"github.com/amp-labs/connectors/test/instantly"
 )
 
 func main() {
@@ -38,7 +38,7 @@ func MainFn() int {
 }
 
 func testLeadLabel(ctx context.Context) error {
-	conn := instantlyai.GetInstantlyAIConnector(ctx)
+	conn := instantly.GetInstantlyConnector(ctx)
 
 	slog.Info("Creating the lead labels")
 
@@ -87,7 +87,7 @@ func testLeadLabel(ctx context.Context) error {
 }
 
 func testCustomTags(ctx context.Context) error {
-	conn := instantlyai.GetInstantlyAIConnector(ctx)
+	conn := instantly.GetInstantlyConnector(ctx)
 
 	slog.Info("Creating the custom tags")
 
@@ -135,7 +135,7 @@ func testCustomTags(ctx context.Context) error {
 }
 
 func testLeadLists(ctx context.Context) error {
-	conn := instantlyai.GetInstantlyAIConnector(ctx)
+	conn := instantly.GetInstantlyConnector(ctx)
 
 	slog.Info("Creating the lead lists")
 

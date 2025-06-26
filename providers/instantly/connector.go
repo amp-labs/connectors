@@ -1,67 +1,90 @@
 package instantly
 
 import (
+	_ "embed"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/deleter"
+	"github.com/amp-labs/connectors/internal/components/operations"
+	"github.com/amp-labs/connectors/internal/components/reader"
+	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/instantly/metadata"
 )
 
-const apiVersion = "v1"
-
 type Connector struct {
-	BaseURL string
-	Module  common.Module
-	Client  *common.JSONHTTPClient
+	// Basic connector
+	*components.Connector
+
+	// Require authenticated client
+	common.RequireAuthenticatedClient
+
+	// Supported operations
+	components.SchemaProvider
+	components.Reader
+	components.Writer
+	components.Deleter
 }
 
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+const apiVersion = "v2"
+
+func NewConnector(params common.ConnectorParams) (*Connector, error) {
+	// Create base connector with provider info
+	return components.Initialize(providers.InstantlyAI, params, constructor)
+}
+
+func constructor(base *components.Connector) (*Connector, error) {
+	connector := &Connector{Connector: base}
+
+	// Set the metadata provider for the connector
+	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
+
+	registry, err := components.NewEndpointRegistry(supportedOperations())
 	if err != nil {
 		return nil, err
 	}
 
-	httpClient := params.Client.Caller
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: httpClient,
+	connector.Reader = reader.NewHTTPReader(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.ReadHandlers{
+			BuildRequest:  connector.buildReadRequest,
+			ParseResponse: connector.parseReadResponse,
+			ErrorHandler: interpreter.ErrorHandler{
+				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+			}.Handle,
 		},
-	}
+	)
 
-	providerInfo, err := providers.ReadInfo(conn.Provider())
-	if err != nil {
-		return nil, err
-	}
+	connector.Writer = writer.NewHTTPWriter(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
+			ErrorHandler: interpreter.ErrorHandler{
+				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+			}.Handle,
+		},
+	)
 
-	if err != nil {
-		return nil, err
-	}
+	connector.Deleter = deleter.NewHTTPDeleter(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.DeleteHandlers{
+			BuildRequest:  connector.buildDeleteRequest,
+			ParseResponse: connector.parseDeleteResponse,
+			ErrorHandler: interpreter.ErrorHandler{
+				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+			}.Handle,
+		},
+	)
 
-	// connector and its client must mirror base url and provide its own error parser
-	conn.setBaseURL(providerInfo.BaseURL)
-	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
-		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-	}.Handle
-
-	return conn, nil
-}
-
-func (c *Connector) Provider() providers.Provider {
-	return providers.Instantly
-}
-
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
-}
-
-func (c *Connector) getURL(parts ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, append([]string{
-		apiVersion,
-	}, parts...)...)
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
+	return connector, nil
 }

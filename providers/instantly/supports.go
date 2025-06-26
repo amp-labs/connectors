@@ -1,4 +1,4 @@
-package instantlyai
+package instantly
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
-	"github.com/amp-labs/connectors/providers/instantlyai/metadata"
+	"github.com/amp-labs/connectors/providers/instantly/metadata"
 )
 
 func supportedOperations() components.EndpointRegistryInput {

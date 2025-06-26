@@ -1,6 +1,0 @@
-{
-    "statusCode": 400,
-    "error": "Bad Request",
-    "message": "body should NOT have fewer than 1 properties"
-}
-

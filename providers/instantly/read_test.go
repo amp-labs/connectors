@@ -1,205 +1,122 @@
 package instantly
 
 import (
-	"errors"
-	"fmt"
 	"net/http"
-	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-// nolint: lll
-func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
+func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	responseInvalidPath := testutils.DataFromFile(t, "invalid-path.json")
-	responseCampaigns := testutils.DataFromFile(t, "read-campaigns.json")
-	responseTags := testutils.DataFromFile(t, "read-tags.json")
+	campaignsResponse := testutils.DataFromFile(t, "campaigns.json")
+	customTagsResponse := testutils.DataFromFile(t, "custom-tags.json")
+	leadListsResponse := testutils.DataFromFile(t, "lead-lists.json")
 
 	tests := []testroutines.Read{
 		{
 			Name:         "Read object must be included",
-			Input:        common.ReadParams{},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "At least one field is requested",
-			Input:        common.ReadParams{ObjectName: "campaigns"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrMissingFields},
-		},
-		{
-			Name:     "Unknown object name is not supported",
-			Input:    common.ReadParams{ObjectName: "orders", Fields: connectors.Fields("id")},
-			Server:   mockserver.Dummy(),
-			Expected: nil,
-			ExpectedErrs: []error{
-				common.ErrOperationNotSupportedForObject,
-			},
-		},
-		{
-			Name:  "Correct error message is understood from JSON response",
-			Input: common.ReadParams{ObjectName: "campaigns", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusNotFound, responseInvalidPath),
-			}.Server(),
-			ExpectedErrs: []error{
-				common.ErrBadRequest,
-				errors.New("Not Found"), // nolint:goerr113
-			},
-		},
-		{
-			Name:  "Incorrect key in payload",
-			Input: common.ReadParams{ObjectName: "emails", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
+			Name:  "Read list of campaigns",
+			Input: common.ReadParams{ObjectName: "campaigns", Fields: connectors.Fields("")},
+			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusOK, `{
-					"yourEmails": []
-				}`),
+				If:    mockcond.Path("/api/v2/campaigns"),
+				Then:  mockserver.Response(http.StatusOK, campaignsResponse),
 			}.Server(),
-			ExpectedErrs: []error{jsonquery.ErrKeyNotFound},
-		},
-		{
-			Name:  "Incorrect data type in payload",
-			Input: common.ReadParams{ObjectName: "emails", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup: mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusOK, `{
-					"data": {}
-				}`),
-			}.Server(),
-			ExpectedErrs: []error{jsonquery.ErrNotArray},
-		},
-		{
-			Name: "Next page is correctly calculated",
-			Input: common.ReadParams{
-				ObjectName: "campaigns",
-				NextPage:   "test-placeholder?skip=700",
-				Fields:     connectors.Fields("id"),
-			},
-			Server: mockserver.NewServer(func(writer http.ResponseWriter, r *http.Request) {
-				writer.Header().Set("Content-Type", "application/json")
-				writer.WriteHeader(http.StatusOK)
-				// Create fake response big enough to conclude that next page exists.
-				manyCampaigns := make([]string, DefaultPageSize)
-
-				for i := range DefaultPageSize {
-					manyCampaigns[i] = "{}"
-				}
-
-				data := fmt.Sprintf("[%v]", strings.Join(manyCampaigns, ","))
-				_, _ = writer.Write([]byte(data)) // nosemgrep: go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
-			}),
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows:     DefaultPageSize,
-				NextPage: "test-placeholder?limit=100&skip=800",
-				Done:     false,
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{},
+						Raw: map[string]any{
+							"id":                "0196d267-8d93-73c3-b563-1a6443e78eb8",
+							"name":              "My First Campaign",
+							"timestamp_created": "2025-05-15T05:25:23.987Z",
+							"timestamp_updated": "2025-05-15T05:25:23.987Z",
+							"organization":      "0196d267-8d93-73c3-b563-1a6685313ea8",
+						},
+					},
+				},
+				NextPage: testroutines.URLTestServer +
+					"/api/v2/campaigns?limit=100&starting_after=0196d267-98dd-7720-b740-f132c2c547d9",
+				Done: false,
 			},
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Current empty page signifies no next page",
-			Input: common.ReadParams{
-				ObjectName: "campaigns",
-				Fields:     connectors.Fields("id"),
-			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusOK, "[]"),
+			Name:  "Read list of custom tags",
+			Input: common.ReadParams{ObjectName: "custom-tags", Fields: connectors.Fields("")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/v2/custom-tags"),
+				Then:  mockserver.Response(http.StatusOK, customTagsResponse),
 			}.Server(),
-			Comparator:   testroutines.ComparatorPagination,
-			Expected:     &common.ReadResult{Rows: 0, NextPage: "", Done: true},
-			ExpectedErrs: nil,
-		},
-		{
-			Name: "Read campaigns with chosen fields",
-			Input: common.ReadParams{
-				ObjectName: "campaigns",
-				Fields:     connectors.Fields("name"),
-			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseCampaigns),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows: 2,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"name": "Second Campaign",
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{},
+						Raw: map[string]any{
+							"id":                "01966b52-73c2-7a5d-9df3-ea5a95a7fb09",
+							"timestamp_created": "2025-04-25T05:01:27.874Z",
+							"timestamp_updated": "2025-04-25T05:01:27.875Z",
+							"organization_id":   "01966b52-73c3-7cc6-8081-efbe11b617f2",
+							"label":             "Important",
+							"description":       "Used for marking important items",
+						},
 					},
-					Raw: map[string]any{
-						"id":   "27dd47ff-5a78-4377-a1eb-98f593f37219",
-						"name": "Second Campaign",
-					},
-				}, {
-					Fields: map[string]any{
-						"name": "My Campaign",
-					},
-					Raw: map[string]any{
-						"id":   "65d890fe-ae4d-43d0-b014-af0e89b6281f",
-						"name": "My Campaign",
-					},
-				}},
-				NextPage: testroutines.URLTestServer + "/api/v1/campaign/list?limit=100&skip=100",
-				Done:     false,
+				},
+				NextPage: testroutines.URLTestServer +
+					"/api/v2/custom-tags?limit=100&starting_after=01966b52-881d-76de-acb0-8b12432533f6",
+				Done: false,
 			},
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read tags with chosen fields",
-			Input: common.ReadParams{
-				ObjectName: "tags",
-				Fields:     connectors.Fields("label", "description"),
-			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseTags),
+			Name:  "Read list of lead lists",
+			Input: common.ReadParams{ObjectName: "lead-lists", Fields: connectors.Fields("")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/v2/lead-lists"),
+				Then:  mockserver.Response(http.StatusOK, leadListsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows: 2,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"label":       "High Delivery 3",
-						"description": "High Delivery Accounts 3",
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{},
+						Raw: map[string]any{
+							"id":                  "01966b52-73bf-79c0-bf01-933de40a96af",
+							"organization_id":     "01966b52-73bf-79c0-bf01-933e7e9d7123",
+							"has_enrichment_task": false,
+							"owned_by":            "01966b52-73bf-79c0-bf01-933fa9d5415a",
+							"name":                "My Lead List",
+							"timestamp_created":   "2025-04-25T05:01:27.871Z",
+						},
 					},
-					Raw: map[string]any{
-						"organization_id": "803a064c-a636-49fe-bc45-5043da7a4ee7",
-						"label":           "High Delivery 3",
-						"description":     "High Delivery Accounts 3",
-					},
-				}, {
-					Fields: map[string]any{
-						"label":       "High Delivery 2",
-						"description": "High Delivery Accounts 2",
-					},
-					Raw: map[string]any{
-						"organization_id": "803a064c-a636-49fe-bc45-5043da7a4ee7",
-						"label":           "High Delivery 2",
-						"description":     "High Delivery Accounts 2",
-					},
-				}},
-				NextPage: testroutines.URLTestServer + "/api/v1/custom-tag?limit=100&skip=100",
-				Done:     false,
+				},
+				NextPage: testroutines.URLTestServer +
+					"/api/v2/lead-lists?limit=100&starting_after=01966b52-883f-760d-b7dc-cdd0fc3f7841",
+				Done: false,
 			},
 			ExpectedErrs: nil,
 		},
 	}
 
 	for _, tt := range tests {
-		// nolint:varnamelen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
@@ -208,18 +125,4 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			})
 		})
 	}
-}
-
-func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(
-		WithAuthenticatedClient(mockutils.NewClient()),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
-
-	return connector, nil
 }

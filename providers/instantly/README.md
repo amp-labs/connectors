@@ -1,10 +1,10 @@
-# InstantlyAI connector
+# Instantly connector
 
 
 ## Supported Objects 
 Below is an exhaustive list of objects & methods supported on the objects
 
-InstantlyAI API version: v2
+Instantly API version: v2
 ------------------------------------------------------------------------------
 | Object                     | Resource                    | Method          |
 | Accounts                   | accounts                    | read and write  |

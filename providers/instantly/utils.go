@@ -1,4 +1,4 @@
-package instantlyai
+package instantly
 
 import (
 	"net/url"
