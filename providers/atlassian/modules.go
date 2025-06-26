@@ -22,4 +22,9 @@ var supportedModules = common.Modules{ // nolint: gochecknoglobals
 		Label:   "rest/api",
 		Version: "3",
 	},
+	providers.ModuleAtlassianConfluence: {
+		ID:      providers.ModuleAtlassianConfluence,
+		Label:   "", // not important
+		Version: "", // not important
+	},
 }
