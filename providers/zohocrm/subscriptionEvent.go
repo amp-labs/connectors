@@ -19,36 +19,43 @@ var (
 )
 
 // SubscriptionEvent represents a webhook event from Zoho CRM.
-type SubscriptionEvent map[string]any
+type (
+	SubscriptionEvent      map[string]any
+	ZohoVerificationParams struct {
+		EchoToken string
+	}
+)
 
 // VerifyWebhookMessage verifies the signature of a webhook message from Zoho CRM.
 // Zoho does not send a signature, but instead,
 // they ask us to provide tokens of our choice that they attach to webhook messages
 // they call it "token", in the response body.
 func (*Connector) VerifyWebhookMessage(
-	_ context.Context, params *common.WebhookVerificationParameters,
+	_ context.Context,
+	request *common.WebhookRequest,
+	params *common.VerificationParams,
 ) (bool, error) {
-	if params.MatcherRefs == nil {
-		return false, fmt.Errorf("%w: %s", errFieldNotFound, "matcherRefs")
+	zohoParams, err := common.AssertType[*ZohoVerificationParams](params.Param)
+	if err != nil {
+		return false, fmt.Errorf("invalid verification params: %w", err)
 	}
 
-	tokenStr, err := parseToken(params)
+	if zohoParams.EchoToken == "" {
+		return false, fmt.Errorf("%w: %s", errFieldNotFound, "echoToken")
+	}
+
+	tokenStr, err := parseToken(request)
 	if err != nil {
 		return false, fmt.Errorf("error parsing token: %w", err)
 	}
 
-	matcherRefStr, err := getUniqueRef(params)
-	if err != nil {
-		return false, fmt.Errorf("error getting unique ref: %w", err)
-	}
-
-	return tokenStr == matcherRefStr, nil
+	return tokenStr == zohoParams.EchoToken, nil
 }
 
-func parseToken(params *common.WebhookVerificationParameters) (string, error) {
+func parseToken(request *common.WebhookRequest) (string, error) {
 	var body map[string]any
 
-	err := json.Unmarshal(params.Body, &body)
+	err := json.Unmarshal(request.Body, &body)
 	if err != nil {
 		return "", err
 	}
@@ -65,24 +72,6 @@ func parseToken(params *common.WebhookVerificationParameters) (string, error) {
 	}
 
 	return tokenStr, nil
-}
-
-func getUniqueRef(params *common.WebhookVerificationParameters) (string, error) {
-	if params.MatcherRefs == nil {
-		return "", fmt.Errorf("%w: %s", errFieldNotFound, "matcherRefs")
-	}
-
-	uniqueRef, ok := params.MatcherRefs["uniqueRef"]
-	if !ok {
-		return "", fmt.Errorf("%w: %s", errFieldNotFound, "uniqueRef")
-	}
-
-	uniqueRefStr, ok := uniqueRef.(string)
-	if !ok {
-		return "", fmt.Errorf("%w: %s, expected string, got %T", errTypeMismatch, "uniqueRef", uniqueRef)
-	}
-
-	return uniqueRefStr, nil
 }
 
 var (
@@ -210,17 +199,27 @@ func parseValuesFromValueMap(valueMap common.StringMap) (map[string]any, error) 
 }
 
 func parseFieldsFromValueMap(valueMap common.StringMap) (map[string][]string, error) {
-	fields, err := valueMap.Get("affected_fields")
+	values, err := valueMap.Get("values")
 	if err != nil {
 		return nil, err
 	}
 
-	fieldsMap, ok := fields.(map[string][]string)
+	vMap, ok := values.(map[string]any)
 	if !ok {
-		return nil, fmt.Errorf("%w: %s, expected map[string][]string, got %T", errTypeMismatch, "fields", fields)
+		return nil, fmt.Errorf("%w: %s, expected map[string]any, got %T", errTypeMismatch, "values", values)
 	}
 
-	return fieldsMap, nil
+	fieldsList := make([]string, 0)
+	for field := range vMap {
+		fieldsList = append(fieldsList, field)
+	}
+
+	recordId, err := valueMap.GetString("record_id")
+	if err != nil {
+		return nil, err
+	}
+
+	return map[string][]string{recordId: fieldsList}, nil
 }
 
 // EventType returns the type of event (create, update, delete).
