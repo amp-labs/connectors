@@ -23,13 +23,13 @@ func makeNextRecordsURL() common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		pagination, err := jsonquery.New(node).ObjectOptional("paging")
 		if err != nil {
-			return "", nil
+			return "", err
 		}
 
 		if pagination != nil {
 			nextLink, err := jsonquery.New(pagination).StringRequired("next_link")
 			if err != nil {
-				return "", nil
+				return "", err
 			}
 
 			return nextLink, nil
@@ -67,7 +67,7 @@ func getRecords(objName string, records []*ajson.Node, fields []string,
 
 	objKey := naming.NewSingularString(objName).String()
 
-	for i, element := range records {
+	for i, element := range records { // nolint:varnamelen
 		originalRecord, err := jsonquery.Convertor.ObjectToMap(element)
 		if err != nil {
 			return nil, err
