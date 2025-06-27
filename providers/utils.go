@@ -167,6 +167,16 @@ func (i *ProviderInfo) SubstituteWith(vars catalogreplacer.CatalogVariables) err
 				}})
 			}
 		}
+
+		// To prevent OAuthConnect from erroring out due to missing PostAuthentication variables,
+		// we add a default value of " " for each PostAuthentication variable.
+		// Since no Connection exists yet, there won't be any PostAuthentication variables.
+		for _, postAuthVar := range i.Metadata.PostAuthentication {
+			vars.AddDefaults(catalogreplacer.CustomCatalogVariable{Plan: catalogreplacer.SubstitutionPlan{
+				From: postAuthVar.Name,
+				To:   " ",
+			}})
+		}
 	}
 
 	return catalogreplacer.NewCatalogSubstitutionRegistry(vars).Apply(i)
