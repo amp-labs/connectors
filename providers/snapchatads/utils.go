@@ -27,12 +27,14 @@ func makeNextRecordsURL() common.NextPageFunc {
 		}
 
 		if pagination != nil {
-			nextLink, err := jsonquery.New(pagination).StringRequired("next_link")
+			nextLink, err := jsonquery.New(pagination).StringOptional("next_link")
 			if err != nil {
 				return "", err
 			}
 
-			return nextLink, nil
+			if nextLink != nil {
+				return *nextLink, nil
+			}
 		}
 
 		return "", nil
