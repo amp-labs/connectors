@@ -12,6 +12,10 @@ func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*co
 		return nil, err
 	}
 
+	if c.isConfluenceModule() {
+		return c.confluenceAdapter.Delete(ctx, config)
+	}
+
 	url, err := c.getModuleURL("issue")
 	if err != nil {
 		return nil, err

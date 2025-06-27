@@ -19,6 +19,10 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
+	if c.isConfluenceModule() {
+		return c.confluenceAdapter.Read(ctx, config)
+	}
+
 	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
