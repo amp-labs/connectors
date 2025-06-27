@@ -63,7 +63,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 			Module:              conn.moduleID,
 			AuthenticatedClient: conn.HTTPClient().Client,
 			Workspace:           conn.workspace,
-			Metadata:            nil,
+			Metadata:            *authMetadata.AsMap(),
 		})
 		if err != nil {
 			return nil, err
@@ -93,6 +93,10 @@ func (c *Connector) String() string {
 func (c *Connector) setBaseURL(rootURL, moduleURL string) {
 	c.providerInfo.BaseURL = rootURL
 	c.moduleInfo.BaseURL = moduleURL
+
+	if c.isConfluenceModule() {
+		c.confluenceAdapter.SetBaseURLs(rootURL, moduleURL)
+	}
 }
 
 func (c *Connector) getRootURL(path ...string) (*urlbuilder.URL, error) {

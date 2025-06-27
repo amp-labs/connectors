@@ -134,13 +134,27 @@ func (u *URL) AddPath(paths ...string) *URL {
 
 	uriParts := make([]string, len(paths))
 
-	for i, p := range paths {
-		if i == len(paths)-1 {
+	for index, p := range paths {
+		if index == len(paths)-1 {
 			// last index
 			p = cleanTrailingSlashes(p)
 		}
 
-		uriParts[i] = p
+		sections := strings.Split(p, "?")
+		if len(sections) != 2 { // nolint:mnd
+			uriParts[index] = p
+
+			continue
+		}
+
+		// This path has query parameters.
+		uriParts[index] = sections[0]
+
+		if parsed, err := url.ParseQuery(sections[1]); err == nil {
+			for key, vals := range parsed {
+				u.WithQueryParamList(key, vals)
+			}
+		}
 	}
 
 	u.delegate = u.delegate.JoinPath(uriParts...)
