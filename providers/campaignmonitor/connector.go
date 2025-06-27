@@ -45,7 +45,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return conn, nil
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(base *components.Connector) (*Connector, error) { // nolinte:funlen
 	connector := &Connector{
 		Connector: base,
 		RequireMetadata: common.RequireMetadata{
