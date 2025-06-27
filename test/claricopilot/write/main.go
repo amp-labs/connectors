@@ -72,6 +72,7 @@ func testCreatingCalls(ctx context.Context, conn *cc.Connector) error {
 	}
 
 	slog.Info("Creating call...")
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return err
@@ -105,6 +106,7 @@ func testCreatingContacts(ctx context.Context, conn *cc.Connector) (string, erro
 	}
 
 	slog.Info("Creating contact...")
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return "", err
@@ -135,6 +137,7 @@ func testCreateDeals(ctx context.Context, conn *cc.Connector) error {
 	}
 
 	slog.Info("Creating deal...")
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return err
@@ -169,6 +172,7 @@ func testCreateAccounts(ctx context.Context, conn *cc.Connector) error {
 	}
 
 	slog.Info("Creating account...")
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return err
@@ -198,6 +202,7 @@ func testUpdateContacts(ctx context.Context, conn *cc.Connector, id string) erro
 	}
 
 	slog.Info("Updating contact...")
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return err
