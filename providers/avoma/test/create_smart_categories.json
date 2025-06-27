@@ -1,0 +1,16 @@
+{
+  "keywords": [
+    "demo"
+  ],
+  "name": "demo",
+  "prompts": [
+    "smart"
+  ],
+  "settings": {
+    "aug_notes_enabled": true,
+    "keyword_notes_enabled": true,
+    "prompt_extract_length": "short",
+    "prompt_extract_strategy": "after"
+  },
+  "uuid": "5b66d318-627e-4336-9eec-bd79212eb1db"
+}
