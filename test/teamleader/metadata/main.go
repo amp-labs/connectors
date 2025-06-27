@@ -18,7 +18,7 @@ func run() error {
 	ctx := context.Background()
 	connector := teamleader.GetConnector(ctx)
 
-	m, err := connector.ListObjectMetadata(ctx, []string{"teams"})
+	m, err := connector.ListObjectMetadata(ctx, []string{"teams", "departments", "users", "workTypes", "contacts", "companies"})
 	if err != nil {
 		return err
 	}
