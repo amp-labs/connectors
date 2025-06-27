@@ -12,11 +12,15 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const cloudId = "35745fff-f0de-466c-b08e-a63f69888611"
+var fieldCloudID = credscanning.Field{
+	Name:      "cloudId",
+	PathJSON:  "metadata.cloudId",
+	SuffixENV: "CLOUD_ID",
+}
 
 func GetAtlassianConnector(ctx context.Context) *atlassian.Connector {
 	filePath := credscanning.LoadPath(providers.Atlassian)
-	reader := utils.MustCreateProvCredJSON(filePath, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true, fieldCloudID)
 
 	conn, err := atlassian.NewConnector(
 		atlassian.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
@@ -26,7 +30,7 @@ func GetAtlassianConnector(ctx context.Context) *atlassian.Connector {
 			// This value can be obtained by following this API reference.
 			// https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
 			// Another simplest solution is to run `connectors/test/atlassian/auth-metadata/main.go` script.
-			"cloudId": cloudId,
+			"cloudId": reader.Get(fieldCloudID),
 		}),
 	)
 	if err != nil {
@@ -36,6 +40,9 @@ func GetAtlassianConnector(ctx context.Context) *atlassian.Connector {
 	return conn
 }
 
+// GetAtlassianConnectConnector
+// Context:
+// https://developer.atlassian.com/cloud/jira/platform/getting-started-with-connect/
 func GetAtlassianConnectConnector(ctx context.Context, claims map[string]any) *atlassian.Connector {
 	filePath := credscanning.LoadPath(providers.Atlassian)
 	reader := utils.MustCreateProvCredJSON(filePath, true)

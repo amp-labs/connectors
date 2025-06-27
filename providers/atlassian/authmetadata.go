@@ -19,8 +19,6 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 		return nil, errors.Join(ErrDiscoveryFailure, err)
 	}
 
-	c.cloudId = cloudId
-
 	return &common.PostAuthInfo{
 		CatalogVars: AuthMetadataVars{
 			CloudId: cloudId,
