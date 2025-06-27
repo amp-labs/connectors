@@ -36,6 +36,13 @@ func supportedOperations() components.EndpointRegistryInput {
 		"sendingdomains",
 	}
 
+	deleteSupport := []string{
+		"campaigns",
+		"templates",
+		"lists",
+		"clients",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
@@ -45,6 +52,10 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
 				Support:  components.WriteSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(deleteSupport, ",")),
+				Support:  components.DeleteSupport,
 			},
 		},
 	}
