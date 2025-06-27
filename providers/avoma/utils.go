@@ -29,18 +29,22 @@ var EndpointsWithResultsPath = datautils.NewSet( //nolint:gochecknoglobals
 
 func makeNextRecordsURL() common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		nextPage, err := jsonquery.New(node).StringRequired("next")
-		if err != nil {
-			return "", nil //nolint:nilerr
-		}
-
-		url, err := urlbuilder.New(nextPage)
+		nextPage, err := jsonquery.New(node).StringOptional("next")
 		if err != nil {
 			return "", err
 		}
 
-		url.AddEncodingExceptions(avomaQueryEncodingExceptions)
+		if nextPage != nil {
+			url, err := urlbuilder.New(*nextPage)
+			if err != nil {
+				return "", err
+			}
 
-		return url.String(), nil
+			url.AddEncodingExceptions(avomaQueryEncodingExceptions)
+
+			return url.String(), nil
+		}
+
+		return "", nil
 	}
 }
