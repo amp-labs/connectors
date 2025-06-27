@@ -9,6 +9,8 @@ const (
 	ModuleAtlassianJira common.ModuleID = "jira"
 	// ModuleAtlassianJiraConnect is the module used for Atlassian Connect.
 	ModuleAtlassianJiraConnect common.ModuleID = "atlassian-connect"
+	// ModuleAtlassianConfluence is the module used for Atlassian Confluence.
+	ModuleAtlassianConfluence common.ModuleID = "confluence"
 )
 
 // nolint:funlen
@@ -44,6 +46,15 @@ func init() {
 					Read:      true,
 					Subscribe: false,
 					Write:     true,
+				},
+			},
+			ModuleAtlassianConfluence: {
+				BaseURL:     "https://api.atlassian.com/ex/confluence/{{.cloudId}}",
+				DisplayName: "Atlassian Confluence",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
 				},
 			},
 		},
