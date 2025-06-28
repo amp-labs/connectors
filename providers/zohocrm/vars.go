@@ -20,8 +20,6 @@ const (
 var (
 	errInvalidRequestType    = errors.New("invalid request type")
 	errMissingParams         = errors.New("missing required parameters")
-	errInvalidField          = errors.New("invalid field format")
-	errValuesIdMismatch      = errors.New("record id and affected values record id does not match")
 	errWatchFieldsAll        = errors.New("watch fields all is not supported")
 	errTooManyWatchFields    = errors.New("too many watch fields")
 	errSubscriptionFailed    = errors.New("subscription failed")

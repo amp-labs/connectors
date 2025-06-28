@@ -1,6 +1,7 @@
 package hubspot
 
 import (
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
@@ -13,6 +14,8 @@ type Connector struct {
 	moduleInfo *providers.ModuleInfo
 	moduleID   common.ModuleID
 }
+
+var _ connectors.WebhookVerifierConnector = &Connector{}
 
 // NewConnector returns a new Hubspot connector.
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
