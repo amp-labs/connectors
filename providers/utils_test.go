@@ -326,14 +326,13 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api/3",
+				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
 				DisplayName: "Atlassian Jira",
 				Support: Support{
 					Read:  true,
 					Write: true,
 				},
 			},
-			// expectedErr: common.ErrMissingModule,
 		},
 		{
 			name: "Hubspot unknown module",
@@ -349,7 +348,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 					Write: true,
 				},
 			},
-			// expectedErr: common.ErrMissingModule,
 		},
 		{
 			name: "Marketo unknown module",
@@ -374,7 +372,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 					Write:     true,
 				},
 			},
-			// expectedErr: common.ErrMissingModule,
 		},
 		// Choosing non-root module for providers supporting several modules.
 		{
@@ -384,7 +381,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: ModuleAtlassianJira,
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api/3",
+				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
 				DisplayName: "Atlassian Jira",
 				Support: Support{
 					Read:  true,
@@ -399,7 +396,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: ModuleAtlassianJiraConnect,
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api/3",
+				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api",
 				DisplayName: "Atlassian Connect",
 				Support: Support{
 					Read:  true,
