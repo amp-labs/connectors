@@ -1,5 +1,8 @@
 query {
-    transcripts(limit: {{.Limit}}, skip: {{.Skip}}) {
+    transcripts(
+        limit: {{.Limit}},
+        skip: {{.Skip}}
+    ) {
         id
         sentences {
             index
