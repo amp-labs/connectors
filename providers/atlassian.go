@@ -17,7 +17,7 @@ func init() {
 	SetInfo(Atlassian, ProviderInfo{
 		DisplayName: "Atlassian",
 		AuthType:    Oauth2,
-		BaseURL:     "https://api.atlassian.com",
+		BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.atlassian.com/authorize",
