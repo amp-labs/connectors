@@ -7,8 +7,8 @@ const Atlassian Provider = "atlassian"
 const (
 	// ModuleAtlassianJira is the module used for listing Jira issues.
 	ModuleAtlassianJira common.ModuleID = "jira"
-	// ModuleAtlassianJiraConnect is the module used for Atlassian Connect.
-	ModuleAtlassianJiraConnect common.ModuleID = "atlassian-connect"
+	// ModuleAtlassianConnect is the module used for Atlassian Connect.
+	ModuleAtlassianConnect common.ModuleID = "atlassian-connect"
 )
 
 // nolint:funlen
@@ -37,7 +37,7 @@ func init() {
 					Write:     true,
 				},
 			},
-			ModuleAtlassianJiraConnect: {
+			ModuleAtlassianConnect: {
 				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api",
 				DisplayName: "Atlassian Connect",
 				Support: Support{
