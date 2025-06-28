@@ -40,8 +40,11 @@ func NewTransport(
 	}, nil
 }
 
+// SetBaseURL overrides base URL for all modules and provider itself.
+// This method should only be used for unit tests.
 func (t *Transport) SetBaseURL(newURL string) {
 	t.ProviderContext.providerInfo.BaseURL = newURL
+	t.ProviderContext.moduleInfo.BaseURL = newURL
 	t.json.HTTPClient.Base = newURL
 }
 

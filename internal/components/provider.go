@@ -58,6 +58,10 @@ func (p *ProviderContext) ProviderInfo() *providers.ProviderInfo {
 	return p.providerInfo
 }
 
+func (p *ProviderContext) ModuleInfo() *providers.ModuleInfo {
+	return p.moduleInfo
+}
+
 func (p *ProviderContext) Module() common.ModuleID {
 	return p.moduleID
 }

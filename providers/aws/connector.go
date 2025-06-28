@@ -1,8 +1,6 @@
 package aws
 
 import (
-	"strings"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/internal/components"
@@ -115,15 +113,6 @@ func constructor(base *components.Connector, expectedMetadataKeys []string) (*Co
 	return connector, nil
 }
 
-// nolint:unused
-func (c *Connector) getModuleURL() (string, error) {
-	modules := c.ProviderInfo().Modules
-	if modules == nil {
-		return "", common.ErrInvalidModuleDeclaration
-	}
-
-	baseURL := (*modules)[c.Module()].BaseURL
-	baseURL = strings.Replace(baseURL, "{{.region}}", c.region, 1)
-
-	return baseURL, nil
+func (c *Connector) getModuleURL() string {
+	return c.Connector.ModuleInfo().BaseURL
 }
