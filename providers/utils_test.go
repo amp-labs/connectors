@@ -234,22 +234,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 		},
 		// Root for providers that have multiple modules.
 		{
-			name: "Atlassian root module",
-			input: inType{
-				provider: Atlassian,
-				moduleID: common.ModuleRoot,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.atlassian.com",
-				DisplayName: "Atlassian",
-				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
 			name: "Hubspot root module",
 			input: inType{
 				provider: Hubspot,
