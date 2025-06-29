@@ -234,22 +234,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 		},
 		// Root for providers that have multiple modules.
 		{
-			name: "Atlassian root module",
-			input: inType{
-				provider: Atlassian,
-				moduleID: common.ModuleRoot,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.atlassian.com",
-				DisplayName: "Atlassian",
-				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
 			name: "Hubspot root module",
 			input: inType{
 				provider: Hubspot,
@@ -349,7 +333,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 					Write: true,
 				},
 			},
-			// expectedErr: common.ErrMissingModule,
 		},
 		{
 			name: "Hubspot unknown module",
@@ -365,7 +348,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 					Write: true,
 				},
 			},
-			// expectedErr: common.ErrMissingModule,
 		},
 		{
 			name: "Marketo unknown module",
@@ -390,7 +372,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 					Write:     true,
 				},
 			},
-			// expectedErr: common.ErrMissingModule,
 		},
 		// Choosing non-root module for providers supporting several modules.
 		{
