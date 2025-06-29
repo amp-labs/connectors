@@ -234,6 +234,22 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 		},
 		// Root for providers that have multiple modules.
 		{
+			name: "Atlassian root module",
+			input: inType{
+				provider: Atlassian,
+				moduleID: common.ModuleRoot,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.atlassian.com",
+				DisplayName: "Atlassian",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
 			name: "Hubspot root module",
 			input: inType{
 				provider: Hubspot,
@@ -326,13 +342,14 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
+				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api/3",
 				DisplayName: "Atlassian Jira",
 				Support: Support{
 					Read:  true,
 					Write: true,
 				},
 			},
+			// expectedErr: common.ErrMissingModule,
 		},
 		{
 			name: "Hubspot unknown module",
@@ -348,6 +365,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 					Write: true,
 				},
 			},
+			// expectedErr: common.ErrMissingModule,
 		},
 		{
 			name: "Marketo unknown module",
@@ -372,6 +390,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 					Write:     true,
 				},
 			},
+			// expectedErr: common.ErrMissingModule,
 		},
 		// Choosing non-root module for providers supporting several modules.
 		{
@@ -381,7 +400,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: ModuleAtlassianJira,
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
+				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api/3",
 				DisplayName: "Atlassian Jira",
 				Support: Support{
 					Read:  true,
@@ -396,7 +415,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: ModuleAtlassianJiraConnect,
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api",
+				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api/3",
 				DisplayName: "Atlassian Connect",
 				Support: Support{
 					Read:  true,

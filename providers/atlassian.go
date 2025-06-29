@@ -17,7 +17,7 @@ func init() {
 	SetInfo(Atlassian, ProviderInfo{
 		DisplayName: "Atlassian",
 		AuthType:    Oauth2,
-		BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
+		BaseURL:     "https://api.atlassian.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.atlassian.com/authorize",
@@ -29,7 +29,7 @@ func init() {
 		DefaultModule:      ModuleAtlassianJira,
 		Modules: &Modules{
 			ModuleAtlassianJira: {
-				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
+				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api/3",
 				DisplayName: "Atlassian Jira",
 				Support: Support{
 					Read:      true,
@@ -38,7 +38,7 @@ func init() {
 				},
 			},
 			ModuleAtlassianJiraConnect: {
-				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api",
+				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api/3",
 				DisplayName: "Atlassian Connect",
 				Support: Support{
 					Read:      true,
