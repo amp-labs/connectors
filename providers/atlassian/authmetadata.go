@@ -3,6 +3,7 @@ package atlassian
 import (
 	"context"
 	"errors"
+	"net/url"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -96,5 +97,11 @@ func (c *Connector) retrieveCloudId(ctx context.Context) (string, error) {
 // URL allows to get list of sites associated with auth token.
 // https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
 func (c *Connector) getAccessibleSitesURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New("https://api.atlassian.com/oauth/token/accessible-resources")
+	// Gets us https://api.atlassian.com (not adding this directly because tests depend on it)
+	host, err := url.Parse(c.BaseURL)
+	if err != nil {
+		return nil, err
+	}
+
+	return urlbuilder.New(host.Host, "oauth/token/accessible-resources")
 }
