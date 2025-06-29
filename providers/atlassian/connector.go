@@ -74,19 +74,7 @@ func (c *Connector) String() string {
 // URL format follows structure applicable to Oauth2 Atlassian apps.
 // https://developer.atlassian.com/cloud/jira/platform/rest/v2/intro/#other-integrations
 func (c *Connector) getJiraRestApiURL(arg string) (*urlbuilder.URL, error) {
-	// In the case of JIRA / Atlassian Cloud, we use this path. In other cases, we fall back to the base path.
-	modulePath := supportedModules[c.moduleID].Path()
-
-	if c.moduleID == providers.ModuleAtlassianJira {
-		cloudId, err := c.getCloudId()
-		if err != nil {
-			return nil, err
-		}
-
-		return urlbuilder.New(c.BaseURL, "ex/jira", cloudId, modulePath, arg)
-	}
-
-	return urlbuilder.New(c.BaseURL, modulePath, arg)
+	return urlbuilder.New(c.BaseURL, arg)
 }
 
 func (c *Connector) setBaseURL(newURL string) {
