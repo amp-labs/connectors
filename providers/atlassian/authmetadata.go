@@ -97,11 +97,15 @@ func (c *Connector) retrieveCloudId(ctx context.Context) (string, error) {
 // URL allows to get list of sites associated with auth token.
 // https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
 func (c *Connector) getAccessibleSitesURL() (*urlbuilder.URL, error) {
-	// Gets us https://api.atlassian.com (not adding this directly because tests depend on it)
-	host, err := url.Parse(c.BaseURL)
+	parsedURL, err := url.Parse(c.BaseURL)
 	if err != nil {
 		return nil, err
 	}
 
-	return urlbuilder.New(host.Host, "oauth/token/accessible-resources")
+	if parsedURL.Scheme == "" {
+		// To handle tests
+		return urlbuilder.New(c.BaseURL, "oauth/token/accessible-resources")
+	} else {
+		return urlbuilder.New(parsedURL.Host, "oauth/token/accessible-resources")
+	}
 }
