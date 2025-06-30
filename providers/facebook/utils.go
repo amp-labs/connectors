@@ -3,8 +3,13 @@ package facebook
 import (
 	"fmt"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
+
+const defaultPageSize = 25
 
 func (c *Connector) constructURL(objName string) string {
 	if EndpointWithAdAccountIdInURLPath.Has(objName) {
@@ -86,3 +91,27 @@ var EndpointWithBusineesIdInURLPath = datautils.NewSet( //nolint:gochecknoglobal
 	"received_audience_sharing_requests",
 	"system_users",
 )
+
+func makeNextRecordsURL() common.NextPageFunc {
+	return func(node *ajson.Node) (string, error) {
+		next, err := jsonquery.New(node).ObjectOptional("paging")
+		if err != nil {
+			return "", err
+		}
+
+		if next == nil {
+			return "", nil
+		}
+
+		nextPage, err := jsonquery.New(next).StringOptional("next")
+		if err != nil {
+			return "", err
+		}
+
+		if nextPage == nil {
+			return "", nil
+		}
+
+		return *nextPage, nil
+	}
+}
