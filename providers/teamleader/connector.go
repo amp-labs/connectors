@@ -31,8 +31,6 @@ func constructor(base *components.Connector) (*Connector, error) {
 		connector.HTTPClient().Client,
 		schema.FetchModeSerial,
 		operations.SingleObjectMetadataHandlers{
-			// Retrieving metadata using individual object calls can lead to rate limiting issues.
-			// Additionally, the rate limits may vary depending on the caller's roles.
 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
 			ParseResponse: connector.parseSingleObjectMetadataResponse,
 		},
