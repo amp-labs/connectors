@@ -34,17 +34,17 @@ func makeNextRecordsURL() common.NextPageFunc {
 			return "", err
 		}
 
-		if nextPage != nil {
-			url, err := urlbuilder.New(*nextPage)
-			if err != nil {
-				return "", err
-			}
-
-			url.AddEncodingExceptions(avomaQueryEncodingExceptions)
-
-			return url.String(), nil
+		if nextPage == nil {
+			return "", nil
 		}
 
-		return "", nil
+		url, err := urlbuilder.New(*nextPage)
+		if err != nil {
+			return "", err
+		}
+
+		url.AddEncodingExceptions(avomaQueryEncodingExceptions)
+
+		return url.String(), nil
 	}
 }
