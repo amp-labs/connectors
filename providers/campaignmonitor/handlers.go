@@ -90,7 +90,9 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	url.WithQueryParam("pageSize", strconv.Itoa(defaultPageSize))
 
-	// Only campaigns objects supports pagination with query param sentFromDate and sentToDate.
+	// The connector currently supports endpoints with clientId in the URL path.
+	// Among these, only the campaigns object supports pagination using the sentFromDate and sentToDate query parameters.
+	// https://www.campaignmonitor.com/api/v3-3/clients/#getting-sent-campaigns-2.
 	if params.ObjectName == "campaigns" {
 		if !params.Since.IsZero() {
 			url.WithQueryParam("sentFromDate", params.Since.Format(time.DateOnly))
