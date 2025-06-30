@@ -1,0 +1,16 @@
+{
+    "data": [
+        {
+            "id": "122096363306901679",
+            "name": "My System User",
+            "role": "ADMIN"
+        }
+    ],
+    "paging": {
+        "cursors": {
+            "before": "QVFIUkVWY19yMHBzbmYzNXBSTlBuc1hxU0ZARbjh6dy1LMGFlNHJTM1RPVTFWTExCQ1V2aWRxZAW9UX3kxS29NZAndmeFpEX0JBMUhsZAlQ3dDZAxSFU3VnlCNGVn",
+            "after": "QVFIUkVWY19yMHBzbmYzNXBSTlBuc1hxU0ZARbjh6dy1LMGFlNHJTM1RPVTFWTExCQ1V2aWRxZAW9UX3kxS29NZAndmeFpEX0JBMUhsZAlQ3dDZAxSFU3VnlCNGVn"
+        },
+        "next": "https://graph.facebook.com/v23.0/1190021932394709/system_users?access_token=EAAOSsmHsF2kBO6AR57PMV0EOtWzcKUSD3eV8iD0iPZBCv0mworX9g7J09eG1EIFukRQdYzpHMiq7QWRKmwBEOuAWUeADoREhfmFNPpYUEJH9zxNqZAWqLXCcP1hRrZCmJwH2JtxZCNER70hD91zYpEMZA8190FZCVrtstBkLOQAZAtltMEARZCZA9uHY8qgtqxBqe6JSYodoXChLZB5V5mCfPdHngDG2O2ZAF4Cr07pRHggXZBLFb2e6nAHL6vABQJMR&limit=1&after=QVFIUkVWY19yMHBzbmYzNXBSTlBuc1hxU0ZARbjh6dy1LMGFlNHJTM1RPVTFWTExCQ1V2aWRxZAW9UX3kxS29NZAndmeFpEX0JBMUhsZAlQ3dDZAxSFU3VnlCNGVn"
+    }
+}
