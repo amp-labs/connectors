@@ -16,6 +16,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	smartCategoriesResponse := testutils.DataFromFile(t, "create_smart_categories.json")
+	updateSmartCategoriesResponse := testutils.DataFromFile(t, "update_smart_categories.json")
 	callsResponse := testutils.DataFromFile(t, "create_calls.json")
 
 	tests := []testroutines.Write{
@@ -51,6 +52,34 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 						"prompt_extract_strategy": "after",
 					},
 					"uuid": "5b66d318-627e-4336-9eec-bd79212eb1db",
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "updating the smart categories",
+			Input: common.WriteParams{ObjectName: "smart_categories", RecordData: "dummy", RecordId: "5b66d318-627e-4336-9eec-bd79212eb1db"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPATCH(),
+				Then:  mockserver.Response(http.StatusOK, updateSmartCategoriesResponse),
+			}.Server(),
+			Expected: &common.WriteResult{
+				Success: true,
+				Errors:  nil,
+				Data: map[string]any{
+					"keywords": []any{
+						"demo",
+					},
+					"prompts": []any{
+						"smart",
+					},
+					"settings": map[string]any{
+						"aug_notes_enabled":       true,
+						"keyword_notes_enabled":   true,
+						"prompt_extract_length":   "short",
+						"prompt_extract_strategy": "after",
+					},
 				},
 			},
 			ExpectedErrs: nil,

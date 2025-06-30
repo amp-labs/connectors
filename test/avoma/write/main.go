@@ -41,11 +41,11 @@ func testSmartCategories(ctx context.Context) error {
 		ObjectName: "smart_categories",
 		RecordData: map[string]any{
 			"keywords": []string{
-				"Places",
+				"play",
 			},
-			"name": "places",
+			"name": "sports",
 			"prompts": []string{
-				"local place",
+				"football",
 			},
 			"settings": map[string]any{
 				"aug_notes_enabled":       true,
@@ -68,6 +68,29 @@ func testSmartCategories(ctx context.Context) error {
 		return err
 	}
 
+	slog.Info("update the smart categories")
+
+	updateParams := common.WriteParams{
+		ObjectName: "smart_categories",
+		RecordData: map[string]any{
+			"name": "Match",
+			"prompts": []string{
+				"circket",
+			},
+		},
+		RecordId: "5d2830dd-7414-4bc2-81fa-6eec79917928",
+	}
+
+	updateRes, err := Write(ctx, conn, updateParams)
+	if err != nil {
+		fmt.Println("ERR: ", err)
+
+		return err
+	}
+
+	if err := constructResponse(updateRes); err != nil {
+		return err
+	}
 	return nil
 }
 

@@ -67,6 +67,18 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
+	method := http.MethodPost
+
+	if params.RecordId != "" {
+		url.AddPath(params.RecordId)
+
+		if params.ObjectName == "template" {
+			method = http.MethodPut
+		}
+
+		method = http.MethodPatch
+	}
+
 	jsonData, err := json.Marshal(params.RecordData)
 	if err != nil {
 		return nil, err
@@ -74,7 +86,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	return http.NewRequestWithContext(
 		ctx,
-		http.MethodPost,
+		method,
 		url.String()+common.WithTrailingSlash,
 		bytes.NewReader(jsonData),
 	)
@@ -96,7 +108,7 @@ func (c *Connector) parseWriteResponse(
 	var searchValue string
 
 	switch params.ObjectName {
-	case "smart_categories":
+	case "smart_categories", "template":
 		searchValue = "uuid"
 	case "calls":
 		searchValue = "external_id"
