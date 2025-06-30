@@ -37,7 +37,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					{
 						Fields: map[string]any{},
 						Raw: map[string]any{
-							"name": "Ampersand Ampersand",
+							"name": "Ampersand Ampersand", // nolint:dupword
 							"tasks": []any{
 								"DRAFT",
 								"ANALYZE",
@@ -71,7 +71,8 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				NextPage: "https://graph.facebook.com/v19.0/act_1214321106978726/adimages?limit=25" +
-					"&after=QVFIUkdfVFFscVJoNC04b3JYdnFWUkdpTUUzeHhYc2ZABRi1IX05PRkxhWkVqNVJfUG5tb3p1aEVMS2JEQktfR0FhMHpvaFZAubEpNTlFKUkZAsZAWdqeHZAvQUxR",
+					"&after=QVFIUkdfVFFscVJoNC04b3JYdnFWUkdpTUUzeHhYc2ZABRi1IX05PRkxhWkVqNVJfUG5tb3p1aE" +
+					"VMS2JEQktfR0FhMHpvaFZAubEpNTlFKUkZAsZAWdqeHZAvQUxR",
 				Done: false,
 			},
 			ExpectedErrs: nil,
@@ -96,7 +97,8 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				NextPage: "https://graph.facebook.com/v19.0/1190021932394709/system_users?limit=25" +
-					"&after=QVFIUkVWY19yMHBzbmYzNXBSTlBuc1hxU0ZARbjh6dy1LMGFlNHJTM1RPVTFWTExCQ1V2aWRxZAW9UX3kxS29NZAndmeFpEX0JBMUhsZAlQ3dDZAxSFU3VnlCNGVn",
+					"&after=QVFIUkVWY19yMHBzbmYzNXBSTlBuc1hxU0ZARbjh6dy1LMGFlNHJTM1RPVTFWTExCQ1V2aWRxZAW9" +
+					"UX3kxS29NZAndmeFpEX0JBMUhsZAlQ3dDZAxSFU3VnlCNGVn",
 				Done: false,
 			},
 			ExpectedErrs: nil,

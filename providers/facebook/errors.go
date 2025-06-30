@@ -17,10 +17,10 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 
 type ResponseError struct {
 	Error struct {
-		Message    string `json:"message"`
-		Type       string `json:"type"`
-		Code       int    `json:"code"`
-		Fbtrace_id string `json:"fbtrace_id"`
+		Message   string `json:"message"`
+		Type      string `json:"type"`
+		Code      int    `json:"code"`
+		FbtraceId string `json:"fbtrace_id"`
 	} `json:"error"`
 }
 

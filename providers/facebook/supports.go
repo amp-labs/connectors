@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 )
 
+// nolint:funlen
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
 		"users",
