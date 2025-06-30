@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -24,8 +25,8 @@ func main() {
 	conn := claricopilot.GetConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "topics",
-		Fields:     connectors.Fields("topic_name", "type"),
+		ObjectName: "users",
+		Fields:     connectors.Fields("id", "name"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Clari Copilot", "error", err)
@@ -37,6 +38,7 @@ func main() {
 	res, err = conn.Read(ctx, common.ReadParams{
 		ObjectName: "calls",
 		Fields:     connectors.Fields("id", "title", "type", "status"),
+		Since:      time.Date(2025, 06, 20, 0, 0, 0, 0, time.UTC),
 	})
 	if err != nil {
 		utils.Fail("error reading from Clari Copilot", "error", err)
@@ -44,5 +46,4 @@ func main() {
 
 	slog.Info("Reading calls..")
 	utils.DumpJSON(res, os.Stdout)
-
 }
