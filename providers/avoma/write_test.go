@@ -57,8 +57,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "updating the smart categories",
-			Input: common.WriteParams{ObjectName: "smart_categories", RecordData: "dummy", RecordId: "5b66d318-627e-4336-9eec-bd79212eb1db"},
+			Name: "updating the smart categories",
+			Input: common.WriteParams{
+				ObjectName: "smart_categories",
+				RecordData: "dummy",
+				RecordId:   "5b66d318-627e-4336-9eec-bd79212eb1db",
+			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPATCH(),

@@ -72,11 +72,14 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	if params.RecordId != "" {
 		url.AddPath(params.RecordId)
 
-		if params.ObjectName == "template" {
+		// The connector supports two endpoints for update the object one is template with PUT method
+		// another one is smart_categories with PATCH method.
+		switch params.ObjectName {
+		case "template":
 			method = http.MethodPut
+		default:
+			method = http.MethodPatch
 		}
-
-		method = http.MethodPatch
 	}
 
 	jsonData, err := json.Marshal(params.RecordData)
