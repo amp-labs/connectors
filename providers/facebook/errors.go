@@ -20,7 +20,7 @@ type ResponseError struct {
 		Message   string `json:"message"`
 		Type      string `json:"type"`
 		Code      int    `json:"code"`
-		FbtraceId string `json:"fbtrace_id"`
+		FbtraceId string `json:"fbtrace_id"` // nolint:tagliatelle
 	} `json:"error"`
 }
 
