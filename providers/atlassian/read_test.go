@@ -278,7 +278,6 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	return constructTestConnectorGeneral(serverURL, providers.ModuleAtlassianJira)
 }
 
-// nolint:unused
 func constructTestConnectorConfluence(serverURL string) (*Connector, error) {
 	return constructTestConnectorGeneral(serverURL, providers.ModuleAtlassianConfluence)
 }

@@ -11,7 +11,13 @@ import (
 // Supports only Issue object. Therefore, objectNames argument is ignored.
 // API Reference:
 // https://developer.atlassian.com/cloud/jira/platform/rest/v2/api-group-issue-fields/#api-rest-api-2-field-get
-func (c *Connector) ListObjectMetadata(ctx context.Context, _ []string) (*common.ListObjectMetadataResult, error) {
+func (c *Connector) ListObjectMetadata(
+	ctx context.Context, objects []string,
+) (*common.ListObjectMetadataResult, error) {
+	if c.isConfluenceModule() {
+		return c.confluenceAdapter.ListObjectMetadata(ctx, objects)
+	}
+
 	url, err := c.getModuleURL("field")
 	if err != nil {
 		return nil, err
