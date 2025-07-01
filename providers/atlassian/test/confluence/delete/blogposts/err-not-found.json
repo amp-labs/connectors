@@ -1,0 +1,10 @@
+{
+  "errors": [
+    {
+      "status": 404,
+      "code": "NOT_FOUND",
+      "title": "Cannot find a blogpost with id [1802301]",
+      "detail": null
+    }
+  ]
+}

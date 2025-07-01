@@ -1,0 +1,29 @@
+{
+  "spaceId": "131189",
+  "createdAt": "2025-07-01T00:27:55.383Z",
+  "authorId": "712020:dcef0c39-e30a-405a-afe5-9d34bf00b73f",
+  "version": {
+    "number": 1,
+    "message": "",
+    "minorEdit": false,
+    "authorId": "712020:dcef0c39-e30a-405a-afe5-9d34bf00b73f",
+    "createdAt": "2025-07-01T00:27:55.383Z",
+    "ncsStepVersion": "1"
+  },
+  "body": {
+    "storage": {
+      "representation": "storage",
+      "value": ""
+    }
+  },
+  "status": "draft",
+  "title": "First blog post ever!",
+  "id": "1802301",
+  "_links": {
+    "editui": "/pages/resumedraft.action?draftId=1802301&draftShareId=0a4a8aec-dda3-4167-94c5-2e15607b1229",
+    "webui": "/pages/resumedraft.action?draftId=1802301&draftShareId=0a4a8aec-dda3-4167-94c5-2e15607b1229",
+    "edituiv2": "/spaces/SD/blog/edit-v2/1802301?draftShareId=0a4a8aec-dda3-4167-94c5-2e15607b1229",
+    "tinyui": "/x/PYAb",
+    "base": "https://withampersand-team-oqo0hkaj.atlassian.net/wiki"
+  }
+}
