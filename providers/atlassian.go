@@ -7,8 +7,6 @@ const Atlassian Provider = "atlassian"
 const (
 	// ModuleAtlassianJira is the module used for listing Jira issues.
 	ModuleAtlassianJira common.ModuleID = "jira"
-	// ModuleAtlassianJiraConnect is the module used for Atlassian Connect.
-	ModuleAtlassianJiraConnect common.ModuleID = "atlassian-connect"
 )
 
 // nolint:funlen
@@ -31,15 +29,6 @@ func init() {
 			ModuleAtlassianJira: {
 				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
 				DisplayName: "Atlassian Jira",
-				Support: Support{
-					Read:      true,
-					Subscribe: false,
-					Write:     true,
-				},
-			},
-			ModuleAtlassianJiraConnect: {
-				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api",
-				DisplayName: "Atlassian Connect",
 				Support: Support{
 					Read:      true,
 					Subscribe: false,
@@ -81,9 +70,6 @@ func init() {
 					Name:        "workspace",
 					DisplayName: "App name",
 					DocsURL:     "https://support.atlassian.com/organization-administration/docs/update-your-product-and-site-url/",
-					ModuleDependencies: &ModuleDependencies{
-						ModuleAtlassianJiraConnect: {},
-					},
 				},
 			},
 		},
