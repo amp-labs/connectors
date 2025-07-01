@@ -9,6 +9,7 @@ import (
 )
 
 func supportedOperations() components.EndpointRegistryInput {
+	//nolint:lll
 	readSupport := []string{
 		"departments", "contacts", "users", "teams", "customFieldDefinitions",
 		"workTypes", "closingDays", "companies", "tags", "deals", "dealPipelines", "dealPhases", "dealSources",
