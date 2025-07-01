@@ -1,0 +1,27 @@
+{
+  "data": [
+    {
+      "id": "2a39e420-3ba3-4384-8024-fa702ef99c9f",
+      "first_name": "Erlich",
+      "last_name": "Bachman",
+      "status": "active",
+      "salutation": "Mr",
+      "website": "https://piedpiper.com",
+      "gender": "unknown",
+      "birthdate": "1987-04-25",
+      "iban": "BE12123412341234",
+      "bic": "BICBANK",
+      "national_identification_number": "86792345-L",
+      "language": "en",
+      "payment_term": {
+        "type": "cash"
+      },
+      "invoicing_preferences": {
+        "electronic_invoicing_address": null
+      },
+      "added_at": "2016-02-04T16:44:33+00:00",
+      "updated_at": "2016-02-05T16:44:33+00:00",
+      "web_url": "https://focus.teamleader.eu/contact_detail.php?id=2a39e420-3ba3-4384-8024-fa702ef99c9f"
+    }
+  ]
+}
