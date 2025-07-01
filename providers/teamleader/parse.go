@@ -1,10 +1,7 @@
 package teamleader
 
 import (
-	"bytes"
-	"encoding/json"
-	"io"
-	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -22,9 +19,8 @@ func records() common.RecordsFunc {
 	}
 }
 
-func nextRecordsURL(req *http.Request) common.NextPageFunc {
+func nextRecordsURL(params common.ReadParams) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-
 		res, err := jsonquery.New(node).ArrayRequired("data")
 		if err != nil {
 			return "", err
@@ -34,35 +30,19 @@ func nextRecordsURL(req *http.Request) common.NextPageFunc {
 			return "", nil
 		}
 
-		if len(res) > 0 {
-			reqBody := req.Body
-			if reqBody == nil {
-				return "", nil
-			}
+		if len(res) < pageSize {
+			return "", nil
+		}
 
-			bodyBytes, err := io.ReadAll(reqBody)
-			if err != nil {
-				return "", err
-			}
+		currentPage := 1
 
-			req.Body = io.NopCloser(bytes.NewReader(bodyBytes))
-
-			var body map[string]any
-			if err := json.Unmarshal(bodyBytes, &body); err != nil {
-				return "", err
-			}
-
-			if offset, ok := body["page"].(map[string]any); ok {
-				if number, ok := offset["number"].(int); ok {
-
-					nextPage := number + 1
-
-					return string(nextPage), nil
-
-				}
+		if params.NextPage != "" {
+			page, err := strconv.Atoi(string(params.NextPage))
+			if err == nil {
+				currentPage = page
 			}
 		}
 
-		return "", nil
+		return strconv.Itoa(currentPage + 1), nil
 	}
 }

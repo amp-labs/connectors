@@ -5,9 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -17,7 +15,7 @@ import (
 
 const (
 	objectNameSuffix = ".list"
-	pageSize         = "2"
+	pageSize         = 2
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -85,19 +83,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	body := buildRequestBody(params)
+	body := buildRequestBody(&params)
 
 	jsonData, err := json.Marshal(body)
 	if err != nil {
-
 		return nil, err
-	}
-
-	if params.NextPage != "" {
-		url, err = urlbuilder.New(params.NextPage.String())
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
@@ -112,13 +102,13 @@ func (c *Connector) parseReadResponse(
 	return common.ParseResult(
 		response,
 		records(),
-		nextRecordsURL(request),
+		nextRecordsURL(params),
 		common.GetMarshaledData,
 		params.Fields,
 	)
 }
 
-func buildRequestBody(params common.ReadParams) map[string]any {
+func buildRequestBody(params *common.ReadParams) map[string]any {
 	body := make(map[string]any)
 
 	if !params.Since.IsZero() {
@@ -128,21 +118,14 @@ func buildRequestBody(params common.ReadParams) map[string]any {
 	}
 
 	if params.NextPage != "" {
-		pageNumber, err := strconv.Atoi(params.NextPage.String())
-		if err != nil {
-			pageNumber = 1 // Default to page 1 if conversion fails
-		}
-
-		log.Printf("Next page number: %d\n", pageNumber)
-
 		body["page"] = map[string]any{
 			"size":   pageSize,
-			"number": pageNumber,
+			"number": params.NextPage,
 		}
 	} else {
 		body["page"] = map[string]any{
 			"size":   pageSize,
-			"number": 1,
+			"number": "1",
 		}
 	}
 
