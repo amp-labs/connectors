@@ -9,6 +9,8 @@ import (
 	"github.com/amp-labs/connectors/providers/stripe/metadata"
 )
 
+const apiVersion = "v1"
+
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
@@ -44,18 +46,16 @@ func NewConnector(opts ...Option) (*Connector, error) {
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
+	path, err := metadata.Schemas.FindURLPath(c.Module.ID, objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return urlbuilder.New(c.BaseURL, path)
+	return urlbuilder.New(c.BaseURL, apiVersion, path)
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
-	path := objectNameToWritePath.Get(objectName)
-
-	return urlbuilder.New(c.BaseURL, path)
+	return urlbuilder.New(c.BaseURL, apiVersion, objectName)
 }
 
 func (c *Connector) getDeleteURL(objectName string) (*urlbuilder.URL, error) {

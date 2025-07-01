@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/stripe/metadata"
 	"github.com/amp-labs/connectors/providers/stripe/openapi"
+	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
@@ -66,9 +67,7 @@ func main() {
 		),
 		api3.WithArrayItemAutoSelection(),
 		api3.WithDuplicatesResolver(api3.SingleItemDuplicatesResolver(func(endpoint string) string {
-			objectName, _ := strings.CutPrefix(endpoint, "/v1/")
-
-			return objectName
+			return endpoint
 		})),
 	)
 	goutils.MustBeNil(err)
@@ -80,26 +79,27 @@ func main() {
 	)
 	goutils.MustBeNil(err)
 
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
+	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
 	registry := datautils.NamedLists[string]{}
 
 	for _, object := range objects {
+		urlPath, _ := strings.CutPrefix(object.URLPath, "/v1/")
+		objectName := urlPath
+
 		if object.Problem != nil {
 			slog.Error("schema not extracted",
-				"objectName", object.ObjectName,
+				"objectName", objectName,
 				"error", object.Problem,
 			)
 		}
 
 		for _, field := range object.Fields {
-			schemas.Add("", object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
-				staticschema.FieldMetadataMapV1{
-					field.Name: field.Name,
-				}, nil, object.Custom)
+			schemas.Add("", objectName, object.DisplayName, urlPath, object.ResponseKey,
+				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
 		}
 
 		for _, queryParam := range object.QueryParams {
-			registry.Add(queryParam, object.ObjectName)
+			registry.Add(queryParam, objectName)
 		}
 	}
 
