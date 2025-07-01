@@ -15,7 +15,7 @@ import (
 
 const (
 	objectNameSuffix = ".list"
-	pageSize         = 2
+	pageSize         = 1
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {

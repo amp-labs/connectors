@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -24,8 +25,22 @@ func main() {
 	conn := teamleader.GetConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
+		ObjectName: "departments",
+		Fields:     connectors.Fields("id", "name", "currency"),
+		Since:      time.Date(2025, 03, 01, 0, 0, 0, 0, time.UTC),
+	})
+
+	if err != nil {
+		utils.Fail("error reading from Teamleader", "error", err)
+	}
+
+	slog.Info("Reading departments..")
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
 		ObjectName: "contacts",
-		Fields:     connectors.Fields("emails", "tags", "id", "status"),
+		Fields:     connectors.Fields("id", "first_name", "last_name", "emails"),
+		Since:      time.Date(2025, 03, 01, 0, 0, 0, 0, time.UTC),
 	})
 
 	if err != nil {
@@ -33,6 +48,19 @@ func main() {
 	}
 
 	slog.Info("Reading contacts..")
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "users",
+		Fields:     connectors.Fields("id", "first_name", "last_name", "email"),
+		Since:      time.Date(2025, 03, 01, 0, 0, 0, 0, time.UTC),
+	})
+
+	if err != nil {
+		utils.Fail("error reading from Teamleader", "error", err)
+	}
+
+	slog.Info("Reading users..")
 	utils.DumpJSON(res, os.Stdout)
 
 	slog.Info("Read operation completed successfully.")
