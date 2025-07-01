@@ -17,9 +17,4 @@ var supportedModules = common.Modules{ // nolint: gochecknoglobals
 		Label:   "rest/api",
 		Version: "3",
 	},
-	providers.ModuleAtlassianJiraConnect: {
-		ID:      providers.ModuleAtlassianJiraConnect,
-		Label:   "rest/api",
-		Version: "3",
-	},
 }
