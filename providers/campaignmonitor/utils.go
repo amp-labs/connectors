@@ -70,17 +70,14 @@ func (c *Connector) constructURL(objName string) (*urlbuilder.URL, error) {
 }
 
 func (c *Connector) constructWriteURL(objName string) (*urlbuilder.URL, error) {
-	// Endpoint with client id in the url
-	if endpointsWithClientIdAfterObjName.Has(objName) {
+	switch {
+	case endpointsWithClientIdAfterObjName.Has(objName):
 		objName = fmt.Sprintf("%s/%s.json", objName, c.clientID)
-	}
 
-	if writeEndpointsWithClientId.Has(objName) {
+	case writeEndpointsWithClientId.Has(objName):
 		objName = fmt.Sprintf("clients/%s/%s.json", c.clientID, objName)
-	}
 
-	// Endpoint without client id in the url.
-	if DirectEndpoints.Has(objName) {
+	case DirectEndpoints.Has(objName):
 		objName += ".json"
 	}
 

@@ -163,6 +163,8 @@ func (c *Connector) parseWriteResponse(
 
 	switch v := value.(type) {
 	case string:
+		// This occurs when the API returns a raw string as the response body, typically just the id of the created/updated object.
+		// For example: "42f13de0-021c-11ef-b57f-0242ac120003"
 		return &common.WriteResult{
 			Success:  true,
 			RecordId: v,
@@ -170,6 +172,13 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 
 	default:
+		// This occurs when the API responds with a full JSON object containing additional metadata or nested structures.
+		// For example: {
+		//   "campaign": {
+		//     "id": "42f13de0-021c-11ef-b57f-0242ac120003",
+		//     "name": "New Campaign"
+		//   }
+		// }
 		data, err := jsonquery.Convertor.ObjectToMap(body)
 		if err != nil {
 			return nil, err
