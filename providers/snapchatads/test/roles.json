@@ -1,0 +1,18 @@
+{
+    "request_status": "SUCCESS",
+    "request_id": "0d581e2b-5f3d-4519-9d58-0ef74f13e0c4",
+    "paging": {},
+    "roles": [
+        {
+            "sub_request_status": "SUCCESS",
+            "role": {
+                "id": "548a683e-181b-4021-ad61-4e1964ab3111",
+                "container_kind": "Organizations",
+                "container_id": "5cf59a25-5063-40e1-826b-5ceaf369b207",
+                "member_id": "82ebdbce-de88-4ba0-a6b4-e77d51a2ce99",
+                "organization_id": "5cf59a25-5063-40e1-826b-5ceaf369b207",
+                "type": "admin"
+            }
+        }
+    ]
+}
