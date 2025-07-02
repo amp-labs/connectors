@@ -163,7 +163,8 @@ func (c *Connector) parseWriteResponse(
 
 	switch v := value.(type) {
 	case string:
-		// This occurs when the API returns a raw string as the response body, typically just the id of the created/updated object.
+		// This occurs when the API returns a raw string as the response body,
+		// typically just the id of the created/updated object.
 		// For example: "42f13de0-021c-11ef-b57f-0242ac120003"
 		return &common.WriteResult{
 			Success:  true,
