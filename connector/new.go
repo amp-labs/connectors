@@ -13,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/providers/ashby"
 	"github.com/amp-labs/connectors/providers/atlassian"
 	"github.com/amp-labs/connectors/providers/attio"
+	"github.com/amp-labs/connectors/providers/avoma"
 	"github.com/amp-labs/connectors/providers/aws"
 	"github.com/amp-labs/connectors/providers/blueshift"
 	"github.com/amp-labs/connectors/providers/brevo"
@@ -27,6 +28,7 @@ import (
 	"github.com/amp-labs/connectors/providers/docusign"
 	"github.com/amp-labs/connectors/providers/drift"
 	"github.com/amp-labs/connectors/providers/dynamicscrm"
+	"github.com/amp-labs/connectors/providers/fireflies"
 	"github.com/amp-labs/connectors/providers/freshdesk"
 	"github.com/amp-labs/connectors/providers/front"
 	"github.com/amp-labs/connectors/providers/github"
@@ -84,6 +86,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Ashby:               wrapper(newAshbyConnector),
 	providers.Atlassian:           wrapper(newAtlassianConnector),
 	providers.Attio:               wrapper(newAttioConnector),
+	providers.Avoma:               wrapper(newAvomaConnector),
 	providers.Blueshift:           wrapper(newBlueshiftConnector),
 	providers.Brevo:               wrapper(newBrevoConnector),
 	providers.Capsule:             wrapper(newCapsuleConnector),
@@ -97,6 +100,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Docusign:            wrapper(newDocusignConnector),
 	providers.Drift:               wrapper(newDriftConnector),
 	providers.DynamicsCRM:         wrapper(newDynamicsCRMConnector),
+	providers.Fireflies:           wrapper(newFirefliesConnector),
 	providers.Freshdesk:           wrapper(newFreshdeskConnector),
 	providers.Front:               wrapper(newFrontConnector),
 	providers.GitLab:              wrapper(newGitLabConnector),
@@ -546,4 +550,16 @@ func newPinterestConnector(
 	params common.ConnectorParams,
 ) (*pinterest.Connector, error) {
 	return pinterest.NewConnector(params)
+}
+
+func newAvomaConnector(
+	params common.ConnectorParams,
+) (*avoma.Connector, error) {
+	return avoma.NewConnector(params)
+}
+
+func newFirefliesConnector(
+	params common.ConnectorParams,
+) (*fireflies.Connector, error) {
+	return fireflies.NewConnector(params)
 }
