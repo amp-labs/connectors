@@ -2,6 +2,9 @@ package braze
 
 import "github.com/amp-labs/connectors/internal/datautils"
 
+// These were retrieved these from their API reference documentation,
+// specifically from the response samples in the Endpoints section of their respective object APIs.
+// https://www.braze.com/docs/api/home
 var dataFields = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
 	"catalogs":                      "catalogs",
 	"cdi/integrations":              "results",
