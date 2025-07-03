@@ -38,16 +38,15 @@ func main() {
 	utils.DumpJSON(res, os.Stdout)
 
 	res, err = conn.Read(ctx, common.ReadParams{
-		ObjectName: "Workbooks",
-		Fields:     connectors.Fields("id", "name"),
-		Since:      time.Date(2025, 07, 0, 0, 0, 0, 0, time.UTC),
+		ObjectName: "users",
+		Fields:     connectors.Fields("id", "name", "email"),
 	})
 
 	if err != nil {
 		utils.Fail("error reading from flatfile", "error", err)
 	}
 
-	slog.Info("Reading jobs..")
+	slog.Info("Reading users..")
 	utils.DumpJSON(res, os.Stdout)
 
 	slog.Info("Read operation completed successfully.")
