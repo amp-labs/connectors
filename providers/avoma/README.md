@@ -15,3 +15,4 @@ Below is an exhaustive list of objects & methods supported on the objects
 | smart_categories       | smart_categories      | read, write   |
 | template               | template              | read, write   |
 | users                  | users                 | read          |
+| transcriptions         | transcriptions        | read          |

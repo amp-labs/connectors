@@ -627,6 +627,33 @@
             }
           }
         },
+        "transcriptions": {
+          "displayName": "Transcriptions",
+          "path": "/transcriptions/",
+          "responseKey": "results",
+          "fields": {
+            "speakers": {
+              "displayName": "speakers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "transcript": {
+              "displayName": "transcript",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "transcription_vtt_url": {
+              "displayName": "transcription_vtt_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "users": {
           "displayName": "Users",
           "path": "/users/",

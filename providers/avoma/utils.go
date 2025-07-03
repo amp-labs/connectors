@@ -21,10 +21,8 @@ var avomaQueryEncodingExceptions = map[string]string{ //nolint:gochecknoglobals
 var endpointsWithResultsPath = datautils.NewSet( //nolint:gochecknoglobals
 	"meetings",
 	"calls",
-	"custom_categories",
 	"notes",
 	"scorecard_evaluations",
-	"smart_categories",
 )
 
 func makeNextRecordsURL() common.NextPageFunc {

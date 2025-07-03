@@ -25,7 +25,6 @@ var (
 		"/v1/meetings/{meeting_uuid}/insights/",
 		"/v1/meetings/{uuid}/",
 		"/v1/meetings/{uuid}/drop/",
-		"/v1/transcriptions/",
 		"/v1/recordings/",
 		"/v1/recordings/{uuid}/",
 		"/v1/scorecards/{uuid}/",
@@ -42,6 +41,7 @@ var (
 		"v1/custom_categories/":     "results",
 		"v1/calls/":                 "results",
 		"v1/smart_categories/":      "results",
+		"v1/transcriptions/":        "results",
 	},
 		func(objectName string) (fieldName string) {
 			return objectName
