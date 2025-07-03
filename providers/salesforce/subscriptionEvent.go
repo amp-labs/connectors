@@ -24,7 +24,11 @@ var (
 	errUnexpectedFieldNameType   = errors.New("unexpected field name type")
 )
 
-func (*Connector) VerifyWebhookMessage(context.Context, *common.WebhookVerificationParameters) (bool, error) {
+func (*Connector) VerifyWebhookMessage(
+	_ context.Context,
+	_ *common.WebhookRequest,
+	_ *common.VerificationParams,
+) (bool, error) {
 	return true, nil
 }
 
