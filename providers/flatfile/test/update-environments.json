@@ -1,0 +1,9 @@
+{
+  "id": "4784189d-610b-4488-b3a5-5f324f752417",
+  "accountId": "us_acc_YOUR_ID",
+  "name": "updated environment",
+  "isProd": false,
+	"guestAuthentication": [
+			"magic_link"
+		]
+}
