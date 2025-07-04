@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -61,8 +62,7 @@ func (c *Connector) parseReadResponse(
 	)
 }
 
-func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) { //nolint:lll
 	method := http.MethodPost
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, version, params.ObjectName)
@@ -98,9 +98,16 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	dataNode, err := jsonquery.New(body).ObjectRequired("data")
+	dataNode, err := jsonquery.New(body).ObjectOptional("data")
 	if err != nil {
+		log.Printf("Error parsing response body: %v", err)
+
 		return nil, err
+	}
+
+	if dataNode == nil {
+		// If the "data" field does not exist, use the root body as the data node.
+		dataNode = body
 	}
 
 	recordID, err := jsonquery.New(dataNode).StringRequired("id")
