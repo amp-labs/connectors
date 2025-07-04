@@ -1,12 +1,16 @@
 package flatfile
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 // nolint: gochecknoglobals
@@ -55,4 +59,64 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+
+	method := http.MethodPost
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, version, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(params.RecordId) > 0 {
+		url.AddPath(params.RecordId)
+
+		method = http.MethodPatch
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, fmt.Errorf("marshalling request body: %w", err)
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	dataNode, err := jsonquery.New(body).ObjectRequired("data")
+	if err != nil {
+		return nil, err
+	}
+
+	recordID, err := jsonquery.New(dataNode).StringRequired("id")
+	if err != nil {
+		return nil, err
+	}
+
+	respMap, err := jsonquery.Convertor.ObjectToMap(dataNode)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     respMap,
+	}, nil
 }
