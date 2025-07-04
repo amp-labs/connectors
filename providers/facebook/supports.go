@@ -76,11 +76,52 @@ func supportedOperations() components.EndpointRegistryInput {
 		"system_users",
 	}
 
+	writeSupport := []string{
+		"ad_place_page_sets",
+		"adrules_library",
+		"adplayables",
+		"adlabels",
+		"account_controls",
+		"ad_place_page_sets_async",
+		"ads",
+		"adsets",
+		"advideos",
+		"customconversions",
+		"product_audiences",
+		"publisher_block_lists",
+		"reachfrequencypredictions",
+		"campaigns",
+		"customaudiences",
+		"adspixels",
+		"assigned_users",
+		"customaudiencestos",
+		"subscribed_apps",
+		"tracking",
+		"adcreatives",
+		"ad_studies",
+		"adaccount",
+		"business_users",
+		"event_source_groups",
+		"owned_businesses",
+		"owned_product_catalogs",
+		"system_users",
+		"owned_pages",
+		"owned_apps",
+		"owned_ad_accounts",
+		"client_apps",
+		"claim_custom_conversions",
+		"china_business_onboarding_attributions",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
