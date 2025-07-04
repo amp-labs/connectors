@@ -14,7 +14,17 @@ func GetConnector(ctx context.Context) *flatfile.Connector {
 	filePath := credscanning.LoadPath(providers.FlatFile)
 	reader := utils.MustCreateProvCredJSON(filePath, false)
 
-	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, "Authorization", reader.Get(credscanning.Fields.ApiKey))
+	info, err := providers.ReadInfo(providers.FlatFile)
+	if err != nil {
+		utils.Fail(err.Error())
+	}
+
+	headerName, headerValue, err := info.GetApiKeyHeader(reader.Get(credscanning.Fields.ApiKey))
+	if err != nil {
+		utils.Fail(err.Error())
+	}
+
+	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, headerName, headerValue)
 	if err != nil {
 		utils.Fail("error creating client", "error", err)
 	}
