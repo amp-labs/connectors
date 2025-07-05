@@ -37,5 +37,17 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722478689/media/facebook_1722478688.svg",
 			},
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "adAccountId",
+					DisplayName: "Ad account id",
+				},
+				{
+					Name:        "businessId",
+					DisplayName: "Business id",
+				},
+			},
+		},
 	})
 }
