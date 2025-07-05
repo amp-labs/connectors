@@ -1,0 +1,14 @@
+mutation ProjectCreate($input: ProjectCreateInput!) {
+  projectCreate(input: $input) {
+    success
+    project {
+      content
+      description
+      id
+      name
+      slugId
+      updatedAt
+      createdAt
+    }
+  }
+}
