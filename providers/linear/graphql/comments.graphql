@@ -1,0 +1,29 @@
+query Comments($filter: CommentFilter, $first: Int, $after: String) {
+  comments(filter: $filter, first: $first, after: $after) {
+    nodes {
+      id
+      createdAt
+      updatedAt
+      archivedAt
+      body
+      resolvedAt
+      editedAt
+      bodyData
+      quotedText
+      reactionData
+      threadSummary
+      url
+      user {
+        id
+        name
+        displayName
+      }
+    }
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
+  }
+}
