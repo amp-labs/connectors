@@ -39,7 +39,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Errors:   nil,
 				Data: map[string]any{
 					"request_status": "SUCCESS",
-					"request_id":     "5eaa9f3f00ff0e03450355dbc60001737e616473617069736300016275696c642d63386238336332372d312d3334372d310001010b",
+					"request_id":     "5eaa9f3f00ff0e03450355dbc60001737e616473617069",
 					"billingcenters": []any{
 						map[string]any{
 							"sub_request_status": "SUCCESS",
@@ -64,8 +64,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Update billingcenters as PUT",
-			Input: common.WriteParams{ObjectName: "billingcenters", RecordId: "6e0f4532-3702-4f0b-9889-9fe5d0614afd", RecordData: "dummy"},
+			Name: "Update billingcenters as PUT",
+			Input: common.WriteParams{
+				ObjectName: "billingcenters",
+				RecordId:   "6e0f4532-3702-4f0b-9889-9fe5d0614afd",
+				RecordData: "dummy",
+			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
@@ -82,7 +86,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Errors:   nil,
 				Data: map[string]any{
 					"request_status": "SUCCESS",
-					"request_id":     "5eaa9f3f00ff0e03450355dbc60001737e616473617069736300016275696c642d63386238336332372d312d3334372d310001010b",
+					"request_id":     "5eaa9f3f00ff0e03450355dbc60001737e616473617069",
 					"billingcenters": []any{
 						map[string]any{
 							"sub_request_status": "SUCCESS",
@@ -125,7 +129,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Errors:   nil,
 				Data: map[string]any{
 					"request_status": "SUCCESS",
-					"request_id":     "5ea8334500ff06d6157db3e3d40001737e616473617069736300016275696c642d36373239363666352d312d3334372d3000010137",
+					"request_id":     "5eaa9f3f00ff0e03450355dbc60001737e616473617069",
 					"roles": []any{
 						map[string]any{
 							"sub_request_status": "SUCCESS",
@@ -146,8 +150,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Update roles as PUT",
-			Input: common.WriteParams{ObjectName: "roles", RecordData: "dummy", RecordId: "9a121178-73f0-4089-8f80-a60e5445e8ea"},
+			Name: "Update roles as PUT",
+			Input: common.WriteParams{
+				ObjectName: "roles",
+				RecordData: "dummy",
+				RecordId:   "9a121178-73f0-4089-8f80-a60e5445e8ea",
+			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
@@ -164,7 +172,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Errors:   nil,
 				Data: map[string]any{
 					"request_status": "SUCCESS",
-					"request_id":     "5ea8334500ff06d6157db3e3d40001737e616473617069736300016275696c642d36373239363666352d312d3334372d3000010137",
+					"request_id":     "5eaa9f3f00ff0e03450355dbc60001737e616473617069",
 					"roles": []any{
 						map[string]any{
 							"sub_request_status": "SUCCESS",

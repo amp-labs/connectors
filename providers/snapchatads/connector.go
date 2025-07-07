@@ -48,6 +48,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return conn, nil
 }
 
+// nolint:funlen
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
