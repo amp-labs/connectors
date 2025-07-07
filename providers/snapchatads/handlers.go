@@ -201,7 +201,7 @@ func (c *Connector) parseDeleteResponse(
 	}
 
 	if len(res) != 0 {
-		return nil, fmt.Errorf("%v", res[0][DeleteResponseKey])
+		return nil, fmt.Errorf("%v", res[0][DeleteResponseKey]) // nolint:err113
 	}
 
 	return &common.DeleteResult{
