@@ -27,6 +27,7 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "meetings",
 		Fields:     connectors.Fields("title", "meeting_title", "url"),
+		Since:      time.Date(2025, 07, 03, 0, 0, 0, 0, time.UTC),
 	})
 	if err != nil {
 		utils.Fail("error reading from Fathom", "error", err)
