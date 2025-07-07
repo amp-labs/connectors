@@ -1,0 +1,91 @@
+{
+    "items": [
+        {
+            "title": "Kristy McCown",
+            "meeting_title": "Kristy McCown and Ayan Barua",
+            "url": "https://fathom.video/calls/345992949",
+            "created_at": "2025-07-07T18:14:52Z",
+            "scheduled_start_time": "2025-07-07T17:30:00Z",
+            "scheduled_end_time": "2025-07-07T18:00:00Z",
+            "recording_start_time": "2025-07-07T17:42:06Z",
+            "recording_end_time": "2025-07-07T18:14:44Z",
+            "meeting_type": "external",
+            "transcript": null,
+            "transcript_language": "en",
+            "default_summary": {
+                "template_name": "General",
+                "markdown_formatted": "## Meeting Purpose\nDiscuss partnership strategies and NetSuite integration for Ampersand, leveraging Kristy McCown's experience at Tropic.\n\n## Key Takeaways\n- NetSuite partnership requires a strong business case, focusing on customer acquisition/retention and non-competitive positioning\n- Partnerships are critical for Ampersand's product strategy, requiring a skilled hire with product partnerships background\n- Kristy offered potential fractional advisory role to help kickstart Ampersand's partnership efforts, particularly with NetSuite\n\n## Topics\n\n### NetSuite Partnership Strategy\n- Connect with right team: partnerships team and app ecosystem management\n- Build business case: focus on new customer acquisition or retention for NetSuite\n- Highlight potential as NetSuite SuiteWorld sponsor ($30k+ investment)\n- Avoid competitive positioning with NetSuite's existing modules\n- Consider NetSuite purchase ($50k) as leverage for partnership, but don't lead with this\n\n### Partnerships Team Structure\n- Hire someone with product partnerships background (5-10 years experience)\n- Focus on candidates who have built partnerships, not just managed existing ones\n- Look for ability to build business cases and pitch effectively\n- Senior manager level likely sufficient; prioritize skills over years of experience\n\n### Ampersand's Integration Strategy\n- Position as enterprise integration layer for complex, custom integrations\n- Target both new AI/SaaS companies and existing businesses updating their tech stack\n- Focus on bidirectional sync capabilities crucial for AI-driven applications\n- Potential to replace expensive, inefficient dev shop solutions for major companies\n\n### Potential Advisory Relationship\n- Kristy offered fractional advisory role (e.g., 10 hours/week for 6 months)\n- Could help initiate partnerships, build business cases, and eventually hire full-time person\n- Pricing based on fixed monthly fee; suggested 2-3 month trial period\n\n## Next Steps\n- Ayan to add Kristy to Slack channel for async communication\n- Schedule follow-up meeting with Ayan's co-founder/CTO to discuss specific requirements\n- Kristy to research Ampersand further and prepare potential questions\n- Explore advisory relationship terms, focusing on accelerating pre-Series A partnerships"
+            },
+            "action_items": [
+                {
+                    "description": "Introduce Ayan to Felipe on LinkedIn re NetSuite partnership\n",
+                    "user_generated": false,
+                    "completed": false,
+                    "recording_timestamp": "00:08:20",
+                    "recording_playback_url": "https://fathom.video/calls/345992949?timestamp=500.9999",
+                    "assignee": {
+                        "name": "Kristy McCown",
+                        "email": "kristy.mccown@gmail.com",
+                        "team": null
+                    }
+                },
+                {
+                    "description": "Check network for SAP contacts, share with Ayan if found\n",
+                    "user_generated": false,
+                    "completed": false,
+                    "recording_timestamp": "00:13:14",
+                    "recording_playback_url": "https://fathom.video/calls/345992949?timestamp=794.9999",
+                    "assignee": {
+                        "name": "Kristy McCown",
+                        "email": "kristy.mccown@gmail.com",
+                        "team": null
+                    }
+                },
+                {
+                    "description": "Add Kristy to Ampersand Slack channel for async comms + scheduling\n",
+                    "user_generated": false,
+                    "completed": false,
+                    "recording_timestamp": "00:31:13",
+                    "recording_playback_url": "https://fathom.video/calls/345992949?timestamp=1873.9999",
+                    "assignee": {
+                        "name": "Ayan Barua",
+                        "email": "ayan@withampersand.com",
+                        "team": "Executive"
+                    }
+                },
+                {
+                    "description": "Research Ampersand website, use cases; Slack Ayan w/ questions\n",
+                    "user_generated": false,
+                    "completed": false,
+                    "recording_timestamp": "00:31:32",
+                    "recording_playback_url": "https://fathom.video/calls/345992949?timestamp=1892.9999",
+                    "assignee": {
+                        "name": "Kristy McCown",
+                        "email": "kristy.mccown@gmail.com",
+                        "team": null
+                    }
+                }
+            ],
+            "calendar_invitees": [
+                {
+                    "name": "Kristy McCown",
+                    "email": "kristy.mccown@gmail.com",
+                    "is_external": true
+                },
+                {
+                    "name": "Ayan Barua",
+                    "email": "ayan@withampersand.com",
+                    "is_external": false
+                }
+            ],
+            "recorded_by": {
+                "name": "Ayan Barua",
+                "email": "ayan@withampersand.com",
+                "team": "Executive"
+            },
+            "share_url": "https://fathom.video/share/z5DnWFvDwGM9J-dTZxZUi_hj9JzNzjP4",
+            "crm_matches": null
+        }
+    ],
+    "limit": 10
+}
