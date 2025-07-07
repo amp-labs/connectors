@@ -98,7 +98,7 @@ func (m StringMap) GetString(key string) (string, error) {
 		return "", err
 	}
 
-	return assertType[string](val)
+	return AssertType[string](val)
 }
 
 func (m StringMap) GetBool(key string) (bool, error) {
@@ -107,7 +107,7 @@ func (m StringMap) GetBool(key string) (bool, error) {
 		return false, err
 	}
 
-	return assertType[bool](val)
+	return AssertType[bool](val)
 }
 
 // GetInt extracts an integer from the map.
@@ -163,14 +163,4 @@ func (m StringMap) GetNumber(key string) (float64, error) {
 	default:
 		return 0, fmt.Errorf("%w: expected a number, but received %T", errFieldTypeMismatch, val)
 	}
-}
-
-//nolint:ireturn
-func assertType[T any](val any) (T, error) {
-	of, ok := val.(T)
-	if !ok {
-		return of, fmt.Errorf("%w: expected type %T, but received %T", errFieldTypeMismatch, of, val)
-	}
-
-	return of, nil
 }
