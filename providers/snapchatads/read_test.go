@@ -18,7 +18,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	organizationIdResponse := testutils.DataFromFile(t, "organization-id.json")
 	membersResponse := testutils.DataFromFile(t, "members.json")
 	rolesResponse := testutils.DataFromFile(t, "roles.json")
-	billingcentersResponse := testutils.DataFromFile(t, "write_billingcenters.json")
+	billingcentersResponse := testutils.DataFromFile(t, "billingcenters.json")
 	tests := []testroutines.Read{
 		{
 			Name:  "Read list of members",
