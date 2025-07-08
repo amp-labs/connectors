@@ -256,7 +256,7 @@ func (h *HTTPClient) Delete(ctx context.Context,
 }
 
 // httpGet makes a GET request to the given URL and returns the response & response body.
-func (h *HTTPClient) httpGet(ctx context.Context,
+func (h *HTTPClient) httpGet(ctx context.Context, //nolint:dupl
 	url string, headers []Header,
 ) (*http.Response, []byte, error) {
 	req, err := MakeGetRequest(ctx, url, headers)
@@ -291,7 +291,7 @@ func (h *HTTPClient) httpGet(ctx context.Context,
 }
 
 // httpPost makes a POST request to the given URL and returns the response & response body.
-func (h *HTTPClient) httpPost(ctx context.Context, url string,
+func (h *HTTPClient) httpPost(ctx context.Context, url string, //nolint:dupl
 	headers []Header, body []byte,
 ) (*http.Response, []byte, error) {
 	req, err := makePostRequest(ctx, url, headers, body)
@@ -326,7 +326,7 @@ func (h *HTTPClient) httpPost(ctx context.Context, url string,
 }
 
 // httpPatch makes a PATCH request to the given URL and returns the response & response body.
-func (h *HTTPClient) httpPatch(ctx context.Context,
+func (h *HTTPClient) httpPatch(ctx context.Context, //nolint:dupl
 	url string, headers []Header, body any,
 ) (*http.Response, []byte, error) {
 	req, err := makePatchRequest(ctx, url, headers, body)
@@ -361,7 +361,7 @@ func (h *HTTPClient) httpPatch(ctx context.Context,
 }
 
 // httpPut makes a PUT request to the given URL and returns the response & response body.
-func (h *HTTPClient) httpPut(ctx context.Context,
+func (h *HTTPClient) httpPut(ctx context.Context, //nolint:dupl
 	url string, headers []Header, body any,
 ) (*http.Response, []byte, error) {
 	req, err := makePutRequest(ctx, url, headers, body)
@@ -396,7 +396,7 @@ func (h *HTTPClient) httpPut(ctx context.Context,
 }
 
 // httpDelete makes a DELETE request to the given URL and returns the response & response body.
-func (h *HTTPClient) httpDelete(ctx context.Context,
+func (h *HTTPClient) httpDelete(ctx context.Context, //nolint:dupl
 	url string, headers []Header,
 ) (*http.Response, []byte, error) {
 	req, err := makeDeleteRequest(ctx, url, headers)
