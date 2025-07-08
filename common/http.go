@@ -465,7 +465,7 @@ func makePostRequest(ctx context.Context, resourceURL string, headers Headers, d
 //   - For "application/x-www-form-urlencoded", a map of strings to strings is expected.
 //     The values are URL-encoded, and the new content length is calculated.
 //   - For other content types, the payload data is sent as-is.
-//e
+//
 // Returns: An io.Reader for the request body, the content length, and an optional error.
 func bodyReader(headers Headers, data []byte) (io.Reader, int64, error) {
 	if headers.Has(HeaderFormURLEncoded) {

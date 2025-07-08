@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log/slog"
 	"mime"
 	"net/http"
@@ -31,12 +30,14 @@ func logRequestWithBody(logger *slog.Logger, req *http.Request, method, id, full
 	payload, err := PrintableRequest(req, body)
 	if err != nil {
 		logger.Error("Error creating printable request", "error", err)
+
 		return
 	}
 
 	truncatedBody, err := payload.Truncate(truncationLength)
 	if err != nil {
 		logger.Error("Error truncating request body", "error", err)
+
 		return
 	}
 
@@ -79,12 +80,14 @@ func logResponseWithBody(logger *slog.Logger, res *http.Response, method, id, fu
 	payload, err := PrintableResponse(res, body)
 	if err != nil {
 		logger.Error("Error creating printable response", "error", err)
+
 		return
 	}
 
 	truncatedBody, err := payload.Truncate(truncationLength)
 	if err != nil {
 		logger.Error("Error truncating response body", "error", err)
+
 		return
 	}
 
@@ -111,7 +114,7 @@ func (p *PrintablePayload) String() string {
 	}
 
 	if p.IsBase64() {
-		return fmt.Sprintf("base64:%s", p.Content)
+		return "base64:" + p.Content
 	}
 
 	return p.Content
@@ -248,7 +251,7 @@ func (r *requestContentReader) GetBody() io.ReadCloser {
 	}
 
 	if r.BodyBytes != nil {
-		return ioutil.NopCloser(bytes.NewReader(r.BodyBytes))
+		return io.NopCloser(bytes.NewReader(r.BodyBytes))
 	}
 
 	return r.Request.Body
@@ -282,7 +285,7 @@ func (r *responseContentReader) GetBody() io.ReadCloser {
 	}
 
 	if r.BodyBytes != nil {
-		return ioutil.NopCloser(bytes.NewReader(r.BodyBytes))
+		return io.NopCloser(bytes.NewReader(r.BodyBytes))
 	}
 
 	return r.Response.Body
@@ -322,12 +325,12 @@ func isPrintableMimeType(mimeType string) bool {
 		mimeType == "application/x-www-form-urlencoded"
 }
 
-func peekBody(br bodyContentReader) ([]byte, error) {
-	if br == nil || br.GetBody() == nil {
+func peekBody(bcr bodyContentReader) ([]byte, error) {
+	if bcr == nil || bcr.GetBody() == nil {
 		return nil, nil
 	}
 
-	body := br.GetBody()
+	body := bcr.GetBody()
 
 	// Read the body without closing it
 	var buf bytes.Buffer
@@ -338,19 +341,20 @@ func peekBody(br bodyContentReader) ([]byte, error) {
 	}
 
 	// Restore the body for further use
-	br.SetBody(io.NopCloser(&buf))
+	bcr.SetBody(io.NopCloser(&buf))
 
 	return data, nil
 }
 
 // getBodyAsPrintable checks if the HTTP response body is probably printable text.
-func getBodyAsPrintable(br bodyContentReader) (*PrintablePayload, error) {
+func getBodyAsPrintable(br bodyContentReader) (*PrintablePayload, error) { //nolint:funlen
 	if br == nil || br.GetBody() == nil {
 		return nil, nil //nolint:nilnil
 	}
 
 	// Check MIME type
 	contentType := br.GetHeaders().Get("Content-Type")
+
 	mimeType, params, err := mime.ParseMediaType(contentType)
 	if err != nil {
 		// If parsing fails, fallback to sniffing the content
@@ -395,7 +399,9 @@ func getBodyAsPrintable(br bodyContentReader) (*PrintablePayload, error) {
 
 	// Check printability (sample max N bytes)
 	const maxCheckLen = 1024
+
 	checkLen := len(decodedData)
+
 	if checkLen > maxCheckLen {
 		checkLen = maxCheckLen
 	}
@@ -420,7 +426,7 @@ func getBodyAsPrintable(br bodyContentReader) (*PrintablePayload, error) {
 	}
 
 	// Heuristic: 95%+ means printable
-	isPrintable := float64(printable)/float64(total) > 0.95
+	isPrintable := float64(printable)/float64(total) > 0.95 //nolint:mnd
 
 	if isPrintable {
 		return &PrintablePayload{
