@@ -76,7 +76,7 @@ func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL,
 		return nil, err
 	}
 
-	if offsetPaginatedRsc.Has(params.ObjectName) {
+	if offsetPaginatedObjects.Has(params.ObjectName) {
 		url.WithQueryParam(offset, "1")
 	}
 
