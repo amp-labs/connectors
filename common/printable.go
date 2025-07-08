@@ -334,7 +334,9 @@ func peekBody(bcr bodyContentReader) ([]byte, error) {
 
 	// Read the body without closing it
 	var buf bytes.Buffer
+
 	tee := io.TeeReader(body, &buf)
+
 	data, err := io.ReadAll(tee)
 	if err != nil {
 		return nil, fmt.Errorf("error reading response body: %w", err)
@@ -347,7 +349,7 @@ func peekBody(bcr bodyContentReader) ([]byte, error) {
 }
 
 // getBodyAsPrintable checks if the HTTP response body is probably printable text.
-func getBodyAsPrintable(br bodyContentReader) (*PrintablePayload, error) { //nolint:funlen
+func getBodyAsPrintable(br bodyContentReader) (*PrintablePayload, error) { //nolint:funlen,cyclop
 	if br == nil || br.GetBody() == nil {
 		return nil, nil //nolint:nilnil
 	}
@@ -405,14 +407,18 @@ func getBodyAsPrintable(br bodyContentReader) (*PrintablePayload, error) { //nol
 	if checkLen > maxCheckLen {
 		checkLen = maxCheckLen
 	}
+
 	sample := decodedData[:checkLen]
 
 	printable := 0
 	total := 0
+
 	for len(sample) > 0 {
 		r, size := utf8.DecodeRune(sample)
+
 		sample = sample[size:]
 		total++
+
 		if unicode.IsPrint(r) || unicode.IsSpace(r) {
 			printable++
 		}
