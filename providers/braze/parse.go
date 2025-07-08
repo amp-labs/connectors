@@ -45,13 +45,17 @@ var dataFields = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint
 	return "data"
 })
 
-var cursorPaginatedRsc = datautils.NewSet( //nolint:gochecknoglobals
+// cursorPaginatedObjects represents a set of objects that follows cursor pagination
+// approach in braze API.
+var cursorPaginatedObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"cdi/integrations",
 	"events",
 	"custom_attributes",
 )
 
-var offsetPaginatedRsc = datautils.NewSet( //nolint:gochecknoglobals
+// offsetPaginatedObjects represents a set of objects that follows offset pagination
+// approach in braze API.
+var offsetPaginatedObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"email/hard_bounces",
 	"email/unsubscribes",
 	"sms/invalid_phone_numbers",
@@ -62,9 +66,9 @@ var offsetPaginatedRsc = datautils.NewSet( //nolint:gochecknoglobals
 func getNextRecordsURL(objectName string, url *urlbuilder.URL, response *common.JSONHTTPResponse) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		switch {
-		case cursorPaginatedRsc.Has(objectName):
+		case cursorPaginatedObjects.Has(objectName):
 			return handleCursorPagination(response)
-		case offsetPaginatedRsc.Has(objectName):
+		case offsetPaginatedObjects.Has(objectName):
 			return handleOffsetPagination(objectName, node, url)
 		default:
 			return handleDefaultPagination(objectName, node, url)
@@ -132,19 +136,24 @@ func handleDefaultPagination(objectName string, node *ajson.Node, url *urlbuilde
 	return url.String(), nil
 }
 
+// ref:
 func filterBySince(params common.ReadParams, url *urlbuilder.URL) error {
-	if params.ObjectName == "campaigns/list" || params.ObjectName == "canvas/list" {
+	switch params.ObjectName {
+	// https://www.braze.com/docs/api/endpoints/export/campaigns/get_campaigns
+	// https://www.braze.com/docs/api/endpoints/export/canvas/get_canvases
+	case "campaigns/list", "canvas/list":
 		url.WithQueryParam("last_edit.time[gt]", params.Since.Format(time.RFC3339))
-	}
 
-	if params.ObjectName == "messages/scheduled_broadcasts" {
+	// https://www.braze.com/docs/api/endpoints/messaging/schedule_messages/get_messages_scheduled
+	case "messages/scheduled_broadcasts":
 		if params.Until.IsZero() {
 			return ErrMissingUntilTimestamp
 		}
-	}
-
-	if params.ObjectName == "content_blocks/list" || params.ObjectName == "templates/email/list" {
+		//https://www.braze.com/docs/api/endpoints/templates/email_templates/get_list_email_templates
+		// https://www.braze.com/docs/api/endpoints/templates/content_blocks_templates/get_list_email_content_blocks
+	case "content_blocks/list", "templates/email/list":
 		url.WithQueryParam("modified_after", params.Since.Format(time.RFC3339))
+	default:
 	}
 
 	return nil
