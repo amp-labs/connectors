@@ -22,10 +22,7 @@ func (a *Adapter) Read(ctx context.Context, params common.ReadParams) (*common.R
 		return nil, err
 	}
 
-	rsp, err := a.Client.Get(ctx, url.String(), common.Header{
-		Key:   "Pardot-Business-Unit-Id",
-		Value: a.BusinessUnitID,
-	})
+	rsp, err := a.Client.Get(ctx, url.String(), a.businessUnitHeader())
 	if err != nil {
 		return nil, err
 	}
@@ -71,8 +68,78 @@ var incrementalQuery = map[string]string{ // nolint:gochecknoglobals
 }
 
 func (a *Adapter) Write(ctx context.Context, params common.WriteParams) (*common.WriteResult, error) {
-	// TODO needs implementation.
-	return nil, common.ErrNotImplemented
+	objectNameLower := strings.ToLower(params.ObjectName)
+
+	url, err := a.getURL(objectNameLower)
+	if err != nil {
+		return nil, err
+	}
+
+	var write common.WriteMethod
+
+	if len(params.RecordId) == 0 {
+		// Create.
+		write = a.Client.Post
+	} else {
+		// Update.
+		write = a.Client.Patch
+
+		url.AddPath(params.RecordId)
+	}
+
+	res, err := write(ctx, url.String(), params.RecordData, a.businessUnitHeader())
+	if err != nil {
+		return nil, err
+	}
+
+	return constructWriteResult(res)
+}
+
+func constructWriteResult(res *common.JSONHTTPResponse) (*common.WriteResult, error) {
+	body, ok := res.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	recordID, err := jsonquery.New(body).TextWithDefault("id", "")
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     data,
+	}, nil
+}
+
+func (a *Adapter) Delete(ctx context.Context, params common.DeleteParams) (*common.DeleteResult, error) {
+	objectNameLower := strings.ToLower(params.ObjectName)
+
+	url, err := a.getURL(objectNameLower)
+	if err != nil {
+		return nil, err
+	}
+
+	url.AddPath(params.RecordId)
+
+	// 204 "No Content" is expected
+	_, err = a.Client.Delete(ctx, url.String(), a.businessUnitHeader())
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
 }
 
 func (a *Adapter) ListObjectMetadata(
