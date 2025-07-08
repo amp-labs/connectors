@@ -24,7 +24,6 @@ func NewExtendedMetadata[F FieldMetadataMap, C any]() *Metadata[F, C] {
 //
 // This structure offers the following main methods:
 // Metadata.ObjectNames - registry of object names by modules.
-// Metadata.LookupURLPath - resolves URL given object name.
 // Metadata.Select - produces output suitable for connectors.ObjectMetadataConnector.
 type Metadata[F FieldMetadataMap, C any] struct {
 	// Modules is a map of object names to object metadata
@@ -273,23 +272,6 @@ func (m *Metadata[F, C]) ObjectNames() datautils.UniqueLists[common.ModuleID, st
 	}
 
 	return moduleObjectNames
-}
-
-// LookupURLPath will give you the URL path for the object located under the module.
-// NOTE: empty module id is treated as root module.
-//
-// Deprecated.
-// Use FindURLPath. The module path will be removed from static files.
-func (m *Metadata[F, C]) LookupURLPath(moduleID common.ModuleID, objectName string) (string, error) {
-	path, err := m.FindURLPath(moduleID, objectName)
-	if err != nil {
-		return "", err
-	}
-
-	moduleID = moduleIdentifier(moduleID)
-	fullPath := m.LookupModuleURLPath(moduleID) + path
-
-	return fullPath, nil
 }
 
 func (m *Metadata[F, C]) FindURLPath(moduleID common.ModuleID, objectName string) (string, error) {

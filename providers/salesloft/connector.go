@@ -52,7 +52,7 @@ func (c *Connector) String() string {
 }
 
 func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
-	path, _ := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
+	path, _ := metadata.Schemas.FindURLPath(c.Module.ID, objectName)
 	if len(path) == 0 {
 		// Fallback, try objectName as a URL.
 		path = objectName
