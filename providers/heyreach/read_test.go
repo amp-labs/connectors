@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -27,9 +28,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all campaign",
 			Input: common.ReadParams{ObjectName: "campaign/GetAll", Fields: connectors.Fields(""), NextPage: ""},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, campaignResponse),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/public/campaign/GetAll"),
+				Then:  mockserver.Response(http.StatusOK, campaignResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
@@ -52,9 +54,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all linked account",
 			Input: common.ReadParams{ObjectName: "li_account/GetAll", Fields: connectors.Fields(""), NextPage: ""},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, liAccountResponse),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/public/li_account/GetAll"),
+				Then:  mockserver.Response(http.StatusOK, liAccountResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
@@ -77,9 +80,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all list",
 			Input: common.ReadParams{ObjectName: "list/GetAll", Fields: connectors.Fields(""), NextPage: ""},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, listResponse),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/public/list/GetAll"),
+				Then:  mockserver.Response(http.StatusOK, listResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
