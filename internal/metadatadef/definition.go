@@ -28,6 +28,7 @@ type Schemas[C any] []ExtendedSchema[C]
 
 type Field struct {
 	Name         string
+	DisplayName  string
 	Type         string
 	ValueOptions []string
 }

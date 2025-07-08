@@ -1,8 +1,6 @@
 package staticschema
 
 import (
-	"strings"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
@@ -32,7 +30,6 @@ type Metadata[F FieldMetadataMap, C any] struct {
 
 type Module[F FieldMetadataMap, C any] struct {
 	ID      common.ModuleID         `json:"id"`
-	Path    string                  `json:"path"`
 	Objects map[string]Object[F, C] `json:"objects"`
 }
 
@@ -209,42 +206,12 @@ func (m *Metadata[F, C]) Add( // nolint:funlen
 	}
 }
 
-func (m *Metadata[F, C]) refactorLongestCommonPath() {
-	for moduleID, module := range m.Modules {
-		var (
-			commonPath string
-			isFirst    = true
-		)
-
-		for _, object := range module.Objects {
-			path := object.URLPath
-			if isFirst {
-				commonPath = path
-				isFirst = false
-
-				continue
-			}
-
-			commonPath = commonPrefix(commonPath, path)
-
-			if len(commonPath) == 0 {
-				break
-			}
-		}
-
-		// CommonPath is now found.
-		module.withPath(commonPath)
-		m.Modules[moduleID] = module
-	}
-}
-
 func (m *Metadata[F, C]) getOrCreateModule(moduleID common.ModuleID) Module[F, C] {
 	module, ok := m.Modules[moduleID]
 	if !ok {
 		// new module
 		module = Module[F, C]{
 			ID:      moduleID,
-			Path:    "",
 			Objects: make(map[string]Object[F, C]),
 		}
 		m.Modules[moduleID] = module
@@ -285,12 +252,6 @@ func (m *Metadata[F, C]) FindURLPath(moduleID common.ModuleID, objectName string
 	return path, nil
 }
 
-func (m *Metadata[F, C]) LookupModuleURLPath(moduleID common.ModuleID) string {
-	moduleID = moduleIdentifier(moduleID)
-
-	return m.Modules[moduleID].Path
-}
-
 // ModuleRegistry returns the list of API modules from static schema.
 func (m *Metadata[F, C]) ModuleRegistry() common.Modules {
 	result := make(common.Modules, len(m.Modules))
@@ -299,7 +260,6 @@ func (m *Metadata[F, C]) ModuleRegistry() common.Modules {
 		// Label and version is not differentiated and all is part of path.
 		result[id] = common.Module{
 			ID:      module.ID,
-			Label:   module.Path,
 			Version: "",
 		}
 	}
@@ -333,19 +293,6 @@ func (m *Metadata[F, C]) FindArrayFieldName(moduleID common.ModuleID, objectName
 	return fieldName, true
 }
 
-func (m *Module[F, C]) withPath(path string) {
-	// Move last slash from module path to object. It looks better that way.
-	path, _ = strings.CutSuffix(path, "/")
-
-	m.Path = path
-
-	// Trim prefix for every object.
-	for name, object := range m.Objects {
-		object.URLPath, _ = strings.CutPrefix(object.URLPath, path)
-		m.Objects[name] = object
-	}
-}
-
 // In case an empty ModuleID is provided we fall back to the default root module id.
 func moduleIdentifier(id common.ModuleID) common.ModuleID {
 	if len(id) == 0 {
@@ -353,28 +300,4 @@ func moduleIdentifier(id common.ModuleID) common.ModuleID {
 	}
 
 	return id
-}
-
-func commonPrefix(a, b string) string {
-	first := []byte(a)
-	second := []byte(b)
-	shortestLength := len(a)
-
-	if len(a) > len(b) {
-		first = []byte(b)
-		second = []byte(a)
-		shortestLength = len(b)
-	}
-
-	result := ""
-
-	for i := range shortestLength {
-		if first[i] != second[i] {
-			return result
-		}
-
-		result += string(first[i])
-	}
-
-	return result
 }

@@ -1179,6 +1179,11 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "origin": {
+              "displayName": "origin",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "origin_id": {
               "displayName": "origin_id",
               "valueType": "string",
@@ -1622,6 +1627,11 @@
               "displayName": "organization_id",
               "valueType": "int",
               "providerType": "integer"
+            },
+            "origin": {
+              "displayName": "origin",
+              "valueType": "string",
+              "providerType": "string"
             },
             "origin_id": {
               "displayName": "origin_id",

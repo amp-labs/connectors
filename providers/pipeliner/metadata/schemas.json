@@ -2,7 +2,7 @@
   "modules": {
     "root": {
       "id": "root",
-      "path": "/entities",
+      "path": "",
       "objects": {
         "AccountDataExRelations": {
           "displayName": "Account Data Ex Relations",

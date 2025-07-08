@@ -84,7 +84,7 @@ func main() {
 		}
 	}
 
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(metadata.FileManager.FlushSchemas(schemas))
 	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
