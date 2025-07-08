@@ -349,13 +349,13 @@ func peekBody(bcr bodyContentReader) ([]byte, error) {
 }
 
 // getBodyAsPrintable checks if the HTTP response body is probably printable text.
-func getBodyAsPrintable(br bodyContentReader) (*PrintablePayload, error) { //nolint:funlen,cyclop
-	if br == nil || br.GetBody() == nil {
+func getBodyAsPrintable(bcr bodyContentReader) (*PrintablePayload, error) { //nolint:funlen,cyclop
+	if bcr == nil || bcr.GetBody() == nil {
 		return nil, nil //nolint:nilnil
 	}
 
 	// Check MIME type
-	contentType := br.GetHeaders().Get("Content-Type")
+	contentType := bcr.GetHeaders().Get("Content-Type")
 
 	mimeType, params, err := mime.ParseMediaType(contentType)
 	if err != nil {
@@ -365,7 +365,7 @@ func getBodyAsPrintable(br bodyContentReader) (*PrintablePayload, error) { //nol
 
 	charsetStr := strings.ToLower(params["charset"])
 
-	rawData, err := peekBody(br)
+	rawData, err := peekBody(bcr)
 	if err != nil {
 		return nil, fmt.Errorf("error peeking response body: %w", err)
 	}
