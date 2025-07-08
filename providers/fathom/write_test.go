@@ -45,7 +45,6 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Success:  true,
 				RecordId: "ikEoQ4bVoq4JYUmc",
 				Data: map[string]any{
-
 					"id":                   "ikEoQ4bVoq4JYUmc",
 					"url":                  "https://example.com/webhook",
 					"secret":               "whsec_x6EV6NIAAz3ldclszNJTwrow",
