@@ -264,27 +264,27 @@ func (h *HTTPClient) httpGet(ctx context.Context, //nolint:dupl
 		return nil, nil, err
 	}
 
-	id := uuid.Must(uuid.NewRandom()).String()
+	correlationId := uuid.Must(uuid.NewRandom()).String()
 
 	if logging.IsVerboseLogging(ctx) {
-		logRequestWithoutBody(logging.VerboseLogger(ctx), req, "GET", id, url)
+		logRequestWithoutBody(logging.VerboseLogger(ctx), req, "GET", correlationId, url)
 	} else {
-		logRequestWithoutBody(logging.Logger(ctx), req, "GET", id, url)
+		logRequestWithoutBody(logging.Logger(ctx), req, "GET", correlationId, url)
 	}
 
 	rsp, body, err := h.sendRequest(req)
 	if err != nil {
 		logging.Logger(ctx).Error("HTTP request failed",
 			"method", "GET", "url", url,
-			"correlationId", id, "error", err)
+			"correlationId", correlationId, "error", err)
 
 		return nil, nil, err
 	}
 
 	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "GET", id, url, body)
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "GET", correlationId, url, body)
 	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "GET", id, url)
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "GET", correlationId, url)
 	}
 
 	return rsp, body, nil
@@ -299,27 +299,27 @@ func (h *HTTPClient) httpPost(ctx context.Context, url string, //nolint:dupl
 		return nil, nil, err
 	}
 
-	id := uuid.Must(uuid.NewRandom()).String()
+	correlationId := uuid.Must(uuid.NewRandom()).String()
 
 	if logging.IsVerboseLogging(ctx) {
-		logRequestWithBody(logging.VerboseLogger(ctx), req, "POST", id, url, body)
+		logRequestWithBody(logging.VerboseLogger(ctx), req, "POST", correlationId, url, body)
 	} else {
-		logRequestWithoutBody(logging.Logger(ctx), req, "POST", id, url)
+		logRequestWithoutBody(logging.Logger(ctx), req, "POST", correlationId, url)
 	}
 
 	rsp, body, err := h.sendRequest(req)
 	if err != nil {
 		logging.Logger(ctx).Error("HTTP request failed",
 			"method", "POST", "url", url,
-			"correlationId", id, "error", err)
+			"correlationId", correlationId, "error", err)
 
 		return nil, nil, err
 	}
 
 	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "POST", id, url, body)
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "POST", correlationId, url, body)
 	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "POST", id, url)
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "POST", correlationId, url)
 	}
 
 	return rsp, body, nil
@@ -334,27 +334,27 @@ func (h *HTTPClient) httpPatch(ctx context.Context, //nolint:dupl
 		return nil, nil, err
 	}
 
-	id := uuid.Must(uuid.NewRandom()).String()
+	correlationId := uuid.Must(uuid.NewRandom()).String()
 
 	if logging.IsVerboseLogging(ctx) {
-		logRequestWithBody(logging.VerboseLogger(ctx), req, "PATCH", id, url, nil)
+		logRequestWithBody(logging.VerboseLogger(ctx), req, "PATCH", correlationId, url, nil)
 	} else {
-		logRequestWithoutBody(logging.Logger(ctx), req, "PATCH", id, url)
+		logRequestWithoutBody(logging.Logger(ctx), req, "PATCH", correlationId, url)
 	}
 
 	rsp, rspBody, err := h.sendRequest(req)
 	if err != nil {
 		logging.Logger(ctx).Error("HTTP request failed",
 			"method", "PATCH", "url", url,
-			"correlationId", id, "error", err)
+			"correlationId", correlationId, "error", err)
 
 		return nil, nil, err
 	}
 
 	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PATCH", id, url, rspBody)
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PATCH", correlationId, url, rspBody)
 	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "PATCH", id, url)
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "PATCH", correlationId, url)
 	}
 
 	return rsp, rspBody, nil
@@ -369,27 +369,27 @@ func (h *HTTPClient) httpPut(ctx context.Context, //nolint:dupl
 		return nil, nil, err
 	}
 
-	id := uuid.Must(uuid.NewRandom()).String()
+	correlationId := uuid.Must(uuid.NewRandom()).String()
 
 	if logging.IsVerboseLogging(ctx) {
-		logRequestWithBody(logging.VerboseLogger(ctx), req, "PUT", id, url, nil)
+		logRequestWithBody(logging.VerboseLogger(ctx), req, "PUT", correlationId, url, nil)
 	} else {
-		logRequestWithoutBody(logging.Logger(ctx), req, "PUT", id, url)
+		logRequestWithoutBody(logging.Logger(ctx), req, "PUT", correlationId, url)
 	}
 
 	rsp, rspBody, err := h.sendRequest(req)
 	if err != nil {
 		logging.Logger(ctx).Error("HTTP request failed",
 			"method", "PUT", "url", url,
-			"correlationId", id, "error", err)
+			"correlationId", correlationId, "error", err)
 
 		return nil, nil, err
 	}
 
 	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PUT", id, url, rspBody)
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PUT", correlationId, url, rspBody)
 	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "PUT", id, url)
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "PUT", correlationId, url)
 	}
 
 	return rsp, rspBody, nil
@@ -404,27 +404,27 @@ func (h *HTTPClient) httpDelete(ctx context.Context, //nolint:dupl
 		return nil, nil, err
 	}
 
-	id := uuid.Must(uuid.NewRandom()).String()
+	correlationId := uuid.Must(uuid.NewRandom()).String()
 
 	if logging.IsVerboseLogging(ctx) {
-		logRequestWithoutBody(logging.VerboseLogger(ctx), req, "DELETE", id, url)
+		logRequestWithoutBody(logging.VerboseLogger(ctx), req, "DELETE", correlationId, url)
 	} else {
-		logRequestWithoutBody(logging.Logger(ctx), req, "DELETE", id, url)
+		logRequestWithoutBody(logging.Logger(ctx), req, "DELETE", correlationId, url)
 	}
 
 	rsp, rspBody, err := h.sendRequest(req)
 	if err != nil {
 		logging.Logger(ctx).Error("HTTP request failed",
 			"method", "DELETE", "url", url,
-			"correlationId", id, "error", err)
+			"correlationId", correlationId, "error", err)
 
 		return nil, nil, err
 	}
 
 	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "DELETE", id, url, rspBody)
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "DELETE", correlationId, url, rspBody)
 	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "DELETE", id, url)
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "DELETE", correlationId, url)
 	}
 
 	return rsp, rspBody, nil
