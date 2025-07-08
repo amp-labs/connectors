@@ -1,9 +1,9 @@
 {
     "items": [
         {
-            "title": "Nebo / ayan catchup",
+            "title": "Neo ayan catchup",
             "meeting_title": "Nebo / ayan catchup",
-            "url": "https://fathom.video/calls/342490368",
+            "url": "https://fathom.video/calls/368",
             "created_at": "2025-07-03T18:31:53Z",
             "scheduled_start_time": "2025-07-03T18:00:00Z",
             "scheduled_end_time": "2025-07-03T18:30:00Z",
@@ -12,46 +12,10 @@
             "meeting_type": "external",
             "transcript": null,
             "transcript_language": "en",
-            "default_summary": {
-                "template_name": "General",
-                "markdown_formatted": "## Meeting Purpose\nIntroductory call between Ayan (Ampersand) and Nebojsa (ZoomInfo) to explore potential collaboration opportunities.\n\n## Key Takeaways\n- ZoomInfo is developing a Scratchpad-like tool internally, focusing on being a proxy for Salesforce data\n- Ampersand's open-source approach and specific change tracking capabilities could be valuable for ZoomInfo's integration needs\n- Nebojsa will introduce Ayan to Khanan, the product SVP overseeing ZoomInfo's integrations\n- ZoomInfo's long-term vision is to become a go-to-market data hub, consolidating data from multiple sources\n\n## Topics\n\n### Personal Background and Immigration Experiences\n- Nebojsa: Moved to US for last year of high school, ~20 years ago; 6'4\" tall\n- Ayan: Immigrated from India (Kolkata) 12 years ago, now 40 years old\n- Both shared experiences of cultural differences and adaptation\n\n### Recent Life Events\n- Ayan: Recently became a father to a newborn son\n- Nebojsa: Has an 18-month-old, expecting another child\n\n### ZoomInfo's Integration Needs\n- Building internal Scratchpad-like tool, acting as a proxy for Salesforce\n- Challenges with syncing large volumes of data, especially custom fields\n- Interest in Ampersand's ability to filter and subscribe to specific field changes\n- Long-term vision: Become a go-to-market data hub, consolidating data from multiple sources\n\n### Ampersand's Offering\n- Series A stage startup, ~15 people (mostly engineering)\n- Open-source approach for core components (connectors, React library, CLI)\n- Proprietary orchestration, syncing infrastructure, and observability\n- Pricing based on data delivered, not processed\n- Specialized in handling fragmentation and integration infrastructure\n\n### Potential Collaboration Areas\n- ZoomInfo's interest in Ampersand's specific change tracking capabilities\n- Possibility of using Ampersand for integrations beyond Salesforce (e.g., SugarCRM)\n- Nebojsa to introduce Ayan to Khanan, the product SVP overseeing integrations\n\n## Next Steps\n- Nebojsa to send an email introducing Ayan to Khanan (product SVP for integrations)\n- Ayan to prepare examples of Ampersand's capabilities, focusing on subscribing to specific changes\n- Both to stay in touch for potential future collaboration opportunities"
-            },
-            "action_items": [
-                {
-                    "description": "Email intro Ayan to Khanan (ZoomInfo integrations lead). Mention Ampersand's specific change subscription capability.\n",
-                    "user_generated": false,
-                    "completed": false,
-                    "recording_timestamp": "00:24:57",
-                    "recording_playback_url": "https://fathom.video/calls/342490368?timestamp=1497.9999",
-                    "assignee": {
-                        "name": "Nebojsa Bogdanovic",
-                        "email": "nebojsa.bogdanovic@zoominfo.com",
-                        "team": null
-                    }
-                }
-            ],
-            "calendar_invitees": [
-                {
-                    "name": "Nebojsa Bogdanovic",
-                    "email": "nebojsa.bogdanovic@zoominfo.com",
-                    "is_external": true
-                },
-                {
-                    "name": "Ayan Barua",
-                    "email": "ayan@withampersand.com",
-                    "is_external": false
-                }
-            ],
-            "recorded_by": {
-                "name": "Ayan Barua",
-                "email": "ayan@withampersand.com",
-                "team": "Executive"
-            },
-            "share_url": "https://fathom.video/share/zmxGyEhySxKbs9hPzSPX61xZR22ih6Ax",
             "crm_matches": null
         }
    
     ],
-    "next_cursor": "eyJ0ZWFtX2NhbGxzIjp7InJlY29yZGluZ19zdGFydGVkX2F0IjoiMjAyNS0wNi0zMFQyMDowMjozMi4wNTQ4MzBaIiwiaWQiOjMzODY0NTU0MH0sImNvbXBsZXRlZF9zb3VyY2VzIjpbInRlYW1fcm9sZV9jYWxscyIsImhvc3Rfc2hhcmVkX3RlYW1fcm9sZV9jYWxscyIsImNvbnRhY3RfdGVhbV9tZW1iZXJfY2FsbHMiLCJmb2xkZXJfdGVhbV9jYWxscyIsImZvbGRlcl90ZWFtX3JvbGVfY2FsbHMiLCJmb2xkZXJfaG9zdF9zaGFyZWRfdGVhbV9yb2xlX2NhbGxzIiwiZm9sZGVyX2NvbnRhY3RfdGVhbV9tZW1iZXJfY2FsbHMiXX0=",
+    "next_cursor": "eyJ0ZWFtX2NhdsafyZGluZ19zdGFydGVkX2F0IjoiMjAyNS0wNi0zMFQyMDowMjozMi4wNTQ4MzBaIiwiaWQiOjMzODY0NTU0MH0sImNvbXBsZXRlZF9zb3VyY2VzIjpbInRlYW1fcm9sZV9jYWxscyIsImhvc3Rfc2hhcmVkX3RlYW1fcm9sZV9jYWxscyIsImNvbnRhY3RfdGVhbV9tZW1iZXJfY2FsbHMiLCJmb2xkZXJfdGVhbV9jYWxscyIsImZvbGRlcl90ZWFtX3JvbGVfY2FsbHMiLCJmb2xkZXJfaG9zdF9zaGFyZWRfdGVhbV9yb2xlX2NhbGxzIiwiZm9sZGVyX2NvbnRhY3RfdGVhbV9tZW1iZXJfY2FsbHMiXX0=",
     "limit": 10
 }
