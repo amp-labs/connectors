@@ -1,7 +1,9 @@
 package providers
 
-const Facebook Provider = "facebook"
-const whatsApp Provider = "whatsApp"
+const (
+	Facebook Provider = "facebook"
+	whatsApp Provider = "whatsApp"
+)
 
 // nolint:funlen
 func init() {
