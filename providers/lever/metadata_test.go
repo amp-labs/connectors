@@ -101,9 +101,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: mockutils.NewClient(),
-		Metadata: map[string]string{
-			"opportunityId": "2087af84-f146-4535-9368-2309e33e049f",
-		},
 	})
 	if err != nil {
 		return nil, err

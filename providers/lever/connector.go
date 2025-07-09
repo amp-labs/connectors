@@ -20,13 +20,7 @@ type Connector struct {
 
 	// Supported operations
 	components.SchemaProvider
-
-	opportunityId string
 }
-
-const (
-	metadataKeyopportunityID = "opportunityId"
-)
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
@@ -34,8 +28,6 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	conn.opportunityId = params.Metadata[metadataKeyopportunityID]
 
 	return conn, nil
 }

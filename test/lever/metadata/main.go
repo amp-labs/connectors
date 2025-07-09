@@ -13,15 +13,6 @@ func main() {
 	connector := lever.GetConnector(ctx)
 
 	m, err := connector.ListObjectMetadata(ctx, []string{
-		"feedback",
-		"files",
-		"interviews",
-		"notes",
-		"offers",
-		"panels",
-		"forms",
-		"referrals",
-		"resumes",
 		"archive_reasons",
 		"audit_events",
 		"sources",

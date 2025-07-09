@@ -12,17 +12,9 @@ import (
 	"golang.org/x/oauth2"
 )
 
-var (
-	fieldOpportunityId = credscanning.Field{
-		Name:      "opportunityId",
-		PathJSON:  "metadata.opportunityId",
-		SuffixENV: "OPPORTUNITY_ID",
-	}
-)
-
 func GetConnector(ctx context.Context) *lever.Connector {
 	filePath := credscanning.LoadPath(providers.LeverSandbox)
-	reader := utils.MustCreateProvCredJSON(filePath, true, fieldOpportunityId)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),
@@ -35,9 +27,6 @@ func GetConnector(ctx context.Context) *lever.Connector {
 
 	conn, err := lever.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
-		Metadata: map[string]string{
-			"opportunityId": reader.Get(fieldOpportunityId),
-		},
 	})
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
