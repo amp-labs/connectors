@@ -6,20 +6,6 @@ Below is an exhaustive list of objects & methods supported on the objects
 
 Lever API version : v1
 
-Below endpoints having url path like opportunities/:opportunity/Object
-
-| Object                  | Resource         | Method       |
-| ----------------------- | ---------------- | ------------ |
-| feedback                | feedback         | read         |
-| files                   | files            | read         |
-| interviews              | interviews       | read         | 
-| notes                   | notes            | read         |
-| offers                  | offers           | read         |
-| panels                  | panels           | read         |
-| forms                   | forms            | read         |
-| referrals               | referrals        | read         |
-| resumes                 | resumes          | read         |
-
 | Object                  | Resource           | Method       |
 | ----------------------- | ------------------ | ------------ |
 | archive_reasons         | archive_reasons    | read         |

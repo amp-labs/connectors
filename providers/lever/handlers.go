@@ -14,9 +14,7 @@ type responseObject struct {
 }
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	urlPath := c.constructURL(objectName)
-
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, urlPath)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName)
 	if err != nil {
 		return nil, err
 	}
