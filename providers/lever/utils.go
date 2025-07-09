@@ -1,7 +1,6 @@
 package lever
 
 import (
-	"fmt"
 	"net/url"
 
 	"github.com/amp-labs/connectors/common"
@@ -31,27 +30,7 @@ var (
 		"resumes",
 		"files",
 	)
-
-	EndpointWithOpportunityID = datautils.NewSet( //nolint:gochecknoglobals
-		"feedback",
-		"files",
-		"interviews",
-		"notes",
-		"offers",
-		"panels",
-		"forms",
-		"referrals",
-		"resumes",
-	)
 )
-
-func (c *Connector) constructURL(objName string) string {
-	if EndpointWithOpportunityID.Has(objName) {
-		return fmt.Sprintf("opportunities/%s/%s", c.opportunityId, objName)
-	}
-
-	return objName
-}
 
 func makeNextRecordsURL(reqLink *url.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
