@@ -16,7 +16,7 @@ func init() {
 				Name:        "Authorization",
 				ValuePrefix: "Bearer ",
 			},
-			DocsURL: "https://dev694.avoma.com/#section/Introduction/Authorization",
+			DocsURL: "https://help.avoma.com/api-integration-for-avoma",
 		}, Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
