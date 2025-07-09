@@ -3,7 +3,7 @@ package providers
 const Facebook Provider = "facebook"
 const whatsApp Provider = "whatsApp"
 
-//nolint:funlen
+// nolint:funlen
 func init() {
 	// Facebook Ads Manager Configuration
 	SetInfo(Facebook, ProviderInfo{
