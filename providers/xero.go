@@ -11,6 +11,7 @@ func init() {
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://login.xero.com/identity/connect/authorize",
+			AuthURLParams:             map[string]string{"response_type": "code"},
 			TokenURL:                  "https://identity.xero.com/connect/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
