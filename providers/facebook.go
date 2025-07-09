@@ -2,7 +2,7 @@ package providers
 
 const (
 	Facebook Provider = "facebook"
-	whatsApp Provider = "whatsApp"
+	WhatsApp Provider = "whatsApp"
 )
 
 // nolint:funlen
@@ -44,7 +44,7 @@ func init() {
 	})
 
 	// WhatsApp configuration
-	SetInfo(whatsApp, ProviderInfo{
+	SetInfo(WhatsApp, ProviderInfo{
 		DisplayName: "whatsApp",
 		AuthType:    Oauth2,
 		BaseURL:     "https://graph.facebook.com",
