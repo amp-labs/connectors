@@ -26,6 +26,7 @@ var (
 		"opportunities",
 	)
 
+	// Below endpoints having PUT method but no recordID.
 	EndpointWithPutMethodNoRecordId = datautils.NewSet( //nolint:gochecknoglobals
 		"stage",
 		"archived",
