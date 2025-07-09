@@ -29,11 +29,6 @@ func MainFn() int {
 		return 1
 	}
 
-	err = testNotes(ctx)
-	if err != nil {
-		return 1
-	}
-
 	return 0
 }
 
@@ -137,33 +132,6 @@ func testRequisitionFields(ctx context.Context) error {
 	}
 
 	if err := constructResponse(res); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func testNotes(ctx context.Context) error {
-	conn := lever.GetConnector(ctx)
-
-	slog.Info("Creating the notes")
-
-	writeParams := common.WriteParams{
-		ObjectName: "notes",
-		RecordData: map[string]any{
-			"value": "Hiring on 2+ experience",
-		},
-		RecordId: "",
-	}
-
-	writeRes, err := Write(ctx, conn, writeParams)
-	if err != nil {
-		fmt.Println("ERR: ", err)
-
-		return err
-	}
-
-	if err := constructResponse(writeRes); err != nil {
 		return err
 	}
 

@@ -25,12 +25,6 @@ var (
 		"postings",
 		"opportunities",
 	)
-
-	// Below endpoints having PUT method but no recordID.
-	EndpointWithPutMethodNoRecordId = datautils.NewSet( //nolint:gochecknoglobals
-		"stage",
-		"archived",
-	)
 )
 
 func makeNextRecordsURL(reqLink *url.URL) common.NextPageFunc {

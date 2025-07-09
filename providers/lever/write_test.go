@@ -18,7 +18,6 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 
 	requisitionFieldResponse := testutils.DataFromFile(t, "write_requisition_field.json")
 	requisitionsResponse := testutils.DataFromFile(t, "write_requisitions.json")
-	notesResponse := testutils.DataFromFile(t, "write_notes.json")
 
 	tests := []testroutines.Write{
 		{
@@ -221,47 +220,6 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 								"type": "text",
 							},
 						},
-					},
-				},
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name:  "Creating the notes",
-			Input: common.WriteParams{ObjectName: "notes", RecordData: "dummy"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/v1/opportunities/2087af84-f146-4535-9368-2309e33e049f/notes"),
-					mockcond.MethodPOST(),
-				},
-				Then: mockserver.Response(http.StatusOK, notesResponse),
-			}.Server(),
-			Expected: &common.WriteResult{
-				Success:  true,
-				RecordId: "26b6397a-c2a3-4e90-85e2-5a4f9b8f11c3",
-				Errors:   nil,
-				Data: map[string]any{
-					"data": map[string]any{
-						"completedAt": float64(1750421318058),
-						"createdAt":   float64(1750421318058),
-						"deletedAt":   nil,
-						"fields": []any{
-							map[string]any{
-								"createdAt": float64(1750421318058),
-								"score":     nil,
-								"stage":     "lead-new",
-								"text":      "Comment",
-								"type":      "note",
-								"user":      nil,
-								"value":     "Hiring on 2+ experience",
-							},
-						},
-						"id":     "26b6397a-c2a3-4e90-85e2-5a4f9b8f11c3",
-						"noteId": "26b6397a-c2a3-4e90-85e2-5a4f9b8f11c3",
-						"secret": false,
-						"text":   "Note",
-						"user":   nil,
 					},
 				},
 			},

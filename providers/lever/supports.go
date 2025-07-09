@@ -25,14 +25,6 @@ func supportedOperations() components.EndpointRegistryInput { // nolint:funlen
 	}
 
 	writeSupport := []string{
-		"notes",
-		"addLinks",
-		"removeLinks",
-		"addTags",
-		"removeTags",
-		"addSources",
-		"removeSources",
-		"forms",
 		"form_templates",
 		"requisitions",
 		"requisition_fields",
@@ -40,29 +32,15 @@ func supportedOperations() components.EndpointRegistryInput { // nolint:funlen
 		"users",
 		"feedback_templates",
 		"contacts",
-		"stage",
-		"archived",
-		"feedback",
-		"files",
-		"interviews",
-		"panels",
-		"deactivate",
-		"reactivate",
 		"opportunities",
 		"postings",
-		"apply",
 	}
 
 	deleteSupport := []string{
-		"feedback",
-		"files",
 		"feedback_templates",
-		"interviews",
-		"notes",
 		"form_templates",
 		"requisitions",
 		"requisition_fields",
-		"panels",
 	}
 
 	return components.EndpointRegistryInput{

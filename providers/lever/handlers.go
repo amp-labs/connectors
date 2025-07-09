@@ -115,14 +115,10 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	method := http.MethodPost
 
-	if EndpointWithPutMethodNoRecordId.Has(params.ObjectName) {
-		method = http.MethodPut
-	}
-
 	if len(params.RecordId) > 0 {
 		url.AddPath(params.RecordId)
 
-		// Except postings object, other objects use PUT.
+		// Except postings object(use POST method), other objects use PUT method.
 		if params.ObjectName != "postings" {
 			method = http.MethodPut
 		}

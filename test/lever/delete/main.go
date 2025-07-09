@@ -19,7 +19,7 @@ func main() {
 func MainFn() int {
 	ctx := context.Background()
 
-	err := testNotes(ctx)
+	err := testRequisitions(ctx)
 	if err != nil {
 		return 1
 	}
@@ -32,14 +32,14 @@ func MainFn() int {
 	return 0
 }
 
-func testNotes(ctx context.Context) error {
+func testRequisitions(ctx context.Context) error {
 	conn := lever.GetConnector(ctx)
 
-	slog.Info("Deleting the notes")
+	slog.Info("Deleting the requisitions")
 
 	deleteParams := common.DeleteParams{
-		ObjectName: "notes",
-		RecordId:   "f4b0dfe1-966e-4cbe-b4c8-c9c864be98d6",
+		ObjectName: "requisitions",
+		RecordId:   "8998678f-a76c-4a03-9a19-24ffd20802e8",
 	}
 
 	res, err := Delete(ctx, conn, deleteParams)
@@ -63,7 +63,7 @@ func testRequisitionFields(ctx context.Context) error {
 
 	deleteParams := common.DeleteParams{
 		ObjectName: "requisition_fields",
-		RecordId:   "field2",
+		RecordId:   "field1",
 	}
 
 	res, err := Delete(ctx, conn, deleteParams)

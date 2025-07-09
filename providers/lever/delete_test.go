@@ -26,13 +26,13 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:         "Write object and its ID must be included",
-			Input:        common.DeleteParams{ObjectName: "notes"},
+			Input:        common.DeleteParams{ObjectName: "requisitions"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordID},
 		},
 		{
 			Name:   "Object name is not supported",
-			Input:  common.DeleteParams{ObjectName: "note", RecordId: "b3d8b85e-2e53-4b24-ad32-d29bbbf47eec"},
+			Input:  common.DeleteParams{ObjectName: "requisition", RecordId: "b3d8b85e-2e53-4b24-ad32-d29bbbf47eec"},
 			Server: mockserver.Dummy(),
 			ExpectedErrs: []error{
 				common.ErrOperationNotSupportedForObject,
@@ -40,12 +40,12 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Successful delete",
-			Input: common.DeleteParams{ObjectName: "notes", RecordId: "f4b0dfe1-966e-4cbe-b4c8-c9c864be98d6"},
+			Input: common.DeleteParams{ObjectName: "requisitions", RecordId: "f4b0dfe1-966e-4cbe-b4c8-c9c864be98d6"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path(
-						"/v1/opportunities/2087af84-f146-4535-9368-2309e33e049f/notes/f4b0dfe1-966e-4cbe-b4c8-c9c864be98d6"),
+						"/v1/requisitions/f4b0dfe1-966e-4cbe-b4c8-c9c864be98d6"),
 					mockcond.MethodDELETE(),
 				},
 				Then: mockserver.Response(http.StatusNoContent),
