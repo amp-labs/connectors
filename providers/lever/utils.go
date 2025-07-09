@@ -25,11 +25,6 @@ var (
 		"postings",
 		"opportunities",
 	)
-
-	EndpointWithUploadedAtRange = datautils.NewSet( //nolint:gochecknoglobals
-		"resumes",
-		"files",
-	)
 )
 
 func makeNextRecordsURL(reqLink *url.URL) common.NextPageFunc {

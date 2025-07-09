@@ -76,7 +76,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	// Apply timestamp parameters for each endpoint type
 	addTimeParams("created_at", EndpointWithCreatedAtRange.Has(params.ObjectName))
 	addTimeParams("updated_at", EndpointWithUpdatedAtRange.Has(params.ObjectName))
-	addTimeParams("uploaded_at", EndpointWithUploadedAtRange.Has(params.ObjectName))
 
 	if len(params.NextPage) != 0 {
 		// Next page.
