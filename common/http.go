@@ -504,16 +504,6 @@ func makePatchRequest(ctx context.Context, url string, headers []Header, body an
 
 	req.ContentLength = int64(len(jBody))
 
-	if logging.IsVerboseLogging(ctx) {
-		logging.VerboseLogger(ctx).Debug("HTTP request",
-			"method", "PATCH", "url", url,
-			"headers", redactSensitiveRequestHeaders(headers),
-			"bodySize", len(jBody))
-	} else {
-		logging.Logger(ctx).Debug("HTTP request",
-			"method", "PATCH", "url", url)
-	}
-
 	return AddJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
 
@@ -531,16 +521,6 @@ func makePutRequest(ctx context.Context, url string, headers []Header, body any)
 	}
 
 	req.ContentLength = int64(len(jBody))
-
-	if logging.IsVerboseLogging(ctx) {
-		logging.VerboseLogger(ctx).Debug("HTTP request",
-			"method", "PUT", "url", url,
-			"headers", redactSensitiveRequestHeaders(headers),
-			"bodySize", len(jBody))
-	} else {
-		logging.Logger(ctx).Debug("HTTP request",
-			"method", "PUT", "url", url)
-	}
 
 	return AddJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }

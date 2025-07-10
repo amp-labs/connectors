@@ -13,7 +13,6 @@ import (
 	"unicode/utf8"
 
 	"golang.org/x/net/html/charset"
-	"golang.org/x/text/transform"
 )
 
 const truncationLength = 512 * 1024 // 512 KB
@@ -348,7 +347,10 @@ func peekBody(bcr bodyContentReader) ([]byte, error) {
 	return data, nil
 }
 
-// getBodyAsPrintable checks if the HTTP response body is probably printable text.
+// getBodyAsPrintable does what it can to convert the body of a request or response
+// into a printable format. It checks the MIME type, charset, and content to determine
+// if the content is printable or needs to be base64 encoded. It also handles UTF-8 decoding
+// and checks for printability using a heuristic based on the proportion of printable characters.
 func getBodyAsPrintable(bcr bodyContentReader) (*PrintablePayload, error) { //nolint:funlen,cyclop
 	if bcr == nil || bcr.GetBody() == nil {
 		return nil, nil //nolint:nilnil
@@ -385,7 +387,7 @@ func getBodyAsPrintable(bcr bodyContentReader) (*PrintablePayload, error) { //no
 		decodedReader = bytes.NewReader(rawData)
 	}
 
-	decodedData, err := io.ReadAll(transform.NewReader(decodedReader, nil))
+	decodedData, err := io.ReadAll(decodedReader)
 	if err != nil {
 		return nil, err
 	}
