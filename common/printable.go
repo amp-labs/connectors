@@ -149,21 +149,23 @@ func jsonToSlogValue(v any) slog.Value {
 	switch x := v.(type) {
 	case map[string]any:
 		attrs := make([]slog.Attr, 0, len(x))
+
 		for k, val := range x {
 			attrs = append(attrs, slog.Attr{
 				Key:   k,
 				Value: jsonToSlogValue(val),
 			})
 		}
-		return slog.GroupValue(attrs...)
 
+		return slog.GroupValue(attrs...)
 	case []any:
 		arr := make([]slog.Value, len(x))
+
 		for i, val := range x {
 			arr[i] = jsonToSlogValue(val)
 		}
-		return slog.AnyValue(arr) // or use slog.Value{Kind: SliceKind...} if building your own encoder
 
+		return slog.AnyValue(arr) // or use slog.Value{Kind: SliceKind...} if building your own encoder
 	case string:
 		return slog.StringValue(x)
 	case float32:
