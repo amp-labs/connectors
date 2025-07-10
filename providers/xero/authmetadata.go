@@ -18,6 +18,7 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 	catalogVars := map[string]string{
 		"tenantId": tenantId,
 	}
+
 	return &common.PostAuthInfo{
 		CatalogVars: &catalogVars,
 	}, nil

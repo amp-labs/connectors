@@ -4,7 +4,7 @@ type AuthMetadataVars struct {
 	TenantId string
 }
 
-// NewAuthMetadataVars parses map into the model
+// NewAuthMetadataVars parses map into the model.
 func NewAuthMetadataVars(dictionary map[string]string) *AuthMetadataVars {
 	return &AuthMetadataVars{
 		TenantId: dictionary["tenantId"],
