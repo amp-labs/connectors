@@ -3,6 +3,7 @@ package common
 import (
 	"bytes"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
@@ -112,11 +113,81 @@ func (p *PrintablePayload) String() string {
 		return ""
 	}
 
-	if p.IsBase64() {
-		return "base64:" + p.Content
+	return p.Content
+}
+
+func (p *PrintablePayload) LogValue() slog.Value {
+	var attrs []slog.Attr
+
+	attrs = append(attrs, slog.String("raw", p.String()))
+
+	isJSON, err := p.IsJSON()
+	if err == nil && isJSON {
+		contentBytes, err := p.GetContentBytes()
+		if err == nil && len(contentBytes) > 0 {
+			var jsonValue any
+			if err := json.Unmarshal(contentBytes, &jsonValue); err != nil {
+				return slog.StringValue(p.String())
+			}
+
+			val := jsonToSlogValue(jsonValue)
+			attrs = append(attrs, slog.Any("json", val))
+		}
 	}
 
-	return p.Content
+	attrs = append(attrs, slog.Bool("base64", p.IsBase64()))
+	attrs = append(attrs, slog.Int64("size", p.Length))
+
+	if p.IsTruncated() {
+		attrs = append(attrs, slog.Int64("sizeTruncated", p.GetTruncatedLength()))
+	}
+
+	return slog.GroupValue(attrs...)
+}
+
+func jsonToSlogValue(v any) slog.Value {
+	switch x := v.(type) {
+	case map[string]any:
+		attrs := make([]slog.Attr, 0, len(x))
+		for k, val := range x {
+			attrs = append(attrs, slog.Attr{
+				Key:   k,
+				Value: jsonToSlogValue(val),
+			})
+		}
+		return slog.GroupValue(attrs...)
+
+	case []any:
+		arr := make([]slog.Value, len(x))
+		for i, val := range x {
+			arr[i] = jsonToSlogValue(val)
+		}
+		return slog.AnyValue(arr) // or use slog.Value{Kind: SliceKind...} if building your own encoder
+
+	case string:
+		return slog.StringValue(x)
+	case float32:
+		return slog.Float64Value(float64(x)) // use Float64Value for consistency
+	case float64:
+		return slog.Float64Value(x)
+	case int:
+		return slog.Int64Value(int64(x)) // use Int64Value for consistency
+	case int32:
+		return slog.Int64Value(int64(x))
+	case uint32:
+		return slog.Uint64Value(uint64(x))
+	case int64:
+		return slog.Int64Value(x)
+	case uint64:
+		return slog.Uint64Value(x)
+	case bool:
+		return slog.BoolValue(x)
+	case nil:
+		return slog.AnyValue(nil) // maps to JSON `null`
+	default:
+		// fallback for unexpected types, or custom structs
+		return slog.AnyValue(x)
+	}
 }
 
 func (p *PrintablePayload) IsEmpty() bool {
@@ -125,6 +196,19 @@ func (p *PrintablePayload) IsEmpty() bool {
 
 func (p *PrintablePayload) IsBase64() bool {
 	return p != nil && p.Base64
+}
+
+func (p *PrintablePayload) IsJSON() (bool, error) {
+	if p == nil {
+		return false, nil
+	}
+
+	bts, err := p.GetContentBytes()
+	if err != nil {
+		return false, fmt.Errorf("error getting content bytes: %w", err)
+	}
+
+	return json.Valid(bts), nil
 }
 
 func (p *PrintablePayload) GetContent() string {

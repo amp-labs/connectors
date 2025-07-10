@@ -91,6 +91,16 @@ func (h Headers) ApplyToRequest(req *http.Request) {
 	}
 }
 
+func (h Headers) LogValue() slog.Value {
+	attrs := make([]slog.Attr, 0, len(h))
+
+	for _, header := range h {
+		attrs = append(attrs, slog.String(header.Key, header.Value))
+	}
+
+	return slog.GroupValue(attrs...)
+}
+
 // ErrorHandler allows the caller to inject their own HTTP error handling logic.
 // All non-2xx responses will be passed to the error handler. If the error handler
 // returns nil, then the error is ignored and the caller is responsible for handling
@@ -115,7 +125,7 @@ func (h *HTTPClient) getURL(url string) (string, error) {
 }
 
 // redactSensitiveRequestHeaders redacts sensitive headers from the given headers.
-func redactSensitiveRequestHeaders(hdrs []Header) []Header {
+func redactSensitiveRequestHeaders(hdrs []Header) Headers {
 	if hdrs == nil {
 		return nil
 	}
@@ -142,7 +152,7 @@ func redactSensitiveRequestHeaders(hdrs []Header) []Header {
 	return redacted
 }
 
-func redactSensitiveResponseHeaders(hdrs []Header) []Header {
+func redactSensitiveResponseHeaders(hdrs []Header) Headers {
 	if hdrs == nil {
 		return nil
 	}
