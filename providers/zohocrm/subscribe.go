@@ -500,11 +500,13 @@ func buildFieldSelection(
 	fieldNames []string,
 	watchFieldsMetadata map[string]map[string]any,
 ) (FieldSelection, error) {
-	if len(fieldNames) == 0 {
-		return FieldSelection{}, nil
-	}
+	var result FieldSelection
+	var err error
 
-	if len(fieldNames) == 1 {
+	switch len(fieldNames) {
+	case 0:
+		result = FieldSelection{}
+	case 1:
 		fieldName := fieldNames[0]
 		fm := watchFieldsMetadata[fieldName]
 		id, ok := fm["id"].(string)
@@ -512,15 +514,13 @@ func buildFieldSelection(
 			return FieldSelection{}, fmt.Errorf("%w: %s", errFieldIDNotString, fieldName)
 		}
 
-		return FieldSelection{
+		result = FieldSelection{
 			Field: &Field{
 				APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
 				ID:      id,
 			},
-		}, nil
-	}
-
-	if len(fieldNames) == maxGroupSize {
+		}
+	case maxGroupSize:
 		fieldGroups := make([]FieldGroup, 0)
 		for _, fieldName := range fieldNames {
 			fm := watchFieldsMetadata[fieldName]
@@ -537,46 +537,48 @@ func buildFieldSelection(
 			})
 		}
 
-		return FieldSelection{
+		result = FieldSelection{
 			Group:         fieldGroups,
 			GroupOperator: GroupOperatorOr,
-		}, nil
-	}
+		}
+	default:
+		// More than 2 fields - binary nest: first field, and the rest as a nested group
+		firstField := fieldNames[0]
+		fm := watchFieldsMetadata[firstField]
+		id, ok := fm["id"].(string)
+		if !ok {
+			return FieldSelection{}, fmt.Errorf("%w: %s", errFieldIDNotString, firstField)
+		}
 
-	// More than 2 fields - binary nest: first field, and the rest as a nested group
-	firstField := fieldNames[0]
-	fm := watchFieldsMetadata[firstField]
-	id, ok := fm["id"].(string)
-	if !ok {
-		return FieldSelection{}, fmt.Errorf("%w: %s", errFieldIDNotString, firstField)
-	}
+		firstGroup := FieldGroup{
+			Field: &Field{
+				APIName: naming.CapitalizeFirstLetterEveryWord(firstField),
+				ID:      id,
+			},
+		}
 
-	firstGroup := FieldGroup{
-		Field: &Field{
-			APIName: naming.CapitalizeFirstLetterEveryWord(firstField),
-			ID:      id,
-		},
-	}
+		nestedSelection, err := buildFieldSelection(fieldNames[1:], watchFieldsMetadata)
+		if err != nil {
+			return FieldSelection{}, err
+		}
 
-	nestedSelection, err := buildFieldSelection(fieldNames[1:], watchFieldsMetadata)
-	if err != nil {
-		return FieldSelection{}, err
-	}
+		var nestedGroup FieldGroup
+		if nestedSelection.Field != nil {
+			nestedGroup = FieldGroup{Field: nestedSelection.Field}
+		} else {
+			nestedGroup = FieldGroup{
+				Group:         nestedSelection.Group,
+				GroupOperator: string(nestedSelection.GroupOperator),
+			}
+		}
 
-	var nestedGroup FieldGroup
-	if nestedSelection.Field != nil {
-		nestedGroup = FieldGroup{Field: nestedSelection.Field}
-	} else {
-		nestedGroup = FieldGroup{
-			Group:         nestedSelection.Group,
-			GroupOperator: string(nestedSelection.GroupOperator),
+		result = FieldSelection{
+			Group:         []FieldGroup{firstGroup, nestedGroup},
+			GroupOperator: GroupOperatorOr,
 		}
 	}
 
-	return FieldSelection{
-		Group:         []FieldGroup{firstGroup, nestedGroup},
-		GroupOperator: GroupOperatorOr,
-	}, nil
+	return result, err
 }
 
 func (c *Connector) getSubscribeURL() (*urlbuilder.URL, error) {
