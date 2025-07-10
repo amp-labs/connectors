@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"mime"
 	"net/http"
+	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -159,13 +160,16 @@ func jsonToSlogValue(v any) slog.Value {
 
 		return slog.GroupValue(attrs...)
 	case []any:
-		arr := make([]slog.Value, len(x))
+		attrs := make([]slog.Attr, len(x))
 
 		for i, val := range x {
-			arr[i] = jsonToSlogValue(val)
+			attrs[i] = slog.Attr{
+				Key:   strconv.FormatInt(int64(i), 10),
+				Value: jsonToSlogValue(val),
+			}
 		}
 
-		return slog.AnyValue(arr) // or use slog.Value{Kind: SliceKind...} if building your own encoder
+		return slog.GroupValue(attrs...)
 	case string:
 		return slog.StringValue(x)
 	case float32:
