@@ -146,12 +146,12 @@ func (p *PrintablePayload) LogValue() slog.Value {
 	return slog.GroupValue(attrs...)
 }
 
-func jsonToSlogValue(v any) slog.Value {
-	switch x := v.(type) {
+func jsonToSlogValue(v any) slog.Value { //nolint:cyclop
+	switch value := v.(type) {
 	case map[string]any:
-		attrs := make([]slog.Attr, 0, len(x))
+		attrs := make([]slog.Attr, 0, len(value))
 
-		for k, val := range x {
+		for k, val := range value {
 			attrs = append(attrs, slog.Attr{
 				Key:   k,
 				Value: jsonToSlogValue(val),
@@ -160,9 +160,9 @@ func jsonToSlogValue(v any) slog.Value {
 
 		return slog.GroupValue(attrs...)
 	case []any:
-		attrs := make([]slog.Attr, len(x))
+		attrs := make([]slog.Attr, len(value))
 
-		for i, val := range x {
+		for i, val := range value {
 			attrs[i] = slog.Attr{
 				Key:   strconv.FormatInt(int64(i), 10),
 				Value: jsonToSlogValue(val),
@@ -171,28 +171,28 @@ func jsonToSlogValue(v any) slog.Value {
 
 		return slog.GroupValue(attrs...)
 	case string:
-		return slog.StringValue(x)
+		return slog.StringValue(value)
 	case float32:
-		return slog.Float64Value(float64(x)) // use Float64Value for consistency
+		return slog.Float64Value(float64(value)) // use Float64Value for consistency
 	case float64:
-		return slog.Float64Value(x)
+		return slog.Float64Value(value)
 	case int:
-		return slog.Int64Value(int64(x)) // use Int64Value for consistency
+		return slog.Int64Value(int64(value)) // use Int64Value for consistency
 	case int32:
-		return slog.Int64Value(int64(x))
+		return slog.Int64Value(int64(value))
 	case uint32:
-		return slog.Uint64Value(uint64(x))
+		return slog.Uint64Value(uint64(value))
 	case int64:
-		return slog.Int64Value(x)
+		return slog.Int64Value(value)
 	case uint64:
-		return slog.Uint64Value(x)
+		return slog.Uint64Value(value)
 	case bool:
-		return slog.BoolValue(x)
+		return slog.BoolValue(value)
 	case nil:
-		return slog.AnyValue(nil) // maps to JSON `null`
+		return slog.AnyValue(nil)
 	default:
 		// fallback for unexpected types, or custom structs
-		return slog.AnyValue(x)
+		return slog.AnyValue(value)
 	}
 }
 

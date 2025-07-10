@@ -347,7 +347,18 @@ func (h *HTTPClient) httpPatch(ctx context.Context, //nolint:dupl
 	correlationId := uuid.Must(uuid.NewRandom()).String()
 
 	if logging.IsVerboseLogging(ctx) {
-		logRequestWithBody(logging.VerboseLogger(ctx), req, "PATCH", correlationId, url, nil)
+		var serializedBody []byte
+
+		if body != nil {
+			serializedBody, err = json.Marshal(body)
+			if err != nil {
+				logging.Logger(ctx).Error("Failed to serialize request body",
+					"method", "PATCH", "url", url,
+					"correlationId", correlationId, "error", err)
+			}
+		}
+
+		logRequestWithBody(logging.VerboseLogger(ctx), req, "PATCH", correlationId, url, serializedBody)
 	} else {
 		logRequestWithoutBody(logging.Logger(ctx), req, "PATCH", correlationId, url)
 	}
@@ -382,7 +393,18 @@ func (h *HTTPClient) httpPut(ctx context.Context, //nolint:dupl
 	correlationId := uuid.Must(uuid.NewRandom()).String()
 
 	if logging.IsVerboseLogging(ctx) {
-		logRequestWithBody(logging.VerboseLogger(ctx), req, "PUT", correlationId, url, nil)
+		var serializedBody []byte
+
+		if body != nil {
+			serializedBody, err = json.Marshal(body)
+			if err != nil {
+				logging.Logger(ctx).Error("Failed to serialize request body",
+					"method", "PUT", "url", url,
+					"correlationId", correlationId, "error", err)
+			}
+		}
+
+		logRequestWithBody(logging.VerboseLogger(ctx), req, "PUT", correlationId, url, serializedBody)
 	} else {
 		logRequestWithoutBody(logging.Logger(ctx), req, "PUT", correlationId, url)
 	}
