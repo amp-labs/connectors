@@ -494,13 +494,15 @@ func (c *Connector) getNotificationConditions(
 	}, nil
 }
 
-// buildFieldSelection creates field selection with proper nesting for any number of fields
-// according to Zoho CRM API requirements (max 2 objects per group)
+// according to Zoho CRM API requirements (max 2 objects per group).
+//
+//nolint:cyclop,funlen
 func buildFieldSelection(
 	fieldNames []string,
 	watchFieldsMetadata map[string]map[string]any,
 ) (FieldSelection, error) {
 	var result FieldSelection
+
 	var err error
 
 	switch len(fieldNames) {
@@ -509,6 +511,7 @@ func buildFieldSelection(
 	case 1:
 		fieldName := fieldNames[0]
 		fm := watchFieldsMetadata[fieldName]
+
 		id, ok := fm["id"].(string)
 		if !ok {
 			return FieldSelection{}, fmt.Errorf("%w: %s", errFieldIDNotString, fieldName)
@@ -522,8 +525,10 @@ func buildFieldSelection(
 		}
 	case maxGroupSize:
 		fieldGroups := make([]FieldGroup, 0)
+
 		for _, fieldName := range fieldNames {
 			fm := watchFieldsMetadata[fieldName]
+
 			id, ok := fm["id"].(string)
 			if !ok {
 				return FieldSelection{}, fmt.Errorf("%w: %s", errFieldIDNotString, fieldName)
@@ -545,6 +550,7 @@ func buildFieldSelection(
 		// More than 2 fields - binary nest: first field, and the rest as a nested group
 		firstField := fieldNames[0]
 		fm := watchFieldsMetadata[firstField]
+
 		id, ok := fm["id"].(string)
 		if !ok {
 			return FieldSelection{}, fmt.Errorf("%w: %s", errFieldIDNotString, firstField)

@@ -70,6 +70,7 @@ func TestBuildNestedFieldGroupsEdgeCases(t *testing.T) {
 	if err != nil {
 		t.Fatalf("buildFieldSelection failed: %v", err)
 	}
+
 	assert.Assert(t, result1.Field != nil)
 	assert.Equal(t, result1.Field.APIName, "Field1")
 	assert.Equal(t, result1.Field.ID, "1")
@@ -85,6 +86,7 @@ func TestBuildNestedFieldGroupsEdgeCases(t *testing.T) {
 	if err != nil {
 		t.Fatalf("buildFieldSelection failed: %v", err)
 	}
+
 	assert.Assert(t, result2.Group != nil)
 	assert.Equal(t, string(result2.GroupOperator), string(GroupOperatorOr))
 	assert.Equal(t, len(result2.Group), 2)
@@ -96,6 +98,7 @@ func TestBuildNestedFieldGroupsEdgeCases(t *testing.T) {
 	if err != nil {
 		t.Fatalf("buildFieldSelection failed: %v", err)
 	}
+
 	assert.Assert(t, result3.Field == nil)
 	assert.Assert(t, result3.Group == nil)
 }
