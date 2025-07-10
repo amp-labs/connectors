@@ -259,6 +259,76 @@ func (c *Connector) putOrPostSubscribe(
 	return subscriptionResult, nil
 }
 
+// buildNestedFieldGroups creates nested field groups to support more than 2 fields
+// by creating pairs and nesting them with OR operators according to Zoho CRM API requirements
+func (c *Connector) buildNestedFieldGroups(
+	fieldNames []string,
+	watchFieldsMetadata map[string]map[string]any,
+) FieldSelection {
+	if len(fieldNames) == 0 {
+		return FieldSelection{}
+	}
+
+	if len(fieldNames) == 1 {
+		// Single field - return as Field
+		fieldName := fieldNames[0]
+		fieldMetadata := watchFieldsMetadata[fieldName]
+
+		return FieldSelection{
+			Field: &Field{
+				APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
+				ID:      fieldMetadata["id"].(string),
+			},
+		}
+	}
+
+	if len(fieldNames) == 2 {
+		// Two fields - return as Group with OR operator
+		fieldGroups := make([]FieldGroup, 0)
+
+		for _, fieldName := range fieldNames {
+			fieldMetadata := watchFieldsMetadata[fieldName]
+			fieldGroups = append(fieldGroups, FieldGroup{
+				Field: &Field{
+					APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
+					ID:      fieldMetadata["id"].(string),
+				},
+			})
+		}
+
+		return FieldSelection{
+			Group:         fieldGroups,
+			GroupOperator: GroupOperatorOr,
+		}
+	}
+
+	// More than 2 fields - binary nest: first field, and the rest as a nested group
+	firstField := fieldNames[0]
+	firstGroup := FieldGroup{
+		Field: &Field{
+			APIName: naming.CapitalizeFirstLetterEveryWord(firstField),
+			ID:      watchFieldsMetadata[firstField]["id"].(string),
+		},
+	}
+
+	nestedSelection := c.buildNestedFieldGroups(fieldNames[1:], watchFieldsMetadata)
+	var nestedGroup FieldGroup
+
+	if nestedSelection.Field != nil {
+		nestedGroup = FieldGroup{Field: nestedSelection.Field}
+	} else {
+		nestedGroup = FieldGroup{
+			Group:         nestedSelection.Group,
+			GroupOperator: string(nestedSelection.GroupOperator),
+		}
+	}
+
+	return FieldSelection{
+		Group:         []FieldGroup{firstGroup, nestedGroup},
+		GroupOperator: GroupOperatorOr,
+	}
+}
+
 func (c *Connector) putOrPostSubscription(
 	ctx context.Context,
 	payload *SubscriptionPayload,
@@ -452,30 +522,49 @@ func (c *Connector) getNotificationConditions(
 		}
 	}
 
-	fieldGroups := make([]FieldGroup, 0)
-
-	//nolint:forcetypeassert
-	for fieldName, fieldMetadata := range watchFieldsMetadata {
-		fieldGroups = append(fieldGroups, FieldGroup{
-			Field: &Field{
-				APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
-
-				ID: fieldMetadata["id"].(string),
-			},
-		})
-	}
-
+	// Build field groups based on the number of fields
+	// According to Zoho CRM API, field_selection can have max 2 objects
+	// When more than 2 fields, we need to nest them properly
 	var fieldSelection FieldSelection
 
-	if len(fieldGroups) == 1 {
-		fieldSelection = FieldSelection{
-			Field: fieldGroups[0].Field,
+	if len(watchFieldsMetadata) == 1 {
+		// Single field - use Field directly
+		for fieldName, fieldMetadata := range watchFieldsMetadata {
+			fieldSelection = FieldSelection{
+				Field: &Field{
+					APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
+					ID:      fieldMetadata["id"].(string),
+				},
+			}
+
+			break
 		}
-	} else {
+	} else if len(watchFieldsMetadata) == 2 {
+		// Two fields - use Group with OR operator
+		fieldGroups := make([]FieldGroup, 0)
+		for fieldName, fieldMetadata := range watchFieldsMetadata {
+			fieldGroups = append(fieldGroups, FieldGroup{
+				Field: &Field{
+					APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
+					ID:      fieldMetadata["id"].(string),
+				},
+			})
+		}
+
 		fieldSelection = FieldSelection{
 			Group:         fieldGroups,
 			GroupOperator: GroupOperatorOr,
 		}
+	} else {
+		// More than 2 fields - need to nest groups
+		// Create pairs of fields and nest them with OR operators
+		fieldNames := make([]string, 0, len(watchFieldsMetadata))
+		for fieldName := range watchFieldsMetadata {
+			fieldNames = append(fieldNames, fieldName)
+		}
+
+		// Build nested groups
+		fieldSelection = c.buildNestedFieldGroups(fieldNames, watchFieldsMetadata)
 	}
 
 	//nolint:forcetypeassert

@@ -37,6 +37,8 @@ func main() {
 				},
 				WatchFields: []string{
 					"phone",
+					"last_name",
+					"first_name",
 				},
 			},
 			"Contacts": common.ObjectEvents{
@@ -47,6 +49,8 @@ func main() {
 				},
 				WatchFields: []string{
 					"phone",
+					"last_name",
+					"last_name",
 				},
 			},
 		},
