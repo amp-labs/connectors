@@ -462,53 +462,14 @@ func (c *Connector) getNotificationConditions(
 		}
 	}
 
-	var fieldSelection FieldSelection
+	fieldNames := make([]string, 0, len(watchFieldsMetadata))
+	for fieldName := range watchFieldsMetadata {
+		fieldNames = append(fieldNames, fieldName)
+	}
 
-	switch len(watchFieldsMetadata) {
-	case 1:
-		for fieldName, fm := range watchFieldsMetadata {
-			id, ok := fm["id"].(string)
-			if !ok {
-				return nil, fmt.Errorf("%w: %s", errFieldIDNotString, fieldName)
-			}
-
-			fieldSelection = FieldSelection{
-				Field: &Field{
-					APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
-					ID:      id,
-				},
-			}
-
-			break
-		}
-	case maxGroupSize:
-		fieldGroups := make([]FieldGroup, 0)
-
-		for fieldName, fm := range watchFieldsMetadata {
-			id, ok := fm["id"].(string)
-			if !ok {
-				return nil, fmt.Errorf("%w: %s", errFieldIDNotString, fieldName)
-			}
-
-			fieldGroups = append(fieldGroups, FieldGroup{
-				Field: &Field{
-					APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
-					ID:      id,
-				},
-			})
-		}
-
-		fieldSelection = FieldSelection{
-			Group:         fieldGroups,
-			GroupOperator: GroupOperatorOr,
-		}
-	default:
-		fieldNames := make([]string, 0, len(watchFieldsMetadata))
-		for fieldName := range watchFieldsMetadata {
-			fieldNames = append(fieldNames, fieldName)
-		}
-
-		fieldSelection = c.buildNestedFieldGroups(fieldNames, watchFieldsMetadata)
+	fieldSelection, err := buildFieldSelection(fieldNames, watchFieldsMetadata)
+	if err != nil {
+		return nil, err
 	}
 
 	apiName, ok := moduleMetadata["api_name"].(string)
@@ -533,38 +494,22 @@ func (c *Connector) getNotificationConditions(
 	}, nil
 }
 
-func fieldNameToFieldGroup(fieldName string, fm map[string]any) (FieldGroup, error) {
-	id, ok := fm["id"].(string)
-	if !ok {
-		return FieldGroup{}, fmt.Errorf("%w: %s", errFieldIDNotString, fieldName)
-	}
-
-	return FieldGroup{
-		Field: &Field{
-			APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
-			ID:      id,
-		},
-	}, nil
-}
-
-// by creating pairs and nesting them with OR operators according to Zoho CRM API requirements.
-
-//nolint:funlen
-func (c *Connector) buildNestedFieldGroups(
+// buildFieldSelection creates field selection with proper nesting for any number of fields
+// according to Zoho CRM API requirements (max 2 objects per group)
+func buildFieldSelection(
 	fieldNames []string,
 	watchFieldsMetadata map[string]map[string]any,
-) FieldSelection {
+) (FieldSelection, error) {
 	if len(fieldNames) == 0 {
-		return FieldSelection{}
+		return FieldSelection{}, nil
 	}
 
 	if len(fieldNames) == 1 {
 		fieldName := fieldNames[0]
 		fm := watchFieldsMetadata[fieldName]
-
 		id, ok := fm["id"].(string)
 		if !ok {
-			return FieldSelection{}
+			return FieldSelection{}, fmt.Errorf("%w: %s", errFieldIDNotString, fieldName)
 		}
 
 		return FieldSelection{
@@ -572,40 +517,53 @@ func (c *Connector) buildNestedFieldGroups(
 				APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
 				ID:      id,
 			},
-		}
+		}, nil
 	}
 
 	if len(fieldNames) == maxGroupSize {
 		fieldGroups := make([]FieldGroup, 0)
-
 		for _, fieldName := range fieldNames {
 			fm := watchFieldsMetadata[fieldName]
-
-			fg, err := fieldNameToFieldGroup(fieldName, fm)
-			if err != nil {
-				return FieldSelection{}
+			id, ok := fm["id"].(string)
+			if !ok {
+				return FieldSelection{}, fmt.Errorf("%w: %s", errFieldIDNotString, fieldName)
 			}
 
-			fieldGroups = append(fieldGroups, fg)
+			fieldGroups = append(fieldGroups, FieldGroup{
+				Field: &Field{
+					APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
+					ID:      id,
+				},
+			})
 		}
 
 		return FieldSelection{
 			Group:         fieldGroups,
 			GroupOperator: GroupOperatorOr,
-		}
+		}, nil
 	}
 
+	// More than 2 fields - binary nest: first field, and the rest as a nested group
 	firstField := fieldNames[0]
-	//nolint:varnamelen
-	fg, err := fieldNameToFieldGroup(firstField, watchFieldsMetadata[firstField])
-	if err != nil {
-		return FieldSelection{}
+	fm := watchFieldsMetadata[firstField]
+	id, ok := fm["id"].(string)
+	if !ok {
+		return FieldSelection{}, fmt.Errorf("%w: %s", errFieldIDNotString, firstField)
 	}
 
-	nestedSelection := c.buildNestedFieldGroups(fieldNames[1:], watchFieldsMetadata)
+	firstGroup := FieldGroup{
+		Field: &Field{
+			APIName: naming.CapitalizeFirstLetterEveryWord(firstField),
+			ID:      id,
+		},
+	}
+
+	nestedSelection, err := buildFieldSelection(fieldNames[1:], watchFieldsMetadata)
+	if err != nil {
+		return FieldSelection{}, err
+	}
 
 	var nestedGroup FieldGroup
-
 	if nestedSelection.Field != nil {
 		nestedGroup = FieldGroup{Field: nestedSelection.Field}
 	} else {
@@ -616,9 +574,9 @@ func (c *Connector) buildNestedFieldGroups(
 	}
 
 	return FieldSelection{
-		Group:         []FieldGroup{fg, nestedGroup},
+		Group:         []FieldGroup{firstGroup, nestedGroup},
 		GroupOperator: GroupOperatorOr,
-	}
+	}, nil
 }
 
 func (c *Connector) getSubscribeURL() (*urlbuilder.URL, error) {

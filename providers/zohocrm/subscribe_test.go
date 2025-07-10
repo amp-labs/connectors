@@ -9,8 +9,6 @@ import (
 func TestBuildNestedFieldGroups(t *testing.T) {
 	t.Parallel()
 
-	connector := &Connector{}
-
 	// Test data
 	watchFieldsMetadata := map[string]map[string]any{
 		"field1": {"id": "1", "api_name": "field1"},
@@ -22,7 +20,10 @@ func TestBuildNestedFieldGroups(t *testing.T) {
 	fieldNames := []string{"field1", "field2", "field3", "field4"}
 
 	// Test the nested field groups
-	result := connector.buildNestedFieldGroups(fieldNames, watchFieldsMetadata)
+	result, err := buildFieldSelection(fieldNames, watchFieldsMetadata)
+	if err != nil {
+		t.Fatalf("buildFieldSelection failed: %v", err)
+	}
 
 	// Top-level should have 2 groups: field1 and a nested group
 	assert.Assert(t, result.Group != nil)
@@ -59,15 +60,16 @@ func TestBuildNestedFieldGroups(t *testing.T) {
 func TestBuildNestedFieldGroupsEdgeCases(t *testing.T) {
 	t.Parallel()
 
-	connector := &Connector{}
-
 	// Test with 1 field
 	watchFieldsMetadata1 := map[string]map[string]any{
 		"field1": {"id": "1", "api_name": "field1"},
 	}
 	fieldNames1 := []string{"field1"}
 
-	result1 := connector.buildNestedFieldGroups(fieldNames1, watchFieldsMetadata1)
+	result1, err := buildFieldSelection(fieldNames1, watchFieldsMetadata1)
+	if err != nil {
+		t.Fatalf("buildFieldSelection failed: %v", err)
+	}
 	assert.Assert(t, result1.Field != nil)
 	assert.Equal(t, result1.Field.APIName, "Field1")
 	assert.Equal(t, result1.Field.ID, "1")
@@ -79,7 +81,10 @@ func TestBuildNestedFieldGroupsEdgeCases(t *testing.T) {
 	}
 	fieldNames2 := []string{"field1", "field2"}
 
-	result2 := connector.buildNestedFieldGroups(fieldNames2, watchFieldsMetadata2)
+	result2, err := buildFieldSelection(fieldNames2, watchFieldsMetadata2)
+	if err != nil {
+		t.Fatalf("buildFieldSelection failed: %v", err)
+	}
 	assert.Assert(t, result2.Group != nil)
 	assert.Equal(t, string(result2.GroupOperator), string(GroupOperatorOr))
 	assert.Equal(t, len(result2.Group), 2)
@@ -87,7 +92,10 @@ func TestBuildNestedFieldGroupsEdgeCases(t *testing.T) {
 	assert.Equal(t, result2.Group[1].Field.APIName, "Field2")
 
 	// Test with empty fields
-	result3 := connector.buildNestedFieldGroups([]string{}, map[string]map[string]any{})
+	result3, err := buildFieldSelection([]string{}, map[string]map[string]any{})
+	if err != nil {
+		t.Fatalf("buildFieldSelection failed: %v", err)
+	}
 	assert.Assert(t, result3.Field == nil)
 	assert.Assert(t, result3.Group == nil)
 }
