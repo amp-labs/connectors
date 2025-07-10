@@ -80,6 +80,7 @@ func main() {
 					"company",
 					"last_name",
 					"first_name",
+					"industry",
 				},
 			},
 			"Accounts": {
@@ -107,6 +108,8 @@ func main() {
 
 		return
 	}
+
+	time.Sleep(time.Minute * 3)
 
 	err = conn.DeleteSubscription(ctx, *updateResult)
 	if err != nil {

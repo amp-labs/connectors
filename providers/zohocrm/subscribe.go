@@ -494,7 +494,8 @@ func (c *Connector) getNotificationConditions(
 	}, nil
 }
 
-// according to Zoho CRM API requirements (max 2 objects per group).
+// according to Zoho CRM API requirements (max 2 objects per group). So we need to nest the fields
+// to subscribe for more fields.
 //
 //nolint:cyclop,funlen
 func buildFieldSelection(
