@@ -17,6 +17,10 @@ import (
 	"github.com/mitchellh/hashstructure"
 )
 
+const (
+	maxGroupSize = 2
+)
+
 var (
 	_ connectors.SubscribeConnector              = &Connector{}
 	_ connectors.SubscriptionMaintainerConnector = &Connector{}
@@ -399,7 +403,7 @@ func (c *Connector) getfieldsMetadata(ctx context.Context, moduleName string) (*
 // getNotificationConditions builds the notification conditions for the given event.
 // it fetches the field metadata for the given module and event to build the notification condition.
 //
-//nolint:cyclop,funlen
+//nolint:cyclop,funlen,gocognit
 func (c *Connector) getNotificationConditions(
 	ctx context.Context,
 	moduleMetadata map[string]any,
@@ -421,8 +425,11 @@ func (c *Connector) getNotificationConditions(
 
 	var err error
 
-	//nolint:forcetypeassert
-	moduleName := moduleMetadata["module_name"].(string) // module name is the official object name
+	//nolint:varnamelen
+	moduleName, ok := moduleMetadata["module_name"].(string)
+	if !ok {
+		return nil, errModuleNameNotString
+	}
 
 	if len(event.WatchFields) > 0 {
 		fieldMetadata, err = c.getfieldsMetadata(ctx, moduleName)
@@ -436,11 +443,14 @@ func (c *Connector) getNotificationConditions(
 	for _, field := range event.WatchFields {
 		found := false
 
-		for _, fieldMetadata := range fieldMetadata.Fields {
-			//nolint:forcetypeassert
-			// api_name is the official notation for `field`
-			if naming.PluralityAndCaseIgnoreEqual(fieldMetadata["api_name"].(string), field) {
-				watchFieldsMetadata[field] = fieldMetadata
+		for _, fm := range fieldMetadata.Fields {
+			apiName, ok := fm["api_name"].(string)
+			if !ok {
+				continue
+			}
+
+			if naming.PluralityAndCaseIgnoreEqual(apiName, field) {
+				watchFieldsMetadata[field] = fm
 				found = true
 
 				break
@@ -452,43 +462,163 @@ func (c *Connector) getNotificationConditions(
 		}
 	}
 
-	fieldGroups := make([]FieldGroup, 0)
-
-	//nolint:forcetypeassert
-	for fieldName, fieldMetadata := range watchFieldsMetadata {
-		fieldGroups = append(fieldGroups, FieldGroup{
-			Field: &Field{
-				APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
-
-				ID: fieldMetadata["id"].(string),
-			},
-		})
-	}
-
 	var fieldSelection FieldSelection
 
-	if len(fieldGroups) == 1 {
-		fieldSelection = FieldSelection{
-			Field: fieldGroups[0].Field,
+	switch len(watchFieldsMetadata) {
+	case 1:
+		for fieldName, fm := range watchFieldsMetadata {
+			id, ok := fm["id"].(string)
+			if !ok {
+				return nil, fmt.Errorf("%w: %s", errFieldIDNotString, fieldName)
+			}
+
+			fieldSelection = FieldSelection{
+				Field: &Field{
+					APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
+					ID:      id,
+				},
+			}
+
+			break
 		}
-	} else {
+	case maxGroupSize:
+		fieldGroups := make([]FieldGroup, 0)
+
+		for fieldName, fm := range watchFieldsMetadata {
+			id, ok := fm["id"].(string)
+			if !ok {
+				return nil, fmt.Errorf("%w: %s", errFieldIDNotString, fieldName)
+			}
+
+			fieldGroups = append(fieldGroups, FieldGroup{
+				Field: &Field{
+					APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
+					ID:      id,
+				},
+			})
+		}
+
 		fieldSelection = FieldSelection{
+			Group:         fieldGroups,
+			GroupOperator: GroupOperatorOr,
+		}
+	default:
+		fieldNames := make([]string, 0, len(watchFieldsMetadata))
+		for fieldName := range watchFieldsMetadata {
+			fieldNames = append(fieldNames, fieldName)
+		}
+
+		fieldSelection = c.buildNestedFieldGroups(fieldNames, watchFieldsMetadata)
+	}
+
+	apiName, ok := moduleMetadata["api_name"].(string)
+	if !ok {
+		return nil, errAPINameNotString
+	}
+
+	id, ok := moduleMetadata["id"].(string)
+	if !ok {
+		return nil, errIDNotString
+	}
+
+	return []NotificationCondition{
+		{
+			Type: "field_selection",
+			Module: Module{
+				APIName: apiName, // this is object name
+				Id:      id,      // this is object type id
+			},
+			FieldSelection: fieldSelection,
+		},
+	}, nil
+}
+
+func fieldNameToFieldGroup(fieldName string, fm map[string]any) (FieldGroup, error) {
+	id, ok := fm["id"].(string)
+	if !ok {
+		return FieldGroup{}, fmt.Errorf("%w: %s", errFieldIDNotString, fieldName)
+	}
+
+	return FieldGroup{
+		Field: &Field{
+			APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
+			ID:      id,
+		},
+	}, nil
+}
+
+// by creating pairs and nesting them with OR operators according to Zoho CRM API requirements.
+
+//nolint:funlen
+func (c *Connector) buildNestedFieldGroups(
+	fieldNames []string,
+	watchFieldsMetadata map[string]map[string]any,
+) FieldSelection {
+	if len(fieldNames) == 0 {
+		return FieldSelection{}
+	}
+
+	if len(fieldNames) == 1 {
+		fieldName := fieldNames[0]
+		fm := watchFieldsMetadata[fieldName]
+
+		id, ok := fm["id"].(string)
+		if !ok {
+			return FieldSelection{}
+		}
+
+		return FieldSelection{
+			Field: &Field{
+				APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
+				ID:      id,
+			},
+		}
+	}
+
+	if len(fieldNames) == maxGroupSize {
+		fieldGroups := make([]FieldGroup, 0)
+
+		for _, fieldName := range fieldNames {
+			fm := watchFieldsMetadata[fieldName]
+
+			fg, err := fieldNameToFieldGroup(fieldName, fm)
+			if err != nil {
+				return FieldSelection{}
+			}
+
+			fieldGroups = append(fieldGroups, fg)
+		}
+
+		return FieldSelection{
 			Group:         fieldGroups,
 			GroupOperator: GroupOperatorOr,
 		}
 	}
 
-	//nolint:forcetypeassert
-	return []NotificationCondition{
-		{
-			Type: "field_selection",
-			Module: Module{
-				APIName: moduleMetadata["api_name"].(string), // this is object name
-				Id:      moduleMetadata["id"].(string),       // this is object type id
-			},
-			FieldSelection: fieldSelection,
-		},
-	}, nil
+	firstField := fieldNames[0]
+	//nolint:varnamelen
+	fg, err := fieldNameToFieldGroup(firstField, watchFieldsMetadata[firstField])
+	if err != nil {
+		return FieldSelection{}
+	}
+
+	nestedSelection := c.buildNestedFieldGroups(fieldNames[1:], watchFieldsMetadata)
+
+	var nestedGroup FieldGroup
+
+	if nestedSelection.Field != nil {
+		nestedGroup = FieldGroup{Field: nestedSelection.Field}
+	} else {
+		nestedGroup = FieldGroup{
+			Group:         nestedSelection.Group,
+			GroupOperator: string(nestedSelection.GroupOperator),
+		}
+	}
+
+	return FieldSelection{
+		Group:         []FieldGroup{fg, nestedGroup},
+		GroupOperator: GroupOperatorOr,
+	}
 }
 
 func (c *Connector) getSubscribeURL() (*urlbuilder.URL, error) {

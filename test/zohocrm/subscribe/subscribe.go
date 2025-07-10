@@ -47,6 +47,8 @@ func main() {
 				},
 				WatchFields: []string{
 					"phone",
+					"last_name",
+					"first_name",
 				},
 			},
 		},
@@ -77,6 +79,8 @@ func main() {
 				WatchFields: []string{
 					"phone",
 					"company",
+					"last_name",
+					"first_name",
 				},
 			},
 			"Accounts": {
