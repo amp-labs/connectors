@@ -19,6 +19,7 @@ func init() {
 				ScopesField: "scope",
 			},
 		},
+		PostAuthInfoNeeded: true,
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -39,6 +40,14 @@ func init() {
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1752052285/media/xero.com_1752052283.svg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1752052285/media/xero.com_1752052283.svg",
+			},
+		},
+
+		Metadata: &ProviderMetadata{
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "Xero-Tenant-Id",
+				},
 			},
 		},
 	})
