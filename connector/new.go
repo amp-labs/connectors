@@ -34,6 +34,7 @@ import (
 	"github.com/amp-labs/connectors/providers/github"
 	"github.com/amp-labs/connectors/providers/gitlab"
 	"github.com/amp-labs/connectors/providers/gong"
+	"github.com/amp-labs/connectors/providers/google"
 	"github.com/amp-labs/connectors/providers/gorgias"
 	"github.com/amp-labs/connectors/providers/groove"
 	"github.com/amp-labs/connectors/providers/helpscoutmailbox"
@@ -106,6 +107,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.GitLab:              wrapper(newGitLabConnector),
 	providers.Github:              wrapper(newGithubConnector),
 	providers.Gong:                wrapper(newGongConnector),
+	providers.Google:              wrapper(newGoogleConnector),
 	providers.Gorgias:             wrapper(newGorgiasConnector),
 	providers.Groove:              wrapper(newGrooveConnector),
 	providers.HelpScoutMailbox:    wrapper(newHelpScoutMailboxConnector),
@@ -124,9 +126,9 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Mixmax:              wrapper(newMixmaxConnector),
 	providers.Monday:              wrapper(newMondayConnector),
 	providers.Outreach:            wrapper(newOutreachConnector),
+	providers.Pinterest:           wrapper(newPinterestConnector),
 	providers.Pipedrive:           wrapper(newPipedriveConnector),
 	providers.Pipeliner:           wrapper(newPipelinerConnector),
-	providers.Pinterest:           wrapper(newPinterestConnector),
 	providers.Podium:              wrapper(newPodiumConnector),
 	providers.Salesforce:          wrapper(newSalesforceConnector),
 	providers.Salesloft:           wrapper(newSalesloftConnector),
@@ -562,4 +564,10 @@ func newFirefliesConnector(
 	params common.ConnectorParams,
 ) (*fireflies.Connector, error) {
 	return fireflies.NewConnector(params)
+}
+
+func newGoogleConnector(
+	params common.ConnectorParams,
+) (*google.Connector, error) {
+	return google.NewConnector(params)
 }
