@@ -59,7 +59,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				},
 				Errors: map[string]error{
 					"mailboxes": mockutils.ExpectedSubsetErrors{
-						ErrMetadataNotFound,
+						common.ErrRetryable,
 					},
 				},
 			},
