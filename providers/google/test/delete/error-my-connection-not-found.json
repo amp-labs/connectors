@@ -1,0 +1,18 @@
+{
+  "error": {
+    "code": 404,
+    "message": "<eye3 title='NOT_FOUND'/> generic::NOT_FOUND: Contact person resources are not found.",
+    "status": "NOT_FOUND",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.BadRequest",
+        "fieldViolations": [
+          {
+            "field": "resourceNames[0]",
+            "description": "Resource not found."
+          }
+        ]
+      }
+    ]
+  }
+}

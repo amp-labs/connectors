@@ -1,0 +1,26 @@
+{
+  "contactGroups": [
+    {
+      "resourceName": "contactGroups/myContacts",
+      "name": "myContacts",
+      "formattedName": "My Contacts"
+    },
+    {
+      "resourceName": "contactGroups/chatBuddies",
+      "name": "chatBuddies",
+      "formattedName": "Chat contacts"
+    },
+    {
+      "resourceName": "contactGroups/all",
+      "name": "all",
+      "formattedName": "All Contacts"
+    },
+    {
+      "resourceName": "contactGroups/blocked",
+      "name": "blocked",
+      "formattedName": "Blocked"
+    }
+  ],
+  "totalItems": 8,
+  "nextSyncToken": "ELzB2sGBzosD"
+}
