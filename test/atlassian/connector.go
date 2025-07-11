@@ -44,36 +44,6 @@ func makeAtlassianConnector(ctx context.Context, module common.ModuleID) *atlass
 	return conn
 }
 
-// GetAtlassianConnectConnector
-// Context:
-// https://developer.atlassian.com/cloud/jira/platform/getting-started-with-connect/
-func GetAtlassianConnectConnector(ctx context.Context, claims map[string]any) *atlassian.Connector {
-	filePath := credscanning.LoadPath(providers.Atlassian)
-	reader := utils.MustCreateProvCredJSON(filePath, true)
-
-	opts := []common.HeaderAuthClientOption{
-		common.WithHeaderClient(http.DefaultClient),
-		common.WithDynamicHeaders(atlassian.JwtTokenGenerator(claims, reader.Get(credscanning.Fields.Secret))),
-	}
-
-	client, err := common.NewHeaderAuthHTTPClient(ctx, opts...)
-	if err != nil {
-		panic(err)
-	}
-
-	conn, err := atlassian.NewConnector(
-		atlassian.WithAuthenticatedClient(client),
-		atlassian.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
-		atlassian.WithModule(providers.ModuleAtlassianJiraConnect),
-	)
-	if err != nil {
-		utils.Fail("error creating connector", "error", err)
-		panic(err)
-	}
-
-	return conn
-}
-
 func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 	cfg := &oauth2.Config{
 		ClientID:     reader.Get(credscanning.Fields.ClientId),
