@@ -16,7 +16,10 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	}...,
 )
 
-var ErrObjNotFound = errors.New("object not found")
+var (
+	ErrObjNotFound    = errors.New("object not found")
+	DeleteResponseKey = "sub_request_error_reason" // nolint:gochecknoglobals
+)
 
 type ResponseError struct {
 	RequestStatus  string `json:"request_status"`  //nolint:tagliatelle
