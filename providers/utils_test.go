@@ -229,6 +229,8 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				DisplayName: "Capsule",
 				Support: Support{
 					Proxy: true,
+					Read:  true,
+					Write: true,
 				},
 			},
 		},
@@ -312,8 +314,8 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				DisplayName: "Capsule",
 				Support: Support{
 					Proxy: true,
-					Read:  false,
-					Write: false,
+					Read:  true,
+					Write: true,
 				},
 			},
 			// expectedErr: common.ErrMissingModule,
@@ -448,6 +450,8 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				DisplayName: "Capsule",
 				Support: Support{
 					Proxy: true,
+					Read:  true,
+					Write: true,
 				},
 			},
 		},
