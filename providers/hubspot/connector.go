@@ -41,7 +41,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	conn.setBaseURL(providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
 
-	conn.moduleID, conn.moduleInfo = providerInfo.ReadModuleInfo(params.Module.Selection.ID)
+	module := providerInfo.ReadModule(params.Module.Selection.ID)
+	conn.moduleID, conn.moduleInfo = module.ID, &module.ModuleInfo
 
 	return conn, nil
 }

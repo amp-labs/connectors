@@ -52,7 +52,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	conn.moduleID, conn.moduleInfo = conn.ProviderInfo.ReadModuleInfo(params.Module.Selection.ID)
+	module := conn.ProviderInfo.ReadModule(params.Module.Selection.ID)
+	conn.moduleID, conn.moduleInfo = module.ID, &module.ModuleInfo
 
 	// connector and its client must mirror base url and provide its own error parser
 	conn.setBaseURL(conn.BaseURL)

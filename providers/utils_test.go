@@ -185,7 +185,7 @@ func TestReadInfo(t *testing.T) { // nolint:funlen
 	}
 }
 
-func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
+func TestReadModule(t *testing.T) { // nolint:funlen,maintidx
 	t.Parallel()
 
 	type inType struct {
@@ -197,7 +197,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 	tests := []struct {
 		name     string
 		input    inType
-		expected *ModuleInfo
+		expected *Module
 		// TODO this method should check: `expectedErr error`
 	}{
 		// Root for providers that have no modules.
@@ -208,13 +208,16 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				vars:     createCatalogVars("workspace", "london"),
 				moduleID: common.ModuleRoot,
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://london.api.crm.dynamics.com/api/data",
-				DisplayName: "Microsoft Dynamics CRM",
-				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
+			expected: &Module{
+				common.ModuleRoot,
+				ModuleInfo{
+					BaseURL:     "https://london.api.crm.dynamics.com/api/data",
+					DisplayName: "Microsoft Dynamics CRM",
+					Support: Support{
+						Proxy: true,
+						Read:  true,
+						Write: true,
+					},
 				},
 			},
 		},
@@ -224,11 +227,14 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				provider: Capsule,
 				moduleID: common.ModuleRoot,
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.capsulecrm.com/api",
-				DisplayName: "Capsule",
-				Support: Support{
-					Proxy: true,
+			expected: &Module{
+				common.ModuleRoot,
+				ModuleInfo{
+					BaseURL:     "https://api.capsulecrm.com/api",
+					DisplayName: "Capsule",
+					Support: Support{
+						Proxy: true,
+					},
 				},
 			},
 		},
@@ -239,13 +245,15 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				provider: Hubspot,
 				moduleID: common.ModuleRoot,
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.hubapi.com",
-				DisplayName: "HubSpot",
-				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
+			expected: &Module{
+				common.ModuleRoot, ModuleInfo{
+					BaseURL:     "https://api.hubapi.com",
+					DisplayName: "HubSpot",
+					Support: Support{
+						Proxy: true,
+						Read:  true,
+						Write: true,
+					},
 				},
 			},
 		},
@@ -256,13 +264,16 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				vars:     createCatalogVars("workspace", "london"),
 				moduleID: common.ModuleRoot,
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://london.mktorest.com",
-				DisplayName: "Marketo",
-				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
+			expected: &Module{
+				common.ModuleRoot,
+				ModuleInfo{
+					BaseURL:     "https://london.mktorest.com",
+					DisplayName: "Marketo",
+					Support: Support{
+						Proxy: true,
+						Read:  true,
+						Write: true,
+					},
 				},
 			},
 		},
@@ -272,13 +283,35 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				provider: Zoom,
 				moduleID: common.ModuleRoot,
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.zoom.us",
-				DisplayName: "Zoom",
-				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
+			expected: &Module{
+				common.ModuleRoot,
+				ModuleInfo{
+					BaseURL:     "https://api.zoom.us",
+					DisplayName: "Zoom",
+					Support: Support{
+						Proxy: true,
+						Read:  true,
+						Write: true,
+					},
+				},
+			},
+		},
+		{
+			name: "Google root module",
+			input: inType{
+				provider: Google,
+				moduleID: common.ModuleRoot,
+			},
+			expected: &Module{
+				common.ModuleRoot,
+				ModuleInfo{
+					BaseURL:     "https://www.googleapis.com",
+					DisplayName: "Google",
+					Support: Support{
+						Proxy: true,
+						Read:  false,
+						Write: false,
+					},
 				},
 			},
 		},
@@ -290,13 +323,16 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				vars:     createCatalogVars("workspace", "london"),
 				moduleID: "random-module-name",
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://london.api.crm.dynamics.com/api/data",
-				DisplayName: "Microsoft Dynamics CRM",
-				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
+			expected: &Module{
+				common.ModuleRoot,
+				ModuleInfo{
+					BaseURL:     "https://london.api.crm.dynamics.com/api/data",
+					DisplayName: "Microsoft Dynamics CRM",
+					Support: Support{
+						Proxy: true,
+						Read:  true,
+						Write: true,
+					},
 				},
 			},
 			// expectedErr: common.ErrMissingModule,
@@ -307,13 +343,16 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				provider: Capsule,
 				moduleID: "random-module-name",
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.capsulecrm.com/api",
-				DisplayName: "Capsule",
-				Support: Support{
-					Proxy: true,
-					Read:  false,
-					Write: false,
+			expected: &Module{
+				common.ModuleRoot,
+				ModuleInfo{
+					BaseURL:     "https://api.capsulecrm.com/api",
+					DisplayName: "Capsule",
+					Support: Support{
+						Proxy: true,
+						Read:  false,
+						Write: false,
+					},
 				},
 			},
 			// expectedErr: common.ErrMissingModule,
@@ -325,12 +364,15 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				provider: Atlassian,
 				moduleID: "random-module-name",
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
-				DisplayName: "Atlassian Jira",
-				Support: Support{
-					Read:  true,
-					Write: true,
+			expected: &Module{
+				ModuleAtlassianJira,
+				ModuleInfo{
+					BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
+					DisplayName: "Atlassian Jira",
+					Support: Support{
+						Read:  true,
+						Write: true,
+					},
 				},
 			},
 		},
@@ -340,12 +382,15 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				provider: Hubspot,
 				moduleID: "random-module-name",
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.hubapi.com/crm/v3",
-				DisplayName: "HubSpot CRM",
-				Support: Support{
-					Read:  true,
-					Write: true,
+			expected: &Module{
+				ModuleHubspotCRM,
+				ModuleInfo{
+					BaseURL:     "https://api.hubapi.com/crm/v3",
+					DisplayName: "HubSpot CRM",
+					Support: Support{
+						Read:  true,
+						Write: true,
+					},
 				},
 			},
 		},
@@ -356,20 +401,49 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				vars:     createCatalogVars("workspace", "london"),
 				moduleID: "random-module-name",
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://london.mktorest.com",
-				DisplayName: "Marketo",
-				Support: Support{
-					BulkWrite: BulkWriteSupport{
-						Insert: false,
-						Update: false,
-						Upsert: false,
-						Delete: false,
+			expected: &Module{
+				common.ModuleRoot,
+				ModuleInfo{
+					BaseURL:     "https://london.mktorest.com",
+					DisplayName: "Marketo",
+					Support: Support{
+						BulkWrite: BulkWriteSupport{
+							Insert: false,
+							Update: false,
+							Upsert: false,
+							Delete: false,
+						},
+						Proxy:     true,
+						Read:      true,
+						Subscribe: false,
+						Write:     true,
 					},
-					Proxy:     true,
-					Read:      true,
-					Subscribe: false,
-					Write:     true,
+				},
+			},
+		},
+		{
+			name: "Google unknown module",
+			input: inType{
+				provider: Google,
+				moduleID: "random-module-name",
+			},
+			expected: &Module{
+				ModuleGoogleCalendar,
+				ModuleInfo{
+					BaseURL:     "https://www.googleapis.com/calendar",
+					DisplayName: "Google Calendar",
+					Support: Support{
+						BulkWrite: BulkWriteSupport{
+							Insert: false,
+							Update: false,
+							Upsert: false,
+							Delete: false,
+						},
+						Proxy:     false,
+						Read:      true,
+						Subscribe: false,
+						Write:     false,
+					},
 				},
 			},
 		},
@@ -380,12 +454,15 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				provider: Atlassian,
 				moduleID: ModuleAtlassianJira,
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
-				DisplayName: "Atlassian Jira",
-				Support: Support{
-					Read:  true,
-					Write: true,
+			expected: &Module{
+				ModuleAtlassianJira,
+				ModuleInfo{
+					BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
+					DisplayName: "Atlassian Jira",
+					Support: Support{
+						Read:  true,
+						Write: true,
+					},
 				},
 			},
 		},
@@ -395,12 +472,15 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				provider: Atlassian,
 				moduleID: ModuleAtlassianJiraConnect,
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api",
-				DisplayName: "Atlassian Connect",
-				Support: Support{
-					Read:  true,
-					Write: true,
+			expected: &Module{
+				ModuleAtlassianJiraConnect,
+				ModuleInfo{
+					BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api",
+					DisplayName: "Atlassian Connect",
+					Support: Support{
+						Read:  true,
+						Write: true,
+					},
 				},
 			},
 		},
@@ -410,12 +490,15 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				provider: Hubspot,
 				moduleID: ModuleHubspotCRM,
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.hubapi.com/crm/v3",
-				DisplayName: "HubSpot CRM",
-				Support: Support{
-					Read:  true,
-					Write: true,
+			expected: &Module{
+				ModuleHubspotCRM,
+				ModuleInfo{
+					BaseURL:     "https://api.hubapi.com/crm/v3",
+					DisplayName: "HubSpot CRM",
+					Support: Support{
+						Read:  true,
+						Write: true,
+					},
 				},
 			},
 		},
@@ -427,13 +510,16 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				vars:     createCatalogVars("workspace", "london"),
 				moduleID: "",
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://london.api.crm.dynamics.com/api/data",
-				DisplayName: "Microsoft Dynamics CRM",
-				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
+			expected: &Module{
+				common.ModuleRoot,
+				ModuleInfo{
+					BaseURL:     "https://london.api.crm.dynamics.com/api/data",
+					DisplayName: "Microsoft Dynamics CRM",
+					Support: Support{
+						Proxy: true,
+						Read:  true,
+						Write: true,
+					},
 				},
 			},
 		},
@@ -443,11 +529,14 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				provider: Capsule,
 				moduleID: "",
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.capsulecrm.com/api",
-				DisplayName: "Capsule",
-				Support: Support{
-					Proxy: true,
+			expected: &Module{
+				common.ModuleRoot,
+				ModuleInfo{
+					BaseURL:     "https://api.capsulecrm.com/api",
+					DisplayName: "Capsule",
+					Support: Support{
+						Proxy: true,
+					},
 				},
 			},
 		},
@@ -459,20 +548,49 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				vars:     createCatalogVars("workspace", "london"),
 				moduleID: "",
 			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://london.mktorest.com",
-				DisplayName: "Marketo",
-				Support: Support{
-					BulkWrite: BulkWriteSupport{
-						Insert: false,
-						Update: false,
-						Upsert: false,
-						Delete: false,
+			expected: &Module{
+				common.ModuleRoot,
+				ModuleInfo{
+					BaseURL:     "https://london.mktorest.com",
+					DisplayName: "Marketo",
+					Support: Support{
+						BulkWrite: BulkWriteSupport{
+							Insert: false,
+							Update: false,
+							Upsert: false,
+							Delete: false,
+						},
+						Proxy:     true,
+						Read:      true,
+						Subscribe: false,
+						Write:     true,
 					},
-					Proxy:     true,
-					Read:      true,
-					Subscribe: false,
-					Write:     true,
+				},
+			},
+		},
+		{
+			name: "Google fallback to default module",
+			input: inType{
+				provider: Google,
+				moduleID: "",
+			},
+			expected: &Module{
+				ModuleGoogleCalendar,
+				ModuleInfo{
+					BaseURL:     "https://www.googleapis.com/calendar",
+					DisplayName: "Google Calendar",
+					Support: Support{
+						BulkWrite: BulkWriteSupport{
+							Insert: false,
+							Update: false,
+							Upsert: false,
+							Delete: false,
+						},
+						Proxy:     false,
+						Read:      true,
+						Subscribe: false,
+						Write:     false,
+					},
 				},
 			},
 		},
@@ -488,7 +606,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				t.Fatalf("%s: bad test, failed to read info: (%v)", tt.name, err)
 			}
 
-			_, output := info.ReadModuleInfo(tt.input.moduleID)
+			output := info.ReadModule(tt.input.moduleID)
 			testutils.CheckOutput(t, tt.name, tt.expected, output)
 		})
 	}

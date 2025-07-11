@@ -192,9 +192,14 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 	return val, ok
 }
 
-// ReadModuleInfo finds information about the module.
+type Module struct {
+	ID common.ModuleID
+	ModuleInfo
+}
+
+// ReadModule finds information about the module.
 // If module is not found fallbacks to the default.
-func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) (common.ModuleID, *ModuleInfo) {
+func (i *ProviderInfo) ReadModule(moduleID common.ModuleID) *Module {
 	// Empty value fallback to the default value defined in ProviderInfo.
 	if moduleID == "" {
 		moduleID = i.defaultModuleOrRoot()
@@ -218,18 +223,18 @@ func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) (common.ModuleID
 		}
 
 		// Requesting root when no modules exist is allowed.
-		return common.ModuleRoot, &rootModule
+		return &Module{common.ModuleRoot, rootModule}
 	}
 
 	// Root module is providerInfo derived module.
 	if moduleID == common.ModuleRoot {
-		return common.ModuleRoot, &rootModule
+		return &Module{common.ModuleRoot, rootModule}
 	}
 
 	// Find module.
 	module, ok := (*i.Modules)[moduleID] // nolint:varnamelen
 	if ok {
-		return moduleID, &module
+		return &Module{moduleID, module}
 	}
 
 	// Invalid module requested.
@@ -240,7 +245,7 @@ func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) (common.ModuleID
 	fallbackModule := i.defaultModuleOrRoot()
 
 	if fallbackModule == common.ModuleRoot {
-		return common.ModuleRoot, &rootModule
+		return &Module{common.ModuleRoot, rootModule}
 	}
 
 	module, ok = (*i.Modules)[fallbackModule]
@@ -248,10 +253,10 @@ func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) (common.ModuleID
 		slog.Warn("finding fallback module failed",
 			"provider", i.DisplayName, "module", fallbackModule)
 
-		return common.ModuleRoot, &rootModule
+		return &Module{common.ModuleRoot, rootModule}
 	}
 
-	return fallbackModule, &module
+	return &Module{fallbackModule, module}
 }
 
 func (i *ProviderInfo) hasModules() bool {
