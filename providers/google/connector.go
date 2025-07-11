@@ -65,3 +65,19 @@ func (c Connector) Read(ctx context.Context, params connectors.ReadParams) (*con
 
 	return nil, common.ErrNotImplemented
 }
+
+func (c Connector) Write(ctx context.Context, params connectors.WriteParams) (*connectors.WriteResult, error) {
+	if c.Calendar != nil {
+		return c.Calendar.Write(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
+	if c.Calendar != nil {
+		return c.Calendar.Delete(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
