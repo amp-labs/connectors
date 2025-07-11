@@ -32,6 +32,10 @@ var (
 	errInconsistentChannelIdsMismatch = errors.New("all events must have the same channel id")
 	errChannelIdMismatch              = errors.New("channel id does not match provided unique ref")
 	errInvalidDuration                = errors.New("duration cannot be greater than 1 week")
+	errModuleNameNotString            = errors.New("module_name is not a string")
+	errAPINameNotString               = errors.New("api_name is not a string")
+	errIDNotString                    = errors.New("id is not a string")
+	errFieldIDNotString               = errors.New("field id is not a string")
 )
 
 // uniqueFields maps the fields to the uniquely required fields.
