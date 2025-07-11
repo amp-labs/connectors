@@ -44,7 +44,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 
 func (c Connector) setUnitTestBaseURL(url string) {
 	if c.Calendar != nil {
-		c.Calendar.SetUnitTestBaseURL(url)
+		c.Calendar.SetUnitTestBaseURL(url, url)
 	}
 }
 

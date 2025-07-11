@@ -48,10 +48,10 @@ func (t *Transport) SetBaseURL(newURL string) {
 	t.json.HTTPClient.Base = newURL
 }
 
-func (t *Transport) SetUnitTestBaseURL(newURL string) {
-	t.ProviderContext.providerInfo.BaseURL = newURL
-	t.ProviderContext.moduleInfo.BaseURL = newURL
-	t.json.HTTPClient.Base = newURL
+func (t *Transport) SetUnitTestBaseURL(rootURL, moduleURL string) {
+	t.providerInfo.BaseURL = rootURL
+	t.moduleInfo.BaseURL = moduleURL
+	t.json.HTTPClient.Base = rootURL
 }
 
 func (t *Transport) SetErrorHandler(handler common.ErrorHandler) {
