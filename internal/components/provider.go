@@ -25,7 +25,6 @@ func NewProviderContext(
 ) (*ProviderContext, error) {
 	pctx := &ProviderContext{
 		provider: provider,
-		moduleID: module,
 	}
 
 	if metadata == nil {
@@ -41,7 +40,7 @@ func NewProviderContext(
 		return nil, err
 	}
 
-	pctx.moduleInfo = pctx.providerInfo.ReadModuleInfo(module)
+	pctx.moduleID, pctx.moduleInfo = pctx.providerInfo.ReadModuleInfo(module)
 
 	return pctx, nil
 }

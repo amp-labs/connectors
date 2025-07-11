@@ -36,13 +36,12 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: params.Client.Caller,
 		},
-		moduleID: params.Module.Selection.ID,
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
 
-	conn.moduleInfo = providerInfo.ReadModuleInfo(conn.moduleID)
+	conn.moduleID, conn.moduleInfo = providerInfo.ReadModuleInfo(params.Module.Selection.ID)
 
 	return conn, nil
 }

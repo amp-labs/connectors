@@ -488,7 +488,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				t.Fatalf("%s: bad test, failed to read info: (%v)", tt.name, err)
 			}
 
-			output := info.ReadModuleInfo(tt.input.moduleID)
+			_, output := info.ReadModuleInfo(tt.input.moduleID)
 			testutils.CheckOutput(t, tt.name, tt.expected, output)
 		})
 	}

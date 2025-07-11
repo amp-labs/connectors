@@ -42,7 +42,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 			HTTPClient: httpClient,
 		},
 		workspace: params.Workspace.Name,
-		moduleID:  params.Module.Selection.ID,
 	}
 
 	// Convert metadata map to model.
@@ -53,7 +52,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	conn.moduleInfo = conn.ProviderInfo.ReadModuleInfo(conn.moduleID)
+	conn.moduleID, conn.moduleInfo = conn.ProviderInfo.ReadModuleInfo(params.Module.Selection.ID)
 
 	// connector and its client must mirror base url and provide its own error parser
 	conn.setBaseURL(conn.BaseURL)
