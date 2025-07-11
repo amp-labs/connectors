@@ -18,7 +18,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	url, err := c.getJiraRestApiURL("issue")
+	url, err := c.getModuleURL("issue")
 	if err != nil {
 		return nil, err
 	}

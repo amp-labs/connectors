@@ -100,6 +100,10 @@ func (u *URL) Path() string {
 	return u.delegate.Path
 }
 
+func (u *URL) Origin() string {
+	return u.delegate.Scheme + "://" + u.delegate.Host
+}
+
 func (u *URL) String() string {
 	// Everything stays the same
 	// The only thing that we alter in the delegate's query params
