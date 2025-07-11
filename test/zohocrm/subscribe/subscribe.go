@@ -47,7 +47,8 @@ func main() {
 				},
 				WatchFields: []string{
 					"phone",
-					"last_name",
+					"Last_Name",
+					"First_Name",
 				},
 			},
 		},
@@ -78,8 +79,8 @@ func main() {
 				WatchFields: []string{
 					"phone",
 					"company",
-					"last_name",
-					"first_name",
+					"Last_Name",
+					"First_Name",
 					"industry",
 				},
 			},
@@ -108,8 +109,6 @@ func main() {
 
 		return
 	}
-
-	time.Sleep(time.Minute * 3)
 
 	err = conn.DeleteSubscription(ctx, *updateResult)
 	if err != nil {

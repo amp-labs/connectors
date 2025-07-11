@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -520,7 +521,7 @@ func buildFieldSelection(
 
 		result = FieldSelection{
 			Field: &Field{
-				APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
+				APIName: formatAPIName(fieldName),
 				ID:      id,
 			},
 		}
@@ -537,7 +538,7 @@ func buildFieldSelection(
 
 			fieldGroups = append(fieldGroups, FieldGroup{
 				Field: &Field{
-					APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
+					APIName: formatAPIName(fieldName),
 					ID:      id,
 				},
 			})
@@ -559,7 +560,7 @@ func buildFieldSelection(
 
 		firstGroup := FieldGroup{
 			Field: &Field{
-				APIName: naming.CapitalizeFirstLetterEveryWord(firstField),
+				APIName: formatAPIName(firstField),
 				ID:      id,
 			},
 		}
@@ -681,4 +682,14 @@ func hashString(uniqueRef string) (string, error) {
 
 	//nolint:gosec
 	return strconv.FormatInt(int64(hashedChannelID), 10), nil
+}
+
+func formatAPIName(apiName string) string {
+	parts := strings.Split(apiName, "_")
+
+	for i, part := range parts {
+		parts[i] = naming.CapitalizeFirstLetterEveryWord(part)
+	}
+
+	return strings.Join(parts, "_")
 }
