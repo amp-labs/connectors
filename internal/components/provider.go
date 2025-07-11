@@ -19,13 +19,12 @@ type ProviderContext struct {
 
 func NewProviderContext(
 	provider providers.Provider,
-	module common.ModuleID,
+	moduleID common.ModuleID,
 	workspace string,
 	metadata map[string]string,
 ) (*ProviderContext, error) {
 	pctx := &ProviderContext{
 		provider: provider,
-		moduleID: module,
 	}
 
 	if metadata == nil {
@@ -41,7 +40,8 @@ func NewProviderContext(
 		return nil, err
 	}
 
-	pctx.moduleInfo = pctx.providerInfo.ReadModuleInfo(module)
+	module := pctx.providerInfo.ReadModule(moduleID)
+	pctx.moduleID, pctx.moduleInfo = module.ID, &module.ModuleInfo
 
 	return pctx, nil
 }

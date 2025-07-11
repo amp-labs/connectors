@@ -50,7 +50,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		XMLClient: &common.XMLHTTPClient{
 			HTTPClient: httpClient,
 		},
-		moduleID: params.Module.Selection.ID,
 	}
 
 	conn.providerInfo, err = providers.ReadInfo(conn.Provider(), &params.Workspace)
@@ -58,7 +57,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
+	module := conn.providerInfo.ReadModule(params.Module.Selection.ID)
+	conn.moduleID, conn.moduleInfo = module.ID, &module.ModuleInfo
 
 	// Proxy actions use the base URL set on the HTTP client, so we need to set it here.
 	conn.SetBaseURL(conn.moduleInfo.BaseURL)

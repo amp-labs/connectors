@@ -37,7 +37,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	conn, err := components.Initialize(providers.AWS, params,
 		func(connector *components.Connector) (*Connector, error) {
 			var expectedMetadataKeys []string
-			if params.Module == providers.ModuleAWSIdentityCenter {
+			if connector.Module() == providers.ModuleAWSIdentityCenter {
 				expectedMetadataKeys = []string{"region", "identityStoreId", "instanceARN"}
 			}
 

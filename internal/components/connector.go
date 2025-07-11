@@ -32,11 +32,6 @@ func Initialize[T any](
 		conn = nil
 	})
 
-	// Default module is always the root module
-	if params.Module == "" {
-		params.Module = common.ModuleRoot
-	}
-
 	transport, err := NewTransport(provider, params)
 	if err != nil {
 		return nil, err
