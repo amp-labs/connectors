@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -167,6 +168,10 @@ func (c *Connector) getDataMarshaller(
 		}
 
 		if len(associatedObjects) > 0 {
+			logging.Logger(ctx).Debug("fetching associations",
+				"object", objName,
+				"associatedObjects", associatedObjects)
+
 			if err := c.fillAssociations(ctx, objName, &data, associatedObjects); err != nil {
 				return nil, err
 			}
