@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -42,9 +43,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{
 				ObjectName: "users", Fields: connectors.Fields("id", "email"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseUsersFirstPage),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/users"),
+				Then:  mockserver.Response(http.StatusOK, responseUsersFirstPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -71,9 +73,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{
 				ObjectName: "users", Fields: connectors.Fields("id", "email"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseUsersSecondPage),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/users"),
+				Then:  mockserver.Response(http.StatusOK, responseUsersSecondPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -99,9 +102,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{
 				ObjectName: "archive_files", Fields: connectors.Fields("id", "topic"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseArchiveFilesFirstPage),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/archive_files"),
+				Then:  mockserver.Response(http.StatusOK, responseArchiveFilesFirstPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -128,9 +132,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{
 				ObjectName: "archive_files", Fields: connectors.Fields("id", "topic"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseArchiveFilesSecondPage),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/archive_files"),
+				Then:  mockserver.Response(http.StatusOK, responseArchiveFilesSecondPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{

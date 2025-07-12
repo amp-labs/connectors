@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -31,9 +32,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all lists",
 			Input: common.ReadParams{ObjectName: "lists", Fields: connectors.Fields("")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseLists),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/lists"),
+				Then:  mockserver.Response(http.StatusOK, responseLists),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
@@ -57,9 +59,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all workspace members",
 			Input: common.ReadParams{ObjectName: "workspace_members", Fields: connectors.Fields("")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseWorkspace),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/workspace_members"),
+				Then:  mockserver.Response(http.StatusOK, responseWorkspace),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,

@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -56,9 +57,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				ObjectName: "sequences",
 				Fields:     connectors.Fields("id", "name", "archived"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusOK, string(sequencesResponse)),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v1/emailer_campaigns/search"),
+				Then:  mockserver.ResponseString(http.StatusOK, string(sequencesResponse)),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
