@@ -22,7 +22,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		err error
 	)
 
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
+	path, err := metadata.Schemas.FindURLPath(c.Module(), params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
+	path, err := metadata.Schemas.FindURLPath(c.Module(), params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

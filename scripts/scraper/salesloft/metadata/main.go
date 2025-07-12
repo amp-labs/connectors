@@ -136,7 +136,7 @@ func createSchemas() {
 	}
 
 	// Finalized save.
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(metadata.FileManager.FlushSchemas(schemas))
 }
 
 func createQueryParamStats() {

@@ -10,7 +10,7 @@ import (
 const apiVersion = "v3.1"
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(common.ModuleRoot, objectName)
+	path, err := metadata.Schemas.FindURLPath(common.ModuleRoot, objectName)
 	if err != nil {
 		// It is possible that an object is custom.
 		// Custom objects support Search which allows incremental reading.

@@ -2,11 +2,11 @@
   "modules": {
     "root": {
       "id": "root",
-      "path": "/v",
+      "path": "",
       "objects": {
         "campaigns": {
           "displayName": "Campaigns",
-          "path": "2/campaigns.json",
+          "path": "/v2/campaigns.json",
           "responseKey": "results",
           "fields": {
             "archived": {
@@ -73,7 +73,7 @@
         },
         "catalogs": {
           "displayName": "Catalogs",
-          "path": "1/catalogs",
+          "path": "/v1/catalogs",
           "responseKey": "catalogs",
           "fields": {
             "access_key": {
@@ -345,7 +345,7 @@
         },
         "email_templates": {
           "displayName": "Email Templates",
-          "path": "1/email_templates.json",
+          "path": "/v1/email_templates.json",
           "responseKey": "results",
           "fields": {
             "author": {
@@ -382,7 +382,7 @@
         },
         "external_fetches": {
           "displayName": "External Fetches",
-          "path": "1/external_fetches.json",
+          "path": "/v1/external_fetches.json",
           "responseKey": "results",
           "fields": {
             "author": {
@@ -419,7 +419,7 @@
         },
         "onsite_slots": {
           "displayName": "Onsite Slots",
-          "path": "1/onsite_slots.json",
+          "path": "/v1/onsite_slots.json",
           "responseKey": "results",
           "fields": {
             "format": {
@@ -441,7 +441,7 @@
         },
         "push_templates": {
           "displayName": "Push Templates",
-          "path": "1/push_templates.json",
+          "path": "/v1/push_templates.json",
           "responseKey": "results",
           "fields": {
             "author": {
@@ -478,7 +478,7 @@
         },
         "seed_lists": {
           "displayName": "Seed Lists",
-          "path": "1/custom_user_lists/seed_lists",
+          "path": "/v1/custom_user_lists/seed_lists",
           "responseKey": "",
           "fields": {
             "account_id": {
@@ -575,7 +575,7 @@
         },
         "segments/list": {
           "displayName": "Segments",
-          "path": "1/segments/list",
+          "path": "/v1/segments/list",
           "responseKey": "",
           "fields": {
             "approxusers": {
@@ -642,7 +642,7 @@
         },
         "sms_templates": {
           "displayName": "Sms Templates",
-          "path": "1/sms_templates.json",
+          "path": "/v1/sms_templates.json",
           "responseKey": "results",
           "fields": {
             "archived": {
@@ -684,7 +684,7 @@
         },
         "tag_contexts/list": {
           "displayName": "Tag Contexts",
-          "path": "1/tag_contexts/list",
+          "path": "/v1/tag_contexts/list",
           "responseKey": "",
           "fields": {
             "account_id": {

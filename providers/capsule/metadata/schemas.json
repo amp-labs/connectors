@@ -2,7 +2,7 @@
   "modules": {
     "root": {
       "id": "root",
-      "path": "/v2",
+      "path": "",
       "objects": {
         "activitytypes": {
           "displayName": "Activity Types",

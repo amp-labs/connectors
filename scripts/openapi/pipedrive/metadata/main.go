@@ -107,7 +107,7 @@ func main() {
 		}
 	}
 
-	if err := metadata.FileManager.SaveSchemas(schemas); err != nil {
+	if err := metadata.FileManager.FlushSchemas(schemas); err != nil {
 		log.Fatalln(err)
 	}
 

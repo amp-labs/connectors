@@ -82,8 +82,9 @@ func main() {
 			objName := strings.TrimPrefix(object.ObjectName, "v1/")
 			objName = strings.TrimSuffix(objName, "/")
 			displayName := titleCaser.String(objName)
+			urlPath := strings.TrimPrefix(object.URLPath, "/v1")
 
-			schemas.Add("", objName, displayName, object.URLPath, object.ResponseKey,
+			schemas.Add("", objName, displayName, urlPath, object.ResponseKey,
 				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
 		}
 
@@ -92,7 +93,7 @@ func main() {
 		}
 	}
 
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(metadata.FileManager.FlushSchemas(schemas))
 	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")

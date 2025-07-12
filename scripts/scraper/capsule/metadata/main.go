@@ -55,23 +55,23 @@ var (
 		"trackdefinitions": "Track Definitions",
 	}, formatDisplay)
 	objectNameToURLPath = datautils.NewDefaultMap(map[string]string{ // nolint:gochecknoglobals
-		"parties":          "/v2/parties",
-		"opportunities":    "/v2/opportunities",
-		"projects":         "/v2/kases",
-		"tasks":            "/v2/tasks",
-		"users":            "/v2/users",
-		"teams":            "/v2/teams",
-		"pipelines":        "/v2/pipelines",
-		"milestones":       "/v2/milestones",
-		"lostreasons":      "/v2/lostreasons",
-		"boards":           "/v2/boards",
-		"stages":           "/v2/stages",
-		"resthooks":        "/v2/resthooks",
-		"trackdefinitions": "/v2/trackdefinitions",
-		"categories":       "/v2/categories",
-		"activitytypes":    "/v2/activitytypes",
-		"countries":        "/v2/countries",
-		"titles":           "/v2/titles",
+		"parties":          "/parties",
+		"opportunities":    "/opportunities",
+		"projects":         "/kases",
+		"tasks":            "/tasks",
+		"users":            "/users",
+		"teams":            "/teams",
+		"pipelines":        "/pipelines",
+		"milestones":       "/milestones",
+		"lostreasons":      "/lostreasons",
+		"boards":           "/boards",
+		"stages":           "/stages",
+		"resthooks":        "/resthooks",
+		"trackdefinitions": "/trackdefinitions",
+		"categories":       "/categories",
+		"activitytypes":    "/activitytypes",
+		"countries":        "/countries",
+		"titles":           "/titles",
 	}, func(objectName string) string {
 		fmt.Println("No matching URL path for object", objectName)
 
@@ -177,7 +177,7 @@ func createSchemas() {
 		log.Printf("Schemas completed %.2f%% [%v]\n", getPercentage(i, len(index.ModelDocs)), model.Name)
 	}
 
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas.Metadata))
+	goutils.MustBeNil(metadata.FileManager.FlushSchemas(schemas.Metadata))
 }
 
 func getTabLinks() []string {

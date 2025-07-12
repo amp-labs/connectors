@@ -100,24 +100,30 @@ func main() {
 	registry := datautils.NamedLists[string]{}
 
 	for _, object := range readObjects { //nolint:gochecknoglobals
+		objectName := object.ObjectName
 		if object.Problem != nil {
 			slog.Error("Schema not extracted",
-				"objectName", object.ObjectName,
+				"objectName", objectName,
 				"error", object.Problem,
 			)
 		}
 
+		if object.URLPath == "/user/migrations" {
+			objectName = "user/migrations"
+			object.DisplayName = "User Migrations"
+		}
+
 		for _, field := range object.Fields {
-			schemas.Add("", object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
+			schemas.Add("", objectName, object.DisplayName, object.URLPath, object.ResponseKey,
 				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
 		}
 
 		for _, queryParam := range object.QueryParams {
-			registry.Add(queryParam, object.ObjectName)
+			registry.Add(queryParam, objectName)
 		}
 	}
 
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(metadata.FileManager.FlushSchemas(schemas))
 	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")

@@ -71,7 +71,7 @@ func main() {
 		}
 	}
 
-	goutils.MustBeNil(schemafileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(schemafileManager.FlushSchemas(schemas))
 	goutils.MustBeNil(schemafileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")

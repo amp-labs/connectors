@@ -2,7 +2,7 @@
   "modules": {
     "root": {
       "id": "root",
-      "path": "/api/v2",
+      "path": "",
       "objects": {
         "activities": {
           "displayName": "Activities",

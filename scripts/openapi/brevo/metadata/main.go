@@ -104,6 +104,8 @@ func main() {
 		}
 
 		for _, field := range object.Fields {
+			field.DisplayName = api3.CapitalizeFirstLetterEveryWord(api3.CamelCaseToSpaceSeparated(field.Name))
+
 			schemas.Add("", object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
 				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
 		}
@@ -113,7 +115,7 @@ func main() {
 		}
 	}
 
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(metadata.FileManager.FlushSchemas(schemas))
 	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")

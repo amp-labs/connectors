@@ -2,7 +2,7 @@
   "modules": {
     "root": {
       "id": "root",
-      "path": "/api",
+      "path": "",
       "objects": {
         "accounts": {
           "displayName": "Accounts",

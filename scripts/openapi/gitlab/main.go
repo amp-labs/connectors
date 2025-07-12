@@ -88,9 +88,10 @@ func main() {
 		}
 
 		objectName, _ := strings.CutPrefix(object.URLPath, "/api/v4/")
+		urlPath, _ := strings.CutPrefix(object.URLPath, "/api/v4")
 
 		for _, field := range object.Fields {
-			schemas.Add("", objectName, object.DisplayName, object.URLPath, object.ResponseKey,
+			schemas.Add("", objectName, object.DisplayName, urlPath, object.ResponseKey,
 				staticschema.FieldMetadataMapV1{
 					field.Name: field.Name,
 				}, nil, object.Custom)
@@ -101,7 +102,7 @@ func main() {
 		}
 	}
 
-	goutils.MustBeNil(schemaManager.SaveSchemas(schemas))
+	goutils.MustBeNil(schemaManager.FlushSchemas(schemas))
 	goutils.MustBeNil(schemaManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	log.Println("Completed.")

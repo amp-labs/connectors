@@ -40,7 +40,6 @@ func main() {
 	); err != nil {
 		slog.Error(err.Error())
 	}
-
 }
 
 func testRead(ctx context.Context, conn *ap.Connector, objectName string, since time.Time, until time.Time) error {

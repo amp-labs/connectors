@@ -91,6 +91,7 @@ func testSmartCategories(ctx context.Context) error {
 	if err := constructResponse(updateRes); err != nil {
 		return err
 	}
+
 	return nil
 }
 

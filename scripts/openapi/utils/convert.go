@@ -7,9 +7,14 @@ import (
 )
 
 func ConvertMetadataFieldToFieldMetadataMapV2(field metadatadef.Field) staticschema.FieldMetadataMapV2 {
+	displayName := field.DisplayName
+	if displayName == "" {
+		displayName = field.Name
+	}
+
 	return staticschema.FieldMetadataMapV2{
 		field.Name: staticschema.FieldMetadata{
-			DisplayName:  field.Name,
+			DisplayName:  displayName,
 			ValueType:    getFieldValueType(field),
 			ProviderType: field.Type,
 			ReadOnly:     false,

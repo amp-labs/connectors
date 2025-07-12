@@ -29,39 +29,39 @@ var supportedObjectsByRead = metadata.Schemas.ObjectNames() //nolint:gochecknogl
 
 var supportedObjectsByWrite = datautils.Map[string, string]{ //nolint:gochecknoglobals
 	// https://api.iterable.com/api/docs#campaigns_create_campaign
-	"campaigns": "/api/campaigns/create",
+	"campaigns": "/campaigns/create",
 	// https://api.iterable.com/api/docs#catalogs_createCatalog
 	// This endpoint doesn't use payload! Catalog name comes from the path {catalogName}.
-	objectNameCatalogs: "/api/catalogs",
+	objectNameCatalogs: "/catalogs",
 	// https://api.iterable.com/api/docs#lists_create
-	"lists": "/api/lists",
+	"lists": "/lists",
 	// https://api.iterable.com/api/docs#users_updateUser
-	"users": "/api/users/update", // Update or create user.
+	"users": "/users/update", // Update or create user.
 	// https://api.iterable.com/api/docs#webhooks_updateWebhook
-	"webhooks": "/api/webhooks", // Update webhook
+	"webhooks": "/webhooks", // Update webhook
 
 	//
 	// Template objects.
 	//
 	// https://api.iterable.com/api/docs#templates_upsertEmailTemplate
-	"templatesEmail": "/api/templates/email/upsert",
+	"templatesEmail": "/templates/email/upsert",
 	// https://api.iterable.com/api/docs#templates_upsertInAppTemplate
-	"templatesInApp": "/api/templates/inapp/upsert",
+	"templatesInApp": "/templates/inapp/upsert",
 	// https://api.iterable.com/api/docs#templates_upsertPushTemplate
-	"templatesPush": "/api/templates/push/upsert",
+	"templatesPush": "/templates/push/upsert",
 	// https://api.iterable.com/api/docs#templates_upsertSMSTemplate
-	"templatesSMS": "/api/templates/sms/upsert",
+	"templatesSMS": "/templates/sms/upsert",
 }
 
 var supportedObjectsByDelete = datautils.Map[string, string]{ //nolint:gochecknoglobals
 	// https://api.iterable.com/api/docs#catalogs_deleteCatalog
-	objectNameCatalogs: "/api/catalogs", // by catalogName
+	objectNameCatalogs: "/catalogs", // by catalogName
 	// https://api.iterable.com/api/docs#export_cancelExport
-	"exports": "/api/export", // by jobId
+	"exports": "/export", // by jobId
 	// https://api.iterable.com/api/docs#lists_delete
-	"lists": "/api/lists", // by listId
+	"lists": "/lists", // by listId
 	// https://api.iterable.com/api/docs#metadata_delete
-	"metadata": "/api/metadata", // by table
+	"metadata": "/metadata", // by table
 	// https://api.iterable.com/api/docs#users_delete
-	"users": "/api/users/byUserId", // by userId
+	"users": "/users/byUserId", // by userId
 }

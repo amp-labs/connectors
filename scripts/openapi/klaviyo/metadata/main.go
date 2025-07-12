@@ -2,6 +2,7 @@ package main
 
 import (
 	"log/slog"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -58,9 +59,11 @@ func main() {
 			)
 		}
 
+		urlPath, _ := strings.CutPrefix(object.URLPath, "/api")
+
 		for _, field := range object.Fields {
 			schemas.Add(common.ModuleRoot,
-				object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
+				object.ObjectName, object.DisplayName, urlPath, object.ResponseKey,
 				staticschema.FieldMetadataMapV1{
 					field.Name: field.Name,
 				}, nil, object.Custom)
@@ -71,7 +74,7 @@ func main() {
 		}
 	}
 
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(metadata.FileManager.FlushSchemas(schemas))
 	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
