@@ -64,13 +64,24 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
 
 	if !config.Since.IsZero() {
+		sinceValue := datautils.Time.FormatRFC3339inUTC(config.Since)
+
 		switch config.ObjectName {
 		case objectNameEmailCampaigns:
-			sinceValue := datautils.Time.FormatRFC3339inUTC(config.Since)
 			url.WithQueryParam("after_date", sinceValue)
 		case objectNameContacts:
-			sinceValue := datautils.Time.FormatRFC3339inUTC(config.Since)
 			url.WithQueryParam("updated_after", sinceValue)
+		}
+	}
+
+	if !config.Until.IsZero() {
+		untilValue := datautils.Time.FormatRFC3339inUTC(config.Until)
+
+		switch config.ObjectName {
+		case objectNameEmailCampaigns:
+			url.WithQueryParam("before_date", untilValue)
+		case objectNameContacts:
+			url.WithQueryParam("updated_before", untilValue)
 		}
 	}
 
