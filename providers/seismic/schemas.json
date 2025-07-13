@@ -1,0 +1,2973 @@
+{
+  "modules": {
+    "reporting": {
+      "id": "reporting",
+      "path": "",
+      "objects": {
+        "adminImpersonationSessions": {
+          "displayName": "Adminimpersonationsessions",
+          "path": "/adminImpersonationSessions",
+          "responseKey": "",
+          "fields": {
+            "adminImpersonationUserId": "adminImpersonationUserId",
+            "adminImpersonationUserName": "adminImpersonationUserName",
+            "durationSeconds": "durationSeconds",
+            "id": "id",
+            "impersonateeUserId": "impersonateeUserId",
+            "impersonateeUserName": "impersonateeUserName",
+            "modifiedAt": "modifiedAt",
+            "sessionEndedAt": "sessionEndedAt",
+            "sessionStartedAt": "sessionStartedAt"
+          }
+        },
+        "aiActivity": {
+          "displayName": "Aiactivity",
+          "path": "/aiActivity",
+          "responseKey": "",
+          "fields": {
+            "aiGeneratedTextId": "aiGeneratedTextId",
+            "creditType": "creditType",
+            "creditsUsed": "creditsUsed",
+            "id": "id",
+            "occurredAt": "occurredAt",
+            "useCase": "useCase",
+            "userId": "userId",
+            "userName": "userName"
+          }
+        },
+        "aiGeneratedText": {
+          "displayName": "Aigeneratedtext",
+          "path": "/aiGeneratedText",
+          "responseKey": "",
+          "fields": {
+            "aiModel": "aiModel",
+            "aiModelProvider": "aiModelProvider",
+            "email": "email",
+            "flowRequestId": "flowRequestId",
+            "id": "id",
+            "isAuraCopilotFeature": "isAuraCopilotFeature",
+            "occurredAt": "occurredAt",
+            "useCase": "useCase",
+            "userId": "userId",
+            "userName": "userName"
+          }
+        },
+        "aiGeneratedTextUserFeedback": {
+          "displayName": "Aigeneratedtextuserfeedback",
+          "path": "/aiGeneratedTextUserFeedback",
+          "responseKey": "",
+          "fields": {
+            "aiGeneratedTextId": "aiGeneratedTextId",
+            "email": "email",
+            "feedback": "feedback",
+            "feedbackId": "feedbackId",
+            "score": "score",
+            "scoreType": "scoreType",
+            "submittedAt": "submittedAt",
+            "userId": "userId",
+            "userName": "userName"
+          }
+        },
+        "aiSuggestedContentProperties": {
+          "displayName": "Aisuggestedcontentproperties",
+          "path": "/aiSuggestedContentProperties",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "id": "id",
+            "isDeclined": "isDeclined",
+            "libraryContentId": "libraryContentId",
+            "modifiedAt": "modifiedAt",
+            "score": "score",
+            "suggestedContentPropertyId": "suggestedContentPropertyId",
+            "suggestedContentPropertyValue": "suggestedContentPropertyValue",
+            "suggestedContentPropertyValueId": "suggestedContentPropertyValueId"
+          }
+        },
+        "announcements": {
+          "displayName": "Announcements",
+          "path": "/announcements",
+          "responseKey": "",
+          "fields": {
+            "announcementName": "announcementName",
+            "createdAt": "createdAt",
+            "id": "id",
+            "modifiedAt": "modifiedAt"
+          }
+        },
+        "answers": {
+          "displayName": "Answers",
+          "path": "/answers",
+          "responseKey": "",
+          "fields": {
+            "correctAnswer": "correctAnswer",
+            "createdAt": "createdAt",
+            "deletedAt": "deletedAt",
+            "givenAnswer": "givenAnswer",
+            "graderId": "graderId",
+            "id": "id",
+            "isCorrect": "isCorrect",
+            "isDeleted": "isDeleted",
+            "isGradable": "isGradable",
+            "modifiedAt": "modifiedAt",
+            "questionId": "questionId",
+            "sourceProgressId": "sourceProgressId",
+            "userId": "userId",
+            "userName": "userName"
+          }
+        },
+        "assignments": {
+          "displayName": "Assignments",
+          "path": "/assignments",
+          "responseKey": "",
+          "fields": {
+            "assignableId": "assignableId",
+            "assignableType": "assignableType",
+            "assignorId": "assignorId",
+            "createdAt": "createdAt",
+            "deletedAt": "deletedAt",
+            "dueAt": "dueAt",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "modifiedAt": "modifiedAt",
+            "reassignedAt": "reassignedAt",
+            "userId": "userId"
+          }
+        },
+        "channels": {
+          "displayName": "Channels",
+          "path": "/channels",
+          "responseKey": "",
+          "fields": {
+            "channelName": "channelName",
+            "createdAt": "createdAt",
+            "id": "id",
+            "modifiedAt": "modifiedAt"
+          }
+        },
+        "contentActivities": {
+          "displayName": "Contentactivities",
+          "path": "/contentActivities",
+          "responseKey": "",
+          "fields": {
+            "action": "action",
+            "actionCategory": "actionCategory",
+            "application": "application",
+            "id": "id",
+            "instanceName": "instanceName",
+            "libraryContentId": "libraryContentId",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "productArea": "productArea",
+            "userId": "userId",
+            "userName": "userName"
+          }
+        },
+        "contentAskExperts": {
+          "displayName": "Contentaskexperts",
+          "path": "/contentAskExperts",
+          "responseKey": "",
+          "fields": {
+            "answer": "answer",
+            "answeredAt": "answeredAt",
+            "answeredBy": "answeredBy",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "libraryContentId": "libraryContentId",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "modifiedAt": "modifiedAt",
+            "question": "question",
+            "questionAt": "questionAt",
+            "questionBy": "questionBy"
+          }
+        },
+        "contentInsertInstances": {
+          "displayName": "Contentinsertinstances",
+          "path": "/contentInsertInstances",
+          "responseKey": "",
+          "fields": {
+            "contentInsertInstanceGroupId": "contentInsertInstanceGroupId",
+            "contentProfileId": "contentProfileId",
+            "contentProfileName": "contentProfileName",
+            "contentVersionId": "contentVersionId",
+            "id": "id",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "repository": "repository",
+            "userID": "userID"
+          }
+        },
+        "contentPages": {
+          "displayName": "Contentpages",
+          "path": "/contentPages",
+          "responseKey": "",
+          "fields": {
+            "contentId": "contentId",
+            "contentVersionId": "contentVersionId",
+            "id": "id",
+            "occurredAt": "occurredAt",
+            "originLibraryContentId": "originLibraryContentId",
+            "originLibraryContentPageId": "originLibraryContentPageId",
+            "originLibraryContentPageIndex": "originLibraryContentPageIndex",
+            "originLibraryContentVersionId": "originLibraryContentVersionId",
+            "pageIndex": "pageIndex",
+            "parentContentId": "parentContentId",
+            "parentContentVersionId": "parentContentVersionId",
+            "parentPageId": "parentPageId",
+            "parentPageIndex": "parentPageIndex",
+            "parentRepository": "parentRepository",
+            "parents": "parents",
+            "repository": "repository"
+          }
+        },
+        "contentProfileAssignments": {
+          "displayName": "Contentprofileassignments",
+          "path": "/contentProfileAssignments",
+          "responseKey": "",
+          "fields": {
+            "addToProfileAt": "addToProfileAt",
+            "contentLastPublishedDate": "contentLastPublishedDate",
+            "contentProfileId": "contentProfileId",
+            "contentProfileName": "contentProfileName",
+            "contentProfileType": "contentProfileType",
+            "contentProfileVersionId": "contentProfileVersionId",
+            "contentStatus": "contentStatus",
+            "isDeleted": "isDeleted",
+            "isPredictiveOnly": "isPredictiveOnly",
+            "isPublished": "isPublished",
+            "libraryContentId": "libraryContentId",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "modifiedAt": "modifiedAt"
+          }
+        },
+        "contentProfileAssignmentsHistory": {
+          "displayName": "Contentprofileassignmentshistory",
+          "path": "/contentProfileAssignmentsHistory",
+          "responseKey": "",
+          "fields": {
+            "addToProfileAt": "addToProfileAt",
+            "contentLastPublishedDate": "contentLastPublishedDate",
+            "contentProfileId": "contentProfileId",
+            "contentProfileName": "contentProfileName",
+            "contentProfileType": "contentProfileType",
+            "contentProfileVersionId": "contentProfileVersionId",
+            "contentStatus": "contentStatus",
+            "isDeleted": "isDeleted",
+            "isPredictiveOnly": "isPredictiveOnly",
+            "isPublished": "isPublished",
+            "libraryContentId": "libraryContentId",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "modifiedAt": "modifiedAt"
+          }
+        },
+        "contentProfiles": {
+          "displayName": "Contentprofiles",
+          "path": "/contentProfiles",
+          "responseKey": "",
+          "fields": {
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "isPredictiveOnly": "isPredictiveOnly",
+            "isPublished": "isPublished",
+            "isStagingProfile": "isStagingProfile",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "teamsiteId": "teamsiteId",
+            "type": "type",
+            "versionId": "versionId"
+          }
+        },
+        "contentProperties": {
+          "displayName": "Contentproperties",
+          "path": "/contentProperties",
+          "responseKey": "",
+          "fields": {
+            "hasDomainOfValues": "hasDomainOfValues",
+            "id": "id",
+            "isRequired": "isRequired",
+            "listOrder": "listOrder",
+            "name": "name",
+            "teamsiteId": "teamsiteId",
+            "type": "type"
+          }
+        },
+        "contentPropertyAssignments": {
+          "displayName": "Contentpropertyassignments",
+          "path": "/contentPropertyAssignments",
+          "responseKey": "",
+          "fields": {
+            "contentPropertyId": "contentPropertyId",
+            "contentPropertyName": "contentPropertyName",
+            "contentPropertyType": "contentPropertyType",
+            "contentPropertyValue": "contentPropertyValue",
+            "contentPropertyValueBoolean": "contentPropertyValueBoolean",
+            "contentPropertyValueDatetime": "contentPropertyValueDatetime",
+            "contentPropertyValueFloat": "contentPropertyValueFloat",
+            "contentPropertyValueInteger": "contentPropertyValueInteger",
+            "libraryContentId": "libraryContentId"
+          }
+        },
+        "contentReviews": {
+          "displayName": "Contentreviews",
+          "path": "/contentReviews",
+          "responseKey": "",
+          "fields": {
+            "id": "id",
+            "libraryContentId": "libraryContentId",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "positivity": "positivity",
+            "rating": "rating",
+            "reviewContent": "reviewContent",
+            "starRating": "starRating",
+            "title": "title",
+            "userId": "userId"
+          }
+        },
+        "contentSlideInsertInstances": {
+          "displayName": "Contentslideinsertinstances",
+          "path": "/contentSlideInsertInstances",
+          "responseKey": "",
+          "fields": {
+            "contentInsertInstanceId": "contentInsertInstanceId",
+            "id": "id",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "slideId": "slideId",
+            "slidePosition": "slidePosition",
+            "thumbnailImageUrl": "thumbnailImageUrl"
+          }
+        },
+        "contentUsageHistory": {
+          "displayName": "Contentusagehistory",
+          "path": "/contentUsageHistory",
+          "responseKey": "",
+          "fields": {
+            "action": "action",
+            "actionType": "actionType",
+            "application": "application",
+            "contentId": "contentId",
+            "contentProfileId": "contentProfileId",
+            "contentProfileName": "contentProfileName",
+            "contentVersionId": "contentVersionId",
+            "contextId": "contextId",
+            "contextName": "contextName",
+            "contextSystemType": "contextSystemType",
+            "contextType": "contextType",
+            "id": "id",
+            "instanceName": "instanceName",
+            "interactionId": "interactionId",
+            "isBoundDelivery": "isBoundDelivery",
+            "libraryContentId": "libraryContentId",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "livesendLinkContentId": "livesendLinkContentId",
+            "livesendLinkId": "livesendLinkId",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "productArea": "productArea",
+            "totalPages": "totalPages",
+            "userId": "userId",
+            "userUsername": "userUsername",
+            "workspaceContentId": "workspaceContentId",
+            "workspaceContentVersionId": "workspaceContentVersionId"
+          }
+        },
+        "contentVersions": {
+          "displayName": "Contentversions",
+          "path": "/contentVersions",
+          "responseKey": "",
+          "fields": {
+            "contentId": "contentId",
+            "createdAt": "createdAt",
+            "id": "id",
+            "isLatestVersion": "isLatestVersion",
+            "libraryContentId": "libraryContentId",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "repository": "repository",
+            "thumbnailImageUrl": "thumbnailImageUrl",
+            "workspaceContentId": "workspaceContentId",
+            "workspaceContentVersionId": "workspaceContentVersionId"
+          }
+        },
+        "contentViewHistory": {
+          "displayName": "Contentviewhistory",
+          "path": "/contentViewHistory",
+          "responseKey": "",
+          "fields": {
+            "action": "action",
+            "application": "application",
+            "contentId": "contentId",
+            "contentProfileId": "contentProfileId",
+            "contentProfileName": "contentProfileName",
+            "contentVersionId": "contentVersionId",
+            "contextId": "contextId",
+            "contextName": "contextName",
+            "contextSystemType": "contextSystemType",
+            "contextType": "contextType",
+            "id": "id",
+            "instanceName": "instanceName",
+            "libraryContentId": "libraryContentId",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "productArea": "productArea",
+            "userId": "userId",
+            "userUsername": "userUsername",
+            "workspaceContentId": "workspaceContentId",
+            "workspaceContentVersionId": "workspaceContentVersionId"
+          }
+        },
+        "contents": {
+          "displayName": "Contents",
+          "path": "/contents",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "format": "format",
+            "id": "id",
+            "instanceName": "instanceName",
+            "isDeleted": "isDeleted",
+            "libraryContentId": "libraryContentId",
+            "modifiedAt": "modifiedAt",
+            "normalizedName": "normalizedName",
+            "originApplication": "originApplication",
+            "originRepository": "originRepository",
+            "repository": "repository",
+            "workspaceContentId": "workspaceContentId"
+          }
+        },
+        "copilotForSalesDsrRecommendations": {
+          "displayName": "Copilotforsalesdsrrecommendations",
+          "path": "/copilotForSalesDsrRecommendations",
+          "responseKey": "",
+          "fields": {
+            "Id": "Id",
+            "contextId": "contextId",
+            "contextType": "contextType",
+            "crmEngagementStatus": "crmEngagementStatus",
+            "digitalSalesRoomId": "digitalSalesRoomId",
+            "interactionId": "interactionId",
+            "occurredAt": "occurredAt",
+            "operationType": "operationType",
+            "totalDsrCount": "totalDsrCount",
+            "userId": "userId",
+            "username": "username"
+          }
+        },
+        "copilotForSalesRecommendations": {
+          "displayName": "Copilotforsalesrecommendations",
+          "path": "/copilotForSalesRecommendations",
+          "responseKey": "",
+          "fields": {
+            "Id": "Id",
+            "externalRecommendationCount": "externalRecommendationCount",
+            "internalRecommendationCount": "internalRecommendationCount",
+            "msftUserId": "msftUserId",
+            "occurredAt": "occurredAt",
+            "operationType": "operationType",
+            "recommendationContext": "recommendationContext",
+            "totalRecommendationsCount": "totalRecommendationsCount",
+            "userId": "userId",
+            "username": "username"
+          }
+        },
+        "customContentTypeFields": {
+          "displayName": "Customcontenttypefields",
+          "path": "/customContentTypeFields",
+          "responseKey": "",
+          "fields": {
+            "customContentTypeId": "customContentTypeId",
+            "description": "description",
+            "fieldType": "fieldType",
+            "id": "id",
+            "isOptional": "isOptional",
+            "modifiedAt": "modifiedAt",
+            "name": "name"
+          }
+        },
+        "customContentTypes": {
+          "displayName": "Customcontenttypes",
+          "path": "/customContentTypes",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "deletedAt": "deletedAt",
+            "description": "description",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "name": "name",
+            "status": "status",
+            "userModifiedAt": "userModifiedAt",
+            "versionId": "versionId",
+            "versionTag": "versionTag"
+          }
+        },
+        "customContents": {
+          "displayName": "Customcontents",
+          "path": "/customContents",
+          "responseKey": "",
+          "fields": {
+            "customContentTypeId": "customContentTypeId",
+            "customContentTypeVersionId": "customContentTypeVersionId",
+            "id": "id",
+            "libraryContentId": "libraryContentId",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "modifiedAt": "modifiedAt"
+          }
+        },
+        "customProperties": {
+          "displayName": "Customproperties",
+          "path": "/customProperties",
+          "responseKey": "",
+          "fields": {
+            "editState": "editState",
+            "hasDomainOfValues": "hasDomainOfValues",
+            "helperText": "helperText",
+            "id": "id",
+            "listOrder": "listOrder",
+            "name": "name",
+            "type": "type"
+          }
+        },
+        "customPropertyAssignments": {
+          "displayName": "Custompropertyassignments",
+          "path": "/customPropertyAssignments",
+          "responseKey": "",
+          "fields": {
+            "customPropertyId": "customPropertyId",
+            "customPropertyName": "customPropertyName",
+            "customPropertyValue": "customPropertyValue",
+            "isRequired": "isRequired",
+            "isRequiredForPublish": "isRequiredForPublish",
+            "objectId": "objectId",
+            "objectType": "objectType",
+            "teamsiteId": "teamsiteId",
+            "teamsiteName": "teamsiteName"
+          }
+        },
+        "customUserFieldValues": {
+          "displayName": "Customuserfieldvalues",
+          "path": "/customUserFieldValues",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "customUserFieldId": "customUserFieldId",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "modifiedAt": "modifiedAt",
+            "userId": "userId",
+            "value": "value"
+          }
+        },
+        "customUserFields": {
+          "displayName": "Customuserfields",
+          "path": "/customUserFields",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "modifiedAt": "modifiedAt",
+            "name": "name"
+          }
+        },
+        "dailyActiveUsers": {
+          "displayName": "Dailyactiveusers",
+          "path": "/dailyActiveUsers",
+          "responseKey": "",
+          "fields": {
+            "date": "date",
+            "includesLessonlyActivity": "includesLessonlyActivity",
+            "userId": "userId",
+            "username": "username"
+          }
+        },
+        "digitalSalesRoomTemplateVersions": {
+          "displayName": "Digitalsalesroomtemplateversions",
+          "path": "/digitalSalesRoomTemplateVersions",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "createdBy": "createdBy",
+            "createdByUsername": "createdByUsername",
+            "digitalSalesRoomTemplateId": "digitalSalesRoomTemplateId",
+            "expiresAt": "expiresAt",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "isPublished": "isPublished",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "version": "version"
+          }
+        },
+        "digitalSalesRoomTemplates": {
+          "displayName": "Digitalsalesroomtemplates",
+          "path": "/digitalSalesRoomTemplates",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "isPublished": "isPublished",
+            "latestVersionCreatedAt": "latestVersionCreatedAt",
+            "latestVersionCreatedBy": "latestVersionCreatedBy",
+            "latestVersionCreatedByUserName": "latestVersionCreatedByUserName",
+            "latestVersionId": "latestVersionId",
+            "libraryUrl": "libraryUrl",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "publishedVersionExpiresAt": "publishedVersionExpiresAt",
+            "userModifiedAt": "userModifiedAt",
+            "version": "version"
+          }
+        },
+        "digitalSalesRoomViewingSessions": {
+          "displayName": "Digitalsalesroomviewingsessions",
+          "path": "/digitalSalesRoomViewingSessions",
+          "responseKey": "",
+          "fields": {
+            "city": "city",
+            "country": "country",
+            "digitalSalesRoomId": "digitalSalesRoomId",
+            "engagementUserEmail": "engagementUserEmail",
+            "geoLocationLongitude": "geoLocationLongitude",
+            "geolocationLatitude": "geolocationLatitude",
+            "id": "id",
+            "ipAddress": "ipAddress",
+            "isEngagementUserInternal": "isEngagementUserInternal",
+            "modifiedAt": "modifiedAt",
+            "roomDurationSeconds": "roomDurationSeconds",
+            "sessionEndedAt": "sessionEndedAt",
+            "sessionStartedAt": "sessionStartedAt",
+            "state": "state",
+            "userId": "userId"
+          }
+        },
+        "digitalSalesRooms": {
+          "displayName": "Digitalsalesrooms",
+          "path": "/digitalSalesRooms",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "createdBy": "createdBy",
+            "createdByUsername": "createdByUsername",
+            "digitalSalesRoomTemplateId": "digitalSalesRoomTemplateId",
+            "digitalSalesRoomTemplateVersionId": "digitalSalesRoomTemplateVersionId",
+            "id": "id",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "userModifiedAt": "userModifiedAt"
+          }
+        },
+        "distributionApprovalWorkflowStepsHistory": {
+          "displayName": "Distributionapprovalworkflowstepshistory",
+          "path": "/distributionApprovalWorkflowStepsHistory",
+          "responseKey": "",
+          "fields": {
+            "comment": "comment",
+            "durationSeconds": "durationSeconds",
+            "endedAt": "endedAt",
+            "id": "id",
+            "interactionGroupId": "interactionGroupId",
+            "isLatest": "isLatest",
+            "isRevoked": "isRevoked",
+            "name": "name",
+            "reviewerUserId": "reviewerUserId",
+            "reviewerUsername": "reviewerUsername",
+            "startedAt": "startedAt",
+            "status": "status",
+            "stepId": "stepId",
+            "stepOrder": "stepOrder",
+            "systemModifiedAt": "systemModifiedAt",
+            "workflowName": "workflowName",
+            "workflowid": "workflowid"
+          }
+        },
+        "distributionApprovalWorkflows": {
+          "displayName": "Distributionapprovalworkflows",
+          "path": "/distributionApprovalWorkflows",
+          "responseKey": "",
+          "fields": {
+            "activeStepOrder": "activeStepOrder",
+            "durationSeconds": "durationSeconds",
+            "endedAt": "endedAt",
+            "engagementUrl": "engagementUrl",
+            "id": "id",
+            "interactionGroupId": "interactionGroupId",
+            "isDistributionApproved": "isDistributionApproved",
+            "name": "name",
+            "startedAt": "startedAt",
+            "status": "status",
+            "systemModifiedAt": "systemModifiedAt",
+            "totalSteps": "totalSteps"
+          }
+        },
+        "emailTemplateInstances": {
+          "displayName": "Emailtemplateinstances",
+          "path": "/emailTemplateInstances",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "emailId": "emailId",
+            "emailTemplateContentProfileId": "emailTemplateContentProfileId",
+            "emailTemplateId": "emailTemplateId",
+            "emailTemplateLibraryContentId": "emailTemplateLibraryContentId",
+            "emailTemplateLibraryContentVersionId": "emailTemplateLibraryContentVersionId",
+            "id": "id",
+            "isClickedDelivery": "isClickedDelivery",
+            "isReadOnly": "isReadOnly",
+            "isSenderCreated": "isSenderCreated",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "position": "position"
+          }
+        },
+        "emailTemplateSectionSelections": {
+          "displayName": "Emailtemplatesectionselections",
+          "path": "/emailTemplateSectionSelections",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "emailId": "emailId",
+            "emailTemplateInstanceId": "emailTemplateInstanceId",
+            "id": "id",
+            "isChangedFromDefault": "isChangedFromDefault",
+            "isReadOnly": "isReadOnly",
+            "isSharedTemplateComponentReadOnly": "isSharedTemplateComponentReadOnly",
+            "modifiedAt": "modifiedAt",
+            "optionName": "optionName",
+            "sectionName": "sectionName",
+            "sectionType": "sectionType",
+            "sharedTemplateComponentLibraryContentId": "sharedTemplateComponentLibraryContentId",
+            "sharedTemplateComponentLibraryContentVersionId": "sharedTemplateComponentLibraryContentVersionId",
+            "sharedTemplateComponentTeamsiteId": "sharedTemplateComponentTeamsiteId"
+          }
+        },
+        "emailTemplateStaticImages": {
+          "displayName": "Emailtemplatestaticimages",
+          "path": "/emailTemplateStaticImages",
+          "responseKey": "",
+          "fields": {
+            "alignment": "alignment",
+            "alternativeText": "alternativeText",
+            "contentId": "contentId",
+            "contentProfileId": "contentProfileId",
+            "contentProfileName": "contentProfileName",
+            "contentVersionId": "contentVersionId",
+            "emailTemplateInstanceId": "emailTemplateInstanceId",
+            "id": "id",
+            "instanceName": "instanceName",
+            "libraryContentId": "libraryContentId",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "modifiedAt": "modifiedAt",
+            "repository": "repository",
+            "targetUrl": "targetUrl",
+            "workspaceContentId": "workspaceContentId",
+            "workspaceContentVersionId": "workspaceContentVersionId"
+          }
+        },
+        "emailTemplateVariableValues": {
+          "displayName": "Emailtemplatevariablevalues",
+          "path": "/emailTemplateVariableValues",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "emailId": "emailId",
+            "emailTemplateInstanceId": "emailTemplateInstanceId",
+            "id": "id",
+            "modifiedAt": "modifiedAt",
+            "placeholderText": "placeholderText",
+            "sectionName": "sectionName",
+            "sectionSelectionId": "sectionSelectionId",
+            "value": "value",
+            "variableType": "variableType"
+          }
+        },
+        "emails": {
+          "displayName": "Emails",
+          "path": "/emails",
+          "responseKey": "",
+          "fields": {
+            "emailImpersonationUserId": "emailImpersonationUserId",
+            "firstOpenedAt": "firstOpenedAt",
+            "id": "id",
+            "interactionGroupId": "interactionGroupId",
+            "interactionGroupName": "interactionGroupName",
+            "interactionId": "interactionId",
+            "isDeleted": "isDeleted",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "sentAsBlast": "sentAsBlast",
+            "status": "status",
+            "subject": "subject"
+          }
+        },
+        "entitlementRoles": {
+          "displayName": "Entitlementroles",
+          "path": "/entitlementRoles",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "createdBy": "createdBy",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "isPredefined": "isPredefined",
+            "modifiedAt": "modifiedAt",
+            "modifiedBy": "modifiedBy",
+            "roleDescription": "roleDescription",
+            "roleName": "roleName"
+          }
+        },
+        "externalContentDetails": {
+          "displayName": "Externalcontentdetails",
+          "path": "/externalContentDetails",
+          "responseKey": "",
+          "fields": {
+            "externalId": "externalId",
+            "externalURL": "externalURL",
+            "id": "id",
+            "isAutoPublished": "isAutoPublished",
+            "isAutoUpdated": "isAutoUpdated",
+            "isDeleted": "isDeleted",
+            "libraryContentId": "libraryContentId",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "originType": "originType",
+            "syncOwnerId": "syncOwnerId",
+            "syncOwnerUserName": "syncOwnerUserName",
+            "syncTimeStamp": "syncTimeStamp"
+          }
+        },
+        "externalUsers": {
+          "displayName": "Externalusers",
+          "path": "/externalUsers",
+          "responseKey": "",
+          "fields": {
+            "email": "email",
+            "emailDomain": "emailDomain",
+            "id": "id",
+            "modifiedAt": "modifiedAt"
+          }
+        },
+        "favoriteStatus": {
+          "displayName": "Favoritestatus",
+          "path": "/favoriteStatus",
+          "responseKey": "",
+          "fields": {
+            "contentId": "contentId",
+            "contentName": "contentName",
+            "id": "id",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "userFullName": "userFullName",
+            "userId": "userId"
+          }
+        },
+        "feedbackCriteria": {
+          "displayName": "Feedbackcriteria",
+          "path": "/feedbackCriteria",
+          "responseKey": "",
+          "fields": {
+            "answerId": "answerId",
+            "createdAt": "createdAt",
+            "criterionCreatorId": "criterionCreatorId",
+            "criterionDescription": "criterionDescription",
+            "criterionName": "criterionName",
+            "criterionType": "criterionType",
+            "id": "id",
+            "isAnswered": "isAnswered",
+            "isDeleted": "isDeleted",
+            "modifiedAt": "modifiedAt",
+            "questionId": "questionId",
+            "score": "score"
+          }
+        },
+        "followStatus": {
+          "displayName": "Followstatus",
+          "path": "/followStatus",
+          "responseKey": "",
+          "fields": {
+            "contentId": "contentId",
+            "contentName": "contentName",
+            "contentOwnerEmail": "contentOwnerEmail",
+            "contentOwnerId": "contentOwnerId",
+            "contentOwnerUsername": "contentOwnerUsername",
+            "folderId": "folderId",
+            "folderName": "folderName",
+            "followedObject": "followedObject",
+            "id": "id",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "profileId": "profileId",
+            "profileName": "profileName",
+            "teamsiteName": "teamsiteName",
+            "userFullName": "userFullName",
+            "userId": "userId"
+          }
+        },
+        "generatedLivedocComponents": {
+          "displayName": "Generatedlivedoccomponents",
+          "path": "/generatedLivedocComponents",
+          "responseKey": "",
+          "fields": {
+            "componentType": "componentType",
+            "contentId": "contentId",
+            "contentProfileId": "contentProfileId",
+            "contentProfileName": "contentProfileName",
+            "contentVersionId": "contentVersionId",
+            "createdAt": "createdAt",
+            "format": "format",
+            "generatedLivedocId": "generatedLivedocId",
+            "id": "id",
+            "insertMethod": "insertMethod",
+            "insertSource": "insertSource",
+            "insertStatus": "insertStatus",
+            "instanceName": "instanceName",
+            "libraryContentId": "libraryContentId",
+            "libraryContentName": "libraryContentName",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "modifiedAt": "modifiedAt",
+            "normalizedName": "normalizedName",
+            "parentComponentId": "parentComponentId",
+            "thumbnailImageId": "thumbnailImageId",
+            "thumbnailImageUrl": "thumbnailImageUrl",
+            "workspaceContentId": "workspaceContentId",
+            "workspaceContentVersionId": "workspaceContentVersionId"
+          }
+        },
+        "generatedLivedocFields": {
+          "displayName": "Generatedlivedocfields",
+          "path": "/generatedLivedocFields",
+          "responseKey": "",
+          "fields": {
+            "fieldName": "fieldName",
+            "fieldType": "fieldType",
+            "fieldValue": "fieldValue",
+            "generatedLivedocId": "generatedLivedocId",
+            "id": "id",
+            "modifiedAt": "modifiedAt"
+          }
+        },
+        "generatedLivedocOutputFormats": {
+          "displayName": "Generatedlivedocoutputformats",
+          "path": "/generatedLivedocOutputFormats",
+          "responseKey": "",
+          "fields": {
+            "compatibility": "compatibility",
+            "fileName": "fileName",
+            "format": "format",
+            "generatedLivedocId": "generatedLivedocId",
+            "hasClearNotes": "hasClearNotes",
+            "hasOpenPassword": "hasOpenPassword",
+            "hasOwnerOptions": "hasOwnerOptions",
+            "hasOwnerPassword": "hasOwnerPassword",
+            "id": "id",
+            "imageDpi": "imageDpi",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "outputLayout": "outputLayout",
+            "size": "size"
+          }
+        },
+        "generatedLivedocSlides": {
+          "displayName": "Generatedlivedocslides",
+          "path": "/generatedLivedocSlides",
+          "responseKey": "",
+          "fields": {
+            "generatedLivedocId": "generatedLivedocId",
+            "id": "id",
+            "insertMethod": "insertMethod",
+            "modifiedAt": "modifiedAt",
+            "originContentId": "originContentId",
+            "originContentPageIndex": "originContentPageIndex",
+            "originContentRepository": "originContentRepository",
+            "originContentVersionId": "originContentVersionId",
+            "pageShortId": "pageShortId",
+            "parentComponentId": "parentComponentId",
+            "position": "position",
+            "thumbnailImageUrl": "thumbnailImageUrl",
+            "title": "title"
+          }
+        },
+        "generatedLivedocs": {
+          "displayName": "Generatedlivedocs",
+          "path": "/generatedLivedocs",
+          "responseKey": "",
+          "fields": {
+            "application": "application",
+            "contentId": "contentId",
+            "contentProfileId": "contentProfileId",
+            "contentProfileName": "contentProfileName",
+            "contentVersionId": "contentVersionId",
+            "createdAt": "createdAt",
+            "flow": "flow",
+            "id": "id",
+            "instanceName": "instanceName",
+            "libraryContentId": "libraryContentId",
+            "libraryContentName": "libraryContentName",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "modifiedAt": "modifiedAt",
+            "normalizedName": "normalizedName",
+            "previewImageId": "previewImageId",
+            "previewImageUrl": "previewImageUrl",
+            "processingTimeSecs": "processingTimeSecs",
+            "productArea": "productArea",
+            "thumbnailImageId": "thumbnailImageId",
+            "thumbnailImageUrl": "thumbnailImageUrl",
+            "userId": "userId",
+            "workspaceContentId": "workspaceContentId",
+            "workspaceContentVersionId": "workspaceContentVersionId"
+          }
+        },
+        "groupManagers": {
+          "displayName": "Groupmanagers",
+          "path": "/groupManagers",
+          "responseKey": "",
+          "fields": {
+            "groupId": "groupId",
+            "groupName": "groupName",
+            "managerId": "managerId",
+            "managerUserId": "managerUserId"
+          }
+        },
+        "groupMembers": {
+          "displayName": "Groupmembers",
+          "path": "/groupMembers",
+          "responseKey": "",
+          "fields": {
+            "groupId": "groupId",
+            "groupName": "groupName",
+            "userId": "userId"
+          }
+        },
+        "groups": {
+          "displayName": "Groups",
+          "path": "/groups",
+          "responseKey": "",
+          "fields": {
+            "id": "id",
+            "name": "name",
+            "parentGroupId": "parentGroupId",
+            "type": "type"
+          }
+        },
+        "indirectGroupManagers": {
+          "displayName": "Indirectgroupmanagers",
+          "path": "/indirectGroupManagers",
+          "responseKey": "",
+          "fields": {
+            "groupId": "groupId",
+            "groupName": "groupName",
+            "id": "id",
+            "indirectManagerId": "indirectManagerId"
+          }
+        },
+        "indirectGroupMembers": {
+          "displayName": "Indirectgroupmembers",
+          "path": "/indirectGroupMembers",
+          "responseKey": "",
+          "fields": {
+            "groupId": "groupId",
+            "groupName": "groupName",
+            "id": "id",
+            "indirectUserId": "indirectUserId"
+          }
+        },
+        "instructorLedTrainingEventAttendance": {
+          "displayName": "Instructorledtrainingeventattendance",
+          "path": "/instructorLedTrainingEventAttendance",
+          "responseKey": "",
+          "fields": {
+            "attendanceStatus": "attendanceStatus",
+            "id": "id",
+            "invitedAt": "invitedAt",
+            "isDeleted": "isDeleted",
+            "rsvpStatus": "rsvpStatus",
+            "sessionId": "sessionId",
+            "userId": "userId",
+            "userModifiedAt": "userModifiedAt"
+          }
+        },
+        "instructorLedTrainingEventContentAssignments": {
+          "displayName": "Instructorledtrainingeventcontentassignments",
+          "path": "/instructorLedTrainingEventContentAssignments",
+          "responseKey": "",
+          "fields": {
+            "assignedAt": "assignedAt",
+            "contentId": "contentId",
+            "contentType": "contentType",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "sessionId": "sessionId",
+            "userModifiedAt": "userModifiedAt"
+          }
+        },
+        "instructorLedTrainingEventSessions": {
+          "displayName": "Instructorledtrainingeventsessions",
+          "path": "/instructorLedTrainingEventSessions",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "endDate": "endDate",
+            "eventId": "eventId",
+            "id": "id",
+            "inPersonLocation": "inPersonLocation",
+            "instructorId": "instructorId",
+            "instructorName": "instructorName",
+            "isArchived": "isArchived",
+            "isDeleted": "isDeleted",
+            "registrationCap": "registrationCap",
+            "sessionName": "sessionName",
+            "startDate": "startDate",
+            "timeZone": "timeZone",
+            "userModifiedAt": "userModifiedAt",
+            "videoConference": "videoConference"
+          }
+        },
+        "instructorLedTrainingEvents": {
+          "displayName": "Instructorledtrainingevents",
+          "path": "/instructorLedTrainingEvents",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "creatorName": "creatorName",
+            "description": "description",
+            "id": "id",
+            "isArchived": "isArchived",
+            "isDeleted": "isDeleted",
+            "name": "name",
+            "rsvpType": "rsvpType",
+            "userModifiedAt": "userModifiedAt"
+          }
+        },
+        "interactionContexts": {
+          "displayName": "Interactioncontexts",
+          "path": "/interactionContexts",
+          "responseKey": "",
+          "fields": {
+            "contextEmail": "contextEmail",
+            "contextId": "contextId",
+            "contextName": "contextName",
+            "contextSource": "contextSource",
+            "contextSourceType": "contextSourceType",
+            "contextType": "contextType",
+            "id": "id",
+            "interactionId": "interactionId",
+            "interactionRecipientId": "interactionRecipientId",
+            "isDeleted": "isDeleted",
+            "modifiedAt": "modifiedAt",
+            "systemId": "systemId",
+            "systemName": "systemName",
+            "systemType": "systemType",
+            "udmContextHistoryId": "udmContextHistoryId",
+            "udmContextId": "udmContextId"
+          }
+        },
+        "interactionRecipients": {
+          "displayName": "Interactionrecipients",
+          "path": "/interactionRecipients",
+          "responseKey": "",
+          "fields": {
+            "city": "city",
+            "country": "country",
+            "createdAt": "createdAt",
+            "email": "email",
+            "emailDomain": "emailDomain",
+            "firstName": "firstName",
+            "fullName": "fullName",
+            "id": "id",
+            "interactionId": "interactionId",
+            "internalUserId": "internalUserId",
+            "isInternalUser": "isInternalUser",
+            "lastName": "lastName",
+            "modifiedAt": "modifiedAt",
+            "phoneNumber": "phoneNumber",
+            "postalCode": "postalCode",
+            "recipientType": "recipientType",
+            "state": "state",
+            "street": "street"
+          }
+        },
+        "learningJourneySteps": {
+          "displayName": "Learningjourneysteps",
+          "path": "/learningJourneySteps",
+          "responseKey": "",
+          "fields": {
+            "id": "id",
+            "instructorLedTrainingEventId": "instructorLedTrainingEventId",
+            "isDeleted": "isDeleted",
+            "learningJourneyId": "learningJourneyId",
+            "lessonId": "lessonId",
+            "libraryContentId": "libraryContentId",
+            "modifiedAt": "modifiedAt",
+            "pathId": "pathId",
+            "stepOrder": "stepOrder",
+            "taskId": "taskId"
+          }
+        },
+        "learningJourneyTasks": {
+          "displayName": "Learningjourneytasks",
+          "path": "/learningJourneyTasks",
+          "responseKey": "",
+          "fields": {
+            "deletedAt": "deletedAt",
+            "description": "description",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "modifiedAt": "modifiedAt",
+            "title": "title"
+          }
+        },
+        "learningJourneys": {
+          "displayName": "Learningjourneys",
+          "path": "/learningJourneys",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "createdBy": "createdBy",
+            "deletedAt": "deletedAt",
+            "description": "description",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "libraryContentId": "libraryContentId",
+            "modifiedAt": "modifiedAt",
+            "modifiedBy": "modifiedBy",
+            "publishedAt": "publishedAt",
+            "status": "status",
+            "title": "title"
+          }
+        },
+        "learningProgress": {
+          "displayName": "Learningprogress",
+          "path": "/learningProgress",
+          "responseKey": "",
+          "fields": {
+            "assignedOrVoluntary": "assignedOrVoluntary",
+            "assignmentId": "assignmentId",
+            "assignmentSource": "assignmentSource",
+            "completedAt": "completedAt",
+            "completedLearningJourneyObjectCount": "completedLearningJourneyObjectCount",
+            "completedLessonCount": "completedLessonCount",
+            "completionRate": "completionRate",
+            "createdAt": "createdAt",
+            "deletedAt": "deletedAt",
+            "detailedStatus": "detailedStatus",
+            "dueAt": "dueAt",
+            "gradedAt": "gradedAt",
+            "graderId": "graderId",
+            "id": "id",
+            "isAwaitingReassignment": "isAwaitingReassignment",
+            "isDeleted": "isDeleted",
+            "isGradePending": "isGradePending",
+            "isInheritedAssignment": "isInheritedAssignment",
+            "isLatest": "isLatest",
+            "isPathProgressOutOfDate": "isPathProgressOutOfDate",
+            "journeyTitle": "journeyTitle",
+            "learningJourneyId": "learningJourneyId",
+            "learningProgressType": "learningProgressType",
+            "lessonId": "lessonId",
+            "lessonTitle": "lessonTitle",
+            "lessonVersionId": "lessonVersionId",
+            "modifiedAt": "modifiedAt",
+            "overdueStatus": "overdueStatus",
+            "pathId": "pathId",
+            "pathTitle": "pathTitle",
+            "progressStatus": "progressStatus",
+            "score": "score",
+            "source": "source",
+            "sourceDescription": "sourceDescription",
+            "sourceProgressId": "sourceProgressId",
+            "startedAt": "startedAt",
+            "timeSpent": "timeSpent",
+            "title": "title",
+            "totalLearningJourneyObjectCount": "totalLearningJourneyObjectCount",
+            "totalLessonCount": "totalLessonCount",
+            "userId": "userId",
+            "userName": "userName",
+            "views": "views",
+            "viewsAfterCompletion": "viewsAfterCompletion"
+          }
+        },
+        "learningStatuses": {
+          "displayName": "Learningstatuses",
+          "path": "/learningStatuses",
+          "responseKey": "",
+          "fields": {
+            "assignmentId": "assignmentId",
+            "eventName": "eventName",
+            "eventSessionName": "eventSessionName",
+            "id": "id",
+            "instructorLedTrainingEventId": "instructorLedTrainingEventId",
+            "instructorLedTrainingEventSessionId": "instructorLedTrainingEventSessionId",
+            "isAssigned": "isAssigned",
+            "isDeleted": "isDeleted",
+            "isGraded": "isGraded",
+            "isLatest": "isLatest",
+            "isOverdue": "isOverdue",
+            "learningJourneyId": "learningJourneyId",
+            "learningJourneyStepId": "learningJourneyStepId",
+            "learningProduct": "learningProduct",
+            "learningProgressId": "learningProgressId",
+            "lessonId": "lessonId",
+            "lessonVersionId": "lessonVersionId",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "pathId": "pathId",
+            "skillAssessmentRequestName": "skillAssessmentRequestName",
+            "skillRequestId": "skillRequestId",
+            "skillReviewId": "skillReviewId",
+            "sourceProgressId": "sourceProgressId",
+            "status": "status",
+            "title": "title",
+            "userId": "userId",
+            "userName": "userName"
+          }
+        },
+        "lessonTags": {
+          "displayName": "Lessontags",
+          "path": "/lessonTags",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "description": "description",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "lessonId": "lessonId",
+            "libraryVisibilityStatus": "libraryVisibilityStatus",
+            "modifiedAt": "modifiedAt",
+            "tagName": "tagName"
+          }
+        },
+        "lessonVersions": {
+          "displayName": "Lessonversions",
+          "path": "/lessonVersions",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "creatorId": "creatorId",
+            "deletedAt": "deletedAt",
+            "description": "description",
+            "estimatedSecondsToComplete": "estimatedSecondsToComplete",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "isValidVersion": "isValidVersion",
+            "lessonId": "lessonId",
+            "retakeScore": "retakeScore",
+            "title": "title",
+            "version": "version",
+            "workspaceId": "workspaceId"
+          }
+        },
+        "lessons": {
+          "displayName": "Lessons",
+          "path": "/lessons",
+          "responseKey": "",
+          "fields": {
+            "archivedAt": "archivedAt",
+            "archivedByUserId": "archivedByUserId",
+            "contentId": "contentId",
+            "createdAt": "createdAt",
+            "creatorId": "creatorId",
+            "description": "description",
+            "estimatedSecondsToComplete": "estimatedSecondsToComplete",
+            "id": "id",
+            "isArchived": "isArchived",
+            "isDeleted": "isDeleted",
+            "lessonVersionId": "lessonVersionId",
+            "modifiedAt": "modifiedAt",
+            "modifierId": "modifierId",
+            "negativeRatings": "negativeRatings",
+            "positiveRatings": "positiveRatings",
+            "retakeScore": "retakeScore",
+            "skippedRatings": "skippedRatings",
+            "state": "state",
+            "teamsiteId": "teamsiteId",
+            "title": "title",
+            "workspaceId": "workspaceId",
+            "workspaceName": "workspaceName"
+          }
+        },
+        "libraryContentExpertAssociations": {
+          "displayName": "Librarycontentexpertassociations",
+          "path": "/libraryContentExpertAssociations",
+          "responseKey": "",
+          "fields": {
+            "contentExpertId": "contentExpertId",
+            "id": "id",
+            "libraryContentId": "libraryContentId",
+            "modifiedAt": "modifiedAt"
+          }
+        },
+        "libraryContentVersions": {
+          "displayName": "Librarycontentversions",
+          "path": "/libraryContentVersions",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "createdBy": "createdBy",
+            "createdByUsername": "createdByUsername",
+            "deletedAt": "deletedAt",
+            "deletedByUserId": "deletedByUserId",
+            "deletedByUserName": "deletedByUserName",
+            "expiresAt": "expiresAt",
+            "id": "id",
+            "isAvailableInProfile": "isAvailableInProfile",
+            "isDeleted": "isDeleted",
+            "isPublished": "isPublished",
+            "libraryContentId": "libraryContentId",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "previewImageId": "previewImageId",
+            "previewImageUrl": "previewImageUrl",
+            "publishedAt": "publishedAt",
+            "publishedByUserId": "publishedByUserId",
+            "size": "size",
+            "teamsiteId": "teamsiteId",
+            "thumbnailImageId": "thumbnailImageId",
+            "thumbnailImageUrl": "thumbnailImageUrl",
+            "unpublishedAt": "unpublishedAt",
+            "uploadedAt": "uploadedAt",
+            "version": "version",
+            "versionStatus": "versionStatus"
+          }
+        },
+        "libraryContents": {
+          "displayName": "Librarycontents",
+          "path": "/libraryContents",
+          "responseKey": "",
+          "fields": {
+            "addLibraryContentToProfileAt": "addLibraryContentToProfileAt",
+            "associatedProgramLibraryContentId": "associatedProgramLibraryContentId",
+            "contentStatus": "contentStatus",
+            "createdAt": "createdAt",
+            "deletedAt": "deletedAt",
+            "deletedByUserId": "deletedByUserId",
+            "deletedByUserName": "deletedByUserName",
+            "description": "description",
+            "docCenterUrl": "docCenterUrl",
+            "format": "format",
+            "hasPlannerAssociations": "hasPlannerAssociations",
+            "hasProgramAssociations": "hasProgramAssociations",
+            "id": "id",
+            "isAvailableInProfile": "isAvailableInProfile",
+            "isCheckedOut": "isCheckedOut",
+            "isDeleted": "isDeleted",
+            "isPublished": "isPublished",
+            "lastModified": "lastModified",
+            "latestLibraryContentVersionCreatedAt": "latestLibraryContentVersionCreatedAt",
+            "latestLibraryContentVersionCreatedBy": "latestLibraryContentVersionCreatedBy",
+            "latestLibraryContentVersionCreatedByUsername": "latestLibraryContentVersionCreatedByUsername",
+            "latestLibraryContentVersionExpiresAt": "latestLibraryContentVersionExpiresAt",
+            "latestLibraryContentVersionId": "latestLibraryContentVersionId",
+            "latestLibraryContentVersionSize": "latestLibraryContentVersionSize",
+            "latestLibraryContentVersionStatus": "latestLibraryContentVersionStatus",
+            "latestVersion": "latestVersion",
+            "libraryPath": "libraryPath",
+            "libraryUrl": "libraryUrl",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "newsCenterUrl": "newsCenterUrl",
+            "originType": "originType",
+            "ownerEmail": "ownerEmail",
+            "ownerId": "ownerId",
+            "ownerUsername": "ownerUsername",
+            "parentFolderLibraryContentId": "parentFolderLibraryContentId",
+            "previewImageId": "previewImageId",
+            "previewImageUrl": "previewImageUrl",
+            "publishedAt": "publishedAt",
+            "publishedByUserId": "publishedByUserId",
+            "publishedByUsername": "publishedByUsername",
+            "publishedVersionExpiresAt": "publishedVersionExpiresAt",
+            "publishedVersionId": "publishedVersionId",
+            "shortId": "shortId",
+            "teamsiteId": "teamsiteId",
+            "teamsiteName": "teamsiteName",
+            "thumbnailImageId": "thumbnailImageId",
+            "thumbnailImageUrl": "thumbnailImageUrl",
+            "type": "type",
+            "unpublishedAt": "unpublishedAt",
+            "version": "version"
+          }
+        },
+        "livedocCustomContentDataSourceRetrieveDataRequests": {
+          "displayName": "Livedoccustomcontentdatasourceretrievedatarequests",
+          "path": "/livedocCustomContentDataSourceRetrieveDataRequests",
+          "responseKey": "",
+          "fields": {
+            "customContentId": "customContentId",
+            "customContentName": "customContentName",
+            "customContentTypeName": "customContentTypeName",
+            "customContentVersion": "customContentVersion",
+            "dataSourceLibraryContentId": "dataSourceLibraryContentId",
+            "dataSourceLibraryContentName": "dataSourceLibraryContentName",
+            "dataSourceLibraryContentVersionId": "dataSourceLibraryContentVersionId",
+            "id": "id",
+            "modifiedAt": "modifiedAt",
+            "region": "region",
+            "requestTime": "requestTime"
+          }
+        },
+        "livedocDataSourceInfo": {
+          "displayName": "Livedocdatasourceinfo",
+          "path": "/livedocDataSourceInfo",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "createdBy": "createdBy",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "isReturnOneRow": "isReturnOneRow",
+            "lastModified": "lastModified",
+            "lastModifiedBy": "lastModifiedBy",
+            "libraryContentId": "libraryContentId",
+            "libraryContentName": "libraryContentName",
+            "libraryContentType": "libraryContentType",
+            "libraryContentVersion": "libraryContentVersion",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "salesforceBaseObject": "salesforceBaseObject",
+            "salesforceVersion": "salesforceVersion",
+            "systemModifiedAt": "systemModifiedAt",
+            "teamsiteId": "teamsiteId"
+          }
+        },
+        "livedocDataSourceRetrieveDataRequests": {
+          "displayName": "Livedocdatasourceretrievedatarequests",
+          "path": "/livedocDataSourceRetrieveDataRequests",
+          "responseKey": "",
+          "fields": {
+            "certificateId": "certificateId",
+            "certificateThumbprint": "certificateThumbprint",
+            "dataSourceLibraryContentId": "dataSourceLibraryContentId",
+            "dataSourceLibraryContentName": "dataSourceLibraryContentName",
+            "dataSourceLibraryContentType": "dataSourceLibraryContentType",
+            "dataSourceLibraryContentVersion": "dataSourceLibraryContentVersion",
+            "dataSourceLibraryContentVersionId": "dataSourceLibraryContentVersionId",
+            "duration": "duration",
+            "id": "id",
+            "isSeismicCertificate": "isSeismicCertificate",
+            "modifiedAt": "modifiedAt",
+            "region": "region",
+            "requestTime": "requestTime",
+            "responseStatus": "responseStatus",
+            "tokenCertificateId": "tokenCertificateId",
+            "tokenCertificateThumbprint": "tokenCertificateThumbprint",
+            "tokenIsSeismicCertificate": "tokenIsSeismicCertificate"
+          }
+        },
+        "livedocGlobalVariableRequests": {
+          "displayName": "Livedocglobalvariablerequests",
+          "path": "/livedocGlobalVariableRequests",
+          "responseKey": "",
+          "fields": {
+            "id": "id",
+            "modifiedAt": "modifiedAt",
+            "operatorId": "operatorId",
+            "operatorName": "operatorName",
+            "region": "region",
+            "requestTime": "requestTime",
+            "requestType": "requestType",
+            "variableFormat": "variableFormat",
+            "variableOutputDataType": "variableOutputDataType",
+            "variableType": "variableType",
+            "variableVersion": "variableVersion"
+          }
+        },
+        "livesendCommentMentions": {
+          "displayName": "Livesendcommentmentions",
+          "path": "/livesendCommentMentions",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "id": "id",
+            "isRemoved": "isRemoved",
+            "livesendCommentId": "livesendCommentId",
+            "mentionedLivesendLinkContentId": "mentionedLivesendLinkContentId",
+            "mentionedLivesendLinkContentName": "mentionedLivesendLinkContentName",
+            "mentionedUserEmail": "mentionedUserEmail",
+            "modifiedAt": "modifiedAt"
+          }
+        },
+        "livesendCommentReactions": {
+          "displayName": "Livesendcommentreactions",
+          "path": "/livesendCommentReactions",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "engagementUserEmail": "engagementUserEmail",
+            "id": "id",
+            "isRemoved": "isRemoved",
+            "livesendCommentId": "livesendCommentId",
+            "modifiedAt": "modifiedAt",
+            "reaction": "reaction",
+            "reactionName": "reactionName"
+          }
+        },
+        "livesendComments": {
+          "displayName": "Livesendcomments",
+          "path": "/livesendComments",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "engagementUserEmail": "engagementUserEmail",
+            "engagementUserName": "engagementUserName",
+            "hasMentions": "hasMentions",
+            "hasReactions": "hasReactions",
+            "id": "id",
+            "isHidden": "isHidden",
+            "isInternalUser": "isInternalUser",
+            "isRemoved": "isRemoved",
+            "livesendLinkId": "livesendLinkId",
+            "livesendViewingSessionId": "livesendViewingSessionId",
+            "modifiedAt": "modifiedAt"
+          }
+        },
+        "livesendContentViewingSessions": {
+          "displayName": "Livesendcontentviewingsessions",
+          "path": "/livesendContentViewingSessions",
+          "responseKey": "",
+          "fields": {
+            "durationSeconds": "durationSeconds",
+            "engagementUserEmailAddress": "engagementUserEmailAddress",
+            "id": "id",
+            "interactionId": "interactionId",
+            "isInternalUser": "isInternalUser",
+            "livesendLinkContentId": "livesendLinkContentId",
+            "livesendLinkId": "livesendLinkId",
+            "livesendViewingSessionId": "livesendViewingSessionId",
+            "modifiedAt": "modifiedAt",
+            "sessionEndedAt": "sessionEndedAt",
+            "sessionStartedAt": "sessionStartedAt"
+          }
+        },
+        "livesendLinkContents": {
+          "displayName": "Livesendlinkcontents",
+          "path": "/livesendLinkContents",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "createdBy": "createdBy",
+            "deletedAt": "deletedAt",
+            "id": "id",
+            "interactionGroupId": "interactionGroupId",
+            "isDeleted": "isDeleted",
+            "libraryContentId": "libraryContentId",
+            "livesendLinkId": "livesendLinkId",
+            "livesendLinkMeetingContentId": "livesendLinkMeetingContentId",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "numberOfSessions": "numberOfSessions",
+            "totalPages": "totalPages",
+            "wasViewed": "wasViewed"
+          }
+        },
+        "livesendLinkMeetingContents": {
+          "displayName": "Livesendlinkmeetingcontents",
+          "path": "/livesendLinkMeetingContents",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "createdBy": "createdBy",
+            "deletedAt": "deletedAt",
+            "id": "id",
+            "interactionGroupId": "interactionGroupId",
+            "isDeleted": "isDeleted",
+            "livesendLinkId": "livesendLinkId",
+            "meetingClipId": "meetingClipId",
+            "meetingId": "meetingId",
+            "meetingRecordingId": "meetingRecordingId",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "numberOfSessions": "numberOfSessions",
+            "type": "type",
+            "wasViewed": "wasViewed"
+          }
+        },
+        "livesendLinkMembers": {
+          "displayName": "Livesendlinkmembers",
+          "path": "/livesendLinkMembers",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "email": "email",
+            "externalUserId": "externalUserId",
+            "internalUserId": "internalUserId",
+            "isInternalUser": "isInternalUser",
+            "livesendLinkId": "livesendLinkId",
+            "modifiedAt": "modifiedAt"
+          }
+        },
+        "livesendLinks": {
+          "displayName": "Livesendlinks",
+          "path": "/livesendLinks",
+          "responseKey": "",
+          "fields": {
+            "allowDownload": "allowDownload",
+            "createdAt": "createdAt",
+            "createdBy": "createdBy",
+            "expireAfterView": "expireAfterView",
+            "expiresAt": "expiresAt",
+            "hasPassword": "hasPassword",
+            "id": "id",
+            "interactionGroupId": "interactionGroupId",
+            "interactionGroupName": "interactionGroupName",
+            "isDigitalRoom": "isDigitalRoom",
+            "isRoomCustomized": "isRoomCustomized",
+            "isSeparateSend": "isSeparateSend",
+            "loginEnabled": "loginEnabled",
+            "modifiedAt": "modifiedAt",
+            "notificationMode": "notificationMode",
+            "urlPath": "urlPath"
+          }
+        },
+        "livesendPageViews": {
+          "displayName": "Livesendpageviews",
+          "path": "/livesendPageViews",
+          "responseKey": "",
+          "fields": {
+            "duration": "duration",
+            "id": "id",
+            "livesendContentViewingSessionId": "livesendContentViewingSessionId",
+            "livesendLinkContentId": "livesendLinkContentId",
+            "livesendViewingSessionId": "livesendViewingSessionId",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "pageIndex": "pageIndex",
+            "sessionEndedAt": "sessionEndedAt",
+            "sessionStartedAt": "sessionStartedAt"
+          }
+        },
+        "livesendViewingSessions": {
+          "displayName": "Livesendviewingsessions",
+          "path": "/livesendViewingSessions",
+          "responseKey": "",
+          "fields": {
+            "city": "city",
+            "country": "country",
+            "engagementUserEmail": "engagementUserEmail",
+            "geolocationLatitude": "geolocationLatitude",
+            "geolocationLongitude": "geolocationLongitude",
+            "id": "id",
+            "interactionGroupId": "interactionGroupId",
+            "interactionId": "interactionId",
+            "ipAddress": "ipAddress",
+            "isInternalUser": "isInternalUser",
+            "livesendLinkId": "livesendLinkId",
+            "modifiedAt": "modifiedAt",
+            "roomDurationSeconds": "roomDurationSeconds",
+            "sessionEndedAt": "sessionEndedAt",
+            "sessionStartedAt": "sessionStartedAt",
+            "state": "state",
+            "totalContentViewingDurationSeconds": "totalContentViewingDurationSeconds",
+            "userLoginType": "userLoginType",
+            "userWasLoggedIn": "userWasLoggedIn"
+          }
+        },
+        "meetingAgendaUpdates": {
+          "displayName": "Meetingagendaupdates",
+          "path": "/meetingAgendaUpdates",
+          "responseKey": "",
+          "fields": {
+            "agendaCharacters": "agendaCharacters",
+            "id": "id",
+            "meetingId": "meetingId",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "userId": "userId",
+            "userName": "userName"
+          }
+        },
+        "meetingContentPagePresentations": {
+          "displayName": "Meetingcontentpagepresentations",
+          "path": "/meetingContentPagePresentations",
+          "responseKey": "",
+          "fields": {
+            "barcode": "barcode",
+            "durationSeconds": "durationSeconds",
+            "endedAt": "endedAt",
+            "id": "id",
+            "meetingContentPresentationId": "meetingContentPresentationId",
+            "modifiedAt": "modifiedAt",
+            "pageIndex": "pageIndex",
+            "startedAt": "startedAt"
+          }
+        },
+        "meetingContentPresentations": {
+          "displayName": "Meetingcontentpresentations",
+          "path": "/meetingContentPresentations",
+          "responseKey": "",
+          "fields": {
+            "contentId": "contentId",
+            "contentVersionId": "contentVersionId",
+            "durationSeconds": "durationSeconds",
+            "endedAt": "endedAt",
+            "id": "id",
+            "isUploadedFromLocal": "isUploadedFromLocal",
+            "meetingId": "meetingId",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "personalizationMethod": "personalizationMethod",
+            "presentationType": "presentationType",
+            "presentedById": "presentedById",
+            "presentedByIsInternalUser": "presentedByIsInternalUser",
+            "presentedByUserName": "presentedByUserName",
+            "repository": "repository",
+            "startedAt": "startedAt",
+            "totalPages": "totalPages"
+          }
+        },
+        "meetingGeneralNotesUpdates": {
+          "displayName": "Meetinggeneralnotesupdates",
+          "path": "/meetingGeneralNotesUpdates",
+          "responseKey": "",
+          "fields": {
+            "generalNotesCharacters": "generalNotesCharacters",
+            "id": "id",
+            "meetingId": "meetingId",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "userId": "userId",
+            "userName": "userName"
+          }
+        },
+        "meetingKeywords": {
+          "displayName": "Meetingkeywords",
+          "path": "/meetingKeywords",
+          "responseKey": "",
+          "fields": {
+            "endedAt": "endedAt",
+            "id": "id",
+            "keyword": "keyword",
+            "meetingId": "meetingId",
+            "meetingParticipantDisplayIdentification": "meetingParticipantDisplayIdentification",
+            "meetingParticipantDisplayName": "meetingParticipantDisplayName",
+            "modifiedAt": "modifiedAt",
+            "startedAt": "startedAt",
+            "topic": "topic"
+          }
+        },
+        "meetingParticipants": {
+          "displayName": "Meetingparticipants",
+          "path": "/meetingParticipants",
+          "responseKey": "",
+          "fields": {
+            "displayName": "displayName",
+            "engagementUserEmailAddress": "engagementUserEmailAddress",
+            "engagementUserEmailDomain": "engagementUserEmailDomain",
+            "engagementUserPhoneNumber": "engagementUserPhoneNumber",
+            "externalMeetingUserIdentification": "externalMeetingUserIdentification",
+            "id": "id",
+            "isInternalUser": "isInternalUser",
+            "listenTimeSeconds": "listenTimeSeconds",
+            "meetingId": "meetingId",
+            "memberType": "memberType",
+            "modifiedAt": "modifiedAt",
+            "talkTimeSeconds": "talkTimeSeconds",
+            "userId": "userId",
+            "userName": "userName"
+          }
+        },
+        "meetingQuestions": {
+          "displayName": "Meetingquestions",
+          "path": "/meetingQuestions",
+          "responseKey": "",
+          "fields": {
+            "endedAt": "endedAt",
+            "id": "id",
+            "meetingId": "meetingId",
+            "modifiedAt": "modifiedAt",
+            "question": "question",
+            "speaker": "speaker",
+            "speakerId": "speakerId",
+            "startedAt": "startedAt",
+            "topic": "topic"
+          }
+        },
+        "meetingTrackers": {
+          "displayName": "Meetingtrackers",
+          "path": "/meetingTrackers",
+          "responseKey": "",
+          "fields": {
+            "aggMentions": "aggMentions",
+            "id": "id",
+            "meetingId": "meetingId",
+            "modifiedAt": "modifiedAt",
+            "topic": "topic",
+            "tracker": "tracker"
+          }
+        },
+        "meetings": {
+          "displayName": "Meetings",
+          "path": "/meetings",
+          "responseKey": "",
+          "fields": {
+            "agendaCharacters": "agendaCharacters",
+            "durationSeconds": "durationSeconds",
+            "endedAt": "endedAt",
+            "externalMeetingId": "externalMeetingId",
+            "externalMeetingType": "externalMeetingType",
+            "generalNotesCharacters": "generalNotesCharacters",
+            "hostId": "hostId",
+            "hostUserName": "hostUserName",
+            "id": "id",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "prepFirstActivityAt": "prepFirstActivityAt",
+            "prepLastActivityAt": "prepLastActivityAt",
+            "startedAt": "startedAt",
+            "type": "type"
+          }
+        },
+        "microappScreenViews": {
+          "displayName": "Microappscreenviews",
+          "path": "/microappScreenViews",
+          "responseKey": "",
+          "fields": {
+            "durationSeconds": "durationSeconds",
+            "engagementUserEmailAddress": "engagementUserEmailAddress",
+            "id": "id",
+            "isInternalUser": "isInternalUser",
+            "livesendContentViewingSessionId": "livesendContentViewingSessionId",
+            "livesendLinkContentId": "livesendLinkContentId",
+            "microappScreenId": "microappScreenId",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "sessionEndedAt": "sessionEndedAt",
+            "sessionStartedAt": "sessionStartedAt"
+          }
+        },
+        "microappScreens": {
+          "displayName": "Microappscreens",
+          "path": "/microappScreens",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "id": "id",
+            "layout": "layout",
+            "libraryContentId": "libraryContentId",
+            "libraryContentName": "libraryContentName",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "orientation": "orientation",
+            "screenIndex": "screenIndex",
+            "screenType": "screenType",
+            "thumbnailImageUrl": "thumbnailImageUrl"
+          }
+        },
+        "notificationFrequencySettings": {
+          "displayName": "Notificationfrequencysettings",
+          "path": "/notificationFrequencySettings",
+          "responseKey": "",
+          "fields": {
+            "activityTrigger": "activityTrigger",
+            "channel": "channel",
+            "frequency": "frequency",
+            "id": "id",
+            "modifiedAt": "modifiedAt",
+            "productArea": "productArea",
+            "type": "type",
+            "userFullName": "userFullName",
+            "userId": "userId"
+          }
+        },
+        "notificationStatus": {
+          "displayName": "Notificationstatus",
+          "path": "/notificationStatus",
+          "responseKey": "",
+          "fields": {
+            "activityTrigger": "activityTrigger",
+            "channel": "channel",
+            "digestId": "digestId",
+            "firstReadTime": "firstReadTime",
+            "id": "id",
+            "isRead": "isRead",
+            "modifiedAt": "modifiedAt",
+            "productArea": "productArea",
+            "sentTime": "sentTime",
+            "userFullName": "userFullName",
+            "userId": "userId"
+          }
+        },
+        "pageClicks": {
+          "displayName": "Pageclicks",
+          "path": "/pageClicks",
+          "responseKey": "",
+          "fields": {
+            "action": "action",
+            "actionType": "actionType",
+            "application": "application",
+            "clickType": "clickType",
+            "id": "id",
+            "isSuccessfulClick": "isSuccessfulClick",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "pageContentId": "pageContentId",
+            "pageContentVersionId": "pageContentVersionId",
+            "pageType": "pageType",
+            "productArea": "productArea",
+            "targetContentId": "targetContentId",
+            "targetContentVersionId": "targetContentVersionId",
+            "targetUrl": "targetUrl",
+            "userId": "userId",
+            "username": "username",
+            "widgetColumnIndex": "widgetColumnIndex",
+            "widgetCount": "widgetCount",
+            "widgetId": "widgetId",
+            "widgetRowIndex": "widgetRowIndex",
+            "widgetSubType": "widgetSubType",
+            "widgetTitle": "widgetTitle",
+            "widgetType": "widgetType"
+          }
+        },
+        "pageContentHistory": {
+          "displayName": "Pagecontenthistory",
+          "path": "/pageContentHistory",
+          "responseKey": "",
+          "fields": {
+            "associatedLessonlyId": "associatedLessonlyId",
+            "associatedObjectId": "associatedObjectId",
+            "associatedObjectLiveSends": "associatedObjectLiveSends",
+            "associatedObjectName": "associatedObjectName",
+            "associatedObjectType": "associatedObjectType",
+            "associatedObjectUsage": "associatedObjectUsage",
+            "associatedObjectUsers": "associatedObjectUsers",
+            "associatedObjectViews": "associatedObjectViews",
+            "associatedSeismicContentId": "associatedSeismicContentId",
+            "associatedSeismicContentOwnerId": "associatedSeismicContentOwnerId",
+            "associatedSeismicContentVersionId": "associatedSeismicContentVersionId",
+            "firstSeenOnPageAt": "firstSeenOnPageAt",
+            "hadDynamicAssociation": "hadDynamicAssociation",
+            "hadStaticAssociation": "hadStaticAssociation",
+            "id": "id",
+            "isMaxLastSeenOnPageAt": "isMaxLastSeenOnPageAt",
+            "isMinFirstSeenOnPageAt": "isMinFirstSeenOnPageAt",
+            "lastSeenOnPageAt": "lastSeenOnPageAt",
+            "libraryContentId": "libraryContentId",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "modifiedAt": "modifiedAt",
+            "pageName": "pageName",
+            "pageOwnerId": "pageOwnerId"
+          }
+        },
+        "pathContents": {
+          "displayName": "Pathcontents",
+          "path": "/pathContents",
+          "responseKey": "",
+          "fields": {
+            "lessonDescription": "lessonDescription",
+            "lessonId": "lessonId",
+            "lessonTitle": "lessonTitle",
+            "pathCreatedAt": "pathCreatedAt",
+            "pathCreatorFullName": "pathCreatorFullName",
+            "pathCreatorId": "pathCreatorId",
+            "pathDescription": "pathDescription",
+            "pathId": "pathId",
+            "pathModifiedAt": "pathModifiedAt",
+            "pathModifierFullName": "pathModifierFullName",
+            "pathModifierId": "pathModifierId",
+            "pathTagList": "pathTagList",
+            "pathTitle": "pathTitle"
+          }
+        },
+        "pathTags": {
+          "displayName": "Pathtags",
+          "path": "/pathTags",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "description": "description",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "libraryVisibilityStatus": "libraryVisibilityStatus",
+            "modifiedAt": "modifiedAt",
+            "pathId": "pathId",
+            "tagName": "tagName"
+          }
+        },
+        "paths": {
+          "displayName": "Paths",
+          "path": "/paths",
+          "responseKey": "",
+          "fields": {
+            "archivedAt": "archivedAt",
+            "archivedByUserId": "archivedByUserId",
+            "certificationId": "certificationId",
+            "createdAt": "createdAt",
+            "creatorId": "creatorId",
+            "deletedAt": "deletedAt",
+            "description": "description",
+            "estimatedSecondsToComplete": "estimatedSecondsToComplete",
+            "id": "id",
+            "isArchived": "isArchived",
+            "isCertification": "isCertification",
+            "isDeleted": "isDeleted",
+            "modifiedAt": "modifiedAt",
+            "modifierId": "modifierId",
+            "publishedat": "publishedat",
+            "publisherId": "publisherId",
+            "title": "title",
+            "workspaceId": "workspaceId",
+            "workspaceName": "workspaceName"
+          }
+        },
+        "postContents": {
+          "displayName": "Postcontents",
+          "path": "/postContents",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "id": "id",
+            "postContentFormat": "postContentFormat",
+            "postContentName": "postContentName",
+            "postContentType": "postContentType"
+          }
+        },
+        "posts": {
+          "displayName": "Posts",
+          "path": "/posts",
+          "responseKey": "",
+          "fields": {
+            "channelId": "channelId",
+            "createdAt": "createdAt",
+            "id": "id",
+            "modifiedAt": "modifiedAt",
+            "postName": "postName"
+          }
+        },
+        "proficiencyLevels": {
+          "displayName": "Proficiencylevels",
+          "path": "/proficiencyLevels",
+          "responseKey": "",
+          "fields": {
+            "companyId": "companyId",
+            "createdAt": "createdAt",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "modifiedAt": "modifiedAt",
+            "ratingDefinitionsKey": "ratingDefinitionsKey",
+            "ratingDefinitionsName": "ratingDefinitionsName",
+            "updatedAt": "updatedAt"
+          }
+        },
+        "programAssociations": {
+          "displayName": "Programassociations",
+          "path": "/programAssociations",
+          "responseKey": "",
+          "fields": {
+            "id": "id",
+            "libraryContentId": "libraryContentId",
+            "programId": "programId",
+            "taskId": "taskId",
+            "taskShortId": "taskShortId"
+          }
+        },
+        "programDates": {
+          "displayName": "Programdates",
+          "path": "/programDates",
+          "responseKey": "",
+          "fields": {
+            "dateType": "dateType",
+            "programDate": "programDate",
+            "programId": "programId",
+            "programShortId": "programShortId"
+          }
+        },
+        "programItems": {
+          "displayName": "Programitems",
+          "path": "/programItems",
+          "responseKey": "",
+          "fields": {
+            "actualCompletedDate": "actualCompletedDate",
+            "actualDurationDays": "actualDurationDays",
+            "actualStartDate": "actualStartDate",
+            "createdAt": "createdAt",
+            "deletedAt": "deletedAt",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "isOverdue": "isOverdue",
+            "plannedDueDate": "plannedDueDate",
+            "plannedDurationDays": "plannedDurationDays",
+            "plannedStartDate": "plannedStartDate",
+            "priority": "priority",
+            "rank": "rank",
+            "shortId": "shortId",
+            "status": "status",
+            "systemModifiedAt": "systemModifiedAt",
+            "title": "title",
+            "type": "type",
+            "userModifiedAt": "userModifiedAt"
+          }
+        },
+        "programRequestDates": {
+          "displayName": "Programrequestdates",
+          "path": "/programRequestDates",
+          "responseKey": "",
+          "fields": {
+            "dateType": "dateType",
+            "requestDate": "requestDate",
+            "requestId": "requestId",
+            "requestShortId": "requestShortId"
+          }
+        },
+        "programRequests": {
+          "displayName": "Programrequests",
+          "path": "/programRequests",
+          "responseKey": "",
+          "fields": {
+            "assigneeId": "assigneeId",
+            "assigneeUsername": "assigneeUsername",
+            "createdAt": "createdAt",
+            "createdBy": "createdBy",
+            "createdByUsername": "createdByUsername",
+            "deletedAt": "deletedAt",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "isOverdue": "isOverdue",
+            "modifiedBy": "modifiedBy",
+            "modifiedByUsername": "modifiedByUsername",
+            "note": "note",
+            "plannedDueDate": "plannedDueDate",
+            "plannedDurationDays": "plannedDurationDays",
+            "plannedStartDate": "plannedStartDate",
+            "priority": "priority",
+            "programId": "programId",
+            "rank": "rank",
+            "requestorId": "requestorId",
+            "requestorUsername": "requestorUsername",
+            "shortId": "shortId",
+            "status": "status",
+            "systemModifiedAt": "systemModifiedAt",
+            "title": "title",
+            "userModifiedAt": "userModifiedAt"
+          }
+        },
+        "programTaskDates": {
+          "displayName": "Programtaskdates",
+          "path": "/programTaskDates",
+          "responseKey": "",
+          "fields": {
+            "dateType": "dateType",
+            "taskDate": "taskDate",
+            "taskId": "taskId",
+            "taskShortId": "taskShortId"
+          }
+        },
+        "programTasks": {
+          "displayName": "Programtasks",
+          "path": "/programTasks",
+          "responseKey": "",
+          "fields": {
+            "actualCompletedDate": "actualCompletedDate",
+            "actualDurationDays": "actualDurationDays",
+            "actualStartDate": "actualStartDate",
+            "assigneeId": "assigneeId",
+            "assigneeUsername": "assigneeUsername",
+            "copyFromId": "copyFromId",
+            "createdAt": "createdAt",
+            "createdBy": "createdBy",
+            "createdByUsername": "createdByUsername",
+            "deletedAt": "deletedAt",
+            "description": "description",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "isFromProgramTemplate": "isFromProgramTemplate",
+            "isOverdue": "isOverdue",
+            "modifiedBy": "modifiedBy",
+            "modifiedByUsername": "modifiedByUsername",
+            "plannedDueDate": "plannedDueDate",
+            "plannedDurationDays": "plannedDurationDays",
+            "plannedStartDate": "plannedStartDate",
+            "priority": "priority",
+            "programId": "programId",
+            "rank": "rank",
+            "requestorId": "requestorId",
+            "requestorUsername": "requestorUsername",
+            "shortId": "shortId",
+            "status": "status",
+            "systemModifiedAt": "systemModifiedAt",
+            "title": "title",
+            "userModifiedAt": "userModifiedAt"
+          }
+        },
+        "programs": {
+          "displayName": "Programs",
+          "path": "/programs",
+          "responseKey": "",
+          "fields": {
+            "actualDurationDays": "actualDurationDays",
+            "actualEndDate": "actualEndDate",
+            "actualStartDate": "actualStartDate",
+            "copyFromId": "copyFromId",
+            "createdAt": "createdAt",
+            "createdBy": "createdBy",
+            "createdByUsername": "createdByUsername",
+            "creationMethod": "creationMethod",
+            "deletedAt": "deletedAt",
+            "description": "description",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "isOverdue": "isOverdue",
+            "modifiedBy": "modifiedBy",
+            "modifiedByUsername": "modifiedByUsername",
+            "plannedDurationDays": "plannedDurationDays",
+            "plannedEndDate": "plannedEndDate",
+            "plannedStartDate": "plannedStartDate",
+            "programArchived": "programArchived",
+            "programAudience": "programAudience",
+            "programLaunchDate": "programLaunchDate",
+            "programManagerId": "programManagerId",
+            "programManagerUsername": "programManagerUsername",
+            "programOnboardingGroup": "programOnboardingGroup",
+            "programOutcomeKpiFirst": "programOutcomeKpiFirst",
+            "programOutcomeKpiSecond": "programOutcomeKpiSecond",
+            "programOutcomeKpiThird": "programOutcomeKpiThird",
+            "programTopics": "programTopics",
+            "programTrackers": "programTrackers",
+            "programType": "programType",
+            "shortId": "shortId",
+            "systemModifiedAt": "systemModifiedAt",
+            "templateId": "templateId",
+            "title": "title",
+            "userModifiedAt": "userModifiedAt"
+          }
+        },
+        "publishingApprovalWorkflowAcknowledgements": {
+          "displayName": "Publishingapprovalworkflowacknowledgements",
+          "path": "/publishingApprovalWorkflowAcknowledgements",
+          "responseKey": "",
+          "fields": {
+            "acknowledgementId": "acknowledgementId",
+            "acknowledgementMessage": "acknowledgementMessage",
+            "acknowledgementName": "acknowledgementName",
+            "acknowledgementTitle": "acknowledgementTitle",
+            "systemModifiedAt": "systemModifiedAt",
+            "workflowId": "workflowId"
+          }
+        },
+        "publishingApprovalWorkflowStepsHistory": {
+          "displayName": "Publishingapprovalworkflowstepshistory",
+          "path": "/publishingApprovalWorkflowStepsHistory",
+          "responseKey": "",
+          "fields": {
+            "approverUserId": "approverUserId",
+            "approverUsername": "approverUsername",
+            "comment": "comment",
+            "contentVersionId": "contentVersionId",
+            "durationSeconds": "durationSeconds",
+            "endedAt": "endedAt",
+            "id": "id",
+            "isLatest": "isLatest",
+            "isRevoked": "isRevoked",
+            "name": "name",
+            "startedAt": "startedAt",
+            "status": "status",
+            "stepOrder": "stepOrder",
+            "systemModifiedAt": "systemModifiedAt",
+            "workflowName": "workflowName",
+            "workflowid": "workflowid"
+          }
+        },
+        "publishingApprovalWorkflows": {
+          "displayName": "Publishingapprovalworkflows",
+          "path": "/publishingApprovalWorkflows",
+          "responseKey": "",
+          "fields": {
+            "activeStepOrder": "activeStepOrder",
+            "contentId": "contentId",
+            "contentLibraryURL": "contentLibraryURL",
+            "contentName": "contentName",
+            "contentVersionId": "contentVersionId",
+            "durationSeconds": "durationSeconds",
+            "endedAt": "endedAt",
+            "id": "id",
+            "isVersionApproved": "isVersionApproved",
+            "isVersionRejected": "isVersionRejected",
+            "name": "name",
+            "startedAt": "startedAt",
+            "status": "status",
+            "submitWithAcknowledgements": "submitWithAcknowledgements",
+            "submitterId": "submitterId",
+            "submitterUsername": "submitterUsername",
+            "systemModifiedAt": "systemModifiedAt",
+            "totalSteps": "totalSteps"
+          }
+        },
+        "questions": {
+          "displayName": "Questions",
+          "path": "/questions",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "deletedAt": "deletedAt",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "isGradable": "isGradable",
+            "isPractice": "isPractice",
+            "isRequired": "isRequired",
+            "lessonId": "lessonId",
+            "modifiedAt": "modifiedAt",
+            "rawChoices": "rawChoices",
+            "subject": "subject",
+            "type": "type"
+          }
+        },
+        "searchClickMatchDetails": {
+          "displayName": "Searchclickmatchdetails",
+          "path": "/searchClickMatchDetails",
+          "responseKey": "",
+          "fields": {
+            "field": "field",
+            "fieldType": "fieldType",
+            "id": "id",
+            "matchType": "matchType",
+            "matchedValue": "matchedValue",
+            "modifiedAt": "modifiedAt",
+            "searchClickId": "searchClickId"
+          }
+        },
+        "searchClicks": {
+          "displayName": "Searchclicks",
+          "path": "/searchClicks",
+          "responseKey": "",
+          "fields": {
+            "application": "application",
+            "clickType": "clickType",
+            "clickedUserId": "clickedUserId",
+            "contentId": "contentId",
+            "contentProfileId": "contentProfileId",
+            "contentProfileName": "contentProfileName",
+            "contentVersionId": "contentVersionId",
+            "externalContentId": "externalContentId",
+            "externalContentUrl": "externalContentUrl",
+            "externalEntityType": "externalEntityType",
+            "externalSystemType": "externalSystemType",
+            "id": "id",
+            "instanceName": "instanceName",
+            "libraryContentId": "libraryContentId",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "modifiedAt": "modifiedAt",
+            "normalizedName": "normalizedName",
+            "occurredAt": "occurredAt",
+            "pageIndex": "pageIndex",
+            "resultIndex": "resultIndex",
+            "searchCycleId": "searchCycleId",
+            "searchHistoryId": "searchHistoryId",
+            "userId": "userId",
+            "viewMode": "viewMode",
+            "workspaceContentId": "workspaceContentId",
+            "workspaceContentVersionId": "workspaceContentVersionId"
+          }
+        },
+        "searchFacets": {
+          "displayName": "Searchfacets",
+          "path": "/searchFacets",
+          "responseKey": "",
+          "fields": {
+            "contentPropertyId": "contentPropertyId",
+            "facetName": "facetName",
+            "facetType": "facetType",
+            "facetValue": "facetValue",
+            "id": "id",
+            "modifiedAt": "modifiedAt",
+            "searchCycleId": "searchCycleId",
+            "searchHistoryId": "searchHistoryId"
+          }
+        },
+        "searchHistory": {
+          "displayName": "Searchhistory",
+          "path": "/searchHistory",
+          "responseKey": "",
+          "fields": {
+            "activeScope": "activeScope",
+            "application": "application",
+            "facetValues": "facetValues",
+            "id": "id",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "resultCount": "resultCount",
+            "resultCountContentManager": "resultCountContentManager",
+            "resultCountControlCenter": "resultCountControlCenter",
+            "resultCountDocCenter": "resultCountDocCenter",
+            "resultCountNewsCenter": "resultCountNewsCenter",
+            "resultCountSuggestedDoc": "resultCountSuggestedDoc",
+            "resultCountSuggestedFacet": "resultCountSuggestedFacet",
+            "resultCountSuggestedFolder": "resultCountSuggestedFolder",
+            "resultCountSuggestedKeyword": "resultCountSuggestedKeyword",
+            "resultCountWorkspace": "resultCountWorkspace",
+            "searchCycleId": "searchCycleId",
+            "searchTermNormalized": "searchTermNormalized",
+            "searchTermRaw": "searchTermRaw",
+            "searchType": "searchType",
+            "sortBy": "sortBy",
+            "stepIndex": "stepIndex",
+            "stepType": "stepType",
+            "userId": "userId",
+            "wasClicked": "wasClicked"
+          }
+        },
+        "searchWords": {
+          "displayName": "Searchwords",
+          "path": "/searchWords",
+          "responseKey": "",
+          "fields": {
+            "id": "id",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "searchCycleId": "searchCycleId",
+            "searchHistoryId": "searchHistoryId",
+            "word": "word"
+          }
+        },
+        "skillAssessments": {
+          "displayName": "Skillassessments",
+          "path": "/skillAssessments",
+          "responseKey": "",
+          "fields": {
+            "assessmentId": "assessmentId",
+            "createdAt": "createdAt",
+            "evaluatorId": "evaluatorId",
+            "id": "id",
+            "isShared": "isShared",
+            "modifiedAt": "modifiedAt",
+            "rating": "rating",
+            "skillName": "skillName",
+            "type": "type",
+            "userId": "userId",
+            "userName": "userName"
+          }
+        },
+        "skillProfileDetails": {
+          "displayName": "Skillprofiledetails",
+          "path": "/skillProfileDetails",
+          "responseKey": "",
+          "fields": {
+            "companyId": "companyId",
+            "createdAt": "createdAt",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "modifiedAt": "modifiedAt",
+            "proficiencyLevelBehaviors": "proficiencyLevelBehaviors",
+            "proficiencyLevelName": "proficiencyLevelName",
+            "skillCategoryName": "skillCategoryName",
+            "skillDescription": "skillDescription",
+            "skillId": "skillId",
+            "skillName": "skillName",
+            "skillProfileId": "skillProfileId",
+            "skillProfileName": "skillProfileName",
+            "updatedAt": "updatedAt"
+          }
+        },
+        "skillProfiles": {
+          "displayName": "Skillprofiles",
+          "path": "/skillProfiles",
+          "responseKey": "",
+          "fields": {
+            "companyId": "companyId",
+            "createdAt": "createdAt",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "isPublished": "isPublished",
+            "modifiedAt": "modifiedAt",
+            "title": "title",
+            "updatedAt": "updatedAt"
+          }
+        },
+        "skillRatings": {
+          "displayName": "Skillratings",
+          "path": "/skillRatings",
+          "responseKey": "",
+          "fields": {
+            "benchmark": "benchmark",
+            "comment": "comment",
+            "createdAt": "createdAt",
+            "id": "id",
+            "isSkipped": "isSkipped",
+            "modifiedAt": "modifiedAt",
+            "ratableId": "ratableId",
+            "ratableType": "ratableType",
+            "rating": "rating",
+            "ratingPercentage": "ratingPercentage",
+            "reviewId": "reviewId",
+            "scale": "scale"
+          }
+        },
+        "skillRequests": {
+          "displayName": "Skillrequests",
+          "path": "/skillRequests",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "createdBy": "createdBy",
+            "description": "description",
+            "dueDate": "dueDate",
+            "id": "id",
+            "isPublished": "isPublished",
+            "isRatingRequired": "isRatingRequired",
+            "isScheduled": "isScheduled",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "reviewTypes": "reviewTypes",
+            "scheduledAt": "scheduledAt"
+          }
+        },
+        "skillReviews": {
+          "displayName": "Skillreviews",
+          "path": "/skillReviews",
+          "responseKey": "",
+          "fields": {
+            "completedAt": "completedAt",
+            "createdAt": "createdAt",
+            "dueDate": "dueDate",
+            "id": "id",
+            "isPublished": "isPublished",
+            "modifiedAt": "modifiedAt",
+            "requestId": "requestId",
+            "reviewerId": "reviewerId",
+            "skillProfileId": "skillProfileId",
+            "startedAt": "startedAt",
+            "type": "type",
+            "userId": "userId"
+          }
+        },
+        "skillTags": {
+          "displayName": "Skilltags",
+          "path": "/skillTags",
+          "responseKey": "",
+          "fields": {
+            "companyId": "companyId",
+            "createdAt": "createdAt",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "modifiedAt": "modifiedAt",
+            "skillId": "skillId",
+            "taggableId": "taggableId",
+            "taggableType": "taggableType",
+            "updatedAt": "updatedAt"
+          }
+        },
+        "skillUserProfiles": {
+          "displayName": "Skilluserprofiles",
+          "path": "/skillUserProfiles",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "modifiedAt": "modifiedAt",
+            "skillProfileId": "skillProfileId",
+            "updatedAt": "updatedAt",
+            "userId": "userId"
+          }
+        },
+        "skills": {
+          "displayName": "Skills",
+          "path": "/skills",
+          "responseKey": "",
+          "fields": {
+            "companyId": "companyId",
+            "createdAt": "createdAt",
+            "description": "description",
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "skillCategoryId": "skillCategoryId",
+            "skillCategoryName": "skillCategoryName",
+            "updatedAt": "updatedAt"
+          }
+        },
+        "teamsites": {
+          "displayName": "Teamsites",
+          "path": "/teamsites",
+          "responseKey": "",
+          "fields": {
+            "id": "id",
+            "isDeleted": "isDeleted",
+            "name": "name"
+          }
+        },
+        "trainingGroupManagers": {
+          "displayName": "Traininggroupmanagers",
+          "path": "/trainingGroupManagers",
+          "responseKey": "",
+          "fields": {
+            "groupId": "groupId",
+            "groupName": "groupName",
+            "managerId": "managerId",
+            "managerUserId": "managerUserId"
+          }
+        },
+        "trainingGroupMembers": {
+          "displayName": "Traininggroupmembers",
+          "path": "/trainingGroupMembers",
+          "responseKey": "",
+          "fields": {
+            "groupId": "groupId",
+            "groupName": "groupName",
+            "userId": "userId"
+          }
+        },
+        "trainingGroups": {
+          "displayName": "Traininggroups",
+          "path": "/trainingGroups",
+          "responseKey": "",
+          "fields": {
+            "id": "id",
+            "name": "name"
+          }
+        },
+        "userActivity": {
+          "displayName": "Useractivity",
+          "path": "/userActivity",
+          "responseKey": "",
+          "fields": {
+            "action": "action",
+            "actionCategory": "actionCategory",
+            "actionType": "actionType",
+            "announcementId": "announcementId",
+            "application": "application",
+            "channelId": "channelId",
+            "contentAskExpertsId": "contentAskExpertsId",
+            "contentId": "contentId",
+            "contentInsertInstanceId": "contentInsertInstanceId",
+            "contentProfileId": "contentProfileId",
+            "contentProfileName": "contentProfileName",
+            "contentReviewId": "contentReviewId",
+            "contentVersionId": "contentVersionId",
+            "contextId": "contextId",
+            "contextName": "contextName",
+            "contextSystemType": "contextSystemType",
+            "contextType": "contextType",
+            "digitalSalesRoomId": "digitalSalesRoomId",
+            "digitalSalesRoomViewingSessionsId": "digitalSalesRoomViewingSessionsId",
+            "engagementUserEmail": "engagementUserEmail",
+            "generatedLivedocId": "generatedLivedocId",
+            "id": "id",
+            "instanceName": "instanceName",
+            "interactionGroupId": "interactionGroupId",
+            "interactionId": "interactionId",
+            "isBlastInteractionGroup": "isBlastInteractionGroup",
+            "isBoundDelivery": "isBoundDelivery",
+            "isEngagementUserInternal": "isEngagementUserInternal",
+            "learningProgressId": "learningProgressId",
+            "learningStatusId": "learningStatusId",
+            "libraryContentId": "libraryContentId",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "livesendCommentId": "livesendCommentId",
+            "livesendContentViewingSessionId": "livesendContentViewingSessionId",
+            "livesendLinkContentId": "livesendLinkContentId",
+            "livesendLinkId": "livesendLinkId",
+            "livesendReactionId": "livesendReactionId",
+            "livesendViewingSessionId": "livesendViewingSessionId",
+            "meetingId": "meetingId",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "pageClickId": "pageClickId",
+            "postContentId": "postContentId",
+            "postId": "postId",
+            "productArea": "productArea",
+            "searchClickId": "searchClickId",
+            "searchCycleId": "searchCycleId",
+            "searchHistoryId": "searchHistoryId",
+            "skillAssessmentId": "skillAssessmentId",
+            "socialShareId": "socialShareId",
+            "textMessageId": "textMessageId",
+            "totalPages": "totalPages",
+            "userId": "userId",
+            "userUsername": "userUsername",
+            "workspaceContentId": "workspaceContentId",
+            "workspaceContentVersionId": "workspaceContentVersionId"
+          }
+        },
+        "userEntitlementRoleAssignments": {
+          "displayName": "Userentitlementroleassignments",
+          "path": "/userEntitlementRoleAssignments",
+          "responseKey": "",
+          "fields": {
+            "assignedAt": "assignedAt",
+            "assigneeId": "assigneeId",
+            "createdBy": "createdBy",
+            "id": "id",
+            "modifiedAt": "modifiedAt",
+            "roleId": "roleId",
+            "roleName": "roleName"
+          }
+        },
+        "userGroupsList": {
+          "displayName": "Usergroupslist",
+          "path": "/userGroupsList",
+          "responseKey": "",
+          "fields": {
+            "groupNameList": "groupNameList",
+            "id": "id"
+          }
+        },
+        "userProperties": {
+          "displayName": "Userproperties",
+          "path": "/userProperties",
+          "responseKey": "",
+          "fields": {
+            "id": "id",
+            "name": "name",
+            "type": "type"
+          }
+        },
+        "userPropertyAssignments": {
+          "displayName": "Userpropertyassignments",
+          "path": "/userPropertyAssignments",
+          "responseKey": "",
+          "fields": {
+            "modifiedAt": "modifiedAt",
+            "userId": "userId",
+            "userPropertyId": "userPropertyId",
+            "userPropertyName": "userPropertyName",
+            "userPropertyType": "userPropertyType",
+            "userPropertyValue": "userPropertyValue",
+            "userPropertyValueBoolean": "userPropertyValueBoolean",
+            "userPropertyValueDatetime": "userPropertyValueDatetime",
+            "userPropertyValueFloat": "userPropertyValueFloat",
+            "userPropertyValueInteger": "userPropertyValueInteger"
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "",
+          "fields": {
+            "address": "address",
+            "businessUnit": "businessUnit",
+            "createdAt": "createdAt",
+            "deactivatedAt": "deactivatedAt",
+            "defaultContentProfileId": "defaultContentProfileId",
+            "defaultContentProfileName": "defaultContentProfileName",
+            "deletedAt": "deletedAt",
+            "department": "department",
+            "email": "email",
+            "emailDomain": "emailDomain",
+            "externalId": "externalId",
+            "firstName": "firstName",
+            "fullName": "fullName",
+            "groupMembersUserId": "groupMembersUserId",
+            "hireDate": "hireDate",
+            "id": "id",
+            "isDeactivated": "isDeactivated",
+            "isDeleted": "isDeleted",
+            "isLessonlyEnabled": "isLessonlyEnabled",
+            "isLocked": "isLocked",
+            "isSeismicEmployee": "isSeismicEmployee",
+            "isSeismicEnabled": "isSeismicEnabled",
+            "isSystemAdmin": "isSystemAdmin",
+            "languageCode": "languageCode",
+            "lastName": "lastName",
+            "latestActivityDate": "latestActivityDate",
+            "licenseType": "licenseType",
+            "location": "location",
+            "managerId": "managerId",
+            "managerName": "managerName",
+            "modifiedAt": "modifiedAt",
+            "organization": "organization",
+            "phoneNumber": "phoneNumber",
+            "ssoUserId": "ssoUserId",
+            "title": "title",
+            "userPropertyAssignmentsUserId": "userPropertyAssignmentsUserId",
+            "username": "username"
+          }
+        },
+        "virusScanAuditLog": {
+          "displayName": "Virusscanauditlog",
+          "path": "/virusScanAuditLog",
+          "responseKey": "",
+          "fields": {
+            "email": "email",
+            "fileExtension": "fileExtension",
+            "fileName": "fileName",
+            "hasVirus": "hasVirus",
+            "id": "id",
+            "occurredAt": "occurredAt",
+            "productArea": "productArea",
+            "userId": "userId",
+            "userName": "userName",
+            "wasNotScanned": "wasNotScanned"
+          }
+        },
+        "watermarks": {
+          "displayName": "Watermarks",
+          "path": "/watermarks",
+          "responseKey": "",
+          "fields": {
+            "application": "application",
+            "contentRepository": "contentRepository",
+            "contentVersionId": "contentVersionId",
+            "id": "id",
+            "interactionId": "interactionId",
+            "modifiedAt": "modifiedAt",
+            "occurredAt": "occurredAt",
+            "productArea": "productArea",
+            "userId": "userId",
+            "watermarkRawText": "watermarkRawText",
+            "watermarkRuleFilterText": "watermarkRuleFilterText",
+            "watermarkTemplateText": "watermarkTemplateText",
+            "watermarkType": "watermarkType"
+          }
+        },
+        "workspaceContentVersions": {
+          "displayName": "Workspacecontentversions",
+          "path": "/workspaceContentVersions",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "createdBy": "createdBy",
+            "format": "format",
+            "generatedLivedocId": "generatedLivedocId",
+            "id": "id",
+            "libraryContentVersionId": "libraryContentVersionId",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "previewImageId": "previewImageId",
+            "previewImageUrl": "previewImageUrl",
+            "size": "size",
+            "thumbnailImageId": "thumbnailImageId",
+            "thumbnailImageUrl": "thumbnailImageUrl",
+            "version": "version",
+            "versionCreationMethod": "versionCreationMethod",
+            "workspaceContentId": "workspaceContentId"
+          }
+        },
+        "workspaceContents": {
+          "displayName": "Workspacecontents",
+          "path": "/workspaceContents",
+          "responseKey": "",
+          "fields": {
+            "contextId": "contextId",
+            "contextName": "contextName",
+            "contextSystemType": "contextSystemType",
+            "contextType": "contextType",
+            "createdAt": "createdAt",
+            "createdBy": "createdBy",
+            "id": "id",
+            "isCartContent": "isCartContent",
+            "isContextualFolderContent": "isContextualFolderContent",
+            "isDeleted": "isDeleted",
+            "latestWorkspaceContentVersionCreatedAt": "latestWorkspaceContentVersionCreatedAt",
+            "latestWorkspaceContentVersionId": "latestWorkspaceContentVersionId",
+            "latestWorkspaceContentVersionSize": "latestWorkspaceContentVersionSize",
+            "libraryContentId": "libraryContentId",
+            "materializedPath": "materializedPath",
+            "modifiedAt": "modifiedAt",
+            "name": "name",
+            "originApplication": "originApplication",
+            "originContentProfileId": "originContentProfileId",
+            "previewImageId": "previewImageId",
+            "previewImageUrl": "previewImageUrl",
+            "thumbnailImageId": "thumbnailImageId",
+            "thumbnailImageUrl": "thumbnailImageUrl",
+            "version": "version"
+          }
+        }
+      }
+    }
+  }
+}
