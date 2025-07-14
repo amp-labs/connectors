@@ -12,16 +12,16 @@ import (
 
 const (
 	apiVersion      = "v1"
-	DefaultPageSize = 100
+	defaultPageSize = 100
 )
 
 var (
-	EndpointWithCreatedAtRange = datautils.NewSet( //nolint:gochecknoglobals
+	endpointWithCreatedAtRange = datautils.NewSet( //nolint:gochecknoglobals
 		"audit_events",
 		"requisitions",
 	)
 
-	EndpointWithUpdatedAtRange = datautils.NewSet( //nolint:gochecknoglobals
+	endpointWithUpdatedAtRange = datautils.NewSet( //nolint:gochecknoglobals
 		"postings",
 		"opportunities",
 	)
