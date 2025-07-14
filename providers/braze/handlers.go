@@ -146,9 +146,10 @@ func (c *Connector) constructCatalogPayload(recordData any) ([]byte, error) {
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	var (
-		url    *urlbuilder.URL
-		err    error
-		method = http.MethodPost
+		jsonData []byte
+		err      error
+		url      *urlbuilder.URL
+		method   = http.MethodPost
 	)
 
 	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
@@ -162,15 +163,15 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		method = http.MethodPut
 	}
 
-	jsonData, err := json.Marshal(params.RecordData)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal record data: %w", err)
-	}
-
 	if params.ObjectName == "catalogs" {
 		jsonData, err = c.constructCatalogPayload(params.RecordData)
 		if err != nil {
 			return nil, err
+		}
+	} else {
+		jsonData, err = json.Marshal(params.RecordData)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal record data: %w", err)
 		}
 	}
 
