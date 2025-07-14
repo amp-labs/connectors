@@ -399,7 +399,7 @@ func (c *Connector) getfieldsMetadata(ctx context.Context, moduleName string) (*
 // getNotificationConditions builds the notification conditions for the given event.
 // it fetches the field metadata for the given module and event to build the notification condition.
 //
-//nolint:cyclop,funlen
+//nolint:cyclop,funlen,gocognit
 func (c *Connector) getNotificationConditions(
 	ctx context.Context,
 	moduleMetadata map[string]any,
@@ -421,8 +421,11 @@ func (c *Connector) getNotificationConditions(
 
 	var err error
 
-	//nolint:forcetypeassert
-	moduleName := moduleMetadata["module_name"].(string) // module name is the official object name
+	//nolint:varnamelen
+	moduleName, ok := moduleMetadata["module_name"].(string)
+	if !ok {
+		return nil, errModuleNameNotString
+	}
 
 	if len(event.WatchFields) > 0 {
 		fieldMetadata, err = c.getfieldsMetadata(ctx, moduleName)
@@ -436,11 +439,14 @@ func (c *Connector) getNotificationConditions(
 	for _, field := range event.WatchFields {
 		found := false
 
-		for _, fieldMetadata := range fieldMetadata.Fields {
-			//nolint:forcetypeassert
-			// api_name is the official notation for `field`
-			if naming.PluralityAndCaseIgnoreEqual(fieldMetadata["api_name"].(string), field) {
-				watchFieldsMetadata[field] = fieldMetadata
+		for _, fm := range fieldMetadata.Fields {
+			apiName, ok := fm["api_name"].(string)
+			if !ok {
+				continue
+			}
+
+			if naming.PluralityAndCaseIgnoreEqual(apiName, field) {
+				watchFieldsMetadata[field] = fm
 				found = true
 
 				break
@@ -452,43 +458,203 @@ func (c *Connector) getNotificationConditions(
 		}
 	}
 
-	fieldGroups := make([]FieldGroup, 0)
-
-	//nolint:forcetypeassert
-	for fieldName, fieldMetadata := range watchFieldsMetadata {
-		fieldGroups = append(fieldGroups, FieldGroup{
-			Field: &Field{
-				APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
-
-				ID: fieldMetadata["id"].(string),
-			},
-		})
+	fieldNames := make([]string, 0, len(watchFieldsMetadata))
+	for fieldName := range watchFieldsMetadata {
+		fieldNames = append(fieldNames, fieldName)
 	}
 
-	var fieldSelection FieldSelection
-
-	if len(fieldGroups) == 1 {
-		fieldSelection = FieldSelection{
-			Field: fieldGroups[0].Field,
-		}
-	} else {
-		fieldSelection = FieldSelection{
-			Group:         fieldGroups,
-			GroupOperator: GroupOperatorOr,
-		}
+	fieldSelection, err := recursiveFieldSelectionBuild(fieldNames, watchFieldsMetadata)
+	if err != nil {
+		return nil, err
 	}
 
-	//nolint:forcetypeassert
+	apiName, ok := moduleMetadata["api_name"].(string)
+	if !ok {
+		return nil, errAPINameNotString
+	}
+
+	id, ok := moduleMetadata["id"].(string)
+	if !ok {
+		return nil, errIDNotString
+	}
+
 	return []NotificationCondition{
 		{
 			Type: "field_selection",
 			Module: Module{
-				APIName: moduleMetadata["api_name"].(string), // this is object name
-				Id:      moduleMetadata["id"].(string),       // this is object type id
+				APIName: apiName, // this is object name
+				Id:      id,      // this is object type id
 			},
 			FieldSelection: fieldSelection,
 		},
 	}, nil
+}
+
+// according to Zoho CRM API requirements (max 2 objects per group).
+// so we are building the payload with recursion
+//
+//nolint:cyclop,funlen
+func recursiveFieldSelectionBuild(
+	fieldNames []string,
+	watchFieldsMetadata map[string]map[string]any,
+) (FieldSelection, error) {
+	/*
+		Example:
+		```leads had 5 fields: more than 2 fields need to be nested,
+			so we are building the payload with recursion
+
+		   "notification_condition": [
+		               {
+		                   "type": "field_selection",
+		                   "module": {
+		                       "api_name": "Leads",
+		                       "id": "6756839000000002175"
+		                   },
+		                   "field_selection": {
+		                       "group_operator": "or",
+		                       "group": [
+		                           {
+		                               "field": {
+		                                   "api_name": "First_Name",
+		                                   "id": "6756839000000002593"
+		                               }
+		                           },
+		                           {
+		                               "group_operator": "or",
+		                               "group": [
+		                                   {
+		                                       "field": {
+		                                           "api_name": "Industry",
+		                                           "id": "6756839000000002613"
+		                                       }
+		                                   },
+		                                   {
+		                                       "group_operator": "or",
+		                                       "group": [
+		                                           {
+		                                               "field": {
+		                                                   "api_name": "Phone",
+		                                                   "id": "6756839000000002601"
+		                                               }
+		                                           },
+		                                           {
+		                                               "group_operator": "or",
+		                                               "group": [
+		                                                   {
+		                                                       "field": {
+		                                                           "api_name": "Company",
+		                                                           "id": "6756839000000002591"
+		                                                       }
+		                                                   },
+		                                                   {
+		                                                       "field": {
+		                                                           "api_name": "Last_Name",
+		                                                           "id": "6756839000000002595"
+		                                                       }
+		                                                   }
+		                                               ]
+		                                           }
+		                                       ]
+		                                   }
+		                               ]
+		                           }
+		                       ]
+		                   }
+		               },
+		               {
+		                   "type": "field_selection",
+		                   "module": {
+		                       "api_name": "Accounts",
+		                       "id": "6756839000000002177"
+		                   },
+		                   "field_selection": {
+		                       "group_operator": "or",
+		                       "group": [
+		                           {
+		                               "field": {
+		                                   "api_name": "Phone",
+		                                   "id": "6756839000000002427"
+		                               }
+		                           },
+		                           {
+		                               "field": {
+		                                   "api_name": "Industry",
+		                                   "id": "6756839000000002445"
+		                               }
+		                           }
+		                       ]
+		                   }
+		               }
+		           ],
+
+
+	*/
+	var result FieldSelection
+
+	var err error
+
+	//nolint:mnd,varnamelen
+	switch len(fieldNames) {
+	case 0:
+		result = FieldSelection{}
+	case 1:
+		fieldName := fieldNames[0]
+
+		result, err = fieldSelectionForOneField(fieldName, watchFieldsMetadata)
+		if err != nil {
+			return FieldSelection{}, err
+		}
+
+	case 2:
+		result, err = fieldSelectionForTwoFields(fieldNames, watchFieldsMetadata)
+		if err != nil {
+			return FieldSelection{}, err
+		}
+	default:
+		// More than 2 fields - nested field selection with recursion
+		firstField := fieldNames[0]
+		fm := watchFieldsMetadata[firstField]
+
+		id, ok := fm["id"].(string)
+		if !ok {
+			return FieldSelection{}, fmt.Errorf("%w: %s", errFieldIDNotString, firstField)
+		}
+
+		apiName, err := formatAPIName(firstField, watchFieldsMetadata)
+		if err != nil {
+			return FieldSelection{}, err
+		}
+
+		firstGroup := FieldGroup{
+			Field: &Field{
+				APIName: apiName,
+				ID:      id,
+			},
+		}
+
+		// recursively build the nested group
+		nestedSelection, err := recursiveFieldSelectionBuild(fieldNames[1:], watchFieldsMetadata)
+		if err != nil {
+			return FieldSelection{}, err
+		}
+
+		var nestedGroup FieldGroup
+		if nestedSelection.Field != nil {
+			nestedGroup = FieldGroup{Field: nestedSelection.Field}
+		} else {
+			nestedGroup = FieldGroup{
+				Group:         nestedSelection.Group,
+				GroupOperator: string(nestedSelection.GroupOperator),
+			}
+		}
+
+		result = FieldSelection{
+			Group:         []FieldGroup{firstGroup, nestedGroup},
+			GroupOperator: GroupOperatorOr,
+		}
+	}
+
+	return result, err
 }
 
 func (c *Connector) getSubscribeURL() (*urlbuilder.URL, error) {
@@ -584,4 +750,86 @@ func hashString(uniqueRef string) (string, error) {
 
 	//nolint:gosec
 	return strconv.FormatInt(int64(hashedChannelID), 10), nil
+}
+
+//nolint:varnamelen
+func formatAPIName(apiName string, watchFieldsMetadata map[string]map[string]any) (string, error) {
+	fm, ok := watchFieldsMetadata[apiName]
+	if !ok {
+		return "", fmt.Errorf("%w: %s", errFieldNotFound, apiName)
+	}
+
+	apiNameAny, ok := fm["api_name"]
+	if !ok {
+		return "", fmt.Errorf("%w: %s", errFieldNotFound, apiName)
+	}
+
+	apiNameStr, ok := apiNameAny.(string)
+	if !ok {
+		return "", fmt.Errorf("%w: %s", errFieldNotFound, apiName)
+	}
+
+	return apiNameStr, nil
+}
+
+// returns single field selection without any nested groups.
+//
+//nolint:varnamelen
+func fieldSelectionForOneField(
+	fieldName string,
+	watchFieldsMetadata map[string]map[string]any,
+) (FieldSelection, error) {
+	fm := watchFieldsMetadata[fieldName]
+
+	id, ok := fm["id"].(string)
+	if !ok {
+		return FieldSelection{}, fmt.Errorf("%w: %s", errFieldIDNotString, fieldName)
+	}
+
+	apiName, err := formatAPIName(fieldName, watchFieldsMetadata)
+	if err != nil {
+		return FieldSelection{}, err
+	}
+
+	return FieldSelection{
+		Field: &Field{
+			APIName: apiName,
+			ID:      id,
+		},
+	}, nil
+}
+
+// returns two fields selection with OR operator without any nested groups.
+func fieldSelectionForTwoFields(
+	fieldNames []string,
+	watchFieldsMetadata map[string]map[string]any,
+) (FieldSelection, error) {
+	fieldGroups := make([]FieldGroup, 0)
+
+	//nolint:varnamelen
+	for _, fieldName := range fieldNames {
+		fm := watchFieldsMetadata[fieldName]
+
+		id, ok := fm["id"].(string)
+		if !ok {
+			return FieldSelection{}, fmt.Errorf("%w: %s", errFieldIDNotString, fieldName)
+		}
+
+		apiName, err := formatAPIName(fieldName, watchFieldsMetadata)
+		if err != nil {
+			return FieldSelection{}, err
+		}
+
+		fieldGroups = append(fieldGroups, FieldGroup{
+			Field: &Field{
+				APIName: apiName,
+				ID:      id,
+			},
+		})
+	}
+
+	return FieldSelection{
+		Group:         fieldGroups,
+		GroupOperator: GroupOperatorOr,
+	}, nil
 }

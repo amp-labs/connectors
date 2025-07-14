@@ -53,7 +53,7 @@ func FromRawURL(rawURL *url.URL) (*URL, error) {
 	return &URL{
 		delegate:           rawURL,
 		queryParams:        values,
-		encodingExceptions: nil,
+		encodingExceptions: make(map[string]string),
 	}, nil
 }
 

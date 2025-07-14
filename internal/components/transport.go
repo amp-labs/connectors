@@ -40,8 +40,17 @@ func NewTransport(
 	}, nil
 }
 
+// SetBaseURL should be used for setting up unit tests.
+// To better indicate the intent use SetUnitTestBaseURL.
+// Deprecated.
 func (t *Transport) SetBaseURL(newURL string) {
 	t.ProviderContext.providerInfo.BaseURL = newURL
+	t.json.HTTPClient.Base = newURL
+}
+
+func (t *Transport) SetUnitTestBaseURL(newURL string) {
+	t.ProviderContext.providerInfo.BaseURL = newURL
+	t.ProviderContext.moduleInfo.BaseURL = newURL
 	t.json.HTTPClient.Base = newURL
 }
 

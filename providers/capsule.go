@@ -15,7 +15,7 @@ func init() {
 		// },
 		DisplayName: "Capsule",
 		AuthType:    ApiKey,
-		BaseURL:     "https://api.capsulecrm.com/api", // TODO this shouldn't have URI part "/api"
+		BaseURL:     "https://api.capsulecrm.com/api",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
@@ -42,9 +42,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 	})
 }
