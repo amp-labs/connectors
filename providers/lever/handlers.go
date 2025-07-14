@@ -128,7 +128,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	if len(params.RecordId) > 0 {
 		url.AddPath(params.RecordId)
 
-		// Except postings object(use POST method), other objects use PUT method.
+		// All objects use the PUT method except for the postings object, which uses the POST method.
 		if params.ObjectName != "postings" {
 			method = http.MethodPut
 		}
@@ -179,12 +179,7 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 		return nil, err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
+	return http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
 }
 
 func (c *Connector) parseDeleteResponse(
