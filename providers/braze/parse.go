@@ -27,20 +27,34 @@ var ErrMissingUntilTimestamp = errors.New("messages/scheduled_broadcasts require
 // specifically from the response samples in the Endpoints section of their respective object APIs.
 // https://www.braze.com/docs/api/home
 var dataFields = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
-	"catalogs":                      "catalogs",
-	"cdi/integrations":              "results",
-	"campaigns/list":                "campaigns",
-	"canvas/list":                   "canvases",
-	"events/list":                   "events",
-	"events":                        "events",
-	"purchases/product_list":        "products",
-	"segments/list":                 "segments",
-	"custom_attributes":             "attributes",
-	"sms/invalid_phone_numbers":     "sms",
+	// https://www.braze.com/docs/api/endpoints/catalogs/catalog_management/synchronous/get_list_catalogs
+	"catalogs": "catalogs",
+	// https://www.braze.com/docs/api/endpoints/cdi/get_integration_list
+	"cdi/integrations": "results",
+	// https://www.braze.com/docs/api/endpoints/export/campaigns/get_campaigns
+	"campaigns/list": "campaigns",
+	// https://www.braze.com/docs/api/endpoints/export/canvas/get_canvases
+	"canvas/list": "canvases",
+	// https://www.braze.com/docs/api/endpoints/export/custom_events/get_custom_events
+	"events/list": "events",
+	// https://www.braze.com/docs/api/endpoints/export/custom_events/get_custom_events_data
+	"events": "events",
+	// https://www.braze.com/docs/api/endpoints/export/purchases/get_list_product_id
+	"purchases/product_list": "products",
+	// https://www.braze.com/docs/api/endpoints/export/segments/get_segment
+	"segments/list": "segments",
+	// https://www.braze.com/docs/api/endpoints/export/custom_attributes/get_custom_attributes
+	"custom_attributes": "attributes",
+	// https://www.braze.com/docs/api/endpoints/sms/get_query_invalid_numbers
+	"sms/invalid_phone_numbers": "sms",
+	// https://www.braze.com/docs/api/endpoints/messaging/schedule_messages/get_messages_scheduled
 	"messages/scheduled_broadcasts": "scheduled_broadcasts",
-	"preference_center/v1/list":     "preference_centers",
-	"content_blocks/list":           "content_blocks",
-	"templates/email/list":          "templates",
+	// https://www.braze.com/docs/api/endpoints/preference_center/get_list_preference_center
+	"preference_center/v1/list": "preference_centers",
+	// https://www.braze.com/docs/api/endpoints/templates/content_blocks_templates/get_list_email_content_blocks
+	"content_blocks/list": "content_blocks",
+	// https://www.braze.com/docs/api/endpoints/templates/email_templates/get_list_email_templates
+	"templates/email/list": "templates",
 }, func(key string) string {
 	return "data"
 })
@@ -48,18 +62,26 @@ var dataFields = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint
 // cursorPaginatedObjects represents a set of objects that follows cursor pagination
 // approach in braze API.
 var cursorPaginatedObjects = datautils.NewSet( //nolint:gochecknoglobals
+	// https://www.braze.com/docs/api/endpoints/cdi/get_integration_list
 	"cdi/integrations",
+	// https://www.braze.com/docs/api/endpoints/export/custom_events/get_custom_events_data/#prerequisites
 	"events",
+	// https://www.braze.com/docs/api/endpoints/export/custom_attributes/get_custom_attributes
 	"custom_attributes",
 )
 
 // offsetPaginatedObjects represents a set of objects that follows offset pagination
 // approach in braze API.
 var offsetPaginatedObjects = datautils.NewSet( //nolint:gochecknoglobals
+	// https://www.braze.com/docs/api/endpoints/email/get_list_hard_bounces
 	"email/hard_bounces",
+	// https://www.braze.com/docs/api/endpoints/email/get_query_unsubscribed_email_addresses
 	"email/unsubscribes",
+	// https://www.braze.com/docs/api/endpoints/sms/get_query_invalid_numbers
 	"sms/invalid_phone_numbers",
+	// https://www.braze.com/docs/api/endpoints/templates/content_blocks_templates/get_list_email_content_blocks
 	"content_blocks/list",
+	// https://www.braze.com/docs/api/endpoints/templates/email_templates/get_list_email_templates
 	"templates/email/list",
 )
 
@@ -136,8 +158,7 @@ func handleDefaultPagination(objectName string, node *ajson.Node, url *urlbuilde
 	return url.String(), nil
 }
 
-// ref:
-func filterBySince(params common.ReadParams, url *urlbuilder.URL) error {
+func setSinceQuery(params common.ReadParams, url *urlbuilder.URL) error {
 	switch params.ObjectName {
 	// https://www.braze.com/docs/api/endpoints/export/campaigns/get_campaigns
 	// https://www.braze.com/docs/api/endpoints/export/canvas/get_canvases
@@ -149,11 +170,11 @@ func filterBySince(params common.ReadParams, url *urlbuilder.URL) error {
 		if params.Until.IsZero() {
 			return ErrMissingUntilTimestamp
 		}
+
 		// https://www.braze.com/docs/api/endpoints/templates/email_templates/get_list_email_templates
 		// https://www.braze.com/docs/api/endpoints/templates/content_blocks_templates/get_list_email_content_blocks
 	case "content_blocks/list", "templates/email/list":
 		url.WithQueryParam("modified_after", params.Since.Format(time.RFC3339))
-	default:
 	}
 
 	return nil

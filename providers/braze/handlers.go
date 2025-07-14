@@ -89,7 +89,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	if err := filterBySince(params, url); err != nil {
+	if err := setSinceQuery(params, url); err != nil {
 		return nil, err
 	}
 
