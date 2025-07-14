@@ -21,10 +21,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportedObjectsByRead[c.Module.ID].Has(config.ObjectName) {
-		return nil, common.ErrOperationNotSupportedForObject
-	}
-
 	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
@@ -52,7 +48,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	url, err := c.getReadURL(config.ObjectName)
+	url, err := c.getURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}

@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common/logging"
+	"github.com/google/uuid"
 )
 
 // HeaderMode determines how the header should be applied to the request.
@@ -90,6 +91,16 @@ func (h Headers) ApplyToRequest(req *http.Request) {
 	}
 }
 
+func (h Headers) LogValue() slog.Value {
+	attrs := make([]slog.Attr, 0, len(h))
+
+	for _, header := range h {
+		attrs = append(attrs, slog.String(header.Key, header.Value))
+	}
+
+	return slog.GroupValue(attrs...)
+}
+
 // ErrorHandler allows the caller to inject their own HTTP error handling logic.
 // All non-2xx responses will be passed to the error handler. If the error handler
 // returns nil, then the error is ignored and the caller is responsible for handling
@@ -113,8 +124,8 @@ func (h *HTTPClient) getURL(url string) (string, error) {
 	return getURL(h.Base, url)
 }
 
-// redactSensitiveHeaders redacts sensitive headers from the given headers.
-func redactSensitiveHeaders(hdrs []Header) []Header {
+// redactSensitiveRequestHeaders redacts sensitive headers from the given headers.
+func redactSensitiveRequestHeaders(hdrs []Header) Headers {
 	if hdrs == nil {
 		return nil
 	}
@@ -141,6 +152,25 @@ func redactSensitiveHeaders(hdrs []Header) []Header {
 	return redacted
 }
 
+func redactSensitiveResponseHeaders(hdrs []Header) Headers {
+	if hdrs == nil {
+		return nil
+	}
+
+	redacted := make([]Header, 0, len(hdrs))
+
+	for _, hdr := range hdrs {
+		switch {
+		case strings.EqualFold(hdr.Key, "Set-Cookie"):
+			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
+		default:
+			redacted = append(redacted, hdr)
+		}
+	}
+
+	return redacted
+}
+
 // Get makes a GET request to the given URL and returns the response. If the response is not a 2xx,
 // an error is returned. If the response is a 401, the caller should refresh the access token
 // and retry the request. If errorHandler is nil, then the default error handler is used.
@@ -149,15 +179,6 @@ func (h *HTTPClient) Get(ctx context.Context, url string, headers ...Header) (*h
 	fullURL, err := h.getURL(url)
 	if err != nil {
 		return nil, nil, err
-	}
-
-	if logging.IsVerboseLogging(ctx) {
-		logging.VerboseLogger(ctx).Debug("HTTP request",
-			"method", "GET", "url", fullURL,
-			"headers", redactSensitiveHeaders(headers))
-	} else {
-		logging.Logger(ctx).Debug("HTTP request",
-			"method", "GET", "url", fullURL)
 	}
 
 	// Make the request, get the response body
@@ -179,16 +200,6 @@ func (h *HTTPClient) Post(ctx context.Context,
 	fullURL, err := h.getURL(url)
 	if err != nil {
 		return nil, nil, err
-	}
-
-	if logging.IsVerboseLogging(ctx) {
-		logging.VerboseLogger(ctx).Debug("HTTP request",
-			"method", "POST", "url", fullURL,
-			"headers", redactSensitiveHeaders(headers),
-			"bodySize", len(reqBody))
-	} else {
-		logging.Logger(ctx).Debug("HTTP request",
-			"method", "POST", "url", fullURL)
 	}
 
 	// Make the request, get the response body
@@ -245,15 +256,6 @@ func (h *HTTPClient) Delete(ctx context.Context,
 		return nil, nil, err
 	}
 
-	if logging.IsVerboseLogging(ctx) {
-		logging.VerboseLogger(ctx).Debug("HTTP request",
-			"method", "DELETE", "url", fullURL,
-			"headers", redactSensitiveHeaders(headers))
-	} else {
-		logging.Logger(ctx).Debug("HTTP request",
-			"method", "DELETE", "url", fullURL)
-	}
-
 	// Make the request, get the response body
 	res, body, err := h.httpDelete(ctx, fullURL, headers) //nolint:bodyclose
 	if err != nil {
@@ -264,7 +266,7 @@ func (h *HTTPClient) Delete(ctx context.Context,
 }
 
 // httpGet makes a GET request to the given URL and returns the response & response body.
-func (h *HTTPClient) httpGet(ctx context.Context,
+func (h *HTTPClient) httpGet(ctx context.Context, //nolint:dupl
 	url string, headers []Header,
 ) (*http.Response, []byte, error) {
 	req, err := MakeGetRequest(ctx, url, headers)
@@ -272,11 +274,34 @@ func (h *HTTPClient) httpGet(ctx context.Context,
 		return nil, nil, err
 	}
 
-	return h.sendRequest(req)
+	correlationId := uuid.Must(uuid.NewRandom()).String()
+
+	if logging.IsVerboseLogging(ctx) {
+		logRequestWithoutBody(logging.VerboseLogger(ctx), req, "GET", correlationId, url)
+	} else {
+		logRequestWithoutBody(logging.Logger(ctx), req, "GET", correlationId, url)
+	}
+
+	rsp, body, err := h.sendRequest(req)
+	if err != nil {
+		logging.Logger(ctx).Error("HTTP request failed",
+			"method", "GET", "url", url,
+			"correlationId", correlationId, "error", err)
+
+		return nil, nil, err
+	}
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "GET", correlationId, url, body)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "GET", correlationId, url)
+	}
+
+	return rsp, body, nil
 }
 
 // httpPost makes a POST request to the given URL and returns the response & response body.
-func (h *HTTPClient) httpPost(ctx context.Context, url string,
+func (h *HTTPClient) httpPost(ctx context.Context, url string, //nolint:dupl
 	headers []Header, body []byte,
 ) (*http.Response, []byte, error) {
 	req, err := makePostRequest(ctx, url, headers, body)
@@ -284,11 +309,34 @@ func (h *HTTPClient) httpPost(ctx context.Context, url string,
 		return nil, nil, err
 	}
 
-	return h.sendRequest(req)
+	correlationId := uuid.Must(uuid.NewRandom()).String()
+
+	if logging.IsVerboseLogging(ctx) {
+		logRequestWithBody(logging.VerboseLogger(ctx), req, "POST", correlationId, url, body)
+	} else {
+		logRequestWithoutBody(logging.Logger(ctx), req, "POST", correlationId, url)
+	}
+
+	rsp, body, err := h.sendRequest(req)
+	if err != nil {
+		logging.Logger(ctx).Error("HTTP request failed",
+			"method", "POST", "url", url,
+			"correlationId", correlationId, "error", err)
+
+		return nil, nil, err
+	}
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "POST", correlationId, url, body)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "POST", correlationId, url)
+	}
+
+	return rsp, body, nil
 }
 
 // httpPatch makes a PATCH request to the given URL and returns the response & response body.
-func (h *HTTPClient) httpPatch(ctx context.Context,
+func (h *HTTPClient) httpPatch(ctx context.Context, //nolint:dupl
 	url string, headers []Header, body any,
 ) (*http.Response, []byte, error) {
 	req, err := makePatchRequest(ctx, url, headers, body)
@@ -296,11 +344,45 @@ func (h *HTTPClient) httpPatch(ctx context.Context,
 		return nil, nil, err
 	}
 
-	return h.sendRequest(req)
+	correlationId := uuid.Must(uuid.NewRandom()).String()
+
+	if logging.IsVerboseLogging(ctx) {
+		var serializedBody []byte
+
+		if body != nil {
+			serializedBody, err = json.Marshal(body)
+			if err != nil {
+				logging.Logger(ctx).Error("Failed to serialize request body",
+					"method", "PATCH", "url", url,
+					"correlationId", correlationId, "error", err)
+			}
+		}
+
+		logRequestWithBody(logging.VerboseLogger(ctx), req, "PATCH", correlationId, url, serializedBody)
+	} else {
+		logRequestWithoutBody(logging.Logger(ctx), req, "PATCH", correlationId, url)
+	}
+
+	rsp, rspBody, err := h.sendRequest(req)
+	if err != nil {
+		logging.Logger(ctx).Error("HTTP request failed",
+			"method", "PATCH", "url", url,
+			"correlationId", correlationId, "error", err)
+
+		return nil, nil, err
+	}
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PATCH", correlationId, url, rspBody)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "PATCH", correlationId, url)
+	}
+
+	return rsp, rspBody, nil
 }
 
 // httpPut makes a PUT request to the given URL and returns the response & response body.
-func (h *HTTPClient) httpPut(ctx context.Context,
+func (h *HTTPClient) httpPut(ctx context.Context, //nolint:dupl
 	url string, headers []Header, body any,
 ) (*http.Response, []byte, error) {
 	req, err := makePutRequest(ctx, url, headers, body)
@@ -308,11 +390,45 @@ func (h *HTTPClient) httpPut(ctx context.Context,
 		return nil, nil, err
 	}
 
-	return h.sendRequest(req)
+	correlationId := uuid.Must(uuid.NewRandom()).String()
+
+	if logging.IsVerboseLogging(ctx) {
+		var serializedBody []byte
+
+		if body != nil {
+			serializedBody, err = json.Marshal(body)
+			if err != nil {
+				logging.Logger(ctx).Error("Failed to serialize request body",
+					"method", "PUT", "url", url,
+					"correlationId", correlationId, "error", err)
+			}
+		}
+
+		logRequestWithBody(logging.VerboseLogger(ctx), req, "PUT", correlationId, url, serializedBody)
+	} else {
+		logRequestWithoutBody(logging.Logger(ctx), req, "PUT", correlationId, url)
+	}
+
+	rsp, rspBody, err := h.sendRequest(req)
+	if err != nil {
+		logging.Logger(ctx).Error("HTTP request failed",
+			"method", "PUT", "url", url,
+			"correlationId", correlationId, "error", err)
+
+		return nil, nil, err
+	}
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PUT", correlationId, url, rspBody)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "PUT", correlationId, url)
+	}
+
+	return rsp, rspBody, nil
 }
 
 // httpDelete makes a DELETE request to the given URL and returns the response & response body.
-func (h *HTTPClient) httpDelete(ctx context.Context,
+func (h *HTTPClient) httpDelete(ctx context.Context, //nolint:dupl
 	url string, headers []Header,
 ) (*http.Response, []byte, error) {
 	req, err := makeDeleteRequest(ctx, url, headers)
@@ -320,7 +436,30 @@ func (h *HTTPClient) httpDelete(ctx context.Context,
 		return nil, nil, err
 	}
 
-	return h.sendRequest(req)
+	correlationId := uuid.Must(uuid.NewRandom()).String()
+
+	if logging.IsVerboseLogging(ctx) {
+		logRequestWithoutBody(logging.VerboseLogger(ctx), req, "DELETE", correlationId, url)
+	} else {
+		logRequestWithoutBody(logging.Logger(ctx), req, "DELETE", correlationId, url)
+	}
+
+	rsp, rspBody, err := h.sendRequest(req)
+	if err != nil {
+		logging.Logger(ctx).Error("HTTP request failed",
+			"method", "DELETE", "url", url,
+			"correlationId", correlationId, "error", err)
+
+		return nil, nil, err
+	}
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "DELETE", correlationId, url, rspBody)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "DELETE", correlationId, url)
+	}
+
+	return rsp, rspBody, nil
 }
 
 // MakeGetRequest creates a GET request with the given headers.
@@ -397,16 +536,6 @@ func makePatchRequest(ctx context.Context, url string, headers []Header, body an
 
 	req.ContentLength = int64(len(jBody))
 
-	if logging.IsVerboseLogging(ctx) {
-		logging.VerboseLogger(ctx).Debug("HTTP request",
-			"method", "PATCH", "url", url,
-			"headers", redactSensitiveHeaders(headers),
-			"bodySize", len(jBody))
-	} else {
-		logging.Logger(ctx).Debug("HTTP request",
-			"method", "PATCH", "url", url)
-	}
-
 	return AddJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
 
@@ -424,16 +553,6 @@ func makePutRequest(ctx context.Context, url string, headers []Header, body any)
 	}
 
 	req.ContentLength = int64(len(jBody))
-
-	if logging.IsVerboseLogging(ctx) {
-		logging.VerboseLogger(ctx).Debug("HTTP request",
-			"method", "PUT", "url", url,
-			"headers", redactSensitiveHeaders(headers),
-			"bodySize", len(jBody))
-	} else {
-		logging.Logger(ctx).Debug("HTTP request",
-			"method", "PUT", "url", url)
-	}
 
 	return AddJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
@@ -540,6 +659,35 @@ func GetResponseBodyOnce(response *http.Response) []byte {
 	}
 
 	return body
+}
+
+func GetRequestHeaders(request *http.Request) Headers {
+	if request == nil {
+		return nil
+	}
+
+	// Pre-calculate the total number of header values
+	totalValues := 0
+	for _, values := range request.Header {
+		totalValues += len(values)
+	}
+
+	// Corner case: if there are no headers, return nil
+	if totalValues == 0 {
+		return nil
+	}
+
+	// Initialize the headers slice with accurate capacity
+	headers := make(Headers, 0, totalValues)
+
+	// Populate the headers slice
+	for key, values := range request.Header {
+		for _, value := range values {
+			headers = append(headers, Header{Key: key, Value: value})
+		}
+	}
+
+	return headers
 }
 
 func GetResponseHeaders(response *http.Response) Headers {

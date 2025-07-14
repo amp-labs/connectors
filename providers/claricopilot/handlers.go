@@ -1,13 +1,17 @@
 package claricopilot
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 const (
@@ -16,6 +20,8 @@ const (
 	pageSize         = "100"
 	skipKey          = "skip"
 	apiVersionV2     = "v2"
+	createPrefix     = "create"
+	updatePrefix     = "update"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -101,6 +107,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
 
+	if !params.Since.IsZero() {
+		url.WithQueryParam("filterModifiedGt", params.Since.Format(time.RFC3339))
+	}
+
 	url.WithQueryParam(limitQuery, pageSize)
 
 	if params.NextPage != "" {
@@ -126,4 +136,60 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	method := http.MethodPost
+
+	objectName := writeObjectMapping.Get(params.ObjectName)
+
+	fullObjectName := fmt.Sprintf("%s-%s", createPrefix, objectName)
+
+	if params.RecordId != "" {
+		method = http.MethodPut
+		fullObjectName = fmt.Sprintf("%s-%s", updatePrefix, objectName)
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, fullObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	recordID, err := jsonquery.New(body).StrWithDefault("crm_id", "")
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     resp,
+	}, nil
 }

@@ -3,6 +3,7 @@ package atlassian
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
@@ -89,13 +90,12 @@ func (c *Connector) getJiraRestApiURL(arg string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, modulePath, arg)
 }
 
-// URL allows to get list of sites associated with auth token.
-// https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
-func (c *Connector) getAccessibleSitesURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, "oauth/token/accessible-resources")
-}
-
 func (c *Connector) setBaseURL(newURL string) {
+	// This is a temporary fix. And will be addressed when URLs are properly loaded from ProviderInfo.
+	if strings.Contains(newURL, "ex/jira") {
+		newURL = "https://api.atlassian.com"
+	}
+
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
 }
