@@ -1,7 +1,10 @@
 package braze
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -9,6 +12,12 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
+
+type catalogPayload struct {
+	Catalogs []map[string]any `json:"catalogs"`
+}
+
+var ErrInvalidData = errors.New("invalid request data provided")
 
 func (c *Connector) metadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
@@ -113,4 +122,69 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) constructCatalogPayload(recordData any) ([]byte, error) {
+	payload := catalogPayload{
+		Catalogs: make([]map[string]any, 1),
+	}
+
+	data, ok := recordData.(map[string]any)
+	if !ok {
+		return nil, ErrInvalidData
+	}
+
+	payload.Catalogs[0] = data
+
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal record data: %w", err)
+	}
+
+	return jsonData, nil
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	var (
+		jsonData []byte
+		err      error
+		url      *urlbuilder.URL
+		method   = http.MethodPost
+	)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		url.AddPath(params.RecordId)
+
+		method = http.MethodPut
+	}
+
+	if params.ObjectName == "catalogs" {
+		jsonData, err = c.constructCatalogPayload(params.RecordData)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		jsonData, err = json.Marshal(params.RecordData)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal record data: %w", err)
+		}
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	return &common.WriteResult{
+		Success: true,
+	}, nil
 }
