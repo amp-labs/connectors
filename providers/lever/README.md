@@ -27,6 +27,16 @@ Lever API version : v1
 Notes:
 - Excluded the endpoints /eeo/responses/pii and /eeo/responses because they are not direct endpoints, and their responses are embedded within their respective objectName under data. Other endpoints follow a consistent structure where responses are contained under data.
 - Excluded the endpoint /surveys/diversity/:posting because it includes a posting ID in the URL path, only one endpoints with posting in the connector.
+- Currently we do not support below endpoints because they requires an opportunity ID in the URL path.
+   - feedback
+   - files
+   - interviews
+   - notes
+   - offers
+   - panels
+   - forms
+   - referrals
+   - resumes
 - Below delete endpoints cannot be delete that were created within the Lever application. Only endpoints that were created via API can be deleted via API.
     - feedback_templates
 	- form_templates

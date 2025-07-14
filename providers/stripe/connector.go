@@ -6,8 +6,9 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/stripe/metadata"
 )
+
+const apiVersion = "v1"
 
 type Connector struct {
 	BaseURL string
@@ -43,23 +44,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	return conn, nil
 }
 
-func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
-	if err != nil {
-		return nil, err
-	}
-
-	return urlbuilder.New(c.BaseURL, path)
-}
-
-func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
-	path := objectNameToWritePath.Get(objectName)
-
-	return urlbuilder.New(c.BaseURL, path)
-}
-
-func (c *Connector) getDeleteURL(objectName string) (*urlbuilder.URL, error) {
-	return c.getWriteURL(objectName)
+func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.BaseURL, apiVersion, objectName)
 }
 
 func (c *Connector) setBaseURL(newURL string) {

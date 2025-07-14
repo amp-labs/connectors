@@ -469,13 +469,17 @@ type CollapsedSubscriptionEvent interface {
 	SubscriptionEventList() ([]SubscriptionEvent, error)
 }
 
-// WebhookVerificationParameters is a struct that contains the parameters required to verify a webhook.
-type WebhookVerificationParameters struct {
-	Headers      http.Header
-	Body         []byte
-	URL          string
-	ClientSecret string
-	Method       string
+// WebhookRequest is a struct that contains the request parameters for a webhook.
+type WebhookRequest struct {
+	Headers http.Header
+	Body    []byte
+	URL     string
+	Method  string
+}
+
+// VerificationParams is a struct that contains the parameters specific to the provider.
+type VerificationParams struct {
+	Param any
 }
 
 func inferDeprecatedFieldsMap(fields FieldsMetadata) map[string]string {

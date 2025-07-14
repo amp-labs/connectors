@@ -30,7 +30,7 @@ type Connector struct {
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
-	conn, err := components.Initialize(providers.LeverSandbox, params, constructor)
+	conn, err := components.Initialize(providers.Lever, params, constructor)
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,67 @@
+{
+  "kind": "calendar#settings",
+  "etag": "\"p32g95jc3lmf8m0o\"",
+  "nextPageToken": "CiEKCwoJL2NhbHVzZXIvEgQIAhIAGgxzaG93RGVjbGluZWQQoJLNg62eiwM=",
+  "items": [
+    {
+      "kind": "calendar#setting",
+      "etag": "\"1589814000000000\"",
+      "id": "autoAddHangouts",
+      "value": "false"
+    },
+    {
+      "kind": "calendar#setting",
+      "etag": "\"1589814000000000\"",
+      "id": "defaultEventLength",
+      "value": "60"
+    },
+    {
+      "kind": "calendar#setting",
+      "etag": "\"1738270937348000\"",
+      "id": "dateFieldOrder",
+      "value": "YMD"
+    },
+    {
+      "kind": "calendar#setting",
+      "etag": "\"1733416408118000\"",
+      "id": "weekStart",
+      "value": "0"
+    },
+    {
+      "kind": "calendar#setting",
+      "etag": "\"1733416408118000\"",
+      "id": "format24HourTime",
+      "value": "false"
+    },
+    {
+      "kind": "calendar#setting",
+      "etag": "\"1589814000000000\"",
+      "id": "hideInvitations",
+      "value": "false"
+    },
+    {
+      "kind": "calendar#setting",
+      "etag": "\"1589814000000000\"",
+      "id": "hideInvitationsSetting",
+      "value": "NONE"
+    },
+    {
+      "kind": "calendar#setting",
+      "etag": "\"1733416408118000\"",
+      "id": "locale",
+      "value": "en"
+    },
+    {
+      "kind": "calendar#setting",
+      "etag": "\"1589814000000000\"",
+      "id": "remindOnRespondedEventsOnly",
+      "value": "false"
+    },
+    {
+      "kind": "calendar#setting",
+      "etag": "\"1589814000000000\"",
+      "id": "showDeclinedEvents",
+      "value": "true"
+    }
+  ]
+}
