@@ -19,6 +19,9 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, err
 	}
 
+	// limited the result set by one.
+	url.WithQueryParam("limit", "1")
+
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
