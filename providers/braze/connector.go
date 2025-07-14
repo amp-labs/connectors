@@ -48,6 +48,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.SingleObjectMetadataHandlers{
 			BuildRequest:  connector.metadataRequest,
 			ParseResponse: connector.parseMetadataResponse,
+			ErrorHandler:  common.InterpretError,
 		},
 	)
 
