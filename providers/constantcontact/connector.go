@@ -46,7 +46,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 }
 
 func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
+	path, err := metadata.Schemas.FindURLPath(c.Module.ID, objectName)
 	if err != nil {
 		var ok bool
 		if path, ok = objectNameToWritePath[objectName]; !ok {

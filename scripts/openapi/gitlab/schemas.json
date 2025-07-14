@@ -2,7 +2,7 @@
   "modules": {
     "root": {
       "id": "root",
-      "path": "/api/v4",
+      "path": "",
       "objects": {
         "admin/batched_background_migrations": {
           "displayName": "Batched Background Migrations",

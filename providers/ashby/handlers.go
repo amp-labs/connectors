@@ -21,7 +21,7 @@ const (
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
+	path, err := metadata.Schemas.FindURLPath(c.Module(), params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

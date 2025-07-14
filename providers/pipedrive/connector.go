@@ -66,7 +66,7 @@ func (c *Connector) getAPIURL(arg string) (*urlbuilder.URL, error) {
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
+	path, err := metadata.Schemas.FindURLPath(c.Module.ID, objectName)
 	if err != nil {
 		return nil, err
 	}

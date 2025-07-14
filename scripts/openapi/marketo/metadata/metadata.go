@@ -50,7 +50,7 @@ func main() {
 	maps.Copy(merged, leadsMetadata)
 	maps.Copy(merged, assetsMetadata)
 
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(&staticschema.Metadata[staticschema.FieldMetadataMapV1, any]{
+	goutils.MustBeNil(metadata.FileManager.FlushSchemas(&staticschema.Metadata[staticschema.FieldMetadataMapV1, any]{
 		Modules: map[common.ModuleID]staticschema.Module[staticschema.FieldMetadataMapV1, any]{
 			common.ModuleRoot: {
 				Objects: merged,
