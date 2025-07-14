@@ -1,0 +1,37 @@
+# Lever connector
+
+
+## Supported Objects 
+Below is an exhaustive list of objects & methods supported on the objects
+
+Lever API version : v1
+
+| Object                  | Resource           | Method       |
+| ----------------------- | ------------------ | ------------ |
+| archive_reasons         | archive_reasons    | read         |
+| audit_events            | audit_events       | read         |
+| sources                 | sources            | read         |
+| stages                  | stages             | read         |
+| tags                    | tags               | read         |
+| users                   | users              | read         |
+| feedback_templates      | feedback_templates | read         |
+| opportunities           | opportunities      | read         |
+| postings                | postings           | read         |
+| form_templates          | form_templates     | read         |
+| requisitions            | requisitions       | read         |
+| requisition_fields      | requisition_fields | read         |
+
+
+Notes:
+- Excluded the endpoints /eeo/responses/pii and /eeo/responses because they are not direct endpoints, and their responses are embedded within their respective objectName under data. Other endpoints follow a consistent structure where responses are contained under data.
+- Excluded the endpoint /surveys/diversity/:posting because it includes a posting ID in the URL path, only one endpoints with posting in the connector.
+- Currently we do not support below endpoints because they requires an opportunity ID in the URL path.
+   - feedback
+   - files
+   - interviews
+   - notes
+   - offers
+   - panels
+   - forms
+   - referrals
+   - resumes
