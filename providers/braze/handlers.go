@@ -65,3 +65,52 @@ func (c *Connector) parseMetadataResponse(
 
 	return &objectMetadata, nil
 }
+
+func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
+	if params.NextPage != "" {
+		return urlbuilder.New(params.NextPage.String())
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if offsetPaginatedObjects.Has(params.ObjectName) {
+		url.WithQueryParam(offset, "1")
+	}
+
+	return url, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	url, err := c.constructReadURL(params)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := setSinceQuery(params, url); err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResult(response,
+		common.ExtractRecordsFromPath(dataFields.Get(params.ObjectName)),
+		getNextRecordsURL(params.ObjectName, url, response),
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}
