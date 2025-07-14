@@ -49,6 +49,7 @@ import (
 	"github.com/amp-labs/connectors/providers/kit"
 	"github.com/amp-labs/connectors/providers/klaviyo"
 	"github.com/amp-labs/connectors/providers/lemlist"
+	"github.com/amp-labs/connectors/providers/lever"
 	"github.com/amp-labs/connectors/providers/marketo"
 	"github.com/amp-labs/connectors/providers/mixmax"
 	"github.com/amp-labs/connectors/providers/monday"
@@ -122,6 +123,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Kit:                 wrapper(newKitConnector),
 	providers.Klaviyo:             wrapper(newKlaviyoConnector),
 	providers.Lemlist:             wrapper(newLemlistConnector),
+	providers.LeverSandbox:        wrapper(newLeverConnector),
 	providers.Marketo:             wrapper(newMarketoConnector),
 	providers.Mixmax:              wrapper(newMixmaxConnector),
 	providers.Monday:              wrapper(newMondayConnector),
@@ -570,4 +572,10 @@ func newGoogleConnector(
 	params common.ConnectorParams,
 ) (*google.Connector, error) {
 	return google.NewConnector(params)
+}
+
+func newLeverConnector(
+	params common.ConnectorParams,
+) (*lever.Connector, error) {
+	return lever.NewConnector(params)
 }
