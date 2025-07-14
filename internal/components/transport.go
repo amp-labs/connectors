@@ -45,6 +45,7 @@ func NewTransport(
 // Deprecated.
 func (t *Transport) SetBaseURL(newURL string) {
 	t.ProviderContext.providerInfo.BaseURL = newURL
+	t.ProviderContext.moduleInfo.BaseURL = newURL
 	t.json.HTTPClient.Base = newURL
 }
 
