@@ -392,21 +392,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 		},
 		{
-			name: "Atlassian Connect module",
-			input: inType{
-				provider: Atlassian,
-				moduleID: ModuleAtlassianJiraConnect,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api",
-				DisplayName: "Atlassian Connect",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
 			name: "Hubspot CRM module",
 			input: inType{
 				provider: Hubspot,
