@@ -32,8 +32,6 @@ func supportedOperations() components.EndpointRegistryInput { // nolint:funlen
 		"users",
 		"feedback_templates",
 		"contacts",
-		"opportunities",
-		"postings",
 	}
 
 	deleteSupport := []string{

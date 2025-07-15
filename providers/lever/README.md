@@ -15,8 +15,8 @@ Lever API version : v1
 | tags                    | tags               | read         |
 | users                   | users              | read, write  |
 | feedback_templates      | feedback_templates | read, write  |
-| opportunities           | opportunities      | read, write  |
-| postings                | postings           | read, write  |
+| opportunities           | opportunities      | read         |
+| postings                | postings           | read         |
 | form_templates          | form_templates     | read, write  |
 | requisitions            | requisitions       | read, write  |
 | requisition_fields      | requisition_fields | read, write  |
@@ -43,6 +43,9 @@ Notes:
   - user ID
     - deactivate
     - reactivate 
+  - Below write endpoints are not supported because it requires query params perform_as.
+    - opportunities
+    - postings
 - The delete endpoints below cannot be removed if they were created within the Lever application. Only endpoints created through the API are eligible for deletion via API.
     - feedback_templates
-	- form_templates
+	  - form_templates

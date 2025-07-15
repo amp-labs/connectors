@@ -123,7 +123,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Kit:                 wrapper(newKitConnector),
 	providers.Klaviyo:             wrapper(newKlaviyoConnector),
 	providers.Lemlist:             wrapper(newLemlistConnector),
-	providers.LeverSandbox:        wrapper(newLeverConnector),
+	providers.Lever:               wrapper(newLeverConnector),
 	providers.Marketo:             wrapper(newMarketoConnector),
 	providers.Mixmax:              wrapper(newMixmaxConnector),
 	providers.Monday:              wrapper(newMondayConnector),
