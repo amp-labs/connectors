@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"os"
 	"time"
 
 	"github.com/amp-labs/connectors"
 	connTest "github.com/amp-labs/connectors/test/atlassian"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
@@ -18,12 +19,13 @@ func main() {
 
 	// Use conn
 	res, err := conn.Read(ctx, connectors.ReadParams{
-		Fields: connectors.Fields("id", "project", "description"),
-		Since:  time.Now().Add(-time.Hour * 24),
+		ObjectName: "issue",
+		Fields:     connectors.Fields("id", "project", "description"),
+		Since:      time.Now().Add(-time.Hour * 24),
 	})
 	if err != nil {
-		panic(err)
+		utils.Fail("error reading", "error", err)
 	}
 
-	fmt.Println(res)
+	utils.DumpJSON(res, os.Stdout)
 }
