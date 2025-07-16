@@ -45,7 +45,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					"meetings": {
 						DisplayName: "Meetings",
 						Fields: map[string]common.FieldMetadata{
-
 							"created_at": {
 								DisplayName:  "created_at",
 								ValueType:    "string",

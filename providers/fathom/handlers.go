@@ -111,8 +111,8 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
-
 }
+
 func inferValueTypeFromData(value any) common.ValueType {
 	if value == nil {
 		return common.ValueTypeOther
