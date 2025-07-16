@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	objectNameSuffix = ".list"
+	apiListSuffix = ".list"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	fullObjectName := objectName + objectNameSuffix
+	fullObjectName := objectName + apiListSuffix
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, fullObjectName)
 	if err != nil {
