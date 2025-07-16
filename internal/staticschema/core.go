@@ -86,6 +86,18 @@ type (
 	}
 )
 
+func (m FieldMetadataMapV1) convertToCommon() map[string]common.FieldMetadata {
+	result := make(map[string]common.FieldMetadata)
+
+	for fieldName, fieldDisplay := range m {
+		result[fieldName] = common.FieldMetadata{
+			DisplayName: fieldDisplay,
+		}
+	}
+
+	return result
+}
+
 func (m FieldMetadataMapV2) convertToCommon() map[string]common.FieldMetadata {
 	result := make(map[string]common.FieldMetadata)
 
@@ -119,16 +131,16 @@ func (m FieldMetadataMapV2) convertToCommon() map[string]common.FieldMetadata {
 // ListObjectMetadata returns a copy that consumers are allowed to modify as needed.
 func (o Object[F, C]) getObjectMetadata() *common.ObjectMetadata {
 	if fieldsMap, isV1 := (any(o.Fields)).(FieldMetadataMapV1); isV1 {
-		return &common.ObjectMetadata{
-			DisplayName: o.DisplayName,
-			FieldsMap:   datautils.FromMap(fieldsMap).ShallowCopy(),
-		}
+		return common.NewObjectMetadata(
+			o.DisplayName,
+			fieldsMap.convertToCommon(),
+		)
 	}
 
 	fields, isV2 := (any(o.Fields)).(FieldMetadataMapV2)
 	if !isV2 {
 		// Unknown fieldsMap version.
-		return &common.ObjectMetadata{}
+		return common.NewObjectMetadata(o.DisplayName, common.FieldsMetadata{})
 	}
 
 	return common.NewObjectMetadata(
