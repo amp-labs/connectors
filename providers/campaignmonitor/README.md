@@ -10,23 +10,46 @@ Campaign Monitor API environment : v3.3
 | ----------------| ---------------------------------------| ------|
 | Clients         | clients.{xml|json}                     | read  |
 | Admins          | admins.{xml|json}                      | read  |
-|                 | transactional/smartEmail               |       | 
-| Transactional   | transactional/classicEmail/groups      | read  |
-|                 | transactional/messages                 |       |
-| lists           | clients/{clientid}/lists.json          | read  |
-| Segments        | clients/{clientid}/segments.json       | read  |
-| Suppressionlist | clients/{clientid}/suppressionlist.json| read  |
-| Templates       | clients/{clientid}/templates.json      | read  |
-| People          | clients/{clientid}/people.json         | read  |
-| Tags            | clients/{clientid}/tags.json           | read  |
-| Campaigns       | clients/{clientid}/campaigns.json      | read  |
-| Scheduled       | clients/{clientid}/scheduled.json      | read  |
-| Drafts          | clients/{clientid}/drafts.json         | read  |
-| Sendigndomains  | clients/{clientid}/sendingdomains.json | read  |
-| Journeys        | clients/{clientid}/journeys.json       | read  |
 --------------------------------------------------------------------
 
 Note: 
- - The connector now supports objects with a client ID in the URL, which is passed in the JSON and retrieved in the code.
- - Ignored the remaining objects with shared IDs like listId, campaignId, and segmentId, as they can be obtained after using the object with clientId.
- - Not able to check the transactional objects because it requires paid version to access on it.
+ - Currently we do not support below endpoints because they requires an shared ID in the URL path.
+   - clientid
+      - lists       
+      - segments
+      - suppressionlist
+      - templates    
+      - people  
+      - tags    
+      - campaigns
+      - scheduled
+      - drafts  
+      - sendingdomains
+      - journeys
+    - campaignid
+      - emailclientusage
+      - recipients
+      - bounces
+      - opens
+      - clicks
+      - unsubscribes
+      - spam
+    - emailId
+       - recipients
+       - opens.
+       - clicks
+       - bounces
+       - unsubscribes
+    - listId
+       - customfields
+       - segments
+       - active
+       - unconfirmed
+       - unsubscribed
+       - bounced
+    - segmentID
+       - active
+ - The following endpoints require clientId as a query parameter. Although the documentation marks it as optional, it’s only optional when the user is using a specific client API key — but since we use an OAuth token, it is required. Refer to: https://www.campaignmonitor.com/api/v3-3/transactional/#smart-email-listing.
+    - transactional/smartEmail
+    - transactional/classicEmail/groups
+    - transactional/messages

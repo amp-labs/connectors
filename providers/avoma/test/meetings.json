@@ -1,0 +1,22 @@
+{
+    "count": 1,
+    "next": "https://api.avoma.com/v1/meetings?from_date=2025-06-01T00:00:00Z&page_size=50&to_date=2025-06-03T00:00:00Z",
+    "previous": null,
+    "results": [
+        {
+            "uuid": "bb4097e2-0e18-43a6-845d-49563f62ff15",
+            "organizer_email": "sample@gmail.com",
+            "attendees": [
+                {
+                    "email": "demo123@@gmail.com",
+                    "name": "demo",
+                    "uuid": "4b317326-93d3-498b-94ee-f5acfec05bca",
+                    "response_status": "accepted"
+                }
+            ],
+            "state": "in_progress",
+            "processing_status": "recording_error",
+            "url": "https://app.avoma.com/meetings/bb4097e2-0e18-43a6-845d-49563f62ff15"
+        }
+    ]
+}

@@ -18,7 +18,7 @@ type ResponseData struct {
 }
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := c.constructURL(objectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "api", APIVersion, objectName+".json")
 	if err != nil {
 		return nil, err
 	}
@@ -37,37 +37,20 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
 
-	switch objectName {
-	// Below two objects having the response which is embedded with the "Results" key.
-	case "suppressionlist", "campaigns":
-		resp, err := common.UnmarshalJSON[ResponseData](response)
-		if err != nil {
-			return nil, err
-		}
+	// Direct Response
+	resp, err := common.UnmarshalJSON[[]map[string]any](response)
+	if err != nil {
+		return nil, err
+	}
 
-		if len(resp.Results) == 0 {
-			return nil, common.ErrMissingExpectedValues
-		}
+	if len(*resp) == 0 {
+		return nil, common.ErrMissingExpectedValues
+	}
 
-		for field := range resp.Results[0] {
-			objectMetadata.FieldsMap[field] = field
-		}
-	default:
-		// Direct Response
-		resp, err := common.UnmarshalJSON[[]map[string]any](response)
-		if err != nil {
-			return nil, err
-		}
+	record := *resp
 
-		if len(*resp) == 0 {
-			return nil, common.ErrMissingExpectedValues
-		}
-
-		record := *resp
-
-		for field := range record[0] {
-			objectMetadata.FieldsMap[field] = field
-		}
+	for field := range record[0] {
+		objectMetadata.FieldsMap[field] = field
 	}
 
 	return &objectMetadata, nil

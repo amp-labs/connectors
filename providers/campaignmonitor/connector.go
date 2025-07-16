@@ -16,18 +16,11 @@ type Connector struct {
 
 	// Require authenticated client
 	common.RequireAuthenticatedClient
-	common.RequireMetadata
 
 	// Supported operations
 	components.SchemaProvider
 	components.Reader
-
-	clientID string
 }
-
-const (
-	metadataKeyClientID = "clientid"
-)
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
@@ -36,18 +29,11 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		return nil, err
 	}
 
-	conn.clientID = params.Metadata[metadataKeyClientID]
-
 	return conn, nil
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
-	connector := &Connector{
-		Connector: base,
-		RequireMetadata: common.RequireMetadata{
-			ExpectedMetadataKeys: []string{metadataKeyClientID},
-		},
-	}
+	connector := &Connector{Connector: base}
 
 	registry, err := components.NewEndpointRegistry(supportedOperations())
 	if err != nil {

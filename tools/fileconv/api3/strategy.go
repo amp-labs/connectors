@@ -64,6 +64,25 @@ func (m AndPathMatcher) IsPathMatching(path string) bool {
 	return true
 }
 
+// OrPathMatcher combines multiple path matchers.
+// A path matches if at least one matcher in the list agrees on the match.
+type OrPathMatcher []PathMatcher
+
+func (m OrPathMatcher) IsPathMatching(path string) bool {
+	// Find the first not matching. Conclude doesn't match the combined goal.
+	for _, matcher := range m {
+		if matcher == nil {
+			continue
+		}
+
+		if matcher.IsPathMatching(path) {
+			return true
+		}
+	}
+
+	return false
+}
+
 // StarRulePathResolver will report if path matches endpoint rule.
 // Match can occur in 3 different ways,
 // * exact value is inside the registry

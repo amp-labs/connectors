@@ -45,3 +45,15 @@ func NewLevelFileLocator(level CallLevel) *LevelFileLocator {
 func (l LevelFileLocator) AbsPathTo(filename string) string {
 	return filepath.Join(l.directory, filename)
 }
+
+type FilePath struct {
+	path string
+}
+
+func NewPath(path string) *FilePath {
+	return &FilePath{path: path}
+}
+
+func (f FilePath) AbsPathTo(filename string) string {
+	return filepath.Join(f.path, filename)
+}
