@@ -75,6 +75,7 @@ func inferValueTypeFromData(value any) common.ValueType {
 	if value == nil {
 		return common.ValueTypeOther
 	}
+
 	switch value.(type) {
 	case string:
 		return common.ValueTypeString
