@@ -10,13 +10,9 @@ Campaign Monitor API environment : v3.3
 | ----------------| ---------------------------------------| ------|
 | Clients         | clients.{xml|json}                     | read  |
 | Admins          | admins.{xml|json}                      | read  |
-|                 | transactional/smartEmail               |       | 
-| Transactional   | transactional/classicEmail/groups      | read  |
-|                 | transactional/messages                 |       |
 --------------------------------------------------------------------
 
 Note: 
- - Not able to check the transactional objects because it requires paid version to access on it.
  - Currently we do not support below endpoints because they requires an shared ID in the URL path.
    - clientid
       - lists       
@@ -53,3 +49,7 @@ Note:
        - bounced
     - segmentID
        - active
+ - The following endpoints require clientId as a query parameter. Although the documentation marks it as optional, it’s only optional when the user is using a specific client API key — but since we use an OAuth token, it is required. Refer to: https://www.campaignmonitor.com/api/v3-3/transactional/#smart-email-listing.
+    - transactional/smartEmail
+    - transactional/classicEmail/groups
+    - transactional/messages
