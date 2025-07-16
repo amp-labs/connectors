@@ -364,3 +364,54 @@ func TestEquality(t *testing.T) { // nolint:funlen
 		})
 	}
 }
+
+func TestURLOrigin(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "HTTP with port",
+			input:    "http://example.com:8080/path?query=1",
+			expected: "http://example.com:8080",
+		},
+		{
+			name:     "HTTPS without port",
+			input:    "https://example.com/some/path",
+			expected: "https://example.com",
+		},
+		{
+			name:     "HTTPS with subdomain",
+			input:    "https://sub.example.com/abc",
+			expected: "https://sub.example.com",
+		},
+		{
+			name:     "HTTP with IP address",
+			input:    "http://127.0.0.1:3000/test",
+			expected: "http://127.0.0.1:3000",
+		},
+		{
+			name:     "Empty URL",
+			input:    "",
+			expected: "",
+		},
+	}
+
+	for _, tt := range tests { // nolint:varnamelen
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			endpoint, err := url.Parse(tt.input)
+			if err != nil {
+				t.Fatalf("%s: is an invalid test, check input", tt.name)
+			}
+
+			outputURL, err := FromRawURL(endpoint)
+			output := outputURL.Origin()
+			testutils.CheckOutputWithError(t, tt.name, tt.expected, nil, output, err)
+		})
+	}
+}

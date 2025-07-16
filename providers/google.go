@@ -1,7 +1,14 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const (
 	Google Provider = "google"
+)
+
+const (
+	// ModuleGoogleCalendar is the module used for listing user calendars.
+	ModuleGoogleCalendar common.ModuleID = "calendar"
 )
 
 //nolint:funlen
@@ -19,6 +26,18 @@ func init() {
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
+			},
+		},
+		DefaultModule: ModuleGoogleCalendar,
+		Modules: &Modules{
+			ModuleGoogleCalendar: {
+				BaseURL:     "https://www.googleapis.com/calendar",
+				DisplayName: "Google Calendar",
+				Support: Support{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
 			},
 		},
 		Media: &Media{
@@ -39,9 +58,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 	})
 }
