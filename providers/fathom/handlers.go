@@ -165,7 +165,6 @@ func (c *Connector) parseWriteResponse(
 		Errors:   nil,
 		Data:     resp,
 	}, nil
-
 }
 
 func inferValueTypeFromData(value any) common.ValueType {
