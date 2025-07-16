@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -69,6 +70,47 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, apiVersion, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if !params.Since.IsZero() {
+		url.WithQueryParam("created_after", params.Since.Format(time.RFC3339))
+	}
+
+	if !params.Until.IsZero() {
+		url.WithQueryParam("created_before", params.Until.Format(time.RFC3339))
+	}
+
+	if params.NextPage != "" {
+		url.WithQueryParam("next_cursor", params.NextPage.String())
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath("items"),
+		nextRecordsURL(),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
 
 func inferValueTypeFromData(value any) common.ValueType {
