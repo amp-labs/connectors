@@ -19,41 +19,12 @@ func main() {
 func MainFn() int {
 	ctx := context.Background()
 
-	err := testCampaigns(ctx)
-	if err != nil {
-		return 1
-	}
-
-	err = testClients(ctx)
+	err := testClients(ctx)
 	if err != nil {
 		return 1
 	}
 
 	return 0
-}
-
-func testCampaigns(ctx context.Context) error {
-	conn := campaignmonitor.GetCampaignMonitorConnector(ctx)
-
-	slog.Info("Deleting the campaigns")
-
-	deleteParams := common.DeleteParams{
-		ObjectName: "campaigns",
-		RecordId:   "90be62122fdb35bf09e2a0030aa0b92c",
-	}
-
-	res, err := Delete(ctx, conn, deleteParams)
-	if err != nil {
-		fmt.Println("ERR: ", err)
-
-		return err
-	}
-
-	if err := constructResponse(res); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func testClients(ctx context.Context) error {

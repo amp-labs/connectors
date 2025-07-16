@@ -24,16 +24,6 @@ func MainFn() int {
 		return 1
 	}
 
-	err = testPeople(ctx)
-	if err != nil {
-		return 1
-	}
-
-	err = testSuppress(ctx)
-	if err != nil {
-		return 1
-	}
-
 	return 0
 }
 
@@ -48,63 +38,6 @@ func testClients(ctx context.Context) error {
 			"CompanyName": "Demo",
 			"Country":     "Australia",
 			"TimeZone":    "(GMT+10:00) Canberra, Melbourne, Sydney",
-		},
-		RecordId: "",
-	}
-
-	writeRes, err := Write(ctx, conn, writeParams)
-	if err != nil {
-		fmt.Println("ERR: ", err)
-
-		return err
-	}
-
-	if err := constructResponse(writeRes); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func testPeople(ctx context.Context) error {
-	conn := campaignmonitor.GetCampaignMonitorConnector(ctx)
-
-	slog.Info("Creating the people")
-
-	writeParams := common.WriteParams{
-		ObjectName: "people",
-		RecordData: map[string]any{
-			"EmailAddress": "sample2@gmail.com",
-			"Name":         "Sparrow2",
-			"AccessLevel":  23,
-			"Password":     "sample2Sparrow",
-		},
-		RecordId: "",
-	}
-
-	writeRes, err := Write(ctx, conn, writeParams)
-	if err != nil {
-		fmt.Println("ERR: ", err)
-
-		return err
-	}
-
-	if err := constructResponse(writeRes); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func testSuppress(ctx context.Context) error {
-	conn := campaignmonitor.GetCampaignMonitorConnector(ctx)
-
-	slog.Info("Creating the suppress")
-
-	writeParams := common.WriteParams{
-		ObjectName: "suppress",
-		RecordData: map[string]any{
-			"EmailAddresses": []string{"one@example.com", "two@example.com"},
 		},
 		RecordId: "",
 	}
