@@ -1,0 +1,59 @@
+{
+    "data": [
+        {
+            "id": "2087af84-f146-4535-9368-2309e33e049f",
+            "name": "karan",
+            "contact": "e2719ee1-21f5-4287-a60a-59bd29deac80",
+            "headline": "",
+            "stage": "lead-new",
+            "confidentiality": "non-confidential",
+            "location": "",
+            "phones": [],
+            "emails": [],
+            "links": [],
+            "archived": null,
+            "tags": [
+                "Hiring Software developer",
+                "Go tech",
+                "kovilpatti",
+                "Service based",
+                "hiring"
+            ],
+            "sources": [
+                "Added manually"
+            ],
+            "stageChanges": [
+                {
+                    "toStageId": "lead-new",
+                    "toStageIndex": 0,
+                    "updatedAt": 1750233426190,
+                    "userId": "2c713392-d0e4-4355-8673-378d6a851cb8"
+                }
+            ],
+            "origin": "sourced",
+            "sourcedBy": "2c713392-d0e4-4355-8673-378d6a851cb8",
+            "owner": "2c713392-d0e4-4355-8673-378d6a851cb8",
+            "followers": [
+                "2c713392-d0e4-4355-8673-378d6a851cb8",
+                "e0a9f3e3-bd9b-4eb1-8d2c-0d9a572bf641"
+            ],
+            "applications": [
+                "2b7f3433-111a-4659-a302-58a32cd2e33c"
+            ],
+            "createdAt": 1750233426190,
+            "updatedAt": 1750247948243,
+            "lastInteractionAt": 1750247948074,
+            "lastAdvancedAt": 1750233426190,
+            "snoozedUntil": null,
+            "urls": {
+                "list": "https://hire.sandbox.lever.co/candidates",
+                "show": "https://hire.sandbox.lever.co/candidates/2087af84-f146-4535-9368-2309e33e049f"
+            },
+            "isAnonymized": false,
+            "dataProtection": null,
+            "opportunityLocation": "Chennai"
+        }
+    ],
+    "hasNext": true,
+    "next": "%5B1%2C1750233409740%2C%2248dd4e94-fea0-4f9a-be5f-95b1853cbbbe%22%5D"
+}
