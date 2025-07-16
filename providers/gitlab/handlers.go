@@ -44,10 +44,10 @@ func (c *Connector) parseSingleHandlerResponse(
 ) (*common.ObjectMetadata, error) {
 	var firstRecord map[string]any
 
-	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
-	}
+	objectMetadata := common.NewObjectMetadata(
+		naming.CapitalizeFirstLetterEveryWord(objectName),
+		common.FieldsMetadata{},
+	)
 
 	switch objectResponders.Has(objectName) {
 	case true:
@@ -77,10 +77,10 @@ func (c *Connector) parseSingleHandlerResponse(
 	}
 
 	for fld := range firstRecord {
-		objectMetadata.FieldsMap[fld] = fld
+		objectMetadata.AddField(fld, fld)
 	}
 
-	return &objectMetadata, nil
+	return objectMetadata, nil
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {

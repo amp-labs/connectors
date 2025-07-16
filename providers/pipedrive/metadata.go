@@ -81,7 +81,7 @@ func metadataMapper(
 	// Looping on the first index of the response data.
 	fields := response.Data[0]
 	for fld := range fields {
-		mdt.FieldsMap[fld] = fld
+		mdt.AddField(fld, fld)
 	}
 
 	return mdt, nil

@@ -89,10 +89,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
-	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
-	}
+	objectMetadata := common.NewObjectMetadata(
+		naming.CapitalizeFirstLetterEveryWord(objectName),
+		common.FieldsMetadata{},
+	)
 
 	metadataResp, err := common.UnmarshalJSON[MetadataResponse](response)
 	if err != nil {
@@ -109,10 +109,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	// Process each field from the introspection result
 	for _, field := range metadataResp.Data.Type.Fields {
-		objectMetadata.FieldsMap[field.Name] = field.Name
+		objectMetadata.AddField(field.Name, field.Name)
 	}
 
-	return &objectMetadata, nil
+	return objectMetadata, nil
 }
 
 func getBoardsBaseFields() string {

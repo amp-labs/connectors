@@ -37,10 +37,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
-	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
-	}
+	objectMetadata := common.NewObjectMetadata(
+		naming.CapitalizeFirstLetterEveryWord(objectName),
+		common.FieldsMetadata{},
+	)
 
 	res, err := common.UnmarshalJSON[responseData](response)
 	if err != nil {
@@ -53,10 +53,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	// Using the first result data to generate the metadata.
 	for k := range res.Result[0] {
-		objectMetadata.FieldsMap[k] = k
+		objectMetadata.AddField(k, k)
 	}
 
-	return &objectMetadata, nil
+	return objectMetadata, nil
 }
 
 func (c *Connector) constructReadURL(params common.ReadParams) (string, error) {

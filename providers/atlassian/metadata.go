@@ -37,12 +37,18 @@ func (c *Connector) ListObjectMetadata(ctx context.Context, _ []string) (*common
 	// Therefore, metadata must include it too.
 	fields["id"] = "Id"
 
+	objectMetadata := common.NewObjectMetadata(
+		"Issue",
+		common.FieldsMetadata{},
+	)
+
+	for k, v := range fields {
+		objectMetadata.AddField(k, v)
+	}
+
 	return &common.ListObjectMetadataResult{
 		Result: map[string]common.ObjectMetadata{
-			"issue": {
-				DisplayName: "Issue",
-				FieldsMap:   fields,
-			},
+			"issue": *objectMetadata,
 		},
 		Errors: nil,
 	}, nil

@@ -39,12 +39,12 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 	}
 
 	for _, object := range objectNames {
-		objectMetadata := common.ObjectMetadata{
-			FieldsMap:   make(map[string]string),
-			DisplayName: naming.CapitalizeFirstLetterEveryWord(object),
-		}
+		objectMetadata := common.NewObjectMetadata(
+			naming.CapitalizeFirstLetterEveryWord(object),
+			common.FieldsMetadata{},
+		)
 
-		if !fetchDataFields(ctx, conn, object, &objectMetadata, &metadataResults) {
+		if !fetchDataFields(ctx, conn, object, objectMetadata, &metadataResults) {
 			openAPIFallback(object, &metadataResults)
 
 			continue
@@ -80,7 +80,7 @@ func fetchDataFields(
 	}
 
 	for fld := range resp.Results[0] {
-		mtd.FieldsMap[fld] = fld
+		mtd.AddField(fld, fld)
 	}
 
 	res.Result[obj] = *mtd

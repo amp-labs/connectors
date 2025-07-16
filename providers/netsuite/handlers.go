@@ -44,11 +44,10 @@ func (c *Connector) parseObjectMetadataResponse(
 		return nil, fmt.Errorf("%w: invalid metadata response: %+v", common.ErrMissingExpectedValues, metadata)
 	}
 
-	result := &common.ObjectMetadata{
-		DisplayName: object,
-		Fields:      make(map[string]common.FieldMetadata),
-		FieldsMap:   make(map[string]string),
-	}
+	result := common.NewObjectMetadata(
+		object,
+		common.FieldsMetadata{},
+	)
 
 	for field, metadata := range metadata.Properties {
 		if metadata.Type == "object" {
@@ -70,8 +69,7 @@ func (c *Connector) parseObjectMetadataResponse(
 			ProviderType: format,
 		}
 
-		// Deprecated: this map includes only display names.
-		result.FieldsMap[field] = title
+		result.AddField(field, title)
 	}
 
 	return result, nil

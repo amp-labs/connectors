@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -72,18 +73,19 @@ func parseMetadataFromResponse(body *ajson.Node, objectName string) (*common.Obj
 		return nil, err
 	}
 
-	fieldsMap := make(map[string]string)
+	objectMetadata := common.NewObjectMetadata(
+		naming.CapitalizeFirstLetterEveryWord(objectName),
+		common.FieldsMetadata{},
+	)
 
 	if len(arr) != 0 {
 		objectResponse := arr[0].MustObject()
 
 		// Using the result data to generate the metadata.
 		for k := range objectResponse {
-			fieldsMap[k] = k
+			objectMetadata.AddField(k, k)
 		}
 	}
 
-	return &common.ObjectMetadata{
-		FieldsMap: fieldsMap,
-	}, nil
+	return objectMetadata, nil
 }
