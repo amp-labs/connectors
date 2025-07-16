@@ -52,8 +52,3 @@ type ResponseData struct {
 	Transcripts []map[string]any `json:"transcripts,omitempty"`
 	Bites       []map[string]any `json:"bites,omitempty"`
 }
-
-type PageInfo struct {
-	Limit int
-	Skip  int
-}

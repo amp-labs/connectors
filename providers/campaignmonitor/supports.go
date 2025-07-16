@@ -12,16 +12,6 @@ func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
 		"clients",
 		"admins",
-		"lists",
-		"segments",
-		"suppressionlist",
-		"templates",
-		"people",
-		"tags",
-		"campaigns",
-		"scheduled",
-		"drafts",
-		"journeys",
 	}
 
 	// List of supported write endpoints based on official Campaign Monitor API documentation:

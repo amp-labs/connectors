@@ -17,7 +17,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 
 	clientsResponse := testutils.DataFromFile(t, "clients.json")
 	adminsResponse := testutils.DataFromFile(t, "admins.json")
-	campaignsResponse := testutils.DataFromFile(t, "campaigns.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -31,9 +30,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				}, {
 					If:   mockcond.Path("/api/v3.3/admins.json"),
 					Then: mockserver.Response(http.StatusOK, adminsResponse),
-				}, {
-					If:   mockcond.Path("/api/v3.3/clients/744cdce058fc61d9ef5e2492f8d8fbaf/campaigns.json"),
-					Then: mockserver.Response(http.StatusOK, campaignsResponse),
 				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -54,23 +50,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							"EmailAddress": "EmailAddress",
 							"Name":         "Name",
 							"Status":       "Status",
-						},
-					},
-					"campaigns": {
-						DisplayName: "Campaigns",
-						Fields:      map[string]common.FieldMetadata{},
-						FieldsMap: map[string]string{
-							"Name":              "Name",
-							"FromName":          "FromName",
-							"FromEmail":         "FromEmail",
-							"ReplyTo":           "ReplyTo",
-							"SentDate":          "SentDate",
-							"TotalRecipients":   "TotalRecipients",
-							"CampaignID":        "CampaignID",
-							"Subject":           "Subject",
-							"Tags":              "Tags",
-							"WebVersionURL":     "WebVersionURL",
-							"WebVersionTextURL": "WebVersionTextURL",
 						},
 					},
 				},
@@ -94,9 +73,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: http.DefaultClient,
-		Metadata: map[string]string{
-			"clientid": "744cdce058fc61d9ef5e2492f8d8fbaf",
-		},
 	})
 	if err != nil {
 		return nil, err

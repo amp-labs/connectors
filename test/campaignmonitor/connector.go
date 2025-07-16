@@ -12,18 +12,9 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// nolint:gochecknoglobals
-var (
-	fieldClientID = credscanning.Field{
-		Name:      "clientid",
-		PathJSON:  "metadata.clientid",
-		SuffixENV: "CLIENTID",
-	}
-)
-
 func GetCampaignMonitorConnector(ctx context.Context) *campaignmonitor.Connector {
 	filePath := credscanning.LoadPath(providers.CampaignMonitor)
-	reader := utils.MustCreateProvCredJSON(filePath, true, fieldClientID)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),
@@ -36,9 +27,6 @@ func GetCampaignMonitorConnector(ctx context.Context) *campaignmonitor.Connector
 
 	conn, err := campaignmonitor.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
-		Metadata: map[string]string{
-			"clientid": reader.Get(fieldClientID),
-		},
 	})
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
