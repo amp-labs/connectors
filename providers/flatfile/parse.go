@@ -22,9 +22,14 @@ func records() common.RecordsFunc {
 
 func nextRecordsURL(url *url.URL) common.NextPageFunc {
 	return func(n *ajson.Node) (string, error) {
-		nexURL := *url
 
-		query := nexURL.Query()
+		if url == nil {
+			return "", nil
+		}
+
+		nextURL := *url
+
+		query := nextURL.Query()
 		currentPage := 1
 		currentPageStr := query.Get(pageQuery)
 
@@ -39,8 +44,8 @@ func nextRecordsURL(url *url.URL) common.NextPageFunc {
 
 		nextPage := currentPage + 1
 		query.Set(pageQuery, strconv.Itoa(nextPage))
-		nexURL.RawQuery = query.Encode()
+		nextURL.RawQuery = query.Encode()
 
-		return nexURL.String(), nil
+		return nextURL.String(), nil
 	}
 }
