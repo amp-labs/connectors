@@ -12,16 +12,6 @@ func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
 		"clients",
 		"admins",
-		"lists",
-		"segments",
-		"suppressionlist",
-		"templates",
-		"people",
-		"tags",
-		"campaigns",
-		"scheduled",
-		"drafts",
-		"journeys",
 	}
 
 	return components.EndpointRegistryInput{

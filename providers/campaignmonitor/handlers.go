@@ -3,8 +3,6 @@ package campaignmonitor
 import (
 	"context"
 	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -57,33 +55,9 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	if params.NextPage != "" {
-		url, err := urlbuilder.New(params.NextPage.String())
-		if err != nil {
-			return nil, err
-		}
-
-		return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
-	}
-
-	url, err := c.constructURL(params.ObjectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "api", APIVersion, params.ObjectName+".json")
 	if err != nil {
 		return nil, err
-	}
-
-	url.WithQueryParam("pageSize", strconv.Itoa(defaultPageSize))
-
-	// The connector currently supports endpoints with clientId in the URL path.
-	// Among these, only the campaigns object supports pagination using the sentFromDate and sentToDate query parameters.
-	// https://www.campaignmonitor.com/api/v3-3/clients/#getting-sent-campaigns-2.
-	if params.ObjectName == "campaigns" {
-		if !params.Since.IsZero() {
-			url.WithQueryParam("sentFromDate", params.Since.Format(time.DateOnly))
-		}
-
-		if !params.Until.IsZero() {
-			url.WithQueryParam("sentToDate", params.Until.Format(time.DateOnly))
-		}
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -95,16 +69,10 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	nodePath := ""
-
-	if endpointsWtihResultsPath.Has(params.ObjectName) {
-		nodePath = "Results"
-	}
-
 	return common.ParseResult(
 		response,
-		common.ExtractRecordsFromPath(nodePath),
-		makeNextRecordsURL(request.URL),
+		common.ExtractRecordsFromPath(""),
+		nil,
 		common.GetMarshaledData,
 		params.Fields,
 	)

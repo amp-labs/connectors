@@ -32,23 +32,6 @@ func MainFn() int {
 		return 1
 	}
 
-	err = testRead(ctx, conn, "suppressionlist", []string{""}, time.Time{}, time.Time{})
-	if err != nil {
-		return 1
-	}
-
-	err = testRead(
-		ctx,
-		conn,
-		"campaigns",
-		[]string{""},
-		time.Date(2024, 5, 1, 0, 0, 0, 0, time.UTC),
-		time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
-	)
-	if err != nil {
-		return 1
-	}
-
 	return 0
 }
 
