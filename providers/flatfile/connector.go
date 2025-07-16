@@ -71,7 +71,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector.Writer = writer.NewHTTPWriter(
 		connector.HTTPClient().Client,
 		registry,
-		common.ModuleRoot,
+		connector.ProviderContext.Module(),
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
