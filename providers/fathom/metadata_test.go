@@ -45,20 +45,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					"meetings": {
 						DisplayName: "Meetings",
 						Fields: map[string]common.FieldMetadata{
-							"action_items": {
-								DisplayName:  "action_items",
-								ValueType:    "other",
-								ProviderType: "",
-								ReadOnly:     false,
-								Values:       nil,
-							},
-							"calendar_invitees": {
-								DisplayName:  "calendar_invitees",
-								ValueType:    "other",
-								ProviderType: "",
-								ReadOnly:     false,
-								Values:       nil,
-							},
+
 							"created_at": {
 								DisplayName:  "created_at",
 								ValueType:    "string",
@@ -73,13 +60,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ReadOnly:     false,
 								Values:       nil,
 							},
-							"default_summary": {
-								DisplayName:  "default_summary",
-								ValueType:    "other",
-								ProviderType: "",
-								ReadOnly:     false,
-								Values:       nil,
-							},
+
 							"meeting_title": {
 								DisplayName:  "meeting_title",
 								ValueType:    "string",
@@ -94,13 +75,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ReadOnly:     false,
 								Values:       nil,
 							},
-							"recorded_by": {
-								DisplayName:  "recorded_by",
-								ValueType:    "other",
-								ProviderType: "",
-								ReadOnly:     false,
-								Values:       nil,
-							},
+
 							"recording_end_time": {
 								DisplayName:  "recording_end_time",
 								ValueType:    "string",
@@ -129,13 +104,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ReadOnly:     false,
 								Values:       nil,
 							},
-							"share_url": {
-								DisplayName:  "share_url",
-								ValueType:    "string",
-								ProviderType: "",
-								ReadOnly:     false,
-								Values:       nil,
-							},
+
 							"title": {
 								DisplayName:  "title",
 								ValueType:    "string",
