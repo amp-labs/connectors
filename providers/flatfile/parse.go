@@ -22,7 +22,6 @@ func records() common.RecordsFunc {
 
 func nextRecordsURL(url *url.URL) common.NextPageFunc {
 	return func(n *ajson.Node) (string, error) {
-
 		if url == nil {
 			return "", nil
 		}

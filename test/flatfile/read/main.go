@@ -34,7 +34,7 @@ func main() {
 		utils.Fail("error reading from flatfile", "error", err)
 	}
 
-	slog.Info("Reading jobs..")
+	slog.Info("Reading events..")
 	utils.DumpJSON(res, os.Stdout)
 
 	res, err = conn.Read(ctx, common.ReadParams{
@@ -47,6 +47,17 @@ func main() {
 	}
 
 	slog.Info("Reading users..")
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "apps",
+		Fields:     connectors.Fields("id", "name", "type"),
+	})
+
+	if err != nil {
+		utils.Fail("error reading from flatfile", "error", err)
+	}
+	slog.Info("Reading apps..")
 	utils.DumpJSON(res, os.Stdout)
 
 	slog.Info("Read operation completed successfully.")
