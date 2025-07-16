@@ -1,0 +1,83 @@
+{
+  "kind": "calendar#calendarList",
+  "etag": "\"p32g95jc3lmf8m0o\"",
+  "nextPageToken": "EjAKDAjR0u-8BhCAjJaYAxIgdTpnY2FsK2dyb3VwOi8vaG9saWRheS9lbi5pbmRpYW4aHhIJBwYs8u00rJIAqsmIjAQNEgsIk9TvvAYQgM7SWQ==",
+  "items": [
+    {
+      "kind": "calendar#calendarListEntry",
+      "etag": "\"1733416408118000\"",
+      "id": "en.tz#holiday@group.v.calendar.google.com",
+      "summary": "Holidays in Tanzania",
+      "description": "Holidays and Observances in Tanzania",
+      "timeZone": "America/Los_Angeles",
+      "colorId": "8",
+      "backgroundColor": "#16a765",
+      "foregroundColor": "#000000",
+      "selected": true,
+      "accessRole": "reader",
+      "defaultReminders": [],
+      "conferenceProperties": {
+        "allowedConferenceSolutionTypes": [
+          "hangoutsMeet"
+        ]
+      }
+    },
+    {
+      "kind": "calendar#calendarListEntry",
+      "etag": "\"1738271037848000\"",
+      "id": "en.usa#holiday@group.v.calendar.google.com",
+      "summary": "Holidays in United States",
+      "description": "Holidays and Observances in United States",
+      "timeZone": "America/Los_Angeles",
+      "colorId": "15",
+      "backgroundColor": "#9fc6e7",
+      "foregroundColor": "#000000",
+      "selected": true,
+      "accessRole": "reader",
+      "defaultReminders": [],
+      "conferenceProperties": {
+        "allowedConferenceSolutionTypes": [
+          "hangoutsMeet"
+        ]
+      }
+    },
+    {
+      "kind": "calendar#calendarListEntry",
+      "etag": "\"1738271042429000\"",
+      "id": "en.ukrainian#holiday@group.v.calendar.google.com",
+      "summary": "Holidays in Ukraine",
+      "description": "Holidays and Observances in Ukraine",
+      "timeZone": "America/Los_Angeles",
+      "colorId": "9",
+      "backgroundColor": "#7bd148",
+      "foregroundColor": "#000000",
+      "selected": true,
+      "accessRole": "reader",
+      "defaultReminders": [],
+      "conferenceProperties": {
+        "allowedConferenceSolutionTypes": [
+          "hangoutsMeet"
+        ]
+      }
+    },
+    {
+      "kind": "calendar#calendarListEntry",
+      "etag": "\"1738271057856000\"",
+      "id": "en.indian#holiday@group.v.calendar.google.com",
+      "summary": "Holidays in India",
+      "description": "Holidays and Observances in India",
+      "timeZone": "America/Los_Angeles",
+      "colorId": "12",
+      "backgroundColor": "#fad165",
+      "foregroundColor": "#000000",
+      "selected": true,
+      "accessRole": "reader",
+      "defaultReminders": [],
+      "conferenceProperties": {
+        "allowedConferenceSolutionTypes": [
+          "hangoutsMeet"
+        ]
+      }
+    }
+  ]
+}

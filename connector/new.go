@@ -13,11 +13,13 @@ import (
 	"github.com/amp-labs/connectors/providers/ashby"
 	"github.com/amp-labs/connectors/providers/atlassian"
 	"github.com/amp-labs/connectors/providers/attio"
+	"github.com/amp-labs/connectors/providers/avoma"
 	"github.com/amp-labs/connectors/providers/aws"
 	"github.com/amp-labs/connectors/providers/blueshift"
 	"github.com/amp-labs/connectors/providers/brevo"
 	"github.com/amp-labs/connectors/providers/capsule"
 	"github.com/amp-labs/connectors/providers/chilipiper"
+	"github.com/amp-labs/connectors/providers/claricopilot"
 	"github.com/amp-labs/connectors/providers/clickup"
 	"github.com/amp-labs/connectors/providers/closecrm"
 	"github.com/amp-labs/connectors/providers/constantcontact"
@@ -26,11 +28,13 @@ import (
 	"github.com/amp-labs/connectors/providers/docusign"
 	"github.com/amp-labs/connectors/providers/drift"
 	"github.com/amp-labs/connectors/providers/dynamicscrm"
+	"github.com/amp-labs/connectors/providers/fireflies"
 	"github.com/amp-labs/connectors/providers/freshdesk"
 	"github.com/amp-labs/connectors/providers/front"
 	"github.com/amp-labs/connectors/providers/github"
 	"github.com/amp-labs/connectors/providers/gitlab"
 	"github.com/amp-labs/connectors/providers/gong"
+	"github.com/amp-labs/connectors/providers/google"
 	"github.com/amp-labs/connectors/providers/gorgias"
 	"github.com/amp-labs/connectors/providers/groove"
 	"github.com/amp-labs/connectors/providers/helpscoutmailbox"
@@ -45,6 +49,7 @@ import (
 	"github.com/amp-labs/connectors/providers/kit"
 	"github.com/amp-labs/connectors/providers/klaviyo"
 	"github.com/amp-labs/connectors/providers/lemlist"
+	"github.com/amp-labs/connectors/providers/lever"
 	"github.com/amp-labs/connectors/providers/marketo"
 	"github.com/amp-labs/connectors/providers/mixmax"
 	"github.com/amp-labs/connectors/providers/monday"
@@ -83,10 +88,12 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Ashby:               wrapper(newAshbyConnector),
 	providers.Atlassian:           wrapper(newAtlassianConnector),
 	providers.Attio:               wrapper(newAttioConnector),
+	providers.Avoma:               wrapper(newAvomaConnector),
 	providers.Blueshift:           wrapper(newBlueshiftConnector),
 	providers.Brevo:               wrapper(newBrevoConnector),
 	providers.Capsule:             wrapper(newCapsuleConnector),
 	providers.ChiliPiper:          wrapper(newChiliPiperConnector),
+	providers.ClariCopilot:        wrapper(newClariCopilotConnector),
 	providers.ClickUp:             wrapper(newClickUpConnector),
 	providers.Close:               wrapper(newCloseConnector),
 	providers.ConstantContact:     wrapper(newConstantContactConnector),
@@ -95,11 +102,13 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Docusign:            wrapper(newDocusignConnector),
 	providers.Drift:               wrapper(newDriftConnector),
 	providers.DynamicsCRM:         wrapper(newDynamicsCRMConnector),
+	providers.Fireflies:           wrapper(newFirefliesConnector),
 	providers.Freshdesk:           wrapper(newFreshdeskConnector),
 	providers.Front:               wrapper(newFrontConnector),
 	providers.GitLab:              wrapper(newGitLabConnector),
 	providers.Github:              wrapper(newGithubConnector),
 	providers.Gong:                wrapper(newGongConnector),
+	providers.Google:              wrapper(newGoogleConnector),
 	providers.Gorgias:             wrapper(newGorgiasConnector),
 	providers.Groove:              wrapper(newGrooveConnector),
 	providers.HelpScoutMailbox:    wrapper(newHelpScoutMailboxConnector),
@@ -114,13 +123,14 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Kit:                 wrapper(newKitConnector),
 	providers.Klaviyo:             wrapper(newKlaviyoConnector),
 	providers.Lemlist:             wrapper(newLemlistConnector),
+	providers.Lever:               wrapper(newLeverConnector),
 	providers.Marketo:             wrapper(newMarketoConnector),
 	providers.Mixmax:              wrapper(newMixmaxConnector),
 	providers.Monday:              wrapper(newMondayConnector),
 	providers.Outreach:            wrapper(newOutreachConnector),
+	providers.Pinterest:           wrapper(newPinterestConnector),
 	providers.Pipedrive:           wrapper(newPipedriveConnector),
 	providers.Pipeliner:           wrapper(newPipelinerConnector),
-	providers.Pinterest:           wrapper(newPinterestConnector),
 	providers.Podium:              wrapper(newPodiumConnector),
 	providers.Salesforce:          wrapper(newSalesforceConnector),
 	providers.Salesloft:           wrapper(newSalesloftConnector),
@@ -291,6 +301,12 @@ func newZohoConnector(
 	return zohocrm.NewConnector(
 		zohocrm.WithAuthenticatedClient(params.AuthenticatedClient),
 	)
+}
+
+func newClariCopilotConnector(
+	params common.ConnectorParams,
+) (*claricopilot.Connector, error) {
+	return claricopilot.NewConnector(params)
 }
 
 func newCloseConnector(
@@ -538,4 +554,28 @@ func newPinterestConnector(
 	params common.ConnectorParams,
 ) (*pinterest.Connector, error) {
 	return pinterest.NewConnector(params)
+}
+
+func newAvomaConnector(
+	params common.ConnectorParams,
+) (*avoma.Connector, error) {
+	return avoma.NewConnector(params)
+}
+
+func newFirefliesConnector(
+	params common.ConnectorParams,
+) (*fireflies.Connector, error) {
+	return fireflies.NewConnector(params)
+}
+
+func newGoogleConnector(
+	params common.ConnectorParams,
+) (*google.Connector, error) {
+	return google.NewConnector(params)
+}
+
+func newLeverConnector(
+	params common.ConnectorParams,
+) (*lever.Connector, error) {
+	return lever.NewConnector(params)
 }

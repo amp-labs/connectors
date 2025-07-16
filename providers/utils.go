@@ -156,7 +156,29 @@ func (c CustomCatalog) ReadInfo(provider Provider, vars ...catalogreplacer.Catal
 	return &providerInfo, nil
 }
 
-func (i *ProviderInfo) SubstituteWith(vars []catalogreplacer.CatalogVariable) error {
+func (i *ProviderInfo) SubstituteWith(vars catalogreplacer.CatalogVariables) error {
+	// Take care of default metadata values.
+	if i.Metadata != nil {
+		for _, metadataInput := range i.Metadata.Input {
+			if metadataInput.DefaultValue != "" {
+				vars.AddDefaults(catalogreplacer.CustomCatalogVariable{Plan: catalogreplacer.SubstitutionPlan{
+					From: metadataInput.Name,
+					To:   metadataInput.DefaultValue,
+				}})
+			}
+		}
+
+		// To prevent OAuthConnect from erroring out due to missing PostAuthentication variables,
+		// we add a default value of "" for each PostAuthentication variable.
+		// Since no Connection exists yet, there won't be any PostAuthentication variables.
+		for _, postAuthVar := range i.Metadata.PostAuthentication {
+			vars.AddDefaults(catalogreplacer.CustomCatalogVariable{Plan: catalogreplacer.SubstitutionPlan{
+				From: postAuthVar.Name,
+				To:   "",
+			}})
+		}
+	}
+
 	return catalogreplacer.NewCatalogSubstitutionRegistry(vars).Apply(i)
 }
 
@@ -908,7 +930,9 @@ func (i *ProviderInfo) RequiresWorkspace() bool {
 
 	for _, input := range i.Metadata.Input {
 		if input.Name == "workspace" {
-			return true
+			// When default value is present then workspace is not required.
+			// Missing the default makes workspace required.
+			return input.DefaultValue == ""
 		}
 	}
 
