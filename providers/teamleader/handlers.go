@@ -41,7 +41,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
-	if len(*res) == 0 {
+	if res == nil || len(*res) == 0 {
 		return nil, common.ErrMissingExpectedValues
 	}
 
