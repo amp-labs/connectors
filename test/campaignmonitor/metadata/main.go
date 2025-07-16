@@ -12,7 +12,7 @@ func main() {
 	ctx := context.Background()
 	conn := campaignmonitor.GetCampaignMonitorConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"clients", "admins", "campaigns"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"clients", "admins"})
 	if err != nil {
 		utils.Fail("error listing metadata for campaign monitor", "error", err)
 	}
