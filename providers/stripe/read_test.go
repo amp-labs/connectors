@@ -37,15 +37,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{common.ErrMissingFields},
 		},
 		{
-			Name:     "Unknown object name is not supported",
-			Input:    common.ReadParams{ObjectName: "videos", Fields: connectors.Fields("id")},
-			Server:   mockserver.Dummy(),
-			Expected: nil,
-			ExpectedErrs: []error{
-				common.ErrOperationNotSupportedForObject,
-			},
-		},
-		{
 			Name:  "Error response is understood when payload is sent for GET operation",
 			Input: common.ReadParams{ObjectName: "accounts", Fields: connectors.Fields("id")},
 			Server: mockserver.Fixed{

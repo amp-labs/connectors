@@ -38,7 +38,12 @@ func (e Explorer[C]) ReadObjectsGet(
 	displayNameOverride map[string]string,
 	locator ObjectArrayLocator,
 ) (metadatadef.Schemas[C], error) {
-	return e.ReadObjects("GET", pathMatcher, objectEndpoints, displayNameOverride, locator)
+	return e.ReadObjects("GET", AndPathMatcher{
+		pathMatcher,
+		// There should be no curly brackets no IDs, no nested resources.
+		// Read objects are those that have constant string path.
+		IDPathIgnorer{},
+	}, objectEndpoints, displayNameOverride, locator)
 }
 
 // ReadObjectsPost is the same as ReadObjectsGet but retrieves schemas for endpoints that perform reading via POST.
@@ -49,7 +54,12 @@ func (e Explorer[C]) ReadObjectsPost(
 	displayNameOverride map[string]string,
 	locator ObjectArrayLocator,
 ) (metadatadef.Schemas[C], error) {
-	return e.ReadObjects("POST", pathMatcher, objectEndpoints, displayNameOverride, locator)
+	return e.ReadObjects("POST", AndPathMatcher{
+		pathMatcher,
+		// There should be no curly brackets no IDs, no nested resources.
+		// Read objects are those that have constant string path.
+		IDPathIgnorer{},
+	}, objectEndpoints, displayNameOverride, locator)
 }
 
 // ReadObjects will explore OpenAPI file returning list of Schemas.
@@ -77,12 +87,7 @@ func (e Explorer[C]) ReadObjects(
 ) (metadatadef.Schemas[C], error) {
 	schemas := make(metadatadef.Schemas[C], 0)
 
-	pathItems := e.GetPathItems(AndPathMatcher{
-		pathMatcher,
-		// There should be no curly brackets no IDs, no nested resources.
-		// Read objects are those that have constant string path.
-		IDPathIgnorer{},
-	}, objectEndpoints)
+	pathItems := e.GetPathItems(pathMatcher, objectEndpoints)
 
 	for _, path := range pathItems {
 		schema, found, err := path.RetrieveSchemaOperation(operationName,

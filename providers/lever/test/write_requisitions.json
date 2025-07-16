@@ -1,0 +1,37 @@
+{
+  "data": {
+    "id": "33b3cdf8-baef-4b17-b9d5-04c3b7e5eeb2",
+    "requisitionCode": "ENG-9",
+    "name": "Junior Software Engineer, Platform",
+    "backfill": false,
+    "createdAt": 1452306348935,
+    "creator": "d68cdaeb-fc0f-462a-b9a5-37bdbdeb0c68",
+    "headcountHired": 0,
+    "headcountTotal": 10,
+    "owner": "f1f9035d-38f4-4e18-82ae-f2eac3e2592a",
+    "status": "open",
+    "hiringManager": "d68cdaeb-fc0f-462a-b9a5-37bdbdeb0c68",
+    "approval": {
+      "steps": []
+    },
+    "compensationBand": {
+      "currency": "USD",
+      "interval": "per-year-salary",
+      "min": 100000,
+      "max": 130000
+    },
+    "employmentStatus": "full-time",
+    "location": "New York",
+    "internalNotes": "College grad hire -- very little flexibility on salary",
+    "postings": [],
+    "team": "Product Engineering",
+    "offerIds": [],
+    "customFields": {
+      "cost_center": {
+        "city": "New York",
+        "campus_code": "9"
+      },
+      "target_hire_date": 1452067200000
+    }
+  }
+}
