@@ -16,6 +16,7 @@ import (
 	"github.com/amp-labs/connectors/providers/avoma"
 	"github.com/amp-labs/connectors/providers/aws"
 	"github.com/amp-labs/connectors/providers/blueshift"
+	"github.com/amp-labs/connectors/providers/braze"
 	"github.com/amp-labs/connectors/providers/brevo"
 	"github.com/amp-labs/connectors/providers/capsule"
 	"github.com/amp-labs/connectors/providers/chilipiper"
@@ -141,6 +142,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.ZendeskSupport:      wrapper(newZendeskSupportConnector),
 	providers.Zoho:                wrapper(newZohoConnector),
 	providers.Zoom:                wrapper(newZoomConnector),
+	providers.Braze:               wrapper(newBrazeConnector),
 }
 
 type outputConstructorFunc func(p common.ConnectorParams) (connectors.Connector, error)
@@ -578,4 +580,10 @@ func newLeverConnector(
 	params common.ConnectorParams,
 ) (*lever.Connector, error) {
 	return lever.NewConnector(params)
+}
+
+func newBrazeConnector(
+	params common.ConnectorParams,
+) (*braze.Connector, error) {
+	return braze.NewConnector(params)
 }
