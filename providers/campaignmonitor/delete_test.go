@@ -16,7 +16,7 @@ import (
 func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
 
-	errorNotFound := testutils.DataFromFile(t, "delete-missing-campaigns.json")
+	errorNotFound := testutils.DataFromFile(t, "delete-missing-client_id.json")
 
 	tests := []testroutines.Delete{
 		{
@@ -26,13 +26,13 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:         "Write object and its ID must be included",
-			Input:        common.DeleteParams{ObjectName: "campaigns"},
+			Input:        common.DeleteParams{ObjectName: "clients"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordID},
 		},
 		{
 			Name:   "Object name is not supported",
-			Input:  common.DeleteParams{ObjectName: "campaign", RecordId: "90be62122fdb35bf09e2a0030aa0b92c"},
+			Input:  common.DeleteParams{ObjectName: "client", RecordId: "90be62122fdb35bf09e2a0030aa0b92c"},
 			Server: mockserver.Dummy(),
 			ExpectedErrs: []error{
 				common.ErrOperationNotSupportedForObject,
@@ -40,11 +40,11 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Successful delete",
-			Input: common.DeleteParams{ObjectName: "campaigns", RecordId: "90be62122fdb35bf09e2a0030aa0b92c"},
+			Input: common.DeleteParams{ObjectName: "clients", RecordId: "0284de5133a2d6e3dc9b49c0e76fb0bd"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/api/v3.3/campaigns/90be62122fdb35bf09e2a0030aa0b92c.json"),
+					mockcond.Path("/api/v3.3/clients/0284de5133a2d6e3dc9b49c0e76fb0bd.json"),
 					mockcond.MethodDELETE(),
 				},
 				Then: mockserver.Response(http.StatusOK),
@@ -54,7 +54,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Error on deleting missing record",
-			Input: common.DeleteParams{ObjectName: "campaigns", RecordId: "4fa0ca9d-f205-4a68-8756-5ad62123a53a"},
+			Input: common.DeleteParams{ObjectName: "clients", RecordId: "0284de5133a2d6e3dc9b49c0e76fb0b"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusNotFound, errorNotFound),
@@ -62,7 +62,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New( // nolint:goerr113
-					"Invalid CampaignID",
+					"Invalid ClientID",
 				),
 			},
 		},

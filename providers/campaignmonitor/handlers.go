@@ -134,10 +134,7 @@ func (c *Connector) parseWriteResponse(
 	default:
 		// This occurs when the API responds with a full JSON object containing additional metadata or nested structures.
 		// For example: {
-		//   "campaign": {
-		//     "id": "42f13de0-021c-11ef-b57f-0242ac120003",
-		//     "name": "New Campaign"
-		//   }
+		//  "EmailAddress": "sally@sparrow.com"
 		// }
 		data, err := jsonquery.Convertor.ObjectToMap(body)
 		if err != nil {
