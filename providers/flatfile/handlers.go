@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -78,7 +76,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	jsonData, err := json.Marshal(params.RecordData)
 	if err != nil {
-		return nil, fmt.Errorf("marshalling request body: %w", err)
+		return nil, err
 	}
 
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
@@ -100,8 +98,6 @@ func (c *Connector) parseWriteResponse(
 
 	dataNode, err := jsonquery.New(body).ObjectOptional("data")
 	if err != nil {
-		log.Printf("Error parsing response body: %v", err)
-
 		return nil, err
 	}
 
