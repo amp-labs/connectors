@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/spyzhov/ajson"
 )
 
 const APIVersion = "v3.3"
@@ -72,8 +73,13 @@ func (c *Connector) parseReadResponse(
 	return common.ParseResult(
 		response,
 		common.ExtractRecordsFromPath(""),
-		nil,
+		getNextRecordsURL,
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func getNextRecordsURL(_ *ajson.Node) (string, error) {
+	// Pagination is not supported for this provider.
+	return "", nil
 }
