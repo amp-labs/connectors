@@ -87,7 +87,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/services/data/v59.0/query"),
+					mockcond.Path("/services/data/v60.0/query"),
 					mockcond.QueryParam("q", "SELECT City FROM leads"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseLeadsFirstPage),
@@ -95,7 +95,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     8,
-				NextPage: "/services/data/v59.0/query/01g3A00007lZwLKQA0-2000",
+				NextPage: "/services/data/v60.0/query/01g3A00007lZwLKQA0-2000",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -109,7 +109,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/services/data/v59.0/query"),
+					mockcond.Path("/services/data/v60.0/query"),
 					mockcond.Or{
 						mockcond.QueryParam("q", "SELECT AssistantName,Department FROM contacts"),
 						mockcond.QueryParam("q", "SELECT Department,AssistantName FROM contacts"),
