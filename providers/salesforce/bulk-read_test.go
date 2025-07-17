@@ -71,7 +71,7 @@ func TestBulkRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				State:           "UploadComplete",
 				ConcurrencyMode: "Parallel",
 				ContentType:     "CSV",
-				ApiVersion:      59.0,
+				ApiVersion:      60.0,
 				LineEnding:      "LF",
 				ColumnDelimiter: "COMMA",
 			},
