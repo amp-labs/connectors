@@ -29,6 +29,7 @@ import (
 	"github.com/amp-labs/connectors/providers/docusign"
 	"github.com/amp-labs/connectors/providers/drift"
 	"github.com/amp-labs/connectors/providers/dynamicscrm"
+	"github.com/amp-labs/connectors/providers/fathom"
 	"github.com/amp-labs/connectors/providers/fireflies"
 	"github.com/amp-labs/connectors/providers/freshdesk"
 	"github.com/amp-labs/connectors/providers/front"
@@ -143,6 +144,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Zoho:                wrapper(newZohoConnector),
 	providers.Zoom:                wrapper(newZoomConnector),
 	providers.Braze:               wrapper(newBrazeConnector),
+	providers.Fathom:              wrapper(newFathomConnector),
 }
 
 type outputConstructorFunc func(p common.ConnectorParams) (connectors.Connector, error)
@@ -586,4 +588,10 @@ func newBrazeConnector(
 	params common.ConnectorParams,
 ) (*braze.Connector, error) {
 	return braze.NewConnector(params)
+}
+
+func newFathomConnector(
+	params common.ConnectorParams,
+) (*fathom.Connector, error) {
+	return fathom.NewConnector(params)
 }
