@@ -183,25 +183,13 @@ func (c *Connector) parseDeleteResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.DeleteResult, error) {
-	body, ok := resp.Body()
-	if !ok {
-		return &common.DeleteResult{ // nolint:nilerr
-			Success: true,
-		}, nil
-	}
-
-	objectResponse, err := jsonquery.New(body).ArrayRequired(params.ObjectName)
+	res, err := responseHandler(resp, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := jsonquery.Convertor.ArrayToMap(objectResponse)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(res) != 0 {
-		return nil, fmt.Errorf("%v", res[0][DeleteResponseKey]) // nolint:err113
+	if res.Code != http.StatusOK {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, resp.Code)
 	}
 
 	return &common.DeleteResult{
