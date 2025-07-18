@@ -16,6 +16,19 @@ func supportedOperations() components.EndpointRegistryInput {
 		"adaccounts",
 		"members",
 		"roles",
+		"age_group",
+		"gender",
+		"languages",
+		"advanced_demographics",
+		"connection_type",
+		"os_type",
+		"carrier",
+		"marketing_name",
+		"country",
+		"dlxs",
+		"dlxp",
+		"nln",
+		"categories_loi",
 	}
 
 	writeSupport := []string{
