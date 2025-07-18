@@ -1,9 +1,12 @@
 package teamleader
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -12,6 +15,7 @@ import (
 
 const (
 	apiListSuffix = ".list"
+	pageSize      = 100
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -70,6 +74,68 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	fullObjectName := params.ObjectName + apiListSuffix
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, fullObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	body := buildRequestBody(&params)
+
+	jsonData, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		records(),
+		nextRecordsURL(params),
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}
+
+func buildRequestBody(params *common.ReadParams) map[string]any {
+	body := make(map[string]any)
+
+	if !params.Since.IsZero() {
+		body["filter"] = map[string]any{
+			"updated_since": params.Since.Format(time.RFC3339),
+		}
+	}
+
+	if params.NextPage != "" {
+		body["page"] = map[string]any{
+			"size":   pageSize,
+			"number": params.NextPage,
+		}
+	} else {
+		body["page"] = map[string]any{
+			"size":   pageSize,
+			"number": "1",
+		}
+	}
+
+	return body
 }
 
 func inferValueTypeFromData(value any) common.ValueType {
