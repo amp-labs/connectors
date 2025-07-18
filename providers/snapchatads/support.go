@@ -31,11 +31,31 @@ func supportedOperations() components.EndpointRegistryInput {
 		"categories_loi",
 	}
 
+	writeSupport := []string{
+		"billingcenters",
+		"adaccounts",
+		"members",
+		"roles",
+	}
+
+	deleteSupport := []string{
+		"members",
+		"roles",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(deleteSupport, ",")),
+				Support:  components.DeleteSupport,
 			},
 		},
 	}
