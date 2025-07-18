@@ -1,0 +1,14 @@
+{
+    "keywords": [
+        "demo"
+    ],
+	"prompts": [
+        "smart"
+    ],
+	"settings": {
+        "aug_notes_enabled":       true,
+		"keyword_notes_enabled":   true,
+		"prompt_extract_length":   "short",
+		"prompt_extract_strategy": "after"
+	}
+}

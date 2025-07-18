@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	apiVersion                 = "59.0"
+	apiVersion                 = "60.0"
 	versionPrefix              = "v"
 	version                    = versionPrefix + apiVersion
 	restAPISuffix              = "/services/data/" + version

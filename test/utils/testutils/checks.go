@@ -13,7 +13,7 @@ func CheckOutput(t *testing.T, name string,
 	t.Helper()
 
 	if !reflect.DeepEqual(actual, expected) {
-		t.Fatalf("%s: expected: (%v), got: (%v)", name, expected, actual)
+		t.Fatalf("%s: expected: (%v),\n got: (%v)", name, expected, actual)
 	}
 }
 

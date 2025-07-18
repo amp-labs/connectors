@@ -43,7 +43,6 @@ func constructor(base *components.Connector) (*Connector, error) {
 		return nil, err
 	}
 
-	// Set the read provider for the connector
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
 		registry,
