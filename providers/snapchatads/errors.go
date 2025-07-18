@@ -22,7 +22,6 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 var (
 	ErrObjNotFound    = errors.New("object not found")
 	DeleteResponseKey = "sub_request_error_reason" // nolint:gochecknoglobals
-	ErrInvalidData    = errors.New("invalid request data provided")
 )
 
 type ResponseError struct {
@@ -40,7 +39,7 @@ func (r ResponseError) CombineErr(base error) error {
 func checkErrorInResponse(resp *common.JSONHTTPResponse, objectName string) (bool, error) {
 	body, ok := resp.Body()
 	if !ok {
-		return false, ErrInvalidData
+		return false, common.ErrEmptyJSONHTTPResponse
 	}
 
 	objectResponse, err := jsonquery.New(body).ArrayRequired(objectName)
@@ -53,9 +52,12 @@ func checkErrorInResponse(resp *common.JSONHTTPResponse, objectName string) (boo
 		return false, err
 	}
 
-	response := len(res[0][DeleteResponseKey].(string))
+	response, ok := res[0][DeleteResponseKey].(string)
+	if !ok {
+		return false, common.ErrParseError
+	}
 
-	return (response > 0), nil
+	return (len(response) > 0), nil
 }
 
 func responseHandler(resp *common.JSONHTTPResponse, objName string) (*common.JSONHTTPResponse, error) { //nolint:cyclop
