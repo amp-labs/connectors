@@ -31,6 +31,7 @@ import (
 	"github.com/amp-labs/connectors/providers/dynamicscrm"
 	"github.com/amp-labs/connectors/providers/fathom"
 	"github.com/amp-labs/connectors/providers/fireflies"
+	"github.com/amp-labs/connectors/providers/flatfile"
 	"github.com/amp-labs/connectors/providers/freshdesk"
 	"github.com/amp-labs/connectors/providers/front"
 	"github.com/amp-labs/connectors/providers/github"
@@ -105,6 +106,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Drift:               wrapper(newDriftConnector),
 	providers.DynamicsCRM:         wrapper(newDynamicsCRMConnector),
 	providers.Fireflies:           wrapper(newFirefliesConnector),
+	providers.FlatFile:            wrapper(newFlatfileConnector),
 	providers.Freshdesk:           wrapper(newFreshdeskConnector),
 	providers.Front:               wrapper(newFrontConnector),
 	providers.GitLab:              wrapper(newGitLabConnector),
@@ -463,6 +465,12 @@ func newDixaConnector(
 	params common.ConnectorParams,
 ) (*dixa.Connector, error) {
 	return dixa.NewConnector(params)
+}
+
+func newFlatfileConnector(
+	params common.ConnectorParams,
+) (*flatfile.Connector, error) {
+	return flatfile.NewConnector(params)
 }
 
 func newFrontConnector(
