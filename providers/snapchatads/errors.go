@@ -37,7 +37,7 @@ func (r ResponseError) CombineErr(base error) error {
 }
 
 func checkErrorInResponse(resp *common.JSONHTTPResponse, objectName string) (bool, error) {
-	body, ok := resp.Body()
+	body, ok := resp.Body() // nolint:varnamelen
 	if !ok {
 		return false, common.ErrEmptyJSONHTTPResponse
 	}
