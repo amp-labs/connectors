@@ -200,7 +200,6 @@ func (c *Connector) parseWriteResponse(
 		Errors:   nil,
 		Data:     respMap,
 	}, nil
-
 }
 
 func inferValueTypeFromData(value any) common.ValueType {

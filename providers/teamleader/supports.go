@@ -22,6 +22,7 @@ var writeFullObjectNames = datautils.NewDefaultMap(map[string]string{
 	},
 )
 
+//nolint:funlen
 func supportedOperations() components.EndpointRegistryInput {
 	//nolint:lll
 	readSupport := []string{
