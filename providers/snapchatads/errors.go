@@ -52,7 +52,7 @@ func checkErrorInResponse(resp *common.JSONHTTPResponse, objectName string) (boo
 		return false, err
 	}
 
-	response, ok := res[0][DeleteResponseKey].(string)
+	response, ok := res[0][DeleteResponseKey].(string) // nolint:varnamelen
 	if !ok {
 		return false, common.ErrParseError
 	}
