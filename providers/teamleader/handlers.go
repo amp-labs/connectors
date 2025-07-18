@@ -136,7 +136,6 @@ func buildRequestBody(params *common.ReadParams) map[string]any {
 	}
 
 	return body
-
 }
 
 func inferValueTypeFromData(value any) common.ValueType {
