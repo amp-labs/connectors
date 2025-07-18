@@ -68,6 +68,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+		XML:  interpreter.NewXMLFaultyResponder(xmlErrorFormats, nil),
 	}.Handle
 
 	connector.Reader = reader.NewHTTPReader(
