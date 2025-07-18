@@ -18,6 +18,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
 
 	errorNotFound := testutils.DataFromFile(t, "delete-missing-members.json")
+	membersResponse := testutils.DataFromFile(t, "delete_members.json")
 
 	tests := []testroutines.Delete{
 		{
@@ -48,7 +49,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 					mockcond.Path("/v1/members/82ebdbce-de88-4ba0-a6b4-e77d51a2ce99"),
 					mockcond.MethodDELETE(),
 				},
-				Then: mockserver.Response(http.StatusOK),
+				Then: mockserver.Response(http.StatusOK, membersResponse),
 			}.Server(),
 			Expected:     &common.DeleteResult{Success: true},
 			ExpectedErrs: nil,
@@ -62,7 +63,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				errors.New( // nolint:goerr113
-					"Error code: E3004, message: Entity does not exist or you do not have permission to access it",
+					"request failed: failed to delete record: 400",
 				),
 			},
 		},

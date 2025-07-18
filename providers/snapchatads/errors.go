@@ -52,12 +52,11 @@ func checkErrorInResponse(resp *common.JSONHTTPResponse, objectName string) (boo
 		return false, err
 	}
 
-	response, ok := res[0][DeleteResponseKey].(string) // nolint:varnamelen
-	if !ok {
-		return false, common.ErrParseError
+	if len(res) != 0 {
+		return true, nil
 	}
 
-	return (len(response) > 0), nil
+	return false, nil
 }
 
 func responseHandler(resp *common.JSONHTTPResponse, objName string) (*common.JSONHTTPResponse, error) { //nolint:cyclop
