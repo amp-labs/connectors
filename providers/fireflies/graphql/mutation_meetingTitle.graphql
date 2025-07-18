@@ -1,0 +1,8 @@
+mutation {
+    updateMeetingTitle(
+        input: {id: "{{.id}}",
+        title: "{{.title}}"
+    }) {
+        title
+    }
+}

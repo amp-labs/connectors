@@ -38,9 +38,11 @@ func nextRecordsURL(params common.ReadParams) common.NextPageFunc {
 
 		if params.NextPage != "" {
 			page, err := strconv.Atoi(string(params.NextPage))
-			if err == nil {
-				currentPage = page
+			if err != nil {
+				return "", err
 			}
+
+			currentPage = page
 		}
 
 		return strconv.Itoa(currentPage + 1), nil

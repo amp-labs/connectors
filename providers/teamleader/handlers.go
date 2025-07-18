@@ -15,12 +15,12 @@ import (
 )
 
 const (
-	objectNameSuffix = ".list"
-	pageSize         = 100
+	apiListSuffix = ".list"
+	pageSize      = 100
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	fullObjectName := objectName + objectNameSuffix
+	fullObjectName := objectName + apiListSuffix
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, fullObjectName)
 	if err != nil {
@@ -37,7 +37,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
 	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
+		Fields:      make(map[string]common.FieldMetadata),
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
 
@@ -46,7 +46,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
-	if len(*res) == 0 {
+	if res == nil || len(*res) == 0 {
 		return nil, common.ErrMissingExpectedValues
 	}
 
@@ -64,8 +64,14 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, fmt.Errorf("couldn't convert the first record data to a map: %w", common.ErrMissingExpectedValues)
 	}
 
-	for field := range firstRecord {
-		objectMetadata.FieldsMap[field] = field
+	for field, value := range firstRecord {
+		objectMetadata.Fields[field] = common.FieldMetadata{
+			DisplayName:  field,
+			ValueType:    inferValueTypeFromData(value),
+			ProviderType: "", // not available
+			ReadOnly:     false,
+			Values:       nil,
+		}
 	}
 
 	return &objectMetadata, nil
@@ -77,7 +83,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		err error
 	)
 
-	fullObjectName := params.ObjectName + objectNameSuffix
+	fullObjectName := params.ObjectName + apiListSuffix
 
 	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, fullObjectName)
 	if err != nil {
@@ -194,4 +200,22 @@ func (c *Connector) parseWriteResponse(
 		Errors:   nil,
 		Data:     respMap,
 	}, nil
+
+}
+
+func inferValueTypeFromData(value any) common.ValueType {
+	if value == nil {
+		return common.ValueTypeOther
+	}
+
+	switch value.(type) {
+	case string:
+		return common.ValueTypeString
+	case float64, int, int64:
+		return common.ValueTypeFloat
+	case bool:
+		return common.ValueTypeBoolean
+	default:
+		return common.ValueTypeOther
+	}
 }
