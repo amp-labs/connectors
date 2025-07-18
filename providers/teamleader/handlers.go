@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 const (
@@ -136,6 +137,69 @@ func buildRequestBody(params *common.ReadParams) map[string]any {
 	}
 
 	return body
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	var (
+		payload = params.RecordData
+		method  = http.MethodPost
+	)
+
+	var fullObjectName string
+	if params.RecordId != "" {
+		fullObjectName = params.ObjectName + ".update"
+	} else {
+		fullObjectName = writeFullObjectNames.Get(params.ObjectName)
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, fullObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	dataNode, err := jsonquery.New(body).ObjectRequired("data")
+	if err != nil {
+		return nil, err
+	}
+
+	recordID, err := jsonquery.New(dataNode).StringRequired("id")
+	if err != nil {
+		return nil, err
+	}
+
+	respMap, err := jsonquery.Convertor.ObjectToMap(dataNode)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     respMap,
+	}, nil
 }
 
 func inferValueTypeFromData(value any) common.ValueType {
