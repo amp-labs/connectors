@@ -95,7 +95,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	if params.NextPage != "" {
-		url.WithQueryParam("next_cursor", params.NextPage.String())
+		url.WithQueryParam("cursor", params.NextPage.String())
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
