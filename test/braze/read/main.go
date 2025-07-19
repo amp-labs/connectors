@@ -43,7 +43,7 @@ func main() {
 
 func testReadCampaigns(ctx context.Context, conn *br.Connector) error {
 	params := common.ReadParams{
-		ObjectName: "campaigns/list",
+		ObjectName: "campaigns",
 		Fields:     connectors.Fields("id", "name"),
 		Since:      time.Now().Add(-1 * time.Hour),
 		// NextPage:   "https://rest.iad-03.braze.com/campaigns/list?page=1",
@@ -92,7 +92,7 @@ func testReadEvents(ctx context.Context, conn *br.Connector) error {
 
 func testReadEmailTemplates(ctx context.Context, conn *br.Connector) error {
 	params := common.ReadParams{
-		ObjectName: "templates/email/list",
+		ObjectName: "templates/email",
 		Fields:     connectors.Fields("template_name", "email_template_id"),
 		Since:      time.Now().Add(-1 * time.Hour),
 		// NextPage:   "https://rest.iad-03.braze.com/templates/email/list?offset=101",
