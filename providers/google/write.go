@@ -1,0 +1,101 @@
+package google
+
+import (
+	"context"
+	"errors"
+
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
+)
+
+func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) { // nolint: cyclop,lll
+	if err := config.ValidateParams(); err != nil {
+		return nil, err
+	}
+
+	write, url, err := c.selectEndpointOperation(config.ObjectName, config.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	if c.Module.ID == ModuleCalendar {
+		if config.ObjectName == objectNameCalendarList {
+			if needsCalendarColorQueryParam(config) {
+				url.WithQueryParam("colorRgbFormat", "true")
+			}
+		}
+	}
+
+	if c.Module.ID == ModulePeople {
+		// TODO are there any exceptions for this Module that are not covered by EndpointLibrary
+		// objectNameContactGroups - no-op.
+	}
+
+	res, err := write(ctx, url.String(), config.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	body, ok := res.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	// write response was with payload
+	return constructWriteResult(body)
+}
+
+func constructWriteResult(node *ajson.Node) (*common.WriteResult, error) {
+	resourceName, err := jsonquery.New(node).StringRequired("resourceName")
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil {
+		return nil, err
+	}
+
+	_, recordID, ok := resourceIdentifierFormat(resourceName)
+	if !ok {
+		return &common.WriteResult{
+			Success:  true,
+			RecordId: "",
+			Errors:   []any{errors.New("cannot infer record identifier")},
+			Data:     data,
+		}, nil
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     data,
+	}, nil
+}
+
+// When either background or foreground is specified this means
+// we must attach a query parameter for the Write request to succeed.
+//
+// https://developers.google.com/calendar/api/v3/reference/calendarList/insert
+func needsCalendarColorQueryParam(config common.WriteParams) bool {
+	properties, err := common.RecordDataToMap(config.RecordData)
+	if err != nil {
+		return false
+	}
+
+	triggerFields := []string{
+		"foregroundColor", "backgroundColor",
+	}
+
+	for _, field := range triggerFields {
+		if _, ok := properties[field]; ok {
+			return true
+		}
+	}
+
+	return false
+}
