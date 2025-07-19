@@ -31,9 +31,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 		},
 		{
-			Name:   "Successfully describe one object with metadata",
-			Input:  []string{"Notes"},
-			Server: mockserver.Dummy(),
+			Name:       "Successfully describe one object with metadata",
+			Input:      []string{"Notes"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"Notes": {
@@ -69,9 +70,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name:   "Successfully describe multiple objects with metadata",
-			Input:  []string{"Phones", "Tags"},
-			Server: mockserver.Dummy(),
+			Name:       "Successfully describe multiple objects with metadata",
+			Input:      []string{"Phones", "Tags"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"Phones": {

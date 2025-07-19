@@ -87,7 +87,7 @@ func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common
 		return nil, fmt.Errorf("error fetching metadata: %w", err)
 	}
 
-	metadata, err := parseMetadataResponse(resp)
+	metadata, err := parseMetadataResponse(objectName, resp)
 	if err != nil {
 		return nil, err
 	}
@@ -97,23 +97,24 @@ func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common
 	return metadata, nil
 }
 
-func parseMetadataResponse(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
+func parseMetadataResponse(objectName string, resp *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
 	response, err := common.UnmarshalJSON[metadataFields](resp)
 	if err != nil {
 		return nil, err
 	}
 
-	metadata := &common.ObjectMetadata{
-		FieldsMap: make(map[string]string),
-	}
+	objectMetadata := common.NewObjectMetadata(
+		naming.CapitalizeFirstLetterEveryWord(objectName),
+		common.FieldsMetadata{},
+	)
 
 	// Ranging on the fields Slice, to construct the metadata fields.
 	for _, f := range response.Fields {
 		apiField, ok := f[apiKeyField].(string)
 		if ok {
-			metadata.FieldsMap[strings.ToLower(apiField)] = strings.ToLower(apiField)
+			objectMetadata.AddField(strings.ToLower(apiField), strings.ToLower(apiField))
 		}
 	}
 
-	return metadata, nil
+	return objectMetadata, nil
 }

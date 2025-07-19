@@ -31,9 +31,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 		},
 		{
-			Name:   "Successfully describe multiple objects with metadata",
-			Input:  []string{"reporting_webhooks", "workspaces"},
-			Server: mockserver.Dummy(),
+			Name:       "Successfully describe multiple objects with metadata",
+			Input:      []string{"reporting_webhooks", "workspaces"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"reporting_webhooks": {

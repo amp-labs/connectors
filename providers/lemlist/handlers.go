@@ -35,10 +35,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		err         error
 	)
 
-	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
-	}
+	objectMetadata := common.NewObjectMetadata(
+		naming.CapitalizeFirstLetterEveryWord(objectName),
+		common.FieldsMetadata{},
+	)
 
 	schema, fld := responseSchema(objectName)
 
@@ -57,10 +57,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	for fld := range firstRecord {
-		objectMetadata.FieldsMap[fld] = fld
+		objectMetadata.AddField(fld, fld)
 	}
 
-	return &objectMetadata, nil
+	return objectMetadata, nil
 }
 
 func parseObject(response *common.JSONHTTPResponse, fld string) (map[string]any, error) {

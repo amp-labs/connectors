@@ -24,10 +24,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
-	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
-	}
+	objectMetadata := common.NewObjectMetadata(
+		naming.CapitalizeFirstLetterEveryWord(objectName),
+		common.FieldsMetadata{},
+	)
 
 	node, ok := response.Body() // nolint:varnamelen
 	if !ok {
@@ -57,8 +57,8 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	for field := range innerData {
-		objectMetadata.FieldsMap[field] = field
+		objectMetadata.AddField(field, field)
 	}
 
-	return &objectMetadata, nil
+	return objectMetadata, nil
 }

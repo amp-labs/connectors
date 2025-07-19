@@ -56,10 +56,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
-	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
-	}
+	objectMetadata := common.NewObjectMetadata(
+		naming.CapitalizeFirstLetterEveryWord(objectName),
+		common.FieldsMetadata{},
+	)
 
 	data, err := common.UnmarshalJSON[map[string]any](response)
 	if err != nil {
@@ -85,10 +85,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	for field := range firstRecord {
-		objectMetadata.FieldsMap[field] = field
+		objectMetadata.AddField(field, field)
 	}
 
-	return &objectMetadata, nil
+	return objectMetadata, nil
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {

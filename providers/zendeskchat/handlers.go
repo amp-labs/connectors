@@ -35,10 +35,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
-	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
-	}
+	objectMetadata := common.NewObjectMetadata(
+		naming.CapitalizeFirstLetterEveryWord(objectName),
+		common.FieldsMetadata{},
+	)
 
 	firstRecord, err := parseIndividualResponse(objectName, response)
 	if err != nil {
@@ -46,10 +46,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	for fld := range firstRecord {
-		objectMetadata.FieldsMap[fld] = fld
+		objectMetadata.AddField(fld, fld)
 	}
 
-	return &objectMetadata, nil
+	return objectMetadata, nil
 }
 
 func parseIndividualResponse(objectName string, response *common.JSONHTTPResponse) (map[string]any, error) {
