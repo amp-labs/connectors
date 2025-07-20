@@ -9,6 +9,12 @@ import (
 )
 
 func (q *Query) zoomIn() (*ajson.Node, error) {
+	if q.err != nil {
+		// Cannot proceed with broken query.
+		// This should not happen but silencing errors shouldn't happen.
+		return nil, q.err
+	}
+
 	var err error
 
 	node := q.node
