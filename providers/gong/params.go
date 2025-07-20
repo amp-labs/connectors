@@ -61,6 +61,10 @@ func buildReadParams(url *urlbuilder.URL, config common.ReadParams) {
 		// https://gong.app.gong.io/settings/api/documentation#get-/v2/calls
 		url.WithQueryParam("fromDateTime", datautils.Time.FormatRFC3339inUTC(config.Since))
 	}
+
+	if !config.Until.IsZero() {
+		url.WithQueryParam("toDateTime", datautils.Time.FormatRFC3339inUTC(config.Until))
+	}
 }
 
 func buildReadBody(config common.ReadParams) map[string]any {
@@ -68,6 +72,10 @@ func buildReadBody(config common.ReadParams) map[string]any {
 
 	if !config.Since.IsZero() {
 		filter["fromDateTime"] = datautils.Time.FormatRFC3339inUTC(config.Since)
+	}
+
+	if !config.Until.IsZero() {
+		filter["toDateTime"] = datautils.Time.FormatRFC3339inUTC(config.Until)
 	}
 
 	body := map[string]any{
