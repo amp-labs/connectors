@@ -38,7 +38,7 @@ func (a *Adapter) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error
 	}
 
 	// First page
-	url, err := a.getURL(params.ObjectName)
+	url, err := a.getReadURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

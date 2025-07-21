@@ -94,12 +94,20 @@ func (c Connector) Write(ctx context.Context, params connectors.WriteParams) (*c
 		return c.Calendar.Write(ctx, params)
 	}
 
+	if c.Contacts != nil {
+		return c.Contacts.Write(ctx, params)
+	}
+
 	return nil, common.ErrNotImplemented
 }
 
 func (c Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
 	if c.Calendar != nil {
 		return c.Calendar.Delete(ctx, params)
+	}
+
+	if c.Contacts != nil {
+		return c.Contacts.Delete(ctx, params)
 	}
 
 	return nil, common.ErrNotImplemented
