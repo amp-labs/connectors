@@ -1,21 +1,18 @@
 package providers
 
 const (
-	Facebook Provider = "facebook"
-	WhatsApp Provider = "whatsApp"
+	Meta Provider = "meta"
 )
 
-// nolint:funlen
 func init() {
-	// Facebook Ads Manager Configuration
-	SetInfo(Facebook, ProviderInfo{
-		DisplayName: "Facebook",
+	SetInfo(Meta, ProviderInfo{
+		DisplayName: "Meta",
 		AuthType:    Oauth2,
 		BaseURL:     "https://graph.facebook.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://www.facebook.com/v19.0/dialog/oauth",
-			TokenURL:                  "https://graph.facebook.com/v19.0/oauth/access_token",
+			AuthURL:                   "https://www.facebook.com/v23.0/dialog/oauth",
+			TokenURL:                  "https://graph.facebook.com/v23.0/oauth/access_token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
@@ -33,48 +30,12 @@ func init() {
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722478709/media/facebook_1722478708.svg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722478689/media/facebook_1722478688.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1753098801/media/meta.com_1753098801.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1753098836/media/meta.com_1753098836.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722478709/media/facebook_1722478708.svg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722478689/media/facebook_1722478688.svg",
-			},
-		},
-	})
-
-	// WhatsApp configuration
-	SetInfo(WhatsApp, ProviderInfo{
-		DisplayName: "whatsApp",
-		AuthType:    Oauth2,
-		BaseURL:     "https://graph.facebook.com",
-		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://www.facebook.com/v23.0/dialog/oauth",
-			TokenURL:                  "https://graph.facebook.com/v23.0/oauth/access_token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
-		},
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-		Media: &Media{
-			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1752068006/media/whatsApp.com_1752068015.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1752068046/media/whatsApp.com_1752068056.svg",
-			},
-			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1752068006/media/whatsApp.com_1752068015.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1752068046/media/whatsApp.com_1752068056.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1753098801/media/meta.com_1753098801.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1753098858/media/meta.com_1753098858.svg",
 			},
 		},
 	})
