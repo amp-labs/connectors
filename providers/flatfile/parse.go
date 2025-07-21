@@ -20,6 +20,7 @@ func records() common.RecordsFunc {
 	}
 }
 
+// nolint: cyclop
 func nextRecordsURL(url *url.URL) common.NextPageFunc {
 	return func(n *ajson.Node) (string, error) {
 		if url == nil {
@@ -28,6 +29,26 @@ func nextRecordsURL(url *url.URL) common.NextPageFunc {
 
 		nextURL := *url
 
+		// Try to parse pagination object from the response
+		pagination, err := jsonquery.New(n).ObjectOptional("pagination")
+		if err == nil && pagination != nil {
+			currentPage, err1 := jsonquery.New(pagination).IntegerOptional("currentPage")
+			totalPages, err2 := jsonquery.New(pagination).IntegerOptional("pageCount")
+
+			if err1 == nil && err2 == nil && currentPage != nil && totalPages != nil {
+				if *currentPage >= *totalPages {
+					return "", nil // No more pages to fetch
+				}
+				// If pagination is present, we can use it to build the next page URL
+				query := nextURL.Query()
+				query.Set(pageQuery, strconv.Itoa(int(*currentPage+1)))
+				nextURL.RawQuery = query.Encode()
+
+				return nextURL.String(), nil
+			}
+		}
+
+		// Fallback: no pagination object, increment based on URL query
 		query := nextURL.Query()
 		currentPage := 1
 		currentPageStr := query.Get(pageQuery)
