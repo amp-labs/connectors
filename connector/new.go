@@ -66,6 +66,7 @@ import (
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/stripe"
+	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/zendeskchat"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/providers/zohocrm"
@@ -141,6 +142,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.ServiceNow:          wrapper(newServiceNowConnector),
 	providers.Smartlead:           wrapper(newSmartleadConnector),
 	providers.Stripe:              wrapper(newStripeConnector),
+	providers.Teamleader:          wrapper(newTeamleaderConnector),
 	providers.ZendeskChat:         wrapper(newZendeskChatConnector),
 	providers.ZendeskSupport:      wrapper(newZendeskSupportConnector),
 	providers.Zoho:                wrapper(newZohoConnector),
@@ -602,4 +604,10 @@ func newFathomConnector(
 	params common.ConnectorParams,
 ) (*fathom.Connector, error) {
 	return fathom.NewConnector(params)
+}
+
+func newTeamleaderConnector(
+	params common.ConnectorParams,
+) (*teamleader.Connector, error) {
+	return teamleader.NewConnector(params)
 }
