@@ -37,9 +37,9 @@ func nextRecordsURL(url *url.URL) common.NextPageFunc {
 
 			if err1 == nil && err2 == nil && currentPage != nil && totalPages != nil {
 				if *currentPage >= *totalPages {
-					return "", nil // No more pages to fetch
+					return "", nil
 				}
-				// If pagination is present, we can use it to build the next page URL
+				// If pagination is present, build the next page URL
 				query := nextURL.Query()
 				query.Set(pageQuery, strconv.Itoa(int(*currentPage+1)))
 				nextURL.RawQuery = query.Encode()
