@@ -29,7 +29,7 @@ func nextRecordsURL(url *url.URL) common.NextPageFunc {
 		nextURL := *url
 
 		// Try to parse pagination object from the response
-		nextURLStr, shouldStop := handlePaginationObject(node, nextURL)
+		nextURLStr, shouldStop := handlePaginationObject(node, &nextURL)
 
 		if nextURLStr != "" {
 			return nextURLStr, nil
@@ -40,7 +40,7 @@ func nextRecordsURL(url *url.URL) common.NextPageFunc {
 		}
 
 		// Fallback: no pagination object, increment based on URL query
-		return handleURLQueryFallback(nextURL)
+		return handleURLQueryFallback(&nextURL)
 	}
 }
 
@@ -48,7 +48,7 @@ func nextRecordsURL(url *url.URL) common.NextPageFunc {
 // Returns: (nextURL, shouldStop).
 // - nextURL: the next page URL if pagination is valid and not at end.
 // - shouldStop: true if we've reached the last page.
-func handlePaginationObject(n *ajson.Node, url url.URL) (string, bool) {
+func handlePaginationObject(n *ajson.Node, url *url.URL) (string, bool) {
 	pagination, err := jsonquery.New(n).ObjectOptional("pagination")
 	if err != nil || pagination == nil {
 		return "", false
@@ -74,7 +74,7 @@ func handlePaginationObject(n *ajson.Node, url url.URL) (string, bool) {
 }
 
 // handleURLQueryFallback handles pagination when no pagination object is present.
-func handleURLQueryFallback(url url.URL) (string, error) {
+func handleURLQueryFallback(url *url.URL) (string, error) {
 	query := url.Query()
 	currentPage := 1
 	currentPageStr := query.Get(pageQuery)
