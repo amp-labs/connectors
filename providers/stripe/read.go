@@ -87,7 +87,7 @@ var incrementalObjects = datautils.NewSet( // nolint:gochecknoglobals
 	"coupons",
 	"credit_notes",
 	"customers",
-	"disputes",
+	"issuing/disputes",
 	"events",
 	"file_links",
 	"files",
