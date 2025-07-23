@@ -302,9 +302,9 @@ func (h *HTTPClient) httpGet(ctx context.Context, //nolint:dupl
 
 // httpPost makes a POST request to the given URL and returns the response & response body.
 func (h *HTTPClient) httpPost(ctx context.Context, url string, //nolint:dupl
-	headers []Header, body []byte,
+	headers []Header, requestBody []byte,
 ) (*http.Response, []byte, error) {
-	req, err := makePostRequest(ctx, url, headers, body)
+	req, err := makePostRequest(ctx, url, headers, requestBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -321,11 +321,10 @@ func (h *HTTPClient) httpPost(ctx context.Context, url string, //nolint:dupl
 		logRequestWithoutBody(logging.Logger(ctx), req, "POST", correlationId, url)
 	}
 
-	// NB: body here is now the response body, not the request body.
-	rsp, body, err := h.sendRequest(req)
+	rsp, responseBody, err := h.sendRequest(req)
 
 	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "POST", correlationId, url, body)
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "POST", correlationId, url, responseBody)
 	} else {
 		logResponseWithoutBody(logging.Logger(ctx), rsp, "POST", correlationId, url)
 	}
@@ -338,7 +337,7 @@ func (h *HTTPClient) httpPost(ctx context.Context, url string, //nolint:dupl
 		return nil, nil, err
 	}
 
-	return rsp, body, nil
+	return rsp, responseBody, nil
 }
 
 // httpPatch makes a PATCH request to the given URL and returns the response & response body.
