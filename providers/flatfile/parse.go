@@ -22,10 +22,10 @@ func records() common.RecordsFunc {
 
 // Two-phase pagination approach is required for Flatfile API:
 //  1. Some endpoints (like environments) return a pagination object with currentPage/pageCount
-//     but don't return empty responses for invalid pages, which can cause infinite loops
-//  2. Other endpoints follow standard pagination (return empty when no more data)
+//     but don't return empty responses for invalid pages, which can cause infinite loops.
+//  2. Other endpoints follow standard pagination (return empty when no more data).
 //
-// We prioritize pagination object when available to avoid infinite loops
+// We prioritize pagination object when available to avoid infinite loops.
 func nextRecordsURL(url *url.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		if url == nil {
