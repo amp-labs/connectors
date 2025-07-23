@@ -60,5 +60,16 @@ func main() {
 	slog.Info("Reading apps..")
 	utils.DumpJSON(res, os.Stdout)
 
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "environments",
+		Fields:     connectors.Fields("id", "accountId", "name"),
+	})
+
+	if err != nil {
+		utils.Fail("error reading from flatfile", "error", err)
+	}
+	slog.Info("Reading environments..")
+	utils.DumpJSON(res, os.Stdout)
+
 	slog.Info("Read operation completed successfully.")
 }
