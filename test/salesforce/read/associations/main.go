@@ -32,7 +32,9 @@ func main() {
 		ObjectName: "Account",
 		Fields:     connectors.Fields("Id", "Name", "BillingCity", "IsDeleted", "SystemModstamp"),
 		Since:      timestamp("2024-08-28T13:47:37"),
-		// Until:      timestamp("2025-01-01T00:00:00"),
+
+		// Names must be plural, i.e. "Contacts", "Opportunities", etc.
+		AssociatedObjects: []string{"Contacts", "Opportunities"},
 	})
 	if err != nil {
 		utils.Fail("error reading", "error", err)
