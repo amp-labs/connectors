@@ -82,7 +82,7 @@ func extractAssociationsFromRecord(val any) []common.Association {
 		return result
 	}
 
-	// For each associated record, extract the ID, coax it into a common.Association & add it to the result.
+	// For each associated record, extract the ID, convert it into a common.Association and add it to the result.
 	for _, record := range records {
 		if assocRec, ok := record.(map[string]any); ok {
 			id, ok := common.ToStringMap(assocRec).GetCaseInsensitive("Id")
