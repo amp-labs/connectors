@@ -3,6 +3,7 @@ package hubspot
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -15,7 +16,10 @@ import (
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	responseContacts := testutils.DataFromFile(t, "read-contacts-objects-api.json")
+	requestContactsSince := testutils.DataFromFile(t, "read/objects-api/contacts-req-payload-since.json")
+	requestContactsUntil := testutils.DataFromFile(t, "read/objects-api/contacts-req-payload-until.json")
+	requestContactsSinceUntil := testutils.DataFromFile(t, "read/objects-api/contacts-req-payload-since-until.json")
+	responseContacts := testutils.DataFromFile(t, "read/objects-api/contacts-response.json")
 	responseListsFirst := testutils.DataFromFile(t, "read-lists-1-first-page.json")
 	responseListsLast := testutils.DataFromFile(t, "read-lists-2-second-page.json")
 
@@ -36,42 +40,142 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Contacts uses object API endpoint",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
-				Fields:     connectors.Fields("hs_object_id"),
+				Fields:     connectors.Fields("email"),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/crm/v3/objects/contacts"),
+				If:    mockcond.Path("/crm/v3/objects/contacts"),
 				Then:  mockserver.Response(http.StatusOK, responseContacts),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 3,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"hs_object_id": "1",
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"email": "a@example.com",
+						},
+						Id: "1",
+						Raw: map[string]any{
+							"id": "1",
+							"properties": map[string]any{
+								"createdate":       "2023-10-26T17:55:48.301Z",
+								"email":            "a@example.com",
+								"lastmodifieddate": "2024-12-24T17:31:54.727Z",
+							},
+							"createdAt": "2023-10-26T17:55:48.301Z",
+							"updatedAt": "2024-12-24T17:31:54.727Z",
+							"archived":  false,
+						},
+					}, {
+						Fields: map[string]any{
+							"email": "b@example.com",
+						},
+						Id: "51",
+						Raw: map[string]any{
+							"id": "51",
+							"properties": map[string]any{
+								"createdate":       "2023-10-26T17:55:48.691Z",
+								"email":            "b@example.com",
+								"lastmodifieddate": "2023-12-13T22:45:30.353Z",
+							},
+							"createdAt": "2023-10-26T17:55:48.691Z",
+							"updatedAt": "2023-12-13T22:45:30.353Z",
+							"archived":  false,
+						},
+					}, {
+						Fields: map[string]any{
+							"email": "c@example.com",
+						},
+						Id: "101",
+						Raw: map[string]any{
+							"id": "101",
+							"properties": map[string]any{
+								"createdate":       "2023-12-13T22:20:02.649Z",
+								"email":            "c@example.com",
+								"lastmodifieddate": "2023-12-13T22:20:05.498Z",
+							},
+							"createdAt": "2023-12-13T22:20:02.649Z",
+							"updatedAt": "2023-12-13T22:20:05.498Z",
+							"archived":  false,
+						},
 					},
-					Raw: map[string]any{
-						"createdAt": "2023-10-26T17:55:48.301Z",
-					},
-				}, {
-					Fields: map[string]any{
-						"hs_object_id": "51",
-					},
-					Raw: map[string]any{
-						"createdAt": "2023-10-26T17:55:48.691Z",
-					},
-				}, {
-					Fields: map[string]any{
-						"hs_object_id": "101",
-					},
-					Raw: map[string]any{
-						"createdAt": "2023-12-13T22:20:02.649Z",
-					},
-				}},
+				},
 				NextPage: "https://api.hubapi.com/crm/v3/objects/contacts?limit=100&properties=listId%2Cname&after=394", // nolint:lll
 				Done:     false,
 			},
 			ExpectedErrs: nil,
+		},
+		{
+			Name: "Contacts records since time",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("email"),
+				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
+					time.FixedZone("UTC-8", -8*60*60)),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/crm/v3/objects/contacts/search"),
+					mockcond.BodyBytes(requestContactsSince),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContacts),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     3,
+				NextPage: "394",
+				Done:     false,
+			},
+		},
+		{
+			Name: "Contacts records until time",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("email"),
+				Until: time.Date(2025, 1, 1, 0, 0, 0, 0,
+					time.FixedZone("UTC-8", -8*60*60)),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/crm/v3/objects/contacts/search"),
+					mockcond.BodyBytes(requestContactsUntil),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContacts),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     3,
+				NextPage: "394",
+				Done:     false,
+			},
+		},
+		{
+			Name: "Contacts records from 'since' till 'until'",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("email"),
+				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
+					time.FixedZone("UTC-8", -8*60*60)),
+				Until: time.Date(2025, 1, 1, 0, 0, 0, 0,
+					time.FixedZone("UTC-8", -8*60*60)),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/crm/v3/objects/contacts/search"),
+					mockcond.BodyBytes(requestContactsSinceUntil),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContacts),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     3,
+				NextPage: "394",
+				Done:     false,
+			},
 		},
 		{
 			Name: "Lists first page is done via search",
@@ -81,8 +185,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/crm/v3/lists/search"),
-				Then:  mockserver.Response(http.StatusOK, responseListsFirst),
+				If: mockcond.And{
+					mockcond.Path("/crm/v3/lists/search"),
+					mockcond.Body(`{"offset":0,"count":100}`),
+				},
+				Then: mockserver.Response(http.StatusOK, responseListsFirst),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -119,7 +226,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/crm/v3/lists/search"),
+					mockcond.Path("/crm/v3/lists/search"),
 					mockcond.Body(`{
 						"offset": 2,
 						"count": 100

@@ -61,9 +61,9 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Files are updated using PUT",
+			Name: "Automation categories are updated using PUT",
 			Input: common.WriteParams{
-				ObjectName: "files",
+				ObjectName: "automationCategory",
 				RecordId:   "123",
 				RecordData: "dummy",
 			},
@@ -81,7 +81,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/crm/rest/v1/contacts"),
+					mockcond.Path("/crm/rest/v2/contacts"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContacts),
@@ -110,7 +110,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleV1)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}

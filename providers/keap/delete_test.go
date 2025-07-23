@@ -44,7 +44,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/crm/rest/v1/contacts/18"),
+					mockcond.Path("/crm/rest/v2/contacts/18"),
 					mockcond.MethodDELETE(),
 				},
 				Then: mockserver.Response(http.StatusNoContent),
@@ -73,7 +73,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.DeleteConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleV1)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}

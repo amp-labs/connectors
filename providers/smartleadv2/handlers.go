@@ -9,8 +9,8 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -25,11 +25,12 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 func (c *Connector) parseReadResponse(
 	ctx context.Context,
 	params common.ReadParams,
+	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		resp,
-		common.GetOptionalRecordsUnderJSONPath(""),
+		common.ExtractOptionalRecordsFromPath(""),
 		getNextRecordsURL,
 		common.GetMarshaledData,
 		params.Fields,
@@ -74,6 +75,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 func (c *Connector) parseWriteResponse(
 	ctx context.Context,
 	params common.WriteParams,
+	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.WriteResult, error) {
 	// Get the JSON node from response
@@ -99,7 +101,7 @@ func (c *Connector) parseWriteResponse(
 	}
 
 	// ID is integer that is always stored under different field name.
-	rawID, err := jsonquery.New(node).Integer(idPath, true)
+	rawID, err := jsonquery.New(node).IntegerOptional(idPath)
 	if err != nil {
 		return nil, err
 	}
@@ -133,6 +135,7 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 func (c *Connector) parseDeleteResponse(
 	ctx context.Context,
 	params common.DeleteParams,
+	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.DeleteResult, error) {
 	if resp.Code != http.StatusOK && resp.Code != http.StatusNoContent {

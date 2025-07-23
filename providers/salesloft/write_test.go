@@ -49,8 +49,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "signals", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK),
+				If: mockcond.And{
+					mockcond.Path("/v2/signals"),
+					mockcond.MethodPOST(),
+				},
+				Then: mockserver.Response(http.StatusOK),
 			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
@@ -61,6 +64,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
+					mockcond.Path("/v2/signals/22165"),
 					mockcond.MethodPUT(),
 				},
 				Then: mockserver.Response(http.StatusOK),
@@ -73,8 +77,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "accounts", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, createAccountRes),
+				If: mockcond.And{
+					mockcond.Path("/v2/accounts"),
+					mockcond.MethodPOST(),
+				},
+				Then: mockserver.Response(http.StatusOK, createAccountRes),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
@@ -96,8 +103,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "tasks", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, createTaskRes),
+				If: mockcond.And{
+					mockcond.Path("/v2/tasks"),
+					mockcond.MethodPOST(),
+				},
+				Then: mockserver.Response(http.StatusOK, createTaskRes),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{

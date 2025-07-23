@@ -1,3 +1,6 @@
-# OpenAPI are third party files that we do not control.
-/providers/*/openapi/*.json
+# OpenAPI and Test Files may contain data that are considered unsecure for sharing.
 /providers/*/openapi/*.yaml
+/providers/*/openapi/*.json
+/providers/*/test/*.json
+/providers/*/test/*.yaml
+/providers/*/test/*.html

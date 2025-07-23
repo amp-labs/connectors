@@ -44,6 +44,25 @@ func init() { // nolint:funlen
 			Subscribe: false,
 			Write:     false,
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "workspace",
+					DisplayName: "Tenant ID",
+					DocsURL:     "https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/tenant-admin-center",
+				},
+				{
+					Name:        "companyId",
+					DisplayName: "Company ID",
+					DocsURL:     "https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/api-reference/v2.0/api/dynamics_company_get",
+				},
+				{
+					Name:        "environmentName",
+					DisplayName: "Environment Name",
+					DocsURL:     "https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/tenant-admin-center-environments",
+				},
+			},
+		},
 	})
 
 	// Dynamics CRM Configuration
@@ -84,6 +103,14 @@ func init() { // nolint:funlen
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "workspace",
+					DisplayName: "Organization ID",
+				},
+			},
 		},
 	})
 }

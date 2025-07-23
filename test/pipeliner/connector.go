@@ -12,7 +12,7 @@ import (
 
 func GetPipelinerConnector(ctx context.Context) *pipeliner.Connector {
 	filePath := credscanning.LoadPath(providers.Pipeliner)
-	reader := utils.MustCreateProvCredJSON(filePath, false, true)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	conn, err := pipeliner.NewConnector(
 		pipeliner.WithClient(ctx, http.DefaultClient,

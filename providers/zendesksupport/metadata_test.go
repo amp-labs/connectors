@@ -7,12 +7,17 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen,gocognit,cyclop
+func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
+
+	responseTicketsCustomFields := testutils.DataFromFile(t, "read/custom_fields/ticket_fields.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -22,15 +27,21 @@ func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Object coming from different module is unknown",
-			Input:        []string{"articles"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
+			Name:       "Unknown object",
+			Input:      []string{"articles"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Errors: map[string]error{
+					"articles": common.ErrObjectNotSupported,
+				},
+			},
 		},
 		{
-			Name:   "Successfully describe one object with metadata",
-			Input:  []string{"brands"},
-			Server: mockserver.Dummy(),
+			Name:       "Successfully describe one object with metadata",
+			Input:      []string{"brands"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"brands": {
@@ -60,9 +71,10 @@ func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen
 			ExpectedErrs: nil,
 		},
 		{
-			Name:   "Successfully describe multiple objects with metadata",
-			Input:  []string{"bookmarks", "ticket_audits"},
-			Server: mockserver.Dummy(),
+			Name:       "Successfully describe multiple objects with metadata",
+			Input:      []string{"bookmarks", "ticket_audits"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"bookmarks": {
@@ -91,64 +103,87 @@ func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen
 			},
 			ExpectedErrs: nil,
 		},
-	}
-
-	for _, tt := range tests {
-		// nolint:varnamelen
-		t.Run(tt.Name, func(t *testing.T) {
-			t.Parallel()
-
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleTicketing)
-			})
-		})
-	}
-}
-
-func TestListObjectMetadataHelpCenterModule(t *testing.T) { // nolint:funlen,gocognit,cyclop
-	t.Parallel()
-
-	tests := []testroutines.Metadata{
 		{
-			Name:         "Object coming from different module is unknown",
-			Input:        []string{"brands"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
-		},
-		{
-			Name:   "Successfully describe one object with metadata",
-			Input:  []string{"articles"},
-			Server: mockserver.Dummy(),
+			Name:  "Successfully describe ticket custom fields",
+			Input: []string{"tickets"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/v2/ticket_fields"),
+				Then:  mockserver.Response(http.StatusOK, responseTicketsCustomFields),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"articles": {
-						DisplayName: "Articles",
+					"tickets": {
+						DisplayName: "Tickets",
+						Fields: map[string]common.FieldMetadata{
+							"comment": {
+								DisplayName:  "comment",
+								ValueType:    "other",
+								ProviderType: "object",
+								ReadOnly:     false,
+							},
+							"priority": {
+								DisplayName:  "priority",
+								ValueType:    "singleSelect",
+								ProviderType: "string",
+								ReadOnly:     false,
+								Values: []common.FieldValue{{
+									Value:        "urgent",
+									DisplayValue: "urgent",
+								}, {
+									Value:        "high",
+									DisplayValue: "high",
+								}, {
+									Value:        "normal",
+									DisplayValue: "normal",
+								}, {
+									Value:        "low",
+									DisplayValue: "low",
+								}},
+							},
+							// Custom field
+							"Customer Type": {
+								DisplayName:  "Customer Type",
+								ValueType:    "singleSelect",
+								ProviderType: "tagger",
+								ReadOnly:     false,
+								Values: []common.FieldValue{{
+									Value:        "vip_customer",
+									DisplayValue: "VIP Customer",
+								}, {
+									Value:        "standard_customer",
+									DisplayValue: "Standard Customer",
+								}},
+							},
+						},
 						FieldsMap: map[string]string{
-							"author_id":           "author_id",
-							"body":                "body",
-							"comments_disabled":   "comments_disabled",
-							"content_tag_ids":     "content_tag_ids",
-							"created_at":          "created_at",
-							"draft":               "draft",
-							"edited_at":           "edited_at",
-							"html_url":            "html_url",
-							"id":                  "id",
-							"label_names":         "label_names",
-							"locale":              "locale",
-							"outdated":            "outdated",
-							"outdated_locales":    "outdated_locales",
-							"permission_group_id": "permission_group_id",
-							"position":            "position",
-							"promoted":            "promoted",
-							"section_id":          "section_id",
-							"source_locale":       "source_locale",
-							"title":               "title",
-							"updated_at":          "updated_at",
-							"url":                 "url",
-							"user_segment_id":     "user_segment_id",
-							"user_segment_ids":    "user_segment_ids",
-							"vote_count":          "vote_count",
-							"vote_sum":            "vote_sum",
+							"comment": "comment",
+							// Custom fields
+							"Customer Type": "Customer Type",
+							"Topic":         "Topic",
+						},
+					},
+				},
+				Errors: make(map[string]error),
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:       "Successfully describe one object with metadata",
+			Input:      []string{"articles/labels"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"articles/labels": {
+						DisplayName: "Article Labels",
+						FieldsMap: map[string]string{
+							"id":         "id",
+							"name":       "name",
+							"url":        "url",
+							"created_at": "created_at",
+							"updated_at": "updated_at",
 						},
 					},
 				},
@@ -164,7 +199,7 @@ func TestListObjectMetadataHelpCenterModule(t *testing.T) { // nolint:funlen,goc
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleHelpCenter)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}
@@ -172,7 +207,7 @@ func TestListObjectMetadataHelpCenterModule(t *testing.T) { // nolint:funlen,goc
 
 func BenchmarkListObjectMetadata(b *testing.B) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 		WithWorkspace("test-workspace"),
 	)
 	if err != nil {
@@ -184,7 +219,7 @@ func BenchmarkListObjectMetadata(b *testing.B) {
 	connector.setBaseURL(dummyServer.URL)
 
 	// start of benchmark
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		_, _ = connector.ListObjectMetadata(context.Background(), []string{"brands"})
 	}
 }

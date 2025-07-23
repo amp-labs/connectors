@@ -9,12 +9,15 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
+// nolint: lll
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
@@ -96,7 +99,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				}
 
 				data := fmt.Sprintf("[%v]", strings.Join(manyCampaigns, ","))
-				_, _ = writer.Write([]byte(data))
+				_, _ = writer.Write([]byte(data)) // nosemgrep: go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
 			}),
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
@@ -126,9 +129,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "campaigns",
 				Fields:     connectors.Fields("name"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseCampaigns),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/v1/campaign/list"),
+				Then:  mockserver.Response(http.StatusOK, responseCampaigns),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -150,7 +154,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"name": "My Campaign",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v1/campaign/list?limit=100&skip=100",
+				NextPage: testroutines.URLTestServer + "/api/v1/campaign/list?limit=100&skip=100",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -161,9 +165,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "tags",
 				Fields:     connectors.Fields("label", "description"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseTags),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/v1/custom-tag"),
+				Then:  mockserver.Response(http.StatusOK, responseTags),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -189,7 +194,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"description":     "High Delivery Accounts 2",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v1/custom-tag?limit=100&skip=100",
+				NextPage: testroutines.URLTestServer + "/api/v1/custom-tag?limit=100&skip=100",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -210,14 +215,14 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }

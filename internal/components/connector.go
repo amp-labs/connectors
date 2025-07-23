@@ -5,7 +5,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -25,7 +24,7 @@ type Connector struct {
 // and returns the connector as the specified T type.
 func Initialize[T any](
 	provider providers.Provider,
-	params common.Parameters,
+	params common.ConnectorParams,
 	constructor ConnectorConstructor[T],
 ) (conn *T, err error) {
 	defer goutils.PanicRecovery(func(cause error) {
@@ -35,7 +34,7 @@ func Initialize[T any](
 
 	// Default module is always the root module
 	if params.Module == "" {
-		params.Module = staticschema.RootModuleID
+		params.Module = common.ModuleRoot
 	}
 
 	transport, err := NewTransport(provider, params)

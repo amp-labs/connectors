@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -22,11 +22,11 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	var write common.WriteMethod
 
 	if len(config.RecordId) == 0 {
-		if supportedObjectsByCreate[c.Module.ID].Has(config.ObjectName) {
+		if supportedObjectsByCreate[common.ModuleRoot].Has(config.ObjectName) {
 			write = c.Client.Post
 		}
 	} else {
-		if supportedObjectsByUpdate[c.Module.ID].Has(config.ObjectName) {
+		if supportedObjectsByUpdate[common.ModuleRoot].Has(config.ObjectName) {
 			write = c.Client.Patch
 
 			url.AddPath(config.RecordId)
@@ -125,7 +125,7 @@ func prepareWritePayload(config common.WriteParams) (any, error) {
 }
 
 func constructWriteResult(body *ajson.Node) (*common.WriteResult, error) {
-	nested, err := jsonquery.New(body).Object("data", false)
+	nested, err := jsonquery.New(body).ObjectRequired("data")
 	if err != nil {
 		return nil, err
 	}

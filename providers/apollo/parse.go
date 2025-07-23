@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -12,7 +12,7 @@ import (
 func getNextRecords(node *ajson.Node) (string, error) {
 	var nextPage string
 
-	pagination, err := jsonquery.New(node).Object("pagination", true)
+	pagination, err := jsonquery.New(node).ObjectOptional("pagination")
 	if err != nil {
 		return "", err
 	}
@@ -23,7 +23,7 @@ func getNextRecords(node *ajson.Node) (string, error) {
 			return "", err
 		}
 
-		totalPages, err := jsonquery.New(pagination).Integer("total_pages", true)
+		totalPages, err := jsonquery.New(pagination).IntegerOptional("total_pages")
 		if err != nil {
 			return "", err
 		}
@@ -37,9 +37,21 @@ func getNextRecords(node *ajson.Node) (string, error) {
 }
 
 // recordsWrapperFunc returns the records using the objectName dynamically.
+// It handles both root-level arrays and nested arrays under an object name.
 func recordsWrapperFunc(obj string) common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		result, err := jsonquery.New(node).Array(obj, true)
+		// If obj is empty or node is an array, process the node directly
+		if obj == "" || node.IsArray() {
+			children, err := node.GetArray()
+			if err != nil {
+				return nil, err
+			}
+
+			return jsonquery.Convertor.ArrayToMap(children)
+		}
+
+		// If not a root array, try to get array from the specified object field
+		result, err := jsonquery.New(node).ArrayOptional(obj)
 		if err != nil {
 			return nil, err
 		}
@@ -55,7 +67,7 @@ func searchRecords(fld string) common.RecordsFunc {
 	fld = constructSupportedObjectName(fld)
 
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		result, err := jsonquery.New(node).Array(fld, true)
+		result, err := jsonquery.New(node).ArrayOptional(fld)
 		if err != nil {
 			return nil, err
 		}

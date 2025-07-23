@@ -1,4 +1,3 @@
-// nolint
 package attio
 
 import (
@@ -6,8 +5,9 @@ import (
 	"errors"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -19,11 +19,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	if !supportedObjectsByWrite.Has(config.ObjectName) {
-		return nil, common.ErrOperationNotSupportedForObject
-	}
-
-	url, err := c.getApiURL(config.ObjectName)
+	url, err := c.buildWriteURL(config)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +30,11 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		write = c.Client.Post
 	} else {
 		// updating resource by patch method.
-		write = c.Client.Patch
+		write = c.Client.Put
+
+		if supportWriteObjects.Has(config.ObjectName) {
+			write = c.Client.Patch
+		}
 
 		url.AddPath(config.RecordId)
 	}
@@ -55,15 +55,36 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	return constructWriteResult(config.ObjectName, body)
 }
 
-func constructWriteResult(objName string, body *ajson.Node) (*common.WriteResult, error) {
-	obj := naming.NewSingularString(objName)
+func (c *Connector) buildWriteURL(config common.WriteParams) (*urlbuilder.URL, error) {
+	// supportWriteObjects represents the APIs listed under the Attio API section in the docs
+	// (this does not cover the entire Attio API). Reference: https://developers.attio.com/reference.
+	if supportWriteObjects.Has(config.ObjectName) {
+		return c.getApiURL(config.ObjectName)
+	}
 
-	objectResponse, err := jsonquery.New(body).Object("data", false)
+	url, err := c.getObjectWriteURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	recordID, err := jsonquery.New(objectResponse, "id").Str(obj.String()+"_id", false)
+	return url, nil
+}
+
+func constructWriteResult(objName string, body *ajson.Node) (*common.WriteResult, error) {
+	var obj naming.SingularString
+
+	if supportWriteObjects.Has(objName) {
+		obj = naming.NewSingularString(objName)
+	} else {
+		obj = naming.NewSingularString("record")
+	}
+
+	objectResponse, err := jsonquery.New(body).ObjectRequired("data")
+	if err != nil {
+		return nil, err
+	}
+
+	recordID, err := jsonquery.New(objectResponse, "id").StringRequired(obj.String() + "_id")
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +96,7 @@ func constructWriteResult(objName string, body *ajson.Node) (*common.WriteResult
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: *recordID,
+		RecordId: recordID,
 		Errors:   nil,
 		Data:     response,
 	}, nil

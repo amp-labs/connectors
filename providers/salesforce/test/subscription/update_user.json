@@ -1,0 +1,23 @@
+{
+  "ChangeEventHeader": {
+    "changeOrigin": "",
+    "changeType": "UPDATE",
+    "changedFields": [
+      "LastModifiedDate",
+      "LastModifiedById",
+      "Name.FirstName"
+    ],
+    "commitNumber": 1745433814682845200,
+    "commitTimestamp": 1745433814000,
+    "commitUser": "005ak00000EpjsfAAB",
+    "entityName": "User",
+    "recordId": "005ak00000GGsRRAA1",
+    "sequenceNumber": 1,
+    "transactionKey": "0000819a-2c4f-e547-290a-8ac966ffa9b9"
+  },
+  "LastModifiedById": "005ak00000EpjsfAAB",
+  "LastModifiedDate": "2025-04-23T18:43:34.000Z",
+  "Name": {
+    "FirstName": "BUTTERBALL"
+  }
+}

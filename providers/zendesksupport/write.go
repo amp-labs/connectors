@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -15,7 +15,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	url, err := c.getURL(config.ObjectName)
+	url, err := c.getWriteURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func constructWriteResult(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
-	nested, err := jsonquery.New(body).Object(config.ObjectName, true)
+	nested, err := jsonquery.New(body).ObjectOptional(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -58,9 +58,8 @@ func constructWriteResult(config common.WriteParams, body *ajson.Node) (*common.
 	if nested == nil {
 		// Field should be in singular form. Either one will be matched.
 		// This one is NOT optional.
-		nested, err = jsonquery.New(body).Object(
+		nested, err = jsonquery.New(body).ObjectOptional(
 			naming.NewSingularString(config.ObjectName).String(),
-			false,
 		)
 		if err != nil {
 			return nil, err
@@ -68,7 +67,7 @@ func constructWriteResult(config common.WriteParams, body *ajson.Node) (*common.
 	}
 	// nested node now must be not null, carry on
 
-	rawID, err := jsonquery.New(nested).Integer("id", true)
+	rawID, err := jsonquery.New(nested).IntegerOptional("id")
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package hubspot
 
 import (
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
@@ -8,15 +9,18 @@ import (
 
 // Connector is a Hubspot connector.
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
-	Module  common.Module
+	BaseURL    string
+	Client     *common.JSONHTTPClient
+	moduleInfo *providers.ModuleInfo
+	moduleID   common.ModuleID
 }
+
+var _ connectors.WebhookVerifierConnector = &Connector{}
 
 // NewConnector returns a new Hubspot connector.
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	params, err := paramsbuilder.Apply(parameters{}, opts,
-		WithModule(ModuleEmpty), // The module is resolved on behalf of the user if the option is missing.
+		WithModule(common.ModuleRoot), // The module is resolved on behalf of the user if the option is missing.
 	)
 	if err != nil {
 		return nil, err
@@ -32,11 +36,13 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: params.Client.Caller,
 		},
-		Module: params.Module.Selection,
+		moduleID: params.Module.Selection.ID,
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
+
+	conn.moduleInfo = providerInfo.ReadModuleInfo(conn.moduleID)
 
 	return conn, nil
 }

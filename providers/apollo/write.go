@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -53,7 +53,7 @@ func constructWriteResult(body *ajson.Node, objName string) (*common.WriteResult
 	// created/updated details in it.
 	obj := naming.NewSingularString(objName)
 
-	respObject, err := jsonquery.New(body).Object(obj.String(), false)
+	respObject, err := jsonquery.New(body).ObjectRequired(obj.String())
 	if err != nil {
 		return nil, err
 	}

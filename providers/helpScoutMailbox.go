@@ -1,5 +1,7 @@
 package providers
 
+import "net/http"
+
 const HelpScoutMailbox Provider = "helpScoutMailbox"
 
 func init() {
@@ -8,12 +10,17 @@ func init() {
 		DisplayName: "Help Scout Mailbox",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.helpscout.net",
+		AuthHealthCheck: &AuthHealthCheck{
+			Method:             http.MethodGet,
+			SuccessStatusCodes: []int{http.StatusOK},
+			Url:                "https://api.helpscout.net/v2/users/me",
+		},
 		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://secure.helpscout.net/authentication/authorizeClientApplication",
+			GrantType:                 ClientCredentials,
 			TokenURL:                  "https://api.helpscout.net/v2/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			DocsURL:                   "https://developer.helpscout.com/mailbox-api/overview/authentication/",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -23,9 +30,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

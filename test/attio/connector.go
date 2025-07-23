@@ -13,7 +13,7 @@ import (
 
 func GetAttioConnector(ctx context.Context) *attio.Connector {
 	filePath := credscanning.LoadPath(providers.Attio)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := attio.NewConnector(
 		attio.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),

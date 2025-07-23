@@ -21,6 +21,22 @@ type parameters struct {
 	paramsbuilder.Metadata
 }
 
+func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
+	oldParams, err := paramsbuilder.Apply(parameters{}, opts,
+		WithModule(common.ModuleRoot), // The module is resolved on behalf of the user if the option is missing.
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.ConnectorParams{
+		Module:              oldParams.Module.Selection.ID,
+		AuthenticatedClient: oldParams.Client.Caller.Client,
+		Workspace:           oldParams.Workspace.Name,
+		Metadata:            oldParams.Metadata.Map,
+	}, nil
+}
+
 func (p parameters) ValidateParams() error {
 	return errors.Join(
 		p.Client.ValidateParams(),
@@ -53,7 +69,7 @@ func WithWorkspace(workspaceRef string) Option {
 // WithModule sets the Atlassian API module to use for the connector. It's required.
 func WithModule(module common.ModuleID) Option {
 	return func(params *parameters) {
-		params.WithModule(module, supportedModules, ModuleEmpty)
+		params.WithModule(module, supportedModules, common.ModuleRoot)
 	}
 }
 

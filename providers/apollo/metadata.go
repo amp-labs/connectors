@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -67,7 +67,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 func parseMetadataFromResponse(body *ajson.Node, objectName string) (*common.ObjectMetadata, error) {
 	objectName = constructSupportedObjectName(objectName)
 
-	arr, err := jsonquery.New(body).Array(objectName, true)
+	arr, err := jsonquery.New(body).ArrayOptional(objectName)
 	if err != nil {
 		return nil, err
 	}

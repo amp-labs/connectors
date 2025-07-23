@@ -2,7 +2,7 @@ package iterable
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/iterable/metadata"
 	"github.com/spyzhov/ajson"
 )
@@ -18,7 +18,7 @@ func makeGetRecords(moduleID common.ModuleID, objectName string) common.RecordsF
 			nestedPath = []string{"params"}
 		}
 
-		return common.GetOptionalRecordsUnderJSONPath(responseFieldName, nestedPath...)(node)
+		return common.ExtractOptionalRecordsFromPath(responseFieldName, nestedPath...)(node)
 	}
 }
 

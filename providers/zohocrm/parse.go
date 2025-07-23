@@ -2,8 +2,8 @@ package zohocrm
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -29,13 +29,13 @@ import (
 
 func getNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		hasMoreRecords, err := jsonquery.New(node, "info").Bool("more_records", false)
+		hasMoreRecords, err := jsonquery.New(node, "info").BoolRequired("more_records")
 		if err != nil {
 			return "", err
 		}
 
-		if *hasMoreRecords {
-			pageToken, err := jsonquery.New(node, "info").Str("next_page_token", true)
+		if hasMoreRecords {
+			pageToken, err := jsonquery.New(node, "info").StringOptional("next_page_token")
 			if err != nil {
 				return "", err
 			}

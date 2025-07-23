@@ -1,7 +1,6 @@
 package atlassian
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -9,7 +8,9 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -215,9 +216,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "issues",
 				Fields:     connectors.Fields("id", "summary"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseIssuesFirstPage),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/ex/jira/ebc887b2-7e61-4059-ab35-71f15cc16e12/rest/api/3/search"),
+				Then:  mockserver.Response(http.StatusOK, responseIssuesFirstPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -228,10 +230,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"summary": "Another one",
 					},
 					Raw: map[string]any{
-						"id":                       "10001",
-						"description":              nil,
-						"created":                  "2024-07-22T22:41:48.474+0300",
-						"statuscategorychangedate": "2024-07-22T22:41:48.686+0300",
+						"id":  "10001",
+						"key": "AM-2",
 					},
 				}, {
 					Fields: map[string]any{
@@ -239,10 +239,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"summary": "First Issue on Jira",
 					},
 					Raw: map[string]any{
-						"id":                       "10000",
-						"description":              nil,
-						"created":                  "2024-07-22T22:41:35.069+0300",
-						"statuscategorychangedate": "2024-07-22T22:41:35.326+0300",
+						"id":  "10000",
+						"key": "AM-1",
 					},
 				}},
 				NextPage: "2",
@@ -264,32 +262,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	}
 }
 
-func TestReadWithoutMetadata(t *testing.T) {
-	t.Parallel()
-
-	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
-		WithWorkspace("test-workspace"),
-		WithModule(ModuleJira),
-	)
-	if err != nil {
-		t.Fatal("failed to create connector")
-	}
-
-	_, err = connector.Read(context.Background(), common.ReadParams{
-		ObjectName: "issues",
-		Fields:     connectors.Fields("id"),
-	})
-	if !errors.Is(err, ErrMissingCloudId) {
-		t.Fatalf("expected Read method to complain about missing cloud id")
-	}
-}
-
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 		WithWorkspace("test-workspace"),
-		WithModule(ModuleJira),
+		WithModule(providers.ModuleAtlassianJira),
 		WithMetadata(map[string]string{
 			"cloudId": "ebc887b2-7e61-4059-ab35-71f15cc16e12", // any value will work for the test
 		}),
@@ -298,8 +275,10 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		return nil, err
 	}
 
-	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	connector.setBaseURL(
+		mockutils.ReplaceURLOrigin(connector.providerInfo.BaseURL, serverURL),
+		mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, serverURL),
+	)
 
 	return connector, nil
 }

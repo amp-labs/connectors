@@ -99,7 +99,7 @@ type NamedCredentialMetadata struct {
 	AllowMergeFieldsInBody      bool                        `json:"allowMergeFieldsInBody,omitempty"`
 	AllowMergeFieldsInHeader    bool                        `json:"allowMergeFieldsInHeader,omitempty"`
 	GenerateAuthorizationHeader bool                        `json:"generateAuthorizationHeader,omitempty"`
-	FullName                    string                      `json:"fullName,omitempty"                    validate:"required"`
+	FullName                    string                      `json:"fullName,omitempty"`
 	Label                       string                      `json:"label,omitempty"`
 	NamedCredentialParameters   []*NamedCredentialParameter `json:"namedCredentialParameters,omitempty"`
 	NamedCredentialType         string                      `json:"namedCredentialType,omitempty"`
@@ -154,6 +154,10 @@ func (c *Connector) CreateEventChannel(ctx context.Context, channel *EventChanne
 	return channel, nil
 }
 
+func (c *Connector) DeleteEventChannel(ctx context.Context, channelId string) (*common.JSONHTTPResponse, error) {
+	return c.deleteToSFAPI(ctx, "tooling/sobjects/PlatformEventChannel/"+channelId, "PlatformEventChannel")
+}
+
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_platformeventchannelmember.htm
 func (c *Connector) CreateEventChannelMember(
@@ -168,6 +172,10 @@ func (c *Connector) CreateEventChannelMember(
 	member.Id = res.Id
 
 	return member, nil
+}
+
+func (c *Connector) DeleteEventChannelMember(ctx context.Context, memberId string) (*common.JSONHTTPResponse, error) {
+	return c.deleteToSFAPI(ctx, "tooling/sobjects/PlatformEventChannelMember/"+memberId, "EventChannelMember")
 }
 
 // nolint: lll
@@ -186,11 +194,15 @@ func (c *Connector) CreateEventRelayConfig(
 	return cfg, nil
 }
 
+func (c *Connector) DeleteEventRelayConfig(ctx context.Context, cfgId string) (*common.JSONHTTPResponse, error) {
+	return c.deleteToSFAPI(ctx, "tooling/sobjects/EventRelayConfig/"+cfgId, "EventRelayConfig")
+}
+
 // RunEventRelay
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
 func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) error {
-	location, err := c.getURIPartEventRelayConfig(cfg.Id)
+	url, err := c.getURLEventRelayConfig(cfg.Id)
 	if err != nil {
 		return err
 	}
@@ -203,12 +215,12 @@ func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) er
 	}
 
 	// patch returns no content with 204. If it fails, it will return an error.
-	_, err = c.Client.Patch(ctx, location.String(), config)
+	_, err = c.Client.Patch(ctx, url.String(), config)
 	if err != nil {
-		slog.Error("Run EventRelayConfig", "error", err)
-
-		return err
+		return fmt.Errorf("error running event relay: %w", err)
 	}
+
+	cfg.Metadata.State = "RUN"
 
 	return nil
 }
@@ -216,7 +228,12 @@ func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) er
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_responses_organization.htm?q=organization
 func (c *Connector) getOrganization(ctx context.Context) (map[string]*ajson.Node, error) {
-	resp, err := c.Client.Get(ctx, restAPISuffix+"/connect/organization")
+	url, err := c.getRestApiURL("connect/organization")
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.Client.Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
@@ -255,6 +272,10 @@ func (c *Connector) CreateNamedCredential(ctx context.Context, creds *NamedCrede
 	return creds, nil
 }
 
+func (c *Connector) DeleteNamedCredential(ctx context.Context, credId string) (*common.JSONHTTPResponse, error) {
+	return c.deleteToSFAPI(ctx, "tooling/sobjects/NamedCredential/"+credId, "NamedCredential")
+}
+
 type Credential interface {
 	DestinationResourceName() string
 }
@@ -280,4 +301,18 @@ func (c *Connector) postToSFAPI(ctx context.Context, body any, path string, enti
 	}
 
 	return res, err
+}
+
+func (c *Connector) deleteToSFAPI(ctx context.Context, path string, entity string) (*common.JSONHTTPResponse, error) {
+	location, err := c.getRestApiURL(path)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.Client.Delete(ctx, location.String())
+	if err != nil {
+		return nil, fmt.Errorf("error deleting %s: %w", entity, err)
+	}
+
+	return resp, nil
 }

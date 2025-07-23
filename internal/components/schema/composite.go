@@ -4,80 +4,83 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"slices"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/components"
 )
 
 var ErrUnableToGetMetadata = errors.New("unable to get metadata")
 
 // CompositeSchemaProvider gets metadata from multiple providers with fallback.
-type CompositeObjectSchemaProvider struct {
-	schemaProviders []HTTPObjectSchemaProvider
+type CompositeSchemaProvider struct {
+	schemaProviders []components.SchemaProvider
 }
 
-func NewCompositeObjectSchemaProvider(schemaProviders ...HTTPObjectSchemaProvider) *CompositeObjectSchemaProvider {
-	return &CompositeObjectSchemaProvider{
+func NewCompositeSchemaProvider(schemaProviders ...components.SchemaProvider) *CompositeSchemaProvider {
+	return &CompositeSchemaProvider{
 		schemaProviders: schemaProviders,
 	}
 }
 
-// GetMetadata tries each schema provider in order, and returns the best result with the least errors.
-func (c *CompositeObjectSchemaProvider) GetMetadata(
+// ListObjectMetadata attempts to retrieve metadata for objects using each schema provider in sequence.
+// It returns aggregated results from the most successful provider (with the fewest errors).
+// Providers are tried in the order they were registered in the CompositeSchemaProvider.
+func (c *CompositeSchemaProvider) ListObjectMetadata(
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
-	// Out of all the providers, we keep track of the best schema result
-	bestResult := &common.ListObjectMetadataResult{
+	result := &common.ListObjectMetadataResult{
 		Result: make(map[string]common.ObjectMetadata),
 		Errors: make(map[string]error),
 	}
 
-	// We keep track of the best alternative by looking at the number of results and errors.
-	maxResults := 0
-	targetResults := len(objects)
+	// Track objects that haven't been successfully processed yet
+	// Initialized with all objects.
+	remainingObjects := objects
 
 	for _, schemaProvider := range c.schemaProviders {
-		metadata, err := safeGetMetadata(schemaProvider, ctx, objects)
+		if len(remainingObjects) == 0 {
+			break
+		}
+
+		metadata, err := safeGetMetadata(schemaProvider, ctx, remainingObjects)
 		if err != nil {
 			slog.Error("Schema provider failed with error", "schemaProvider", schemaProvider, "error", err)
 
 			continue
 		}
 
-		// If we have a provider that can handle all objects with no errors,
-		// we can return immediately
-		if len(metadata.Result) == targetResults && len(metadata.Errors) == 0 {
-			return metadata, nil
+		// Append successful object metadatas to the result metadata.
+		// do not replace this with map.Copy
+		for obj, mtdata := range metadata.Result {
+			result.Result[obj] = mtdata
 		}
 
-		// Otherwise, keep track of the provider with the most results and fewer errors
-		if len(metadata.Result) > maxResults ||
-			(len(metadata.Result) == maxResults && len(metadata.Errors) < len(bestResult.Errors)) {
-			bestResult = metadata
-			maxResults = len(metadata.Result)
+		// Assumes the object response was a success, we remove the object from failures.
+		// adds all errored objects to failures list.
+		remainingObjects = slices.Delete(remainingObjects, 0, len(remainingObjects))
+		for obj := range metadata.Errors {
+			remainingObjects = append(remainingObjects, obj)
+		}
+
+		if len(metadata.Errors) > 0 {
+			slog.Info("Partial metadata collection complete",
+				"provider", schemaProvider.String(),
+				"failed", metadata.Errors)
 		}
 	}
 
-	// If we have no providers that can handle all objects, return an error
-	if len(bestResult.Errors) == len(objects) || len(bestResult.Result) == 0 {
-		return nil, ErrUnableToGetMetadata
-	}
-
-	return bestResult, nil
+	return result, nil
 }
 
-// safeGetMetadata is a helper function that safely executes the provider's GetMetadata method
+// safeGetMetadata is a helper function that safely executes the provider's ListObjectMetadata method
 // and recovers from panics.
 func safeGetMetadata(
-	schemaProvider HTTPObjectSchemaProvider,
+	schemaProvider components.SchemaProvider,
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
-	var (
-		result *common.ListObjectMetadataResult
-		err    error
-	)
-
 	defer func() {
 		if r := recover(); r != nil {
 			slog.Error("Schema provider panicked",
@@ -86,7 +89,9 @@ func safeGetMetadata(
 		}
 	}()
 
-	result, err = schemaProvider.GetMetadata(ctx, objects)
+	return schemaProvider.ListObjectMetadata(ctx, objects)
+}
 
-	return result, err
+func (c *CompositeSchemaProvider) String() string {
+	return "CompositeSchemaProvider"
 }

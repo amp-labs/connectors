@@ -16,6 +16,17 @@ type parameters struct {
 	paramsbuilder.Client
 }
 
+func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
+	oldParams, err := paramsbuilder.Apply(parameters{}, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.ConnectorParams{
+		AuthenticatedClient: oldParams.Client.Caller.Client,
+	}, nil
+}
+
 func (p parameters) ValidateParams() error {
 	return errors.Join(
 		p.Client.ValidateParams(),

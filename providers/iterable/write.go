@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -138,16 +138,16 @@ func locateWriteRecordID(body *ajson.Node, objectName string) (string, error) {
 	}
 
 	// ID is integer that is always stored under different field name.
-	intIdentifier, err := jsonquery.New(body, recordIDLocation.zoom...).Integer(recordIDLocation.id, false)
+	intIdentifier, err := jsonquery.New(body, recordIDLocation.zoom...).IntegerRequired(recordIDLocation.id)
 	if err != nil {
 		return "", err
 	}
 
-	return strconv.FormatInt(*intIdentifier, 10), nil
+	return strconv.FormatInt(intIdentifier, 10), nil
 }
 
 func extractTemplateWriteRecordID(body *ajson.Node) (string, error) {
-	message, err := jsonquery.New(body).Str("msg", true)
+	message, err := jsonquery.New(body).StringOptional("msg")
 	if err != nil {
 		return "", err
 	}
@@ -156,7 +156,7 @@ func extractTemplateWriteRecordID(body *ajson.Node) (string, error) {
 	//	Input: "Upserted 1 templates with IDs: 15939824"
 	//	Output: "15939824"
 	parts := strings.Split(*message, "IDs: ")
-	if len(parts) != 2 { // nolint:mnd
+	if len(parts) != 2 { // nolint:mnd,gomnd
 		return "", nil
 	}
 

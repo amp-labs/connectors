@@ -3,10 +3,12 @@ package common
 import (
 	"errors"
 	"fmt"
+	"slices"
+	"strings"
 )
 
-// Parameters can be used to pass input parameters to the connector.
-type Parameters struct {
+// ConnectorParams can be used to pass input parameters to the connector.
+type ConnectorParams struct {
 	Module ModuleID
 
 	// AuthenticatedClient is a client for the connector that knows how to handle authentication for the provider.
@@ -31,7 +33,7 @@ var (
 
 // ValidateParameters sees which interfaces conn implements, calls the relevant validation methods.
 // nolint:cyclop
-func ValidateParameters(conn any, params Parameters) error {
+func ValidateParameters(conn any, params ConnectorParams) error {
 	var errs error
 
 	if r, ok := conn.(workspaceValidator); ok {
@@ -60,12 +62,12 @@ func ValidateParameters(conn any, params Parameters) error {
 // authenticatedClientValidator is an interface that requires an authenticated client to be set in the parameters.
 
 type authenticatedClientValidator interface {
-	validateAuthenticatedClient(parameters Parameters) error
+	validateAuthenticatedClient(parameters ConnectorParams) error
 }
 
 type RequireAuthenticatedClient struct{}
 
-func (RequireAuthenticatedClient) validateAuthenticatedClient(parameters Parameters) error {
+func (RequireAuthenticatedClient) validateAuthenticatedClient(parameters ConnectorParams) error {
 	if parameters.AuthenticatedClient == nil {
 		return ErrMissingAuthClient
 	}
@@ -76,12 +78,12 @@ func (RequireAuthenticatedClient) validateAuthenticatedClient(parameters Paramet
 // workspaceValidator is an interface that requires a workspace to be set in the parameters.
 
 type workspaceValidator interface {
-	validateWorkspace(parameters Parameters) error
+	validateWorkspace(parameters ConnectorParams) error
 }
 
 type RequireWorkspace struct{}
 
-func (RequireWorkspace) validateWorkspace(parameters Parameters) error {
+func (RequireWorkspace) validateWorkspace(parameters ConnectorParams) error {
 	if parameters.Workspace == "" {
 		return ErrMissingWorkspace
 	}
@@ -92,20 +94,28 @@ func (RequireWorkspace) validateWorkspace(parameters Parameters) error {
 // metadataValidator is an interface that requires metadata to be set in the parameters.
 
 type metadataValidator interface {
-	validateMetadata(parameters Parameters) error
+	validateMetadata(parameters ConnectorParams) error
 }
 
+// RequireMetadata defines required metadata for validation.
+// Metadata keys are case-insensitive.
 type RequireMetadata struct {
-	Expected []string
+	ExpectedMetadataKeys []string
 }
 
-func (RequireMetadata) validateMetadata(parameters Parameters) error {
+func (m RequireMetadata) validateMetadata(parameters ConnectorParams) error {
 	if parameters.Metadata == nil {
 		return ErrMissingMetadata
 	}
 
-	for _, key := range parameters.Metadata {
-		if key == "" {
+	metadataLower := make(map[string]string)
+	for k, v := range parameters.Metadata {
+		metadataLower[strings.ToLower(k)] = v
+	}
+
+	for _, key := range m.ExpectedMetadataKeys {
+		lowerKey := strings.ToLower(key)
+		if metadataLower[lowerKey] == "" {
 			return fmt.Errorf("%w: expected key %s not found", ErrMissingMetadata, key)
 		}
 	}
@@ -116,14 +126,20 @@ func (RequireMetadata) validateMetadata(parameters Parameters) error {
 // moduleValidator is an interface that requires a module to be set in the parameters.
 
 type moduleValidator interface {
-	validateModule(parameters Parameters) error
+	validateModule(parameters ConnectorParams) error
 }
 
-type RequireModule struct{}
+type RequireModule struct {
+	ExpectedModules []ModuleID
+}
 
-func (RequireModule) validateModule(parameters Parameters) error {
+func (r RequireModule) validateModule(parameters ConnectorParams) error {
 	if parameters.Module == "" {
 		return ErrMissingModule
+	}
+
+	if !slices.Contains(r.ExpectedModules, parameters.Module) {
+		return ErrUnsupportedModule
 	}
 
 	return nil

@@ -4,8 +4,8 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -30,17 +30,17 @@ import (
 func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		// check if there is more items in the collection.
-		more, err := jsonquery.New(node, "additional_data", "pagination").Bool("more_items_in_collection", true)
+		more, err := jsonquery.New(node, "additional_data", "pagination").BoolOptional("more_items_in_collection")
 		if err != nil {
 			return "", err
 		}
 
-		startValue, err := jsonquery.New(node, "additional_data", "pagination").Integer("next_start", true)
+		startValue, err := jsonquery.New(node, "additional_data", "pagination").IntegerOptional("next_start")
 		if err != nil {
 			return "", err
 		}
 
-		if *more {
+		if more != nil && *more && startValue != nil {
 			url.WithQueryParam("start", strconv.FormatInt(*startValue, 10))
 
 			return url.String(), nil

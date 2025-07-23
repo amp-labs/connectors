@@ -12,17 +12,17 @@ import (
 // OpenapiFileManager locates openapi file.
 // Allows to read data of interest.
 // Use it when dealing with OpenAPI v2.
-type OpenapiFileManager struct {
+type OpenapiFileManager[C any] struct {
 	file []byte
 }
 
-func NewOpenapiFileManager(file []byte) *OpenapiFileManager {
-	return &OpenapiFileManager{
+func NewOpenapiFileManager[C any](file []byte) *OpenapiFileManager[C] {
+	return &OpenapiFileManager[C]{
 		file: file,
 	}
 }
 
-func (m OpenapiFileManager) GetExplorer(opts ...api3.Option) (*api3.Explorer, error) {
+func (m OpenapiFileManager[C]) GetExplorer(opts ...api3.Option) (*api3.Explorer[C], error) {
 	dataV2, err := parseV2(m.file)
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func (m OpenapiFileManager) GetExplorer(opts ...api3.Option) (*api3.Explorer, er
 		return nil, err
 	}
 
-	return api3.NewExplorer(dataV3, opts...), nil
+	return api3.NewExplorer[C](dataV3, opts...), nil
 }
 
 func parseV2(file []byte) (*openapi2.T, error) {

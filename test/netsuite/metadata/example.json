@@ -1,0 +1,489 @@
+{
+  "type": "object",
+  "properties": {
+      "isInactive": {
+          "title": "Contact is Inactive",
+          "type": "boolean",
+          "description": "When you check this box, this contact no longer appears on the Contacts list unless you check the Show Inactives box at the bottom of the page. Also, you can no longer select this contact from lists on transactions, company records, task records or events records."
+      },
+      "firstName": {
+          "title": "First Name",
+          "type": "string",
+          "description": "Enter the contact&apos;s name. What you enter here automatically appears first in the Contact field. This field is required for the Online Bill Pay feature.",
+          "nullable": true
+      },
+      "homePhone": {
+          "title": "Home Phone",
+          "type": "string",
+          "description": "Enter the contact&apos;s home phone number. This number appears only on this record.",
+          "nullable": true
+      },
+      "externalId": {
+          "title": "External ID",
+          "type": "string",
+          "nullable": true
+      },
+      "entityId": {
+          "title": "Entity ID",
+          "type": "string",
+          "description": "NetSuite automatically completes this field as you enter first, middle, and last names below. This is how the contact&apos;s name appears in all lists.",
+          "nullable": true
+      },
+      "title": {
+          "title": "Job Title",
+          "type": "string",
+          "description": "Enter this contact&apos;s title at his or her company. On the record for this contact&apos;s company, in the Contacts section, this title appears next to the contacts name.",
+          "nullable": true
+      },
+      "emailPreference": {
+          "type": "object",
+          "properties": {
+              "id": {
+                  "title": "Internal identifier",
+                  "type": "string",
+                  "enum": [
+                      "PDF",
+                      "HTML",
+                      "DEFAULT"
+                  ]
+              },
+              "refName": {
+                  "title": "Reference Name",
+                  "type": "string"
+              }
+          }
+      },
+      "unsubscribe": {
+          "title": "Unsubscribe from Campaigns",
+          "type": "boolean",
+          "description": "This box is checked if this contact has unsubscribed from your e-mail marketing campaigns. Unsubscribed contacts receive no marketing campaign e-mail. Contacts can unsubscribe to your e-mail marketing campaigns by clicking a link in any campaign e-mail they receive. To resubscribe to e-mail campaigns, a contact must opt in through the Customer Center or click the Unsubscribe link on a campaign e-mail message. If you are using the US Edition of NetSuite and you want new contacts to be subscribed by default, an administrator can go to Setup &gt; Marketing &gt; Set Up Marketing and clear the Unsubscribed to Marketing by Default box."
+      },
+      "mobilePhone": {
+          "title": "Mobile Phone",
+          "type": "string",
+          "description": "Enter the contact&apos;s mobile or cell phone number. This number appears only on this record.",
+          "nullable": true
+      },
+      "id": {
+          "title": "Internal ID",
+          "type": "string",
+          "description": "The internal ID for this record is shown here. If you do not want to show internal IDs, clear the Show Internal IDs box at Home &gt; Set Preferences.",
+          "nullable": true
+      },
+      "fax": {
+          "title": "Fax",
+          "type": "string",
+          "description": "Enter a fax number for this record. You should enter the fax number exactly as it must be dialed. If a &apos;1&apos; is required to fax to this number, be sure to include it at the beginning of the number. The number you enter automatically appears in the To Be Faxed field of transactions when you select this customer. To fax NetSuite forms, an administrator must first set up fax service at Setup &gt; Set Up Printing, Fax and E-mail &gt; Fax.",
+          "nullable": true
+      },
+      "assistantPhone": {
+          "title": "Assist. Phone",
+          "type": "string",
+          "description": "Enter the phone number for this contact&apos;s assistant. This number appears only on this record.",
+          "nullable": true
+      },
+      "email": {
+          "title": "Email",
+          "type": "string",
+          "description": "Enter the contact&apos;s e-mail address. If you enter an e-mail address, you can e-mail this contact directly from the Contacts list. Also, If you invite this contact to an event, the contact receives e-mail with the event details.",
+          "nullable": true
+      },
+      "owner": {
+          "type": "integer",
+          "format": "int64",
+          "nullable": true
+      },
+      "isPrivate": {
+          "title": "Private",
+          "type": "boolean",
+          "description": "Check this box if this is a private contact. Private contacts can only be viewed by the person that entered the contact record. They are also excluded from the Duplicate Detection process."
+      },
+      "comments": {
+          "title": "Comments",
+          "type": "string",
+          "description": "Enter any other information you want to note about this contact. These notes appears only on this record. You can enter up to 999 characters of text. If you see the Enhance text button next to this field, you can get writing help for this field from our generative AI service, NetSuite Text Enhance. Click the Enhance Text button to use the available options. Learn more about Text Enhance.",
+          "nullable": true
+      },
+      "lastModifiedDate": {
+          "title": "Last Modified Date",
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+      },
+      "middleName": {
+          "title": "Middle Name",
+          "type": "string",
+          "description": "Enter the contact&apos;s middle name or initial. This field is optional. What you enter here automatically appears second in the Contact field.",
+          "nullable": true
+      },
+      "dateCreated": {
+          "title": "Date Created",
+          "type": "string",
+          "description": "In this field, NetSuite automatically records the date you created this record.",
+          "format": "date-time",
+          "nullable": true
+      },
+      "globalSubscriptionStatus": {
+          "type": "object",
+          "properties": {
+              "id": {
+                  "title": "Internal identifier",
+                  "type": "string",
+                  "enum": [
+                      "1",
+                      "2",
+                      "3",
+                      "4"
+                  ]
+              },
+              "refName": {
+                  "title": "Reference Name",
+                  "type": "string"
+              }
+          }
+      },
+      "lastName": {
+          "title": "Last Name",
+          "type": "string",
+          "description": "Enter the contact&apos;s last name. What you enter here automatically appears last in the Contact field. This field is required for the Online Bill Pay feature.",
+          "nullable": true
+      },
+      "altEmail": {
+          "title": "Alt. Email",
+          "type": "string",
+          "description": "&lt;p&gt;Enter an alternate email address for this contact. If you use the Capture Email Replies, email sent with the alternate email address are automatically attached to the contact record.",
+          "nullable": true
+      },
+      "customForm": {
+          "type": "object",
+          "properties": {
+              "id": {
+                  "title": "Internal identifier",
+                  "type": "string",
+                  "enum": [
+                      "550",
+                      "-40",
+                      "350"
+                  ]
+              },
+              "refName": {
+                  "title": "Reference Name",
+                  "type": "string"
+              }
+          }
+      },
+      "phone": {
+          "title": "Main Phone",
+          "type": "string",
+          "description": "Enter the phone number you primarily use to reach this contact. This number appears in the Contacts list and in the Contact section of company records. This field is required for the Online Bill Pay feature.",
+          "nullable": true
+      },
+      "salutation": {
+          "title": "Mr./Ms...",
+          "type": "string",
+          "description": "Enter the contact&apos;s salutation. Examples are Mr., Mrs., Ms. and Miss.",
+          "nullable": true
+      },
+      "officePhone": {
+          "title": "Office Phone",
+          "type": "string",
+          "description": "Enter the contact&apos;s work phone number. This number appears only on this record.",
+          "nullable": true
+      },
+      "supervisorPhone": {
+          "title": "Sup. Phone",
+          "type": "string",
+          "description": "Enter the phone number for this contact&apos;s supervisor.",
+          "nullable": true
+      },
+      "refName": {
+          "title": "Reference Name",
+          "type": "string"
+      },
+      "links": {
+          "title": "Links",
+          "type": "array",
+          "readOnly": true,
+          "items": {
+              "$ref": "/services/rest/record/v1/metadata-catalog/nsLink"
+          }
+      },
+      "image": {
+          "type": "object",
+          "properties": {
+              "id": {
+                  "title": "Internal identifier",
+                  "type": "string"
+              },
+              "refName": {
+                  "title": "Reference Name",
+                  "type": "string"
+              },
+              "externalId": {
+                  "title": "External identifier",
+                  "type": "string"
+              },
+              "links": {
+                  "title": "Links",
+                  "type": "array",
+                  "readOnly": true,
+                  "items": {
+                      "$ref": "/services/rest/record/v1/metadata-catalog/nsLink"
+                  }
+              }
+          }
+      },
+      "contactCampaignEvent": {
+          "type": "object",
+          "properties": {
+              "id": {
+                  "title": "Internal identifier",
+                  "type": "string"
+              },
+              "refName": {
+                  "title": "Reference Name",
+                  "type": "string"
+              },
+              "externalId": {
+                  "title": "External identifier",
+                  "type": "string"
+              },
+              "links": {
+                  "title": "Links",
+                  "type": "array",
+                  "readOnly": true,
+                  "items": {
+                      "$ref": "/services/rest/record/v1/metadata-catalog/nsLink"
+                  }
+              }
+          }
+      },
+      "assistant": {
+          "type": "object",
+          "properties": {
+              "id": {
+                  "title": "Internal identifier",
+                  "type": "string"
+              },
+              "refName": {
+                  "title": "Reference Name",
+                  "type": "string"
+              },
+              "externalId": {
+                  "title": "External identifier",
+                  "type": "string"
+              },
+              "links": {
+                  "title": "Links",
+                  "type": "array",
+                  "readOnly": true,
+                  "items": {
+                      "$ref": "/services/rest/record/v1/metadata-catalog/nsLink"
+                  }
+              }
+          }
+      },
+      "company": {
+          "type": "object",
+          "properties": {
+              "id": {
+                  "title": "Internal identifier",
+                  "type": "string"
+              },
+              "refName": {
+                  "title": "Reference Name",
+                  "type": "string"
+              },
+              "externalId": {
+                  "title": "External identifier",
+                  "type": "string"
+              },
+              "links": {
+                  "title": "Links",
+                  "type": "array",
+                  "readOnly": true,
+                  "items": {
+                      "$ref": "/services/rest/record/v1/metadata-catalog/nsLink"
+                  }
+              }
+          }
+      },
+      "supervisor": {
+          "type": "object",
+          "properties": {
+              "id": {
+                  "title": "Internal identifier",
+                  "type": "string"
+              },
+              "refName": {
+                  "title": "Reference Name",
+                  "type": "string"
+              },
+              "externalId": {
+                  "title": "External identifier",
+                  "type": "string"
+              },
+              "links": {
+                  "title": "Links",
+                  "type": "array",
+                  "readOnly": true,
+                  "items": {
+                      "$ref": "/services/rest/record/v1/metadata-catalog/nsLink"
+                  }
+              }
+          }
+      },
+      "contactSourceCampaignCategory": {
+          "type": "object",
+          "properties": {
+              "id": {
+                  "title": "Internal identifier",
+                  "type": "string"
+              },
+              "refName": {
+                  "title": "Reference Name",
+                  "type": "string"
+              },
+              "externalId": {
+                  "title": "External identifier",
+                  "type": "string"
+              },
+              "links": {
+                  "title": "Links",
+                  "type": "array",
+                  "readOnly": true,
+                  "items": {
+                      "$ref": "/services/rest/record/v1/metadata-catalog/nsLink"
+                  }
+              }
+          }
+      },
+      "contactSource": {
+          "type": "object",
+          "properties": {
+              "id": {
+                  "title": "Internal identifier",
+                  "type": "string"
+              },
+              "refName": {
+                  "title": "Reference Name",
+                  "type": "string"
+              },
+              "externalId": {
+                  "title": "External identifier",
+                  "type": "string"
+              },
+              "links": {
+                  "title": "Links",
+                  "type": "array",
+                  "readOnly": true,
+                  "items": {
+                      "$ref": "/services/rest/record/v1/metadata-catalog/nsLink"
+                  }
+              }
+          }
+      },
+      "subsidiary": {
+          "type": "object",
+          "properties": {
+              "id": {
+                  "title": "Internal identifier",
+                  "type": "string"
+              },
+              "refName": {
+                  "title": "Reference Name",
+                  "type": "string"
+              },
+              "externalId": {
+                  "title": "External identifier",
+                  "type": "string"
+              },
+              "links": {
+                  "title": "Links",
+                  "type": "array",
+                  "readOnly": true,
+                  "items": {
+                      "$ref": "/services/rest/record/v1/metadata-catalog/nsLink"
+                  }
+              }
+          }
+      },
+      "category": {
+          "type": "object",
+          "properties": {
+              "links": {
+                  "title": "Links",
+                  "type": "array",
+                  "readOnly": true,
+                  "items": {
+                      "$ref": "/services/rest/record/v1/metadata-catalog/nsLink"
+                  }
+              },
+              "totalResults": {
+                  "title": "Total Results",
+                  "type": "integer",
+                  "format": "int64",
+                  "readOnly": true
+              },
+              "count": {
+                  "title": "Count",
+                  "type": "integer",
+                  "format": "int64",
+                  "readOnly": true
+              },
+              "hasMore": {
+                  "title": "Has More Results",
+                  "type": "boolean",
+                  "readOnly": true
+              },
+              "offset": {
+                  "title": "Query Offset",
+                  "type": "integer",
+                  "format": "int64",
+                  "readOnly": true
+              },
+              "items": {
+                  "type": "array",
+                  "items": {
+                      "$ref": "/services/rest/record/v1/metadata-catalog/contactCategory"
+                  }
+              }
+          }
+      }
+  },
+  "$schema": "http://json-schema.org/draft-06/hyper-schema#",
+  "x-ns-filterable": [
+      "isInactive",
+      "firstName",
+      "homePhone",
+      "externalId",
+      "contactSourceCampaignCategory",
+      "entityId",
+      "contactCampaignEvent",
+      "title",
+      "emailPreference",
+      "unsubscribe",
+      "mobilePhone",
+      "contactSource",
+      "company",
+      "id",
+      "fax",
+      "assistantPhone",
+      "email",
+      "isPrivate",
+      "comments",
+      "lastModifiedDate",
+      "assistant",
+      "middleName",
+      "dateCreated",
+      "globalSubscriptionStatus",
+      "lastName",
+      "altEmail",
+      "phone",
+      "salutation",
+      "officePhone",
+      "category",
+      "supervisor",
+      "supervisorPhone"
+  ]
+}

@@ -16,9 +16,23 @@ type parameters struct {
 	paramsbuilder.Client
 }
 
+func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
+	oldParams, err := paramsbuilder.Apply(parameters{}, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.ConnectorParams{
+		AuthenticatedClient: oldParams.Client.Caller.Client,
+	}, nil
+}
+
 const (
 	// DefaultPageSize is number of elements per page.
-	DefaultPageSize = 10
+	// The Page size for standard/custom objects, tasks.
+	DefaultPageSize = 500
+	// The Page size for only notes object.
+	DefaultPageSizeForNotesObj = 50
 )
 
 func (p parameters) ValidateParams() error {

@@ -44,11 +44,12 @@ type Connector struct {
 	components.Deleter
 }
 
-func NewConnector(params common.Parameters) (*Connector, error) {
+func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
 	return components.Initialize(providers.Smartlead, params, constructor)
 }
 
+// nolint:funlen
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
@@ -59,6 +60,23 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 	// Set the metadata provider for the connector
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)
+	// Other examples:
+	// 	schema.NewAggregateSchemaProvider(
+	// 		connector.HTTPClient().Client,
+	// 		operations.ListObjectMetadataHandlers{
+	// 			BuildRequest:  connector.buildListObjectMetadataRequest,
+	// 			ParseResponse: connector.parseListObjectMetadataResponse,
+	// 		},
+	// 	),
+
+	//  schema.NewObjectSchemaProvider(
+	// 		connector.HTTPClient().Client,
+	// 		schema.FetchModeParallel,
+	// 		operations.SingleObjectMetadataHandlers{
+	// 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
+	// 			ParseResponse: connector.parseSingleObjectMetadataResponse,
+	// 		},
+	//  ),
 
 	// Set the reader for the connector
 	// TODO: Refactor to simplify clients

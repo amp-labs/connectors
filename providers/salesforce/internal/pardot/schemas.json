@@ -1,0 +1,167 @@
+{
+  "modules": {
+    "account-engagement": {
+      "id": "account-engagement",
+      "objects": {
+        "emails": {
+          "displayName": "Emails",
+          "path": "emails",
+          "responseKey": "values",
+          "fields": {
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "campaignId": {
+              "displayName": "Campaign ID",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "prospectId": {
+              "displayName": "Prospect ID",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "subject": {
+              "displayName": "Subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "textMessage": {
+              "displayName": "Text Message",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "htmlMessage": {
+              "displayName": "HTML Message",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "senderOptions": {
+              "displayName": "Sender Options",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "replyToOptions": {
+              "displayName": "Reply To Options",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "scheduledTime": {
+              "displayName": "Scheduled Time",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "isOperational": {
+              "displayName": "Is Operational",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "emailTemplateId": {
+              "displayName": "Email Template ID",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "trackerDomainId": {
+              "displayName": "Tracker Domain ID",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "folderId": {
+              "displayName": "Folder ID",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "Email ID",
+              "valueType": "int",
+              "providerType": "integer",
+              "readOnly": true
+            },
+            "clientType": {
+              "displayName": "Client Type",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "Created By ID",
+              "valueType": "int",
+              "providerType": "integer",
+              "readOnly": true
+            },
+            "listId": {
+              "displayName": "List ID",
+              "valueType": "int",
+              "providerType": "integer",
+              "readOnly": true
+            },
+            "listEmailId": {
+              "displayName": "List Email ID",
+              "valueType": "int",
+              "providerType": "integer",
+              "readOnly": true
+            },
+            "sentAt": {
+              "displayName": "Sent At",
+              "valueType": "datetime",
+              "providerType": "datetime",
+              "readOnly": true
+            },
+            "createdBy": {
+              "displayName": "Created By",
+              "valueType": "other",
+              "providerType": "object",
+              "readOnly": true
+            },
+            "campaign": {
+              "displayName": "Campaign",
+              "valueType": "other",
+              "providerType": "object",
+              "readOnly": true
+            },
+            "list": {
+              "displayName": "List",
+              "valueType": "other",
+              "providerType": "object",
+              "readOnly": true
+            },
+            "listEmail": {
+              "displayName": "List Email",
+              "valueType": "other",
+              "providerType": "object",
+              "readOnly": true
+            },
+            "salesforceCmsId": {
+              "displayName": "Copied Salesforce CMS ID",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": true
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "singleSelect",
+              "providerType": "enum",
+              "readOnly": true,
+              "values": [
+                {
+                  "value": "html",
+                  "displayValue": "HTML"
+                },
+                {
+                  "value": "text",
+                  "displayValue": "Text"
+                },
+                {
+                  "value": "htmlAndText",
+                  "displayValue": "HTML and Text"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

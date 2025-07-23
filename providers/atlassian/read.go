@@ -33,13 +33,13 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		rsp,
 		getRecords,
 		getNextRecords,
-		common.GetMarshaledData,
+		common.MakeMarshaledDataFunc(flattenRecord),
 		config.Fields,
 	)
 }
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
-	url, err := c.getJiraRestApiURL("search")
+	url, err := c.getModuleURL("search")
 	if err != nil {
 		return nil, err
 	}

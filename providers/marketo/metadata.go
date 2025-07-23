@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/providers/marketo/metadata"
 )
 
@@ -18,6 +19,8 @@ type responseObject struct {
 func (c *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
+	ctx = logging.With(ctx, "connector", "marketo")
+
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
 	}
@@ -28,29 +31,39 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 	}
 
 	for _, obj := range objectNames {
-		// Constructing the request url.
-		url, err := c.getAPIURL(obj)
+		url, err := c.constructMetadataURL(obj)
 		if err != nil {
 			return nil, err
 		}
 
-		resp, err := c.Client.Get(ctx, url.String())
+		httpResp, body, err := c.Client.HTTPClient.Get(ctx, url.String())
 		if err != nil {
-			runFallback(c.Module.ID, obj, &metadataResult)
+			logging.Logger(ctx).Error("failed to get metadata", "object", obj, "body", body, "err", err.Error())
+			runFallback(obj, &metadataResult)
+
+			continue
+		}
+
+		defer httpResp.Body.Close()
+
+		resp, err := common.ParseJSONResponse(httpResp, body)
+		if err != nil {
+			logging.Logger(ctx).Error("failed to parse metadata response", "object", obj, "body", body, "err", err.Error())
+			runFallback(obj, &metadataResult)
 
 			continue
 		}
 
 		if _, ok := resp.Body(); !ok {
-			runFallback(c.Module.ID, obj, &metadataResult)
+			runFallback(obj, &metadataResult)
 
 			continue
 		}
 
-		data, err := parseMetadataFromResponse(resp)
+		data, err := parseMetadataFromResponse(resp, obj)
 		if err != nil {
 			if errors.Is(err, common.ErrMissingExpectedValues) {
-				runFallback(c.Module.ID, obj, &metadataResult)
+				runFallback(obj, &metadataResult)
 
 				continue
 			} else {
@@ -65,17 +78,21 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 	return &metadataResult, nil
 }
 
-func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
+func parseMetadataFromResponse(resp *common.JSONHTTPResponse, objectName string) (*common.ObjectMetadata, error) {
 	response, err := common.UnmarshalJSON[responseObject](resp)
 	if err != nil {
 		return nil, err
+	}
+
+	if _, ok := hasMetadataResource(objectName); ok {
+		return parseDescribeResponse(response.Result[0])
 	}
 
 	if len(response.Result) == 0 {
 		return nil, common.ErrMissingExpectedValues
 	}
 
-	data := &common.ObjectMetadata{
+	data := common.ObjectMetadata{
 		FieldsMap: make(map[string]string),
 	}
 
@@ -84,25 +101,22 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (*common.ObjectMet
 		data.FieldsMap[k] = k
 	}
 
-	return data, nil
+	return &data, nil
 }
 
-func metadataFallback(moduleID common.ModuleID, objectName string) (*common.ObjectMetadata, error) {
-	metadatResult, err := metadata.Schemas.Select(moduleID, []string{objectName})
+func metadataFallback(objectName string) (*common.ObjectMetadata, error) {
+	metadata, err := metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	data := metadatResult.Result[objectName]
-
-	return &data, nil
+	return metadata, nil
 }
 
-func runFallback(
-	moduleID common.ModuleID, obj string, res *common.ListObjectMetadataResult,
+func runFallback(obj string, res *common.ListObjectMetadataResult,
 ) *common.ListObjectMetadataResult { //nolint:unparam
 	// Try fallback function
-	data, err := metadataFallback(moduleID, obj)
+	data, err := metadataFallback(obj)
 	if err != nil {
 		res.Errors[obj] = err
 
@@ -113,4 +127,38 @@ func runFallback(
 	res.Result[obj] = *data
 
 	return res
+}
+
+func parseDescribeResponse(results any) (*common.ObjectMetadata, error) {
+	data := common.ObjectMetadata{
+		FieldsMap: make(map[string]string),
+	}
+
+	fieldsResult, ok := results.(map[string]any)
+	if !ok {
+		return nil, ErrFailedConvertFields
+	}
+
+	fields := fieldsResult["fields"]
+
+	result, ok := fields.([]any)
+	if !ok {
+		return nil, ErrFailedConvertFields
+	}
+
+	for _, flds := range result {
+		flds, ok := flds.(map[string]any)
+		if !ok {
+			return nil, ErrFailedConvertFields
+		}
+
+		fld, ok := flds["name"].(string)
+		if !ok {
+			return nil, ErrFailedConvertFields
+		}
+
+		data.FieldsMap[fld] = fld
+	}
+
+	return &data, nil
 }

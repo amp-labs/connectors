@@ -1,8 +1,6 @@
 package atlassian
 
 import (
-	"context"
-	"errors"
 	"net/http"
 	"testing"
 
@@ -104,23 +102,5 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
-	}
-}
-
-func TestListObjectMetadataWithoutMetadata(t *testing.T) {
-	t.Parallel()
-
-	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
-		WithWorkspace("test-workspace"),
-		WithModule(ModuleJira),
-	)
-	if err != nil {
-		t.Fatal("failed to create connector")
-	}
-
-	_, err = connector.ListObjectMetadata(context.Background(), nil)
-	if !errors.Is(err, ErrMissingCloudId) {
-		t.Fatalf("expected ListObjectMetadata method to complain about missing cloud id")
 	}
 }

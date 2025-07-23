@@ -7,6 +7,8 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -15,9 +17,10 @@ import (
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	responseContactIDsError := testutils.DataFromFile(t, "read-contact-ids-error.json")
-	responseContactsFirstPage := testutils.DataFromFile(t, "read-contacts-1-first-page.json")
-	responseContactsLastPage := testutils.DataFromFile(t, "read-contacts-2-second-page.json")
+	responseContactIDsError := testutils.DataFromFile(t, "read/contact-ids-error.json")
+	responseContactsCustomFields := testutils.DataFromFile(t, "read/contacts/custom-fields.json")
+	responseContactsFirstPage := testutils.DataFromFile(t, "read/contacts/1-first-page.json")
+	responseContactsLastPage := testutils.DataFromFile(t, "read/contacts/2-second-page.json")
 
 	tests := []testroutines.Read{
 		{
@@ -57,11 +60,17 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Read contacts first page",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
-				Fields:     connectors.Fields("first_name", "last_name"),
+				Fields:     connectors.Fields("first_name", "last_name", "hobby"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseContactsFirstPage),
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/v3/contacts"),
+					Then: mockserver.Response(http.StatusOK, responseContactsFirstPage),
+				}, {
+					If:   mockcond.Path("/v3/contact_custom_fields"),
+					Then: mockserver.Response(http.StatusOK, responseContactsCustomFields),
+				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -70,10 +79,15 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Fields: map[string]any{
 						"first_name": "Debora",
 						"last_name":  "Lang",
+						"hobby":      "Skiing",
 					},
 					Raw: map[string]any{
 						"company_name": "Acme Corp.",
 						"contact_id":   "af73e650-96f0-11ef-b2a0-fa163eafb85e",
+						"custom_fields": []any{map[string]any{
+							"custom_field_id": "77317b4e-b35c-11ef-ad2e-fa163e5a0a14",
+							"value":           "Skiing",
+						}},
 					},
 				}},
 				NextPage: testroutines.URLTestServer + "/v3/contacts?cursor=bGltaXQ9MSZuZXh0PTI=",
@@ -87,9 +101,15 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("first_name", "last_name"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseContactsLastPage),
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If:   mockcond.Path("/v3/contacts"),
+					Then: mockserver.Response(http.StatusOK, responseContactsLastPage),
+				}, {
+					If:   mockcond.Path("/v3/contact_custom_fields"),
+					Then: mockserver.Response(http.StatusNoContent),
+				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -125,14 +145,14 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }

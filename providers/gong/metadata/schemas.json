@@ -31,6 +31,15 @@
             "workspaceId": "workspaceId"
           }
         },
+        "transcripts": {
+          "displayName": "Transcripts",
+          "path": "/calls/transcript",
+          "responseKey": "callTranscripts",
+          "fields": {
+            "callId": "callId",
+            "transcript": "transcript"
+          }
+        },
         "users": {
           "displayName": "Users",
           "path": "/users",

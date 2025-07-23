@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 var (
@@ -18,8 +18,6 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 	if err != nil {
 		return nil, errors.Join(ErrDiscoveryFailure, err)
 	}
-
-	c.cloudId = cloudId
 
 	return &common.PostAuthInfo{
 		CatalogVars: AuthMetadataVars{
@@ -75,19 +73,15 @@ func (c *Connector) retrieveCloudId(ctx context.Context) (string, error) {
 	}
 
 	for _, item := range arr {
-		workspaceName, err := jsonquery.New(item).Str("name", false)
+		workspaceName, err := jsonquery.New(item).StringRequired("name")
 		if err != nil {
 			return "", err
 		}
 
-		if *workspaceName == c.workspace {
-			// names match, select this container.
-			cloudId, err := jsonquery.New(item).Str("id", false)
-			if err != nil {
-				return "", err
-			}
-
-			return *cloudId, nil
+		if workspaceName == c.workspace {
+			// Names match, select this container.
+			// Returns cloudID.
+			return jsonquery.New(item).StringRequired("id")
 		}
 	}
 

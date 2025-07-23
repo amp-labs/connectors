@@ -2,10 +2,16 @@ package operations
 
 import (
 	"context"
+	"errors"
 	"io"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+)
+
+var (
+	ErrInvalidRequest = errors.New("invalid request")
+	ErrNoResponse     = errors.New("no response")
 )
 
 // HTTPOperation provides a generic implementation for HTTP-based operations like read, write, delete, etc.
@@ -17,7 +23,7 @@ type HTTPOperation[RequestType any, ResponseType any] struct {
 // HTTPHandlers contains operation-specific HTTP handlers for building and parsing HTTP requests and responses.
 type HTTPHandlers[RequestType any, ResponseType any] struct {
 	BuildRequest  func(context.Context, RequestType) (*http.Request, error)
-	ParseResponse func(context.Context, RequestType, *common.JSONHTTPResponse) (ResponseType, error)
+	ParseResponse func(context.Context, RequestType, *http.Request, *common.JSONHTTPResponse) (ResponseType, error)
 	ErrorHandler  func(*http.Response, []byte) error
 }
 
@@ -31,7 +37,7 @@ func NewHTTPOperation[RequestType any, ResponseType any](
 	}
 }
 
-// nolint:ireturn
+// nolint:ireturn,cyclop
 func (op *HTTPOperation[RequestType, ResponseType]) ExecuteRequest(
 	ctx context.Context,
 	params RequestType,
@@ -43,10 +49,21 @@ func (op *HTTPOperation[RequestType, ResponseType]) ExecuteRequest(
 		return response, err
 	}
 
+	if req == nil {
+		return response, ErrInvalidRequest
+	}
+
+	req = common.AddJSONContentTypeIfNotPresent(req)
+
 	resp, err := op.client.Do(req)
 	if err != nil {
 		return response, err
 	}
+
+	if resp == nil {
+		return response, ErrNoResponse
+	}
+
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
@@ -61,6 +78,8 @@ func (op *HTTPOperation[RequestType, ResponseType]) ExecuteRequest(
 				return response, err
 			}
 		}
+
+		return response, common.InterpretError(resp, body)
 	}
 
 	jsonResp, err := common.ParseJSONResponse(resp, body)
@@ -68,5 +87,5 @@ func (op *HTTPOperation[RequestType, ResponseType]) ExecuteRequest(
 		return response, err
 	}
 
-	return op.handlers.ParseResponse(ctx, params, jsonResp)
+	return op.handlers.ParseResponse(ctx, params, req, jsonResp)
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"time"
 
@@ -14,26 +14,42 @@ import (
 )
 
 func main() {
-	os.Exit(MainFn())
-}
+	ctx := context.Background()
 
-func MainFn() int {
-	err := testReadChannels(context.Background())
+	err := testReadChannels(ctx)
 	if err != nil {
-		return 1
+		slog.Error(err.Error())
 	}
 
-	err = testReadSmartCampaigns(context.Background())
+	err = testReadSmartCampaigns(ctx)
 	if err != nil {
-		return 1
+		slog.Error(err.Error())
 	}
 
-	err = testReadCampaigns(context.Background())
+	err = testReadCampaigns(ctx)
 	if err != nil {
-		return 1
+		slog.Error(err.Error())
 	}
 
-	return 0
+	err = testReadLeads(ctx)
+	if err != nil {
+		slog.Error(err.Error())
+	}
+
+	err = testIncrementalReadLeads(ctx)
+	if err != nil {
+		slog.Error(err.Error())
+	}
+
+	err = testReadActivities(ctx)
+	if err != nil {
+		slog.Error(err.Error())
+	}
+
+	err = testReadAllActivities(ctx)
+	if err != nil {
+		slog.Error(err.Error())
+	}
 }
 
 func testReadChannels(ctx context.Context) error {
@@ -46,7 +62,7 @@ func testReadChannels(ctx context.Context) error {
 
 	res, err := conn.Read(ctx, params)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
 
 	// Print the results
@@ -72,7 +88,7 @@ func testReadSmartCampaigns(ctx context.Context) error {
 
 	res, err := conn.Read(ctx, params)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
 
 	// Print the results
@@ -88,7 +104,7 @@ func testReadSmartCampaigns(ctx context.Context) error {
 }
 
 func testReadCampaigns(ctx context.Context) error {
-	conn := mk.GetMarketoConnectorW(ctx)
+	conn := mk.GetMarketoConnectorLeads(ctx)
 
 	params := common.ReadParams{
 		ObjectName: "campaigns",
@@ -98,7 +114,113 @@ func testReadCampaigns(ctx context.Context) error {
 
 	res, err := conn.Read(ctx, params)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testReadLeads(ctx context.Context) error {
+	conn := mk.GetMarketoConnectorLeads(ctx)
+
+	params := common.ReadParams{
+		ObjectName: "leads",
+		Fields:     connectors.Fields("id", "email", "createdAt", "firstName"),
+	}
+
+	res, err := conn.Read(ctx, params)
+	if err != nil {
+		return err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testIncrementalReadLeads(ctx context.Context) error {
+	conn := mk.GetMarketoConnectorLeads(ctx)
+
+	params := common.ReadParams{
+		ObjectName: "leads",
+		Fields:     connectors.Fields("id", "email"),
+		Since:      time.Now().Add(-6 * time.Hour),
+		NextPage:   "5HGU7ZC75UN24BUTN4FPNOQBNYYAR3VPGIS4BZLWEHGJWWKTP4UQ====",
+	}
+
+	res, err := conn.Read(ctx, params)
+	if err != nil {
+		return err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testReadActivities(ctx context.Context) error {
+	conn := mk.GetMarketoConnectorLeads(ctx)
+
+	params := common.ReadParams{
+		ObjectName: "activities",
+		Since:      time.Now().Add(-1800 * time.Hour),
+		Fields:     connectors.Fields("id", "primaryAttributeValue", "activityDate"),
+		Filter:     "1,2,3,6,7,8,9,10,11,12",
+		NextPage:   "7A4CXBXWDZ7ZTQBOQVIV2VTWDXUS7GKFQN3UZYGPNV4IA4C7GDCA====",
+	}
+
+	res, err := conn.Read(ctx, params)
+	if err != nil {
+		return err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testReadAllActivities(ctx context.Context) error {
+	conn := mk.GetMarketoConnectorLeads(ctx)
+
+	params := common.ReadParams{
+		ObjectName: "activities",
+		Fields:     connectors.Fields("id", "primaryAttributeValue", "activityDate"),
+		Filter:     "1,2,3,6,7,8,9,10,11,12",
+	}
+
+	res, err := conn.Read(ctx, params)
+	if err != nil {
+		return err
 	}
 
 	// Print the results

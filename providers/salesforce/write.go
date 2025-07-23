@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -12,6 +12,10 @@ import (
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
+	}
+
+	if c.isPardotModule() {
+		return c.pardotAdapter.Write(ctx, config)
 	}
 
 	url, err := c.getRestApiURL("sobjects", config.ObjectName)
@@ -30,7 +34,16 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	return parseWriteResult(rsp)
+	rslt, err := parseWriteResult(rsp)
+	if err != nil {
+		return nil, err
+	}
+
+	if config.RecordId != "" && rslt.Success && rslt.RecordId == "" {
+		rslt.RecordId = config.RecordId
+	}
+
+	return rslt, nil
 }
 
 // parseWriteResult parses the response from writing to Salesforce API. A 2xx return type is assumed.
@@ -42,7 +55,7 @@ func parseWriteResult(rsp *common.JSONHTTPResponse) (*common.WriteResult, error)
 		}, nil
 	}
 
-	recordID, err := jsonquery.New(body).Str("id", false)
+	recordID, err := jsonquery.New(body).StringRequired("id")
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +65,7 @@ func parseWriteResult(rsp *common.JSONHTTPResponse) (*common.WriteResult, error)
 		return nil, err
 	}
 
-	success, err := jsonquery.New(body).Bool("success", false)
+	success, err := jsonquery.New(body).BoolRequired("success")
 	if err != nil {
 		return nil, err
 	}
@@ -60,15 +73,15 @@ func parseWriteResult(rsp *common.JSONHTTPResponse) (*common.WriteResult, error)
 	// Salesforce does not return record data upon successful write so we do not populate
 	// the corresponding result field
 	return &common.WriteResult{
-		RecordId: *recordID,
+		RecordId: recordID,
 		Errors:   errors,
-		Success:  *success,
+		Success:  success,
 	}, nil
 }
 
 // getErrors returns the errors from the response.
 func getErrors(node *ajson.Node) ([]any, error) {
-	arr, err := jsonquery.New(node).Array("errors", true)
+	arr, err := jsonquery.New(node).ArrayOptional("errors")
 	if err != nil {
 		return nil, err
 	}

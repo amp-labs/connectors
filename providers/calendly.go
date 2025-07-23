@@ -1,5 +1,7 @@
 package providers
 
+import "net/http"
+
 const Calendly Provider = "calendly"
 
 func init() {
@@ -8,6 +10,11 @@ func init() {
 		DisplayName: "Calendly",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.calendly.com",
+		AuthHealthCheck: &AuthHealthCheck{
+			Method:             http.MethodGet,
+			SuccessStatusCodes: []int{http.StatusOK},
+			Url:                "https://api.calendly.com/users/me",
+		},
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.calendly.com/oauth/authorize",

@@ -30,7 +30,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	return common.ParseResult(
 		rsp,
-		common.GetOptionalRecordsUnderJSONPath("data"),
+		common.ExtractOptionalRecordsFromPath("data"),
 		makeNextRecordsURL(),
 		common.GetMarshaledData,
 		config.Fields,
@@ -42,7 +42,7 @@ func (c *Connector) buildURL(config common.ReadParams) (*urlbuilder.URL, error) 
 		return urlbuilder.New(config.NextPage.String())
 	}
 
-	url, err := c.geAPIURL(config.ObjectName)
+	url, err := c.getAPIURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}

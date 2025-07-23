@@ -1,7 +1,6 @@
 package atlassian
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -107,23 +106,5 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
-	}
-}
-
-func TestWriteWithoutMetadata(t *testing.T) {
-	t.Parallel()
-
-	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
-		WithWorkspace("test-workspace"),
-		WithModule(ModuleJira),
-	)
-	if err != nil {
-		t.Fatal("failed to create connector")
-	}
-
-	_, err = connector.Write(context.Background(), common.WriteParams{ObjectName: "issues", RecordData: "dummy"})
-	if !errors.Is(err, ErrMissingCloudId) {
-		t.Fatalf("expected Write method to complain about missing cloud id")
 	}
 }

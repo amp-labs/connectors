@@ -10,29 +10,46 @@ const (
 	QueryParamStatsFile = "queryParamStats.json"
 )
 
-type MetadataFileManager[F staticschema.FieldMetadataMap] struct {
-	staticschema.FileManager[F]
+type MetadataFileManager[F staticschema.FieldMetadataMap, C any] struct {
+	staticschema.FileManager[F, C]
 
 	locator fileconv.FileLocator
 	flush   fileconv.Flusher
 }
 
-func NewMetadataFileManager[F staticschema.FieldMetadataMap](
+func NewExtendedMetadataFileManager[F staticschema.FieldMetadataMap, C any](
 	schemas []byte, locator fileconv.FileLocator,
-) *MetadataFileManager[F] {
-	return &MetadataFileManager[F]{
-		FileManager: *staticschema.NewFileManager[F](schemas, locator),
+) *MetadataFileManager[F, C] {
+	return &MetadataFileManager[F, C]{
+		FileManager: *staticschema.NewFileManager[F, C](schemas, locator),
 		locator:     locator,
 	}
 }
 
-func (m MetadataFileManager[F]) SaveIndex(index *ModelURLRegistry) error {
+// NewMetadataFileManager allows reading and writing schema.json.
+// Use dedicated instances of NewReader or NewWriter.
+// Deprecated.
+func NewMetadataFileManager[F staticschema.FieldMetadataMap](
+	schemas []byte, locator fileconv.FileLocator,
+) *MetadataFileManager[F, any] {
+	return NewExtendedMetadataFileManager[F, any](schemas, locator)
+}
+
+func NewReader[F staticschema.FieldMetadataMap](schemas []byte) *MetadataFileManager[F, any] {
+	return NewExtendedMetadataFileManager[F, any](schemas, nil)
+}
+
+func NewWriter[F staticschema.FieldMetadataMap](locator fileconv.FileLocator) *MetadataFileManager[F, any] {
+	return NewExtendedMetadataFileManager[F, any](nil, locator)
+}
+
+func (m MetadataFileManager[F, C]) SaveIndex(index *ModelURLRegistry) error {
 	index.Sort()
 
 	return m.flush.ToFile(m.locator.AbsPathTo(IndexFile), index)
 }
 
-func (m MetadataFileManager[F]) LoadIndex() (*ModelURLRegistry, error) {
+func (m MetadataFileManager[F, C]) LoadIndex() (*ModelURLRegistry, error) {
 	var registry *ModelURLRegistry
 
 	err := LoadFile(m.locator.AbsPathTo(IndexFile), &registry)
@@ -43,6 +60,6 @@ func (m MetadataFileManager[F]) LoadIndex() (*ModelURLRegistry, error) {
 	return registry, nil
 }
 
-func (m MetadataFileManager[F]) SaveQueryParamStats(stats *QueryParamStats) error {
+func (m MetadataFileManager[F, C]) SaveQueryParamStats(stats *QueryParamStats) error {
 	return m.flush.ToFile(m.locator.AbsPathTo(QueryParamStatsFile), stats)
 }

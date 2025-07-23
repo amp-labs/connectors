@@ -11,6 +11,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/xquery"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
@@ -80,7 +81,7 @@ func TestCreateMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			defer tt.server.Close()
 
 			connector, err := NewConnector(
-				WithAuthenticatedClient(http.DefaultClient),
+				WithAuthenticatedClient(mockutils.NewClient()),
 				WithWorkspace("test-workspace"),
 			)
 			if err != nil {
@@ -88,7 +89,7 @@ func TestCreateMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}
 
 			// for testing we want to redirect calls to our mock server
-			connector.setBaseURL(tt.server.URL)
+			connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, tt.server.URL))
 
 			// start of tests
 			output, err := connector.CreateMetadata(context.Background(), tt.input, "access_token_testing")

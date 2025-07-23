@@ -24,7 +24,6 @@ Newer version doc: https://developers.hubspot.com/docs/guides/apps/public-apps/c
 */
 
 /*
-Note:
 SubscriptionEvent is a map[string]any as opposed to a typed struct, because the structure of the event is not known .
 We may define the latest structure of the event, but in the future, the provider may add more fields.
 In that case, we won't be receiving those fields in the event.
@@ -32,19 +31,33 @@ This form also prevents null fields to be sent out as zero values.
 */
 type SubscriptionEvent map[string]any
 
+var (
+	_ common.SubscriptionEvent       = SubscriptionEvent{}
+	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
+)
+
+type HubspotVerificationParams struct {
+	ClientSecret string
+}
+
 // VerifyWebhookMessage verifies the signature of a webhook message from Hubspot.
-func (c *Connector) VerifyWebhookMessage(
-	_ context.Context, params *common.WebhookVerificationParameters,
+func (*Connector) VerifyWebhookMessage(
+	_ context.Context, request *common.WebhookRequest, params *common.VerificationParams,
 ) (bool, error) {
-	ts := params.Headers.Get(string(xHubspotRequestTimestamp))
+	hsParams, err := common.AssertType[*HubspotVerificationParams](params.Param)
+	if err != nil {
+		return false, fmt.Errorf("invalid verification params: %w", err)
+	}
 
-	rawString := params.Method + params.URL + string(params.Body) + ts
+	ts := request.Headers.Get(string(xHubspotRequestTimestamp))
 
-	mac := hmac.New(sha256.New, []byte(params.ClientSecret))
+	rawString := request.Method + request.URL + string(request.Body) + ts
+
+	mac := hmac.New(sha256.New, []byte(hsParams.ClientSecret))
 	mac.Write([]byte(rawString))
 	expectedMAC := mac.Sum(nil)
 
-	signature := params.Headers.Get(string(xHubspotSignatureV3))
+	signature := request.Headers.Get(string(xHubspotSignatureV3))
 
 	decodedSignature, err := base64.StdEncoding.DecodeString(signature)
 	if err != nil {
@@ -163,6 +176,17 @@ func (evt SubscriptionEvent) ObjectTypeId() (string, error) {
 	m := evt.asMap()
 
 	return m.GetString("objectTypeId")
+}
+
+func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
+	m := evt.asMap()
+
+	property, err := m.GetString("propertyName")
+	if err != nil {
+		return nil, fmt.Errorf("error getting property name: %w", err)
+	}
+
+	return []string{property}, nil
 }
 
 /*

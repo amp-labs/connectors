@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"os"
 	"strings"
 
@@ -32,19 +33,27 @@ func main() {
 	ldef, docL, err := constructDefinitions(leads, 4) //nolint:gomnd,mnd
 	goutils.MustBeNil(err)
 
-	// Initializes an empty ObjectMetadata variable
-	objectMetadata := make(map[string]staticschema.Object[staticschema.FieldMetadataMapV1])
+	// Initializes an empty map of leads ObjectMetadata
+	leadsMetadata := make(map[string]staticschema.Object[staticschema.FieldMetadataMapV1, any])
 
-	// Add Lead metadata details
-	objectMetadata = generateMetadata(ldef, docL, objectMetadata)
+	// Initializes an empty map of assets ObjectMetadata
+	assetsMetadata := make(map[string]staticschema.Object[staticschema.FieldMetadataMapV1, any])
 
-	// Adds Assets Metadata details to the same variable declared above.
-	objectMetadata = generateMetadata(def, docA, objectMetadata)
+	merged := make(map[string]staticschema.Object[staticschema.FieldMetadataMapV1, any])
 
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(&staticschema.Metadata[staticschema.FieldMetadataMapV1]{
-		Modules: map[common.ModuleID]staticschema.Module[staticschema.FieldMetadataMapV1]{
-			staticschema.RootModuleID: {
-				Objects: objectMetadata,
+	// Adds Leads metadata details
+	leadsMetadata = generateMetadata(ldef, docL, leadsMetadata)
+
+	// Adds Assets Metadata details
+	assetsMetadata = generateMetadata(def, docA, assetsMetadata)
+
+	maps.Copy(merged, leadsMetadata)
+	maps.Copy(merged, assetsMetadata)
+
+	goutils.MustBeNil(metadata.FileManager.SaveSchemas(&staticschema.Metadata[staticschema.FieldMetadataMapV1, any]{
+		Modules: map[common.ModuleID]staticschema.Module[staticschema.FieldMetadataMapV1, any]{
+			common.ModuleRoot: {
+				Objects: merged,
 			},
 		},
 	}))
@@ -95,8 +104,8 @@ func cleanDefinitions(def string) string {
 }
 
 func generateMetadata(objDefs map[string]string,
-	doc openapi2.T, objectMetadata map[string]staticschema.Object[staticschema.FieldMetadataMapV1],
-) map[string]staticschema.Object[staticschema.FieldMetadataMapV1] {
+	doc openapi2.T, objectMetadata map[string]staticschema.Object[staticschema.FieldMetadataMapV1, any],
+) map[string]staticschema.Object[staticschema.FieldMetadataMapV1, any] {
 	for obj, dfn := range objDefs {
 		schem := doc.Definitions[dfn].Value.Properties
 
@@ -112,7 +121,7 @@ func generateMetadata(objDefs map[string]string,
 			fields[k] = k
 		}
 
-		om := staticschema.Object[staticschema.FieldMetadataMapV1]{
+		om := staticschema.Object[staticschema.FieldMetadataMapV1, any]{
 			DisplayName: obj,
 			URLPath:     fmt.Sprintf("/%v", obj),
 			Fields:      fields,

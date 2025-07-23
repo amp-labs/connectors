@@ -1,0 +1,725 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/v",
+      "objects": {
+        "campaigns": {
+          "displayName": "Campaigns",
+          "path": "2/campaigns.json",
+          "responseKey": "results",
+          "fields": {
+            "archived": {
+              "displayName": "archived",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "author": {
+              "displayName": "author",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "exec_term": {
+              "displayName": "exec_term",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "holdout_percentage": {
+              "displayName": "holdout_percentage",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "next_execution_scheduled_at": {
+              "displayName": "next_execution_scheduled_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "segment_name": {
+              "displayName": "segment_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "segment_uuid": {
+              "displayName": "segment_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "startdate": {
+              "displayName": "startdate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "catalogs": {
+          "displayName": "Catalogs",
+          "path": "1/catalogs",
+          "responseKey": "catalogs",
+          "fields": {
+            "access_key": {
+              "displayName": "access_key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "author": {
+              "displayName": "author",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "bucket": {
+              "displayName": "bucket",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "catalog_file_name": {
+              "displayName": "catalog_file_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "catalog_headers": {
+              "displayName": "catalog_headers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "catalog_type": {
+              "displayName": "catalog_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category_options": {
+              "displayName": "category_options",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "default_root_category": {
+              "displayName": "default_root_category",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "end_at": {
+              "displayName": "end_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "error_access_key": {
+              "displayName": "error_access_key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "file_options": {
+              "displayName": "file_options",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "file_settings": {
+              "displayName": "file_settings",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "host": {
+              "displayName": "host",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_active": {
+              "displayName": "is_active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_passive": {
+              "displayName": "is_passive",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "last_catalog_file": {
+              "displayName": "last_catalog_file",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "last_processed": {
+              "displayName": "last_processed",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "login": {
+              "displayName": "login",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parent_sku_column_name": {
+              "displayName": "parent_sku_column_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "password": {
+              "displayName": "password",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "path": {
+              "displayName": "path",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "port": {
+              "displayName": "port",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_brand_column_name": {
+              "displayName": "product_brand_column_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_category_column_name": {
+              "displayName": "product_category_column_name",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "product_count": {
+              "displayName": "product_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "product_end_date_column_name": {
+              "displayName": "product_end_date_column_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_id_column_name": {
+              "displayName": "product_id_column_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_image_column_name": {
+              "displayName": "product_image_column_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_inventory_column_name": {
+              "displayName": "product_inventory_column_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_msrp_column_name": {
+              "displayName": "product_msrp_column_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_name_column_name": {
+              "displayName": "product_name_column_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_price_column_name": {
+              "displayName": "product_price_column_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_start_date_column_name": {
+              "displayName": "product_start_date_column_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_tag_column_name": {
+              "displayName": "product_tag_column_name",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "product_url_column_name": {
+              "displayName": "product_url_column_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "s3_access_key": {
+              "displayName": "s3_access_key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "s3_aws_region": {
+              "displayName": "s3_aws_region",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "s3_path": {
+              "displayName": "s3_path",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "secret_access_key": {
+              "displayName": "secret_access_key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sftp_host": {
+              "displayName": "sftp_host",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sftp_login": {
+              "displayName": "sftp_login",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sftp_password": {
+              "displayName": "sftp_password",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sftp_path": {
+              "displayName": "sftp_path",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sftp_port": {
+              "displayName": "sftp_port",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_at": {
+              "displayName": "start_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tag_options": {
+              "displayName": "tag_options",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "update_frequency": {
+              "displayName": "update_frequency",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "upload_method": {
+              "displayName": "upload_method",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "email_templates": {
+          "displayName": "Email Templates",
+          "path": "1/email_templates.json",
+          "responseKey": "results",
+          "fields": {
+            "author": {
+              "displayName": "author",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "resource": {
+              "displayName": "resource",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "external_fetches": {
+          "displayName": "External Fetches",
+          "path": "1/external_fetches.json",
+          "responseKey": "results",
+          "fields": {
+            "author": {
+              "displayName": "author",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "resource": {
+              "displayName": "resource",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "onsite_slots": {
+          "displayName": "Onsite Slots",
+          "path": "1/onsite_slots.json",
+          "responseKey": "results",
+          "fields": {
+            "format": {
+              "displayName": "format",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "push_templates": {
+          "displayName": "Push Templates",
+          "path": "1/push_templates.json",
+          "responseKey": "results",
+          "fields": {
+            "author": {
+              "displayName": "author",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "resource": {
+              "displayName": "resource",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "seed_lists": {
+          "displayName": "Seed Lists",
+          "path": "1/custom_user_lists/seed_lists",
+          "responseKey": "",
+          "fields": {
+            "account_id": {
+              "displayName": "account_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "author": {
+              "displayName": "author",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted_at": {
+              "displayName": "deleted_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "filename": {
+              "displayName": "filename",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "filesize": {
+              "displayName": "filesize",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "import_method": {
+              "displayName": "import_method",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_exported": {
+              "displayName": "is_exported",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_seed_list": {
+              "displayName": "is_seed_list",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "source": {
+              "displayName": "source",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_count": {
+              "displayName": "user_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "segments/list": {
+          "displayName": "Segments",
+          "path": "1/segments/list",
+          "responseKey": "",
+          "fields": {
+            "approxusers": {
+              "displayName": "approxusers",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "approxusers_updated_at": {
+              "displayName": "approxusers_updated_at",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email_users": {
+              "displayName": "email_users",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "mixin_key": {
+              "displayName": "mixin_key",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "push_users": {
+              "displayName": "push_users",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "sms_users": {
+              "displayName": "sms_users",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "sms_templates": {
+          "displayName": "Sms Templates",
+          "path": "1/sms_templates.json",
+          "responseKey": "results",
+          "fields": {
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "author": {
+              "displayName": "author",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_destroy": {
+              "displayName": "is_destroy",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "tag_contexts/list": {
+          "displayName": "Tag Contexts",
+          "path": "1/tag_contexts/list",
+          "responseKey": "",
+          "fields": {
+            "account_id": {
+              "displayName": "account_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "allowed_tags": {
+              "displayName": "allowed_tags",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "color": {
+              "displayName": "color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "tagged_items": {
+              "displayName": "tagged_items",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        }
+      }
+    }
+  }
+}

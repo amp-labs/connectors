@@ -3,9 +3,9 @@ package common
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"reflect"
-
-	"golang.org/x/exp/maps"
+	"slices"
 )
 
 var (
@@ -16,8 +16,8 @@ var (
 
 type StringMap map[string]any
 
-func (m StringMap) Keys(key string) []string {
-	return maps.Keys(m)
+func (m StringMap) Keys() []string {
+	return slices.AppendSeq(make([]string, 0, len(m)), maps.Keys(m))
 }
 
 func (m StringMap) Has(key string) bool {
@@ -27,7 +27,7 @@ func (m StringMap) Has(key string) bool {
 }
 
 func (m StringMap) Values() []any {
-	return maps.Values(m)
+	return slices.AppendSeq(make([]any, 0, len(m)), maps.Values(m))
 }
 
 func (m StringMap) Len() int {
@@ -98,7 +98,7 @@ func (m StringMap) GetString(key string) (string, error) {
 		return "", err
 	}
 
-	return assertType[string](val)
+	return AssertType[string](val)
 }
 
 func (m StringMap) GetBool(key string) (bool, error) {
@@ -107,7 +107,7 @@ func (m StringMap) GetBool(key string) (bool, error) {
 		return false, err
 	}
 
-	return assertType[bool](val)
+	return AssertType[bool](val)
 }
 
 // GetInt extracts an integer from the map.
@@ -146,12 +146,21 @@ func (m StringMap) GetFloat(key string) (float64, error) {
 	}
 }
 
-//nolint:ireturn
-func assertType[T any](val any) (T, error) {
-	of, ok := val.(T)
-	if !ok {
-		return of, fmt.Errorf("%w: expected type %T, but received %T", errFieldTypeMismatch, of, val)
+func (m StringMap) GetNumber(key string) (float64, error) {
+	val, err := m.Get(key)
+	if err != nil {
+		return 0, err
 	}
 
-	return of, nil
+	t := reflect.TypeOf(val)
+
+	//nolint:exhaustive
+	switch t.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return float64(reflect.ValueOf(val).Int()), nil
+	case reflect.Float32, reflect.Float64:
+		return reflect.ValueOf(val).Float(), nil
+	default:
+		return 0, fmt.Errorf("%w: expected a number, but received %T", errFieldTypeMismatch, val)
+	}
 }

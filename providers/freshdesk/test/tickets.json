@@ -1,0 +1,56 @@
+[
+  {
+    "cc_emails": ["user@cc.com", "user2@cc.com"],
+    "fwd_emails": [],
+    "reply_cc_emails": ["user@cc.com", "user2@cc.com"],
+    "fr_escalated": false,
+    "spam": false,
+    "email_config_id": null,
+    "group_id": 2,
+    "priority": 1,
+    "requester_id": 5,
+    "responder_id": 1,
+    "source": 2,
+    "status": 2,
+    "subject": "Please help",
+    "to_emails": null,
+    "product_id": null,
+    "id": 18,
+    "type": "Lead",
+    "created_at": "2015-08-17T12:02:50Z",
+    "updated_at": "2015-08-17T12:02:51Z",
+    "due_by": "2015-08-20T11:30:00Z",
+    "fr_due_by": "2015-08-18T11:30:00Z",
+    "is_escalated": false,
+    "custom_fields": {
+      "category": "Default"
+    }
+  },
+  {
+    "cc_emails": [],
+    "fwd_emails": [],
+    "reply_cc_emails": [],
+    "fr_escalated": false,
+    "spam": false,
+    "email_config_id": null,
+    "group_id": null,
+    "priority": 1,
+    "requester_id": 1,
+    "responder_id": null,
+    "source": 2,
+    "status": 2,
+    "subject": "",
+    "to_emails": null,
+    "product_id": null,
+    "id": 17,
+    "type": null,
+    "created_at": "2015-08-17T12:02:06Z",
+    "updated_at": "2015-08-17T12:02:07Z",
+    "due_by": "2015-08-20T11:30:00Z",
+    "fr_due_by": "2015-08-18T11:30:00Z",
+    "is_escalated": false,
+    "custom_fields": {
+      "category": null
+    }
+  }
+]

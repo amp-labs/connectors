@@ -15,7 +15,7 @@ var (
 	apiFileV2 []byte
 
 	// Version1FileManager -> https://developer.keap.com/docs/rest/
-	Version1FileManager = api3.NewOpenapiFileManager(apiFileV1) // nolint:gochecknoglobals
+	Version1FileManager = api3.NewOpenapiFileManager[any](apiFileV1) // nolint:gochecknoglobals
 	// Version2FileManager -> https://developer.keap.com/docs/restv2/
-	Version2FileManager = api3.NewOpenapiFileManager(apiFileV2) // nolint:gochecknoglobals
+	Version2FileManager = api3.NewOpenapiFileManager[any](apiFileV2) // nolint:gochecknoglobals
 )

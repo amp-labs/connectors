@@ -7,12 +7,16 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-const RootModuleID common.ModuleID = "root"
-
 // NewMetadata constructs empty Metadata. To populate it with data use Metadata.Add method.
-func NewMetadata[F FieldMetadataMap]() *Metadata[F] {
-	return &Metadata[F]{
-		Modules: make(map[common.ModuleID]Module[F]),
+func NewMetadata[F FieldMetadataMap]() *Metadata[F, any] {
+	return NewExtendedMetadata[F, any]()
+}
+
+// NewExtendedMetadata constructs empty Metadata. To populate it with data use Metadata.Add method.
+// Metadata may include custom properties describing object schema.
+func NewExtendedMetadata[F FieldMetadataMap, C any]() *Metadata[F, C] {
+	return &Metadata[F, C]{
+		Modules: make(map[common.ModuleID]Module[F, C]),
 	}
 }
 
@@ -22,18 +26,21 @@ func NewMetadata[F FieldMetadataMap]() *Metadata[F] {
 // Metadata.ObjectNames - registry of object names by modules.
 // Metadata.LookupURLPath - resolves URL given object name.
 // Metadata.Select - produces output suitable for connectors.ObjectMetadataConnector.
-type Metadata[F FieldMetadataMap] struct {
+type Metadata[F FieldMetadataMap, C any] struct {
 	// Modules is a map of object names to object metadata
-	Modules map[common.ModuleID]Module[F] `json:"modules"`
+	Modules map[common.ModuleID]Module[F, C] `json:"modules"`
 }
 
-type Module[F FieldMetadataMap] struct {
-	ID      common.ModuleID      `json:"id"`
-	Path    string               `json:"path"`
-	Objects map[string]Object[F] `json:"objects"`
+type Module[F FieldMetadataMap, C any] struct {
+	ID      common.ModuleID         `json:"id"`
+	Path    string                  `json:"path"`
+	Objects map[string]Object[F, C] `json:"objects"`
 }
 
-type Object[F FieldMetadataMap] struct {
+// Object describes provider resource.
+// Fields of an object supports multiple formats.
+// Custom properties can be associated with each object.
+type Object[F FieldMetadataMap, C any] struct {
 	// Provider's display name for the object
 	DisplayName string `json:"displayName"`
 
@@ -49,6 +56,10 @@ type Object[F FieldMetadataMap] struct {
 
 	// DocsURL points to docs endpoint. Optional.
 	DocsURL *string `json:"docs,omitempty"`
+
+	// Custom includes properties important for altering the behaviour of Read/ListObjectMetadata.
+	// This is relevant for some connectors.
+	Custom C `json:"custom,omitempty"`
 }
 
 type FieldMetadata struct {
@@ -106,7 +117,7 @@ func (m FieldMetadataMapV2) convertToCommon() map[string]common.FieldMetadata {
 // All maps must be copies of the original map, which remains immutable.
 // The immutable map serves as a unified registry of metadata for the connector.
 // ListObjectMetadata returns a copy that consumers are allowed to modify as needed.
-func (o Object[F]) getObjectMetadata() *common.ObjectMetadata {
+func (o Object[F, C]) getObjectMetadata() *common.ObjectMetadata {
 	if fieldsMap, isV1 := (any(o.Fields)).(FieldMetadataMapV1); isV1 {
 		return &common.ObjectMetadata{
 			DisplayName: o.DisplayName,
@@ -128,11 +139,11 @@ func (o Object[F]) getObjectMetadata() *common.ObjectMetadata {
 
 // Add will appropriately store the data, abiding to data structure rules.
 // NOTE: empty module id is treated as root module.
-func (m *Metadata[F]) Add( // nolint:funlen
+func (m *Metadata[F, C]) Add( // nolint:funlen
 	moduleID common.ModuleID,
 	objectName, objectDisplayName, urlPath, responseKey string,
-	fieldMetadataMap F,
-	docsURL *string,
+	fieldMetadataMap F, docsURL *string,
+	customProperties C,
 ) {
 	moduleID = moduleIdentifier(moduleID)
 
@@ -144,12 +155,13 @@ func (m *Metadata[F]) Add( // nolint:funlen
 	}()
 
 	if !objectExists {
-		object = Object[F]{
+		object = Object[F, C]{
 			DisplayName: objectDisplayName,
 			URLPath:     urlPath,
 			ResponseKey: responseKey,
 			Fields:      fieldMetadataMap,
 			DocsURL:     docsURL,
+			Custom:      customProperties,
 		}
 
 		return
@@ -198,7 +210,7 @@ func (m *Metadata[F]) Add( // nolint:funlen
 	}
 }
 
-func (m *Metadata[F]) refactorLongestCommonPath() {
+func (m *Metadata[F, C]) refactorLongestCommonPath() {
 	for moduleID, module := range m.Modules {
 		var (
 			commonPath string
@@ -227,14 +239,14 @@ func (m *Metadata[F]) refactorLongestCommonPath() {
 	}
 }
 
-func (m *Metadata[F]) getOrCreateModule(moduleID common.ModuleID) Module[F] {
+func (m *Metadata[F, C]) getOrCreateModule(moduleID common.ModuleID) Module[F, C] {
 	module, ok := m.Modules[moduleID]
 	if !ok {
 		// new module
-		module = Module[F]{
+		module = Module[F, C]{
 			ID:      moduleID,
 			Path:    "",
-			Objects: make(map[string]Object[F]),
+			Objects: make(map[string]Object[F, C]),
 		}
 		m.Modules[moduleID] = module
 	}
@@ -243,7 +255,7 @@ func (m *Metadata[F]) getOrCreateModule(moduleID common.ModuleID) Module[F] {
 }
 
 // ObjectNames provides a registry of object names grouped by module.
-func (m *Metadata[F]) ObjectNames() datautils.UniqueLists[common.ModuleID, string] {
+func (m *Metadata[F, C]) ObjectNames() datautils.UniqueLists[common.ModuleID, string] {
 	moduleObjectNames := make(datautils.UniqueLists[common.ModuleID, string])
 
 	for key, value := range m.Modules {
@@ -254,7 +266,7 @@ func (m *Metadata[F]) ObjectNames() datautils.UniqueLists[common.ModuleID, strin
 
 		moduleObjectNames[key] = names
 
-		if key == RootModuleID {
+		if key == common.ModuleRoot {
 			// Empty ModuleID could be passed referring to the same root module.
 			moduleObjectNames[""] = names
 		}
@@ -265,7 +277,22 @@ func (m *Metadata[F]) ObjectNames() datautils.UniqueLists[common.ModuleID, strin
 
 // LookupURLPath will give you the URL path for the object located under the module.
 // NOTE: empty module id is treated as root module.
-func (m *Metadata[F]) LookupURLPath(moduleID common.ModuleID, objectName string) (string, error) {
+//
+// Deprecated.
+// Use FindURLPath. The module path will be removed from static files.
+func (m *Metadata[F, C]) LookupURLPath(moduleID common.ModuleID, objectName string) (string, error) {
+	path, err := m.FindURLPath(moduleID, objectName)
+	if err != nil {
+		return "", err
+	}
+
+	moduleID = moduleIdentifier(moduleID)
+	fullPath := m.LookupModuleURLPath(moduleID) + path
+
+	return fullPath, nil
+}
+
+func (m *Metadata[F, C]) FindURLPath(moduleID common.ModuleID, objectName string) (string, error) {
 	moduleID = moduleIdentifier(moduleID)
 
 	path := m.Modules[moduleID].Objects[objectName].URLPath
@@ -273,19 +300,17 @@ func (m *Metadata[F]) LookupURLPath(moduleID common.ModuleID, objectName string)
 		return "", common.ErrResolvingURLPathForObject
 	}
 
-	fullPath := m.LookupModuleURLPath(moduleID) + path
-
-	return fullPath, nil
+	return path, nil
 }
 
-func (m *Metadata[F]) LookupModuleURLPath(moduleID common.ModuleID) string {
+func (m *Metadata[F, C]) LookupModuleURLPath(moduleID common.ModuleID) string {
 	moduleID = moduleIdentifier(moduleID)
 
 	return m.Modules[moduleID].Path
 }
 
 // ModuleRegistry returns the list of API modules from static schema.
-func (m *Metadata[F]) ModuleRegistry() common.Modules {
+func (m *Metadata[F, C]) ModuleRegistry() common.Modules {
 	result := make(common.Modules, len(m.Modules))
 
 	for id, module := range m.Modules {
@@ -302,15 +327,31 @@ func (m *Metadata[F]) ModuleRegistry() common.Modules {
 
 // LookupArrayFieldName will give you the field name which holds the array of objects in provider response.
 // Ex: CustomerSubscriptions is located under field name subscriptions => { "subscriptions": [{},{},{}] }.
-func (m *Metadata[F]) LookupArrayFieldName(moduleID common.ModuleID, objectName string) string {
-	moduleID = moduleIdentifier(moduleID)
-
-	fieldName := m.Modules[moduleID].Objects[objectName].ResponseKey
+func (m *Metadata[F, C]) LookupArrayFieldName(moduleID common.ModuleID, objectName string) string {
+	fieldName, _ := m.FindArrayFieldName(moduleID, objectName)
 
 	return fieldName
 }
 
-func (m *Module[F]) withPath(path string) {
+func (m *Metadata[F, C]) FindArrayFieldName(moduleID common.ModuleID, objectName string) (string, bool) {
+	moduleID = moduleIdentifier(moduleID)
+
+	module, ok := m.Modules[moduleID]
+	if !ok {
+		return "", false
+	}
+
+	object, ok := module.Objects[objectName]
+	if !ok {
+		return "", false
+	}
+
+	fieldName := object.ResponseKey
+
+	return fieldName, true
+}
+
+func (m *Module[F, C]) withPath(path string) {
 	// Move last slash from module path to object. It looks better that way.
 	path, _ = strings.CutSuffix(path, "/")
 
@@ -326,7 +367,7 @@ func (m *Module[F]) withPath(path string) {
 // In case an empty ModuleID is provided we fall back to the default root module id.
 func moduleIdentifier(id common.ModuleID) common.ModuleID {
 	if len(id) == 0 {
-		return RootModuleID
+		return common.ModuleRoot
 	}
 
 	return id

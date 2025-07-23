@@ -5,9 +5,23 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
+
+/*
+Pagination format:
+
+{
+  "results": [...],
+  "paging": {
+    "next": {
+      "after": "394",
+      "link": "https://api.hubapi.com/crm/v3/objects/contacts?limit=100&properties=listId%2Cname&after=394"
+    }
+  }
+}
+*/
 
 // getNextRecordsAfter returns the "after" value for the next page of results.
 func getNextRecordsAfter(node *ajson.Node) (string, error) {
@@ -118,8 +132,9 @@ func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 	return out, nil
 }
 
-// getMarshalledData accepts a list of records and returns a list of structured data ([]ReadResultRow).
-func (c *Connector) getMarshalledData(
+// getDataMarshaller returns a function that accepts a list of records and fields
+// and returns a list of structured data ([]ReadResultRow).
+func (c *Connector) getDataMarshaller(
 	ctx context.Context,
 	objName string,
 	associatedObjects []string,
@@ -129,21 +144,26 @@ func (c *Connector) getMarshalledData(
 
 		//nolint:varnamelen
 		for i, record := range records {
-			recordProperties, ok := record["properties"].(map[string]interface{})
-			if !ok {
-				return nil, ErrNotObject
-			}
-
 			id, ok := record["id"].(string)
 			if !ok {
 				return nil, errMissingId
 			}
 
-			data[i] = common.ReadResultRow{
-				Fields: common.ExtractLowercaseFieldsFromRaw(fields, recordProperties),
-				Raw:    record,
-				Id:     id,
+			result := common.ReadResultRow{
+				Raw: record,
+				Id:  id,
 			}
+
+			if len(fields) != 0 {
+				recordProperties, ok := record["properties"].(map[string]interface{})
+				if !ok {
+					return nil, ErrNotObject
+				}
+
+				result.Fields = common.ExtractLowercaseFieldsFromRaw(fields, recordProperties)
+			}
+
+			data[i] = result
 		}
 
 		if len(associatedObjects) > 0 {

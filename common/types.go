@@ -113,6 +113,16 @@ var (
 	// ErrPayloadNotURLForm is returned when payload is not string key-value pair
 	// which could be encoded for POST with content type of application/x-www-form-urlencoded.
 	ErrPayloadNotURLForm = errors.New("payload cannot be url-form encoded")
+
+	// ErrResolvingCustomFields is returned when custom fields cannot be retrieved for Read or ListObjectMetadata.
+	ErrResolvingCustomFields = errors.New("cannot resolve custom fields")
+
+	ErrGetRecordNotSupportedForObject = errors.New("getRecord is not supported for the object")
+
+	// ErrImplementation is returned when the code takes an unexpected or logically invalid execution path.
+	// It should be used to explicitly catch cases that would otherwise lead to panics (e.g., nil pointer dereference).
+	// This typically indicates a broken assumption or inconsistency in the implementation logic.
+	ErrImplementation = errors.New("code took invalid execution path")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -126,8 +136,13 @@ type ReadParams struct {
 	// NextPage is an opaque token that can be used to get the next page of results.
 	NextPage NextPageToken // optional, only set this if you want to read the next page of results
 
-	// Since is a timestamp that can be used to get only records that have changed since that time.
-	Since time.Time // optional, omit this to fetch all records
+	// Since is an optional timestamp to fetch only records updated **after** this time.
+	// Used for incremental reads.
+	Since time.Time
+
+	// Until is an optional timestamp to fetch only records updated **up to and including** this time.
+	// Pagination stops when records exceed this timestamp.
+	Until time.Time
 
 	// Deleted is true if we want to read deleted records instead of active records.
 	Deleted bool // optional, defaults to false
@@ -139,6 +154,10 @@ type ReadParams struct {
 	//	* Klaviyo: Comma separated methods following JSON:API filtering syntax.
 	//		Note: timing is already handled by Since argument.
 	//		Reference: https://developers.klaviyo.com/en/docs/filtering_
+	//	* Marketo: Comma-separated activityTypeIds for filtering lead activities.
+	//		Note: Only supported when reading Lead Activities (not other endpoints).
+	//		Example: "1,6,12" (for visitWebpage, fillOutForm, emailClicked)
+	//		Reference: https://developer.adobe.com/marketo-apis/api/mapi/#tag/Activities
 	Filter string // optional
 
 	// AssociatedObjects specifies a list of related objects to fetch along with the main object.
@@ -147,6 +166,8 @@ type ReadParams struct {
 	//	* Stripe: Only nested objects can be expanded. Specify a dot-separated path
 	//		to the property to fetch and expand those objects.
 	//		Reference: https://docs.stripe.com/expand#how-it-works
+	//	* Capsule: Embeds objects in response.
+	//		Reference: https://developer.capsulecrm.com/v2/overview/reading-from-the-api
 	AssociatedObjects []string // optional
 }
 
@@ -241,7 +262,9 @@ type Association struct {
 	// ObjectID is the ID of the associated object.
 	ObjectId string `json:"objectId"`
 	// AssociationType is the type of association.
-	AssociationType string `json:"associationType,omitempty"`
+	AssociationType string         `json:"associationType,omitempty"`
+	Raw             map[string]any `json:"raw,omitempty"`
+	Fields          map[string]any `json:"fields,omitempty"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.
@@ -266,36 +289,57 @@ type DeleteResult struct {
 // Ex: Post/Put/Patch.
 type WriteMethod func(context.Context, string, any, ...Header) (*JSONHTTPResponse, error)
 
-// NewHTTPStatusError creates a new error with the given HTTP status.
-func NewHTTPStatusError(status int, err error) error {
+// NewHTTPError creates a new error with the given HTTP status.
+func NewHTTPError(status int, body []byte, headers Headers, err error) error {
 	if status < 1 || status > 599 {
 		return err
 	}
 
-	return &HTTPStatusError{
-		HTTPStatus: status,
-		err:        err,
+	// Just in case the caller mutates the body after passing it in,
+	// we make a copy of the body to ensure that the error contains
+	// the original body.
+	var bodyCopy []byte
+
+	if body != nil {
+		bodyCopy = make([]byte, len(body))
+		copy(bodyCopy, body)
+	}
+
+	return &HTTPError{
+		Status:  status,
+		Headers: headers,
+		Body:    bodyCopy,
+		err:     err,
 	}
 }
 
-// HTTPStatusError is an error that contains an HTTP status code.
-type HTTPStatusError struct {
-	// HTTPStatus is the original HTTP status.
-	HTTPStatus int
+// HTTPError is an error that contains both an error and details
+// about the HTTP response that caused the error. It includes
+// the HTTP status code, headers, and body of the response.
+// Body and Headers are optional and may be nil if not available.
+type HTTPError struct {
+	// Status is the original HTTP status.
+	Status int
+
+	// Headers are the HTTP headers of the response, if available.
+	Headers Headers // optional
+
+	// Body is the raw response body, if available.
+	Body []byte // optional
 
 	// The underlying error
 	err error
 }
 
-func (r HTTPStatusError) Error() string {
-	if r.HTTPStatus > 0 {
-		return fmt.Sprintf("HTTP status %d: %v", r.HTTPStatus, r.err)
+func (r HTTPError) Error() string {
+	if r.Status > 0 {
+		return fmt.Sprintf("HTTP status %d: %v", r.Status, r.err)
 	}
 
 	return r.err.Error()
 }
 
-func (r HTTPStatusError) Unwrap() error {
+func (r HTTPError) Unwrap() error {
 	return r.err
 }
 
@@ -325,7 +369,7 @@ type ObjectMetadata struct {
 	DisplayName string
 
 	// Fields is a map of field names to FieldMetadata.
-	Fields map[string]FieldMetadata
+	Fields FieldsMetadata
 
 	// FieldsMap is a map of field names to field display names.
 	// Deprecated: this map includes only display names.
@@ -333,9 +377,15 @@ type ObjectMetadata struct {
 	FieldsMap map[string]string
 }
 
+// AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
+func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
+	m.Fields[fieldName] = fieldMetadata
+	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
+}
+
 // NewObjectMetadata constructs ObjectMetadata.
 // This will automatically infer fields map from field metadata map. This construct exists for such convenience.
-func NewObjectMetadata(displayName string, fields map[string]FieldMetadata) *ObjectMetadata {
+func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadata {
 	return &ObjectMetadata{
 		DisplayName: displayName,
 		Fields:      fields,
@@ -360,6 +410,18 @@ type FieldMetadata struct {
 	// Values is a list of possible values for this field.
 	// It is applicable only if the type is either singleSelect or multiSelect, otherwise slice is nil.
 	Values []FieldValue
+}
+
+type FieldsMetadata map[string]FieldMetadata
+
+func (f FieldsMetadata) AddFieldWithDisplayOnly(fieldName string, displayName string) {
+	f[fieldName] = FieldMetadata{
+		DisplayName:  displayName,
+		ValueType:    "",
+		ProviderType: "",
+		ReadOnly:     false,
+		Values:       nil,
+	}
 }
 
 type FieldValue struct {
@@ -396,16 +458,33 @@ type SubscriptionEvent interface {
 	EventTimeStampNano() (int64, error)
 }
 
-// WebhookVerificationParameters is a struct that contains the parameters required to verify a webhook.
-type WebhookVerificationParameters struct {
-	Headers      http.Header
-	Body         []byte
-	URL          string
-	ClientSecret string
-	Method       string
+type SubscriptionUpdateEvent interface {
+	SubscriptionEvent
+	// GetUpdatedFields returns the fields that were updated in the event.
+	UpdatedFields() ([]string, error)
 }
 
-func inferDeprecatedFieldsMap(fields map[string]FieldMetadata) map[string]string {
+// Some providers send multiple events in a single webhook payload.
+// This interface is used to extract individual events to SubscriptionEvent type
+// from a collapsed event for webhook parsing and processing.
+type CollapsedSubscriptionEvent interface {
+	SubscriptionEventList() ([]SubscriptionEvent, error)
+}
+
+// WebhookRequest is a struct that contains the request parameters for a webhook.
+type WebhookRequest struct {
+	Headers http.Header
+	Body    []byte
+	URL     string
+	Method  string
+}
+
+// VerificationParams is a struct that contains the parameters specific to the provider.
+type VerificationParams struct {
+	Param any
+}
+
+func inferDeprecatedFieldsMap(fields FieldsMetadata) map[string]string {
 	fieldsMap := make(map[string]string)
 
 	for name, field := range fields {
@@ -418,37 +497,62 @@ func inferDeprecatedFieldsMap(fields map[string]FieldMetadata) map[string]string
 type RegistrationResult struct {
 	RegistrationRef string
 	Result          any // struct depends on the provider
+	Status          RegistrationStatus
 }
 
+type RegistrationStatus string
+
+const (
+	// registration is pending and not yet complete.
+	RegistrationStatusPending RegistrationStatus = "pending"
+	// registration returned error, and all intermittent steps are rolled back.
+	RegistrationStatusFailed RegistrationStatus = "failed"
+	// successful registration.
+	RegistrationStatusSuccess RegistrationStatus = "success"
+	// registration returned error, and failed to rollback some intermittent steps.
+	RegistrationStatusFailedToRollback RegistrationStatus = "failed_to_rollback"
+)
+
 type SubscriptionRegistrationParams struct {
-	Request any
+	Request any `json:"request" validate:"required"`
 }
 
 type ObjectEvents struct {
-	Events []SubscriptionEventType
 	// ["create", "update", "delete"] our regular CRUD operation events
 	// we translate to provider-specific names contact.creation
-	WatchFields []string
+	Events []SubscriptionEventType
 	// ["email", "fax"] fields to watch for an update subscription
-	PassThroughEvents []string
+	WatchFields []string
+	// true if all fields should be watched for an update subscription
+	// this is provider specific, and not all providers support this.
+	WatchFieldsAll bool
 	// any non CRUD operations with provider specific event names
 	// eg)  ["contact.merged"] for hubspot or ["jira_issue:restored", "jira_issue:archived"] for jira.
+	PassThroughEvents []string
 }
 
 type ObjectName string
 
 type SubscribeParams struct {
-	RegistrationRef    string // optional, needed for some providers like Hubspot
+	Request any
+	// RegistrationResult is the result of the Connector.Register call.
+	// Connector.Subscribe requires information from the registration.
+	// Not all providers require registration, so this is optional.
+	// eg) Salesforce and HubSpot require registration because
+	RegistrationResult *RegistrationResult
 	SubscriptionEvents map[ObjectName]ObjectEvents
-	TargetURL          string // optional
 }
 
 type SubscriptionResult struct { // this corresponds to each API call.
-	RegistrationRef string
-	SubscriptionRef string
-	Result          any
-	Objects         []ObjectName
-	Events          []SubscriptionEventType
+	Result       any
+	ObjectEvents map[ObjectName]ObjectEvents
+	Status       SubscriptionStatus
+
+	// Below fields are deprecated, and will be removed in a future release.
+	// Use ObjectEvents instead.
+
+	Objects []ObjectName
+	Events  []SubscriptionEventType
 	// ["create", "update", "delete"]
 	// our regular CRUD operation events we translate to provider-specific names contact.creation
 	UpdateFields []string
@@ -457,40 +561,15 @@ type SubscriptionResult struct { // this corresponds to each API call.
 	// provider specific events ["contact.merged"] for hubspot or ["jira_issue:restored", "jira_issue:archived"] for jira.
 }
 
-// SubscribeConnector has 2 main responsibilities:
-// 1. Register a subscription with the provider.
-// Registering a subscription is a one-time operation that is required
-// by providers that hold some master registration of all subscriptions.
-// Not all providers require this, but some do.
-// 2. Subscribe to events from the provider.
-// This is the actual subscription to events from the provider.
-// It will subscribe for events and objects as specified in SubscribeParams.
-type SubscribeConnector interface {
-	Register(
-		ctx context.Context,
-		params SubscriptionRegistrationParams,
-	) (*RegistrationResult, error)
-	UpdateRegistration(
-		ctx context.Context,
-		params SubscriptionRegistrationParams,
-		previousResult SubscriptionResult,
-	) (*SubscriptionResult, error)
-	DeleteRegistration(
-		ctx context.Context,
-		previousResult SubscriptionResult,
-	) error
+type SubscriptionStatus string
 
-	Subscribe(
-		ctx context.Context,
-		params SubscribeParams,
-	) (*SubscriptionResult, error)
-	UpdateSubscription(
-		ctx context.Context,
-		params SubscribeParams,
-		previousResult SubscriptionResult,
-	) (*SubscriptionResult, error)
-	DeleteSubscription(
-		ctx context.Context,
-		previousResult SubscriptionResult,
-	) error
-}
+const (
+	// registration is pending and not yet complete.
+	SubscriptionStatusPending SubscriptionStatus = "pending"
+	// registration returned error, and all intermittent steps are rolled back.
+	SubscriptionStatusFailed SubscriptionStatus = "failed"
+	// successful registration.
+	SubscriptionStatusSuccess SubscriptionStatus = "success"
+	// registration returned error, and failed to rollback some intermittent steps.
+	SubscriptionStatusFailedToRollback SubscriptionStatus = "failed_to_rollback"
+)

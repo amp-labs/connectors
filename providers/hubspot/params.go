@@ -25,6 +25,20 @@ type parameters struct {
 	paramsbuilder.Module
 }
 
+func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
+	oldParams, err := paramsbuilder.Apply(parameters{}, opts,
+		WithModule(common.ModuleRoot),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.ConnectorParams{
+		Module:              oldParams.Module.Selection.ID,
+		AuthenticatedClient: oldParams.Client.Caller.Client,
+	}, nil
+}
+
 func (p parameters) ValidateParams() error {
 	return errors.Join(
 		p.Client.ValidateParams(),
@@ -51,10 +65,6 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 // WithModule sets the hubspot API module to use for the connector. It's required.
 func WithModule(module common.ModuleID) Option {
 	return func(params *parameters) {
-		params.WithModule(module, supportedModules, ModuleEmpty)
+		params.WithModule(module, supportedModules, common.ModuleRoot)
 	}
-}
-
-func requiresFiltering(config common.ReadParams) bool {
-	return !config.Since.IsZero()
 }

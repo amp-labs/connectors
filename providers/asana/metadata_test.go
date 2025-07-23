@@ -1,11 +1,11 @@
 package asana
 
 import (
-	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
@@ -21,10 +21,15 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 
 		{
-			Name:         "Unknown object requested",
-			Input:        []string{"groot"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
+			Name:       "Unknown object requested",
+			Input:      []string{"groot"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Errors: map[string]error{
+					"groot": common.ErrObjectNotSupported,
+				},
+			},
 		},
 
 		{
@@ -84,13 +89,13 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 	)
 	if err != nil {
 		return nil, err
 	}
 	// for testing we want to redirect calls to our mock server.
-	connector.setBaseURL(serverURL)
+	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }

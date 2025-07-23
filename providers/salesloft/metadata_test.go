@@ -20,25 +20,33 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Unknown object requested",
-			Input:        []string{"butterflies"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
+			Name:       "Unknown object requested",
+			Input:      []string{"butterflies"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Errors: map[string]error{
+					"butterflies": common.ErrObjectNotSupported,
+				},
+			},
 		},
 		{
-			Name:   "Successfully describe one object with metadata",
-			Input:  []string{"bulk_jobs_results"},
-			Server: mockserver.Dummy(),
+			Name:       "Successfully describe one object with metadata",
+			Input:      []string{"activities/calls"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"bulk_jobs_results": {
-						DisplayName: "Job Data for a Completed Bulk Job.",
+					"activities/calls": {
+						DisplayName: "Calls",
 						FieldsMap: map[string]string{
-							"error":    "error",
-							"id":       "id",
-							"record":   "record",
-							"resource": "resource",
-							"status":   "status",
+							"disposition": "disposition",
+							"duration":    "duration",
+							"id":          "id",
+							"note":        "note",
+							"positive":    "positive",
+							"recordings":  "recordings",
+							"sentiment":   "sentiment",
 						},
 					},
 				},

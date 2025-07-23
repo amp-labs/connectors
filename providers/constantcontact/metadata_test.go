@@ -1,16 +1,21 @@
 package constantcontact
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
+
+	responseContactsCustomFields := testutils.DataFromFile(t, "read/contacts/custom-fields.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -20,10 +25,15 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Unknown object requested",
-			Input:        []string{"butterflies"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
+			Name:       "Unknown object requested",
+			Input:      []string{"butterflies"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Errors: map[string]error{
+					"butterflies": common.ErrObjectNotSupported,
+				},
+			},
 		},
 		{
 			Name:   "Successfully describe multiple objects with metadata",
@@ -52,6 +62,32 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"tag_id":         "tag_id",
 							"tag_source":     "tag_source",
 							"updated_at":     "updated_at",
+						},
+					},
+				},
+				Errors: make(map[string]error),
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Contacts metadata includes human-readable custom fields",
+			Input: []string{"contacts"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v3/contact_custom_fields"),
+				Then:  mockserver.Response(http.StatusOK, responseContactsCustomFields),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "Contacts",
+						FieldsMap: map[string]string{
+							"first_name":    "first_name",
+							"notes":         "notes",
+							"phone_numbers": "phone_numbers",
+							// Custom fields that come from a dedicated API call.
+							"hobby": "Hobby",
 						},
 					},
 				},

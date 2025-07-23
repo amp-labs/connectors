@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/gertd/go-pluralize"
 	"github.com/spyzhov/ajson"
 )
@@ -38,7 +38,7 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 		return nil, err
 	}
 
-	arr, err := jsonquery.New(node).Array(arrKey, false)
+	arr, err := jsonquery.New(node).ArrayRequired(arrKey)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 		}
 
 		// Probably, we are dealing with an object under `pages.next`
-		startingAfter, err := jsonquery.New(node, "pages", "next").Str("starting_after", true)
+		startingAfter, err := jsonquery.New(node, "pages", "next").StringOptional("starting_after")
 		if err != nil {
 			return "", err
 		}
@@ -95,7 +95,7 @@ func extractListFieldName(node *ajson.Node) (string, error) {
 	// default field at which list is stored
 	defaultFieldName := "data"
 
-	fieldName, err := jsonquery.New(node).Str("type", true)
+	fieldName, err := jsonquery.New(node).StringOptional("type")
 	if err != nil {
 		return "", err
 	}

@@ -6,7 +6,7 @@ import (
 	"log/slog"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/spyzhov/ajson"
 )
@@ -47,31 +47,31 @@ func Find[T any](res *common.ReadResult, keys []Key, value T) map[string]any {
 		for _, key := range keys {
 			switch key.Type {
 			case String:
-				actual, err := jsonquery.New(node).Str(key.At, false)
+				actual, err := jsonquery.New(node).StringRequired(key.At)
 				if err != nil {
 					slog.Warn("string", "error", err)
 
 					continue
 				}
 
-				if fmt.Sprintf("%v", *actual) == fmt.Sprintf("%v", value) {
+				if fmt.Sprintf("%v", actual) == fmt.Sprintf("%v", value) {
 					return data.Fields
 				}
 			case Integer:
-				actual, err := jsonquery.New(node).Integer(key.At, false)
+				actual, err := jsonquery.New(node).IntegerRequired(key.At)
 				if err != nil {
 					slog.Warn("integer", "error", err)
 
 					continue
 				}
 
-				if fmt.Sprintf("%v", *actual) == fmt.Sprintf("%v", value) {
+				if fmt.Sprintf("%v", actual) == fmt.Sprintf("%v", value) {
 					return data.Fields
 				}
 			case Array:
 				var nodes []*ajson.Node
 
-				nodes, err = jsonquery.New(node).Array(key.At, false)
+				nodes, err = jsonquery.New(node).ArrayRequired(key.At)
 				if err != nil {
 					slog.Warn("array", "error", err)
 
@@ -82,7 +82,7 @@ func Find[T any](res *common.ReadResult, keys []Key, value T) map[string]any {
 			case Object:
 				fallthrough
 			default:
-				node, err = jsonquery.New(node).Object(key.At, false)
+				node, err = jsonquery.New(node).ObjectRequired(key.At)
 				if err != nil {
 					slog.Warn("object", "error", err)
 

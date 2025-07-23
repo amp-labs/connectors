@@ -15,10 +15,8 @@ import (
 //nolint:gochecknoglobals
 var (
 	getRecordSupportedObjectsSet = datautils.NewStringSet(
-		"company", "contact", "deal", "ticket", "line_item", "product",
+		"company", "contact", "deal", "ticket", "line_item", "product", "user",
 	)
-
-	errGerRecordNotSupportedForObject = errors.New("getRecord is not supproted for the object")
 )
 
 /*
@@ -31,13 +29,10 @@ var (
    https://developers.hubspot.com/beta-docs/reference/api/crm/objects/products
 */
 
-var (
-	errMissingId    = errors.New("missing id field in raw record")
-	errTypeMismatch = errors.New("field is not a string")
-)
+var errMissingId = errors.New("missing id field in raw record")
 
 //nolint:revive,funlen
-func (c *Connector) GetRecordsWithIds(
+func (c *Connector) GetRecordsByIds(
 	ctx context.Context,
 	objectName string,
 	ids []string,
@@ -48,7 +43,7 @@ func (c *Connector) GetRecordsWithIds(
 
 	singularObjName := naming.NewSingularString(objectName).String()
 	if !getRecordSupportedObjectsSet.Has(singularObjName) {
-		return nil, fmt.Errorf("%w %s", errGerRecordNotSupportedForObject, objectName)
+		return nil, fmt.Errorf("%w %s", common.ErrGetRecordNotSupportedForObject, objectName)
 	}
 
 	inputs := make([]map[string]any, len(ids))
@@ -85,27 +80,7 @@ func (c *Connector) GetRecordsWithIds(
 		return nil, err
 	}
 
-	if len(fields) != 0 {
-		// If fields are specified, extract only those fields from the record.
-		return c.getMarshalledData(ctx, objectName, associations)(records, fields)
-	}
-
-	data := make([]common.ReadResultRow, len(records))
-
-	for i, record := range records {
-		id, err := extractIdFromRecord(record)
-		if err != nil {
-			// this should never happen unless the provider changes subscription event format
-			return nil, err
-		}
-
-		data[i] = common.ReadResultRow{
-			Raw: record,
-			Id:  id,
-		}
-	}
-
-	return data, nil
+	return c.getDataMarshaller(ctx, objectName, associations)(records, fields)
 }
 
 func (c *Connector) getBatchRecordsURL(objectName string, associations []string) (string, error) {
@@ -116,18 +91,4 @@ func (c *Connector) getBatchRecordsURL(objectName string, associations []string)
 	} else {
 		return c.getURL(relativePath)
 	}
-}
-
-func extractIdFromRecord(record map[string]any) (string, error) {
-	id, ok := record["id"]
-	if !ok {
-		return "", errMissingId
-	}
-
-	idStr, ok := id.(string)
-	if !ok {
-		return "", errTypeMismatch
-	}
-
-	return idStr, nil
 }

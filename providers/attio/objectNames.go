@@ -3,33 +3,30 @@ package attio
 import "github.com/amp-labs/connectors/internal/datautils"
 
 const (
-	objectNameObjects          = "objects"
 	objectNameLists            = "lists"
 	objectNameWorkspacemembers = "workspace_members"
-	objectNameWebhooks         = "webhooks"
 	objectNameTasks            = "tasks"
 	objectNameNotes            = "notes"
 )
 
-var supportedObjectsByRead = datautils.NewSet( //nolint:gochecknoglobals
-	objectNameObjects,
-	objectNameLists,
-	objectNameWorkspacemembers,
-	objectNameWebhooks,
-	objectNameTasks,
-	objectNameNotes,
-)
-
-var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
-	objectNameObjects,
+// supportWriteObjects represents the APIs listed under the Attio API section in the docs
+// (this does not cover the entire Attio API). Reference: https://developers.attio.com/reference.
+var supportWriteObjects = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameLists,
 	objectNameTasks,
 	objectNameNotes,
-	objectNameWebhooks,
 )
 
 var supportLimitAndOffset = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameTasks,
 	objectNameNotes,
-	objectNameWebhooks,
+)
+
+// supportAttioApi represents the APIs listed under the Attio API section in the docs
+// (this does not cover the entire Attio API). Reference: https://developers.attio.com/reference.
+var supportAttioApi = datautils.NewSet( //nolint:gochecknoglobals
+	objectNameLists,
+	objectNameWorkspacemembers,
+	objectNameTasks,
+	objectNameNotes,
 )

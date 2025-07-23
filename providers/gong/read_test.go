@@ -8,18 +8,21 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
+// nolint:lll
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	fakeServerResp := testutils.DataFromFile(t, "read.json")
 	fakeServerResp2 := testutils.DataFromFile(t, "read_cursor.json")
+	responseTranscripts := testutils.DataFromFile(t, "read_transcripts.json")
 
 	tests := []testroutines.Read{
 		{
@@ -114,9 +117,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Successful read with 2 entries without cursor/next page",
 			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, fakeServerResp),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/calls"),
+				Then:  mockserver.Response(http.StatusOK, fakeServerResp),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 2,
@@ -151,9 +155,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Successful read with 2 entries and cursor for next page",
 			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, fakeServerResp2),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/calls"),
+				Then:  mockserver.Response(http.StatusOK, fakeServerResp2),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 2,
@@ -180,7 +185,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"workspaceId":    "1007648505208900737",
 					},
 				}},
-				NextPage: "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiOjQ5NTM3MDc2MDE3NzYyMzgzNjAsInRvdGFsIjoxNzksInBhZ2VOdW1iZXIiOjAsInBhZ2VTaXplIjoxMDAsInRpbWUiOiIyMDIyLTA5LTEzVDA5OjMwOjAwWiIsImV4cCI6MTcxNjYyNjE0Nn0.o6SIJZFyjlxDC8m3HJM_TBn39M6WakXpbMXFXX3Iy9I", // nolint:lll
+				// This is a non-sensitive JWT for pagination (does not grant access).
+				NextPage: "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiOjQ5NTM3MDc2MDE3NzYyMzgzNjAsInRvdGFsIjoxNzksInBhZ2VOdW1iZXIiOjAsInBhZ2VTaXplIjoxMDAsInRpbWUiOiIyMDIyLTA5LTEzVDA5OjMwOjAwWiIsImV4cCI6MTcxNjYyNjE0Nn0.o6SIJZFyjlxDC8m3HJM_TBn39M6WakXpbMXFXX3Iy9I", // nosemgrep: generic.secrets.security.detected-jwt-token.detected-jwt-token
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -195,6 +201,32 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				}`),
 			}.Server(),
 			ExpectedErrs: []error{jsonquery.ErrNotArray},
+		},
+
+		{
+			Name:  "Successful read transcripts using POST",
+			Input: common.ReadParams{ObjectName: "transcripts", Fields: connectors.Fields("callid")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/calls/transcript"),
+				Then:  mockserver.Response(http.StatusOK, responseTranscripts),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"callid": "7782342274025937895",
+					},
+					Raw: map[string]any{
+						"callid": "7782342274025937895",
+					},
+				}},
+				// This is a non-sensitive JWT for pagination (does not grant access).
+				NextPage: "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiM1M30.6qKwpOcvnuweTZmFRzYdtjs_YwJphJU4QIwWFM", // nosemgrep: generic.secrets.security.detected-jwt-token.detected-jwt-token
+				Done:     false,
+			},
+			ExpectedErrs: nil,
 		},
 	}
 
@@ -212,14 +244,14 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }

@@ -9,14 +9,17 @@ import (
 	"github.com/amp-labs/connectors/providers/klaviyo/metadata"
 )
 
+// headerVersion2024Oct15 is the latest stable version of API as of the date of writing.
+// https://developers.klaviyo.com/en/reference/api_overview
+const headerVersion2024Oct15 = "2024-10-15"
+
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
-	Module  common.Module
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts, WithModule(Module2024Oct15))
+	params, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +29,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: httpClient,
 		},
-		Module: params.Module.Selection,
 	}
 
 	// Read provider info
@@ -47,7 +49,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
+	path, err := metadata.Schemas.LookupURLPath(common.ModuleRoot, objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +70,7 @@ func (c *Connector) getDeleteURL(objectName string) (*urlbuilder.URL, error) {
 func (c *Connector) revisionHeader() common.Header {
 	return common.Header{
 		Key:   "revision",
-		Value: string(c.Module.ID),
+		Value: headerVersion2024Oct15,
 	}
 }
 

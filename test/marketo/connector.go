@@ -18,7 +18,6 @@ func GetMarketoConnector(ctx context.Context) *marketo.Connector {
 	conn, err := marketo.NewConnector(
 		marketo.WithClient(ctx, http.DefaultClient, getConfig(reader)),
 		marketo.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
-		marketo.WithModule(marketo.ModuleAssets),
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
@@ -27,13 +26,12 @@ func GetMarketoConnector(ctx context.Context) *marketo.Connector {
 	return conn
 }
 
-func GetMarketoConnectorW(ctx context.Context) *marketo.Connector {
+func GetMarketoConnectorLeads(ctx context.Context) *marketo.Connector {
 	reader := getMarketoJSONReader()
 
 	conn, err := marketo.NewConnector(
 		marketo.WithClient(ctx, http.DefaultClient, getConfig(reader)),
 		marketo.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
-		marketo.WithModule(marketo.ModuleLeads),
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
@@ -61,7 +59,7 @@ func GetMarketoAccessToken() string {
 
 func getMarketoJSONReader() *credscanning.ProviderCredentials {
 	filePath := credscanning.LoadPath(providers.Marketo)
-	reader := utils.MustCreateProvCredJSON(filePath, true, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	return reader
 }

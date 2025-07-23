@@ -6,42 +6,38 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
-	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
+	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/scripts/openapi/zendesksupport/metadata/helpcenter"
 	"github.com/amp-labs/connectors/scripts/openapi/zendesksupport/metadata/support"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
 func main() {
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
+	schemas := staticschema.NewExtendedMetadata[staticschema.FieldMetadataMapV2, metadata.CustomProperties]()
 	registry := datautils.NamedLists[string]{}
-	lists := datautils.IndexedLists[common.ModuleID, metadatadef.Schema]{}
 
-	lists.Add(zendesksupport.ModuleTicketing, support.Objects()...)
-	lists.Add(zendesksupport.ModuleHelpCenter, helpcenter.Objects()...)
+	objects := append(
+		support.Objects(),
+		helpcenter.Objects()...,
+	)
 
-	for module, objects := range lists {
-		for _, object := range objects {
-			if object.Problem != nil {
-				slog.Error("schema not extracted",
-					"objectName", object.ObjectName,
-					"error", object.Problem,
-				)
-			}
+	for _, object := range objects {
+		if object.Problem != nil {
+			slog.Error("schema not extracted",
+				"objectName", object.ObjectName,
+				"error", object.Problem,
+			)
+		}
 
-			for _, field := range object.Fields {
-				schemas.Add(module, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
-					staticschema.FieldMetadataMapV1{
-						field.Name: field.Name,
-					}, nil)
-			}
+		for _, field := range object.Fields {
+			schemas.Add(common.ModuleRoot, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
+				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
+		}
 
-			for _, queryParam := range object.QueryParams {
-				registry.Add(queryParam, object.ObjectName)
-			}
+		for _, queryParam := range object.QueryParams {
+			registry.Add(queryParam, object.ObjectName)
 		}
 	}
 

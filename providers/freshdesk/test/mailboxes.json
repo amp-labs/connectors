@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "name": "Test Account",
+    "support_email": "testemail@gmail.com",
+    "group_id": 1,
+    "default_reply_email": true,
+    "active": true,
+    "mailbox_type": "freshdesk_mailbox",
+    "created_at": "2019-08-20T05:55:38Z",
+    "updated_at": "2019-08-20T05:55:38Z",
+    "product_id": 2,
+    "freshdesk_mailbox": {
+      "forward_email": "gmailcomtestemail@freshdesk.com"
+    }
+  }
+]

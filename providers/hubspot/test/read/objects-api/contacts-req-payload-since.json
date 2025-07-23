@@ -1,0 +1,23 @@
+{
+  "filterGroups": [
+    {
+      "filters": [
+        {
+          "propertyName": "lastmodifieddate",
+          "operator": "GTE",
+          "value": "2024-09-19T04:30:45-08:00"
+        }
+      ]
+    }
+  ],
+  "limit": "100",
+  "properties": [
+    "email"
+  ],
+  "sorts": [
+    {
+      "propertyName": "hs_object_id",
+      "direction": "ASCENDING"
+    }
+  ]
+}

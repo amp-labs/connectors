@@ -3,72 +3,52 @@ package scrapper
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/chromedp/chromedp"
 )
 
 // QueryHTML this method can panic.
 func QueryHTML(url string) *goquery.Document { //nolint:gocritic
-	res, err := makeRequest(url)
+	return QueryLoadableHTML(url, 0)
+}
+
+// QueryLoadableHTML this method can panic.
+// Uses browser internally to wait for all HTML parts to be fully loaded.
+func QueryLoadableHTML(url string, wait int64) *goquery.Document { //nolint:gocritic
+	htmlPage, err := loadHTMLPage(url, wait)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if res.StatusCode != http.StatusOK {
-		_ = res.Body.Close()
-		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
-	}
+	reader := strings.NewReader(htmlPage)
 
-	doc, err := goquery.NewDocumentFromReader(res.Body)
+	doc, err := goquery.NewDocumentFromReader(reader)
 	if err != nil {
-		_ = res.Body.Close()
-
 		log.Fatal(err)
 	}
-
-	_ = res.Body.Close()
 
 	return doc
 }
 
-func makeRequest(sourceURL string) (*http.Response, error) {
-	// must end with `/` to avoid stupid redirect with then without then again with and without slash
-	if !strings.HasSuffix(sourceURL, "/") {
-		sourceURL += "/"
-	}
+func loadHTMLPage(url string, wait int64) (string, error) {
+	ctx, cancel := chromedp.NewContext(context.Background())
+	defer cancel()
 
-	client := &http.Client{
-		CheckRedirect: func() func(req *http.Request, via []*http.Request) error {
-			redirects := 0
+	// Run Chrome headless and extract the final rendered HTML.
+	var htmlContent string
+	err := chromedp.Run(ctx,
+		chromedp.Navigate(url),
+		// Wait for JavaScript to load content
+		chromedp.Sleep(time.Duration(wait)*time.Second),
+		chromedp.OuterHTML("html", &htmlContent),
+	)
 
-			return func(req *http.Request, via []*http.Request) error {
-				maxRedirects := 12
-				if redirects > maxRedirects {
-					return fmt.Errorf("stopped after %v redirects", maxRedirects) // nolint:goerr113
-				}
-				redirects++
-
-				return nil
-			}
-		}(),
-	}
-
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, sourceURL, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
+	return htmlContent, err
 }
 
 func LoadFile(filename string, object any) error {

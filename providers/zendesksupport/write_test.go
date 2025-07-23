@@ -37,10 +37,16 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: []error{common.ErrMissingRecordData},
 		},
 		{
-			Name:         "Unsupported object name",
+			Name:         "URL cannot be identified for an object",
 			Input:        common.WriteParams{ObjectName: "signals", RecordData: "dummy"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrResolvingURLPathForObject},
+		},
+		{
+			Name:         "Object is not supported for write, while it is defined for read",
+			Input:        common.WriteParams{ObjectName: "ticket_events", RecordData: "dummy"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
 			Name:  "Missing write parameter",
@@ -114,7 +120,7 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v2/brands"),
+					mockcond.Path("/api/v2/brands"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, createBrand),
@@ -135,6 +141,23 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Writing tickets delegates to correct URL",
+			Input: common.WriteParams{
+				ObjectName: "tickets",
+				RecordData: "dummy",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/api/v2/tickets"),
+				},
+				Then: mockserver.Response(http.StatusOK),
+			}.Server(),
+			Expected:     &common.WriteResult{Success: true},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {
@@ -143,7 +166,7 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleTicketing)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}
@@ -161,7 +184,7 @@ func TestWriteHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,m
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v2/community/posts"),
+					mockcond.Path("/api/v2/community/posts"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreatePost),
@@ -187,7 +210,7 @@ func TestWriteHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,m
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleHelpCenter)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}

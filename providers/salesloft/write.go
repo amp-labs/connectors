@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -49,12 +49,12 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func constructWriteResult(body *ajson.Node) (*common.WriteResult, error) {
-	nested, err := jsonquery.New(body).Object("data", false)
+	nested, err := jsonquery.New(body).ObjectRequired("data")
 	if err != nil {
 		return nil, err
 	}
 
-	rawID, err := jsonquery.New(nested).Integer("id", true)
+	rawID, err := jsonquery.New(nested).IntegerOptional("id")
 	if err != nil {
 		return nil, err
 	}

@@ -3,7 +3,10 @@ package marketo
 import (
 	"errors"
 	"fmt"
+	"slices"
 )
+
+const batchSize = 300 // nolint:gochecknoglobals
 
 type writeResponse struct {
 	Result  []map[string]any `json:"result"`
@@ -11,13 +14,34 @@ type writeResponse struct {
 	Errors  []map[string]any `json:"errors"`
 }
 
-// IdResponseObjects represents a list of objects that uses `id` as a unique field in the response.
-var IdResponseObjects = []string{"leads", "companies", "salespersons"} //nolint:gochecknoglobals
+// nolint:gochecknoglobals
+var (
+	// IdResponseObjects represents a list of objects that uses `id` as a unique field in the response.
+	IdResponseObjects = []string{"leads", "companies", "salespersons"}
 
-// marketoGUIDResponseObjects represents a list of objects that uses `marketoGUID` as the unique field in the response.
-var marketoGUIDResponseObjects = []string{ //nolint:gochecknoglobals
-	"namedAccountLists", "namedaccounts", "opportunities",
-}
+	// marketoGUIDResponseObjects represents a list of objects that uses `marketoGUID` as the unique field in the response.
+	marketoGUIDResponseObjects = []string{"namedAccountLists", "namedaccounts", "opportunities"}
+
+	// idFilteringObjects represents objects that uses id as filtering values in read connector.
+	idFilteringObjects = []string{"salespersons", "companies"}
+
+	// metadataPaths represents a map of a few objects in Marketo that has unique resource for returning metadata fields.
+	metadataPaths = map[string]string{
+		"leads":         "rest/v1/leads/describe2.json",
+		"companies":     "rest/v1/companies/describe.json",
+		"namedaccounts": "rest/v1/namedaccounts/describe.json",
+		"salespersons":  "rest/v1/salespersons/describe.json",
+		"opportunities": "rest/v1/opportunities/describe.json",
+	}
+
+	ErrFailedConvertFields = errors.New("failed to convert the response message to metadata fields")
+
+	// ErrFilterInvalid indicates missing activityTypeIds when reading Marketo lead activities.
+	ErrFilterInvalid = errors.New("reading lead activities require Filter parameter with comma-separated activityTypeIds")
+
+	// ErrZeroRecords indicates missing records for the provided timestamp range, using the Since Field.
+	ErrZeroRecords = errors.New("returned zero records for the provided timestamp range")
+)
 
 func constructErrMessage(a any) (string, error) {
 	s, ok := a.([]map[string]any)
@@ -26,4 +50,19 @@ func constructErrMessage(a any) (string, error) {
 	}
 
 	return fmt.Sprint(s[0]["reasons"]), nil
+}
+
+func paginatesByIDs(object string) bool {
+	// Most Marketo APIs requires filtering when reading, Important objects are Leads, Custom Objects, Companies
+	// With this we use the general filter parameter `id` and iterate over the records.
+	return slices.Contains(idFilteringObjects, object)
+}
+
+func hasMetadataResource(object string) (string, bool) {
+	path, ok := metadataPaths[object]
+	if !ok {
+		return "", false
+	}
+
+	return path, true
 }

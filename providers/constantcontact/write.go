@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -59,7 +59,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 func constructWriteResult(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 	idFieldName := objectNameToWriteResponseIdentifier.Get(config.ObjectName)
 
-	recordID, err := jsonquery.New(body).Str(idFieldName, false)
+	recordID, err := jsonquery.New(body).StringRequired(idFieldName)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func constructWriteResult(config common.WriteParams, body *ajson.Node) (*common.
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: *recordID,
+		RecordId: recordID,
 		Errors:   nil,
 		Data:     data,
 	}, nil

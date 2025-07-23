@@ -17,7 +17,7 @@ func GetHubspotConnector(ctx context.Context) *hubspot.Connector {
 
 	conn, err := hubspot.NewConnector(
 		hubspot.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		hubspot.WithModule(hubspot.ModuleCRM))
+		hubspot.WithModule(providers.ModuleHubspotCRM))
 	if err != nil {
 		utils.Fail("error creating hubspot connector", "error", err)
 	}
@@ -27,7 +27,7 @@ func GetHubspotConnector(ctx context.Context) *hubspot.Connector {
 
 func CredsReader() *credscanning.ProviderCredentials {
 	filePath := credscanning.LoadPath(providers.Hubspot)
-	return utils.MustCreateProvCredJSON(filePath, true, false)
+	return utils.MustCreateProvCredJSON(filePath, true)
 }
 
 func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {

@@ -40,6 +40,14 @@ func init() { // nolint:funlen
 			Subscribe: false,
 			Write:     true,
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "workspace",
+					DisplayName: "Subdomain",
+				},
+			},
+		},
 	})
 
 	// BLOCKED: refresh token seems to be one-time use.
@@ -50,7 +58,7 @@ func init() { // nolint:funlen
 		// Reference docs
 		// https://developer.zendesk.com/documentation/live-chat/getting-started/auth/
 
-		BaseURL: "https://{{.workspace}}.zendesk.com/api/v2/chat",
+		BaseURL: "https://{{.workspace}}.zendesk.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.zendesk.com/oauth2/chat/authorizations/new",
@@ -75,10 +83,18 @@ func init() { // nolint:funlen
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
-			Read:      false,
+			Proxy:     true,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "workspace",
+					DisplayName: "Subdomain",
+				},
+			},
 		},
 	})
 }

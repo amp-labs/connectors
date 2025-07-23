@@ -8,7 +8,7 @@ import (
 
 // Select will look for object names under the module and will return metadata result for those objects.
 // NOTE: empty module id is treated as root module.
-func (m *Metadata[F]) Select(
+func (m *Metadata[F, C]) Select(
 	moduleID common.ModuleID, objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
 	if len(objectNames) == 0 {
@@ -34,7 +34,7 @@ func (m *Metadata[F]) Select(
 			// move metadata from scrapper object to common object
 			list.Result[objectName] = *v.getObjectMetadata()
 		} else {
-			return nil, fmt.Errorf("%w: unknown object [%v]", common.ErrObjectNotSupported, objectName)
+			list.Errors[objectName] = common.ErrObjectNotSupported
 		}
 	}
 
@@ -43,7 +43,7 @@ func (m *Metadata[F]) Select(
 
 // SelectOne reads one object metadata from the static file.
 // NOTE: empty module id is treated as root module.
-func (m *Metadata[F]) SelectOne(
+func (m *Metadata[F, C]) SelectOne(
 	moduleID common.ModuleID, objectName string,
 ) (*common.ObjectMetadata, error) {
 	moduleID = moduleIdentifier(moduleID)

@@ -109,7 +109,7 @@ const (
 )
 
 var supportedObjectsByCreate = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
-	Module2024Oct15: datautils.NewSet(
+	common.ModuleRoot: datautils.NewSet(
 		// https://developers.klaviyo.com/en/reference/create_campaign
 		objectNameCampaigns,
 		// https://developers.klaviyo.com/en/reference/send_campaign
@@ -209,7 +209,7 @@ var supportedObjectsByCreate = map[common.ModuleID]datautils.StringSet{ //nolint
 }
 
 var supportedObjectsByUpdate = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
-	Module2024Oct15: datautils.NewSet(
+	common.ModuleRoot: datautils.NewSet(
 		// https://developers.klaviyo.com/en/reference/update_campaign
 		objectNameCampaigns,
 		// https://developers.klaviyo.com/en/reference/cancel_campaign_send
@@ -250,7 +250,7 @@ var supportedObjectsByUpdate = map[common.ModuleID]datautils.StringSet{ //nolint
 }
 
 var supportedObjectsByDelete = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
-	Module2024Oct15: datautils.NewSet(
+	common.ModuleRoot: datautils.NewSet(
 		// https://developers.klaviyo.com/en/reference/delete_campaign
 		objectNameCampaigns,
 		// https://developers.klaviyo.com/en/reference/delete_catalog_variant

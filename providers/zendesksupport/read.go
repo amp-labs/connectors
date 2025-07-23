@@ -2,9 +2,12 @@ package zendesksupport
 
 import (
 	"context"
+	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -12,7 +15,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportedObjectsByRead[c.Module.ID].Has(config.ObjectName) {
+	if !supportedObjectsByRead[common.ModuleRoot].Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -26,13 +29,16 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	responseFieldName := ObjectNameToResponseField[c.Module.ID].Get(config.ObjectName)
+	customFields, err := c.requestCustomTicketFields(ctx, config.ObjectName)
+	if err != nil {
+		return nil, err
+	}
 
 	return common.ParseResult(
 		rsp,
-		common.GetRecordsUnderJSONPath(responseFieldName),
+		getRecords(config.ObjectName),
 		getNextRecordsURL,
-		common.GetMarshaledData,
+		common.MakeMarshaledDataFunc(c.attachReadCustomFields(customFields)),
 		config.Fields,
 	)
 }
@@ -44,5 +50,45 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	return c.getURL(config.ObjectName)
+	url, err := c.getReadURL(config.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	pageSizeStr := metadata.Schemas.PageSize(config.ObjectName)
+	isIncremental := metadata.Schemas.IsIncrementalRead(config.ObjectName)
+
+	if isIncremental {
+		// Incremental endpoints requires start query parameter.
+		// Even if no Since parameter is empty the start_time must be set to 0.
+		// This is effectively to say read everything since the beginning of time.
+		// https://developer.zendesk.com/api-reference/ticketing/ticket-management/incremental_exports/#start_time
+		url.WithQueryParam("start_time", formatStartTime(config))
+		url.WithQueryParam("per_page", pageSizeStr)
+	} else {
+		// Different objects have different pagination types.
+		// https://developer.zendesk.com/api-reference/introduction/pagination/#using-offset-pagination
+		ptype := metadata.Schemas.LookupPaginationType(config.ObjectName)
+		if ptype == "cursor" {
+			url.WithQueryParam("page[size]", pageSizeStr)
+		}
+	}
+
+	return url, nil
+}
+
+func formatStartTime(config common.ReadParams) string {
+	if config.Since.IsZero() {
+		return "0"
+	}
+
+	// Records cannot be requested if they are less than 1 minute old.
+	unixTime := config.Since.Unix()
+	timeWindow := time.Since(config.Since)
+
+	if timeWindow.Minutes() < 1 {
+		unixTime = time.Now().Add(-1 * time.Minute).Unix()
+	}
+
+	return strconv.FormatInt(unixTime, 10)
 }

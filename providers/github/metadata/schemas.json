@@ -1,0 +1,5746 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "advisories": {
+          "displayName": "Advisories",
+          "path": "/advisories",
+          "responseKey": "",
+          "fields": {
+            "credits": {
+              "displayName": "credits",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "cve_id": {
+              "displayName": "cve_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "cvss": {
+              "displayName": "cvss",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "cvss_severities": {
+              "displayName": "cvss_severities",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "cwes": {
+              "displayName": "cwes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "epss": {
+              "displayName": "epss",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "ghsa_id": {
+              "displayName": "ghsa_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "github_reviewed_at": {
+              "displayName": "github_reviewed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "identifiers": {
+              "displayName": "identifiers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "nvd_published_at": {
+              "displayName": "nvd_published_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "published_at": {
+              "displayName": "published_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "references": {
+              "displayName": "references",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "repository_advisory_url": {
+              "displayName": "repository_advisory_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "severity": {
+              "displayName": "severity",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "critical",
+                  "displayValue": "critical"
+                },
+                {
+                  "value": "high",
+                  "displayValue": "high"
+                },
+                {
+                  "value": "medium",
+                  "displayValue": "medium"
+                },
+                {
+                  "value": "low",
+                  "displayValue": "low"
+                },
+                {
+                  "value": "unknown",
+                  "displayValue": "unknown"
+                }
+              ]
+            },
+            "source_code_location": {
+              "displayName": "source_code_location",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "summary": {
+              "displayName": "summary",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "reviewed",
+                  "displayValue": "reviewed"
+                },
+                {
+                  "value": "unreviewed",
+                  "displayValue": "unreviewed"
+                },
+                {
+                  "value": "malware",
+                  "displayValue": "malware"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vulnerabilities": {
+              "displayName": "vulnerabilities",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "withdrawn_at": {
+              "displayName": "withdrawn_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "blocks": {
+          "displayName": "Blocks",
+          "path": "/user/blocks",
+          "responseKey": "",
+          "fields": {
+            "avatar_url": {
+              "displayName": "avatar_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "events_url": {
+              "displayName": "events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "followers_url": {
+              "displayName": "followers_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "following_url": {
+              "displayName": "following_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "gists_url": {
+              "displayName": "gists_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "gravatar_id": {
+              "displayName": "gravatar_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "login": {
+              "displayName": "login",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "organizations_url": {
+              "displayName": "organizations_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "received_events_url": {
+              "displayName": "received_events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "repos_url": {
+              "displayName": "repos_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "site_admin": {
+              "displayName": "site_admin",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "starred_at": {
+              "displayName": "starred_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "starred_url": {
+              "displayName": "starred_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscriptions_url": {
+              "displayName": "subscriptions_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_view_type": {
+              "displayName": "user_view_type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "classrooms": {
+          "displayName": "Classrooms",
+          "path": "/classrooms",
+          "responseKey": "",
+          "fields": {
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "codes_of_conduct": {
+          "displayName": "Codes Of Conduct",
+          "path": "/codes_of_conduct",
+          "responseKey": "",
+          "fields": {
+            "body": {
+              "displayName": "body",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "conflicts": {
+          "displayName": "Conflicts",
+          "path": "/user/docker/conflicts",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "package_type": {
+              "displayName": "package_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "npm",
+                  "displayValue": "npm"
+                },
+                {
+                  "value": "maven",
+                  "displayValue": "maven"
+                },
+                {
+                  "value": "rubygems",
+                  "displayValue": "rubygems"
+                },
+                {
+                  "value": "docker",
+                  "displayValue": "docker"
+                },
+                {
+                  "value": "nuget",
+                  "displayValue": "nuget"
+                },
+                {
+                  "value": "container",
+                  "displayValue": "container"
+                }
+              ]
+            },
+            "repository": {
+              "displayName": "repository",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version_count": {
+              "displayName": "version_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "private",
+                  "displayValue": "private"
+                },
+                {
+                  "value": "public",
+                  "displayValue": "public"
+                }
+              ]
+            }
+          }
+        },
+        "deliveries": {
+          "displayName": "Deliveries",
+          "path": "/app/hook/deliveries",
+          "responseKey": "",
+          "fields": {
+            "action": {
+              "displayName": "action",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "delivered_at": {
+              "displayName": "delivered_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "duration": {
+              "displayName": "duration",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "event": {
+              "displayName": "event",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "guid": {
+              "displayName": "guid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "installation_id": {
+              "displayName": "installation_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "redelivery": {
+              "displayName": "redelivery",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "repository_id": {
+              "displayName": "repository_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status_code": {
+              "displayName": "status_code",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "throttled_at": {
+              "displayName": "throttled_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "events": {
+          "displayName": "Events",
+          "path": "/events",
+          "responseKey": "",
+          "fields": {
+            "actor": {
+              "displayName": "actor",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "org": {
+              "displayName": "org",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "payload": {
+              "displayName": "payload",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "public": {
+              "displayName": "public",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "repo": {
+              "displayName": "repo",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "followers": {
+          "displayName": "Followers",
+          "path": "/user/followers",
+          "responseKey": "",
+          "fields": {
+            "avatar_url": {
+              "displayName": "avatar_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "events_url": {
+              "displayName": "events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "followers_url": {
+              "displayName": "followers_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "following_url": {
+              "displayName": "following_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "gists_url": {
+              "displayName": "gists_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "gravatar_id": {
+              "displayName": "gravatar_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "login": {
+              "displayName": "login",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "organizations_url": {
+              "displayName": "organizations_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "received_events_url": {
+              "displayName": "received_events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "repos_url": {
+              "displayName": "repos_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "site_admin": {
+              "displayName": "site_admin",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "starred_at": {
+              "displayName": "starred_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "starred_url": {
+              "displayName": "starred_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscriptions_url": {
+              "displayName": "subscriptions_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_view_type": {
+              "displayName": "user_view_type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "following": {
+          "displayName": "Following",
+          "path": "/user/following",
+          "responseKey": "",
+          "fields": {
+            "avatar_url": {
+              "displayName": "avatar_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "events_url": {
+              "displayName": "events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "followers_url": {
+              "displayName": "followers_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "following_url": {
+              "displayName": "following_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "gists_url": {
+              "displayName": "gists_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "gravatar_id": {
+              "displayName": "gravatar_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "login": {
+              "displayName": "login",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "organizations_url": {
+              "displayName": "organizations_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "received_events_url": {
+              "displayName": "received_events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "repos_url": {
+              "displayName": "repos_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "site_admin": {
+              "displayName": "site_admin",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "starred_at": {
+              "displayName": "starred_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "starred_url": {
+              "displayName": "starred_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscriptions_url": {
+              "displayName": "subscriptions_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_view_type": {
+              "displayName": "user_view_type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "gists": {
+          "displayName": "Gists",
+          "path": "/gists",
+          "responseKey": "",
+          "fields": {
+            "comments": {
+              "displayName": "comments",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "comments_enabled": {
+              "displayName": "comments_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "comments_url": {
+              "displayName": "comments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "commits_url": {
+              "displayName": "commits_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "files": {
+              "displayName": "files",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "forks": {
+              "displayName": "forks",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "forks_url": {
+              "displayName": "forks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_pull_url": {
+              "displayName": "git_pull_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_push_url": {
+              "displayName": "git_push_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "history": {
+              "displayName": "history",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "public": {
+              "displayName": "public",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "truncated": {
+              "displayName": "truncated",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "gists/public": {
+          "displayName": "Gists Public",
+          "path": "/gists/public",
+          "responseKey": "",
+          "fields": {
+            "comments": {
+              "displayName": "comments",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "comments_enabled": {
+              "displayName": "comments_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "comments_url": {
+              "displayName": "comments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "commits_url": {
+              "displayName": "commits_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "files": {
+              "displayName": "files",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "forks": {
+              "displayName": "forks",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "forks_url": {
+              "displayName": "forks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_pull_url": {
+              "displayName": "git_pull_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_push_url": {
+              "displayName": "git_push_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "history": {
+              "displayName": "history",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "public": {
+              "displayName": "public",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "truncated": {
+              "displayName": "truncated",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "gists/starred": {
+          "displayName": "Gists Starred",
+          "path": "/gists/starred",
+          "responseKey": "",
+          "fields": {
+            "comments": {
+              "displayName": "comments",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "comments_enabled": {
+              "displayName": "comments_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "comments_url": {
+              "displayName": "comments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "commits_url": {
+              "displayName": "commits_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "files": {
+              "displayName": "files",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "forks": {
+              "displayName": "forks",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "forks_url": {
+              "displayName": "forks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_pull_url": {
+              "displayName": "git_pull_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_push_url": {
+              "displayName": "git_push_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "history": {
+              "displayName": "history",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "public": {
+              "displayName": "public",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "truncated": {
+              "displayName": "truncated",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "installation-requests": {
+          "displayName": "Installation Requests",
+          "path": "/app/installation-requests",
+          "responseKey": "",
+          "fields": {
+            "account": {
+              "displayName": "account",
+              "valueType": "other"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "requester": {
+              "displayName": "requester",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "installation/repositories": {
+          "displayName": "Installation Repositories",
+          "path": "/installation/repositories",
+          "responseKey": "repositories",
+          "fields": {
+            "allow_auto_merge": {
+              "displayName": "allow_auto_merge",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_forking": {
+              "displayName": "allow_forking",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_merge_commit": {
+              "displayName": "allow_merge_commit",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_rebase_merge": {
+              "displayName": "allow_rebase_merge",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_squash_merge": {
+              "displayName": "allow_squash_merge",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_update_branch": {
+              "displayName": "allow_update_branch",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "anonymous_access_enabled": {
+              "displayName": "anonymous_access_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "archive_url": {
+              "displayName": "archive_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "assignees_url": {
+              "displayName": "assignees_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "blobs_url": {
+              "displayName": "blobs_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "branches_url": {
+              "displayName": "branches_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "clone_url": {
+              "displayName": "clone_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "collaborators_url": {
+              "displayName": "collaborators_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "comments_url": {
+              "displayName": "comments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "commits_url": {
+              "displayName": "commits_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "compare_url": {
+              "displayName": "compare_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contents_url": {
+              "displayName": "contents_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contributors_url": {
+              "displayName": "contributors_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default_branch": {
+              "displayName": "default_branch",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "delete_branch_on_merge": {
+              "displayName": "delete_branch_on_merge",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deployments_url": {
+              "displayName": "deployments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "disabled": {
+              "displayName": "disabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "downloads_url": {
+              "displayName": "downloads_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "events_url": {
+              "displayName": "events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fork": {
+              "displayName": "fork",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "forks": {
+              "displayName": "forks",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "forks_count": {
+              "displayName": "forks_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "forks_url": {
+              "displayName": "forks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "full_name": {
+              "displayName": "full_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_commits_url": {
+              "displayName": "git_commits_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_refs_url": {
+              "displayName": "git_refs_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_tags_url": {
+              "displayName": "git_tags_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_url": {
+              "displayName": "git_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "has_discussions": {
+              "displayName": "has_discussions",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_downloads": {
+              "displayName": "has_downloads",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_issues": {
+              "displayName": "has_issues",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_pages": {
+              "displayName": "has_pages",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_projects": {
+              "displayName": "has_projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_wiki": {
+              "displayName": "has_wiki",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "homepage": {
+              "displayName": "homepage",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hooks_url": {
+              "displayName": "hooks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_template": {
+              "displayName": "is_template",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "issue_comment_url": {
+              "displayName": "issue_comment_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "issue_events_url": {
+              "displayName": "issue_events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "issues_url": {
+              "displayName": "issues_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "keys_url": {
+              "displayName": "keys_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "labels_url": {
+              "displayName": "labels_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "language": {
+              "displayName": "language",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "languages_url": {
+              "displayName": "languages_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "license": {
+              "displayName": "license",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "master_branch": {
+              "displayName": "master_branch",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "merge_commit_message": {
+              "displayName": "merge_commit_message",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "PR_BODY",
+                  "displayValue": "PR_BODY"
+                },
+                {
+                  "value": "PR_TITLE",
+                  "displayValue": "PR_TITLE"
+                },
+                {
+                  "value": "BLANK",
+                  "displayValue": "BLANK"
+                }
+              ]
+            },
+            "merge_commit_title": {
+              "displayName": "merge_commit_title",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "PR_TITLE",
+                  "displayValue": "PR_TITLE"
+                },
+                {
+                  "value": "MERGE_MESSAGE",
+                  "displayValue": "MERGE_MESSAGE"
+                }
+              ]
+            },
+            "merges_url": {
+              "displayName": "merges_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "milestones_url": {
+              "displayName": "milestones_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mirror_url": {
+              "displayName": "mirror_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notifications_url": {
+              "displayName": "notifications_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "open_issues": {
+              "displayName": "open_issues",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "open_issues_count": {
+              "displayName": "open_issues_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "permissions": {
+              "displayName": "permissions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "private": {
+              "displayName": "private",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "pulls_url": {
+              "displayName": "pulls_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pushed_at": {
+              "displayName": "pushed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "releases_url": {
+              "displayName": "releases_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "size": {
+              "displayName": "size",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "squash_merge_commit_message": {
+              "displayName": "squash_merge_commit_message",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "PR_BODY",
+                  "displayValue": "PR_BODY"
+                },
+                {
+                  "value": "COMMIT_MESSAGES",
+                  "displayValue": "COMMIT_MESSAGES"
+                },
+                {
+                  "value": "BLANK",
+                  "displayValue": "BLANK"
+                }
+              ]
+            },
+            "squash_merge_commit_title": {
+              "displayName": "squash_merge_commit_title",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "PR_TITLE",
+                  "displayValue": "PR_TITLE"
+                },
+                {
+                  "value": "COMMIT_OR_PR_TITLE",
+                  "displayValue": "COMMIT_OR_PR_TITLE"
+                }
+              ]
+            },
+            "ssh_url": {
+              "displayName": "ssh_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "stargazers_count": {
+              "displayName": "stargazers_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "stargazers_url": {
+              "displayName": "stargazers_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "starred_at": {
+              "displayName": "starred_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "statuses_url": {
+              "displayName": "statuses_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscribers_url": {
+              "displayName": "subscribers_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscription_url": {
+              "displayName": "subscription_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "svn_url": {
+              "displayName": "svn_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tags_url": {
+              "displayName": "tags_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "teams_url": {
+              "displayName": "teams_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "temp_clone_token": {
+              "displayName": "temp_clone_token",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "topics": {
+              "displayName": "topics",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "trees_url": {
+              "displayName": "trees_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "use_squash_pr_title_as_default": {
+              "displayName": "use_squash_pr_title_as_default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "watchers": {
+              "displayName": "watchers",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "watchers_count": {
+              "displayName": "watchers_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "web_commit_signoff_required": {
+              "displayName": "web_commit_signoff_required",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "issues": {
+          "displayName": "Issues",
+          "path": "/issues",
+          "responseKey": "",
+          "fields": {
+            "active_lock_reason": {
+              "displayName": "active_lock_reason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "assignee": {
+              "displayName": "assignee",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "assignees": {
+              "displayName": "assignees",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "author_association": {
+              "displayName": "author_association",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "COLLABORATOR",
+                  "displayValue": "COLLABORATOR"
+                },
+                {
+                  "value": "CONTRIBUTOR",
+                  "displayValue": "CONTRIBUTOR"
+                },
+                {
+                  "value": "FIRST_TIMER",
+                  "displayValue": "FIRST_TIMER"
+                },
+                {
+                  "value": "FIRST_TIME_CONTRIBUTOR",
+                  "displayValue": "FIRST_TIME_CONTRIBUTOR"
+                },
+                {
+                  "value": "MANNEQUIN",
+                  "displayValue": "MANNEQUIN"
+                },
+                {
+                  "value": "MEMBER",
+                  "displayValue": "MEMBER"
+                },
+                {
+                  "value": "NONE",
+                  "displayValue": "NONE"
+                },
+                {
+                  "value": "OWNER",
+                  "displayValue": "OWNER"
+                }
+              ]
+            },
+            "body": {
+              "displayName": "body",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "body_html": {
+              "displayName": "body_html",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "body_text": {
+              "displayName": "body_text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "closed_at": {
+              "displayName": "closed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "closed_by": {
+              "displayName": "closed_by",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "comments": {
+              "displayName": "comments",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "comments_url": {
+              "displayName": "comments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "draft": {
+              "displayName": "draft",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "events_url": {
+              "displayName": "events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "labels": {
+              "displayName": "labels",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "labels_url": {
+              "displayName": "labels_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "locked": {
+              "displayName": "locked",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "milestone": {
+              "displayName": "milestone",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number": {
+              "displayName": "number",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "performed_via_github_app": {
+              "displayName": "performed_via_github_app",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "pull_request": {
+              "displayName": "pull_request",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "reactions": {
+              "displayName": "reactions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "repository": {
+              "displayName": "repository",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "repository_url": {
+              "displayName": "repository_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state_reason": {
+              "displayName": "state_reason",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "completed",
+                  "displayValue": "completed"
+                },
+                {
+                  "value": "reopened",
+                  "displayValue": "reopened"
+                },
+                {
+                  "value": "not_planned",
+                  "displayValue": "not_planned"
+                }
+              ]
+            },
+            "sub_issues_summary": {
+              "displayName": "sub_issues_summary",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "timeline_url": {
+              "displayName": "timeline_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "licenses": {
+          "displayName": "Licenses",
+          "path": "/licenses",
+          "responseKey": "",
+          "fields": {
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spdx_id": {
+              "displayName": "spdx_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "marketplace_listing/plans": {
+          "displayName": "Marketplace Listing Plans",
+          "path": "/marketplace_listing/plans",
+          "responseKey": "",
+          "fields": {
+            "accounts_url": {
+              "displayName": "accounts_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "bullets": {
+              "displayName": "bullets",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "has_free_trial": {
+              "displayName": "has_free_trial",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "monthly_price_in_cents": {
+              "displayName": "monthly_price_in_cents",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number": {
+              "displayName": "number",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "price_model": {
+              "displayName": "price_model",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "FREE",
+                  "displayValue": "FREE"
+                },
+                {
+                  "value": "FLAT_RATE",
+                  "displayValue": "FLAT_RATE"
+                },
+                {
+                  "value": "PER_UNIT",
+                  "displayValue": "PER_UNIT"
+                }
+              ]
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "unit_name": {
+              "displayName": "unit_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "yearly_price_in_cents": {
+              "displayName": "yearly_price_in_cents",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "marketplace_listing/stubbed/plans": {
+          "displayName": "Marketplace Listing Stubbed Plans",
+          "path": "/marketplace_listing/stubbed/plans",
+          "responseKey": "",
+          "fields": {
+            "accounts_url": {
+              "displayName": "accounts_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "bullets": {
+              "displayName": "bullets",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "has_free_trial": {
+              "displayName": "has_free_trial",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "monthly_price_in_cents": {
+              "displayName": "monthly_price_in_cents",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number": {
+              "displayName": "number",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "price_model": {
+              "displayName": "price_model",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "FREE",
+                  "displayValue": "FREE"
+                },
+                {
+                  "value": "FLAT_RATE",
+                  "displayValue": "FLAT_RATE"
+                },
+                {
+                  "value": "PER_UNIT",
+                  "displayValue": "PER_UNIT"
+                }
+              ]
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "unit_name": {
+              "displayName": "unit_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "yearly_price_in_cents": {
+              "displayName": "yearly_price_in_cents",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "marketplace_purchases": {
+          "displayName": "Marketplace Purchases",
+          "path": "/user/marketplace_purchases",
+          "responseKey": "",
+          "fields": {
+            "account": {
+              "displayName": "account",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "billing_cycle": {
+              "displayName": "billing_cycle",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "free_trial_ends_on": {
+              "displayName": "free_trial_ends_on",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "next_billing_date": {
+              "displayName": "next_billing_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "on_free_trial": {
+              "displayName": "on_free_trial",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "plan": {
+              "displayName": "plan",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "unit_count": {
+              "displayName": "unit_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "organizations": {
+          "displayName": "Organizations",
+          "path": "/organizations",
+          "responseKey": "",
+          "fields": {
+            "avatar_url": {
+              "displayName": "avatar_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "events_url": {
+              "displayName": "events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hooks_url": {
+              "displayName": "hooks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "issues_url": {
+              "displayName": "issues_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "login": {
+              "displayName": "login",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "members_url": {
+              "displayName": "members_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "public_members_url": {
+              "displayName": "public_members_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "repos_url": {
+              "displayName": "repos_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "orgs": {
+          "displayName": "Orgs",
+          "path": "/user/orgs",
+          "responseKey": "",
+          "fields": {
+            "avatar_url": {
+              "displayName": "avatar_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "events_url": {
+              "displayName": "events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hooks_url": {
+              "displayName": "hooks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "issues_url": {
+              "displayName": "issues_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "login": {
+              "displayName": "login",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "members_url": {
+              "displayName": "members_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "public_members_url": {
+              "displayName": "public_members_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "repos_url": {
+              "displayName": "repos_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "packages": {
+          "displayName": "Packages",
+          "path": "/user/packages",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "package_type": {
+              "displayName": "package_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "npm",
+                  "displayValue": "npm"
+                },
+                {
+                  "value": "maven",
+                  "displayValue": "maven"
+                },
+                {
+                  "value": "rubygems",
+                  "displayValue": "rubygems"
+                },
+                {
+                  "value": "docker",
+                  "displayValue": "docker"
+                },
+                {
+                  "value": "nuget",
+                  "displayValue": "nuget"
+                },
+                {
+                  "value": "container",
+                  "displayValue": "container"
+                }
+              ]
+            },
+            "repository": {
+              "displayName": "repository",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version_count": {
+              "displayName": "version_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "private",
+                  "displayValue": "private"
+                },
+                {
+                  "value": "public",
+                  "displayValue": "public"
+                }
+              ]
+            }
+          }
+        },
+        "public_emails": {
+          "displayName": "Public Emails",
+          "path": "/user/public_emails",
+          "responseKey": "",
+          "fields": {
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primary": {
+              "displayName": "primary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "verified": {
+              "displayName": "verified",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "repos": {
+          "displayName": "Repos",
+          "path": "/user/repos",
+          "responseKey": "",
+          "fields": {
+            "allow_auto_merge": {
+              "displayName": "allow_auto_merge",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_forking": {
+              "displayName": "allow_forking",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_merge_commit": {
+              "displayName": "allow_merge_commit",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_rebase_merge": {
+              "displayName": "allow_rebase_merge",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_squash_merge": {
+              "displayName": "allow_squash_merge",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_update_branch": {
+              "displayName": "allow_update_branch",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "anonymous_access_enabled": {
+              "displayName": "anonymous_access_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "archive_url": {
+              "displayName": "archive_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "assignees_url": {
+              "displayName": "assignees_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "blobs_url": {
+              "displayName": "blobs_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "branches_url": {
+              "displayName": "branches_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "clone_url": {
+              "displayName": "clone_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "collaborators_url": {
+              "displayName": "collaborators_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "comments_url": {
+              "displayName": "comments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "commits_url": {
+              "displayName": "commits_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "compare_url": {
+              "displayName": "compare_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contents_url": {
+              "displayName": "contents_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contributors_url": {
+              "displayName": "contributors_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default_branch": {
+              "displayName": "default_branch",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "delete_branch_on_merge": {
+              "displayName": "delete_branch_on_merge",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deployments_url": {
+              "displayName": "deployments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "disabled": {
+              "displayName": "disabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "downloads_url": {
+              "displayName": "downloads_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "events_url": {
+              "displayName": "events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fork": {
+              "displayName": "fork",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "forks": {
+              "displayName": "forks",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "forks_count": {
+              "displayName": "forks_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "forks_url": {
+              "displayName": "forks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "full_name": {
+              "displayName": "full_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_commits_url": {
+              "displayName": "git_commits_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_refs_url": {
+              "displayName": "git_refs_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_tags_url": {
+              "displayName": "git_tags_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_url": {
+              "displayName": "git_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "has_discussions": {
+              "displayName": "has_discussions",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_downloads": {
+              "displayName": "has_downloads",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_issues": {
+              "displayName": "has_issues",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_pages": {
+              "displayName": "has_pages",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_projects": {
+              "displayName": "has_projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_wiki": {
+              "displayName": "has_wiki",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "homepage": {
+              "displayName": "homepage",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hooks_url": {
+              "displayName": "hooks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_template": {
+              "displayName": "is_template",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "issue_comment_url": {
+              "displayName": "issue_comment_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "issue_events_url": {
+              "displayName": "issue_events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "issues_url": {
+              "displayName": "issues_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "keys_url": {
+              "displayName": "keys_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "labels_url": {
+              "displayName": "labels_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "language": {
+              "displayName": "language",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "languages_url": {
+              "displayName": "languages_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "license": {
+              "displayName": "license",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "master_branch": {
+              "displayName": "master_branch",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "merge_commit_message": {
+              "displayName": "merge_commit_message",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "PR_BODY",
+                  "displayValue": "PR_BODY"
+                },
+                {
+                  "value": "PR_TITLE",
+                  "displayValue": "PR_TITLE"
+                },
+                {
+                  "value": "BLANK",
+                  "displayValue": "BLANK"
+                }
+              ]
+            },
+            "merge_commit_title": {
+              "displayName": "merge_commit_title",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "PR_TITLE",
+                  "displayValue": "PR_TITLE"
+                },
+                {
+                  "value": "MERGE_MESSAGE",
+                  "displayValue": "MERGE_MESSAGE"
+                }
+              ]
+            },
+            "merges_url": {
+              "displayName": "merges_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "milestones_url": {
+              "displayName": "milestones_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mirror_url": {
+              "displayName": "mirror_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notifications_url": {
+              "displayName": "notifications_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "open_issues": {
+              "displayName": "open_issues",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "open_issues_count": {
+              "displayName": "open_issues_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "permissions": {
+              "displayName": "permissions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "private": {
+              "displayName": "private",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "pulls_url": {
+              "displayName": "pulls_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pushed_at": {
+              "displayName": "pushed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "releases_url": {
+              "displayName": "releases_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "size": {
+              "displayName": "size",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "squash_merge_commit_message": {
+              "displayName": "squash_merge_commit_message",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "PR_BODY",
+                  "displayValue": "PR_BODY"
+                },
+                {
+                  "value": "COMMIT_MESSAGES",
+                  "displayValue": "COMMIT_MESSAGES"
+                },
+                {
+                  "value": "BLANK",
+                  "displayValue": "BLANK"
+                }
+              ]
+            },
+            "squash_merge_commit_title": {
+              "displayName": "squash_merge_commit_title",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "PR_TITLE",
+                  "displayValue": "PR_TITLE"
+                },
+                {
+                  "value": "COMMIT_OR_PR_TITLE",
+                  "displayValue": "COMMIT_OR_PR_TITLE"
+                }
+              ]
+            },
+            "ssh_url": {
+              "displayName": "ssh_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "stargazers_count": {
+              "displayName": "stargazers_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "stargazers_url": {
+              "displayName": "stargazers_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "starred_at": {
+              "displayName": "starred_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "statuses_url": {
+              "displayName": "statuses_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscribers_url": {
+              "displayName": "subscribers_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscription_url": {
+              "displayName": "subscription_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "svn_url": {
+              "displayName": "svn_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tags_url": {
+              "displayName": "tags_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "teams_url": {
+              "displayName": "teams_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "temp_clone_token": {
+              "displayName": "temp_clone_token",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "topics": {
+              "displayName": "topics",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "trees_url": {
+              "displayName": "trees_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "use_squash_pr_title_as_default": {
+              "displayName": "use_squash_pr_title_as_default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "watchers": {
+              "displayName": "watchers",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "watchers_count": {
+              "displayName": "watchers_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "web_commit_signoff_required": {
+              "displayName": "web_commit_signoff_required",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "repositories": {
+          "displayName": "Repositories",
+          "path": "/repositories",
+          "responseKey": "",
+          "fields": {
+            "allow_forking": {
+              "displayName": "allow_forking",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "archive_url": {
+              "displayName": "archive_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "assignees_url": {
+              "displayName": "assignees_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "blobs_url": {
+              "displayName": "blobs_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "branches_url": {
+              "displayName": "branches_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "clone_url": {
+              "displayName": "clone_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "code_of_conduct": {
+              "displayName": "code_of_conduct",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "collaborators_url": {
+              "displayName": "collaborators_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "comments_url": {
+              "displayName": "comments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "commits_url": {
+              "displayName": "commits_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "compare_url": {
+              "displayName": "compare_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contents_url": {
+              "displayName": "contents_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contributors_url": {
+              "displayName": "contributors_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default_branch": {
+              "displayName": "default_branch",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "delete_branch_on_merge": {
+              "displayName": "delete_branch_on_merge",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deployments_url": {
+              "displayName": "deployments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "disabled": {
+              "displayName": "disabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "downloads_url": {
+              "displayName": "downloads_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "events_url": {
+              "displayName": "events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fork": {
+              "displayName": "fork",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "forks": {
+              "displayName": "forks",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "forks_count": {
+              "displayName": "forks_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "forks_url": {
+              "displayName": "forks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "full_name": {
+              "displayName": "full_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_commits_url": {
+              "displayName": "git_commits_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_refs_url": {
+              "displayName": "git_refs_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_tags_url": {
+              "displayName": "git_tags_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_url": {
+              "displayName": "git_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "has_discussions": {
+              "displayName": "has_discussions",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_downloads": {
+              "displayName": "has_downloads",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_issues": {
+              "displayName": "has_issues",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_pages": {
+              "displayName": "has_pages",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_projects": {
+              "displayName": "has_projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_wiki": {
+              "displayName": "has_wiki",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "homepage": {
+              "displayName": "homepage",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hooks_url": {
+              "displayName": "hooks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_template": {
+              "displayName": "is_template",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "issue_comment_url": {
+              "displayName": "issue_comment_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "issue_events_url": {
+              "displayName": "issue_events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "issues_url": {
+              "displayName": "issues_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "keys_url": {
+              "displayName": "keys_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "labels_url": {
+              "displayName": "labels_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "language": {
+              "displayName": "language",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "languages_url": {
+              "displayName": "languages_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "license": {
+              "displayName": "license",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "merges_url": {
+              "displayName": "merges_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "milestones_url": {
+              "displayName": "milestones_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mirror_url": {
+              "displayName": "mirror_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "network_count": {
+              "displayName": "network_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notifications_url": {
+              "displayName": "notifications_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "open_issues": {
+              "displayName": "open_issues",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "open_issues_count": {
+              "displayName": "open_issues_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "permissions": {
+              "displayName": "permissions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "private": {
+              "displayName": "private",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "pulls_url": {
+              "displayName": "pulls_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pushed_at": {
+              "displayName": "pushed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "releases_url": {
+              "displayName": "releases_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "role_name": {
+              "displayName": "role_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "security_and_analysis": {
+              "displayName": "security_and_analysis",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "size": {
+              "displayName": "size",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ssh_url": {
+              "displayName": "ssh_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "stargazers_count": {
+              "displayName": "stargazers_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "stargazers_url": {
+              "displayName": "stargazers_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "statuses_url": {
+              "displayName": "statuses_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscribers_count": {
+              "displayName": "subscribers_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "subscribers_url": {
+              "displayName": "subscribers_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscription_url": {
+              "displayName": "subscription_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "svn_url": {
+              "displayName": "svn_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tags_url": {
+              "displayName": "tags_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "teams_url": {
+              "displayName": "teams_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "temp_clone_token": {
+              "displayName": "temp_clone_token",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "topics": {
+              "displayName": "topics",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "trees_url": {
+              "displayName": "trees_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "watchers": {
+              "displayName": "watchers",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "watchers_count": {
+              "displayName": "watchers_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "web_commit_signoff_required": {
+              "displayName": "web_commit_signoff_required",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "repository_invitations": {
+          "displayName": "Repository Invitations",
+          "path": "/user/repository_invitations",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expired": {
+              "displayName": "expired",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "invitee": {
+              "displayName": "invitee",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "inviter": {
+              "displayName": "inviter",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "permissions": {
+              "displayName": "permissions",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "read",
+                  "displayValue": "read"
+                },
+                {
+                  "value": "write",
+                  "displayValue": "write"
+                },
+                {
+                  "value": "admin",
+                  "displayValue": "admin"
+                },
+                {
+                  "value": "triage",
+                  "displayValue": "triage"
+                },
+                {
+                  "value": "maintain",
+                  "displayValue": "maintain"
+                }
+              ]
+            },
+            "repository": {
+              "displayName": "repository",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "secrets": {
+          "displayName": "Secrets",
+          "path": "/user/codespaces/secrets",
+          "responseKey": "secrets",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "selected_repositories_url": {
+              "displayName": "selected_repositories_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "all",
+                  "displayValue": "all"
+                },
+                {
+                  "value": "private",
+                  "displayValue": "private"
+                },
+                {
+                  "value": "selected",
+                  "displayValue": "selected"
+                }
+              ]
+            }
+          }
+        },
+        "stubbed": {
+          "displayName": "Stubbed",
+          "path": "/user/marketplace_purchases/stubbed",
+          "responseKey": "",
+          "fields": {
+            "account": {
+              "displayName": "account",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "billing_cycle": {
+              "displayName": "billing_cycle",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "free_trial_ends_on": {
+              "displayName": "free_trial_ends_on",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "next_billing_date": {
+              "displayName": "next_billing_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "on_free_trial": {
+              "displayName": "on_free_trial",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "plan": {
+              "displayName": "plan",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "unit_count": {
+              "displayName": "unit_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "subscriptions": {
+          "displayName": "Subscriptions",
+          "path": "/user/subscriptions",
+          "responseKey": "",
+          "fields": {
+            "allow_forking": {
+              "displayName": "allow_forking",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "archive_url": {
+              "displayName": "archive_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "assignees_url": {
+              "displayName": "assignees_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "blobs_url": {
+              "displayName": "blobs_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "branches_url": {
+              "displayName": "branches_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "clone_url": {
+              "displayName": "clone_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "code_of_conduct": {
+              "displayName": "code_of_conduct",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "collaborators_url": {
+              "displayName": "collaborators_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "comments_url": {
+              "displayName": "comments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "commits_url": {
+              "displayName": "commits_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "compare_url": {
+              "displayName": "compare_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contents_url": {
+              "displayName": "contents_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contributors_url": {
+              "displayName": "contributors_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default_branch": {
+              "displayName": "default_branch",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "delete_branch_on_merge": {
+              "displayName": "delete_branch_on_merge",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deployments_url": {
+              "displayName": "deployments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "disabled": {
+              "displayName": "disabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "downloads_url": {
+              "displayName": "downloads_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "events_url": {
+              "displayName": "events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fork": {
+              "displayName": "fork",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "forks": {
+              "displayName": "forks",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "forks_count": {
+              "displayName": "forks_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "forks_url": {
+              "displayName": "forks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "full_name": {
+              "displayName": "full_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_commits_url": {
+              "displayName": "git_commits_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_refs_url": {
+              "displayName": "git_refs_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_tags_url": {
+              "displayName": "git_tags_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_url": {
+              "displayName": "git_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "has_discussions": {
+              "displayName": "has_discussions",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_downloads": {
+              "displayName": "has_downloads",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_issues": {
+              "displayName": "has_issues",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_pages": {
+              "displayName": "has_pages",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_projects": {
+              "displayName": "has_projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_wiki": {
+              "displayName": "has_wiki",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "homepage": {
+              "displayName": "homepage",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hooks_url": {
+              "displayName": "hooks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_template": {
+              "displayName": "is_template",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "issue_comment_url": {
+              "displayName": "issue_comment_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "issue_events_url": {
+              "displayName": "issue_events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "issues_url": {
+              "displayName": "issues_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "keys_url": {
+              "displayName": "keys_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "labels_url": {
+              "displayName": "labels_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "language": {
+              "displayName": "language",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "languages_url": {
+              "displayName": "languages_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "license": {
+              "displayName": "license",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "merges_url": {
+              "displayName": "merges_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "milestones_url": {
+              "displayName": "milestones_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mirror_url": {
+              "displayName": "mirror_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "network_count": {
+              "displayName": "network_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notifications_url": {
+              "displayName": "notifications_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "open_issues": {
+              "displayName": "open_issues",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "open_issues_count": {
+              "displayName": "open_issues_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "permissions": {
+              "displayName": "permissions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "private": {
+              "displayName": "private",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "pulls_url": {
+              "displayName": "pulls_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pushed_at": {
+              "displayName": "pushed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "releases_url": {
+              "displayName": "releases_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "role_name": {
+              "displayName": "role_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "security_and_analysis": {
+              "displayName": "security_and_analysis",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "size": {
+              "displayName": "size",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ssh_url": {
+              "displayName": "ssh_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "stargazers_count": {
+              "displayName": "stargazers_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "stargazers_url": {
+              "displayName": "stargazers_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "statuses_url": {
+              "displayName": "statuses_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscribers_count": {
+              "displayName": "subscribers_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "subscribers_url": {
+              "displayName": "subscribers_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscription_url": {
+              "displayName": "subscription_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "svn_url": {
+              "displayName": "svn_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tags_url": {
+              "displayName": "tags_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "teams_url": {
+              "displayName": "teams_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "temp_clone_token": {
+              "displayName": "temp_clone_token",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "topics": {
+              "displayName": "topics",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "trees_url": {
+              "displayName": "trees_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "watchers": {
+              "displayName": "watchers",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "watchers_count": {
+              "displayName": "watchers_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "web_commit_signoff_required": {
+              "displayName": "web_commit_signoff_required",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "teams": {
+          "displayName": "Teams",
+          "path": "/user/teams",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ldap_dn": {
+              "displayName": "ldap_dn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "members_count": {
+              "displayName": "members_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "members_url": {
+              "displayName": "members_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notification_setting": {
+              "displayName": "notification_setting",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "notifications_enabled",
+                  "displayValue": "notifications_enabled"
+                },
+                {
+                  "value": "notifications_disabled",
+                  "displayValue": "notifications_disabled"
+                }
+              ]
+            },
+            "organization": {
+              "displayName": "organization",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "parent": {
+              "displayName": "parent",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "permission": {
+              "displayName": "permission",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "privacy": {
+              "displayName": "privacy",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "closed",
+                  "displayValue": "closed"
+                },
+                {
+                  "value": "secret",
+                  "displayValue": "secret"
+                }
+              ]
+            },
+            "repos_count": {
+              "displayName": "repos_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "repositories_url": {
+              "displayName": "repositories_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "slug": {
+              "displayName": "slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "user/codespaces": {
+          "displayName": "User Codespaces",
+          "path": "/user/codespaces",
+          "responseKey": "codespaces",
+          "fields": {
+            "billable_owner": {
+              "displayName": "billable_owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "devcontainer_path": {
+              "displayName": "devcontainer_path",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "display_name": {
+              "displayName": "display_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "environment_id": {
+              "displayName": "environment_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_status": {
+              "displayName": "git_status",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "idle_timeout_minutes": {
+              "displayName": "idle_timeout_minutes",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "idle_timeout_notice": {
+              "displayName": "idle_timeout_notice",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_known_stop_notice": {
+              "displayName": "last_known_stop_notice",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_used_at": {
+              "displayName": "last_used_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "EastUs",
+                  "displayValue": "EastUs"
+                },
+                {
+                  "value": "SouthEastAsia",
+                  "displayValue": "SouthEastAsia"
+                },
+                {
+                  "value": "WestEurope",
+                  "displayValue": "WestEurope"
+                },
+                {
+                  "value": "WestUs2",
+                  "displayValue": "WestUs2"
+                }
+              ]
+            },
+            "machine": {
+              "displayName": "machine",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "machines_url": {
+              "displayName": "machines_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "pending_operation": {
+              "displayName": "pending_operation",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "pending_operation_disabled_reason": {
+              "displayName": "pending_operation_disabled_reason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "prebuild": {
+              "displayName": "prebuild",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "publish_url": {
+              "displayName": "publish_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pulls_url": {
+              "displayName": "pulls_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recent_folders": {
+              "displayName": "recent_folders",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "repository": {
+              "displayName": "repository",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "retention_expires_at": {
+              "displayName": "retention_expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "retention_period_minutes": {
+              "displayName": "retention_period_minutes",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "runtime_constraints": {
+              "displayName": "runtime_constraints",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "start_url": {
+              "displayName": "start_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Unknown",
+                  "displayValue": "Unknown"
+                },
+                {
+                  "value": "Created",
+                  "displayValue": "Created"
+                },
+                {
+                  "value": "Queued",
+                  "displayValue": "Queued"
+                },
+                {
+                  "value": "Provisioning",
+                  "displayValue": "Provisioning"
+                },
+                {
+                  "value": "Available",
+                  "displayValue": "Available"
+                },
+                {
+                  "value": "Awaiting",
+                  "displayValue": "Awaiting"
+                },
+                {
+                  "value": "Unavailable",
+                  "displayValue": "Unavailable"
+                },
+                {
+                  "value": "Deleted",
+                  "displayValue": "Deleted"
+                },
+                {
+                  "value": "Moved",
+                  "displayValue": "Moved"
+                },
+                {
+                  "value": "Shutdown",
+                  "displayValue": "Shutdown"
+                },
+                {
+                  "value": "Archived",
+                  "displayValue": "Archived"
+                },
+                {
+                  "value": "Starting",
+                  "displayValue": "Starting"
+                },
+                {
+                  "value": "ShuttingDown",
+                  "displayValue": "ShuttingDown"
+                },
+                {
+                  "value": "Failed",
+                  "displayValue": "Failed"
+                },
+                {
+                  "value": "Exporting",
+                  "displayValue": "Exporting"
+                },
+                {
+                  "value": "Updating",
+                  "displayValue": "Updating"
+                },
+                {
+                  "value": "Rebuilding",
+                  "displayValue": "Rebuilding"
+                }
+              ]
+            },
+            "stop_url": {
+              "displayName": "stop_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "web_url": {
+              "displayName": "web_url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "user/emails": {
+          "displayName": "User/Emails",
+          "path": "/user/emails",
+          "responseKey": "",
+          "fields": {
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primary": {
+              "displayName": "primary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "verified": {
+              "displayName": "verified",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "user/gpg_keys": {
+          "displayName": "User/Gpg Keys",
+          "path": "/user/gpg_keys",
+          "responseKey": "",
+          "fields": {
+            "can_certify": {
+              "displayName": "can_certify",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "can_encrypt_comms": {
+              "displayName": "can_encrypt_comms",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "can_encrypt_storage": {
+              "displayName": "can_encrypt_storage",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "can_sign": {
+              "displayName": "can_sign",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emails": {
+              "displayName": "emails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "key_id": {
+              "displayName": "key_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primary_key_id": {
+              "displayName": "primary_key_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "public_key": {
+              "displayName": "public_key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_key": {
+              "displayName": "raw_key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "revoked": {
+              "displayName": "revoked",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "subkeys": {
+              "displayName": "subkeys",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "user/installations": {
+          "displayName": "User Installations",
+          "path": "/user/installations",
+          "responseKey": "installations",
+          "fields": {
+            "access_tokens_url": {
+              "displayName": "access_tokens_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "account": {
+              "displayName": "account",
+              "valueType": "other"
+            },
+            "app_id": {
+              "displayName": "app_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "app_slug": {
+              "displayName": "app_slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_email": {
+              "displayName": "contact_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "events": {
+              "displayName": "events",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "has_multiple_single_files": {
+              "displayName": "has_multiple_single_files",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "permissions": {
+              "displayName": "permissions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "repositories_url": {
+              "displayName": "repositories_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "repository_selection": {
+              "displayName": "repository_selection",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "all",
+                  "displayValue": "all"
+                },
+                {
+                  "value": "selected",
+                  "displayValue": "selected"
+                }
+              ]
+            },
+            "single_file_name": {
+              "displayName": "single_file_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "single_file_paths": {
+              "displayName": "single_file_paths",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "suspended_at": {
+              "displayName": "suspended_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "suspended_by": {
+              "displayName": "suspended_by",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "target_id": {
+              "displayName": "target_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "target_type": {
+              "displayName": "target_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "user/issues": {
+          "displayName": "User Issues",
+          "path": "/user/issues",
+          "responseKey": "",
+          "fields": {
+            "active_lock_reason": {
+              "displayName": "active_lock_reason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "assignee": {
+              "displayName": "assignee",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "assignees": {
+              "displayName": "assignees",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "author_association": {
+              "displayName": "author_association",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "COLLABORATOR",
+                  "displayValue": "COLLABORATOR"
+                },
+                {
+                  "value": "CONTRIBUTOR",
+                  "displayValue": "CONTRIBUTOR"
+                },
+                {
+                  "value": "FIRST_TIMER",
+                  "displayValue": "FIRST_TIMER"
+                },
+                {
+                  "value": "FIRST_TIME_CONTRIBUTOR",
+                  "displayValue": "FIRST_TIME_CONTRIBUTOR"
+                },
+                {
+                  "value": "MANNEQUIN",
+                  "displayValue": "MANNEQUIN"
+                },
+                {
+                  "value": "MEMBER",
+                  "displayValue": "MEMBER"
+                },
+                {
+                  "value": "NONE",
+                  "displayValue": "NONE"
+                },
+                {
+                  "value": "OWNER",
+                  "displayValue": "OWNER"
+                }
+              ]
+            },
+            "body": {
+              "displayName": "body",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "body_html": {
+              "displayName": "body_html",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "body_text": {
+              "displayName": "body_text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "closed_at": {
+              "displayName": "closed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "closed_by": {
+              "displayName": "closed_by",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "comments": {
+              "displayName": "comments",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "comments_url": {
+              "displayName": "comments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "draft": {
+              "displayName": "draft",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "events_url": {
+              "displayName": "events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "labels": {
+              "displayName": "labels",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "labels_url": {
+              "displayName": "labels_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "locked": {
+              "displayName": "locked",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "milestone": {
+              "displayName": "milestone",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number": {
+              "displayName": "number",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "performed_via_github_app": {
+              "displayName": "performed_via_github_app",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "pull_request": {
+              "displayName": "pull_request",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "reactions": {
+              "displayName": "reactions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "repository": {
+              "displayName": "repository",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "repository_url": {
+              "displayName": "repository_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state_reason": {
+              "displayName": "state_reason",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "completed",
+                  "displayValue": "completed"
+                },
+                {
+                  "value": "reopened",
+                  "displayValue": "reopened"
+                },
+                {
+                  "value": "not_planned",
+                  "displayValue": "not_planned"
+                }
+              ]
+            },
+            "sub_issues_summary": {
+              "displayName": "sub_issues_summary",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "timeline_url": {
+              "displayName": "timeline_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "user/keys": {
+          "displayName": "User/Keys",
+          "path": "/user/keys",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "read_only": {
+              "displayName": "read_only",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "verified": {
+              "displayName": "verified",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "user/memberships/orgs": {
+          "displayName": "User Memberships Orgs",
+          "path": "/user/memberships/orgs",
+          "responseKey": "",
+          "fields": {
+            "organization": {
+              "displayName": "organization",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "organization_url": {
+              "displayName": "organization_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "permissions": {
+              "displayName": "permissions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "role": {
+              "displayName": "role",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "admin",
+                  "displayValue": "admin"
+                },
+                {
+                  "value": "member",
+                  "displayValue": "member"
+                },
+                {
+                  "value": "billing_manager",
+                  "displayValue": "billing_manager"
+                }
+              ]
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "active",
+                  "displayValue": "active"
+                },
+                {
+                  "value": "pending",
+                  "displayValue": "pending"
+                }
+              ]
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "user/migrations": {
+          "displayName": "User Migrations",
+          "path": "/user/migrations",
+          "responseKey": "",
+          "fields": {
+            "archive_url": {
+              "displayName": "archive_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "exclude": {
+              "displayName": "exclude",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "exclude_attachments": {
+              "displayName": "exclude_attachments",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_git_data": {
+              "displayName": "exclude_git_data",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_metadata": {
+              "displayName": "exclude_metadata",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_owner_projects": {
+              "displayName": "exclude_owner_projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_releases": {
+              "displayName": "exclude_releases",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "guid": {
+              "displayName": "guid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "lock_repositories": {
+              "displayName": "lock_repositories",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "org_metadata_only": {
+              "displayName": "org_metadata_only",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "repositories": {
+              "displayName": "repositories",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "user/social_accounts": {
+          "displayName": "User/Social Accounts",
+          "path": "/user/social_accounts",
+          "responseKey": "",
+          "fields": {
+            "provider": {
+              "displayName": "provider",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "user/ssh_signing_keys": {
+          "displayName": "User/Ssh Signing Keys",
+          "path": "/user/ssh_signing_keys",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "user/starred": {
+          "displayName": "User Starred",
+          "path": "/user/starred",
+          "responseKey": "",
+          "fields": {
+            "allow_auto_merge": {
+              "displayName": "allow_auto_merge",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_forking": {
+              "displayName": "allow_forking",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_merge_commit": {
+              "displayName": "allow_merge_commit",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_rebase_merge": {
+              "displayName": "allow_rebase_merge",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_squash_merge": {
+              "displayName": "allow_squash_merge",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_update_branch": {
+              "displayName": "allow_update_branch",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "anonymous_access_enabled": {
+              "displayName": "anonymous_access_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "archive_url": {
+              "displayName": "archive_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "assignees_url": {
+              "displayName": "assignees_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "blobs_url": {
+              "displayName": "blobs_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "branches_url": {
+              "displayName": "branches_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "clone_url": {
+              "displayName": "clone_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "collaborators_url": {
+              "displayName": "collaborators_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "comments_url": {
+              "displayName": "comments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "commits_url": {
+              "displayName": "commits_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "compare_url": {
+              "displayName": "compare_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contents_url": {
+              "displayName": "contents_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contributors_url": {
+              "displayName": "contributors_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default_branch": {
+              "displayName": "default_branch",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "delete_branch_on_merge": {
+              "displayName": "delete_branch_on_merge",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deployments_url": {
+              "displayName": "deployments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "disabled": {
+              "displayName": "disabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "downloads_url": {
+              "displayName": "downloads_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "events_url": {
+              "displayName": "events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fork": {
+              "displayName": "fork",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "forks": {
+              "displayName": "forks",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "forks_count": {
+              "displayName": "forks_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "forks_url": {
+              "displayName": "forks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "full_name": {
+              "displayName": "full_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_commits_url": {
+              "displayName": "git_commits_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_refs_url": {
+              "displayName": "git_refs_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_tags_url": {
+              "displayName": "git_tags_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_url": {
+              "displayName": "git_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "has_discussions": {
+              "displayName": "has_discussions",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_downloads": {
+              "displayName": "has_downloads",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_issues": {
+              "displayName": "has_issues",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_pages": {
+              "displayName": "has_pages",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_projects": {
+              "displayName": "has_projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_wiki": {
+              "displayName": "has_wiki",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "homepage": {
+              "displayName": "homepage",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hooks_url": {
+              "displayName": "hooks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_template": {
+              "displayName": "is_template",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "issue_comment_url": {
+              "displayName": "issue_comment_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "issue_events_url": {
+              "displayName": "issue_events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "issues_url": {
+              "displayName": "issues_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "keys_url": {
+              "displayName": "keys_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "labels_url": {
+              "displayName": "labels_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "language": {
+              "displayName": "language",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "languages_url": {
+              "displayName": "languages_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "license": {
+              "displayName": "license",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "master_branch": {
+              "displayName": "master_branch",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "merge_commit_message": {
+              "displayName": "merge_commit_message",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "PR_BODY",
+                  "displayValue": "PR_BODY"
+                },
+                {
+                  "value": "PR_TITLE",
+                  "displayValue": "PR_TITLE"
+                },
+                {
+                  "value": "BLANK",
+                  "displayValue": "BLANK"
+                }
+              ]
+            },
+            "merge_commit_title": {
+              "displayName": "merge_commit_title",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "PR_TITLE",
+                  "displayValue": "PR_TITLE"
+                },
+                {
+                  "value": "MERGE_MESSAGE",
+                  "displayValue": "MERGE_MESSAGE"
+                }
+              ]
+            },
+            "merges_url": {
+              "displayName": "merges_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "milestones_url": {
+              "displayName": "milestones_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mirror_url": {
+              "displayName": "mirror_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notifications_url": {
+              "displayName": "notifications_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "open_issues": {
+              "displayName": "open_issues",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "open_issues_count": {
+              "displayName": "open_issues_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "permissions": {
+              "displayName": "permissions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "private": {
+              "displayName": "private",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "pulls_url": {
+              "displayName": "pulls_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pushed_at": {
+              "displayName": "pushed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "releases_url": {
+              "displayName": "releases_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "size": {
+              "displayName": "size",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "squash_merge_commit_message": {
+              "displayName": "squash_merge_commit_message",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "PR_BODY",
+                  "displayValue": "PR_BODY"
+                },
+                {
+                  "value": "COMMIT_MESSAGES",
+                  "displayValue": "COMMIT_MESSAGES"
+                },
+                {
+                  "value": "BLANK",
+                  "displayValue": "BLANK"
+                }
+              ]
+            },
+            "squash_merge_commit_title": {
+              "displayName": "squash_merge_commit_title",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "PR_TITLE",
+                  "displayValue": "PR_TITLE"
+                },
+                {
+                  "value": "COMMIT_OR_PR_TITLE",
+                  "displayValue": "COMMIT_OR_PR_TITLE"
+                }
+              ]
+            },
+            "ssh_url": {
+              "displayName": "ssh_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "stargazers_count": {
+              "displayName": "stargazers_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "stargazers_url": {
+              "displayName": "stargazers_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "starred_at": {
+              "displayName": "starred_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "statuses_url": {
+              "displayName": "statuses_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscribers_url": {
+              "displayName": "subscribers_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscription_url": {
+              "displayName": "subscription_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "svn_url": {
+              "displayName": "svn_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tags_url": {
+              "displayName": "tags_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "teams_url": {
+              "displayName": "teams_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "temp_clone_token": {
+              "displayName": "temp_clone_token",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "topics": {
+              "displayName": "topics",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "trees_url": {
+              "displayName": "trees_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "use_squash_pr_title_as_default": {
+              "displayName": "use_squash_pr_title_as_default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "watchers": {
+              "displayName": "watchers",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "watchers_count": {
+              "displayName": "watchers_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "web_commit_signoff_required": {
+              "displayName": "web_commit_signoff_required",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "",
+          "fields": {
+            "avatar_url": {
+              "displayName": "avatar_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "events_url": {
+              "displayName": "events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "followers_url": {
+              "displayName": "followers_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "following_url": {
+              "displayName": "following_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "gists_url": {
+              "displayName": "gists_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "gravatar_id": {
+              "displayName": "gravatar_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "login": {
+              "displayName": "login",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "organizations_url": {
+              "displayName": "organizations_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "received_events_url": {
+              "displayName": "received_events_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "repos_url": {
+              "displayName": "repos_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "site_admin": {
+              "displayName": "site_admin",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "starred_at": {
+              "displayName": "starred_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "starred_url": {
+              "displayName": "starred_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscriptions_url": {
+              "displayName": "subscriptions_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_view_type": {
+              "displayName": "user_view_type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -2,8 +2,8 @@ package stripe
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -25,7 +25,7 @@ func makeNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 			return "", nil
 		}
 
-		data, err := jsonquery.New(node).Array("data", true)
+		data, err := jsonquery.New(node).ArrayOptional("data")
 		if err != nil {
 			return "", err
 		}
@@ -36,7 +36,7 @@ func makeNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 
 		lastElement := data[len(data)-1]
 
-		lastItemID, err := jsonquery.New(lastElement).Str("id", true)
+		lastItemID, err := jsonquery.New(lastElement).StringOptional("id")
 		if err != nil {
 			return "", err
 		}

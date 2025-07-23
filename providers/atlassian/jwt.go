@@ -23,7 +23,7 @@ const QuerySeparator = "&"              // nolint:gochecknoglobals
 // a query request hash, an issued time and an expiration time. The implementation has been adapted
 // from https://bitbucket.org/atlassian/atlassian-jwt-js.git.
 func JwtTokenGenerator(payload map[string]any, secret string) common.DynamicHeadersGenerator {
-	return func(req http.Request) ([]common.Header, error) {
+	return func(req *http.Request) ([]common.Header, error) {
 		claims := make(map[string]any)
 		queryParams := make(map[string][]string)
 

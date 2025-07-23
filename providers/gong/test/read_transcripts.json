@@ -1,0 +1,27 @@
+{
+    "requestId": "4al018gzaztcr8nbukw",
+    "records": {
+      "totalRecords": 263,
+      "currentPageSize": 100,
+      "currentPageNumber": 0,
+      "cursor": "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiM1M30.6qKwpOcvnuweTZmFRzYdtjs_YwJphJU4QIwWFM"
+    },
+    "callTranscripts": [
+      {
+        "callid": "7782342274025937895",
+        "transcript": [
+          {
+            "speakerId": "6432345678555530067",
+            "topic": "Objections",
+            "sentences": [
+              {
+                "start": 460230,
+                "end": 462343,
+                "text": "No wait, I think we should check that out first."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }

@@ -3,7 +3,7 @@ package atlassian
 import (
 	"errors"
 
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -26,17 +26,17 @@ func (c *Connector) parseFieldsJiraIssue(node *ajson.Node) (map[string]string, e
 	fieldsMap := make(map[string]string)
 
 	for _, item := range arr {
-		name, err := jsonquery.New(item).Str("id", false)
+		name, err := jsonquery.New(item).StringRequired("id")
 		if err != nil {
 			return nil, err
 		}
 
-		displayName, err := jsonquery.New(item).Str("name", false)
+		displayName, err := jsonquery.New(item).StringRequired("name")
 		if err != nil {
 			return nil, err
 		}
 
-		fieldsMap[*name] = *displayName
+		fieldsMap[name] = displayName
 	}
 
 	return fieldsMap, nil

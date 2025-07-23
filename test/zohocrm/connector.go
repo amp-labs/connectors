@@ -13,7 +13,7 @@ import (
 
 func GetZohoConnector(ctx context.Context) *zohocrm.Connector {
 	filePath := credscanning.LoadPath(providers.Zoho)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := zohocrm.NewConnector(
 		zohocrm.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
@@ -38,6 +38,7 @@ func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 		Scopes: []string{
 			"ZohoCRM.modules.ALL",
 			"ZohoCRM.settings.ALL",
+			"ZohoCRM.notifications.ALL",
 		},
 	}
 

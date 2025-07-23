@@ -1,12 +1,12 @@
 package pipeliner
 
 import (
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	arr, err := jsonquery.New(node).Array("data", false)
+	arr, err := jsonquery.New(node).ArrayRequired("data")
 	if err != nil {
 		return nil, err
 	}

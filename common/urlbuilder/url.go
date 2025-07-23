@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/url"
 	"strings"
+
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 var ErrInvalidURL = errors.New("URL format is incorrect")
@@ -33,11 +35,26 @@ func New(base string, path ...string) (*URL, error) {
 	u := &URL{
 		delegate:           delegate,
 		queryParams:        values,
-		encodingExceptions: nil,
+		encodingExceptions: make(map[string]string),
 	}
 	u.AddPath(path...)
 
 	return u, nil
+}
+
+// FromRawURL converts a core Go `url.URL` into `urlbuilder.URL`,
+// providing better control over query parameters and encoding.
+func FromRawURL(rawURL *url.URL) (*URL, error) {
+	values, err := url.ParseQuery(rawURL.RawQuery)
+	if err != nil {
+		return nil, errors.Join(err, ErrInvalidURL)
+	}
+
+	return &URL{
+		delegate:           rawURL,
+		queryParams:        values,
+		encodingExceptions: make(map[string]string),
+	}, nil
 }
 
 func (u *URL) WithQueryParamList(name string, values []string) {
@@ -62,7 +79,9 @@ func (u *URL) RemoveQueryParam(name string) {
 }
 
 func (u *URL) AddEncodingExceptions(exceptions map[string]string) {
-	u.encodingExceptions = exceptions
+	for key, value := range exceptions {
+		u.encodingExceptions[key] = value
+	}
 }
 
 // ToURL relies on String method.
@@ -75,6 +94,18 @@ func (u *URL) ToURL() (*url.URL, error) {
 	}
 
 	return result, nil
+}
+
+func (u *URL) Path() string {
+	return u.delegate.Path
+}
+
+func (u *URL) Origin() string {
+	if u.delegate.Scheme == "" || u.delegate.Host == "" {
+		return ""
+	}
+
+	return u.delegate.Scheme + "://" + u.delegate.Host
 }
 
 func (u *URL) String() string {
@@ -136,4 +167,30 @@ func cleanTrailingSlashes(link string) string {
 
 func (u *URL) HasQueryParam(name string) bool {
 	return u.queryParams.Has(name)
+}
+
+// Equals compares URL equality ignoring order, encoding.
+func (u *URL) Equals(other *URL) bool { // nolint:cyclop
+	if strings.ToLower(u.delegate.Host) != strings.ToLower(other.delegate.Host) || // nolint:staticcheck
+		u.delegate.Path != other.delegate.Path ||
+		u.delegate.RawPath != other.delegate.RawPath ||
+		u.delegate.Scheme != other.delegate.Scheme ||
+		u.delegate.Fragment != other.delegate.Fragment ||
+		u.delegate.RawFragment != other.delegate.RawFragment {
+		return false
+	}
+
+	// Compare query parameters. The order doesn't matter
+	if len(u.queryParams) != len(other.queryParams) {
+		return false
+	}
+
+	for name, params := range u.queryParams {
+		otherParams, exists := other.queryParams[name]
+		if !exists || !datautils.EqualUnordered(params, otherParams) {
+			return false
+		}
+	}
+
+	return true
 }

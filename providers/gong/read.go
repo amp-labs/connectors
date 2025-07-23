@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers/gong/metadata"
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -17,23 +17,21 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	url, err := c.getURL(config.ObjectName)
+	url, err := c.getReadURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(config.NextPage) != 0 { // not the first page, add a cursor
-		url.WithQueryParam("cursor", config.NextPage.String())
+	var res *common.JSONHTTPResponse
+
+	if postReadObjects.Has(config.ObjectName) {
+		body := buildReadBody(config)
+		res, err = c.Client.Post(ctx, url.String(), body)
+	} else {
+		buildReadParams(url, config)
+		res, err = c.Client.Get(ctx, url.String())
 	}
 
-	if !config.Since.IsZero() {
-		// This time format is RFC3339 but in UTC only.
-		// See calls or users object for query parameter requirements.
-		// https://gong.app.gong.io/settings/api/documentation#get-/v2/calls
-		url.WithQueryParam("fromDateTime", datautils.Time.FormatRFC3339inUTC(config.Since))
-	}
-
-	res, err := c.Client.Get(ctx, url.String())
 	if err != nil {
 		if errors.Is(err, common.ErrNotFound) {
 			return &common.ReadResult{
@@ -47,8 +45,10 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
+	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, config.ObjectName)
+
 	return common.ParseResult(res,
-		common.GetRecordsUnderJSONPath(config.ObjectName),
+		common.ExtractRecordsFromPath(responseFieldName),
 		getNextRecordsURL,
 		common.GetMarshaledData,
 		config.Fields,

@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -30,36 +30,30 @@ Visual example of what will happen to each property:
 		}
 	}
 */
-func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	arr, err := jsonquery.New(node).Array("issues", false)
+func flattenRecord(item *ajson.Node) (map[string]any, error) {
+	fieldsObject, err := jsonquery.New(item).ObjectRequired("fields")
 	if err != nil {
-		return nil, err
+		return nil, errors.Join(common.ErrParseError, err)
 	}
 
-	list := make([]map[string]any, len(arr))
-
-	for index, item := range arr {
-		fieldsObject, err := jsonquery.New(item).Object("fields", false)
-		if err != nil {
-			return nil, errors.Join(common.ErrParseError, err)
-		}
-
-		fields, err := jsonquery.Convertor.ObjectToMap(fieldsObject)
-		if err != nil {
-			return nil, errors.Join(common.ErrParseError, err)
-		}
-
-		id, err := jsonquery.New(item).Str("id", false)
-		if err != nil {
-			return nil, errors.Join(common.ErrParseError, err)
-		}
-
-		// Enhance response with id property.
-		fields["id"] = *id
-		list[index] = fields
+	fields, err := jsonquery.Convertor.ObjectToMap(fieldsObject)
+	if err != nil {
+		return nil, errors.Join(common.ErrParseError, err)
 	}
 
-	return list, nil
+	id, err := jsonquery.New(item).StringRequired("id")
+	if err != nil {
+		return nil, errors.Join(common.ErrParseError, err)
+	}
+
+	// Enhance response with id property.
+	fields["id"] = id
+
+	return fields, nil
+}
+
+func getRecords(node *ajson.Node) ([]*ajson.Node, error) {
+	return jsonquery.New(node).ArrayRequired("issues")
 }
 
 // Next starting page index is calculated base on current index and array size.
@@ -77,7 +71,7 @@ func getNextRecords(node *ajson.Node) (string, error) {
 		return "", nil
 	}
 
-	startAt, err := jsonquery.New(node).Integer("startAt", true)
+	startAt, err := jsonquery.New(node).IntegerOptional("startAt")
 	if err != nil {
 		return "", err
 	}

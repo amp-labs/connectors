@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -56,12 +56,12 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 func constructWriteResult(objName string, body *ajson.Node) (*common.WriteResult, error) {
 	obj := naming.NewSingularString(objName).String()
 
-	objectResponse, err := jsonquery.New(body).Object(obj, true)
+	objectResponse, err := jsonquery.New(body).ObjectOptional(obj)
 	if err != nil {
 		return nil, err
 	}
 
-	recordID, err := jsonquery.New(objectResponse).Integer("id", true)
+	recordID, err := jsonquery.New(objectResponse).IntegerOptional("id")
 	if err != nil {
 		return nil, err
 	}

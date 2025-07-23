@@ -1,13 +1,21 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Atlassian Provider = "atlassian"
 
+const (
+	// ModuleAtlassianJira is the module used for listing Jira issues.
+	ModuleAtlassianJira common.ModuleID = "jira"
+)
+
+// nolint:funlen
 func init() {
 	// Atlassian Configuration
 	SetInfo(Atlassian, ProviderInfo{
 		DisplayName: "Atlassian",
 		AuthType:    Oauth2,
-		BaseURL:     "https://api.atlassian.com",
+		BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.atlassian.com/authorize",
@@ -16,6 +24,18 @@ func init() {
 			ExplicitWorkspaceRequired: true, // Needed for GetPostAuthInfo call
 		},
 		PostAuthInfoNeeded: true,
+		DefaultModule:      ModuleAtlassianJira,
+		Modules: &Modules{
+			ModuleAtlassianJira: {
+				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
+				DisplayName: "Atlassian Jira",
+				Support: Support{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
+		},
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -38,6 +58,20 @@ func init() {
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+		},
+		Metadata: &ProviderMetadata{
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "cloudId",
+				},
+			},
+			Input: []MetadataItemInput{
+				{
+					Name:        "workspace",
+					DisplayName: "App name",
+					DocsURL:     "https://support.atlassian.com/organization-administration/docs/update-your-product-and-site-url/",
+				},
+			},
 		},
 	})
 }

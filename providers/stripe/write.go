@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -13,7 +13,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	url, err := c.getWriteURL(config.ObjectName)
+	url, err := c.getURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -21,20 +21,11 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	var write common.WriteMethod
 
 	if len(config.RecordId) == 0 {
-		if supportedObjectsByCreate[c.Module.ID].Has(config.ObjectName) {
-			write = c.Client.Post
-		}
+		write = c.Client.Post
 	} else {
-		if supportedObjectsByUpdate[c.Module.ID].Has(config.ObjectName) {
-			write = c.Client.Post
+		write = c.Client.Post
 
-			url.AddPath(config.RecordId)
-		}
-	}
-
-	if write == nil {
-		// No supported REST operation was found for current object.
-		return nil, common.ErrOperationNotSupportedForObject
+		url.AddPath(config.RecordId)
 	}
 
 	res, err := write(ctx, url.String(), config.RecordData, common.HeaderFormURLEncoded)
@@ -54,7 +45,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func constructWriteResult(node *ajson.Node) (*common.WriteResult, error) {
-	recordID, err := jsonquery.New(node).Str("id", false)
+	recordID, err := jsonquery.New(node).StringRequired("id")
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +57,7 @@ func constructWriteResult(node *ajson.Node) (*common.WriteResult, error) {
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: *recordID,
+		RecordId: recordID,
 		Errors:   nil,
 		Data:     data,
 	}, nil
