@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -24,8 +25,9 @@ func main() {
 	conn := connTest.GetStripeConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "customers",
-		Fields:     connectors.Fields("email", "name"),
+		ObjectName: "invoices",
+		Fields:     connectors.Fields("description", "customer_name"),
+		Since:      time.Unix(1753116936, 0),
 	})
 	if err != nil {
 		utils.Fail("error reading from provider", "error", err)
