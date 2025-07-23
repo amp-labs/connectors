@@ -282,18 +282,19 @@ func (h *HTTPClient) httpGet(ctx context.Context, //nolint:dupl
 	}
 
 	rsp, body, err := h.sendRequest(req)
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "GET", correlationId, url, body)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "GET", correlationId, url)
+	}
+
 	if err != nil {
 		logging.Logger(ctx).Error("HTTP request failed",
 			"method", "GET", "url", url,
 			"correlationId", correlationId, "error", err)
 
 		return nil, nil, err
-	}
-
-	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "GET", correlationId, url, body)
-	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "GET", correlationId, url)
 	}
 
 	return rsp, body, nil
@@ -317,18 +318,19 @@ func (h *HTTPClient) httpPost(ctx context.Context, url string, //nolint:dupl
 	}
 
 	rsp, body, err := h.sendRequest(req)
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "POST", correlationId, url, body)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "POST", correlationId, url)
+	}
+
 	if err != nil {
 		logging.Logger(ctx).Error("HTTP request failed",
 			"method", "POST", "url", url,
 			"correlationId", correlationId, "error", err)
 
 		return nil, nil, err
-	}
-
-	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "POST", correlationId, url, body)
-	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "POST", correlationId, url)
 	}
 
 	return rsp, body, nil
@@ -363,18 +365,19 @@ func (h *HTTPClient) httpPatch(ctx context.Context, //nolint:dupl
 	}
 
 	rsp, rspBody, err := h.sendRequest(req)
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PATCH", correlationId, url, rspBody)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "PATCH", correlationId, url)
+	}
+
 	if err != nil {
 		logging.Logger(ctx).Error("HTTP request failed",
 			"method", "PATCH", "url", url,
 			"correlationId", correlationId, "error", err)
 
 		return nil, nil, err
-	}
-
-	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PATCH", correlationId, url, rspBody)
-	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "PATCH", correlationId, url)
 	}
 
 	return rsp, rspBody, nil
@@ -409,18 +412,19 @@ func (h *HTTPClient) httpPut(ctx context.Context, //nolint:dupl
 	}
 
 	rsp, rspBody, err := h.sendRequest(req)
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PUT", correlationId, url, rspBody)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "PUT", correlationId, url)
+	}
+
 	if err != nil {
 		logging.Logger(ctx).Error("HTTP request failed",
 			"method", "PUT", "url", url,
 			"correlationId", correlationId, "error", err)
 
 		return nil, nil, err
-	}
-
-	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PUT", correlationId, url, rspBody)
-	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "PUT", correlationId, url)
 	}
 
 	return rsp, rspBody, nil
@@ -444,18 +448,19 @@ func (h *HTTPClient) httpDelete(ctx context.Context, //nolint:dupl
 	}
 
 	rsp, rspBody, err := h.sendRequest(req)
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "DELETE", correlationId, url, rspBody)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "DELETE", correlationId, url)
+	}
+
 	if err != nil {
 		logging.Logger(ctx).Error("HTTP request failed",
 			"method", "DELETE", "url", url,
 			"correlationId", correlationId, "error", err)
 
 		return nil, nil, err
-	}
-
-	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "DELETE", correlationId, url, rspBody)
-	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "DELETE", correlationId, url)
 	}
 
 	return rsp, rspBody, nil
@@ -591,10 +596,10 @@ func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, err
 	// Check the response status code
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		if h.ErrorHandler != nil {
-			return nil, nil, h.ErrorHandler(res, body)
+			return res, body, h.ErrorHandler(res, body)
 		}
 
-		return nil, nil, InterpretError(res, body)
+		return res, body, InterpretError(res, body)
 	}
 
 	return res, body, nil
