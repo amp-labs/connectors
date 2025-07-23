@@ -302,9 +302,9 @@ func (h *HTTPClient) httpGet(ctx context.Context, //nolint:dupl
 
 // httpPost makes a POST request to the given URL and returns the response & response body.
 func (h *HTTPClient) httpPost(ctx context.Context, url string, //nolint:dupl
-	headers []Header, body []byte,
+	headers []Header, requestBody []byte,
 ) (*http.Response, []byte, error) {
-	req, err := makePostRequest(ctx, url, headers, body)
+	req, err := makePostRequest(ctx, url, headers, requestBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -312,15 +312,19 @@ func (h *HTTPClient) httpPost(ctx context.Context, url string, //nolint:dupl
 	correlationId := uuid.Must(uuid.NewRandom()).String()
 
 	if logging.IsVerboseLogging(ctx) {
-		logRequestWithBody(logging.VerboseLogger(ctx), req, "POST", correlationId, url, body)
+		// body is nil because makePostRequest sometimes returns an altered body reader
+		// so we rely on req and not body for logging purposes. If we use body, it will
+		// not just log the wrong thing, it will swap the body out, which will lead to
+		// unexpected behavior in the request.
+		logRequestWithBody(logging.VerboseLogger(ctx), req, "POST", correlationId, url, nil)
 	} else {
 		logRequestWithoutBody(logging.Logger(ctx), req, "POST", correlationId, url)
 	}
 
-	rsp, body, err := h.sendRequest(req)
+	rsp, responseBody, err := h.sendRequest(req)
 
 	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "POST", correlationId, url, body)
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "POST", correlationId, url, responseBody)
 	} else {
 		logResponseWithoutBody(logging.Logger(ctx), rsp, "POST", correlationId, url)
 	}
@@ -333,7 +337,7 @@ func (h *HTTPClient) httpPost(ctx context.Context, url string, //nolint:dupl
 		return nil, nil, err
 	}
 
-	return rsp, body, nil
+	return rsp, responseBody, nil
 }
 
 // httpPatch makes a PATCH request to the given URL and returns the response & response body.
