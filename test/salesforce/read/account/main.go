@@ -32,7 +32,7 @@ func main() {
 		ObjectName: "Account",
 		Fields:     connectors.Fields("Id", "Name", "BillingCity", "IsDeleted", "SystemModstamp"),
 		Since:      timestamp("2024-08-28T13:47:37"),
-		// Until:      timestamp("2025-01-01T00:00:00"),
+		Until:      timestamp("2025-01-01T00:00:00"),
 	})
 	if err != nil {
 		utils.Fail("error reading", "error", err)

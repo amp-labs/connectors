@@ -22,19 +22,19 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 }
 
 // getSalesforceDataMarshaller returns a marshaller that fills Associations in ReadResultRow for Salesforce.
-func getSalesforceDataMarshaller(associatedObjects []string) func([]map[string]any, []string) ([]common.ReadResultRow, error) {
+func getSalesforceDataMarshaller(assoc []string) func([]map[string]any, []string) ([]common.ReadResultRow, error) {
 	// This is a common.MarshalFunc.
 	return func(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
 		data := make([]common.ReadResultRow, len(records))
 
 		// Go through each record, attach associations (if any) to the record and
 		// convert the record to a common.ReadResultRow.
-		for i, record := range records {
+		for idx, record := range records {
 			recordMap := common.ToStringMap(record)
 			associations := make(map[string][]common.Association)
 
 			// Go through each associated object (from ReadParams), and extract the associations from the record.
-			for _, assoc := range associatedObjects {
+			for _, assoc := range assoc {
 				// In Salesforce, the associated object is a key in the record map.
 				// For example, "Contacts" will be a key in the record map, with an array of associated contacts.
 				key, ok := recordMap.GetCaseInsensitive(assoc)
@@ -52,7 +52,7 @@ func getSalesforceDataMarshaller(associatedObjects []string) func([]map[string]a
 			id, _ := recordMap.GetCaseInsensitive("Id")
 			idStr, _ := id.(string)
 
-			data[i] = common.ReadResultRow{
+			data[idx] = common.ReadResultRow{
 				Fields:       common.ExtractLowercaseFieldsFromRaw(fields, record),
 				Raw:          record,
 				Associations: associations,
