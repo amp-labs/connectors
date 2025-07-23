@@ -312,11 +312,16 @@ func (h *HTTPClient) httpPost(ctx context.Context, url string, //nolint:dupl
 	correlationId := uuid.Must(uuid.NewRandom()).String()
 
 	if logging.IsVerboseLogging(ctx) {
-		logRequestWithBody(logging.VerboseLogger(ctx), req, "POST", correlationId, url, body)
+		// body is nil because makePostRequest sometimes returns an altered body reader
+		// so we rely on req and not body for logging purposes. If we use body, it will
+		// not just log the wrong thing, it will swap the body out, which will lead to
+		// unexpected behavior in the request.
+		logRequestWithBody(logging.VerboseLogger(ctx), req, "POST", correlationId, url, nil)
 	} else {
 		logRequestWithoutBody(logging.Logger(ctx), req, "POST", correlationId, url)
 	}
 
+	// NB: body here is now the response body, not the request body.
 	rsp, body, err := h.sendRequest(req)
 
 	if logging.IsVerboseLogging(ctx) {
