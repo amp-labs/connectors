@@ -456,6 +456,7 @@ type SubscriptionEvent interface {
 	Workspace() (string, error)
 	RecordId() (string, error)
 	EventTimeStampNano() (int64, error)
+	RawMap() (map[string]any, error)
 }
 
 type SubscriptionUpdateEvent interface {
@@ -469,6 +470,7 @@ type SubscriptionUpdateEvent interface {
 // from a collapsed event for webhook parsing and processing.
 type CollapsedSubscriptionEvent interface {
 	SubscriptionEventList() ([]SubscriptionEvent, error)
+	RawMap() (map[string]any, error)
 }
 
 // WebhookRequest is a struct that contains the request parameters for a webhook.

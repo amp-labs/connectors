@@ -172,6 +172,10 @@ func (evt SubscriptionEvent) asMap() common.StringMap {
 	return common.StringMap(evt)
 }
 
+func (evt SubscriptionEvent) RawMap() (map[string]any, error) {
+	return evt, nil
+}
+
 func (evt SubscriptionEvent) ObjectTypeId() (string, error) {
 	m := evt.asMap()
 
