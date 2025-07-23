@@ -15,7 +15,7 @@ func init() {
 				},
 				{
 					Name:          "Api-Username",
-					ValueTemplate: "{{ .apiUsername }}",
+					ValueTemplate: "{{ .username }}",
 				},
 			},
 			Inputs: []CustomAuthInput{
@@ -24,7 +24,7 @@ func init() {
 					DisplayName: "API Key",
 				},
 				{
-					Name:        "apiUsername",
+					Name:        "username",
 					DisplayName: "API Username",
 				},
 			},
