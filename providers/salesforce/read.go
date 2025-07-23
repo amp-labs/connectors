@@ -65,7 +65,7 @@ func makeSOQL(config common.ReadParams) *soqlBuilder {
 	// Source: https://www.infallibletechie.com/2023/04/parent-child-records-in-salesforce-soql-using-rest-api.html
 	if config.AssociatedObjects != nil {
 		for _, obj := range config.AssociatedObjects {
-			// Generates subqueries like: (SELECT FIELDS(ALL) FROM Account)
+			// Generates subqueries like: (SELECT FIELDS(STANDARD) FROM Account)
 			// Just standard fields for now, because salesforce errors out > 200 fields on an object.
 			fields = append(fields, "(SELECT FIELDS(STANDARD) FROM "+obj+")")
 		}
