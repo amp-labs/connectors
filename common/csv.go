@@ -43,13 +43,12 @@ func (j *JSONHTTPClient) httpPutCSV(ctx context.Context, url string,
 }
 
 func makeTextCSVPutRequest(ctx context.Context, url string, headers []Header, body []byte) (*http.Request, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewBuffer(body))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewReader(body))
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
 	headers = append(headers, Header{Key: "Content-Type", Value: "text/csv"})
-	req.ContentLength = int64(len(body))
 
 	return addHeaders(req, headers), nil
 }
