@@ -20,6 +20,12 @@ func records() common.RecordsFunc {
 	}
 }
 
+// Two-phase pagination approach is required for Flatfile API:
+//  1. Some endpoints (like environments) return a pagination object with currentPage/pageCount
+//     but don't return empty responses for invalid pages, which can cause infinite loops
+//  2. Other endpoints follow standard pagination (return empty when no more data)
+//
+// We prioritize pagination object when available to avoid infinite loops
 func nextRecordsURL(url *url.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		if url == nil {
@@ -44,10 +50,12 @@ func nextRecordsURL(url *url.URL) common.NextPageFunc {
 	}
 }
 
-// handlePaginationObject extracts pagination info from response.
+// handlePaginationObject extracts pagination info from response to prevent infinite loops.
+// Some Flatfile endpoints (e.g., environments) return pagination metadata but don't return
+// empty responses for invalid pages, so we must rely on currentPage/pageCount comparison.
 // Returns: (nextURL, shouldStop).
 // - nextURL: the next page URL if pagination is valid and not at end.
-// - shouldStop: true if we've reached the last page.
+// - shouldStop: true if we've reached the last page according to pagination object.
 func handlePaginationObject(n *ajson.Node, url *url.URL) (string, bool) {
 	pagination, err := jsonquery.New(n).ObjectOptional("pagination")
 	if err != nil || pagination == nil {
@@ -73,7 +81,9 @@ func handlePaginationObject(n *ajson.Node, url *url.URL) (string, bool) {
 	return url.String(), false
 }
 
-// handleURLQueryFallback handles pagination when no pagination object is present.
+// handleURLQueryFallback handles standard pagination when no pagination object is present.
+// This is used for endpoints that follow conventional pagination patterns where
+// empty responses indicate no more data is available.
 func handleURLQueryFallback(url *url.URL) (string, error) {
 	query := url.Query()
 	currentPage := 1
