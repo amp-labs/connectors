@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"maps"
 	"strconv"
 	"strings"
 	"time"
@@ -173,7 +174,7 @@ func (evt SubscriptionEvent) asMap() common.StringMap {
 }
 
 func (evt SubscriptionEvent) RawMap() (map[string]any, error) {
-	return evt, nil
+	return maps.Clone(evt), nil
 }
 
 func (evt SubscriptionEvent) ObjectTypeId() (string, error) {

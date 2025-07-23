@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -42,7 +43,7 @@ var _ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 type CollapsedSubscriptionEvent map[string]any
 
 func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
-	return e, nil
+	return maps.Clone(e), nil
 }
 
 // ToRecordList splits bundled event into per record event.
@@ -128,7 +129,7 @@ func (s SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 }
 
 func (s SubscriptionEvent) RawMap() (map[string]any, error) {
-	return s, nil
+	return maps.Clone(s), nil
 }
 
 func (s SubscriptionEvent) RawEventName() (string, error) {
