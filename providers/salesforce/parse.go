@@ -72,7 +72,9 @@ func extractAssociationsFromRecord(val any) []common.Association {
 		return result
 	}
 
-	// In Salesforce, the associated object is a key in the record map, with an array of associated records.
+	// In Salesforce, the associated object is a key in the record map. It appears as a nested object
+	// containing a "records" array with the associated data. Additionally, it includes metadata such as
+	// "done" (a boolean indicating if all records have been fetched) and the total record count.
 	// There are other keys in the record map, but we only care about the "records" key for now. The other keys
 	// are 'done' and number of records.
 	records, ok := assocMap["records"].([]any)
