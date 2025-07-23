@@ -6,6 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/amp-labs/connectors/common/logging"
+	"github.com/google/uuid"
 )
 
 /*
@@ -39,7 +42,31 @@ func (j *JSONHTTPClient) httpPutCSV(ctx context.Context, url string,
 		return nil, nil, err
 	}
 
-	return j.HTTPClient.sendRequest(req)
+	correlationId := uuid.Must(uuid.NewRandom()).String()
+
+	if logging.IsVerboseLogging(ctx) {
+		logRequestWithBody(logging.VerboseLogger(ctx), req, "PUT", correlationId, url, body)
+	} else {
+		logRequestWithoutBody(logging.Logger(ctx), req, "PUT", correlationId, url)
+	}
+
+	rsp, body, err := j.HTTPClient.sendRequest(req)
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PUT", correlationId, url, body)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "PUT", correlationId, url)
+	}
+
+	if err != nil {
+		logging.Logger(ctx).Error("HTTP request failed",
+			"method", "PUT", "url", url,
+			"correlationId", correlationId, "error", err)
+
+		return nil, nil, err
+	}
+
+	return rsp, body, nil
 }
 
 func makeTextCSVPutRequest(ctx context.Context, url string, headers []Header, body []byte) (*http.Request, error) {
