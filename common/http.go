@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"net/textproto"
 	"net/url"
-	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common/logging"
@@ -474,7 +473,7 @@ func MakeGetRequest(ctx context.Context, url string, headers []Header) (*http.Re
 
 // makePostRequest creates request that will post bytes of data. If no content type defaults to JSON.
 func makePostRequest(ctx context.Context, resourceURL string, headers Headers, data []byte) (*http.Request, error) {
-	reader, contentLength, err := bodyReader(headers, data)
+	reader, _, err := bodyReader(headers, data)
 	if err != nil {
 		return nil, err
 	}
@@ -483,12 +482,6 @@ func makePostRequest(ctx context.Context, resourceURL string, headers Headers, d
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
-
-	req.ContentLength = contentLength
-	headers = append(headers, Header{
-		Key:   "Content-Length",
-		Value: strconv.FormatInt(contentLength, 10),
-	})
 
 	return AddJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
@@ -514,11 +507,12 @@ func bodyReader(headers Headers, data []byte) (io.Reader, int64, error) {
 		}
 
 		encodedPayload := payloadValues.Encode()
+		encodedBytes := []byte(encodedPayload)
 
-		return strings.NewReader(encodedPayload), int64(len(encodedPayload)), nil
+		return bytes.NewReader(encodedBytes), int64(len(encodedBytes)), nil
 	}
 
-	return bytes.NewBuffer(data), int64(len(data)), nil
+	return bytes.NewReader(data), int64(len(data)), nil
 }
 
 // makePatchRequest creates a PATCH request with the given headers and body, and adds the
@@ -529,12 +523,10 @@ func makePatchRequest(ctx context.Context, url string, headers []Header, body an
 		return nil, fmt.Errorf("request body is not valid JSON, body is %v:\n%w", body, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewBuffer(jBody))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewReader(jBody))
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
-
-	req.ContentLength = int64(len(jBody))
 
 	return AddJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
@@ -547,12 +539,10 @@ func makePutRequest(ctx context.Context, url string, headers []Header, body any)
 		return nil, fmt.Errorf("request body is not valid JSON, body is %v:\n%w", body, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewBuffer(jBody))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewReader(jBody))
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
-
-	req.ContentLength = int64(len(jBody))
 
 	return AddJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
