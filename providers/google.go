@@ -9,6 +9,8 @@ const (
 const (
 	// ModuleGoogleCalendar is the module used for listing user calendars.
 	ModuleGoogleCalendar common.ModuleID = "calendar"
+	// ModuleGoogleContacts is the module used for listing contacts from People API.
+	ModuleGoogleContacts common.ModuleID = "contacts"
 )
 
 //nolint:funlen
@@ -37,6 +39,15 @@ func init() {
 					Read:      true,
 					Subscribe: false,
 					Write:     true,
+				},
+			},
+			ModuleGoogleContacts: {
+				BaseURL:     "https://people.googleapis.com",
+				DisplayName: "Google Contacts",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
 				},
 			},
 		},

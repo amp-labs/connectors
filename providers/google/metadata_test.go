@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
 
-func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
+func TestCalendarListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	tests := []testroutines.Metadata{
@@ -90,10 +90,83 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	}
 }
 
+func TestContactsListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
+	t.Parallel()
+
+	tests := []testroutines.Metadata{
+		{
+			Name:       "Successful metadata for CalendarList and Settings",
+			Input:      []string{"myConnections", "peopleDirectory"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"myConnections": {
+						DisplayName: "Connections",
+						Fields: map[string]common.FieldMetadata{
+							"phoneNumbers": {
+								DisplayName:  "Phone Numbers",
+								ValueType:    "other",
+								ProviderType: "array",
+							},
+							"nicknames": {
+								DisplayName:  "Nicknames",
+								ValueType:    "other",
+								ProviderType: "array",
+							},
+						},
+					},
+					"peopleDirectory": {
+						DisplayName: "People Directory",
+						Fields: map[string]common.FieldMetadata{
+							"birthdays": {
+								DisplayName:  "Birthdays",
+								ValueType:    "other",
+								ProviderType: "array",
+							},
+							"names": {
+								DisplayName:  "Names",
+								ValueType:    "other",
+								ProviderType: "array",
+							},
+							"skills": {
+								DisplayName:  "Skills",
+								ValueType:    "other",
+								ProviderType: "array",
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+				return constructTestContactsConnector(tt.Server.URL)
+			})
+		})
+	}
+}
+
 func constructTestCalendarConnector(serverURL string) (*Connector, error) {
+	return constructTestConnector(serverURL, providers.ModuleGoogleCalendar)
+}
+
+func constructTestContactsConnector(serverURL string) (*Connector, error) {
+	return constructTestConnector(serverURL, providers.ModuleGoogleContacts)
+}
+
+func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connector, error) {
 	connector, err := NewConnector(
 		common.ConnectorParams{
-			Module:              providers.ModuleGoogleCalendar,
+			Module:              moduleID,
 			AuthenticatedClient: mockutils.NewClient(),
 		},
 	)
