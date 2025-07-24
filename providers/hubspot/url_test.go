@@ -52,6 +52,7 @@ func TestConnector_getURL_ModuleCRM(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			pi := *providerInfo // copy to avoid race
 			mi := *moduleInfo
+
 			if tc.baseURL != "" {
 				pi.BaseURL = tc.baseURL
 			} else {
@@ -68,11 +69,14 @@ func TestConnector_getURL_ModuleCRM(t *testing.T) {
 				if err == nil {
 					t.Errorf("expected error, got nil")
 				}
+
 				return
 			}
+
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
+
 			if gotURL != tc.wantURL {
 				t.Errorf("got URL %q, want %q", gotURL, tc.wantURL)
 			}
