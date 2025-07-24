@@ -343,7 +343,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.hubapi.com/crm/v3",
+				BaseURL:     "https://api.hubapi.com/crm",
 				DisplayName: "HubSpot CRM",
 				Support: Support{
 					Read:  true,
@@ -398,7 +398,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: ModuleHubspotCRM,
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.hubapi.com/crm/v3",
+				BaseURL:     "https://api.hubapi.com/crm",
 				DisplayName: "HubSpot CRM",
 				Support: Support{
 					Read:  true,
