@@ -67,7 +67,7 @@ func getSalesforceDataMarshaller(assoc []string) func([]map[string]any, []string
 func extractAssociationsFromRecord(val any) []common.Association {
 	var result []common.Association
 
-	assocMap, ok := val.(map[string]any)
+	assocMap, ok := val.(map[string]any) // nolint:varnamelen
 	if !ok {
 		return result
 	}
