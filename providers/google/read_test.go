@@ -14,17 +14,17 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
+func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	errorPageToken := testutils.DataFromFile(t, "read/error-page-token.json")
-	errorNotFound := testutils.DataFromFile(t, "read/error-object-not-found.html")
-	responseCalendarListFirstPage := testutils.DataFromFile(t, "read/calendarList/1-first-page.json")
-	responseCalendarListLastPage := testutils.DataFromFile(t, "read/calendarList/2-last-page.json")
-	responseSettingsFirstPage := testutils.DataFromFile(t, "read/settings/1-first-page.json")
-	responseSettingsLastPage := testutils.DataFromFile(t, "read/settings/2-last-page.json")
-	responseEventsFirstPage := testutils.DataFromFile(t, "read/events/1-first-page.json")
-	responseEventsLastPage := testutils.DataFromFile(t, "read/events/2-last-page.json")
+	errorPageToken := testutils.DataFromFile(t, "calendar/read/error-page-token.json")
+	errorNotFound := testutils.DataFromFile(t, "calendar/read/error-object-not-found.html")
+	responseCalendarListFirstPage := testutils.DataFromFile(t, "calendar/read/calendarList/1-first-page.json")
+	responseCalendarListLastPage := testutils.DataFromFile(t, "calendar/read/calendarList/2-last-page.json")
+	responseSettingsFirstPage := testutils.DataFromFile(t, "calendar/read/settings/1-first-page.json")
+	responseSettingsLastPage := testutils.DataFromFile(t, "calendar/read/settings/2-last-page.json")
+	responseEventsFirstPage := testutils.DataFromFile(t, "calendar/read/events/1-first-page.json")
+	responseEventsLastPage := testutils.DataFromFile(t, "calendar/read/events/2-last-page.json")
 
 	tests := []testroutines.Read{
 		{
@@ -295,6 +295,228 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
 				return constructTestCalendarConnector(tt.Server.URL)
+			})
+		})
+	}
+}
+
+func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
+	t.Parallel()
+
+	errorPageSize := testutils.DataFromFile(t, "contacts/read/error-bad-page-size.json")
+	errorNotFound := testutils.DataFromFile(t, "contacts/read/error-object-not-found.html")
+	responseContactGroupsFirstPage := testutils.DataFromFile(t, "contacts/read/contactGroups/1-first-page.json")
+	responseContactGroupsLastPage := testutils.DataFromFile(t, "contacts/read/contactGroups/2-last-page.json")
+	responseMyConnectionsFirstPage := testutils.DataFromFile(t, "contacts/read/myConnections/1-first-page.json")
+	responseMyConnectionsLastPage := testutils.DataFromFile(t, "contacts/read/myConnections/2-last-page.json")
+	responseOtherContacts := testutils.DataFromFile(t, "contacts/read/otherContacts/one-page.json")
+
+	tests := []testroutines.Read{
+		{
+			Name:         "Read object must be included",
+			Input:        common.ReadParams{},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:         "At least one field is requested",
+			Input:        common.ReadParams{ObjectName: "contactGroups"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFields},
+		},
+		{
+			Name:  "Error response is parsed",
+			Input: common.ReadParams{ObjectName: "contactGroups", Fields: connectors.Fields("memberCount")},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, errorPageSize),
+			}.Server(),
+			ExpectedErrs: []error{
+				common.ErrBadRequest,
+				errors.New("Page size must be less than or equal to 1000."), // nolint:goerr113
+			},
+		},
+		{
+			Name:  "Error endpoint for object is not found",
+			Input: common.ReadParams{ObjectName: "contactGroups", Fields: connectors.Fields("memberCount")},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentHTML(),
+				Always: mockserver.Response(http.StatusNotFound, errorNotFound),
+			}.Server(),
+			ExpectedErrs: []error{
+				common.ErrBadRequest,
+				common.ErrNotFound,
+				errors.New("The requested URL /v1/bananas was not found on this server."), // nolint:goerr113
+			},
+		},
+		{
+			Name: "Read contactGroups first page",
+			Input: common.ReadParams{
+				ObjectName: "contactGroups",
+				Fields:     connectors.Fields("id", "name"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v1/contactGroups"),
+				Then:  mockserver.Response(http.StatusOK, responseContactGroupsFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":   "starred",
+						"name": "starred",
+					},
+					Raw: map[string]any{
+						"resourceName":  "contactGroups/starred",
+						"groupType":     "SYSTEM_CONTACT_GROUP",
+						"formattedName": "Starred",
+					},
+				}, {
+					Fields: map[string]any{
+						"id":   "friends",
+						"name": "friends",
+					},
+					Raw: map[string]any{
+						"resourceName":  "contactGroups/friends",
+						"groupType":     "SYSTEM_CONTACT_GROUP",
+						"formattedName": "Friends",
+					},
+				}},
+				NextPage: testroutines.URLTestServer + "/v1/contactGroups?groupFields=name&pageSize=1000" +
+					"&pageToken=CAISDAjEt9vDBhDoq6i8Ag",
+				Done: false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read contactGroups second page without next cursor",
+			Input: common.ReadParams{
+				ObjectName: "contactGroups",
+				Fields:     connectors.Fields("id", "name"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1/contactGroups"),
+					mockcond.QueryParam("pageSize", "1000"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContactGroupsLastPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":   "blocked",
+						"name": "blocked",
+					},
+					Raw: map[string]any{
+						"resourceName":  "contactGroups/blocked",
+						"groupType":     "SYSTEM_CONTACT_GROUP",
+						"formattedName": "Blocked",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read myConnections first page",
+			Input: common.ReadParams{
+				ObjectName: "myConnections",
+				Fields:     connectors.Fields("id", "resourceName"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v1/people/me/connections"),
+				Then:  mockserver.Response(http.StatusOK, responseMyConnectionsFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":           "c3194283054244587340",
+						"resourcename": "people/c3194283054244587340",
+					},
+					Raw: map[string]any{
+						"etag": "%EgUBAi43PRoEAQIFByIMZHUyb2I4ZWlGdVk9",
+					},
+				}},
+				NextPage: testroutines.URLTestServer + "/v1/people/me/connections?pageSize=1000" +
+					"&pageToken=GiAKHAgBagsIvd7bwwYQiLuICXILCLTe28MGEOChvEYQAg",
+				Done: false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read myConnections second page without next cursor",
+			Input: common.ReadParams{
+				ObjectName: "myConnections",
+				Fields:     connectors.Fields("id", "resourceName"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v1/people/me/connections"),
+				Then:  mockserver.Response(http.StatusOK, responseMyConnectionsLastPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":           "c3614676454703510757",
+						"resourcename": "people/c3614676454703510757",
+					},
+					Raw: map[string]any{
+						"etag": "%EgUBAi43PRoEAQIFByIMZWthZ1VlTWN4eEE9",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read otherContacts one and only page",
+			Input: common.ReadParams{
+				ObjectName: "otherContacts",
+				Fields:     connectors.Fields("id", "resourceName"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v1/otherContacts"),
+				Then:  mockserver.Response(http.StatusOK, responseOtherContacts),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":           "c6949365612481516512",
+						"resourcename": "otherContacts/c6949365612481516512",
+					},
+					Raw: map[string]any{
+						"etag": "%EgcBAgkuNz0+GgQBAgUHIgxJVnA4dkJSUTBQMD0=",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestContactsConnector(tt.Server.URL)
 			})
 		})
 	}

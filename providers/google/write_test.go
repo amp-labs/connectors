@@ -13,12 +13,12 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestWrite(t *testing.T) { // nolint:funlen,cyclop
+func TestCalendarWrite(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
 
-	errorCalendarNoColor := testutils.DataFromFile(t, "write/calendarList/error-missing-color.json")
-	responseInsertCalendar := testutils.DataFromFile(t, "write/calendarList/new.json")
-	responseEvent := testutils.DataFromFile(t, "write/events/new.json")
+	errorCalendarNoColor := testutils.DataFromFile(t, "calendar/write/calendarList/error-missing-color.json")
+	responseInsertCalendar := testutils.DataFromFile(t, "calendar/write/calendarList/new.json")
+	responseEvent := testutils.DataFromFile(t, "calendar/write/events/new.json")
 
 	tests := []testroutines.Write{
 		{

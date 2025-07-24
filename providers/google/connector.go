@@ -82,6 +82,10 @@ func (c Connector) Read(ctx context.Context, params connectors.ReadParams) (*con
 		return c.Calendar.Read(ctx, params)
 	}
 
+	if c.Contacts != nil {
+		return c.Contacts.Read(ctx, params)
+	}
+
 	return nil, common.ErrNotImplemented
 }
 
