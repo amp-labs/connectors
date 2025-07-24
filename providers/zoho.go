@@ -47,7 +47,7 @@ func init() {
 				BaseURL:     "https://projectsapi.zoho.com",
 				DisplayName: "Zoho Projects",
 				Support: Support{
-					Read:      true,
+					Read:      false,
 					Subscribe: false,
 					Write:     false,
 				},
@@ -57,7 +57,7 @@ func init() {
 				BaseURL:     "https://bugtracker.zoho.com",
 				DisplayName: "Zoho BugTracker",
 				Support: Support{
-					Read:      true,
+					Read:      false,
 					Subscribe: false,
 					Write:     false,
 				},
