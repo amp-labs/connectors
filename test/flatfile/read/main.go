@@ -57,6 +57,7 @@ func main() {
 	if err != nil {
 		utils.Fail("error reading from flatfile", "error", err)
 	}
+
 	slog.Info("Reading apps..")
 	utils.DumpJSON(res, os.Stdout)
 
