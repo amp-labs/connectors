@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
@@ -18,6 +19,10 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 		},
 	}...,
 )
+
+var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
+	http.StatusConflict: common.ErrBadRequest,
+}
 
 // nolint:tagliatelle
 type ErrorDetails struct {
