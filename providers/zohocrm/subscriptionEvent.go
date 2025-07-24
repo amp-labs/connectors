@@ -83,6 +83,10 @@ type CollapsedSubscriptionEvent map[string]any
 
 var _ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 
+func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
+	return maps.Clone(e), nil
+}
+
 //nolint:funlen
 func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.SubscriptionEvent, error) {
 	/*
@@ -220,6 +224,10 @@ func parseFieldsFromValueMap(valueMap common.StringMap) (map[string][]string, er
 	}
 
 	return map[string][]string{recordId: fieldsList}, nil
+}
+
+func (evt SubscriptionEvent) RawMap() (map[string]any, error) {
+	return maps.Clone(evt), nil
 }
 
 // EventType returns the type of event (create, update, delete).
