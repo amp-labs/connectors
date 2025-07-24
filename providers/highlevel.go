@@ -83,6 +83,28 @@ func init() {
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField:      "scope",
 				ConsumerRefField: "userId",
+				OtherFields: &TokenMetadataFieldsOtherFields{
+					{
+						DisplayName: "Location Id",
+						Name:        "locationId",
+						Path:        "",
+					},
+					{
+						DisplayName: "User Type",
+						Name:        "userType",
+						Path:        "",
+					},
+					{
+						DisplayName: "Plan Id",
+						Name:        "planId",
+						Path:        "",
+					},
+					{
+						DisplayName: "Company Id",
+						Name:        "companyId",
+						Path:        "",
+					},
+				},
 			},
 		},
 		Support: Support{
