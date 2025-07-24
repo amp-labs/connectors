@@ -6,7 +6,10 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
+// nolint:funlen
 func TestConnector_getURL_ModuleCRM(t *testing.T) {
+	t.Parallel()
+
 	providerInfo, err := providers.ReadInfo(providers.Hubspot)
 	if err != nil {
 		t.Fatalf("failed to get providerInfo: %v", err)
@@ -48,13 +51,15 @@ func TestConnector_getURL_ModuleCRM(t *testing.T) {
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, ttc := range cases {
+		t.Run(ttc.name, func(t *testing.T) {
+			t.Parallel()
+
 			pi := *providerInfo // copy to avoid race
 			mi := *moduleInfo
 
-			if tc.baseURL != "" {
-				pi.BaseURL = tc.baseURL
+			if ttc.baseURL != "" {
+				pi.BaseURL = ttc.baseURL
 			} else {
 				pi.BaseURL = defaultBaseURL
 			}
@@ -64,8 +69,8 @@ func TestConnector_getURL_ModuleCRM(t *testing.T) {
 				moduleInfo:   &mi,
 			}
 
-			gotURL, err := c.getURL(tc.arg, tc.queryArgs...)
-			if tc.wantErr {
+			gotURL, err := c.getURL(ttc.arg, ttc.queryArgs...)
+			if ttc.wantErr {
 				if err == nil {
 					t.Errorf("expected error, got nil")
 				}
@@ -77,8 +82,8 @@ func TestConnector_getURL_ModuleCRM(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 
-			if gotURL != tc.wantURL {
-				t.Errorf("got URL %q, want %q", gotURL, tc.wantURL)
+			if gotURL != ttc.wantURL {
+				t.Errorf("got URL %q, want %q", gotURL, ttc.wantURL)
 			}
 		})
 	}
