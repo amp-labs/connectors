@@ -1,0 +1,28 @@
+{
+  "connections": [
+    {
+      "resourceName": "people/c3194283054244587340",
+      "etag": "%EgUBAi43PRoEAQIFByIMZHUyb2I4ZWlGdVk9",
+      "names": [
+        {
+          "metadata": {
+            "primary": true,
+            "source": {
+              "type": "CONTACT",
+              "id": "2c545f83884c674c"
+            },
+            "sourcePrimary": true
+          },
+          "displayName": "Josh Brown",
+          "familyName": "Brown",
+          "givenName": "Josh",
+          "displayNameLastFirst": "Brown, Josh",
+          "unstructuredName": "Josh Brown"
+        }
+      ]
+    }
+  ],
+  "nextPageToken": "GiAKHAgBagsIvd7bwwYQiLuICXILCLTe28MGEOChvEYQAg",
+  "totalPeople": 2,
+  "totalItems": 2
+}

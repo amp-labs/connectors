@@ -13,10 +13,10 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestDelete(t *testing.T) { // nolint:funlen,cyclop
+func TestCalendarDelete(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
 
-	errorNotFound := testutils.DataFromFile(t, "delete/calendarList/not-found.json")
+	errorNotFound := testutils.DataFromFile(t, "calendar/delete/calendarList/not-found.json")
 
 	tests := []testroutines.Delete{
 		{
