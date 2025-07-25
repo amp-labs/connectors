@@ -6,6 +6,7 @@ import (
 	"maps"
 	"reflect"
 	"slices"
+	"strings"
 )
 
 var (
@@ -15,6 +16,10 @@ var (
 )
 
 type StringMap map[string]any
+
+func ToStringMap(m map[string]any) StringMap {
+	return StringMap(m)
+}
 
 func (m StringMap) Keys() []string {
 	return slices.AppendSeq(make([]string, 0, len(m)), maps.Keys(m))
@@ -32,6 +37,16 @@ func (m StringMap) Values() []any {
 
 func (m StringMap) Len() int {
 	return len(m)
+}
+
+func (m StringMap) GetCaseInsensitive(key string) (any, bool) {
+	for k, v := range m {
+		if strings.EqualFold(k, key) {
+			return v, true
+		}
+	}
+
+	return nil, false
 }
 
 func (m StringMap) Get(key string) (any, error) {

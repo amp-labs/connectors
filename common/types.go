@@ -264,7 +264,6 @@ type Association struct {
 	// AssociationType is the type of association.
 	AssociationType string         `json:"associationType,omitempty"`
 	Raw             map[string]any `json:"raw,omitempty"`
-	Fields          map[string]any `json:"fields,omitempty"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.
