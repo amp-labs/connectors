@@ -17,9 +17,9 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 	return jsonquery.New(node, "links").StrWithDefault("next", "")
 }
 
-func getDataMarshaller(nodeRecordFunc common.RecordTransformer, assc []Associations) common.MarshalFromNodeFunc { //nolint:lll
+func getDataMarshaller(nodeRecordFunc common.RecordTransformer, ra []RecordAssociations) common.MarshalFromNodeFunc { //nolint:lll
 	assocMap := make(map[string]map[string][]common.Association)
-	for _, a := range assc {
+	for _, a := range ra {
 		assocMap[a.ObjectId] = a.AssociatedObjects
 	}
 

@@ -18,7 +18,7 @@ type Record struct {
 	Data DataItem `json:"data"`
 }
 
-type Associations struct {
+type RecordAssociations struct {
 	ObjectId          string                          // ObjectId represents the id of the object we are reading
 	AssociatedObjects map[string][]common.Association // Associated objects
 }
@@ -29,6 +29,8 @@ type Associations struct {
 // configuration parameters. It returns the nested Attributes values read results or an error
 // if the operation fails.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+	var asc []RecordAssociations
+
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
@@ -49,11 +51,14 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	assoc := make([]Associations, 0)
+	rasc := make([]RecordAssociations, 0)
 
-	asc, err := c.fetchAssociations(ctx, data, config.AssociatedObjects, assoc)
-	if err != nil {
-		return nil, err
+	// If were reading with associations, we make the API calls to retrieve associated objects.
+	if len(config.AssociatedObjects) > 0 {
+		asc, err = c.fetchAssociations(ctx, data, config.AssociatedObjects, rasc)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return common.ParseResult(res,
@@ -88,8 +93,8 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 }
 
 func (c *Connector) fetchAssociations(ctx context.Context, d *Data, assc []string,
-	assocII []Associations,
-) ([]Associations, error) { //nolint:lll
+	ras []RecordAssociations,
+) ([]RecordAssociations, error) { //nolint:lll
 	var err error
 
 	for _, rcd := range d.Data {
@@ -119,13 +124,13 @@ func (c *Connector) fetchAssociations(ctx context.Context, d *Data, assc []strin
 			}
 		}
 
-		assocII = append(assocII, Associations{
+		ras = append(ras, RecordAssociations{
 			ObjectId:          strconv.Itoa(rcd.ID),
 			AssociatedObjects: masc,
 		})
 	}
 
-	return assocII, nil
+	return ras, nil
 }
 
 func (c *Connector) processSingleAssociation(ctx context.Context, data map[string]any, typ string,
