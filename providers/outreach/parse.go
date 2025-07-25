@@ -1,6 +1,7 @@
 package outreach
 
 import (
+	"errors"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -17,10 +18,15 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 }
 
 func getDataMarshaller(nodeRecordFunc common.RecordTransformer, assc []Associations) common.MarshalFromNodeFunc { //nolint:lll
+	assocMap := make(map[string]map[string][]common.Association)
+	for _, a := range assc {
+		assocMap[a.ObjectId] = a.AssociatedObjects
+	}
+
 	return func(records []*ajson.Node, fields []string) ([]common.ReadResultRow, error) {
 		data := make([]common.ReadResultRow, len(records))
 
-		for index, nodeRecord := range records {
+		for idx, nodeRecord := range records {
 			raw, err := jsonquery.Convertor.ObjectToMap(nodeRecord)
 			if err != nil {
 				return nil, err
@@ -31,23 +37,19 @@ func getDataMarshaller(nodeRecordFunc common.RecordTransformer, assc []Associati
 				return nil, err
 			}
 
-			data[index] = common.ReadResultRow{
-				Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
-				Raw:    raw,
+			// RecordId of Outreach Objects are float64 by default.
+			idF, ok := record["id"].(float64)
+			if !ok {
+				return nil, errors.New("failed to convert the object id to expected type") //nolint: err113
 			}
 
-			// By default the ids are in float64 type
-			id, ok := record["id"].(float64)
-			if ok {
-				data[index].Id = strconv.Itoa(int(id))
-			}
+			idStr := strconv.Itoa(int(idF))
 
-			// better approach?
-			for _, ass := range assc {
-				if ass.ObjectId == strconv.Itoa(int(id)) {
-					data[index].Associations = ass.AssociatedObjects
-					// should i break?
-				}
+			data[idx] = common.ReadResultRow{
+				Id:           idStr,
+				Fields:       common.ExtractLowercaseFieldsFromRaw(fields, record),
+				Raw:          raw,
+				Associations: assocMap[idStr],
 			}
 		}
 

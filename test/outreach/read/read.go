@@ -97,7 +97,7 @@ func testReadProspects(ctx context.Context, conn *outreach.Connector) error {
 		ObjectName:        "prospects",
 		Since:             time.Now().Add(-720 * time.Hour),
 		Fields:            connectors.Fields("addressCountry", "campaignName", "id"),
-		AssociatedObjects: []string{"accounts", "emailAddresses", "mimi"},
+		AssociatedObjects: []string{"accounts", "emailAddresses", "phoneNumbers"},
 	}
 
 	result, err := conn.Read(ctx, config)

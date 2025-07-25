@@ -51,7 +51,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	assoc := make([]Associations, 0)
 
-	ass, err := c.fetchAssociations(ctx, data, config.AssociatedObjects, assoc)
+	asc, err := c.fetchAssociations(ctx, data, config.AssociatedObjects, assoc)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	return common.ParseResult(res,
 		getRecords,
 		getNextRecordsURL,
-		getDataMarshaller(common.FlattenNestedFields(attributesKey), ass),
+		getDataMarshaller(common.FlattenNestedFields(attributesKey), asc),
 		config.Fields,
 	)
 }
@@ -128,7 +128,7 @@ func (c *Connector) fetchAssociations(ctx context.Context, d *Data, assc []strin
 	return assocII, nil
 }
 
-func (c *Connector) processSingleAssociation(ctx context.Context, data map[string]any, assType string,
+func (c *Connector) processSingleAssociation(ctx context.Context, data map[string]any, typ string,
 	assc []string, assoc map[string][]common.Association,
 ) (map[string][]common.Association, error) {
 	objName, ok := data["type"].(string)
@@ -141,10 +141,13 @@ func (c *Connector) processSingleAssociation(ctx context.Context, data map[strin
 		return nil, errors.New("missing or invalid 'id'") //nolint: err113
 	}
 
+	// object type in the response is in the singular form of the objectname
+	// but the Outreach APIs uses the plural form by default.
 	objName = naming.NewPluralString(objName).String()
 	path := objName + "/" + strconv.Itoa(int(ascId))
 
 	// If the objectName is not in the associated request parameter, we return.
+	// we only care for the requested assoctade objects.
 	if !slices.Contains(assc, objName) {
 		return assoc, nil
 	}
@@ -153,17 +156,20 @@ func (c *Connector) processSingleAssociation(ctx context.Context, data map[strin
 	targetId := strconv.Itoa(int(ascId))
 	for _, ass := range assoc[objName] {
 		// Check if we already have this combination of ObjectId and AssociationType
-		if ass.ObjectId == targetId && ass.AssociationType == assType {
+		if ass.ObjectId == targetId && ass.AssociationType == typ {
 			return assoc, nil
 		}
 	}
 
 	// Check if we have the object with same id but different association type
+	// if true, no need to make an API call, we can re-use the available data, just update the associationn type.
+	// A good example for such scenario is when a sequence has a user for associationType creator and updator.
+	// if the same user is the creator and updator, no need to make an extra call.
 	for _, ass := range assoc[objName] {
 		if ass.ObjectId == targetId {
 			assoc[objName] = append(assoc[objName], common.Association{
 				ObjectId:        targetId,
-				AssociationType: assType,
+				AssociationType: typ,
 				Raw:             ass.Raw,
 			})
 
@@ -171,12 +177,16 @@ func (c *Connector) processSingleAssociation(ctx context.Context, data map[strin
 		}
 	}
 
-	asRec, err := c.getAssociation(ctx, path)
+	// TODO Maybe before making the call, check if in the previous objectids assocaitions.
+	// we already have similar objectId + associated type.
+
+	// when we have no such object, we make the API call.
+	assRec, err := c.getAssociation(ctx, path)
 	if err != nil {
 		return nil, err
 	}
 
-	return addAssociation(assoc, assType, objName, targetId, asRec)
+	return addAssociation(assoc, typ, objName, targetId, assRec)
 }
 
 func (c *Connector) processMultipleAssociations(ctx context.Context, data []any, typ string, assc []string,
