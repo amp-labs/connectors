@@ -92,10 +92,14 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	return url, nil
 }
 
-func (c *Connector) fetchAssociations(ctx context.Context, d *Data, assc []string,
+func (c *Connector) fetchAssociations(ctx context.Context, d *Data, asc []string, //nolint: lll, cyclop
 	ras []RecordAssociations,
-) ([]RecordAssociations, error) { //nolint:lll
+) ([]RecordAssociations, error) {
 	var err error
+
+	// we need this to keep track of the list of the available associated objects
+	// so we can compare it with the requested objects.
+	var ascObj []string
 
 	for _, rcd := range d.Data {
 		masc := make(map[string][]common.Association)
@@ -110,12 +114,12 @@ func (c *Connector) fetchAssociations(ctx context.Context, d *Data, assc []strin
 			case nil:
 				continue
 			case map[string]any:
-				masc, err = c.processSingleAssociation(ctx, data, typ, assc, masc)
+				masc, ascObj, err = c.processSingleAssociation(ctx, data, typ, asc, ascObj, masc)
 				if err != nil {
 					return nil, fmt.Errorf("failed to process association %s: %w", typ, err)
 				}
 			case []any:
-				masc, err = c.processMultipleAssociations(ctx, data, typ, assc, masc)
+				masc, ascObj, err = c.processMultipleAssociations(ctx, data, typ, asc, ascObj, masc)
 				if err != nil {
 					return nil, fmt.Errorf("failed to process multiple associations for %s: %w", typ, err)
 				}
@@ -130,20 +134,28 @@ func (c *Connector) fetchAssociations(ctx context.Context, d *Data, assc []strin
 		})
 	}
 
+	// We use here to double-check if all requested associated objects are available in the response associated list.
+	// else we error out.
+	for _, obj := range asc {
+		if !slices.Contains(ascObj, obj) {
+			return nil, fmt.Errorf("couldn't find associated records of: %s", obj) //nolint: err113
+		}
+	}
+
 	return ras, nil
 }
 
-func (c *Connector) processSingleAssociation(ctx context.Context, data map[string]any, typ string,
-	assc []string, assoc map[string][]common.Association,
-) (map[string][]common.Association, error) {
+func (c *Connector) processSingleAssociation(ctx context.Context, data map[string]any, typ string, // nolint: funlen
+	asc []string, ascObj []string, masc map[string][]common.Association,
+) (map[string][]common.Association, []string, error) {
 	objName, ok := data["type"].(string)
 	if !ok {
-		return nil, errors.New("missing or invalid 'type'") //nolint: err113
+		return nil, ascObj, errors.New("missing or invalid 'type'") //nolint: err113
 	}
 
 	ascId, ok := data["id"].(float64)
 	if !ok {
-		return nil, errors.New("missing or invalid 'id'") //nolint: err113
+		return nil, ascObj, errors.New("missing or invalid 'id'") //nolint: err113
 	}
 
 	// object type in the response is in the singular form of the objectname
@@ -151,18 +163,20 @@ func (c *Connector) processSingleAssociation(ctx context.Context, data map[strin
 	objName = naming.NewPluralString(objName).String()
 	path := objName + "/" + strconv.Itoa(int(ascId))
 
+	ascObj = append(ascObj, objName)
+
 	// If the objectName is not in the associated request parameter, we return.
 	// we only care for the requested assoctade objects.
-	if !slices.Contains(assc, objName) {
-		return assoc, nil
+	if !slices.Contains(asc, objName) {
+		return masc, ascObj, nil
 	}
 
 	// don't make the call, if we already have the data.
 	targetId := strconv.Itoa(int(ascId))
-	for _, ass := range assoc[objName] {
+	for _, ass := range masc[objName] {
 		// Check if we already have this combination of ObjectId and AssociationType
 		if ass.ObjectId == targetId && ass.AssociationType == typ {
-			return assoc, nil
+			return masc, ascObj, nil
 		}
 	}
 
@@ -170,15 +184,15 @@ func (c *Connector) processSingleAssociation(ctx context.Context, data map[strin
 	// if true, no need to make an API call, we can re-use the available data, just update the associationn type.
 	// A good example for such scenario is when a sequence has a user for associationType creator and updator.
 	// if the same user is the creator and updator, no need to make an extra call.
-	for _, ass := range assoc[objName] {
+	for _, ass := range masc[objName] {
 		if ass.ObjectId == targetId {
-			assoc[objName] = append(assoc[objName], common.Association{
+			masc[objName] = append(masc[objName], common.Association{
 				ObjectId:        targetId,
 				AssociationType: typ,
 				Raw:             ass.Raw,
 			})
 
-			return assoc, nil
+			return masc, ascObj, nil
 		}
 	}
 
@@ -188,30 +202,32 @@ func (c *Connector) processSingleAssociation(ctx context.Context, data map[strin
 	// when we have no such object, we make the API call.
 	assRec, err := c.getAssociation(ctx, path)
 	if err != nil {
-		return nil, err
+		return nil, ascObj, err
 	}
 
-	return addAssociation(assoc, typ, objName, targetId, assRec)
+	masc = addAssociation(masc, typ, objName, targetId, assRec)
+
+	return masc, ascObj, nil
 }
 
-func (c *Connector) processMultipleAssociations(ctx context.Context, data []any, typ string, assc []string,
-	assoc map[string][]common.Association,
-) (map[string][]common.Association, error) {
+func (c *Connector) processMultipleAssociations(ctx context.Context, data []any, typ string, asc []string,
+	ascObj []string, masc map[string][]common.Association,
+) (map[string][]common.Association, []string, error) {
 	var err error
 
 	for _, d := range data {
 		rcd, ok := d.(map[string]any)
 		if !ok {
-			return nil, fmt.Errorf("invalid relationship structure for type %s", typ) //nolint: err113
+			return nil, ascObj, fmt.Errorf("invalid relationship structure for type %s", typ) //nolint: err113
 		}
 
-		assoc, err = c.processSingleAssociation(ctx, rcd, typ, assc, assoc)
+		masc, ascObj, err = c.processSingleAssociation(ctx, rcd, typ, asc, ascObj, masc)
 		if err != nil {
-			return nil, err
+			return nil, ascObj, err
 		}
 	}
 
-	return assoc, nil
+	return masc, ascObj, nil
 }
 
 func (c *Connector) getAssociation(ctx context.Context, path string) (*Record, error) {
@@ -233,10 +249,10 @@ func (c *Connector) getAssociation(ctx context.Context, path string) (*Record, e
 	return d, nil
 }
 
-func addAssociation(assoc map[string][]common.Association, typ, objName string,
+func addAssociation(masc map[string][]common.Association, typ, objName string,
 	id string, d *Record,
-) (map[string][]common.Association, error) {
-	assoc[objName] = append(assoc[objName], common.Association{
+) map[string][]common.Association {
+	masc[objName] = append(masc[objName], common.Association{
 		ObjectId:        id,
 		AssociationType: typ,
 		Raw: map[string]any{
@@ -248,5 +264,5 @@ func addAssociation(assoc map[string][]common.Association, typ, objName string,
 		},
 	})
 
-	return assoc, nil
+	return masc
 }
