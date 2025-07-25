@@ -53,10 +53,13 @@ func getSalesforceDataMarshaller(assoc []string) func([]map[string]any, []string
 			idStr, _ := id.(string)
 
 			data[idx] = common.ReadResultRow{
-				Fields:       common.ExtractLowercaseFieldsFromRaw(fields, record),
-				Raw:          record,
-				Associations: associations,
-				Id:           idStr,
+				Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
+				Raw:    record,
+				Id:     idStr,
+			}
+
+			if len(associations) > 0 {
+				data[idx].Associations = associations
 			}
 		}
 
@@ -88,12 +91,15 @@ func extractAssociationsFromRecord(val any) []common.Association {
 			id, _ := common.ToStringMap(assocRec).GetCaseInsensitive("Id")
 			idStr, _ := id.(string)
 
-			if idStr != "" {
-				result = append(result, common.Association{
-					ObjectId: idStr,
-					Raw:      assocRec,
-				})
+			association := common.Association{
+				Raw: assocRec,
 			}
+
+			if idStr != "" {
+				association.ObjectId = idStr
+			}
+
+			result = append(result, association)
 		}
 	}
 
