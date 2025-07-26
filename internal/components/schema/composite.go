@@ -26,7 +26,7 @@ func NewCompositeSchemaProvider(schemaProviders ...components.SchemaProvider) *C
 // ListObjectMetadata attempts to retrieve metadata for objects using each schema provider in sequence.
 // It returns aggregated results from the most successful provider (with the fewest errors).
 // Providers are tried in the order they were registered in the CompositeSchemaProvider.
-func (c *CompositeSchemaProvider) ListObjectMetadata(
+func (c *CompositeSchemaProvider) ListObjectMetadata( //nolint: cyclop
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
