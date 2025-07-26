@@ -3,8 +3,9 @@ package schema
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
-	"slices"
+	"maps"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
@@ -36,9 +37,7 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 	}
 
 	// Track objects that haven't been successfully processed yet
-	// Initialized with all objects.
-	var remainingObjects []string
-
+	remainingObjects := make([]string, len(objects))
 	copy(remainingObjects, objects)
 
 	for _, schemaProvider := range c.schemaProviders {
@@ -49,27 +48,35 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 		metadata, err := safeGetMetadata(schemaProvider, ctx, remainingObjects)
 		if err != nil {
 			slog.Error("Schema provider failed with error", "schemaProvider", schemaProvider, "error", err)
-
 			continue
 		}
 
-		// Append successful object metadatas to the result metadata.
-		// do not replace this with map.Copy
-		for obj, mtdata := range metadata.Result {
-			result.Result[obj] = mtdata
-		}
+		// Append successful object metadatas to the result metadata
+		maps.Copy(result.Result, metadata.Result)
 
-		// Assumes the object response was a success, we remove the object from failures.
-		// adds all errored objects to failures list.
-		remainingObjects = slices.Delete(remainingObjects, 0, len(remainingObjects))
-		for obj := range metadata.Errors {
-			remainingObjects = append(remainingObjects, obj)
+		// Update remaining objects - only those that failed in this attempt
+		var newRemaining []string
+		for _, obj := range remainingObjects {
+			if _, ok := metadata.Result[obj]; !ok {
+				newRemaining = append(newRemaining, obj)
+			}
 		}
+		remainingObjects = newRemaining
 
 		if len(metadata.Errors) > 0 {
-			slog.Info("Partial metadata collection complete",
+			slog.Info("First schema provider completed, now retrying failed objects with the second schema provider:",
 				"provider", schemaProvider.String(),
 				"failed", metadata.Errors)
+		}
+	}
+
+	// If we have any remaining objects that weren't processed successfully,
+	// add them to the errors map
+	if len(remainingObjects) > 0 {
+		for _, obj := range remainingObjects {
+			if _, exists := result.Errors[obj]; !exists {
+				result.Errors[obj] = fmt.Errorf("failed to get metadata for object from any provider")
+			}
 		}
 	}
 
