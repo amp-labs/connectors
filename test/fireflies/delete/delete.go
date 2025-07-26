@@ -33,7 +33,7 @@ func testDeleteTranscripts(ctx context.Context) error {
 	slog.Info("Delete Transcripts")
 
 	deleteParams := common.DeleteParams{
-		ObjectName: "transcript",
+		ObjectName: "transcripts",
 		RecordId:   "01JSXHYDZETZ24B9VEXQM52R9X",
 	}
 
