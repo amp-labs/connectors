@@ -3,7 +3,6 @@ package schema
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log/slog"
 	"maps"
 
@@ -40,7 +39,7 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 	remainingObjects := make([]string, len(objects))
 	copy(remainingObjects, objects)
 
-	for _, schemaProvider := range c.schemaProviders {
+	for idx, schemaProvider := range c.schemaProviders {
 		if len(remainingObjects) == 0 {
 			break
 		}
@@ -48,6 +47,7 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 		metadata, err := safeGetMetadata(schemaProvider, ctx, remainingObjects)
 		if err != nil {
 			slog.Error("Schema provider failed with error", "schemaProvider", schemaProvider, "error", err)
+
 			continue
 		}
 
@@ -56,17 +56,19 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 
 		// Update remaining objects - only those that failed in this attempt
 		var newRemaining []string
+
 		for _, obj := range remainingObjects {
 			if _, ok := metadata.Result[obj]; !ok {
 				newRemaining = append(newRemaining, obj)
 			}
 		}
+
 		remainingObjects = newRemaining
 
-		if len(metadata.Errors) > 0 {
+		if len(metadata.Errors) > 0 && len(c.schemaProviders)-1 != idx {
 			slog.Info("First schema provider completed, now retrying failed objects with the second schema provider:",
 				"provider", schemaProvider.String(),
-				"failed", metadata.Errors)
+				"failed", remainingObjects)
 		}
 	}
 
@@ -75,7 +77,7 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 	if len(remainingObjects) > 0 {
 		for _, obj := range remainingObjects {
 			if _, exists := result.Errors[obj]; !exists {
-				result.Errors[obj] = fmt.Errorf("failed to get metadata for object from any provider")
+				result.Errors[obj] = errors.New("failed to get metadata for object from any provider") // nolint: err113
 			}
 		}
 	}
