@@ -95,8 +95,8 @@ func testSalesforceValidCreate(ctx context.Context, conn *salesforce.Connector) 
 	writeRes, err := conn.Write(ctx, connectors.WriteParams{
 		ObjectName: "Account",
 		RecordData: map[string]interface{}{
-			"Name": "TEST ACCOUNT - [TO DELETE]",
-			// "AccountNumber": accountNumber,
+			"Name":          "TEST ACCOUNT - [TO DELETE]",
+			"AccountNumber": accountNumber,
 		},
 	})
 	if err != nil {

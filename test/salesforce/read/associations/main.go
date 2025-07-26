@@ -29,12 +29,12 @@ func main() {
 	defer done()
 
 	res, err := conn.Read(ctx, connectors.ReadParams{
-		ObjectName: "Opportunity",
-		Fields:     connectors.Fields("Id", "Name", "IsDeleted", "SystemModstamp"),
-		Since:      timestamp("2025-07-24T13:47:37"),
+		ObjectName: "Account",
+		Fields:     connectors.Fields("Id", "Name", "BillingCity", "IsDeleted", "SystemModstamp"),
+		Since:      timestamp("2024-08-28T13:47:37"),
 
 		// Names must be plural, i.e. "Contacts", "Opportunities", etc.
-		AssociatedObjects: []string{"OpportunityContactRoles"},
+		AssociatedObjects: []string{"Contacts", "Opportunities"},
 	})
 	if err != nil {
 		utils.Fail("error reading", "error", err)
