@@ -1,0 +1,31 @@
+query Cycles($filter: CycleFilter, $first: Int, $after: String) {
+  cycles(filter: $filter, first: $first, after: $after) {
+    nodes {
+      id
+      createdAt
+      updatedAt
+      archivedAt
+      number
+      name
+      description
+      startsAt
+      endsAt
+      completedAt
+      autoArchivedAt
+      issueCountHistory
+      completedIssueCountHistory
+      scopeHistory
+      completedScopeHistory
+      inProgressScopeHistory
+      progressHistory
+      currentProgress
+      progress
+    }
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
+  }
+}

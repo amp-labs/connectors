@@ -1,0 +1,45 @@
+query Notifications($filter: NotificationFilter, $first: Int, $after: String) {
+  notifications(filter: $filter, first: $first, after: $after) {
+    nodes {
+      actor {
+        id
+        name
+        email
+        description
+      }
+      actorAvatarColor
+      actorAvatarUrl
+      actorInitials
+      archivedAt
+      emailedAt
+      id
+      inboxUrl
+      isLinearActor
+      issueStatusType
+      projectUpdateHealth
+      readAt
+      snoozedUntilAt
+      subtitle
+      title
+      unsnoozedAt
+      type
+      updatedAt
+      url
+      user {
+        email
+        displayName
+        url
+        timezone
+        name
+        id
+        description
+      }
+    }
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
+  }
+}
