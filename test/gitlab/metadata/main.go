@@ -18,7 +18,7 @@ func run() error {
 	ctx := context.Background()
 	connector := gitlab.GetConnector(ctx)
 
-	m, err := connector.ListObjectMetadata(ctx, []string{"projects", "templates/gitignores", "events"})
+	m, err := connector.ListObjectMetadata(ctx, []string{"projects", "templates/gitignores", "events", "issues", "issue"})
 	if err != nil {
 		return err
 	}

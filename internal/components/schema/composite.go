@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
-	"slices"
+	"maps"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
@@ -26,7 +26,7 @@ func NewCompositeSchemaProvider(schemaProviders ...components.SchemaProvider) *C
 // ListObjectMetadata attempts to retrieve metadata for objects using each schema provider in sequence.
 // It returns aggregated results from the most successful provider (with the fewest errors).
 // Providers are tried in the order they were registered in the CompositeSchemaProvider.
-func (c *CompositeSchemaProvider) ListObjectMetadata(
+func (c *CompositeSchemaProvider) ListObjectMetadata( //nolint: cyclop
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
@@ -36,10 +36,10 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 	}
 
 	// Track objects that haven't been successfully processed yet
-	// Initialized with all objects.
-	remainingObjects := objects
+	remainingObjects := make([]string, len(objects))
+	copy(remainingObjects, objects)
 
-	for _, schemaProvider := range c.schemaProviders {
+	for idx, schemaProvider := range c.schemaProviders {
 		if len(remainingObjects) == 0 {
 			break
 		}
@@ -51,23 +51,34 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 			continue
 		}
 
-		// Append successful object metadatas to the result metadata.
-		// do not replace this with map.Copy
-		for obj, mtdata := range metadata.Result {
-			result.Result[obj] = mtdata
+		// Append successful object metadatas to the result metadata
+		maps.Copy(result.Result, metadata.Result)
+
+		// Update remaining objects - only those that failed in this attempt
+		var newRemaining []string
+
+		for _, obj := range remainingObjects {
+			if _, ok := metadata.Result[obj]; !ok {
+				newRemaining = append(newRemaining, obj)
+			}
 		}
 
-		// Assumes the object response was a success, we remove the object from failures.
-		// adds all errored objects to failures list.
-		remainingObjects = slices.Delete(remainingObjects, 0, len(remainingObjects))
-		for obj := range metadata.Errors {
-			remainingObjects = append(remainingObjects, obj)
-		}
+		remainingObjects = newRemaining
 
-		if len(metadata.Errors) > 0 {
-			slog.Info("Partial metadata collection complete",
+		if len(metadata.Errors) > 0 && len(c.schemaProviders)-1 != idx {
+			slog.Info("First schema provider completed, now retrying failed objects with the second schema provider:",
 				"provider", schemaProvider.String(),
-				"failed", metadata.Errors)
+				"failed", remainingObjects)
+		}
+	}
+
+	// If we have any remaining objects that weren't processed successfully,
+	// add them to the errors map
+	if len(remainingObjects) > 0 {
+		for _, obj := range remainingObjects {
+			if _, exists := result.Errors[obj]; !exists {
+				result.Errors[obj] = errors.New("failed to get metadata for object from any provider") // nolint: err113
+			}
 		}
 	}
 
