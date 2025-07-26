@@ -49,10 +49,10 @@ func (c *Connector) parseMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
-	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
-	}
+	objectMetadata := common.NewObjectMetadata(
+		naming.CapitalizeFirstLetterEveryWord(objectName),
+		common.FieldsMetadata{},
+	)
 
 	data, err := common.UnmarshalJSON[map[string]any](response)
 	if err != nil {
@@ -83,10 +83,10 @@ func (c *Connector) parseMetadataResponse(
 	}
 
 	for fld := range firstRecord {
-		objectMetadata.FieldsMap[fld] = fld
+		objectMetadata.AddField(fld, fld)
 	}
 
-	return &objectMetadata, nil
+	return objectMetadata, nil
 }
 
 func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL, error) {

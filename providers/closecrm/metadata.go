@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 )
 
 /*
@@ -88,7 +89,7 @@ func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common
 		return nil, err
 	}
 
-	metadata, err := parseMetadataResponse(resp)
+	metadata, err := parseMetadataResponse(objectName, resp)
 	if err != nil {
 		return nil, err
 	}
@@ -98,20 +99,21 @@ func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common
 	return metadata, nil
 }
 
-func parseMetadataResponse(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
+func parseMetadataResponse(objectName string, resp *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
 	response, err := common.UnmarshalJSON[metadataFields](resp)
 	if err != nil {
 		return nil, err
 	}
 
-	metadata := &common.ObjectMetadata{
-		FieldsMap: make(map[string]string),
-	}
+	objectMetadata := common.NewObjectMetadata(
+		naming.CapitalizeFirstLetterEveryWord(objectName),
+		common.FieldsMetadata{},
+	)
 
 	// Ranging on the fields Slice, to construct the metadata fields.
 	for k := range response.Data[0] {
-		metadata.FieldsMap[k] = k
+		objectMetadata.AddField(k, k)
 	}
 
-	return metadata, nil
+	return objectMetadata, nil
 }

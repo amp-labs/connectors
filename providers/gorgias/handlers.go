@@ -47,10 +47,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
-	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
-	}
+	objectMetadata := common.NewObjectMetadata(
+		naming.CapitalizeFirstLetterEveryWord(objectName),
+		common.FieldsMetadata{},
+	)
 
 	// All supported objects return a response following the `dataResponse` schema,
 	// with the exception of the `account` object.
@@ -62,7 +62,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		}
 
 		for fld := range *record {
-			objectMetadata.FieldsMap[fld] = fld
+			objectMetadata.AddField(fld, fld)
 		}
 	default:
 		records, err := common.UnmarshalJSON[dataResponse](response)
@@ -75,11 +75,11 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		}
 
 		for fld := range records.Data[0] {
-			objectMetadata.FieldsMap[fld] = fld
+			objectMetadata.AddField(fld, fld)
 		}
 	}
 
-	return &objectMetadata, nil
+	return objectMetadata, nil
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {

@@ -85,23 +85,24 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse, objectName string)
 	}
 
 	if _, ok := hasMetadataResource(objectName); ok {
-		return parseDescribeResponse(response.Result[0])
+		return parseDescribeResponse(objectName, response.Result[0])
 	}
 
 	if len(response.Result) == 0 {
 		return nil, common.ErrMissingExpectedValues
 	}
 
-	data := common.ObjectMetadata{
-		FieldsMap: make(map[string]string),
-	}
+	data := common.NewObjectMetadata(
+		objectName,
+		common.FieldsMetadata{},
+	)
 
 	// Using the first result data to generate the metadata.
 	for k := range response.Result[0] {
-		data.FieldsMap[k] = k
+		data.AddField(k, k)
 	}
 
-	return &data, nil
+	return data, nil
 }
 
 func metadataFallback(objectName string) (*common.ObjectMetadata, error) {
@@ -129,10 +130,11 @@ func runFallback(obj string, res *common.ListObjectMetadataResult,
 	return res
 }
 
-func parseDescribeResponse(results any) (*common.ObjectMetadata, error) {
-	data := common.ObjectMetadata{
-		FieldsMap: make(map[string]string),
-	}
+func parseDescribeResponse(objectName string, results any) (*common.ObjectMetadata, error) {
+	data := common.NewObjectMetadata(
+		objectName,
+		common.FieldsMetadata{},
+	)
 
 	fieldsResult, ok := results.(map[string]any)
 	if !ok {
@@ -157,8 +159,8 @@ func parseDescribeResponse(results any) (*common.ObjectMetadata, error) {
 			return nil, ErrFailedConvertFields
 		}
 
-		data.FieldsMap[fld] = fld
+		data.AddField(fld, fld)
 	}
 
-	return &data, nil
+	return data, nil
 }

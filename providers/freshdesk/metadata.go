@@ -47,11 +47,13 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 	return &metadataResults, nil
 }
 
-func buildMetadataFields(object string, response *common.JSONHTTPResponse, res *common.ListObjectMetadataResult) error {
-	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(object),
-	}
+func buildMetadataFields(
+	objectName string, response *common.JSONHTTPResponse, res *common.ListObjectMetadataResult,
+) error {
+	objectMetadata := common.NewObjectMetadata(
+		naming.CapitalizeFirstLetterEveryWord(objectName),
+		common.FieldsMetadata{},
+	)
 
 	// We're unmarshaling the data to []map[string]any, all supported objects returns this data type.
 	data, err := common.UnmarshalJSON[[]map[string]any](response)
@@ -64,10 +66,10 @@ func buildMetadataFields(object string, response *common.JSONHTTPResponse, res *
 	}
 
 	for fld := range (*data)[0] {
-		objectMetadata.FieldsMap[fld] = fld
+		objectMetadata.AddField(fld, fld)
 	}
 
-	res.Result[object] = objectMetadata
+	res.Result[objectName] = *objectMetadata
 
 	return nil
 }

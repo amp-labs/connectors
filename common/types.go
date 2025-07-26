@@ -376,6 +376,22 @@ type ObjectMetadata struct {
 	FieldsMap map[string]string
 }
 
+// AddField updates Fields and FieldsMap fields ensuring data consistency.
+func (m *ObjectMetadata) AddField(fieldName string, fieldDisplay string) {
+	if data, exists := m.Fields[fieldName]; exists {
+		// Amend existing data by updating the display field.
+		data.DisplayName = fieldDisplay
+		m.Fields[fieldName] = data
+	} else {
+		// Create entry with Display field only.
+		m.Fields[fieldName] = FieldMetadata{
+			DisplayName: fieldDisplay,
+		}
+	}
+
+	m.FieldsMap[fieldName] = fieldDisplay
+}
+
 // AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
 func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
 	m.Fields[fieldName] = fieldMetadata
