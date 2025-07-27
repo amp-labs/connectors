@@ -38,6 +38,7 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 	// Track objects that haven't been successfully processed yet
 	// Initialized with all objects.
 	var remainingObjects []string
+
 	copy(remainingObjects, objects)
 
 	for _, schemaProvider := range c.schemaProviders {
