@@ -118,7 +118,7 @@ func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL,
 		url.WithQueryParam(updatedAfterQuery, params.Since.Format(time.RFC3339))
 
 		if params.ObjectName == projects {
-			// This is required for reading Projects, if sice is provided.
+			// This is required for reading Projects, if since is provided.
 			// ref: https://docs.gitlab.com/api/projects/#list-projects
 			url.WithQueryParam("order_by", "updated_at")
 		}
