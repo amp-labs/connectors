@@ -37,7 +37,8 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 
 	// Track objects that haven't been successfully processed yet
 	// Initialized with all objects.
-	remainingObjects := objects
+	remainingObjects := make([]string, len(objects))
+	copy(remainingObjects, objects)
 
 	for _, schemaProvider := range c.schemaProviders {
 		if len(remainingObjects) == 0 {
