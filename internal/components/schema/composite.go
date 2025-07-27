@@ -4,15 +4,20 @@ import (
 	"context"
 	"errors"
 	"log/slog"
-	"maps"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 var ErrUnableToGetMetadata = errors.New("unable to get metadata")
 
 // CompositeSchemaProvider gets metadata from multiple providers with fallback.
+// For example, certain connectors may have OpenAPI definitions for some objects,
+// while other objects require calling an API endpoint to get the metadata.
+// This provider will try each provider in sequence until all objects are processed.
+// If a provider doesn't successfully get metadata for all objects, it will try the next provider.
+// If all providers fail, it will return an error.
 type CompositeSchemaProvider struct {
 	schemaProviders []components.SchemaProvider
 }
@@ -26,7 +31,7 @@ func NewCompositeSchemaProvider(schemaProviders ...components.SchemaProvider) *C
 // ListObjectMetadata attempts to retrieve metadata for objects using each schema provider in sequence.
 // It returns aggregated results from the most successful provider (with the fewest errors).
 // Providers are tried in the order they were registered in the CompositeSchemaProvider.
-func (c *CompositeSchemaProvider) ListObjectMetadata( //nolint: cyclop
+func (c *CompositeSchemaProvider) ListObjectMetadata(
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
@@ -35,50 +40,47 @@ func (c *CompositeSchemaProvider) ListObjectMetadata( //nolint: cyclop
 		Errors: make(map[string]error),
 	}
 
-	// Track objects that haven't been successfully processed yet
-	remainingObjects := make([]string, len(objects))
-	copy(remainingObjects, objects)
+	unprocessedObjs := datautils.NewStringSet(objects...)
 
 	for idx, schemaProvider := range c.schemaProviders {
-		if len(remainingObjects) == 0 {
+		if unprocessedObjs.IsEmpty() {
 			break
 		}
 
-		metadata, err := safeGetMetadata(schemaProvider, ctx, remainingObjects)
+		metadata, err := safeGetMetadata(schemaProvider, ctx, unprocessedObjs)
 		if err != nil {
-			slog.Error("Schema provider failed with error", "schemaProvider", schemaProvider, "error", err)
+			// This is unexpected and means something has gone wrong, expected errors should be in metadata.Errors
+			slog.Error("Schema provider failed with error",
+				"schemaProvider", schemaProvider.String(), "error", err)
+			// Construct errors for all the remaining unprocessed objects
+			// and add them to result.Errors
+			for obj := range unprocessedObjs {
+				result.Errors[obj] = err
+			}
 
 			continue
 		}
 
-		// Append successful object metadatas to the result metadata
-		maps.Copy(result.Result, metadata.Result)
+		// Add successful results, remove from unprocessed set, and remove any previous errors
+		for obj, objMetadata := range metadata.Result {
+			result.Result[obj] = objMetadata
 
-		// Update remaining objects - only those that failed in this attempt
-		var newRemaining []string
-
-		for _, obj := range remainingObjects {
-			if _, ok := metadata.Result[obj]; !ok {
-				newRemaining = append(newRemaining, obj)
-			}
+			unprocessedObjs.Remove(obj)
+			delete(result.Errors, obj)
 		}
 
-		remainingObjects = newRemaining
+		// Add errors to result.Errors
+		for obj, err := range metadata.Errors {
+			result.Errors[obj] = err
+		}
 
-		if len(metadata.Errors) > 0 && len(c.schemaProviders)-1 != idx {
-			slog.Info("First schema provider completed, now retrying failed objects with the second schema provider:",
+		notLastProvider := idx < len(c.schemaProviders)-1
+
+		if len(metadata.Errors) > 0 && notLastProvider {
+			slog.Debug("Still some unprocessed objects left, trying next schema provider:",
 				"provider", schemaProvider.String(),
-				"failed", remainingObjects)
-		}
-	}
-
-	// If we have any remaining objects that weren't processed successfully,
-	// add them to the errors map
-	if len(remainingObjects) > 0 {
-		for _, obj := range remainingObjects {
-			if _, exists := result.Errors[obj]; !exists {
-				result.Errors[obj] = errors.New("failed to get metadata for object from any provider") // nolint: err113
-			}
+				"nextProvider", c.schemaProviders[idx+1].String(),
+				"unprocessedObjects", unprocessedObjs.List())
 		}
 	}
 
@@ -90,7 +92,7 @@ func (c *CompositeSchemaProvider) ListObjectMetadata( //nolint: cyclop
 func safeGetMetadata(
 	schemaProvider components.SchemaProvider,
 	ctx context.Context,
-	objects []string,
+	objects datautils.StringSet,
 ) (*common.ListObjectMetadataResult, error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -100,7 +102,7 @@ func safeGetMetadata(
 		}
 	}()
 
-	return schemaProvider.ListObjectMetadata(ctx, objects)
+	return schemaProvider.ListObjectMetadata(ctx, objects.List())
 }
 
 func (c *CompositeSchemaProvider) String() string {
