@@ -108,7 +108,8 @@ func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL,
 	}
 
 	if params.ObjectName == projects {
-		// sets owned=true&membership=true
+		// sets owned=true&membership=true so that we are fetching the user's projects
+		// instead of all public projects on GitLab
 		url.WithQueryParam(ownedQuery, "true")
 		url.WithQueryParam(membershipQuery, "true")
 	}
