@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -14,10 +15,14 @@ import (
 )
 
 const (
-	perPageQuery     = "per_page"
-	pageQuery        = "page"
-	metadataPageSize = "1"
-	pageSize         = "100"
+	perPageQuery      = "per_page"
+	pageQuery         = "page"
+	ownedQuery        = "owned"
+	membershipQuery   = "membership"
+	updatedAfterQuery = "updated_after"
+	metadataPageSize  = "1"
+	pageSize          = "100"
+	projects          = "projects"
 )
 
 func (c *Connector) buildSingleHandlerRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -84,23 +89,43 @@ func (c *Connector) parseSingleHandlerResponse(
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	var (
-		url *urlbuilder.URL
-		err error
-	)
-
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
+	url, err := c.constructReadURL(params)
 	if err != nil {
 		return nil, err
 	}
-
-	url.WithQueryParam(perPageQuery, pageSize)
 
 	if params.NextPage != "" {
 		url.WithQueryParam(pageQuery, params.NextPage.String())
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.ObjectName == projects {
+		// sets owned=true&membership=true
+		url.WithQueryParam(ownedQuery, "true")
+		url.WithQueryParam(membershipQuery, "true")
+	}
+
+	if !params.Since.IsZero() {
+		url.WithQueryParam(updatedAfterQuery, params.Since.Format(time.RFC3339))
+
+		if params.ObjectName == projects {
+			// This is required for reading Projects, if sice is provided.
+			// ref: https://docs.gitlab.com/api/projects/#list-projects
+			url.WithQueryParam("order_by", "updated_at")
+		}
+	}
+
+	url.WithQueryParam(perPageQuery, pageSize)
+
+	return url, nil
 }
 
 func (c *Connector) parseReadResponse(
