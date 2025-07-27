@@ -23,6 +23,8 @@ linters:
     - nonamedreturns
     # No longer relevant in newer versions of Go
     - exportloopref
+    # There are many legitimate cases for preallocating the length of a slice, so this is not helpful.
+    - makezero
 linters-settings:
   # See https://golangci-lint.run/usage/linters#revive
   revive:
