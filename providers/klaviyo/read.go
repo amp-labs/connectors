@@ -2,11 +2,10 @@ package klaviyo
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers/klaviyo/internal/filtering"
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -36,53 +35,33 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 }
 
-func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
-	if len(config.NextPage) != 0 {
+func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
+	if len(params.NextPage) != 0 {
 		// Next page
-		return urlbuilder.New(config.NextPage.String())
+		return urlbuilder.New(params.NextPage.String())
 	}
 
 	// First page
-	url, err := c.getReadURL(config.ObjectName)
+	url, err := c.getReadURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	filter := filterBuilder{
-		custom: config.Filter,
+	// Build query.
+	query := filtering.NewQuery().
+		WithCustomFiltering(params.Filter)
+
+	// Attach time-based filtering if supported
+	if timeField, found := objectsNameToSinceFieldName[common.ModuleRoot][params.ObjectName]; found {
+		query.
+			WithSince(params.Since, timeField).
+			WithUntil(params.Until, timeField)
 	}
 
-	if !config.Since.IsZero() {
-		if sinceField, found := objectsNameToSinceFieldName[common.ModuleRoot][config.ObjectName]; found {
-			// Documentation about filtering: https://developers.klaviyo.com/en/docs/filtering_
-			// Ex: ?filter=greater-than(datetime,2023-03-01T01:00:00Z)
-			sinceValue := datautils.Time.FormatRFC3339inUTC(config.Since)
-			filter.since = fmt.Sprintf("greater-than(%v,%v)", sinceField, sinceValue)
-		}
-	}
-
-	if queryParam := filter.queryParameter(); len(queryParam) != 0 {
+	// Apply query to URL.
+	if queryParam := query.String(); len(queryParam) != 0 {
 		url.WithQueryParam("filter", queryParam)
 	}
 
 	return url, nil
-}
-
-type filterBuilder struct {
-	since  string
-	custom string
-}
-
-func (b filterBuilder) queryParameter() string {
-	if len(b.since) == 0 {
-		return b.custom
-	}
-
-	if len(b.custom) == 0 {
-		return b.since
-	}
-
-	// Both values are set. As per documentation these values can be comma separated.
-	// Reference: https://developers.klaviyo.com/en/docs/filtering_
-	return b.since + "," + b.custom
 }
