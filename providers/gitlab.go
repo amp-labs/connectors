@@ -1,6 +1,6 @@
 package providers
 
-const GitLab Provider = "gitLab"
+const GitLab Provider = "gitlab"
 
 func init() {
 	SetInfo(GitLab, ProviderInfo{
