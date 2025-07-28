@@ -46,6 +46,7 @@ import (
 	"github.com/amp-labs/connectors/providers/heyreach"
 	"github.com/amp-labs/connectors/providers/hubspot"
 	"github.com/amp-labs/connectors/providers/hunter"
+	"github.com/amp-labs/connectors/providers/insightly"
 	"github.com/amp-labs/connectors/providers/instantly"
 	"github.com/amp-labs/connectors/providers/instantlyai"
 	"github.com/amp-labs/connectors/providers/intercom"
@@ -126,6 +127,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.HeyReach:                wrapper(newHeyReachConnector),
 	providers.Hubspot:                 wrapper(newHubspotConnector),
 	providers.Hunter:                  wrapper(newHunterConnector),
+	providers.Insightly:               wrapper(newInsightlyConnector),
 	providers.Instantly:               wrapper(newInstantlyConnector),
 	providers.InstantlyAI:             wrapper(newInstantlyAIConnector),
 	providers.Intercom:                wrapper(newIntercomConnector),
@@ -518,6 +520,12 @@ func newHunterConnector(
 	params common.ConnectorParams,
 ) (*hunter.Connector, error) {
 	return hunter.NewConnector(params)
+}
+
+func newInsightlyConnector(
+	params common.ConnectorParams,
+) (*insightly.Connector, error) {
+	return insightly.NewConnector(params)
 }
 
 func newPodiumConnector(
