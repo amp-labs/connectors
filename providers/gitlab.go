@@ -7,12 +7,20 @@ func init() {
 		DisplayName: "GitLab",
 		AuthType:    Oauth2,
 		BaseURL:     "https://gitlab.com",
-		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://gitlab.com/oauth/authorize",
-			TokenURL:                  "https://gitlab.com/oauth/token",
-			ExplicitScopesRequired:    false,
-			ExplicitWorkspaceRequired: false,
+		CustomOpts: &CustomAuthOpts{
+			Headers: []CustomAuthHeader{
+				{
+					Name:          "PRIVATE TOKEN",
+					ValueTemplate: "{{ .apiKey }}",
+				},
+			},
+			Inputs: []CustomAuthInput{
+				{
+					Name:        "apiKey",
+					DisplayName: "Personal Access Token",
+					DocsURL:     "https://gitlab.com/-/user_settings/personal_access_tokens",
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
