@@ -10,14 +10,15 @@ func init() {
 		CustomOpts: &CustomAuthOpts{
 			Headers: []CustomAuthHeader{
 				{
-					Name:          "PRIVATE TOKEN",
-					ValueTemplate: "{{ .apiKey }}",
+					Name:          "PRIVATE-TOKEN",
+					ValueTemplate: "{{ .token }}",
 				},
 			},
 			Inputs: []CustomAuthInput{
 				{
-					Name:        "apiKey",
-					DisplayName: "Personal Access Token",
+					Name:        "token",
+					DisplayName: "Access Token",
+					Prompt:      "This can be a personal, project, or group access token.",
 					DocsURL:     "https://gitlab.com/-/user_settings/personal_access_tokens",
 				},
 			},
