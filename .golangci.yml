@@ -23,6 +23,7 @@ linters:
     - nonamedreturns
     # There are many legitimate cases for preallocating the length of a slice, so this is not helpful.
     - makezero
+    - usetesting
 linters-settings:
   # See https://golangci-lint.run/usage/linters#revive
   revive:
