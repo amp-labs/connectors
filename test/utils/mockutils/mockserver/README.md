@@ -56,7 +56,7 @@ This is highly useful to ensure that requests are constructed properly by the co
 Server: mockserver.Conditional{
 	Setup: mockserver.ContentJSON(),
 	If: mockcond.And{
-		mockcond.PathSuffix("/services/data/v60.0/jobs/ingest"),
+		mockcond.Path("/services/data/v60.0/jobs/ingest"),
 		mockcond.Body(bodyRequest),
 	},
 	Then: mockserver.Response(http.StatusOK, responseCreateJob),
@@ -75,10 +75,10 @@ This is particularly useful when a connector makes multiple API calls, each requ
 Server: mockserver.Switch{
 	Setup: mockserver.ContentJSON(),
 	Cases: []mockserver.Case{{
-		If:   mockcond.PathSuffix("EntityDefinitions(LogicalName='account')"),
+		If:   mockcond.Path("EntityDefinitions(LogicalName='account')"),
 		Then: mockserver.Response(http.StatusOK, responseContactsSchema),
 	}, {
-		If:   mockcond.PathSuffix("EntityDefinitions(LogicalName='account')/Attributes"),
+		If:   mockcond.Path("EntityDefinitions(LogicalName='account')/Attributes"),
 		Then: mockserver.ResponseString(http.StatusOK, `{"value":[]}`),
 	}},
 	Default: mockserver.Response(http.StatusOK, []byte{}),
