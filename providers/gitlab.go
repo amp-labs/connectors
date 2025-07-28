@@ -8,6 +8,7 @@ func init() {
 		AuthType:    Oauth2,
 		BaseURL:     "https://gitlab.com",
 		CustomOpts: &CustomAuthOpts{
+			// https://docs.gitlab.com/api/rest/authentication/#personalprojectgroup-access-tokens
 			Headers: []CustomAuthHeader{
 				{
 					Name:          "PRIVATE-TOKEN",
