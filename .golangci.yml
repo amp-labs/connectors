@@ -1,7 +1,9 @@
 run:
-  timeout: 5m
+  timeout: 10m
 output:
-  formats: colored-line-number
+  formats:
+    - format: colored-line-number
+      path: stdout
 linters:
   enable-all: true
   disable:
