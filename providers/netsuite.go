@@ -1,6 +1,11 @@
 package providers
 
-const Netsuite Provider = "netsuite"
+const (
+	Netsuite Provider = "netsuite"
+
+	// NetsuiteModuleRESTAPI is a read-write module that uses the REST API to read and write data.
+	NetsuiteModuleRESTAPI = "restapi"
+)
 
 // nolint:lll
 func init() {
@@ -27,6 +32,17 @@ func init() {
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+		DefaultModule: NetsuiteModuleRESTAPI,
+		Modules: &Modules{
+			NetsuiteModuleRESTAPI: {
+				DisplayName: "Netsuite (REST API)",
+				BaseURL:     "https://{{.workspace}}.suitetalk.api.netsuite.com/services/rest/record",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
