@@ -5,7 +5,7 @@ const GitLab Provider = "gitlab"
 func init() {
 	SetInfo(GitLab, ProviderInfo{
 		DisplayName: "GitLab",
-		AuthType:    Oauth2,
+		AuthType:    Custom,
 		BaseURL:     "https://gitlab.com",
 		CustomOpts: &CustomAuthOpts{
 			// https://docs.gitlab.com/api/rest/authentication/#personalprojectgroup-access-tokens
