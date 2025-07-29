@@ -225,6 +225,10 @@ func (c *Connector) fetchMultipleAssociations(ctx context.Context, objectName st
 	return result, nil
 }
 
+type Records struct {
+	Data map[string]any `json:"data"`
+}
+
 func (c *Connector) getAssociation(ctx context.Context, path string) (map[string]any, error) {
 	u, err := c.getApiURL(path)
 	if err != nil {
@@ -236,12 +240,12 @@ func (c *Connector) getAssociation(ctx context.Context, path string) (map[string
 		return nil, err
 	}
 
-	d, err := common.UnmarshalJSON[map[string]any](resp)
+	d, err := common.UnmarshalJSON[Records](resp)
 	if err != nil {
 		return nil, err
 	}
 
-	return *d, nil
+	return d.Data, nil
 }
 
 func assertMapStringAny(val any) (map[string]any, error) {
