@@ -10,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/netsuite/internal/restapi"
+	"github.com/amp-labs/connectors/providers/netsuite/internal/suiteql"
 )
 
 const apiVersion = "v1"
@@ -24,6 +25,7 @@ type Connector struct {
 
 	// TODO: Expose concurrency knobs to the server.
 	RESTAPI *restapi.Adapter
+	SuiteQL *suiteql.Adapter
 }
 
 // API Reference: https://td2972271.app.netsuite.com/app/help/helpcenter.nl?fid=section_158151234003.html
@@ -46,6 +48,13 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		}
 
 		connector.RESTAPI = adapter
+	case providers.NetsuiteModuleSuiteQL:
+		adapter, err := suiteql.NewAdapter(params)
+		if err != nil {
+			return nil, err
+		}
+
+		connector.SuiteQL = adapter
 	default:
 		return nil, fmt.Errorf("module %s not supported", connector.Module())
 	}
@@ -60,12 +69,20 @@ func (c Connector) ListObjectMetadata(
 		return c.RESTAPI.ListObjectMetadata(ctx, objectNames)
 	}
 
+	if c.SuiteQL != nil {
+		return c.SuiteQL.ListObjectMetadata(ctx, objectNames)
+	}
+
 	return nil, common.ErrNotImplemented
 }
 
 func (c Connector) Read(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error) {
 	if c.RESTAPI != nil {
 		return c.RESTAPI.Read(ctx, params)
+	}
+
+	if c.SuiteQL != nil {
+		return c.SuiteQL.Read(ctx, params)
 	}
 
 	return nil, common.ErrNotImplemented
@@ -76,6 +93,7 @@ func (c Connector) Write(ctx context.Context, params connectors.WriteParams) (*c
 		return c.RESTAPI.Write(ctx, params)
 	}
 
+	// SuiteQL is read-only, so it doesn't support write operations
 	return nil, common.ErrNotImplemented
 }
 
@@ -84,11 +102,6 @@ func (c Connector) Delete(ctx context.Context, params connectors.DeleteParams) (
 		return c.RESTAPI.Delete(ctx, params)
 	}
 
+	// SuiteQL is read-only, so it doesn't support delete operations
 	return nil, common.ErrNotImplemented
-}
-
-func (c Connector) setUnitTestBaseURL(url string) {
-	if c.RESTAPI != nil {
-		c.RESTAPI.SetUnitTestBaseURL(url)
-	}
 }

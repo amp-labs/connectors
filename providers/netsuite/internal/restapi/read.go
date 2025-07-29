@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -16,6 +17,8 @@ import (
 
 const (
 	maxRecordsToFetchConcurrently = 5
+
+	defaultLimit = 10
 
 	// DO NOT CHANGE THIS FORMAT. For some reason, this format works even though it isn't
 	// mentioned explicitly in the documentation. I found it mentioned as a common format
@@ -32,6 +35,8 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 	if err != nil {
 		return nil, err
 	}
+
+	url.WithQueryParam("limit", strconv.Itoa(defaultLimit))
 
 	// Attach Since & Until, if provided.
 	var queries []string

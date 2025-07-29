@@ -20,6 +20,10 @@ func GetNetsuiteRESTAPIConnector(ctx context.Context) *netsuite.Connector {
 	return getNetsuiteConnector(ctx, providers.NetsuiteModuleRESTAPI)
 }
 
+func GetNetsuiteSuiteQLConnector(ctx context.Context) *netsuite.Connector {
+	return getNetsuiteConnector(ctx, providers.NetsuiteModuleSuiteQL)
+}
+
 func getNetsuiteConnector(ctx context.Context, module common.ModuleID) *netsuite.Connector {
 	reader := getNetsuiteJSONReader()
 

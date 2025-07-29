@@ -13,7 +13,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-const TimeoutSeconds = 180
+const TimeoutSeconds = 30
 
 func main() {
 	// Handle Ctrl-C gracefully.
@@ -23,20 +23,20 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetNetsuiteRESTAPIConnector(ctx)
+	conn := connTest.GetNetsuiteSuiteQLConnector(ctx)
 
 	ctx, done = context.WithTimeout(ctx, TimeoutSeconds*time.Second)
 	defer done()
 
 	res, err := conn.Read(ctx, connectors.ReadParams{
-		ObjectName: "customer",
-		Fields:     connectors.Fields("id", "companyName", "email", "phone", "entityStatus"),
-		NextPage:   "https://td2972271.suitetalk.api.netsuite.com/services/rest/record/v1/customer?limit=10&offset=10",
+		ObjectName: "transaction",
+		Fields:     connectors.Fields("id", "lastModifiedDate"),
+		Since:      time.Now().Add(-90 * 24 * time.Hour),
 	})
 	if err != nil {
-		utils.Fail("error reading customers from NetSuite REST API", "error", err)
+		utils.Fail("error reading transactions from NetSuite SuiteQL", "error", err)
 	}
 
-	fmt.Println("Reading customers..")
+	fmt.Println("Reading transactions..")
 	utils.DumpJSON(res, os.Stdout)
 }

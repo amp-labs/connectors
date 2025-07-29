@@ -3,6 +3,9 @@ package providers
 const (
 	Netsuite Provider = "netsuite"
 
+	// NetsuiteModuleSuiteQL is a read-only module that uses SuiteQL to read data.
+	NetsuiteModuleSuiteQL = "suiteql"
+
 	// NetsuiteModuleRESTAPI is a read-write module that uses the REST API to read and write data.
 	NetsuiteModuleRESTAPI = "restapi"
 )
@@ -35,6 +38,13 @@ func init() {
 		},
 		DefaultModule: NetsuiteModuleRESTAPI,
 		Modules: &Modules{
+			NetsuiteModuleSuiteQL: {
+				DisplayName: "Netsuite (SuiteQL)",
+				BaseURL:     "https://{{.workspace}}.suitetalk.api.netsuite.com/services/rest/query",
+				Support: Support{
+					Read: true,
+				},
+			},
 			NetsuiteModuleRESTAPI: {
 				DisplayName: "Netsuite (REST API)",
 				BaseURL:     "https://{{.workspace}}.suitetalk.api.netsuite.com/services/rest/record",

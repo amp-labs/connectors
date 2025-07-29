@@ -23,20 +23,20 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetNetsuiteRESTAPIConnector(ctx)
+	conn := connTest.GetNetsuiteSuiteQLConnector(ctx)
 
 	ctx, done = context.WithTimeout(ctx, TimeoutSeconds*time.Second)
 	defer done()
 
 	res, err := conn.Read(ctx, connectors.ReadParams{
-		ObjectName: "customer",
-		Fields:     connectors.Fields("id", "companyName", "email", "phone", "entityStatus"),
-		NextPage:   "https://td2972271.suitetalk.api.netsuite.com/services/rest/record/v1/customer?limit=10&offset=10",
+		ObjectName: "account",
+		Fields:     connectors.Fields("id", "acctname", "acctnumber"),
+		Since:      time.Now().Add(-1 * time.Hour),
 	})
 	if err != nil {
-		utils.Fail("error reading customers from NetSuite REST API", "error", err)
+		utils.Fail("error reading accounts from NetSuite SuiteQL", "error", err)
 	}
 
-	fmt.Println("Reading customers..")
+	fmt.Println("Reading accounts..")
 	utils.DumpJSON(res, os.Stdout)
 }
