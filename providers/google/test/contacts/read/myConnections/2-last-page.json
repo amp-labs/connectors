@@ -1,0 +1,27 @@
+{
+  "connections": [
+    {
+      "resourceName": "people/c3614676454703510757",
+      "etag": "%EgUBAi43PRoEAQIFByIMZWthZ1VlTWN4eEE9",
+      "names": [
+        {
+          "metadata": {
+            "primary": true,
+            "source": {
+              "type": "CONTACT",
+              "id": "3229e9158c9234e5"
+            },
+            "sourcePrimary": true
+          },
+          "displayName": "Scarlet Lester",
+          "familyName": "Lester",
+          "givenName": "Scarlet",
+          "displayNameLastFirst": "Lester, Scarlet",
+          "unstructuredName": "Scarlet Lester"
+        }
+      ]
+    }
+  ],
+  "totalPeople": 2,
+  "totalItems": 2
+}

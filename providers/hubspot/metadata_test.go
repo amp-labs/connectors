@@ -351,7 +351,8 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
+	connector.providerInfo.BaseURL = mockutils.ReplaceURLOrigin(connector.providerInfo.BaseURL, serverURL)
+	connector.moduleInfo.BaseURL = mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, serverURL)
 
 	return connector, nil
 }

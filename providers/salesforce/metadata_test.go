@@ -40,7 +40,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If: mockcond.Body(`{"allOrNone":false,"compositeRequest":[{
 					"referenceId":"Organization",
 					"method":"GET",
-					"url":"/services/data/v59.0/sobjects/Organization/describe"
+					"url":"/services/data/v60.0/sobjects/Organization/describe"
 				}]}`),
 				Then: mockserver.Response(http.StatusOK, responseOrgMeta),
 			}.Server(),

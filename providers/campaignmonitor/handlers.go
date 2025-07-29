@@ -60,6 +60,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	// Here is the link explaining why we add .json after the objectName: https://www.campaignmonitor.com/api/v3-3/clients/
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "api", APIVersion, params.ObjectName+".json")
 	if err != nil {
 		return nil, err
