@@ -5,12 +5,12 @@
 Below is an exhaustive list of objects & methods supported on the objects
 
 Campaign Monitor API environment : v3.3
--------------------------------------------------------------------
-| object          |  Resource                              | Method|
-| ----------------| ---------------------------------------| ------|
-| Clients         | clients.{xml|json}                     | read  |
-| Admins          | admins.{xml|json}                      | read  |
---------------------------------------------------------------------
+--------------------------------------------------------------------------
+| object          |  Resource                              | Method      |
+| ----------------| ---------------------------------------| ------------|
+| Clients         | clients.{xml|json}                     | read,write  |
+| Admins          | admins.{xml|json}                      | read,write  |
+--------------------------------------------------------------------------
 
 Note: 
  - Currently we do not support below endpoints because they requires an shared ID in the URL path.
