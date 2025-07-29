@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/spyzhov/ajson"
 )
 
 const APIVersion = "v3.3"
@@ -52,4 +53,34 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	// Here is the link explaining why we add .json after the objectName: https://www.campaignmonitor.com/api/v3-3/clients/
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "api", APIVersion, params.ObjectName+".json")
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath(""),
+		getNextRecordsURL,
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}
+
+func getNextRecordsURL(_ *ajson.Node) (string, error) {
+	// Pagination is not supported for this provider.
+	return "", nil
 }
