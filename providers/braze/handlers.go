@@ -22,9 +22,8 @@ var ErrInvalidData = errors.New("invalid request data provided")
 func (c *Connector) metadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	path := objectName
 
-	// map objectName to the braze APIs endpoints.
+	// maps objectName to the braze APIs endpoints path.
 	if objectName, exists := readEndpointsByObject[objectName]; exists {
-		// map the objectName to the appropriate endpoint
 		path = objectName
 	}
 
@@ -33,6 +32,7 @@ func (c *Connector) metadataRequest(ctx context.Context, objectName string) (*ht
 		return nil, err
 	}
 
+	// sets single page request for metadata response.
 	url.WithQueryParam(limitQuery, metadataPageSize)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -61,9 +61,7 @@ func (c *Connector) parseMetadataResponse(
 		return nil, err
 	}
 
-	// map objectName to the braze APIs endpoints.
 	if endpoint, exists := readEndpointsByObject[objectName]; exists {
-		// map the objectName to the appropriate endpoint
 		path = endpoint
 	}
 
@@ -98,9 +96,7 @@ func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL,
 		return urlbuilder.New(params.NextPage.String())
 	}
 
-	// map objectName to the braze APIs endpoints.
 	if obj, exists := readEndpointsByObject[params.ObjectName]; exists {
-		// map the objectName to the appropriate endpoint
 		path = obj
 	}
 
@@ -185,6 +181,8 @@ func (c *Connector) constructCatalogPayload(recordData any) ([]byte, error) {
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	path := params.ObjectName
+
 	var (
 		jsonData []byte
 		err      error
@@ -194,11 +192,10 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	// map objectName to the braze APIs endpoints.
 	if objectName, exists := writeEndpointsByObject[params.ObjectName]; exists {
-		// map the objectName to the appropriate endpoint
-		params.ObjectName = objectName
+		path = objectName
 	}
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, path)
 	if err != nil {
 		return nil, err
 	}
