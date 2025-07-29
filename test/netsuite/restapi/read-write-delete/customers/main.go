@@ -38,6 +38,7 @@ func main() {
 	}
 
 	slog.Info("Creating customer..")
+
 	writeRes, err := conn.Write(ctx, connectors.WriteParams{
 		ObjectName: "customer",
 		RecordData: testCustomer,
@@ -51,6 +52,7 @@ func main() {
 	if writeRes.Success && writeRes.RecordId != "" {
 		// Read the created customer back
 		slog.Info("Reading back created customer..")
+
 		readRes, err := conn.Read(ctx, connectors.ReadParams{
 			ObjectName: "customer",
 			Fields:     connectors.Fields("id", "companyName", "email", "phone", "entityStatus"),
@@ -65,6 +67,7 @@ func main() {
 
 		// Update the customer
 		slog.Info("Updating customer..")
+
 		updateData := map[string]any{
 			"phone": "555-9999",
 			"email": "updated@example.com",
@@ -80,18 +83,19 @@ func main() {
 		}
 
 		slog.Info("Customer updated", "updateResult", updateRes)
+		slog.Info("Deleting test customer..")
 
-		// Optionally delete the test customer (commented out for safety)
-		// slog.Info("Deleting test customer..")
-		// deleteRes, err := conn.Delete(ctx, connectors.DeleteParams{
-		// 	ObjectName: "customer",
-		// 	RecordId:   writeRes.RecordId,
-		// })
-		// if err != nil {
-		// 	utils.Fail("error deleting customer", "error", err)
-		// }
-		// slog.Info("Customer deleted", "deleteResult", deleteRes)
+		deleteRes, err := conn.Delete(ctx, connectors.DeleteParams{
+			ObjectName: "customer",
+			RecordId:   writeRes.RecordId,
+		})
+
+		if err != nil {
+			utils.Fail("error deleting customer", "error", err)
+		}
+
+		slog.Info("Customer deleted", "deleteResult", deleteRes)
 	}
 
-	slog.Info("Read-write test completed successfully")
+	slog.Info("Read-write-delete test completed successfully")
 }

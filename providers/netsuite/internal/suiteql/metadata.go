@@ -19,7 +19,7 @@ func (a *Adapter) buildObjectMetadataRequest(ctx context.Context, objectName str
 	}
 
 	body := suiteQLQueryBody{
-		Query: fmt.Sprintf("SELECT * FROM %s", objectName),
+		Query: "SELECT * FROM " + objectName,
 	}
 
 	url.WithQueryParam("limit", "1")
@@ -35,8 +35,6 @@ func (a *Adapter) buildObjectMetadataRequest(ctx context.Context, objectName str
 	}
 
 	req.Header.Set("Prefer", "transient")
-
-	fmt.Println(url.String())
 
 	return req, nil
 }

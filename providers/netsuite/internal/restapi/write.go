@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -12,6 +13,8 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
+
+var ErrNoLocationHeader = errors.New("no Location header in response")
 
 func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	url, err := urlbuilder.New(a.ModuleInfo().BaseURL, apiVersion, params.ObjectName)
@@ -23,6 +26,7 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 
 	if params.RecordId != "" {
 		url.AddPath(params.RecordId)
+
 		method = http.MethodPatch
 	}
 
@@ -56,6 +60,7 @@ func (a *Adapter) parseWriteResponse(ctx context.Context, params common.WritePar
 	} else {
 		data, err = jsonquery.Convertor.ObjectToMap(body)
 	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse response body: %w", err)
 	}
@@ -66,7 +71,7 @@ func (a *Adapter) parseWriteResponse(ctx context.Context, params common.WritePar
 	if recordID == "" {
 		location := response.Headers.Get("Location")
 		if location == "" {
-			return nil, fmt.Errorf("no Location header in response")
+			return nil, ErrNoLocationHeader
 		}
 
 		recordID = location[strings.LastIndex(location, "/")+1:]

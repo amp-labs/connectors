@@ -3,7 +3,6 @@ package netsuite
 import (
 	"context"
 	_ "embed"
-	"fmt"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -12,8 +11,6 @@ import (
 	"github.com/amp-labs/connectors/providers/netsuite/internal/restapi"
 	"github.com/amp-labs/connectors/providers/netsuite/internal/suiteql"
 )
-
-const apiVersion = "v1"
 
 type Connector struct {
 	// Basic connector
@@ -40,7 +37,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		return nil, err
 	}
 
-	switch connector.Module() {
+	switch connector.Module() { //nolint:exhaustive
 	case providers.NetsuiteModuleRESTAPI:
 		adapter, err := restapi.NewAdapter(params)
 		if err != nil {
@@ -56,7 +53,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 
 		connector.SuiteQL = adapter
 	default:
-		return nil, fmt.Errorf("module %s not supported", connector.Module())
+		return nil, common.ErrUnsupportedModule
 	}
 
 	return connector, nil

@@ -12,10 +12,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func GetNetsuiteConnector(ctx context.Context) *netsuite.Connector {
-	return getNetsuiteConnector(ctx, providers.NetsuiteModuleRESTAPI)
-}
-
 func GetNetsuiteRESTAPIConnector(ctx context.Context) *netsuite.Connector {
 	return getNetsuiteConnector(ctx, providers.NetsuiteModuleRESTAPI)
 }

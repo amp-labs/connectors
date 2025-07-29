@@ -35,7 +35,7 @@ type NetSuiteErrorDetails struct {
 	ErrorDetails []NetSuiteErrorItem `json:"o:errorDetails"`
 }
 
-// NetSuiteErrorItem represents individual error details within NetSuite's error response
+// NetSuiteErrorItem represents individual error details within NetSuite's error response.
 type NetSuiteErrorItem struct {
 	Detail          string `json:"detail"`
 	ErrorQueryParam string `json:"o:errorQueryParam"`

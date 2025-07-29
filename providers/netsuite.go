@@ -10,7 +10,7 @@ const (
 	NetsuiteModuleRESTAPI = "restapi"
 )
 
-// nolint:lll
+// nolint:lll,funlen
 func init() {
 	SetInfo(Netsuite, ProviderInfo{
 		DisplayName: "Netsuite",

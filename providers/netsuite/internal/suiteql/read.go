@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	// SuiteQL timestamp format for TO_TIMESTAMP function
+	// SuiteQL timestamp format for TO_TIMESTAMP function.
 	suiteQLTimestampFormat = "2006-01-02 15:04:05.000000000"
 )
 
@@ -98,7 +98,7 @@ func makeNextRecordsURL() common.NextPageFunc {
 
 func makeSuiteQLBody(params common.ReadParams) suiteQLQueryBody {
 	body := suiteQLQueryBody{
-		Query: fmt.Sprintf("SELECT * FROM %s", params.ObjectName),
+		Query: "SELECT * FROM " + params.ObjectName,
 	}
 
 	var queries []string

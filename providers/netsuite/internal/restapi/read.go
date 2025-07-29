@@ -16,15 +16,20 @@ import (
 )
 
 const (
+	// maxRecordsToFetchConcurrently was chosen for the broadest compatibility.
+	// If a consumer has a license that allows for more than 5 concurrent requests,
+	// we should make this configurable.
 	maxRecordsToFetchConcurrently = 5
 
 	defaultLimit = 10
 
 	// DO NOT CHANGE THIS FORMAT. For some reason, this format works even though it isn't
-	// mentioned explicitly in the documentation. I found it mentioned as a common format
-	// in multiple stackoverflow threads.
+	// mentioned explicitly in the documentation. It is quite possible that this only works
+	// for some instances (US based), so we need to test this with other instances.
 	dateLayout = "01/02/2006 03:04 PM"
 )
+
+var ErrNoRecordFound = errors.New("no record found")
 
 func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if len(params.NextPage) != 0 {
@@ -71,6 +76,8 @@ func (a *Adapter) parseReadResponse(
 	)
 }
 
+// We define a special marshal function for Netsuite because the response is a list of record URLs.
+// We need to fetch the actual records from the URLs and return the records.
 func (a *Adapter) getMarshaledData(ctx context.Context) common.MarshalFunc {
 	return func(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
 		// We have a list of records, each record has a links array with a 'rel' property with the value 'self'.
@@ -147,6 +154,9 @@ func makeNextRecordsURL() common.NextPageFunc {
 	}
 }
 
+// fetchRecords fetches records from the given URLs concurrently. It does so in
+// batches of maxRecordsToFetchConcurrently to avoid running into rate limits.
+// nolint:funlen
 func (a *Adapter) fetchRecords(ctx context.Context, recordsToFetch []string) ([]map[string]any, error) {
 	maxc := make(chan struct{}, maxRecordsToFetchConcurrently)
 
@@ -158,14 +168,15 @@ func (a *Adapter) fetchRecords(ctx context.Context, recordsToFetch []string) ([]
 
 	resultChan := make(chan result, len(recordsToFetch))
 
-	var wg sync.WaitGroup
+	var wgroup sync.WaitGroup
 
-	for i, recordURL := range recordsToFetch {
-		wg.Add(1)
+	for idx, recordURL := range recordsToFetch {
+		wgroup.Add(1)
 
 		go func(index int, url string) {
-			defer wg.Done()
+			defer wgroup.Done()
 
+			// Block to avoid overwhelming the API with too many concurrent requests.
 			maxc <- struct{}{}
 			defer func() { <-maxc }()
 
@@ -178,7 +189,7 @@ func (a *Adapter) fetchRecords(ctx context.Context, recordsToFetch []string) ([]
 
 			node, ok := record.Body()
 			if !ok {
-				resultChan <- result{index: index, err: fmt.Errorf("record body is empty for URL: %s", url)}
+				resultChan <- result{index: index, err: fmt.Errorf("%w: %s", ErrNoRecordFound, url)}
 
 				return
 			}
@@ -191,13 +202,15 @@ func (a *Adapter) fetchRecords(ctx context.Context, recordsToFetch []string) ([]
 			}
 
 			resultChan <- result{index: index, data: recordBody}
-		}(i, recordURL)
+		}(idx, recordURL)
 	}
 
-	wg.Wait()
+	wgroup.Wait()
 	close(resultChan)
 
+	// Collect the results.
 	results := make([]map[string]any, len(recordsToFetch))
+
 	var allErrors []error
 
 	for res := range resultChan {
@@ -208,5 +221,7 @@ func (a *Adapter) fetchRecords(ctx context.Context, recordsToFetch []string) ([]
 		}
 	}
 
+	// Return results & errors. Can give partial results if some records fail to fetch.
+	// The caller can decide if they want to fail the entire request if some records fail to fetch.
 	return results, errors.Join(allErrors...)
 }
