@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"maps"
 	"strconv"
 	"strings"
 	"time"
@@ -170,6 +171,10 @@ func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
 
 func (evt SubscriptionEvent) asMap() common.StringMap {
 	return common.StringMap(evt)
+}
+
+func (evt SubscriptionEvent) RawMap() (map[string]any, error) {
+	return maps.Clone(evt), nil
 }
 
 func (evt SubscriptionEvent) ObjectTypeId() (string, error) {

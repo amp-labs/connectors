@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/google/internal/calendar"
+	"github.com/amp-labs/connectors/providers/google/internal/contacts"
 )
 
 // Connector for Google provider.
@@ -18,6 +19,7 @@ type Connector struct {
 	common.RequireAuthenticatedClient
 
 	Calendar *calendar.Adapter
+	Contacts *contacts.Adapter
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -39,12 +41,25 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		connector.Calendar = adapter
 	}
 
+	if connector.Module() == providers.ModuleGoogleContacts {
+		adapter, err := contacts.NewAdapter(params)
+		if err != nil {
+			return nil, err
+		}
+
+		connector.Contacts = adapter
+	}
+
 	return connector, nil
 }
 
 func (c Connector) setUnitTestBaseURL(url string) {
 	if c.Calendar != nil {
 		c.Calendar.SetUnitTestBaseURL(url)
+	}
+
+	if c.Contacts != nil {
+		c.Contacts.SetUnitTestBaseURL(url)
 	}
 }
 
@@ -55,12 +70,20 @@ func (c Connector) ListObjectMetadata(
 		return c.Calendar.ListObjectMetadata(ctx, objectNames)
 	}
 
+	if c.Contacts != nil {
+		return c.Contacts.ListObjectMetadata(ctx, objectNames)
+	}
+
 	return nil, common.ErrNotImplemented
 }
 
 func (c Connector) Read(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error) {
 	if c.Calendar != nil {
 		return c.Calendar.Read(ctx, params)
+	}
+
+	if c.Contacts != nil {
+		return c.Contacts.Read(ctx, params)
 	}
 
 	return nil, common.ErrNotImplemented
@@ -71,12 +94,20 @@ func (c Connector) Write(ctx context.Context, params connectors.WriteParams) (*c
 		return c.Calendar.Write(ctx, params)
 	}
 
+	if c.Contacts != nil {
+		return c.Contacts.Write(ctx, params)
+	}
+
 	return nil, common.ErrNotImplemented
 }
 
 func (c Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
 	if c.Calendar != nil {
 		return c.Calendar.Delete(ctx, params)
+	}
+
+	if c.Contacts != nil {
+		return c.Contacts.Delete(ctx, params)
 	}
 
 	return nil, common.ErrNotImplemented

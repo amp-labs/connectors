@@ -4,15 +4,20 @@ import (
 	"context"
 	"errors"
 	"log/slog"
-	"slices"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 var ErrUnableToGetMetadata = errors.New("unable to get metadata")
 
 // CompositeSchemaProvider gets metadata from multiple providers with fallback.
+// For example, certain connectors may have OpenAPI definitions for some objects,
+// while other objects require calling an API endpoint to get the metadata.
+// This provider will try each provider in sequence until all objects are processed.
+// If a provider doesn't successfully get metadata for all objects, it will try the next provider.
+// If all providers fail, it will return an error.
 type CompositeSchemaProvider struct {
 	schemaProviders []components.SchemaProvider
 }
@@ -35,39 +40,47 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 		Errors: make(map[string]error),
 	}
 
-	// Track objects that haven't been successfully processed yet
-	// Initialized with all objects.
-	remainingObjects := objects
+	unprocessedObjs := datautils.NewStringSet(objects...)
 
-	for _, schemaProvider := range c.schemaProviders {
-		if len(remainingObjects) == 0 {
+	for idx, schemaProvider := range c.schemaProviders {
+		if unprocessedObjs.IsEmpty() {
 			break
 		}
 
-		metadata, err := safeGetMetadata(schemaProvider, ctx, remainingObjects)
+		metadata, err := safeGetMetadata(schemaProvider, ctx, unprocessedObjs)
 		if err != nil {
-			slog.Error("Schema provider failed with error", "schemaProvider", schemaProvider, "error", err)
+			// This is unexpected and means something has gone wrong, expected errors should be in metadata.Errors
+			slog.Error("Schema provider failed with error",
+				"schemaProvider", schemaProvider.String(), "error", err)
+			// Construct errors for all the remaining unprocessed objects
+			// and add them to result.Errors
+			for obj := range unprocessedObjs {
+				result.Errors[obj] = err
+			}
 
 			continue
 		}
 
-		// Append successful object metadatas to the result metadata.
-		// do not replace this with map.Copy
-		for obj, mtdata := range metadata.Result {
-			result.Result[obj] = mtdata
+		// Add successful results, remove from unprocessed set, and remove any previous errors
+		for obj, objMetadata := range metadata.Result {
+			result.Result[obj] = objMetadata
+
+			unprocessedObjs.Remove(obj)
+			delete(result.Errors, obj)
 		}
 
-		// Assumes the object response was a success, we remove the object from failures.
-		// adds all errored objects to failures list.
-		remainingObjects = slices.Delete(remainingObjects, 0, len(remainingObjects))
-		for obj := range metadata.Errors {
-			remainingObjects = append(remainingObjects, obj)
+		// Add errors to result.Errors
+		for obj, err := range metadata.Errors {
+			result.Errors[obj] = err
 		}
 
-		if len(metadata.Errors) > 0 {
-			slog.Info("Partial metadata collection complete",
+		notLastProvider := idx < len(c.schemaProviders)-1
+
+		if len(metadata.Errors) > 0 && notLastProvider {
+			slog.Debug("Still some unprocessed objects left, trying next schema provider:",
 				"provider", schemaProvider.String(),
-				"failed", metadata.Errors)
+				"nextProvider", c.schemaProviders[idx+1].String(),
+				"unprocessedObjects", unprocessedObjs.List())
 		}
 	}
 
@@ -79,7 +92,7 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 func safeGetMetadata(
 	schemaProvider components.SchemaProvider,
 	ctx context.Context,
-	objects []string,
+	objects datautils.StringSet,
 ) (*common.ListObjectMetadataResult, error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -89,7 +102,7 @@ func safeGetMetadata(
 		}
 	}()
 
-	return schemaProvider.ListObjectMetadata(ctx, objects)
+	return schemaProvider.ListObjectMetadata(ctx, objects.List())
 }
 
 func (c *CompositeSchemaProvider) String() string {

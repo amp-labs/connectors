@@ -262,7 +262,8 @@ type Association struct {
 	// ObjectID is the ID of the associated object.
 	ObjectId string `json:"objectId"`
 	// AssociationType is the type of association.
-	AssociationType string `json:"associationType,omitempty"`
+	AssociationType string         `json:"associationType,omitempty"`
+	Raw             map[string]any `json:"raw,omitempty"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.
@@ -454,6 +455,7 @@ type SubscriptionEvent interface {
 	Workspace() (string, error)
 	RecordId() (string, error)
 	EventTimeStampNano() (int64, error)
+	RawMap() (map[string]any, error)
 }
 
 type SubscriptionUpdateEvent interface {
@@ -467,6 +469,7 @@ type SubscriptionUpdateEvent interface {
 // from a collapsed event for webhook parsing and processing.
 type CollapsedSubscriptionEvent interface {
 	SubscriptionEventList() ([]SubscriptionEvent, error)
+	RawMap() (map[string]any, error)
 }
 
 // WebhookRequest is a struct that contains the request parameters for a webhook.
