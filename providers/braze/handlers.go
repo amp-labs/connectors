@@ -20,19 +20,19 @@ type catalogPayload struct {
 var ErrInvalidData = errors.New("invalid request data provided")
 
 func (c *Connector) metadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	endpoint := objectName
+	path := objectName
 
-	// map objectName to the braze APIs endpoints.
+	// maps objectName to the braze APIs endpoints path.
 	if objectName, exists := readEndpointsByObject[objectName]; exists {
-		// map the objectName to the appropriate endpoint
-		endpoint = objectName
+		path = objectName
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, endpoint)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
 	if err != nil {
 		return nil, err
 	}
 
+	// sets single page request for metadata response.
 	url.WithQueryParam(limitQuery, metadataPageSize)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -49,6 +49,8 @@ func (c *Connector) parseMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
+	path := objectName
+
 	objectMetadata := common.ObjectMetadata{
 		FieldsMap:   make(map[string]string),
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
@@ -59,13 +61,11 @@ func (c *Connector) parseMetadataResponse(
 		return nil, err
 	}
 
-	// map objectName to the braze APIs endpoints.
 	if endpoint, exists := readEndpointsByObject[objectName]; exists {
-		// map the objectName to the appropriate endpoint
-		objectName = endpoint
+		path = endpoint
 	}
 
-	fld := dataFields.Get(objectName)
+	fld := dataFields.Get(path)
 
 	rcds, okay := (*data)[fld].([]any)
 	if !okay {
@@ -90,17 +90,17 @@ func (c *Connector) parseMetadataResponse(
 }
 
 func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
+	path := params.ObjectName
+
 	if params.NextPage != "" {
 		return urlbuilder.New(params.NextPage.String())
 	}
 
-	// map objectName to the braze APIs endpoints.
-	if objectName, exists := readEndpointsByObject[params.ObjectName]; exists {
-		// map the objectName to the appropriate endpoint
-		params.ObjectName = objectName
+	if obj, exists := readEndpointsByObject[params.ObjectName]; exists {
+		path = obj
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
 	if err != nil {
 		return nil, err
 	}
@@ -118,12 +118,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	// map objectName to the braze APIs endpoints.
-	if objectName, exists := readEndpointsByObject[params.ObjectName]; exists {
-		// map the objectName to the appropriate endpoint
-		params.ObjectName = objectName
-	}
-
 	if err := setSinceQuery(params, url); err != nil {
 		return nil, err
 	}
@@ -137,10 +131,20 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	path := params.ObjectName
+
+	// map objectName to the braze APIs endpoints.
+	if obj, exists := readEndpointsByObject[params.ObjectName]; exists {
+		// map the objectName to the appropriate endpoint
+		path = obj
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
 	if err != nil {
 		return nil, err
 	}
+
+	prevPage := request.URL.Query().Get(page)
 
 	// map objectName to the braze APIs endpoints.
 	if objectName, exists := readEndpointsByObject[params.ObjectName]; exists {
@@ -150,7 +154,7 @@ func (c *Connector) parseReadResponse(
 
 	return common.ParseResult(response,
 		common.ExtractRecordsFromPath(dataFields.Get(params.ObjectName)),
-		getNextRecordsURL(params.ObjectName, url, response),
+		getNextRecordsURL(params.ObjectName, prevPage, url, response),
 		common.GetMarshaledData,
 		params.Fields,
 	)
@@ -177,6 +181,8 @@ func (c *Connector) constructCatalogPayload(recordData any) ([]byte, error) {
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	path := params.ObjectName
+
 	var (
 		jsonData []byte
 		err      error
@@ -186,11 +192,10 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	// map objectName to the braze APIs endpoints.
 	if objectName, exists := writeEndpointsByObject[params.ObjectName]; exists {
-		// map the objectName to the appropriate endpoint
-		params.ObjectName = objectName
+		path = objectName
 	}
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, path)
 	if err != nil {
 		return nil, err
 	}

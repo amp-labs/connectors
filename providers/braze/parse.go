@@ -65,7 +65,9 @@ var offsetPaginatedObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"templates/email/list",
 )
 
-func getNextRecordsURL(objectName string, url *urlbuilder.URL, response *common.JSONHTTPResponse) common.NextPageFunc {
+func getNextRecordsURL(objectName string, prevPage string, url *urlbuilder.URL,
+	response *common.JSONHTTPResponse,
+) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		switch {
 		case cursorPaginatedObjects.Has(objectName):
@@ -73,7 +75,7 @@ func getNextRecordsURL(objectName string, url *urlbuilder.URL, response *common.
 		case offsetPaginatedObjects.Has(objectName):
 			return handleOffsetPagination(objectName, node, url)
 		default:
-			return handleDefaultPagination(objectName, node, url)
+			return handleDefaultPagination(objectName, prevPage, node, url)
 		}
 	}
 }
@@ -110,7 +112,9 @@ func handleOffsetPagination(objectName string, node *ajson.Node, url *urlbuilder
 	return url.String(), nil
 }
 
-func handleDefaultPagination(objectName string, node *ajson.Node, url *urlbuilder.URL) (string, error) {
+func handleDefaultPagination(objectName string, prevPage string, node *ajson.Node,
+	url *urlbuilder.URL,
+) (string, error) {
 	q := jsonquery.New(node)
 
 	rcds, err := q.ArrayRequired(dataFields.Get(objectName))
@@ -122,12 +126,11 @@ func handleDefaultPagination(objectName string, node *ajson.Node, url *urlbuilde
 		return "", nil
 	}
 
-	prvPgs, exists := url.GetFirstQueryParam(page)
-	if !exists {
-		prvPgs = "0"
+	if prevPage == "" {
+		prevPage = "0"
 	}
 
-	prvPg, err := strconv.Atoi(prvPgs)
+	prvPg, err := strconv.Atoi(prevPage)
 	if err != nil {
 		return "", err
 	}
@@ -139,7 +142,13 @@ func handleDefaultPagination(objectName string, node *ajson.Node, url *urlbuilde
 }
 
 func setSinceQuery(params common.ReadParams, url *urlbuilder.URL) error {
-	switch params.ObjectName {
+	path := params.ObjectName
+
+	if obj, exist := readEndpointsByObject[params.ObjectName]; exist {
+		path = obj
+	}
+
+	switch path {
 	// https://www.braze.com/docs/api/endpoints/export/campaigns/get_campaigns
 	// https://www.braze.com/docs/api/endpoints/export/canvas/get_canvases
 	case "campaigns/list", "canvas/list":
