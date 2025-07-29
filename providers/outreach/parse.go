@@ -71,7 +71,7 @@ func (c *Connector) getOutreachDataMarshaller(ctx context.Context, assoc []strin
 
 			data[idx] = common.ReadResultRow{
 				Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
-				Raw:    record,
+				Raw:    raw,
 				Id:     idStr,
 			}
 
@@ -194,10 +194,6 @@ func (c *Connector) fetchSingleAssociation(ctx context.Context, objectName strin
 
 	path := objectName + "/" + strconv.Itoa(int(recordId))
 
-	// TODO making the call, check if in the previous objectids associations.
-	// we already have similar objectId + associated type.
-
-	// when we have no such object, we make the API call.
 	records, err := c.getAssociation(ctx, path)
 	if err != nil {
 		return nil, err
@@ -227,6 +223,25 @@ func (c *Connector) fetchMultipleAssociations(ctx context.Context, objectName st
 	}
 
 	return result, nil
+}
+
+func (c *Connector) getAssociation(ctx context.Context, path string) (map[string]any, error) {
+	u, err := c.getApiURL(path)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.Client.Get(ctx, u.String())
+	if err != nil {
+		return nil, err
+	}
+
+	d, err := common.UnmarshalJSON[map[string]any](resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return *d, nil
 }
 
 func assertMapStringAny(val any) (map[string]any, error) {

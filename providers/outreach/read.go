@@ -8,16 +8,6 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-// Record represents a single object record returned by the Outreach connector.
-type Record struct {
-	Data DataItem `json:"data"`
-}
-
-type RecordAssociations struct {
-	ObjectId          string                          // ObjectId represents the id of the object we are reading
-	AssociatedObjects map[string][]common.Association // Associated objects
-}
-
 // Read retrieves data based on the provided configuration parameters.
 //
 // This function executes a read operation using the given context and
@@ -67,23 +57,4 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	return url, nil
-}
-
-func (c *Connector) getAssociation(ctx context.Context, path string) (map[string]any, error) {
-	u, err := c.getApiURL(path)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.Client.Get(ctx, u.String())
-	if err != nil {
-		return nil, err
-	}
-
-	d, err := common.UnmarshalJSON[map[string]any](resp)
-	if err != nil {
-		return nil, err
-	}
-
-	return *d, nil
 }

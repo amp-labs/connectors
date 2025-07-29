@@ -44,10 +44,9 @@ func main() {
 
 func testReadSequences(ctx context.Context, conn *outreach.Connector) error {
 	config := connectors.ReadParams{
-		ObjectName:        "sequences",
-		Since:             time.Now().Add(-720 * time.Hour),
-		Fields:            connectors.Fields("openCount", "description", "id", "links", "type"),
-		AssociatedObjects: []string{"users", "rulesets"},
+		ObjectName: "sequences",
+		Since:      time.Now().Add(-720 * time.Hour),
+		Fields:     connectors.Fields("openCount", "description", "id", "links", "type"),
 	}
 
 	result, err := conn.Read(ctx, config)
@@ -69,10 +68,9 @@ func testReadSequences(ctx context.Context, conn *outreach.Connector) error {
 
 func testReadMailings(ctx context.Context, conn *outreach.Connector) error {
 	config := connectors.ReadParams{
-		ObjectName:        "mailings",
-		Since:             time.Now().Add(-720 * time.Hour),
-		Fields:            connectors.Fields("bodyHtml", "errorReason", "id"),
-		AssociatedObjects: []string{"mailboxes", "prospects"},
+		ObjectName: "mailings",
+		Since:      time.Now().Add(-720 * time.Hour),
+		Fields:     connectors.Fields("bodyHtml", "errorReason", "id"),
 	}
 
 	result, err := conn.Read(ctx, config)
@@ -94,10 +92,9 @@ func testReadMailings(ctx context.Context, conn *outreach.Connector) error {
 
 func testReadProspects(ctx context.Context, conn *outreach.Connector) error {
 	config := connectors.ReadParams{
-		ObjectName:        "prospects",
-		Since:             time.Now().Add(-720 * time.Hour),
-		Fields:            connectors.Fields("addressCountry", "campaignName", "id"),
-		AssociatedObjects: []string{"accounts", "emailAddresses", "phoneNumbers"},
+		ObjectName: "prospects",
+		Since:      time.Now().Add(-720 * time.Hour),
+		Fields:     connectors.Fields("addressCountry", "campaignName", "id"),
 	}
 
 	result, err := conn.Read(ctx, config)
