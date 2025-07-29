@@ -143,10 +143,11 @@ type CatalogWrapper struct {
 
 // CustomAuthHeader A custom header to be used for authentication. Automatically added by the backend.
 type CustomAuthHeader struct {
-	// Name The name of the header.
+	// Name The key of the header.
 	Name string `json:"name"`
 
 	// ValueTemplate The value of the header, represented as a Golang text/template expression. Only the backend will interpret this.
+	// e.g. {{ .token }}, where `token` is the `Name` of a `CustomAuthInput`
 	ValueTemplate string `json:"valueTemplate" skipSubstitutions:"true"`
 }
 
