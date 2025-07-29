@@ -60,8 +60,6 @@ func (a *Adapter) parseObjectMetadataResponse(
 	fields := make(map[string]common.FieldMetadata)
 	fieldsMap := make(map[string]string)
 
-	// TODO: It is possible that SuiteQL doesn't return all fields (custom fields, etc.)
-	// We should verify this in the future.
 	for field := range record {
 		fields[field] = common.FieldMetadata{DisplayName: field}
 		fieldsMap[field] = field

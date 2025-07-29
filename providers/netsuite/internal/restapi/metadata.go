@@ -29,7 +29,6 @@ func (a *Adapter) buildObjectMetadataRequest(ctx context.Context, object string)
 	return req, nil
 }
 
-// Example of a raw response is in test/netsuite/metadata/example.json.
 func (a *Adapter) parseObjectMetadataResponse(
 	ctx context.Context,
 	object string,

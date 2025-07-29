@@ -12,7 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/spyzhov/ajson"
+	"github.com/amp-labs/connectors/providers/netsuite/internal/shared"
 )
 
 const (
@@ -21,7 +21,7 @@ const (
 	// we should make this configurable.
 	maxRecordsToFetchConcurrently = 5
 
-	defaultLimit = 10
+	defaultLimit = 1000
 
 	// DO NOT CHANGE THIS FORMAT. For some reason, this format works even though it isn't
 	// mentioned explicitly in the documentation. It is quite possible that this only works
@@ -70,7 +70,7 @@ func (a *Adapter) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(resp,
 		common.ExtractRecordsFromPath("items"),
-		makeNextRecordsURL(),
+		shared.GetNextPageURL(),
 		a.getMarshaledData(ctx),
 		params.Fields,
 	)
@@ -122,35 +122,6 @@ func (a *Adapter) getMarshaledData(ctx context.Context) common.MarshalFunc {
 		}
 
 		return common.GetMarshaledData(records, fields)
-	}
-}
-
-func makeNextRecordsURL() common.NextPageFunc {
-	// The body has a 'links' array with an object that has a 'rel' property with the value 'next'.
-	// The 'href' property is the URL of the next page.
-	return func(node *ajson.Node) (string, error) {
-		links, err := jsonquery.New(node).ArrayRequired("links")
-		if err != nil {
-			return "", err
-		}
-
-		for _, link := range links {
-			rel, err := jsonquery.New(link).StringOptional("rel")
-			if err != nil {
-				return "", err
-			}
-
-			if rel != nil && *rel == "next" {
-				href, err := jsonquery.New(link).StringRequired("href")
-				if err != nil {
-					return "", err
-				}
-
-				return href, nil
-			}
-		}
-
-		return "", nil
 	}
 }
 

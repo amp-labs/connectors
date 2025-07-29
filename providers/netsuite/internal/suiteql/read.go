@@ -6,17 +6,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/spyzhov/ajson"
+	"github.com/amp-labs/connectors/providers/netsuite/internal/shared"
 )
 
 const (
-	// SuiteQL timestamp format for TO_TIMESTAMP function.
+	// SuiteQL timestamp format for TO_TIMESTAMP function. This seems to be a magic
+	// date format that is accepted by SuiteQL. We should verify it this actually
+	// works for all instances.
 	suiteQLTimestampFormat = "2006-01-02 15:04:05.000000000"
+
+	defaultLimit = 1000
 )
 
 // buildReadRequest builds the HTTP request for SuiteQL queries.
@@ -32,7 +36,7 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 			return nil, err
 		}
 
-		url.WithQueryParam("limit", "5")
+		url.WithQueryParam("limit", strconv.Itoa(defaultLimit))
 		urlStr = url.String()
 	}
 
@@ -60,40 +64,10 @@ func (a *Adapter) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(resp,
 		common.ExtractRecordsFromPath("items"),
-		makeNextRecordsURL(),
+		shared.GetNextPageURL(),
 		common.GetMarshaledData,
 		params.Fields,
 	)
-}
-
-func makeNextRecordsURL() common.NextPageFunc {
-	return func(node *ajson.Node) (string, error) {
-		// The response is a JSON object with a "links" property.
-		// The "links" property is an array of objects with a "rel" property and a "href" property.
-		// We need to find the "next" link and return the "href" property.
-		links, err := jsonquery.New(node).ArrayRequired("links")
-		if err != nil {
-			return "", err
-		}
-
-		for _, link := range links {
-			rel, err := jsonquery.New(link).StringOptional("rel")
-			if err != nil {
-				return "", err
-			}
-
-			if rel != nil && *rel == "next" {
-				href, err := jsonquery.New(link).StringRequired("href")
-				if err != nil {
-					return "", err
-				}
-
-				return href, nil
-			}
-		}
-
-		return "", nil
-	}
 }
 
 func makeSuiteQLBody(params common.ReadParams) suiteQLQueryBody {
@@ -118,4 +92,23 @@ func makeSuiteQLBody(params common.ReadParams) suiteQLQueryBody {
 	}
 
 	return body
+}
+
+type suiteQLQueryBody struct {
+	Query string `json:"q"`
+}
+
+// nolint:tagliatelle
+type suiteQLResponse struct {
+	Links        []suiteQLLink    `json:"links"`
+	Count        int              `json:"count"`
+	HasMore      bool             `json:"hasMore"`
+	Items        []map[string]any `json:"items"`
+	Offset       int              `json:"offset"`
+	TotalResults int              `json:"totalResults"`
+}
+
+type suiteQLLink struct {
+	Rel  string `json:"rel"`
+	Href string `json:"href"`
 }

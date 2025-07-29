@@ -1,4 +1,4 @@
-package restapi
+package shared
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
-var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
+var ErrorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	[]interpreter.FormatTemplate{
 		{
 			MustKeys: []string{"o:errorDetails"},
@@ -18,7 +18,7 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	}...,
 )
 
-var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
+var StatusCodeMapping = map[int]error{ // nolint:gochecknoglobals
 	http.StatusInternalServerError: common.ErrServer,
 	http.StatusBadGateway:          common.ErrServer,
 	http.StatusServiceUnavailable:  common.ErrServer,
