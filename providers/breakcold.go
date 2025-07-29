@@ -12,6 +12,7 @@ func init() {
 			Header: &ApiKeyOptsHeader{
 				Name: "X-API-KEY",
 			},
+			DocsURL: "https://developer.breakcold.com/v3/api-reference/introduction#authentication",
 		},
 		//nolint:lll
 		Media: &Media{
