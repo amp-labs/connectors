@@ -18,6 +18,7 @@ import (
 	"github.com/amp-labs/connectors/providers/blueshift"
 	"github.com/amp-labs/connectors/providers/braze"
 	"github.com/amp-labs/connectors/providers/brevo"
+	"github.com/amp-labs/connectors/providers/campaignmonitor"
 	"github.com/amp-labs/connectors/providers/capsule"
 	"github.com/amp-labs/connectors/providers/chilipiper"
 	"github.com/amp-labs/connectors/providers/claricopilot"
@@ -97,6 +98,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Blueshift:               wrapper(newBlueshiftConnector),
 	providers.Braze:                   wrapper(newBrazeConnector),
 	providers.Brevo:                   wrapper(newBrevoConnector),
+	providers.CampaignMonitor:         wrapper(newCampaignMonitorConnector),
 	providers.Capsule:                 wrapper(newCapsuleConnector),
 	providers.ChiliPiper:              wrapper(newChiliPiperConnector),
 	providers.ClariCopilot:            wrapper(newClariCopilotConnector),
@@ -618,4 +620,10 @@ func newTeamleaderConnector(
 	params common.ConnectorParams,
 ) (*teamleader.Connector, error) {
 	return teamleader.NewConnector(params)
+}
+
+func newCampaignMonitorConnector(
+	params common.ConnectorParams,
+) (*campaignmonitor.Connector, error) {
+	return campaignmonitor.NewConnector(params)
 }
