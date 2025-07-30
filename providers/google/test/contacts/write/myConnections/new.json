@@ -1,0 +1,58 @@
+{
+  "resourceName": "people/c2600607527630254940",
+  "etag": "%EigBAgMEBQYHCAkKCwwNDg8QERITFBUWFxkfISIjJCUmJy40NTc9Pj9AGgQBAgUHIgxSUjBKd1IyLzdoaz0=",
+  "metadata": {
+    "sources": [
+      {
+        "type": "CONTACT",
+        "id": "241736c48c9bb35c",
+        "etag": "#RR0JwR2/7hk=",
+        "updateTime": "2025-07-17T21:47:23.910197Z"
+      }
+    ],
+    "objectType": "PERSON"
+  },
+  "names": [
+    {
+      "metadata": {
+        "primary": true,
+        "source": {
+          "type": "CONTACT",
+          "id": "241736c48c9bb35c"
+        },
+        "sourcePrimary": true
+      },
+      "displayName": "Patrick",
+      "givenName": "Patrick",
+      "displayNameLastFirst": "Patrick",
+      "unstructuredName": "Patrick"
+    }
+  ],
+  "photos": [
+    {
+      "metadata": {
+        "primary": true,
+        "source": {
+          "type": "CONTACT",
+          "id": "241736c48c9bb35c"
+        }
+      },
+      "url": "https://lh3.googleusercontent.com/cm/AGPWSu-cYkFlJy4z4kDJLrlTvOYnkTaRlP9hYJsDdwsKdcSUlsJVd3wWfARzZw6EOIhWziWoDg=s100",
+      "default": true
+    }
+  ],
+  "memberships": [
+    {
+      "metadata": {
+        "source": {
+          "type": "CONTACT",
+          "id": "241736c48c9bb35c"
+        }
+      },
+      "contactGroupMembership": {
+        "contactGroupId": "myContacts",
+        "contactGroupResourceName": "contactGroups/myContacts"
+      }
+    }
+  ]
+}

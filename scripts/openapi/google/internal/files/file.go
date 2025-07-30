@@ -14,8 +14,13 @@ var (
 	// Static file containing openapi spec.
 	//go:embed calendar.json
 	calendarAPI []byte
+	//go:embed people.json
+	peopleAPI []byte
 
 	InputCalendar  = api3.NewOpenapiFileManager[any](calendarAPI)
 	OutputCalendar = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
 		fileconv.NewPath("providers/google/internal/calendar"))
+	InputContacts  = api3.NewOpenapiFileManager[any](peopleAPI)
+	OutputContacts = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
+		fileconv.NewPath("providers/google/internal/contacts"))
 )

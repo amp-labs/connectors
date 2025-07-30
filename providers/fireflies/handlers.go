@@ -20,8 +20,12 @@ import (
 //go:embed graphql/*.graphql
 var queryFiles embed.FS
 
+const (
+	apiGraphQLSuffix = "/graphql"
+)
+
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL + apiGraphQLSuffix)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
@@ -125,7 +129,7 @@ func getFieldValueType(field string) common.ValueType {
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL + apiGraphQLSuffix)
 	if err != nil {
 		return nil, err
 	}
@@ -223,7 +227,7 @@ func (c *Connector) parseReadResponse(
 func (c *Connector) buildWriteRequest(
 	ctx context.Context, params common.WriteParams,
 ) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL + apiGraphQLSuffix)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
@@ -290,7 +294,7 @@ func (c *Connector) parseWriteResponse(
 }
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL + apiGraphQLSuffix)
 	if err != nil {
 		return nil, err
 	}

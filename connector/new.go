@@ -18,6 +18,7 @@ import (
 	"github.com/amp-labs/connectors/providers/blueshift"
 	"github.com/amp-labs/connectors/providers/braze"
 	"github.com/amp-labs/connectors/providers/brevo"
+	"github.com/amp-labs/connectors/providers/campaignmonitor"
 	"github.com/amp-labs/connectors/providers/capsule"
 	"github.com/amp-labs/connectors/providers/chilipiper"
 	"github.com/amp-labs/connectors/providers/claricopilot"
@@ -28,9 +29,11 @@ import (
 	"github.com/amp-labs/connectors/providers/dixa"
 	"github.com/amp-labs/connectors/providers/docusign"
 	"github.com/amp-labs/connectors/providers/drift"
+	"github.com/amp-labs/connectors/providers/dynamicsbusiness"
 	"github.com/amp-labs/connectors/providers/dynamicscrm"
 	"github.com/amp-labs/connectors/providers/fathom"
 	"github.com/amp-labs/connectors/providers/fireflies"
+	"github.com/amp-labs/connectors/providers/flatfile"
 	"github.com/amp-labs/connectors/providers/freshdesk"
 	"github.com/amp-labs/connectors/providers/front"
 	"github.com/amp-labs/connectors/providers/github"
@@ -43,6 +46,7 @@ import (
 	"github.com/amp-labs/connectors/providers/heyreach"
 	"github.com/amp-labs/connectors/providers/hubspot"
 	"github.com/amp-labs/connectors/providers/hunter"
+	"github.com/amp-labs/connectors/providers/insightly"
 	"github.com/amp-labs/connectors/providers/instantly"
 	"github.com/amp-labs/connectors/providers/instantlyai"
 	"github.com/amp-labs/connectors/providers/intercom"
@@ -65,6 +69,7 @@ import (
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/stripe"
+	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/zendeskchat"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/providers/zohocrm"
@@ -83,68 +88,73 @@ func New(provider providers.Provider, params common.ConnectorParams) (connectors
 }
 
 var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nolint:gochecknoglobals
-	providers.AWS:                 wrapper(newAWSConnector),
-	providers.Aha:                 wrapper(newAhaConnector),
-	providers.Apollo:              wrapper(newApolloConnector),
-	providers.Asana:               wrapper(newAsanaConnector),
-	providers.Ashby:               wrapper(newAshbyConnector),
-	providers.Atlassian:           wrapper(newAtlassianConnector),
-	providers.Attio:               wrapper(newAttioConnector),
-	providers.Avoma:               wrapper(newAvomaConnector),
-	providers.Blueshift:           wrapper(newBlueshiftConnector),
-	providers.Brevo:               wrapper(newBrevoConnector),
-	providers.Capsule:             wrapper(newCapsuleConnector),
-	providers.ChiliPiper:          wrapper(newChiliPiperConnector),
-	providers.ClariCopilot:        wrapper(newClariCopilotConnector),
-	providers.ClickUp:             wrapper(newClickUpConnector),
-	providers.Close:               wrapper(newCloseConnector),
-	providers.ConstantContact:     wrapper(newConstantContactConnector),
-	providers.CustomerJourneysApp: wrapper(newCustomerJourneysAppConnector),
-	providers.Dixa:                wrapper(newDixaConnector),
-	providers.Docusign:            wrapper(newDocusignConnector),
-	providers.Drift:               wrapper(newDriftConnector),
-	providers.DynamicsCRM:         wrapper(newDynamicsCRMConnector),
-	providers.Fireflies:           wrapper(newFirefliesConnector),
-	providers.Freshdesk:           wrapper(newFreshdeskConnector),
-	providers.Front:               wrapper(newFrontConnector),
-	providers.GitLab:              wrapper(newGitLabConnector),
-	providers.Github:              wrapper(newGithubConnector),
-	providers.Gong:                wrapper(newGongConnector),
-	providers.Google:              wrapper(newGoogleConnector),
-	providers.Gorgias:             wrapper(newGorgiasConnector),
-	providers.Groove:              wrapper(newGrooveConnector),
-	providers.HelpScoutMailbox:    wrapper(newHelpScoutMailboxConnector),
-	providers.HeyReach:            wrapper(newHeyReachConnector),
-	providers.Hubspot:             wrapper(newHubspotConnector),
-	providers.Hunter:              wrapper(newHunterConnector),
-	providers.Instantly:           wrapper(newInstantlyConnector),
-	providers.InstantlyAI:         wrapper(newInstantlyAIConnector),
-	providers.Intercom:            wrapper(newIntercomConnector),
-	providers.Iterable:            wrapper(newIterableConnector),
-	providers.Keap:                wrapper(newKeapConnector),
-	providers.Kit:                 wrapper(newKitConnector),
-	providers.Klaviyo:             wrapper(newKlaviyoConnector),
-	providers.Lemlist:             wrapper(newLemlistConnector),
-	providers.Lever:               wrapper(newLeverConnector),
-	providers.Marketo:             wrapper(newMarketoConnector),
-	providers.Mixmax:              wrapper(newMixmaxConnector),
-	providers.Monday:              wrapper(newMondayConnector),
-	providers.Outreach:            wrapper(newOutreachConnector),
-	providers.Pinterest:           wrapper(newPinterestConnector),
-	providers.Pipedrive:           wrapper(newPipedriveConnector),
-	providers.Pipeliner:           wrapper(newPipelinerConnector),
-	providers.Podium:              wrapper(newPodiumConnector),
-	providers.Salesforce:          wrapper(newSalesforceConnector),
-	providers.Salesloft:           wrapper(newSalesloftConnector),
-	providers.ServiceNow:          wrapper(newServiceNowConnector),
-	providers.Smartlead:           wrapper(newSmartleadConnector),
-	providers.Stripe:              wrapper(newStripeConnector),
-	providers.ZendeskChat:         wrapper(newZendeskChatConnector),
-	providers.ZendeskSupport:      wrapper(newZendeskSupportConnector),
-	providers.Zoho:                wrapper(newZohoConnector),
-	providers.Zoom:                wrapper(newZoomConnector),
-	providers.Braze:               wrapper(newBrazeConnector),
-	providers.Fathom:              wrapper(newFathomConnector),
+	providers.AWS:                     wrapper(newAWSConnector),
+	providers.Aha:                     wrapper(newAhaConnector),
+	providers.Apollo:                  wrapper(newApolloConnector),
+	providers.Asana:                   wrapper(newAsanaConnector),
+	providers.Ashby:                   wrapper(newAshbyConnector),
+	providers.Atlassian:               wrapper(newAtlassianConnector),
+	providers.Attio:                   wrapper(newAttioConnector),
+	providers.Avoma:                   wrapper(newAvomaConnector),
+	providers.Blueshift:               wrapper(newBlueshiftConnector),
+	providers.Braze:                   wrapper(newBrazeConnector),
+	providers.Brevo:                   wrapper(newBrevoConnector),
+	providers.CampaignMonitor:         wrapper(newCampaignMonitorConnector),
+	providers.Capsule:                 wrapper(newCapsuleConnector),
+	providers.ChiliPiper:              wrapper(newChiliPiperConnector),
+	providers.ClariCopilot:            wrapper(newClariCopilotConnector),
+	providers.ClickUp:                 wrapper(newClickUpConnector),
+	providers.Close:                   wrapper(newCloseConnector),
+	providers.ConstantContact:         wrapper(newConstantContactConnector),
+	providers.CustomerJourneysApp:     wrapper(newCustomerJourneysAppConnector),
+	providers.Dixa:                    wrapper(newDixaConnector),
+	providers.Docusign:                wrapper(newDocusignConnector),
+	providers.Drift:                   wrapper(newDriftConnector),
+	providers.DynamicsBusinessCentral: wrapper(newDynamicsBusinessCentral),
+	providers.DynamicsCRM:             wrapper(newDynamicsCRMConnector),
+	providers.Fathom:                  wrapper(newFathomConnector),
+	providers.Fireflies:               wrapper(newFirefliesConnector),
+	providers.FlatFile:                wrapper(newFlatfileConnector),
+	providers.Freshdesk:               wrapper(newFreshdeskConnector),
+	providers.Front:                   wrapper(newFrontConnector),
+	providers.GitLab:                  wrapper(newGitLabConnector),
+	providers.Github:                  wrapper(newGithubConnector),
+	providers.Gong:                    wrapper(newGongConnector),
+	providers.Google:                  wrapper(newGoogleConnector),
+	providers.Gorgias:                 wrapper(newGorgiasConnector),
+	providers.Groove:                  wrapper(newGrooveConnector),
+	providers.HelpScoutMailbox:        wrapper(newHelpScoutMailboxConnector),
+	providers.HeyReach:                wrapper(newHeyReachConnector),
+	providers.Hubspot:                 wrapper(newHubspotConnector),
+	providers.Hunter:                  wrapper(newHunterConnector),
+	providers.Insightly:               wrapper(newInsightlyConnector),
+	providers.Instantly:               wrapper(newInstantlyConnector),
+	providers.InstantlyAI:             wrapper(newInstantlyAIConnector),
+	providers.Intercom:                wrapper(newIntercomConnector),
+	providers.Iterable:                wrapper(newIterableConnector),
+	providers.Keap:                    wrapper(newKeapConnector),
+	providers.Kit:                     wrapper(newKitConnector),
+	providers.Klaviyo:                 wrapper(newKlaviyoConnector),
+	providers.Lemlist:                 wrapper(newLemlistConnector),
+	providers.Lever:                   wrapper(newLeverConnector),
+	providers.Marketo:                 wrapper(newMarketoConnector),
+	providers.Mixmax:                  wrapper(newMixmaxConnector),
+	providers.Monday:                  wrapper(newMondayConnector),
+	providers.Outreach:                wrapper(newOutreachConnector),
+	providers.Pinterest:               wrapper(newPinterestConnector),
+	providers.Pipedrive:               wrapper(newPipedriveConnector),
+	providers.Pipeliner:               wrapper(newPipelinerConnector),
+	providers.Podium:                  wrapper(newPodiumConnector),
+	providers.Salesforce:              wrapper(newSalesforceConnector),
+	providers.Salesloft:               wrapper(newSalesloftConnector),
+	providers.ServiceNow:              wrapper(newServiceNowConnector),
+	providers.Smartlead:               wrapper(newSmartleadConnector),
+	providers.Stripe:                  wrapper(newStripeConnector),
+	providers.Teamleader:              wrapper(newTeamleaderConnector),
+	providers.ZendeskChat:             wrapper(newZendeskChatConnector),
+	providers.ZendeskSupport:          wrapper(newZendeskSupportConnector),
+	providers.Zoho:                    wrapper(newZohoConnector),
+	providers.Zoom:                    wrapper(newZoomConnector),
 }
 
 type outputConstructorFunc func(p common.ConnectorParams) (connectors.Connector, error)
@@ -453,6 +463,12 @@ func newDriftConnector(
 	return drift.NewConnector(params)
 }
 
+func newDynamicsBusinessCentral(
+	params common.ConnectorParams,
+) (*dynamicsbusiness.Connector, error) {
+	return dynamicsbusiness.NewConnector(params)
+}
+
 func newMixmaxConnector(
 	params common.ConnectorParams,
 ) (*mixmax.Connector, error) {
@@ -463,6 +479,12 @@ func newDixaConnector(
 	params common.ConnectorParams,
 ) (*dixa.Connector, error) {
 	return dixa.NewConnector(params)
+}
+
+func newFlatfileConnector(
+	params common.ConnectorParams,
+) (*flatfile.Connector, error) {
+	return flatfile.NewConnector(params)
 }
 
 func newFrontConnector(
@@ -498,6 +520,12 @@ func newHunterConnector(
 	params common.ConnectorParams,
 ) (*hunter.Connector, error) {
 	return hunter.NewConnector(params)
+}
+
+func newInsightlyConnector(
+	params common.ConnectorParams,
+) (*insightly.Connector, error) {
+	return insightly.NewConnector(params)
 }
 
 func newPodiumConnector(
@@ -594,4 +622,16 @@ func newFathomConnector(
 	params common.ConnectorParams,
 ) (*fathom.Connector, error) {
 	return fathom.NewConnector(params)
+}
+
+func newTeamleaderConnector(
+	params common.ConnectorParams,
+) (*teamleader.Connector, error) {
+	return teamleader.NewConnector(params)
+}
+
+func newCampaignMonitorConnector(
+	params common.ConnectorParams,
+) (*campaignmonitor.Connector, error) {
+	return campaignmonitor.NewConnector(params)
 }

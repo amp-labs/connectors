@@ -14,7 +14,9 @@ func main() {
 
 	conn := braze.NewBrazeConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"catalogs", "campaigns/list", "templates/email/list"})
+	objectNames := []string{"catalogs", "campaigns", "templates/email"}
+
+	m, err := conn.ListObjectMetadata(ctx, objectNames)
 
 	if err != nil {
 		log.Fatal(err)

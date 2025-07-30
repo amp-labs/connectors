@@ -29,7 +29,7 @@ func main() {
 		Deleted:    true,
 	})
 	if err != nil {
-		utils.Fail("error reading from conenctor", "error", err)
+		utils.Fail("error reading from connector", "error", err)
 	}
 
 	slog.Info("Reading...")

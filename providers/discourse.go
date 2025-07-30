@@ -5,13 +5,28 @@ const Discourse Provider = "discourse"
 func init() {
 	SetInfo(Discourse, ProviderInfo{
 		DisplayName: "Discourse",
-		AuthType:    ApiKey,
-		// Discourse is self-hosted, and the domain on which it is hosted serves as the base URL.
-		BaseURL: "https://{{.workspace}}",
-		ApiKeyOpts: &ApiKeyOpts{
-			AttachmentType: Header,
-			Header: &ApiKeyOptsHeader{
-				Name: "Api-Key",
+		AuthType:    Custom,
+		BaseURL:     "https://{{.workspace}}",
+		CustomOpts: &CustomAuthOpts{
+			Headers: []CustomAuthHeader{
+				{
+					Name:          "Api-Key",
+					ValueTemplate: "{{.apiKey}}",
+				},
+				{
+					Name:          "Api-Username",
+					ValueTemplate: "{{.username}}",
+				},
+			},
+			Inputs: []CustomAuthInput{
+				{
+					Name:        "apiKey",
+					DisplayName: "API Key",
+				},
+				{
+					Name:        "username",
+					DisplayName: "API Username",
+				},
 			},
 		},
 		Support: Support{
