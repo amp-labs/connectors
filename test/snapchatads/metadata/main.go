@@ -17,7 +17,7 @@ func main() {
 		utils.Fail(err.Error())
 	}
 
-	m, err := connector.ListObjectMetadata(ctx, []string{"billingcenters", "adaccounts", "members", "roles", "age_group"})
+	m, err := connector.ListObjectMetadata(ctx, []string{"billingcenters", "adaccounts", "members", "roles", "age_group", "connection_type", "country", "dlxs", "categories_loi"})
 	if err != nil {
 		utils.Fail(err.Error())
 	}
