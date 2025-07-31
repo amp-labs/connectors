@@ -6,7 +6,7 @@ func init() {
 	SetInfo(QuickBooks, ProviderInfo{
 		DisplayName: "QuickBooks",
 		AuthType:    Oauth2,
-		BaseURL:     " https://sandbox-quickbooks.api.intuit.com",
+		BaseURL:     "https://sandbox-quickbooks.api.intuit.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
