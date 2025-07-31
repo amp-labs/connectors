@@ -114,7 +114,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.DynamicsCRM:             wrapper(newDynamicsCRMConnector),
 	providers.Fathom:                  wrapper(newFathomConnector),
 	providers.Fireflies:               wrapper(newFirefliesConnector),
-	providers.FlatFile:                wrapper(newFlatfileConnector),
+	providers.Flatfile:                wrapper(newFlatfileConnector),
 	providers.Freshdesk:               wrapper(newFreshdeskConnector),
 	providers.Front:                   wrapper(newFrontConnector),
 	providers.GitLab:                  wrapper(newGitLabConnector),
