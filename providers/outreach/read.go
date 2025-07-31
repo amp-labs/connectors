@@ -31,7 +31,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	return common.ParseResult(res,
 		getRecords,
 		getNextRecordsURL,
-		c.getOutreachDataMarshaller(ctx, config.AssociatedObjects, common.FlattenNestedFields(attributesKey)),
+		c.getOutreachDataMarshaller(ctx, config, common.FlattenNestedFields(attributesKey)),
 		config.Fields,
 	)
 }

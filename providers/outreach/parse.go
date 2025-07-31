@@ -3,11 +3,11 @@ package outreach
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -20,7 +20,7 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 	return jsonquery.New(node, "links").StrWithDefault("next", "")
 }
 
-func (c *Connector) getOutreachDataMarshaller(ctx context.Context, assoc []string, //nolint: gocognit,cyclop,funlen
+func (c *Connector) getOutreachDataMarshaller(ctx context.Context, config common.ReadParams,
 	transformer common.RecordTransformer,
 ) common.MarshalFromNodeFunc {
 	return func(records []*ajson.Node, fields []string) ([]common.ReadResultRow, error) {
@@ -29,8 +29,6 @@ func (c *Connector) getOutreachDataMarshaller(ctx context.Context, assoc []strin
 		// Go through each record, attach associations (if any) to the record
 		// and convert the record to a common.ReadResultRow.
 		for idx, nodeRecord := range records {
-			associations := make(map[string][]common.Association)
-
 			raw, err := jsonquery.Convertor.ObjectToMap(nodeRecord)
 			if err != nil {
 				return nil, err
@@ -48,35 +46,19 @@ func (c *Connector) getOutreachDataMarshaller(ctx context.Context, assoc []strin
 
 			idStr := strconv.Itoa(int(idF))
 
-			for _, assoc := range assoc {
-				relationship, ok := raw[relationshipsKey].(map[string]any)
-				if !ok {
-					return nil, errors.New("relationship key not found ") // nolint: err113
-				}
-
-				assocObjectName, typ, err := extractAssociationKey(relationship, assoc)
-				if err != nil {
-					return nil, err
-				}
-
-				assocList, err := c.fetchAssociations(ctx, assocObjectName, typ, relationship)
-				if err != nil {
-					return nil, err
-				}
-
-				if len(assocList) > 0 {
-					associations[assoc] = assocList
-				}
-			}
-
 			data[idx] = common.ReadResultRow{
 				Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
 				Raw:    raw,
 				Id:     idStr,
 			}
 
-			if len(associations) > 0 {
-				data[idx].Associations = associations
+			if len(config.AssociatedObjects) > 0 {
+				assoc, err := c.fetchAssociations(ctx, idStr, config.ObjectName, config.AssociatedObjects)
+				if err != nil {
+					return nil, err
+				}
+
+				data[idx].Associations = assoc
 			}
 		}
 
@@ -84,192 +66,50 @@ func (c *Connector) getOutreachDataMarshaller(ctx context.Context, assoc []strin
 	}
 }
 
-func extractAssociationKey(relationships map[string]any, reqAssoc string) (string, []string, error) { //nolint: cyclop
-	var (
-		singularObjectName string
-		assocTypes         []string
-	)
-
-	for typ, relRecord := range relationships {
-		data, err := assertMapStringAny(relRecord)
-		if err != nil {
-			return "", nil, fmt.Errorf("relationship %s: %w", typ, err)
-		}
-
-		records, exists := data[dataKey]
-		if !exists {
-			continue
-		}
-
-		switch rcds := records.(type) {
-		case nil:
-			continue
-		case map[string]any:
-			if typeStr, ok := rcds["type"].(string); ok {
-				singularObjectName = typeStr
-			} else {
-				return "", nil, errors.New("missing or invalid 'type'") //nolint: err113
-			}
-		case []any:
-			if len(rcds) == 0 {
-				continue
-			}
-
-			firstRecord, err := assertMapStringAny(rcds[0])
-			if err != nil {
-				return "", nil, fmt.Errorf("first record: %w", err)
-			}
-
-			if typeStr, ok := firstRecord["type"].(string); ok {
-				singularObjectName = typeStr
-			} else {
-				return "", nil, errors.New("missing or invalid 'type'") //nolint: err113
-			}
-		default:
-			continue
-		}
-
-		associatedObjectName := naming.NewPluralString(singularObjectName).String()
-		if associatedObjectName == reqAssoc {
-			assocTypes = append(assocTypes, typ)
-		}
-	}
-
-	return reqAssoc, assocTypes, nil
+type AssocData struct {
+	Included []map[string]any `json:"included"`
 }
 
-func (c *Connector) fetchAssociations(ctx context.Context, objectName string, keys []string,
-	record map[string]any,
-) ([]common.Association, error) {
-	var assoc []common.Association
+// fetchAssociations fetches the list of associated objects from the outreach API.
+func (c *Connector) fetchAssociations(ctx context.Context, id string, objectName string,
+	assoc []string,
+) (map[string][]common.Association, error) {
+	associations := make(map[string][]common.Association)
 
-	for _, key := range keys {
-		data, err := assertMapStringAny(record[key])
-		if err != nil {
-			return nil, fmt.Errorf("key %s: %w", key, err)
-		}
-
-		records, exists := data[dataKey]
-		if !exists {
-			return nil, fmt.Errorf("the requested associated object %s was not found", objectName) //nolint: err113
-		}
-
-		// Handle single association
-		if rec, err := assertMapStringAny(records); err == nil {
-			asc, err := c.fetchSingleAssociation(ctx, objectName, key, rec)
-			if err != nil {
-				return nil, err
-			}
-
-			assoc = append(assoc, asc...)
-
-			continue
-		}
-
-		// Handle multiple associations
-		if recs, err := assertSliceMapStringAny(records); err == nil {
-			asc, err := c.fetchMultipleAssociations(ctx, objectName, key, recs)
-			if err != nil {
-				return nil, err
-			}
-
-			assoc = append(assoc, asc...)
-
-			continue
-		}
-
-		return nil, fmt.Errorf("unexpected data type for associations of %s", objectName) // nolint: err113
-	}
-
-	return assoc, nil
-}
-
-func (c *Connector) fetchSingleAssociation(ctx context.Context, objectName string,
-	key string, rel map[string]any,
-) ([]common.Association, error) {
-	recordId, ok := rel[idKey].(float64)
-	if !ok {
-		return nil, errors.New("unexpected association recordId data type") //nolint:err113
-	}
-
-	path := objectName + "/" + strconv.Itoa(int(recordId))
-
-	records, err := c.getAssociation(ctx, path)
+	url, err := urlbuilder.New(c.BaseURL, apiVersion, objectName, id)
 	if err != nil {
 		return nil, err
 	}
 
-	assoc := common.Association{
-		ObjectId:        strconv.Itoa(int(recordId)),
-		AssociationType: key,
-		Raw:             records,
+	url.WithQueryParam("include", strings.Join(assoc, ","))
+
+	resp, err := c.Client.Get(ctx, url.String())
+	if err != nil {
+		return nil, err
 	}
 
-	return []common.Association{assoc}, nil
-}
+	data, err := common.UnmarshalJSON[AssocData](resp)
+	if err != nil {
+		return nil, err
+	}
 
-func (c *Connector) fetchMultipleAssociations(ctx context.Context, objectName string,
-	key string, relationships []map[string]any,
-) ([]common.Association, error) {
-	var result []common.Association
-
-	for _, rcd := range relationships {
-		recod, err := c.fetchSingleAssociation(ctx, objectName, key, rcd)
-		if err != nil {
-			return nil, err
+	for _, record := range data.Included {
+		recordId, ok := record["id"].(float64)
+		if !ok {
+			return nil, errors.New("objectID expected to be a number") //nolint: err113
 		}
 
-		result = append(result, recod...)
-	}
-
-	return result, nil
-}
-
-type Records struct {
-	Data map[string]any `json:"data"`
-}
-
-func (c *Connector) getAssociation(ctx context.Context, path string) (map[string]any, error) {
-	u, err := c.getApiURL(path)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.Client.Get(ctx, u.String())
-	if err != nil {
-		return nil, err
-	}
-
-	d, err := common.UnmarshalJSON[Records](resp)
-	if err != nil {
-		return nil, err
-	}
-
-	return d.Data, nil
-}
-
-func assertMapStringAny(val any) (map[string]any, error) {
-	if m, ok := val.(map[string]any); ok {
-		return m, nil
-	}
-
-	return nil, fmt.Errorf("expected map[string]any, got %T", val) //nolint: err113
-}
-
-func assertSliceMapStringAny(val any) ([]map[string]any, error) {
-	if s, ok := val.([]any); ok {
-		result := make([]map[string]any, 0, len(s))
-
-		for _, item := range s {
-			if m, ok := item.(map[string]any); ok {
-				result = append(result, m)
-			} else {
-				return nil, fmt.Errorf("expected []map[string]any, got element of type %T", item) //nolint: err113
-			}
+		assocType, ok := record["type"].(string)
+		if !ok {
+			return nil, errors.New("object type expected to be a string") //nolint: err113
 		}
 
-		return result, nil
+		associations[assocType] = append(associations[assocType], common.Association{
+			ObjectId:        strconv.Itoa(int(recordId)),
+			AssociationType: assocType,
+			Raw:             record,
+		})
 	}
 
-	return nil, fmt.Errorf("expected []any, got %T", val) //nolint: err113
+	return associations, nil
 }
