@@ -39,6 +39,7 @@ func (c *Connector) getOutreachDataMarshaller(ctx context.Context, config common
 				return nil, err
 			}
 
+			// Extract and validate the record ID.
 			idF, ok := raw["id"].(float64)
 			if !ok {
 				return nil, errors.New("invalid or missing id field") // nolint: err113
@@ -46,12 +47,14 @@ func (c *Connector) getOutreachDataMarshaller(ctx context.Context, config common
 
 			idStr := strconv.Itoa(int(idF))
 
+			// Populate the result row with fields, raw data, and ID.
 			data[idx] = common.ReadResultRow{
 				Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
 				Raw:    raw,
 				Id:     idStr,
 			}
 
+			// Fetch associations if requested in the config.
 			if len(config.AssociatedObjects) > 0 {
 				assoc, err := c.fetchAssociations(ctx, idStr, config.ObjectName, config.AssociatedObjects)
 				if err != nil {
@@ -66,11 +69,13 @@ func (c *Connector) getOutreachDataMarshaller(ctx context.Context, config common
 	}
 }
 
+// AssocData represents the response structure from the Outreach API including associated objects only.
 type AssocData struct {
 	Included []map[string]any `json:"included"`
 }
 
-// fetchAssociations fetches the list of associated objects from the outreach API.
+// fetchAssociations fetches associated objects for a given record from the Outreach API.
+// The API is queried with the `include` parameter to fetch related resources (e.g. owner, account).
 func (c *Connector) fetchAssociations(ctx context.Context, id string, objectName string,
 	assoc []string,
 ) (map[string][]common.Association, error) {
@@ -81,6 +86,7 @@ func (c *Connector) fetchAssociations(ctx context.Context, id string, objectName
 		return nil, err
 	}
 
+	// Sets the `include` parameter, for querying the associated objects.
 	url.WithQueryParam("include", strings.Join(assoc, ","))
 
 	resp, err := c.Client.Get(ctx, url.String())
@@ -88,11 +94,13 @@ func (c *Connector) fetchAssociations(ctx context.Context, id string, objectName
 		return nil, err
 	}
 
+	// Parse the response into AssocData.
 	data, err := common.UnmarshalJSON[AssocData](resp)
 	if err != nil {
 		return nil, err
 	}
 
+	// Process each included record.
 	for _, record := range data.Included {
 		recordId, ok := record["id"].(float64)
 		if !ok {
