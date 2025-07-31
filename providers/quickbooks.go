@@ -7,6 +7,12 @@ func init() {
 		DisplayName: "QuickBooks",
 		AuthType:    Oauth2,
 		BaseURL:     "https://sandbox-quickbooks.api.intuit.com",
+		Oauth2Opts: &Oauth2Opts{
+			GrantType:              AuthorizationCode,
+			AuthURL:                "https://appcenter.intuit.com/connect/oauth2",
+			TokenURL:               "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer",
+			ExplicitScopesRequired: true,
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
