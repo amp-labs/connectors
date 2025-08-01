@@ -78,7 +78,7 @@ var objectWithSkipQueryParam = datautils.NewSet( //nolint:gochecknoglobals
 	"invoices",
 )
 
-var objectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals}
+var objectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 	"businesses":                   "businesses",
 	"calendars":                    "calendars",
 	"calendars/groups":             "groups",

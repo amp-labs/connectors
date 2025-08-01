@@ -47,7 +47,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 			return nil, err
 		}
 
-		urlRaw.Path = urlRaw.Path + "/"
+		urlRaw.Path = urlRaw.Path + "/" // nolint:gocritic
 
 		url, err = urlbuilder.FromRawURL(urlRaw)
 		if err != nil {
