@@ -2,11 +2,14 @@ package outreach
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
+
+const include = "include"
 
 // Read retrieves data based on the provided configuration parameters.
 //
@@ -23,7 +26,17 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
+	// Sets the query parameter `include` when the requests has request for associated objects.
+	if len(config.AssociatedObjects) > 0 {
+		url.WithQueryParam(include, strings.Join(config.AssociatedObjects, ","))
+	}
+
 	res, err := c.Client.Get(ctx, url.String())
+	if err != nil {
+		return nil, err
+	}
+
+	included, err := common.UnmarshalJSON[IncludedObjects](res)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +44,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	return common.ParseResult(res,
 		getRecords,
 		getNextRecordsURL,
-		c.getOutreachDataMarshaller(ctx, config, common.FlattenNestedFields(attributesKey)),
+		getOutreachDataMarshaller(config, included.Included, common.FlattenNestedFields(attributesKey)),
 		config.Fields,
 	)
 }

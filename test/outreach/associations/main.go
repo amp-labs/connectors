@@ -39,7 +39,7 @@ func testReadProspects(ctx context.Context, conn *outreach.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName:        "prospects",
 		Fields:            connectors.Fields("addressCountry", "campaignName", "id"),
-		AssociatedObjects: []string{"phoneNumbers", "account"},
+		AssociatedObjects: []string{"phoneNumbers", "account", "creator"},
 	}
 
 	result, err := conn.Read(ctx, config)
