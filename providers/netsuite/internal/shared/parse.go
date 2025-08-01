@@ -23,12 +23,7 @@ func GetNextPageURL() common.NextPageFunc {
 			}
 
 			if rel != nil && *rel == "next" {
-				href, err := jsonquery.New(link).StringRequired("href")
-				if err != nil {
-					return "", err
-				}
-
-				return href, nil
+				return jsonquery.New(link).StringRequired("href")
 			}
 		}
 

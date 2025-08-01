@@ -20,7 +20,9 @@ type Connector struct {
 	common.RequireAuthenticatedClient
 	common.RequireWorkspace
 
-	// TODO: Expose concurrency knobs to the server.
+	// TODO: Make REST API module's concurrent record fetching limit configurable
+	// (currently hardcoded to 5)
+	// https://github.com/amp-labs/connectors/pull/1920#discussion_r2248615641
 	RESTAPI *restapi.Adapter
 	SuiteQL *suiteql.Adapter
 }

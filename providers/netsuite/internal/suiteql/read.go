@@ -20,7 +20,7 @@ const (
 	// works for all instances.
 	suiteQLTimestampFormat = "2006-01-02 15:04:05.000000000"
 
-	defaultLimit = 1000
+	maxRecordsPerPage = 1000
 )
 
 // buildReadRequest builds the HTTP request for SuiteQL queries.
@@ -36,7 +36,7 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 			return nil, err
 		}
 
-		url.WithQueryParam("limit", strconv.Itoa(defaultLimit))
+		url.WithQueryParam("limit", strconv.Itoa(maxRecordsPerPage))
 		urlStr = url.String()
 	}
 

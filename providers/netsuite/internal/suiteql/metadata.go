@@ -55,21 +55,11 @@ func (a *Adapter) parseObjectMetadataResponse(
 		return nil, fmt.Errorf("no records found for metadata request: %w", common.ErrNotFound)
 	}
 
-	record := response.Items[0]
+	fields := common.FieldsMetadata{}
 
-	fields := make(map[string]common.FieldMetadata)
-	fieldsMap := make(map[string]string)
-
-	for field := range record {
-		fields[field] = common.FieldMetadata{DisplayName: field}
-		fieldsMap[field] = field
+	for field := range response.Items[0] {
+		fields.AddFieldWithDisplayOnly(field, field)
 	}
 
-	metadata := &common.ObjectMetadata{
-		DisplayName: objectName,
-		Fields:      fields,
-		FieldsMap:   fieldsMap,
-	}
-
-	return metadata, nil
+	return common.NewObjectMetadata(objectName, fields), nil
 }

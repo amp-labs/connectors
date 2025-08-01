@@ -21,7 +21,7 @@ const (
 	// we should make this configurable.
 	maxRecordsToFetchConcurrently = 5
 
-	defaultLimit = 1000
+	maxRecordsPerPage = 1000
 
 	// DO NOT CHANGE THIS FORMAT. For some reason, this format works even though it isn't
 	// mentioned explicitly in the documentation. It is quite possible that this only works
@@ -41,7 +41,7 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 		return nil, err
 	}
 
-	url.WithQueryParam("limit", strconv.Itoa(defaultLimit))
+	url.WithQueryParam("limit", strconv.Itoa(maxRecordsPerPage))
 
 	// Attach Since & Until, if provided.
 	var queries []string

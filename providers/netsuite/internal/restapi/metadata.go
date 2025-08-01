@@ -24,6 +24,7 @@ func (a *Adapter) buildObjectMetadataRequest(ctx context.Context, object string)
 	// This tells the netsuite API to give us a shortened JSON schema for the properties.
 	// Passing in schema+json, swagger+json, etc, will give us more information, but it's not
 	// needed right now.
+	// https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_1540810174.html
 	req.Header.Add("Accept", "application/schema+json")
 
 	return req, nil
@@ -44,15 +45,11 @@ func (a *Adapter) parseObjectMetadataResponse(
 		return nil, fmt.Errorf("%w: invalid metadata response: %+v", common.ErrMissingExpectedValues, metadata)
 	}
 
-	result := &common.ObjectMetadata{
-		DisplayName: object,
-		Fields:      make(map[string]common.FieldMetadata),
-		FieldsMap:   make(map[string]string),
-	}
+	result := common.NewObjectMetadata(object, common.FieldsMetadata{})
 
 	for name, prop := range metadata.Properties {
 		var (
-			displayName  = oneOf(prop.Title, name)
+			displayName  = firstNonEmpty(prop.Title, name)
 			providerType string
 			values       []common.FieldValue
 		)
@@ -62,7 +59,7 @@ func (a *Adapter) parseObjectMetadataResponse(
 		// NetSuite puts the enum on the child "id" field.
 		case "object":
 			if idProp, ok := prop.Properties["id"]; ok {
-				providerType = oneOf(idProp.Format, idProp.Type)
+				providerType = firstNonEmpty(idProp.Format, idProp.Type)
 				values = make([]common.FieldValue, len(idProp.Enum))
 
 				for i, v := range idProp.Enum {
@@ -74,23 +71,20 @@ func (a *Adapter) parseObjectMetadataResponse(
 			}
 		// The usual fields (strings, booleans, etc.)
 		default:
-			providerType = oneOf(prop.Format, prop.Type)
+			providerType = firstNonEmpty(prop.Format, prop.Type)
 		}
 
-		result.Fields[name] = common.FieldMetadata{
+		result.AddFieldMetadata(name, common.FieldMetadata{
 			DisplayName:  displayName,
 			ProviderType: providerType,
 			Values:       values,
-		}
-
-		// backward compatibility
-		result.FieldsMap[name] = displayName
+		})
 	}
 
 	return result, nil
 }
 
-func oneOf(candidates ...string) string {
+func firstNonEmpty(candidates ...string) string {
 	for _, s := range candidates {
 		if s != "" {
 			return s

@@ -42,13 +42,15 @@ func init() {
 				DisplayName: "Netsuite (SuiteQL)",
 				BaseURL:     "https://{{.workspace}}.suitetalk.api.netsuite.com/services/rest/query",
 				Support: Support{
-					Read: true,
+					Proxy: true,
+					Read:  true,
 				},
 			},
 			NetsuiteModuleRESTAPI: {
 				DisplayName: "Netsuite (REST API)",
 				BaseURL:     "https://{{.workspace}}.suitetalk.api.netsuite.com/services/rest/record",
 				Support: Support{
+					Proxy: true,
 					Read:  true,
 					Write: true,
 				},
