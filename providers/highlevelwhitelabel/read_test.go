@@ -94,15 +94,15 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Read list of all products collections",
-			Input: common.ReadParams{ObjectName: "products/collections", Fields: connectors.Fields(""), NextPage: "1"},
+			Input: common.ReadParams{ObjectName: "products/collections", Fields: connectors.Fields(""), NextPage: "101"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/products/collections"),
 					mockcond.QueryParam("altId", "iV1BEzddaWWLqU2kXhcN"),
 					mockcond.QueryParam("altType", "location"),
-					mockcond.QueryParam("limit", "1"),
-					mockcond.QueryParam("offset", "1"),
+					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("offset", "101"),
 				},
 				Then: mockserver.Response(http.StatusOK, productsCollectionsResponse),
 			}.Server(),
@@ -120,7 +120,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				NextPage: "2",
+				NextPage: "201",
 				Done:     false,
 			},
 			ExpectedErrs: nil,

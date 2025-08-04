@@ -105,7 +105,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	return &objectMetadata, nil
 }
 
-func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) { // nolint:cyclop
+func (c *Connector) buildReadRequest(
+	ctx context.Context,
+	params common.ReadParams,
+) (*http.Request, error) { // nolint:cyclop
 	var (
 		nextPage int
 		err      error

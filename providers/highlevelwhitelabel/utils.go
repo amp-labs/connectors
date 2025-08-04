@@ -10,7 +10,7 @@ import (
 
 const (
 	apiVersion      = "2021-07-28"
-	defaultPageSize = 1
+	defaultPageSize = 100
 )
 
 var objectsWithLocationIdInParam = datautils.NewSet( //nolint:gochecknoglobals
