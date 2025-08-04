@@ -1,8 +1,17 @@
 package highlevelwhitelabel
 
-import "github.com/amp-labs/connectors/internal/datautils"
+import (
+	"strconv"
 
-const apiVersion = "2021-07-28"
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/spyzhov/ajson"
+)
+
+const (
+	apiVersion      = "2021-07-28"
+	defaultPageSize = 1
+)
 
 var objectsWithLocationIdInParam = datautils.NewSet( //nolint:gochecknoglobals
 	"businesses",
@@ -121,3 +130,16 @@ var objectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochec
 	return "id"
 },
 )
+
+// makeNextRecord creates a function that determines the next page token based on the current offset.
+func makeNextRecord(offset int) common.NextPageFunc {
+	return func(node *ajson.Node) (string, error) {
+		if offset == 0 {
+			return "", nil
+		}
+
+		nextStart := offset + defaultPageSize
+
+		return strconv.Itoa(nextStart), nil
+	}
+}

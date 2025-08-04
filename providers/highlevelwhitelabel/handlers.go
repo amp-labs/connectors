@@ -3,6 +3,7 @@ package highlevelwhitelabel
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -102,4 +103,98 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	var (
+		nextPage int
+		err      error
+	)
+
+	if params.NextPage != "" {
+		// Parse the page number from NextPage
+		nextPage, err = strconv.Atoi(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if objectsWithLocationIdInParam.Has(params.ObjectName) {
+		url.WithQueryParam("locationId", c.locationId)
+	}
+
+	if objectWithAltTypeAndIdQueryParam.Has(params.ObjectName) {
+		url.WithQueryParam("altId", c.locationId)
+		url.WithQueryParam("altType", "location")
+	}
+
+	if paginationObjects.Has(params.ObjectName) {
+		url.WithQueryParam("limit", strconv.Itoa(defaultPageSize))
+
+		if objectWithSkipQueryParam.Has(params.ObjectName) {
+			url.WithQueryParam("skip", strconv.Itoa(nextPage))
+		} else {
+			url.WithQueryParam("offset", strconv.Itoa(nextPage))
+		}
+	}
+
+	// For single-segment paths (e.g., "businesses"), the URL must have a trailing slash at the end.
+	// Example: https://highlevel.stoplight.io/docs/integrations/a8db8afcbe0a3-get-businesses-by-location
+	//
+	// For multi-segment paths (e.g., "calendars/groups"), the URL does not require a trailing slash.
+	// Example: https://highlevel.stoplight.io/docs/integrations/89e47b6c05e67-get-groups
+	if !(strings.Contains(params.ObjectName, "/")) {
+		urlRaw, err := url.ToURL()
+		if err != nil {
+			return nil, err
+		}
+
+		urlRaw.Path = urlRaw.Path + "/" // nolint:gocritic
+
+		url, err = urlbuilder.FromRawURL(urlRaw)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Version", apiVersion)
+
+	return req, nil
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	var (
+		offset int
+		err    error
+	)
+
+	if params.NextPage.String() != "" {
+		offset, err = strconv.Atoi(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath(objectsNodePath.Get(params.ObjectName)),
+		makeNextRecord(offset),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
