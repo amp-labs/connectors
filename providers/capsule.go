@@ -5,23 +5,15 @@ const Capsule Provider = "capsule"
 func init() {
 	// Capsule Configuration
 	SetInfo(Capsule, ProviderInfo{
-		// AuthType:    Oauth2,
-		// Oauth2Opts: &Oauth2Opts{
-		//	GrantType:                 AuthorizationCode,
-		//	AuthURL:                   "https://api.capsulecrm.com/oauth/authorise",
-		//	TokenURL:                  "https://api.capsulecrm.com/oauth/token",
-		//	ExplicitScopesRequired:    true,
-		//	ExplicitWorkspaceRequired: false,
-		// },
 		DisplayName: "Capsule",
-		AuthType:    ApiKey,
 		BaseURL:     "https://api.capsulecrm.com/api",
-		ApiKeyOpts: &ApiKeyOpts{
-			AttachmentType: Header,
-			Header: &ApiKeyOptsHeader{
-				Name:        "Authorization",
-				ValuePrefix: "Bearer ",
-			},
+		AuthType:    Oauth2,
+		Oauth2Opts: &Oauth2Opts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://api.capsulecrm.com/oauth/authorise",
+			TokenURL:                  "https://api.capsulecrm.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
 		},
 		//nolint:lll
 		Media: &Media{
