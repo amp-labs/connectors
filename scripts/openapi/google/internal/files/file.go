@@ -16,6 +16,8 @@ var (
 	calendarAPI []byte
 	//go:embed people.json
 	peopleAPI []byte
+	//go:embed bitbucket.json
+	bitbucketAPI []byte
 
 	InputCalendar  = api3.NewOpenapiFileManager[any](calendarAPI)
 	OutputCalendar = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
@@ -23,4 +25,7 @@ var (
 	InputContacts  = api3.NewOpenapiFileManager[any](peopleAPI)
 	OutputContacts = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
 		fileconv.NewPath("providers/google/internal/contacts"))
+	InputBitBucket = api3.NewOpenapiFileManager[any](bitbucketAPI)
+	OutputBitBucket = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
+		fileconv.NewPath("scripts/openapi/google"))
 )
