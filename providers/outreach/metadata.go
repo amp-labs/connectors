@@ -2,21 +2,40 @@ package outreach
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 )
 
 type Data struct {
-	Data []DataItem `json:"data"`
+	Data []dataItem `json:"data"`
 }
 
-type DataItem struct {
+type includedObjects struct {
+	Included []dataItem `json:"included,omitempty"`
+}
+
+type dataItem struct {
 	Type          string         `json:"type"`
 	ID            int            `json:"id"`
 	Relationships map[string]any `json:"relationships"`
 	Attributes    map[string]any `json:"attributes"`
 	Links         map[string]any `json:"links"`
+}
+
+func (item dataItem) ToMapStringAny() (map[string]any, error) {
+	jsonBytes, err := json.Marshal(item)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal DataItem: %w", err)
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(jsonBytes, &result); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal to map: %w", err)
+	}
+
+	return result, nil
 }
 
 func (c *Connector) ListObjectMetadata(ctx context.Context,
