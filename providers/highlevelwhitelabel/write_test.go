@@ -49,8 +49,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "updating the businesses",
-			Input: common.WriteParams{ObjectName: "businesses", RecordData: "dummy", RecordId: "63771dcac1116f0e21de8e12"},
+			Name: "updating the businesses",
+			Input: common.WriteParams{
+				ObjectName: "businesses",
+				RecordData: "dummy",
+				RecordId:   "63771dcac1116f0e21de8e12",
+			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPUT(),
@@ -95,8 +99,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "updating the calendars groups",
-			Input: common.WriteParams{ObjectName: "calendars/groups", RecordData: "dummy", RecordId: "ocQHyuzHvysMo5N5VsXc"},
+			Name: "updating the calendars groups",
+			Input: common.WriteParams{
+				ObjectName: "calendars/groups",
+				RecordData: "dummy",
+				RecordId:   "ocQHyuzHvysMo5N5VsXc",
+			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPUT(),
@@ -140,8 +148,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "updating the products collections",
-			Input: common.WriteParams{ObjectName: "products/collections", RecordData: "dummy", RecordId: "655b33a82209e60b6adb87a5"},
+			Name: "updating the products collections",
+			Input: common.WriteParams{
+				ObjectName: "products/collections",
+				RecordData: "dummy",
+				RecordId:   "655b33a82209e60b6adb87a5",
+			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPUT(),
