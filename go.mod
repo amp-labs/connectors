@@ -5,7 +5,7 @@ go 1.23.0
 require (
 	github.com/PuerkitoBio/goquery v1.10.3
 	github.com/antchfx/xmlquery v1.4.3
-	github.com/aws/aws-sdk-go-v2 v1.37.1
+	github.com/aws/aws-sdk-go-v2 v1.37.2
 	github.com/aws/aws-sdk-go-v2/config v1.30.2
 	github.com/aws/aws-sdk-go-v2/credentials v1.18.2
 	github.com/brianvoe/gofakeit/v6 v6.28.0
