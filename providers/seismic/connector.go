@@ -57,17 +57,27 @@ func constructor(base *components.Connector) (*Connector, error) {
 		// Set the metadata provider for the connector
 		connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)
 
-		// Set the read provider for the connector
-		connector.Reader = reader.NewHTTPReader(
-			connector.HTTPClient().Client,
-			registry,
-			connector.ProviderContext.Module(),
-			operations.ReadHandlers{
-				BuildRequest:  connector.buildReadRequest,
-				ParseResponse: connector.parseReadResponse,
-				ErrorHandler:  common.InterpretError,
-			},
-		)
+		switch connector.Module() { //nolint: exhaustive
+		case providers.ModuleReporting:
+			// Set the metadata provider for the connector
+			connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)
+
+			// Set the read provider for the connector
+			connector.Reader = reader.NewHTTPReader(
+				connector.HTTPClient().Client,
+				registry,
+				connector.ProviderContext.Module(),
+				operations.ReadHandlers{
+					BuildRequest:  connector.buildReadRequest,
+					ParseResponse: connector.parseReadResponse,
+					ErrorHandler:  common.InterpretError,
+				},
+			)
+
+		// We haven't implemented any other module upto now.
+		default:
+			return nil, common.ErrUnsupportedModule
+		}
 
 	// We haven't implemented any other module upto now.
 	default:
