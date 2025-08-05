@@ -1,7 +1,9 @@
 package highlevelwhitelabel
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
@@ -200,4 +202,93 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	method := http.MethodPost
+
+	if params.RecordId != "" {
+		url.AddPath(params.RecordId)
+
+		method = http.MethodPut
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	if !(strings.Contains(params.ObjectName, "/")) {
+		urlRaw, err := url.ToURL()
+		if err != nil {
+			return nil, err
+		}
+
+		urlRaw.Path = urlRaw.Path + "/" // nolint:gocritic
+
+		url, err = urlbuilder.FromRawURL(urlRaw)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Version", apiVersion)
+
+	return req, nil
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{ // nolint:nilerr
+			Success: true,
+		}, nil
+	}
+
+	record, err := jsonquery.New(body).ObjectOptional(writeObjectsNodePath.Get(params.ObjectName))
+	if err != nil {
+		return nil, err
+	}
+
+	recordId := ""
+
+	if writeObjectsWithIdField.Has(params.ObjectName) {
+		recordId = "id"
+	}
+
+	if writeObjectsWith_IdField.Has(params.ObjectName) {
+		recordId = "_id"
+	}
+
+	recordID, err := jsonquery.New(record).StrWithDefault(recordId, "")
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := jsonquery.Convertor.ObjectToMap(record)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     resp,
+	}, nil
 }

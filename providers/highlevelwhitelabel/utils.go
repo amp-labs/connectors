@@ -143,3 +143,77 @@ func makeNextRecord(offset int) common.NextPageFunc {
 		return strconv.Itoa(nextStart), nil
 	}
 }
+
+var writeObjectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+	"custom-menus":                    "custom-menu",
+	"users":                           "",
+	"businesses":                      "business",
+	"calendars":                       "calendar",
+	"calendars/groups":                "group",
+	"calendars/events/appointments":   "",
+	"calendars/events/block-slots":    "",
+	"contacts":                        "contact",
+	"objects":                         "object",
+	"associations":                    "",
+	"associations/relations":          "",
+	"custom-fields":                   "field",
+	"custom-fields/folder":            "",
+	"conversations":                   "conversation",
+	"conversations/messages":          "",
+	"conversations/messages/inbound":  "",
+	"conversations/messages/outbound": "",
+	"conversations/messages/upload":   "",
+	"emails/builder":                  "",
+	"invoices":                        "",
+	"invoices/template":               "",
+	"invoices/schedule":               "",
+	"invoices/text2pay":               "",
+	"invoices/estimate":               "",
+	"invoices/estimate/template":      "",
+	"links":                           "link",
+	"locations":                       "",
+	"blogs/posts":                     "data",
+	"funnels/lookup/redirect":         "data",
+	"opportunities":                   "opportunity",
+	"payments/coupon":                 "",
+	"products":                        "",
+	"products/collections":            "data",
+	"store/shipping-zone":             "data",
+}, func(objectName string) string {
+	return "id"
+})
+
+var writeObjectsWithIdField = datautils.NewSet( //nolint:gochecknoglobals
+	"custom-menus",
+	"users",
+	"businesses",
+	"calendars",
+	"calendars/groups",
+	"calendars/events/appointments",
+	"calendars/events/block-slots",
+	"contacts",
+	"objects",
+	"associations",
+	"associations/relations",
+	"custom-fields",
+	"custom-fields/folder",
+	"conversations",
+	"links",
+	"locations",
+	"funnels/lookup/redirect",
+	"opportunities",
+)
+
+var writeObjectsWith_IdField = datautils.NewSet( //nolint:gochecknoglobals
+	"invoices",
+	"invoices/template",
+	"invoices/schedule",
+	"invoices/text2pay",
+	"invoices/estimate",
+	"invoices/estimate/template",
+	"blogs/posts",
+	"payments/coupon",
+	"products",
+	"products/collections",
+	"store/shipping-zone",
+)
