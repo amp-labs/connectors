@@ -9,14 +9,14 @@ import (
 )
 
 type Data struct {
-	Data []DataItem `json:"data"`
+	Data []dataItem `json:"data"`
 }
 
-type IncludedObjects struct {
-	Included []DataItem `json:"included,omitempty"`
+type includedObjects struct {
+	Included []dataItem `json:"included,omitempty"`
 }
 
-type DataItem struct {
+type dataItem struct {
 	Type          string         `json:"type"`
 	ID            int            `json:"id"`
 	Relationships map[string]any `json:"relationships"`
@@ -24,7 +24,7 @@ type DataItem struct {
 	Links         map[string]any `json:"links"`
 }
 
-func (item DataItem) ToMapStringAny() (map[string]any, error) {
+func (item dataItem) ToMapStringAny() (map[string]any, error) {
 	jsonBytes, err := json.Marshal(item)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal DataItem: %w", err)

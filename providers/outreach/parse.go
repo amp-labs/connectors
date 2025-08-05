@@ -18,9 +18,13 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 	return jsonquery.New(node, "links").StrWithDefault("next", "")
 }
 
-func getOutreachDataMarshaller(config common.ReadParams, included []DataItem,
+func getOutreachDataMarshaller(config common.ReadParams, included []dataItem,
 	transformer common.RecordTransformer,
 ) common.MarshalFromNodeFunc {
+	if len(config.AssociatedObjects) == 0 {
+		return common.MakeMarshaledDataFunc(common.FlattenNestedFields(attributesKey))
+	}
+
 	return func(records []*ajson.Node, fields []string) ([]common.ReadResultRow, error) {
 		result := make([]common.ReadResultRow, len(records))
 
@@ -94,6 +98,10 @@ func collectAssociationsTypesAndIDs(assoc []string, relationships map[string]any
 		}
 
 		switch rcds := records.(type) {
+		// The relationships data response can be either:
+		// - nil (no related objects)
+		// - a single object (if only one related record exists)
+		// - an array of objects (for multiple related records)
 		case map[string]any:
 			if err := processRecord(rcds, assocObject, detailsMap); err != nil {
 				return nil, fmt.Errorf("single record: %w", err)
@@ -119,7 +127,7 @@ func collectAssociationsTypesAndIDs(assoc []string, relationships map[string]any
 	return detailsMap, nil
 }
 
-func collectAssociations(included []DataItem, details map[string]map[string][]int,
+func collectAssociations(included []dataItem, details map[string]map[string][]int,
 ) (map[string][]common.Association, error) {
 	associations := make(map[string][]common.Association)
 

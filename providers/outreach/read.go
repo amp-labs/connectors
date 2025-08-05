@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-const include = "include"
+const includeQueryParam = "include"
 
 // Read retrieves data based on the provided configuration parameters.
 //
@@ -28,7 +28,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	// Sets the query parameter `include` when the requests has request for associated objects.
 	if len(config.AssociatedObjects) > 0 {
-		url.WithQueryParam(include, strings.Join(config.AssociatedObjects, ","))
+		url.WithQueryParam(includeQueryParam, strings.Join(config.AssociatedObjects, ","))
 	}
 
 	res, err := c.Client.Get(ctx, url.String())
@@ -36,7 +36,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	included, err := common.UnmarshalJSON[IncludedObjects](res)
+	included, err := common.UnmarshalJSON[includedObjects](res)
 	if err != nil {
 		return nil, err
 	}
