@@ -26,15 +26,15 @@ func main() {
 
 	var err error
 
-	// err = testReadSequences(ctx, conn)
-	// if err != nil {
-	// 	utils.Fail("error reading sequences", "error", err)
-	// }
+	err = testReadSequences(ctx, conn)
+	if err != nil {
+		utils.Fail("error reading sequences", "error", err)
+	}
 
-	// err = testReadMailings(ctx, conn)
-	// if err != nil {
-	// 	utils.Fail("error reading mailings", "error", err)
-	// }
+	err = testReadMailings(ctx, conn)
+	if err != nil {
+		utils.Fail("error reading mailings", "error", err)
+	}
 
 	err = testReadProspects(ctx, conn)
 	if err != nil {
