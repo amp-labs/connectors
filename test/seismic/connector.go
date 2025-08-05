@@ -15,7 +15,7 @@ import (
 
 func GetConnector(ctx context.Context) *seismic.Connector {
 	filePath := credscanning.LoadPath(providers.Seismic)
-	reader := utils.MustCreateProvCredJSON(filePath, true, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),
@@ -26,7 +26,7 @@ func GetConnector(ctx context.Context) *seismic.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := seismic.NewConnector(common.Parameters{
+	conn, err := seismic.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 		Workspace:           "ampersanddemo",
 		Module:              "reporting",
