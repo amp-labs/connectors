@@ -204,7 +204,7 @@ var writeObjectsWithIdField = datautils.NewSet( //nolint:gochecknoglobals
 	"opportunities",
 )
 
-var writeObjectsWith_IdField = datautils.NewSet( //nolint:gochecknoglobals
+var writeObjectsWithUnderscoreIdField = datautils.NewSet( //nolint:gochecknoglobals
 	"invoices",
 	"invoices/template",
 	"invoices/schedule",

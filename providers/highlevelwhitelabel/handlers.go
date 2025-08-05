@@ -271,7 +271,7 @@ func (c *Connector) parseWriteResponse(
 		recordId = "id"
 	}
 
-	if writeObjectsWith_IdField.Has(params.ObjectName) {
+	if writeObjectsWithUnderscoreIdField.Has(params.ObjectName) {
 		recordId = "_id"
 	}
 
