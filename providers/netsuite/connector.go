@@ -40,14 +40,14 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	}
 
 	switch connector.Module() { //nolint:exhaustive
-	case providers.NetsuiteModuleRESTAPI:
+	case providers.ModuleNetsuiteRESTAPI:
 		adapter, err := restapi.NewAdapter(params)
 		if err != nil {
 			return nil, err
 		}
 
 		connector.RESTAPI = adapter
-	case providers.NetsuiteModuleSuiteQL:
+	case providers.ModuleNetsuiteSuiteQL:
 		adapter, err := suiteql.NewAdapter(params)
 		if err != nil {
 			return nil, err
