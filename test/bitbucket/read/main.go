@@ -42,7 +42,7 @@ func main() {
 	res, err = connector.Read(ctx, common.ReadParams{
 		ObjectName: "repositories",
 		Fields:     datautils.NewStringSet("full_name", "type", "name", "description"),
-		Since:      time.Date(2024, 03, 1, 0, 0, 0, 0, time.UTC),
+		Since:      time.Now().Add(-10 * time.Hour),
 	})
 	if err != nil {
 		slog.Error(err.Error())

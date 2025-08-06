@@ -3,6 +3,7 @@ package bitbucket
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -86,6 +87,18 @@ func (c *Connector) constructReadURL(params common.ReadParams) (string, error) {
 	url, err := urlbuilder.New(c.ModuleInfo().BaseURL, restAPIVersion, params.ObjectName)
 	if err != nil {
 		return "", err
+	}
+
+	if !params.Since.IsZero() {
+		since := "updated_on >= " + params.Since.Format(time.RFC3339)
+		url.WithQueryParam("q", since)
+
+		// for readig repositories, so as we don't query all available repos
+		// we set, list only membered repositories.
+
+		if params.ObjectName == "repositories" {
+			url.WithQueryParam("role", "member")
+		}
 	}
 
 	return url.String(), nil
