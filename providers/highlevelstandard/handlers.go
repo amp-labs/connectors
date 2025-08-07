@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -290,5 +291,36 @@ func (c *Connector) parseWriteResponse(
 		RecordId: recordID,
 		Errors:   nil,
 		Data:     resp,
+	}, nil
+}
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName, params.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Version", apiVersion)
+
+	return req, nil
+}
+
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context,
+	params common.DeleteParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	if resp.Code != http.StatusOK {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, resp.Code)
+	}
+
+	return &common.DeleteResult{
+		Success: true,
 	}, nil
 }

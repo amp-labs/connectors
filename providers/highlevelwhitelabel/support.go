@@ -88,6 +88,24 @@ func supportedOperations() components.EndpointRegistryInput {
 		"store/shipping-zone",
 	}
 
+	deleteSupport := []string{
+		"custom-menus",
+		"users",
+		"businesses",
+		"calendars",
+		"calendars/groups",
+		"contacts",
+		"associations",
+		"custom-fields",
+		"conversations",
+		"invoices/schedule",
+		"invoices/text2pay",
+		"links",
+		"opportunities",
+		"payments/coupon",
+		"products",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
@@ -97,6 +115,10 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
 				Support:  components.WriteSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(deleteSupport, ",")),
+				Support:  components.DeleteSupport,
 			},
 		},
 	}
