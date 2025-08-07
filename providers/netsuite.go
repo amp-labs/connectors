@@ -4,10 +4,10 @@ const (
 	Netsuite Provider = "netsuite"
 
 	// NetsuiteModuleSuiteQL is a read-only module that uses SuiteQL to read data.
-	NetsuiteModuleSuiteQL = "suiteql"
+	ModuleNetsuiteSuiteQL = "suiteql"
 
 	// NetsuiteModuleRESTAPI is a read-write module that uses the REST API to read and write data.
-	NetsuiteModuleRESTAPI = "restapi"
+	ModuleNetsuiteRESTAPI = "restapi"
 )
 
 // nolint:lll,funlen
@@ -36,9 +36,9 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
-		DefaultModule: NetsuiteModuleRESTAPI,
+		DefaultModule: ModuleNetsuiteRESTAPI,
 		Modules: &Modules{
-			NetsuiteModuleSuiteQL: {
+			ModuleNetsuiteSuiteQL: {
 				DisplayName: "Netsuite (SuiteQL)",
 				BaseURL:     "https://{{.workspace}}.suitetalk.api.netsuite.com/services/rest/query",
 				Support: Support{
@@ -46,7 +46,7 @@ func init() {
 					Read:  true,
 				},
 			},
-			NetsuiteModuleRESTAPI: {
+			ModuleNetsuiteRESTAPI: {
 				DisplayName: "Netsuite (REST API)",
 				BaseURL:     "https://{{.workspace}}.suitetalk.api.netsuite.com/services/rest/record",
 				Support: Support{
@@ -72,8 +72,8 @@ func init() {
 					Name:        "workspace",
 					DisplayName: "Account ID",
 					ModuleDependencies: &ModuleDependencies{
-						NetsuiteModuleRESTAPI: ModuleDependency{},
-						NetsuiteModuleSuiteQL: ModuleDependency{},
+						ModuleNetsuiteRESTAPI: ModuleDependency{},
+						ModuleNetsuiteSuiteQL: ModuleDependency{},
 					},
 				},
 			},
