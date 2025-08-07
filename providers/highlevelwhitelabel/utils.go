@@ -78,6 +78,7 @@ var objectWithSkipQueryParam = datautils.NewSet( //nolint:gochecknoglobals
 	"invoices",
 )
 
+// Ref for nodePath https://highlevel.stoplight.io/docs/integrations/a8db8afcbe0a3-get-businesses-by-location.
 var objectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 	"businesses":                   "businesses",
 	"calendars":                    "calendars",
