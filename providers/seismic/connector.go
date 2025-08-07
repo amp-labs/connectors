@@ -29,7 +29,6 @@ type Connector struct {
 
 	// Require authenticated client
 	common.RequireAuthenticatedClient
-	common.RequireModule
 	common.RequireWorkspace
 
 	// Supported operations
@@ -45,10 +44,19 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
-	connector.RequireModule = modules
+	if connector.Module() != providers.ModuleReporting {
+		return nil, common.ErrUnsupportedModule
+	}
 
-	// Set the metadata provider for the connector
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)
+	switch connector.Module() { //nolint: exhaustive
+	case providers.ModuleReporting:
+		// Set the metadata provider for the connector
+		connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)
+
+	// We haven't implemented any other module upto now.
+	default:
+		return nil, common.ErrUnsupportedModule
+	}
 
 	return connector, nil
 }
