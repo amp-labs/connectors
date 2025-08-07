@@ -20,6 +20,10 @@ func Method(methodName string) Check {
 	}
 }
 
+func MethodGET() Check {
+	return Method("GET")
+}
+
 func MethodPOST() Check {
 	return Method("POST")
 }
