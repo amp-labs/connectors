@@ -30,8 +30,8 @@ const (
 )
 
 // In the highlevel connector, there is two listing type -- standard and whitelabel.
-// Both type have different Authorization URL
-// refer: https://highlevel.stoplight.io/docs/integrations/a04191c0fabf9-authorization#3-get-the-apps-authorization-page-url.
+// Both type have different Authorization URL. Refer below link.
+// https://highlevel.stoplight.io/docs/integrations/a04191c0fabf9-authorization#3-get-the-apps-authorization-page-url.
 // Apps are visible at both agency and sub-account levels under white-label and non-white-label domains
 // (no HighLevel/GoHighLevel references allowed, or they’ll be disapproved) for white-label.
 //
