@@ -1,0 +1,139 @@
+[
+  {
+    "id": 705303,
+    "name": "Fruits",
+    "data_type": "Dropdown",
+    "available_on": [
+      "company",
+      "lead",
+      "person"
+    ],
+    "is_filterable": false,
+    "options": [
+      {
+        "id": 2082340,
+        "name": "Banana",
+        "rank": 0
+      },
+      {
+        "id": 2082341,
+        "name": "Strawberries",
+        "rank": 1
+      }
+    ]
+  },
+  {
+    "id": 705393,
+    "name": "Parent of",
+    "data_type": "Connect",
+    "available_on": [
+      "company"
+    ],
+    "is_filterable": false,
+    "connected_id": 705394
+  },
+  {
+    "id": 705394,
+    "name": "Child of",
+    "data_type": "Connect",
+    "available_on": [
+      "company"
+    ],
+    "is_filterable": false,
+    "connected_id": 705393
+  },
+  {
+    "id": 705396,
+    "name": "Hryvnia",
+    "data_type": "Currency",
+    "available_on": [
+      "company"
+    ],
+    "is_filterable": false,
+    "currency": "UAH"
+  },
+  {
+    "id": 705399,
+    "name": "Birthday",
+    "data_type": "Date",
+    "available_on": [
+      "company"
+    ],
+    "is_filterable": true
+  },
+  {
+    "id": 705401,
+    "name": "Many",
+    "data_type": "MultiSelect",
+    "available_on": [
+      "company"
+    ],
+    "is_filterable": true,
+    "options": [
+      {
+        "id": 2082480,
+        "name": "Option 1",
+        "rank": 0
+      },
+      {
+        "id": 2082481,
+        "name": "Option 2",
+        "rank": 1
+      }
+    ]
+  },
+  {
+    "id": 705402,
+    "name": "FavNum",
+    "data_type": "Float",
+    "available_on": [
+      "company"
+    ],
+    "is_filterable": true
+  },
+  {
+    "id": 705403,
+    "name": "Story",
+    "data_type": "Text",
+    "available_on": [
+      "company"
+    ],
+    "is_filterable": true
+  },
+  {
+    "id": 705404,
+    "name": "MyWebsite",
+    "data_type": "URL",
+    "available_on": [
+      "company"
+    ],
+    "is_filterable": true
+  },
+  {
+    "id": 705407,
+    "name": "IsBouillonSoup",
+    "data_type": "Checkbox",
+    "available_on": [
+      "company"
+    ],
+    "is_filterable": true
+  },
+  {
+    "id": 705452,
+    "name": "TextEntry",
+    "data_type": "String",
+    "available_on": [
+      "company"
+    ],
+    "is_filterable": true
+  },
+  {
+    "id": 705453,
+    "name": "Progression",
+    "data_type": "Percentage",
+    "available_on": [
+      "company"
+    ],
+    "is_filterable": true
+  }
+]
