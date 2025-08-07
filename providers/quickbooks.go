@@ -6,7 +6,7 @@ func init() {
 	SetInfo(QuickBooks, ProviderInfo{
 		DisplayName: "QuickBooks",
 		AuthType:    Oauth2,
-		BaseURL:     "https://sandbox-quickbooks.api.intuit.com",
+		BaseURL:     "https://quickbooks.api.intuit.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:              AuthorizationCode,
 			AuthURL:                "https://appcenter.intuit.com/connect/oauth2",
