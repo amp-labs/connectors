@@ -13,11 +13,11 @@ import (
 )
 
 func GetNetsuiteRESTAPIConnector(ctx context.Context) *netsuite.Connector {
-	return getNetsuiteConnector(ctx, providers.NetsuiteModuleRESTAPI)
+	return getNetsuiteConnector(ctx, providers.ModuleNetsuiteRESTAPI)
 }
 
 func GetNetsuiteSuiteQLConnector(ctx context.Context) *netsuite.Connector {
-	return getNetsuiteConnector(ctx, providers.NetsuiteModuleSuiteQL)
+	return getNetsuiteConnector(ctx, providers.ModuleNetsuiteSuiteQL)
 }
 
 func getNetsuiteConnector(ctx context.Context, module common.ModuleID) *netsuite.Connector {
