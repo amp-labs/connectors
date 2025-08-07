@@ -56,8 +56,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func (c *Connector) buildWriteURL(config common.WriteParams) (*urlbuilder.URL, error) {
-	// supportWriteObjects represents the APIs listed under the Attio API section in the docs
-	// (this does not cover the entire Attio API). Reference: https://developers.attio.com/reference.
+	// supportWriteObjects represents non-standard/custom objects.
 	if supportWriteObjects.Has(config.ObjectName) {
 		return c.getApiURL(config.ObjectName)
 	}
