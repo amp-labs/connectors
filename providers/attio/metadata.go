@@ -93,8 +93,7 @@ func (c *Connector) getObjectAttributes(
 	ctx context.Context, obj string,
 ) (map[string]common.FieldMetadata, bool, error) {
 	// Standard isn't a term we commonly use, but rather a concept defined by Attio itself.
-	// supportAttioApi represents the APIs listed under the Attio API section in the docs
-	// (this does not cover the entire Attio API). Reference: https://developers.attio.com/reference.
+	// supportAttioApi represents non-standarad/custom objects.
 	isAttioStandardOrCustomObj := !supportAttioApi.Has(obj)
 
 	var (

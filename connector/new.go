@@ -59,6 +59,7 @@ import (
 	"github.com/amp-labs/connectors/providers/marketo"
 	"github.com/amp-labs/connectors/providers/mixmax"
 	"github.com/amp-labs/connectors/providers/monday"
+	"github.com/amp-labs/connectors/providers/netsuite"
 	"github.com/amp-labs/connectors/providers/outreach"
 	"github.com/amp-labs/connectors/providers/pinterest"
 	"github.com/amp-labs/connectors/providers/pipedrive"
@@ -140,6 +141,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Marketo:                 wrapper(newMarketoConnector),
 	providers.Mixmax:                  wrapper(newMixmaxConnector),
 	providers.Monday:                  wrapper(newMondayConnector),
+	providers.Netsuite:                wrapper(newNetsuiteConnector),
 	providers.Outreach:                wrapper(newOutreachConnector),
 	providers.Pinterest:               wrapper(newPinterestConnector),
 	providers.Pipedrive:               wrapper(newPipedriveConnector),
@@ -634,4 +636,10 @@ func newCampaignMonitorConnector(
 	params common.ConnectorParams,
 ) (*campaignmonitor.Connector, error) {
 	return campaignmonitor.NewConnector(params)
+}
+
+func newNetsuiteConnector(
+	params common.ConnectorParams,
+) (*netsuite.Connector, error) {
+	return netsuite.NewConnector(params)
 }
