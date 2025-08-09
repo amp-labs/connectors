@@ -123,6 +123,15 @@ func init() { // nolint:funlen
 					DisplayName: "Subdomain",
 					DocsURL:     "https://help.salesforce.com/s/articleView?language=en_US&id=sf.faq_domain_name_what.htm&type=5",
 				},
+				{
+					Name:        "businessUnitId",
+					DisplayName: "Business Unit ID",
+					DocsURL:     "https://help.salesforce.com/s/articleView?id=000381973&type=1",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleSalesforceAccountEngagement:     {},
+						ModuleSalesforceAccountEngagementDemo: {},
+					},
+				},
 			},
 		},
 	})
