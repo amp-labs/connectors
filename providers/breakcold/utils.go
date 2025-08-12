@@ -6,7 +6,7 @@ import "github.com/amp-labs/connectors/internal/datautils"
 // https://developer.breakcold.com/v3/api-reference/leads/list-leads-with-pagination-and-filters.
 // https://developer.breakcold.com/v3/api-reference/notes/list-notes.
 // https://developer.breakcold.com/v3/api-reference/reminders/list-reminders-with-filters-and-pagination.
-var getEndpointsPostMethod = datautils.NewSet(
+var getEndpointsPostMethod = datautils.NewSet( //nolint:gochecknoglobals
 	"leads/list",
 	"notes/list",
 	"reminders/list",
@@ -15,7 +15,7 @@ var getEndpointsPostMethod = datautils.NewSet(
 // The endpoints has data nodePath in the response.
 // https://developer.breakcold.com/v3/api-reference/notes/list-notes.
 // https://developer.breakcold.com/v3/api-reference/campaigns/list-campaigns.
-var objectWithDataNodePath = datautils.NewSet(
+var objectWithDataNodePath = datautils.NewSet( //nolint:gochecknoglobals
 	"campaigns",
 	"notes/list",
 )
