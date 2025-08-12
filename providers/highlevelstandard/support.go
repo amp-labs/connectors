@@ -51,11 +51,74 @@ func supportedOperations() components.EndpointRegistryInput {
 		"custom-menus",
 	}
 
+	writeSupport := []string{
+		"custom-menus",
+		"users",
+		"businesses",
+		"calendars",
+		"calendars/groups",
+		"calendars/events/appointments",
+		"calendars/events/block-slots",
+		"contacts",
+		"objects",
+		"associations",
+		"associations/relations",
+		"custom-fields",
+		"custom-fields/folder",
+		"conversations",
+		"conversations/messages",
+		"conversations/messages/inbound",
+		"conversations/messages/outbound",
+		"conversations/messages/upload",
+		"emails/builder",
+		"invoices",
+		"invoices/template",
+		"invoices/schedule",
+		"invoices/text2pay",
+		"invoices/estimate",
+		"invoices/estimate/template",
+		"links",
+		"locations",
+		"blogs/posts",
+		"funnels/lookup/redirect",
+		"opportunities",
+		"payments/coupon",
+		"products",
+		"products/collections",
+		"store/shipping-zone",
+	}
+
+	deleteSupport := []string{
+		"custom-menus",
+		"users",
+		"businesses",
+		"calendars",
+		"calendars/groups",
+		"contacts",
+		"associations",
+		"custom-fields",
+		"conversations",
+		"invoices/schedule",
+		"invoices/text2pay",
+		"links",
+		"opportunities",
+		"payments/coupon",
+		"products",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(deleteSupport, ",")),
+				Support:  components.DeleteSupport,
 			},
 		},
 	}
