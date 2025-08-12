@@ -13,7 +13,7 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 		return nil, err
 	}
 
-	c.tenatantId = tenantId
+	c.tenantId = tenantId
 
 	catalogVars := map[string]string{
 		"tenantId": tenantId,

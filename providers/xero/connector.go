@@ -16,7 +16,7 @@ type Connector struct {
 	common.RequireAuthenticatedClient
 	common.PostAuthInfo
 
-	tenatantId string // Tenant ID for Xero
+	tenantId string // Tenant ID for Xero
 }
 
 // NewConnector.
