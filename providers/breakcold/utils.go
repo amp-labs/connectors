@@ -11,11 +11,3 @@ var getEndpointsPostMethod = datautils.NewSet( //nolint:gochecknoglobals
 	"notes/list",
 	"reminders/list",
 )
-
-// The endpoints has data nodePath in the response.
-// https://developer.breakcold.com/v3/api-reference/notes/list-notes.
-// https://developer.breakcold.com/v3/api-reference/campaigns/list-campaigns.
-var objectWithDataNodePath = datautils.NewSet( //nolint:gochecknoglobals
-	"campaigns",
-	"notes/list",
-)

@@ -43,7 +43,9 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	nodepath := ""
 
-	if objectWithDataNodePath.Has(objectName) {
+	// The endpoint has data nodePath in the response.
+	// https://developer.breakcold.com/v3/api-reference/reminders/list-reminders-with-filters-and-pagination.
+	if objectName == "reminders/list" {
 		nodepath = "data"
 	}
 
