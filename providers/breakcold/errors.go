@@ -17,7 +17,7 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 
 type ResponseError struct {
 	Message string `json:"message"`
-	Code    int    `json:"Code"`
+	Code    int    `json:"code"`
 	Data    any    `json:"data"`
 }
 

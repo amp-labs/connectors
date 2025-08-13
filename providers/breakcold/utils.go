@@ -9,7 +9,11 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-const pageSize = 100
+const (
+	pageSize                = 100
+	objectNameRemindersList = "reminders/list"
+	objectNameLeadsList     = "leads/list"
+)
 
 // The endpoints below use the POST method instead of the GET method.
 // https://developer.breakcold.com/v3/api-reference/leads/list-leads-with-pagination-and-filters.
@@ -30,12 +34,12 @@ func makeNextRecordsURL(nodePath string, nextPage int) common.NextPageFunc {
 			return "", err
 		}
 
-		if record == nil || len(record) < pageSize {
+		if len(record) < pageSize {
 			return "", nil
 		}
 
 		nextPage += 1
 
-		return strconv.Itoa(int(nextPage)), nil
+		return strconv.Itoa(nextPage), nil
 	}
 }

@@ -48,13 +48,13 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	// The endpoint has data nodePath in the response.
 	// https://developer.breakcold.com/v3/api-reference/reminders/list-reminders-with-filters-and-pagination.
-	if objectName == "reminders/list" {
+	if objectName == objectNameRemindersList {
 		nodepath = "data"
 	}
 
 	//  The endpoint has leads as the nodePath in the response.
 	//  https://developer.breakcold.com/v3/api-reference/leads/list-leads-with-pagination-and-filters.
-	if objectName == "leads/list" {
+	if objectName == objectNameLeadsList {
 		nodepath = "leads"
 	}
 
@@ -103,13 +103,13 @@ func (c *Connector) parseReadResponse(
 
 	// The endpoint has data nodePath in the response.
 	// https://developer.breakcold.com/v3/api-reference/reminders/list-reminders-with-filters-and-pagination.
-	if params.ObjectName == "reminders/list" {
+	if params.ObjectName == objectNameRemindersList {
 		nodePath = "data"
 	}
 
 	//  The endpoint has leads as the nodePath in the response.
 	//  https://developer.breakcold.com/v3/api-reference/leads/list-leads-with-pagination-and-filters.
-	if params.ObjectName == "leads/list" {
+	if params.ObjectName == objectNameLeadsList {
 		nodePath = "leads"
 	}
 
@@ -142,6 +142,7 @@ func constructRequestBody(config common.ReadParams) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		page = nextPage
 	}
 
@@ -152,7 +153,7 @@ func constructRequestBody(config common.ReadParams) ([]byte, error) {
 		},
 	}
 
-	if config.ObjectName == "reminders/list" {
+	if config.ObjectName == objectNameRemindersList {
 		body["cursor"] = page
 	}
 
