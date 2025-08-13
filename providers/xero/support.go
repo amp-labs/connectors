@@ -10,7 +10,7 @@ import (
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
-		"accounts",
+		"accounts", "contacts",
 	}
 
 	return components.EndpointRegistryInput{

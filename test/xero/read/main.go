@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -29,15 +30,16 @@ func main() {
 	}
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "accounts",
-		Fields:     connectors.Fields("code", "name", "Type"),
+		ObjectName: "contacts",
+		Fields:     connectors.Fields("ContactID", "ContactNumber", "AccountNumber"),
+		Since:      time.Date(2025, 6, 01, 0, 0, 0, 0, time.UTC),
 	})
 
 	if err != nil {
 		utils.Fail("error reading from Xero", "error", err)
 	}
 
-	slog.Info("Reading accounts..")
+	slog.Info("Reading contacts..")
 	utils.DumpJSON(res, os.Stdout)
 
 	slog.Info("Read operation completed successfully.")

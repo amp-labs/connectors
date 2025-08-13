@@ -4,14 +4,17 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-const apiBasePath = "api.xro/2.0"
+const (
+	apiBasePath = "api.xro/2.0"
+	pageSize    = 300
+)
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := c.constructURL(objectName)
@@ -88,16 +91,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	if !params.Since.IsZero() {
-		url.WithQueryParam("created_after", params.Since.Format(time.RFC3339))
-	}
-
-	if !params.Until.IsZero() {
-		url.WithQueryParam("created_before", params.Until.Format(time.RFC3339))
-	}
-
 	if params.NextPage != "" {
-		url.WithQueryParam("cursor", params.NextPage.String())
+		url.WithQueryParam("page", params.NextPage.String())
+	} else {
+		url.WithQueryParam("page", "1")
+		url.WithQueryParam("pageSize", strconv.Itoa(pageSize))
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -107,6 +105,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	req.Header.Set("Xero-Tenant-Id", c.tenantId)
 	req.Header.Set("Accept", "application/json")
+
+	if !params.Since.IsZero() {
+		req.Header.Set("If-Modified-Since", params.Since.UTC().Format("2006-01-02T15:04:05"))
+	}
 
 	return req, nil
 }
