@@ -10,7 +10,33 @@ import (
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
-		"accounts", "contacts",
+		"accounts",
+		"contacts",
+		"bankTransactions",
+		"bankTransfers",
+		"batchPayments",
+		"brandingThemes",
+		"budgets",
+		"contactGroups",
+		"creditNotes",
+		"Currencies",
+		"invoices",
+		"items",
+		"journals",
+		"linkedTransactions",
+		"manualJournals",
+		"organisation",
+		"overpayments",
+		"paymentServices",
+		"payments",
+		"prepayments",
+		"purchaseOrders",
+		"quotes",
+		"repeatingInvoices",
+		"reports",
+		"taxRates",
+		"trackingCategories",
+		"users",
 	}
 
 	return components.EndpointRegistryInput{
