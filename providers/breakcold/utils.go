@@ -1,6 +1,15 @@
 package breakcold
 
-import "github.com/amp-labs/connectors/internal/datautils"
+import (
+	"strconv"
+
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
+)
+
+const pageSize = 100
 
 // The endpoints below use the POST method instead of the GET method.
 // https://developer.breakcold.com/v3/api-reference/leads/list-leads-with-pagination-and-filters.
@@ -11,3 +20,22 @@ var getEndpointsPostMethod = datautils.NewSet( //nolint:gochecknoglobals
 	"notes/list",
 	"reminders/list",
 )
+
+func makeNextRecordsURL(nodePath string, nextPage int) common.NextPageFunc {
+	return func(node *ajson.Node) (string, error) {
+		query := jsonquery.New(node)
+
+		record, err := query.ArrayOptional(nodePath)
+		if err != nil {
+			return "", err
+		}
+
+		if record == nil || len(record) < pageSize {
+			return "", nil
+		}
+
+		nextPage += 1
+
+		return strconv.Itoa(int(nextPage)), nil
+	}
+}
