@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 const apiBasePath = "api.xro/2.0"
@@ -75,19 +77,51 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	return &objectMetadata, nil
 }
 
-func inferValueTypeFromData(value any) common.ValueType {
-	if value == nil {
-		return common.ValueTypeOther
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	url, err = c.constructURL(params.ObjectName)
+	if err != nil {
+		return nil, err
 	}
 
-	switch value.(type) {
-	case string:
-		return common.ValueTypeString
-	case float64, int, int64:
-		return common.ValueTypeFloat
-	case bool:
-		return common.ValueTypeBoolean
-	default:
-		return common.ValueTypeOther
+	if !params.Since.IsZero() {
+		url.WithQueryParam("created_after", params.Since.Format(time.RFC3339))
 	}
+
+	if !params.Until.IsZero() {
+		url.WithQueryParam("created_before", params.Until.Format(time.RFC3339))
+	}
+
+	if params.NextPage != "" {
+		url.WithQueryParam("cursor", params.NextPage.String())
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Xero-Tenant-Id", c.tenantId)
+	req.Header.Set("Accept", "application/json")
+
+	return req, nil
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath(naming.CapitalizeFirstLetter(params.ObjectName)),
+		nextRecordsURL(),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
