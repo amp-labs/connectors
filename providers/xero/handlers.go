@@ -34,7 +34,6 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
-
 	objectMetadata := common.ObjectMetadata{
 		Fields:      make(map[string]common.FieldMetadata),
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
