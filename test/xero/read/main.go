@@ -42,5 +42,29 @@ func main() {
 	slog.Info("Reading contacts..")
 	utils.DumpJSON(res, os.Stdout)
 
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "contactGroups",
+		Fields:     connectors.Fields("Name", "ContactGroupID", "Status"),
+	})
+
+	if err != nil {
+		utils.Fail("error reading from Xero", "error", err)
+	}
+
+	slog.Info("Reading budgets..")
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "purchaseOrders",
+		Fields:     connectors.Fields("PurchaseOrderID", "PurchaseOrderNumber", "FirstName"),
+	})
+
+	if err != nil {
+		utils.Fail("error reading from Xero", "error", err)
+	}
+
+	slog.Info("Reading purchaseOrders..")
+	utils.DumpJSON(res, os.Stdout)
+
 	slog.Info("Read operation completed successfully.")
 }
