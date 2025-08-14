@@ -11,7 +11,7 @@ import (
 
 const (
 	pageSize                = 100
-	objectNameRemindersList = "reminderst"
+	objectNameRemindersList = "reminders"
 	objectNameLeadsList     = "leads"
 )
 

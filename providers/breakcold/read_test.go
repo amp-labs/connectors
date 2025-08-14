@@ -55,7 +55,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Read list of reminders list",
-			Input: common.ReadParams{ObjectName: "reminders/list", Fields: connectors.Fields(""), NextPage: "2"},
+			Input: common.ReadParams{ObjectName: "reminders", Fields: connectors.Fields(""), NextPage: "2"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.Path("/reminders/list"),

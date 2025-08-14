@@ -13,11 +13,11 @@ func supportedOperations() components.EndpointRegistryInput {
 		"status",
 		"workspaces",
 		"members",
-		"leads/list",
+		"leads",
 		"tags",
 		"lists",
-		"notes/list",
-		"reminders/list",
+		"notes",
+		"reminders",
 	}
 
 	return components.EndpointRegistryInput{

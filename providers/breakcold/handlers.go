@@ -84,6 +84,8 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	if getEndpointsPostMethod.Has(params.ObjectName) {
+		url = url.AddPath("list")
+
 		body, err := constructRequestBody(params)
 		if err != nil {
 			return nil, err

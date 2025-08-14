@@ -19,17 +19,17 @@ func main() {
 func MainFn() int {
 	conn := breakcold.GetBreakcoldConnector(context.Background())
 
-	err := testRead(context.Background(), conn, "notes/list", []string{""})
+	err := testRead(context.Background(), conn, "notes", []string{""})
 	if err != nil {
 		return 1
 	}
 
-	err = testRead(context.Background(), conn, "leads/list", []string{""})
+	err = testRead(context.Background(), conn, "leads", []string{""})
 	if err != nil {
 		return 1
 	}
 
-	err = testRead(context.Background(), conn, "reminders/list", []string{""})
+	err = testRead(context.Background(), conn, "reminders", []string{""})
 	if err != nil {
 		return 1
 	}
