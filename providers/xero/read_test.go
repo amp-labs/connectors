@@ -33,7 +33,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 		{
 			Name:  "Successful read with chosen fields",
-			Input: common.ReadParams{ObjectName: "purchaseOrders", Fields: connectors.Fields("purchaseorderid", "purchaseordernumber", "type")},
+			Input: common.ReadParams{ObjectName: "purchaseOrders", Fields: connectors.Fields("purchaseorderid", "purchaseordernumber", "type")}, //nolint:lll
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.Path("/api.xro/2.0/PurchaseOrders"),
