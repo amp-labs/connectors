@@ -51,7 +51,7 @@ func main() {
 		utils.Fail("error reading from Xero", "error", err)
 	}
 
-	slog.Info("Reading budgets..")
+	slog.Info("Reading contactGroups..")
 	utils.DumpJSON(res, os.Stdout)
 
 	res, err = conn.Read(ctx, common.ReadParams{
