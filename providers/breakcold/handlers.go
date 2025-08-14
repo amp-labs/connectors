@@ -231,7 +231,11 @@ func (c *Connector) parseWriteResponse(
 }
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, naming.NewPluralString(params.ObjectName).String(), params.RecordId)
+	url, err := urlbuilder.New(
+		c.ProviderInfo().BaseURL,
+		naming.NewPluralString(params.ObjectName).String(),
+		params.RecordId,
+	)
 	if err != nil {
 		return nil, err
 	}
