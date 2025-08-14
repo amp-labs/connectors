@@ -1,0 +1,32 @@
+{
+    "Id": "2d7b0ab1-072e-46d1-bcc3-11a0b1384777",
+    "Status": "OK",
+    "ProviderName": "Ampersand test",
+    "DateTimeUTC": "/Date(1755166104859)/",
+    "pagination": {
+        "page": 1,
+        "pageSize": 1,
+        "pageCount": 2,
+        "itemCount": 1
+    },
+    "PurchaseOrders": [
+        {
+            "PurchaseOrderID": "f6c52cc7-5e7f-4924-af07-ec848dd0043f",
+            "PurchaseOrderNumber": "PO-0001",
+            "DateString": "2025-08-14T00:00:00",
+            "Date": "/Date(1755129600000+0000)/",
+            "DeliveryDateString": "2025-08-11T00:00:00",
+            "DeliveryDate": "/Date(1754870400000+0000)/",
+            "DeliveryAddress": "",
+            "AttentionTo": "",
+            "Telephone": "",
+            "DeliveryInstructions": "",
+            "HasErrors": false,
+            "IsDiscounted": false,
+            "Reference": "feqpowejrpqw",
+            "Type": "PURCHASEORDER",
+            "CurrencyRate": 1.0000000000,
+            "CurrencyCode": "USD"
+        }
+    ]
+}
