@@ -27,14 +27,15 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		},
 		{
 			Name:  "Successfully describe multiple objects with metadata",
-			Input: []string{"status", "leads/list"},
+			Input: []string{"status", "leads"},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
 					If:   mockcond.Path("/status"),
 					Then: mockserver.Response(http.StatusOK, statusResponse),
 				}, {
-					If:   mockcond.Path("/leads/list"),
+					If: mockcond.Path("/leads/list"),
+
 					Then: mockserver.Response(http.StatusOK, leadsResponse),
 				}},
 			}.Server(),
@@ -54,8 +55,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							"id_space":     "id_space",
 						},
 					},
-					"leads/list": {
-						DisplayName: "Leads/List",
+					"leads": {
+						DisplayName: "Leads",
 						Fields:      map[string]common.FieldMetadata{},
 						FieldsMap: map[string]string{
 							"id":                   "id",

@@ -20,6 +20,8 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 
 	if getEndpointsPostMethod.Has(objectName) {
 		method = http.MethodPost
+
+		url = url.AddPath("list")
 	}
 
 	return http.NewRequestWithContext(ctx, method, url.String(), nil)
@@ -45,13 +47,13 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	// The endpoint has data nodePath in the response.
 	// https://developer.breakcold.com/v3/api-reference/reminders/list-reminders-with-filters-and-pagination.
-	if objectName == "reminders/list" {
+	if objectName == "reminders" {
 		nodepath = "data"
 	}
 
 	//  The endpoint has leads as the nodePath in the response.
 	//  https://developer.breakcold.com/v3/api-reference/leads/list-leads-with-pagination-and-filters.
-	if objectName == "leads/list" {
+	if objectName == "leads" {
 		nodepath = "leads"
 	}
 

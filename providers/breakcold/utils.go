@@ -7,7 +7,7 @@ import "github.com/amp-labs/connectors/internal/datautils"
 // https://developer.breakcold.com/v3/api-reference/notes/list-notes.
 // https://developer.breakcold.com/v3/api-reference/reminders/list-reminders-with-filters-and-pagination.
 var getEndpointsPostMethod = datautils.NewSet( //nolint:gochecknoglobals
-	"leads/list",
-	"notes/list",
-	"reminders/list",
+	"leads",
+	"notes",
+	"reminders",
 )
