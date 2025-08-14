@@ -9,15 +9,18 @@ Below is an exhaustive list of objects & methods supported on the objects
 | status          | status         | read          |
 | workspaces      | workspaces     | read          |
 | members         | members        | read          |
-| leads/list      | leads/list     | read          |
+| leads           | leads          | read          |
 | tags            | tags           | read          |
 | lists           | lists          | read          |
-| notes/list      | notes/list     | read          |
-| reminders/list  | reminders/list | read          |
+| notes           | notes          | read          |
+| reminders       | reminders      | read          |
 
-- The endpoints below use the POST method instead of the GET method.
-  - leads/list
-  - notes/list
-  - reminders/list
+- The endpoints below use the POST method instead of the GET method and use appropriate object name.
+
+| Original objectname | Changed objectname |
+| --------------------| -------------------|
+| leads/list          | leads              |          
+| notes/list          | notes              |
+| reminders/list      | reminders          |
 
 - 

@@ -11,8 +11,8 @@ import (
 
 const (
 	pageSize                = 100
-	objectNameRemindersList = "reminders/list"
-	objectNameLeadsList     = "leads/list"
+	objectNameRemindersList = "reminderst"
+	objectNameLeadsList     = "leads"
 )
 
 // The endpoints below use the POST method instead of the GET method.
@@ -20,9 +20,9 @@ const (
 // https://developer.breakcold.com/v3/api-reference/notes/list-notes.
 // https://developer.breakcold.com/v3/api-reference/reminders/list-reminders-with-filters-and-pagination.
 var getEndpointsPostMethod = datautils.NewSet( //nolint:gochecknoglobals
-	"leads/list",
-	"notes/list",
-	"reminders/list",
+	"leads",
+	"notes",
+	"reminders",
 )
 
 func makeNextRecordsURL(nodePath string, nextPage int) common.NextPageFunc {

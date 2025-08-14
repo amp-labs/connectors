@@ -23,6 +23,8 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 
 	if getEndpointsPostMethod.Has(objectName) {
 		method = http.MethodPost
+
+		url = url.AddPath("list")
 	}
 
 	return http.NewRequestWithContext(ctx, method, url.String(), nil)
