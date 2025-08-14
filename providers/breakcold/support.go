@@ -20,11 +20,41 @@ func supportedOperations() components.EndpointRegistryInput {
 		"reminders",
 	}
 
+	writeSupport := []string{
+		"status",
+		"lead",
+		"leads/add-list",
+		"tags",
+		"lists",
+		"notes",
+		"reminders",
+		"attribute",
+	}
+
+	deleteSupport := []string{
+		"status",
+		"lead",
+		"leads/add-list",
+		"tags",
+		"lists",
+		"notes",
+		"reminders",
+		"attribute",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(deleteSupport, ",")),
+				Support:  components.DeleteSupport,
 			},
 		},
 	}
