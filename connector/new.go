@@ -67,6 +67,7 @@ import (
 	"github.com/amp-labs/connectors/providers/podium"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/providers/salesloft"
+	"github.com/amp-labs/connectors/providers/seismic"
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/stripe"
@@ -150,6 +151,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Salesforce:              wrapper(newSalesforceConnector),
 	providers.Salesloft:               wrapper(newSalesloftConnector),
 	providers.ServiceNow:              wrapper(newServiceNowConnector),
+	providers.Seismic:                 wrapper(newSeismicConnector),
 	providers.Smartlead:               wrapper(newSmartleadConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
@@ -642,4 +644,10 @@ func newNetsuiteConnector(
 	params common.ConnectorParams,
 ) (*netsuite.Connector, error) {
 	return netsuite.NewConnector(params)
+}
+
+func newSeismicConnector(
+	params common.ConnectorParams,
+) (*seismic.Connector, error) {
+	return seismic.NewConnector(params)
 }
