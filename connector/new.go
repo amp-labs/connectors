@@ -60,6 +60,7 @@ import (
 	"github.com/amp-labs/connectors/providers/mixmax"
 	"github.com/amp-labs/connectors/providers/monday"
 	"github.com/amp-labs/connectors/providers/netsuite"
+	"github.com/amp-labs/connectors/providers/nutshell"
 	"github.com/amp-labs/connectors/providers/outreach"
 	"github.com/amp-labs/connectors/providers/pinterest"
 	"github.com/amp-labs/connectors/providers/pipedrive"
@@ -143,6 +144,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Mixmax:                  wrapper(newMixmaxConnector),
 	providers.Monday:                  wrapper(newMondayConnector),
 	providers.Netsuite:                wrapper(newNetsuiteConnector),
+	providers.Nutshell:                wrapper(newNutshellConnector),
 	providers.Outreach:                wrapper(newOutreachConnector),
 	providers.Pinterest:               wrapper(newPinterestConnector),
 	providers.Pipedrive:               wrapper(newPipedriveConnector),
@@ -447,6 +449,12 @@ func newMondayConnector(
 	params common.ConnectorParams,
 ) (*monday.Connector, error) {
 	return monday.NewConnector(params)
+}
+
+func newNutshellConnector(
+	params common.ConnectorParams,
+) (*nutshell.Connector, error) {
+	return nutshell.NewConnector(params)
 }
 
 func newHeyReachConnector(
