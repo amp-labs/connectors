@@ -23,7 +23,6 @@ func init() {
 			ExplicitWorkspaceRequired: false,
 		},
 
-		PostAuthInfoNeeded: true,
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346654/media/calendly_1722346653.svg",
