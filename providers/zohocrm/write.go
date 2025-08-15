@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
 )
 
@@ -43,8 +44,15 @@ type writeResponse struct {
 // Write creates or updates records in a zohoCRM account.
 // A maximum of 100 records can be inserted per API call.
 // https://www.zoho.com/crm/developer/docs/api/v6/insert-records.html
+//
+// nolint: funlen, cyclop
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
-	var errs []any
+	ctx = logging.With(ctx, "connector", "zoho CRM")
+
+	var (
+		errs     []any
+		recordId string
+	)
 
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
@@ -84,17 +92,36 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	// Looping in the response data to see if there is
-	// an error in any of the record Responses.
+	// Validate that the response contains data before processing.
+	// The Zoho CRM API should always return response data for write operations.
+	if len(response.Data) < 1 {
+		logging.Logger(ctx).Error("failed to retrieve the created/updated response data", "object", config.ObjectName,
+			"response", response)
+
+		return &common.WriteResult{Success: true}, nil
+	}
+
+	// Note: Currently handles single-record operations only (non-bulk)
 	for _, r := range response.Data {
 		if r["code"] != "SUCCESS" {
 			errs = append(errs, r)
 		}
+
+		// Extract record ID from successful responses
+		if id, ok := r["id"].(string); ok && id != "" {
+			recordId = id
+		} else {
+			logging.Logger(ctx).Error("failed to construct recordId from response",
+				"object", config.ObjectName,
+				"response", response)
+		}
 	}
 
 	return &common.WriteResult{
-		Success: true,
-		Errors:  errs,
+		Success:  true,
+		Errors:   errs,
+		RecordId: recordId,
+		Data:     response.Data[0],
 	}, nil
 }
 
