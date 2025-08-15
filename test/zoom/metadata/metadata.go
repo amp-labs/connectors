@@ -21,8 +21,7 @@ func main() {
 	conn := connTest.GetZoomConnector(ctx)
 	defer utils.Close(conn)
 
-	metadata, err := conn.ListObjectMetadata(ctx, []string{"users", "groups"})
-
+	metadata, err := conn.ListObjectMetadata(ctx, []string{"users", "group"})
 	if err != nil {
 		utils.Fail("error listing metadata for zoom", "error", err)
 	}
