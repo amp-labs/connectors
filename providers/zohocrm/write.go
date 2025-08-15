@@ -107,8 +107,16 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 			errs = append(errs, r)
 		}
 
+		details, ok := r["details"].(map[string]any)
+		if !ok {
+			logging.Logger(ctx).Error("failed to retrieve details in response data", "object", config.ObjectName,
+				"response", response)
+
+			return &common.WriteResult{Success: true}, nil
+		}
+
 		// Extract record ID from successful responses
-		if id, ok := r["id"].(string); ok && id != "" {
+		if id, ok := details["id"].(string); ok && id != "" {
 			recordId = id
 		} else {
 			logging.Logger(ctx).Error("failed to construct recordId from response",
