@@ -155,7 +155,15 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+	req, err := http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Xero-Tenant-Id", c.tenantId)
+	req.Header.Set("Accept", "application/json")
+
+	return req, nil
 }
 
 func (c *Connector) parseWriteResponse(
@@ -171,7 +179,7 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	recordID, err := jsonquery.New(body).StringOptional("id")
+	recordID, err := jsonquery.New(body).StrWithDefault("Id", "")
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +191,7 @@ func (c *Connector) parseWriteResponse(
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: *recordID,
+		RecordId: recordID,
 		Errors:   nil,
 		Data:     resp,
 	}, nil
