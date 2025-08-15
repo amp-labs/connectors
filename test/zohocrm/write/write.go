@@ -97,7 +97,7 @@ func createLeads(ctx context.Context, conn *zohocrm.Connector) error {
 func updateContacts(ctx context.Context, conn *zohocrm.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "contacts",
-		RecordId:   "6493490000001291001",
+		RecordId:   "6172731000000472189",
 		RecordData: map[string]any{
 			"First_Name": "Ryan",
 			"Phone":      "+12343678910",

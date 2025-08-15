@@ -69,7 +69,20 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Then:  mockserver.Response(http.StatusOK, leadsWriteResponse),
 			}.Server(),
 			Expected: &common.WriteResult{
-				Success: true,
+				Success:  true,
+				RecordId: "6493490000001504003",
+				Data: map[string]any{
+					"code": "SUCCESS",
+					"details": map[string]any{
+						"Modified_Time": "2025-01-10T13:09:14+03:00",
+						"Modified_By":   map[string]any{"name": "Joseph Karage", "id": "6493490000000486001"},
+						"Created_Time":  "2025-01-10T13:09:14+03:00",
+						"id":            "6493490000001504003",
+						"Created_By":    map[string]any{"name": "Joseph Karage", "id": "6493490000000486001"},
+					},
+					"message": "record added",
+					"status":  "success",
+				},
 			},
 			ExpectedErrs: nil,
 		},
@@ -88,7 +101,20 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Then:  mockserver.Response(http.StatusOK, updateContactsResponse),
 			}.Server(),
 			Expected: &common.WriteResult{
-				Success: true,
+				Success:  true,
+				RecordId: "6493490000001291001",
+				Data: map[string]any{
+					"code": "SUCCESS",
+					"details": map[string]any{
+						"Modified_Time": "2025-01-10T13:22:08+03:00",
+						"Modified_By":   map[string]any{"name": "Joseph Karage", "id": "6493490000000486001"},
+						"Created_Time":  "2024-12-20T10:09:52+03:00",
+						"id":            "6493490000001291001",
+						"Created_By":    map[string]any{"name": "Joseph Karage", "id": "6493490000000486001"},
+					},
+					"message": "record updated",
+					"status":  "success",
+				},
 			},
 			ExpectedErrs: nil,
 		},
