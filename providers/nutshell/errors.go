@@ -69,7 +69,10 @@ type errorResponse struct {
 func (d ErrorDetails) CombineErr(base error) error {
 	reasons := make([]string, len(d.Errors))
 	for i, item := range d.Errors {
-		reasons[i] = fmt.Sprintf("%v [%v]", item.Title, item.Detail)
+		reasons[i] = item.Title
+		if item.Detail != "" {
+			reasons[i] = fmt.Sprintf("%v [%v]", item.Title, item.Detail)
+		}
 	}
 
 	return fmt.Errorf("%w: %v", base, strings.Join(reasons, ","))
