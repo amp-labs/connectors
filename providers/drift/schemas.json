@@ -4,7 +4,7 @@
       "id": "root",
       "path": "",
       "objects": {
-        "users/list": {
+        "users": {
           "displayName": "Users",
           "path": "/users/list",
           "docs": "https://devdocs.drift.com/docs/listing-users",
@@ -26,7 +26,7 @@
             "updatedAt": "updatedAt"
           }
         },
-        "conversations/list": {
+        "conversations": {
           "displayName": "Conversations List",
           "path": "/conversations/list",
           "docs": "https://devdocs.drift.com/docs/list-conversations",
@@ -88,7 +88,7 @@
             "isPrivate": "isPrivate"
           }
         },
-        "playbooks/list": {
+        "playbooks": {
           "displayName": "Playbooks Lists",
           "path": "/playbooks/list",
           "docs": "https://devdocs.drift.com/docs/get-playbooks",

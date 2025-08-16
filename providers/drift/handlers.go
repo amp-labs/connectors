@@ -11,13 +11,14 @@ import (
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
-func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	var (
-		url *urlbuilder.URL
-		err error
-	)
+const (
+	users         = "users"
+	conversations = "conversations"
+	playbooks     = "playbooks"
+)
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	url, err := c.constructReadURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -45,6 +46,14 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) constructReadURL(objectName string) (*urlbuilder.URL, error) {
+	if objectName == users || objectName == playbooks || objectName == conversations {
+		objectName += "/list"
+	}
+
+	return urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {

@@ -17,9 +17,9 @@ const (
 
 func responseSchema(objectName string) (string, string) {
 	switch objectName {
-	case "users/list", "conversations/list", "teams/org", "users/meetings/org":
+	case "users", "conversations", "teams/org", "users/meetings/org":
 		return object, data
-	case "playbooks/list", "playbooks/clp":
+	case "playbooks", "playbooks/clp":
 		return list, ""
 	default:
 		return object, ""
@@ -37,8 +37,8 @@ func writeResponseField(objectName string) string {
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
-		"users/list", "conversations/list", "teams/org", "users/meetings/org",
-		"playbooks/list", "playbooks/clp", "conversations/stats", "scim/Users",
+		"users", "conversations", "teams/org", "users/meetings/org",
+		"playbooks", "playbooks/clp", "conversations/stats", "scim/Users",
 	}
 
 	writeSupport := []string{
