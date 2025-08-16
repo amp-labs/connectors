@@ -1,0 +1,29 @@
+{
+    "data": [
+        {
+            "id": "7312bd6f-a5c7-431d-83f4-13fa9c7257c6",
+            "date": null,
+            "name": "demo20",
+            "cron": null,
+            "cron_id": null,
+            "users": [
+                {
+                    "id_lead_reminder": "7312bd6f-a5c7-431d-83f4-13fa9c7257c6",
+                    "id_user": "8XZHWCI3EVaPfiZpYL5shZRAwjj2",
+                    "assigned_at": "2025-08-13T10:44:20.832Z",
+                    "is_author": true,
+                    "notify": false,
+                    "user": {
+                        "id": "8XZHWCI3EVaPfiZpYL5shZRAwjj2",
+                        "email": "sample@gmail.com",
+                        "full_name": "sample"
+                    }
+                }
+            ]
+        }
+    ],
+    "pagination": {
+        "page": 2,
+        "page_size": 100
+    }
+}
