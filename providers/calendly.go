@@ -22,7 +22,6 @@ func init() {
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
-
 		PostAuthInfoNeeded: true,
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -45,6 +44,16 @@ func init() {
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+		Metadata: &ProviderMetadata{
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "UserURI",
+				},
+				{
+					Name: "OrganizationURI",
+				},
+			},
 		},
 	})
 }
