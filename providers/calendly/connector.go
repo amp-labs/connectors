@@ -29,9 +29,13 @@ type Connector struct {
 
 	// Require authenticated client
 	common.RequireAuthenticatedClient
+	common.PostAuthInfo
 
 	// Supported operations
 	components.SchemaProvider
+
+	userURI string
+	orgURI  string
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
