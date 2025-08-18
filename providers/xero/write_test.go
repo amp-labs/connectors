@@ -61,14 +61,15 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			ExpectedErrs: nil,
 		},
-
 		{
 			Name: "Successfully updated ContactGroups",
-			Input: common.WriteParams{ObjectName: "contactGroups",
-				RecordId: "055712c7-0fcf-4ba2-a900-1200f10cfe28",
+			Input: common.WriteParams{
+				ObjectName: "contactGroups",
+				RecordId:   "055712c7-0fcf-4ba2-a900-1200f10cfe28",
 				RecordData: map[string]any{
 					"Name": "Eusebio Damore",
-				}},
+				},
+			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPOST(),
