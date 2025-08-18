@@ -36,8 +36,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				}, {
 					If:   mockcond.Path("/crm-volmg/volunteers/search"),
 					Then: mockserver.Response(http.StatusOK, volunteersResponse),
-				},
-				},
+				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -97,10 +96,10 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 			"Bb-Api-Subscription-Key": "d747f7eca52d495998eef6e4bc923147",
 		},
 	})
-
 	if err != nil {
 		return nil, err
 	}
+
 	// for testing we want to redirect calls to our mock server.
 	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 

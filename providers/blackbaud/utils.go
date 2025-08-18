@@ -23,7 +23,7 @@ var objectNameWithSearchResource = datautils.NewSet( //nolint:gochecknoglobals
 	"crm-volmg/volunteers",
 )
 
-var objectNameWithListResource = datautils.NewSet(
+var objectNameWithListResource = datautils.NewSet( //nolint:gochecknoglobals
 	"crm-adnmg/businessprocessstatus",
 	"crm-adnmg/batchtemplates",
 	"crm-adnmg/currencies",
