@@ -133,9 +133,9 @@ var objectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochec
 )
 
 // makeNextRecord creates a function that determines the next page token based on the current offset.
-func makeNextRecord(offset int) common.NextPageFunc {
+func makeNextRecord(offset int, objName string) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		if offset == 0 {
+		if !paginationObjects.Has(objName) {
 			return "", nil
 		}
 

@@ -199,7 +199,7 @@ func (c *Connector) parseReadResponse(
 	return common.ParseResult(
 		response,
 		common.ExtractRecordsFromPath(objectsNodePath.Get(params.ObjectName)),
-		makeNextRecord(offset),
+		makeNextRecord(offset, params.ObjectName),
 		common.GetMarshaledData,
 		params.Fields,
 	)
