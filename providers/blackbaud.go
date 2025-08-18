@@ -37,5 +37,13 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1753783228/media/blackbaud.com_1753783228.png",
 			},
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "BbApiSubscriptionKey",
+					DisplayName: "Blackbaud API subscription key",
+				},
+			},
+		},
 	})
 }
