@@ -34,12 +34,12 @@ func run() error {
 		utils.Fail(err.Error())
 	}
 
-	_, err = testCreatingContactGroups(ctx, conn)
+	recordId, err := testCreatingContactGroups(ctx, conn)
 	if err != nil {
 		return err
 	}
 
-	_, err = testCreatingTrackingCategories(ctx, conn)
+	err = testUpdateContactGroups(ctx, conn, recordId)
 	if err != nil {
 		return err
 	}
@@ -79,30 +79,32 @@ func testCreatingContactGroups(ctx context.Context, conn *cc.Connector) (string,
 
 }
 
-func testCreatingTrackingCategories(ctx context.Context, conn *cc.Connector) (string, error) {
+func testUpdateContactGroups(ctx context.Context, conn *cc.Connector, recordId string) error {
 	params := common.WriteParams{
-		ObjectName: "trackingCategories",
+		ObjectName: "contactGroups",
+		RecordId:   recordId,
 		RecordData: map[string]any{
-			"name": gofakeit.Name(),
+			"ContactGroupID": recordId,
+			"name":           gofakeit.Name(),
 		},
 	}
-	slog.Info("Creating an tracking category...")
+	slog.Info("Updating a contact group...")
 
 	res, err := conn.Write(ctx, params)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	// Print the results
 	jsonStr, err := json.MarshalIndent(res, "", "  ")
 	if err != nil {
-		return "", fmt.Errorf("error marshalling JSON: %w", err)
+		return fmt.Errorf("error marshalling JSON: %w", err)
 	}
 
 	_, _ = os.Stdout.Write(jsonStr)
 	_, _ = os.Stdout.WriteString("\n")
 
-	return res.RecordId, nil
+	return nil
 
 }
 
@@ -110,11 +112,11 @@ func testCreatingTaxRates(ctx context.Context, conn *cc.Connector) (string, erro
 	params := common.WriteParams{
 		ObjectName: "taxRates",
 		RecordData: map[string]any{
-			"Name": "Oakdale Sales Tax",
+			"Name": gofakeit.Name(),
 			"TaxComponents": []map[string]any{
 				{
-					"Name":             "State Tax",
-					"Rate":             "7.5",
+					"Name":             "Society Tax",
+					"Rate":             "7.6",
 					"IsCompound":       "false",
 					"IsNonRecoverable": "false",
 				},
