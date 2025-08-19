@@ -23,10 +23,13 @@ func logRequestWithBody(logger *slog.Logger, req *http.Request, method, id, full
 	headers := redactSensitiveRequestHeaders(GetRequestHeaders(req))
 
 	logger = logger.With(
-		"method", method,
-		"url", fullURL,
-		"correlationId", id,
-		"headers", headers)
+		"details", map[string]any{
+			"method":        method,
+			"url":           fullURL,
+			"correlationId": id,
+			"headers":       headers,
+		},
+	)
 
 	payload, err := PrintableRequest(req, body)
 	if err != nil {
@@ -61,10 +64,13 @@ func logResponseWithoutBody(logger *slog.Logger, res *http.Response, method, id,
 	headers := redactSensitiveResponseHeaders(GetResponseHeaders(res))
 
 	logger = logger.With(
-		"method", method,
-		"url", fullURL,
-		"correlationId", id,
-		"headers", headers)
+		"details", map[string]any{
+			"method":        method,
+			"url":           fullURL,
+			"correlationId": id,
+			"headers":       headers,
+		},
+	)
 
 	logger.Debug("HTTP response")
 }
@@ -73,10 +79,13 @@ func logResponseWithBody(logger *slog.Logger, res *http.Response, method, id, fu
 	headers := redactSensitiveResponseHeaders(GetResponseHeaders(res))
 
 	logger = logger.With(
-		"method", method,
-		"url", fullURL,
-		"correlationId", id,
-		"headers", headers)
+		"details", map[string]any{
+			"method":        method,
+			"url":           fullURL,
+			"correlationId": id,
+			"headers":       headers,
+		},
+	)
 
 	payload, err := PrintableResponse(res, body)
 	if err != nil {
