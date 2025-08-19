@@ -1,10 +1,10 @@
 package providers
 
-const SageInacct Provider = "sageInacct"
+const SageIntacct Provider = "sageIntacct"
 
 func init() {
-	SetInfo(SageInacct, ProviderInfo{
-		DisplayName: "Sage Inacct",
+	SetInfo(SageIntacct, ProviderInfo{
+		DisplayName: "Sage Intacct",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.intacct.com",
 		Oauth2Opts: &Oauth2Opts{
