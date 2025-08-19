@@ -3,7 +3,6 @@ package providers
 const SageInacct Provider = "sageInacct"
 
 func init() {
-	// Sage Inacct configuration
 	SetInfo(SageInacct, ProviderInfo{
 		DisplayName: "Sage Inacct",
 		AuthType:    Oauth2,
