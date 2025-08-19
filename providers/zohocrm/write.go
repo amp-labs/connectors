@@ -6,6 +6,8 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 /*
@@ -37,9 +39,7 @@ Sample Response Data:
 }
 */
 
-type writeResponse struct {
-	Data []map[string]any `json:"data"`
-}
+const dataKey = "data"
 
 // Write creates or updates records in a zohoCRM account.
 // A maximum of 100 records can be inserted per API call.
@@ -50,15 +50,13 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	ctx = logging.With(ctx, "connector", "zoho CRM")
 
 	var (
-		errs     []any
-		recordId string
+		errs  []any
+		write common.WriteMethod
 	)
 
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
 	}
-
-	var write common.WriteMethod
 
 	// Object names in ZohoCRM API are case sensitive.
 	// Capitalizing the first character of object names to form correct URL.
@@ -87,49 +85,28 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	response, err := common.UnmarshalJSON[writeResponse](resp)
-	if err != nil {
-		return nil, err
-	}
-
-	// Validate that the response contains data before processing.
-	// The Zoho CRM API should always return response data for write operations.
-	if len(response.Data) < 1 {
-		logging.Logger(ctx).Error("failed to retrieve the created/updated response data", "object", config.ObjectName,
-			"response", response)
+	node, ok := resp.Body()
+	if !ok {
+		logging.Logger(ctx).Error("failed to retrieve the created/updated response data", "object", config.ObjectName)
 
 		return &common.WriteResult{Success: true}, nil
 	}
 
-	// Note: Currently handles single-record operations only (non-bulk)
-	for _, r := range response.Data {
-		if r["code"] != "SUCCESS" {
-			errs = append(errs, r)
-		}
+	records, err := jsonquery.New(node).ArrayOptional(dataKey)
+	if err != nil {
+		return nil, err
+	}
 
-		details, ok := r["details"].(map[string]any)
-		if !ok {
-			logging.Logger(ctx).Error("failed to retrieve details in response data", "object", config.ObjectName,
-				"response", response)
-
-			return &common.WriteResult{Success: true}, nil
-		}
-
-		// Extract record ID from successful responses
-		if id, ok := details["id"].(string); ok && id != "" {
-			recordId = id
-		} else {
-			logging.Logger(ctx).Error("failed to construct recordId from response",
-				"object", config.ObjectName,
-				"response", response)
-		}
+	id, data, err := constructResponse(records, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	return &common.WriteResult{
 		Success:  true,
 		Errors:   errs,
-		RecordId: recordId,
-		Data:     response.Data[0],
+		RecordId: id,
+		Data:     data,
 	}, nil
 }
 
@@ -164,4 +141,42 @@ func capitalizeKeys(data map[string]any) {
 			delete(data, k)
 		}
 	}
+}
+
+func constructResponse(records []*ajson.Node, errs []any) (string, map[string]any, error) {
+	var (
+		recordId   string
+		recordData map[string]any
+		err        error
+	)
+
+	for _, record := range records {
+		data, err := jsonquery.New(record).ObjectRequired("details")
+		if err != nil {
+			return "", nil, err
+		}
+
+		objectId, err := jsonquery.New(data).StrWithDefault("id", "")
+		if err != nil {
+			return "", nil, err
+		}
+
+		code, err := jsonquery.New(record).StrWithDefault("code", "")
+		if err != nil {
+			return "", nil, err
+		}
+
+		if code != "SUCCESS" {
+			errs = append(errs, record)
+		}
+
+		recordData, err = jsonquery.Convertor.ObjectToMap(data)
+		if err != nil {
+			return "", nil, err
+		}
+
+		recordId = objectId
+	}
+
+	return recordId, recordData, err
 }
