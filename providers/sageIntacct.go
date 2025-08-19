@@ -8,7 +8,7 @@ func init() {
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.intacct.com",
 		Oauth2Opts: &Oauth2Opts{
-			AuthURL:                   "https://app.blackbaud.com/oauth/authorize",
+			AuthURL:                   "https://api.intacct.com/ia/api/v1/oauth2/authorize",
 			TokenURL:                  "https://api.intacct.com/ia/api/v1/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
