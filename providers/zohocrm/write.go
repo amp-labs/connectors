@@ -151,12 +151,12 @@ func constructResponse(records []*ajson.Node, errs []any) (string, map[string]an
 	)
 
 	for _, record := range records {
-		data, err := jsonquery.New(record).ObjectRequired("details")
+		recordData, err = jsonquery.Convertor.ObjectToMap(record)
 		if err != nil {
 			return "", nil, err
 		}
 
-		objectId, err := jsonquery.New(data).StrWithDefault("id", "")
+		objectId, err := jsonquery.New(record, "details").StrWithDefault("id", "")
 		if err != nil {
 			return "", nil, err
 		}
@@ -168,11 +168,6 @@ func constructResponse(records []*ajson.Node, errs []any) (string, map[string]an
 
 		if code != "SUCCESS" {
 			errs = append(errs, record)
-		}
-
-		recordData, err = jsonquery.Convertor.ObjectToMap(data)
-		if err != nil {
-			return "", nil, err
 		}
 
 		recordId = objectId
