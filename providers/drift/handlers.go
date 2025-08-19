@@ -5,9 +5,11 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
@@ -15,7 +17,12 @@ const (
 	users         = "users"
 	conversations = "conversations"
 	playbooks     = "playbooks"
+
+	ListSuffix = "/list"
 )
+
+// Create a set of endpoints that require the list suffix.
+var endpointsRequiringListSuffix = datautils.NewSet(users, conversations, playbooks) //nolint: gochecknoglobals
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	url, err := c.constructReadURL(params.ObjectName)
@@ -49,8 +56,11 @@ func (c *Connector) parseReadResponse(
 }
 
 func (c *Connector) constructReadURL(objectName string) (*urlbuilder.URL, error) {
-	if objectName == users || objectName == playbooks || objectName == conversations {
-		objectName += "/list"
+	lowerCaseObject := strings.ToLower(objectName)
+
+	// Check if this endpoint requires the list suffix
+	if endpointsRequiringListSuffix.Has(lowerCaseObject) {
+		objectName += ListSuffix
 	}
 
 	return urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
