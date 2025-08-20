@@ -1,8 +1,10 @@
 package blackbaud
 
 import (
+	"bytes"
 	"fmt"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
@@ -29,5 +31,17 @@ type ResponseError struct {
 }
 
 func (r ResponseError) CombineErr(base error) error {
-	return fmt.Errorf("%w: %v", base, r.Title)
+	message := r.Message
+
+	if r.Detail != "" {
+		document, err := goquery.NewDocumentFromReader(bytes.NewReader([]byte(r.Detail)))
+		if err != nil {
+			// ignore HTML that cannot be understood
+			return base
+		}
+
+		message = document.Find("StatusMessage").Text()
+	}
+
+	return fmt.Errorf("%w: %v", base, message)
 }
