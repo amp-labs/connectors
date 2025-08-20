@@ -19,8 +19,8 @@ func init() {
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
-				Name:        "Authorization",
-				ValuePrefix: "Bearer ",
+				Name:        "X-PW-AccessToken",
+				ValuePrefix: "",
 			},
 			DocsURL: "https://developer.copper.com/introduction/authentication.html#api-keys",
 		},
