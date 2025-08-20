@@ -3,6 +3,7 @@ package blackbaud
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -67,4 +68,57 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if objectNameWithSearchResource.Has(params.ObjectName) {
+		url.AddPath("search")
+	}
+
+	if objectNameWithListResource.Has(params.ObjectName) {
+		url.AddPath("list")
+	}
+
+	url.WithQueryParam("limit", strconv.Itoa(defaultPageSize))
+
+	// offset := 0
+
+	// if params.NextPage != "" {
+	// 	// Parse the page number from NextPage
+	// 	offset, err = strconv.Atoi(params.NextPage.String())
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// }
+
+	// url.WithQueryParam("offset", strconv.Itoa(offset))
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Bb-Api-Subscription-Key", c.SubscriptionKey)
+
+	return req, nil
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath("value"),
+		makeNextRecord(),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
