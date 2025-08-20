@@ -61,6 +61,20 @@ var (
 		"/objects/order-entry/document-line":                        "order-entry-document-line",
 		"/objects/order-entry/document-line-detail":                 "order-entry-document-line-detail",
 		"/objects/order-entry/document-line-subtotal":               "order-entry-document-line-subtotal",
+		"/objects/purchasing/price-schedule":                        "purchasing-price-schedule",
+		"/objects/purchasing/price-list-entry":                      "purchasing-price-list-entry",
+		"/objects/purchasing/price-list":                            "purchasing-price-list",
+		"/objects/purchasing/document-subtotal":                     "purchasing-document-subtotal",
+		"/objects/purchasing/document-line-detail":                  "purchasing-document-line-detail",
+		"/objects/purchasing/document-line":                         "purchasing-document-line",
+		"/objects/order-entry/price-schedule":                       "order-entry-price-schedule",
+		"/objects/order-entry/price-list-entry":                     "order-entry-price-list-entry",
+		"/objects/inventory-control/document":                       "inventory-control-document",
+		"/objects/inventory-control/document-line-detail":           "inventory-control-document-line-detail",
+		"/objects/inventory-control/document-subtotal":              "inventory-control-document-subtotal",
+		"/objects/inventory-control/price-list-entry":               "inventory-control-price-list-entry",
+		"/objects/order-entry/document-subtotal":                    "order-entry-document-subtotal",
+		"/objects/order-entry/price-list":                           "order-entry-price-list",
 	}
 
 	ObjectNameToResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals

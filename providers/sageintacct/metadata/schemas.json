@@ -2967,9 +2967,9 @@
             }
           }
         },
-        "document-history": {
-          "displayName": "Document History",
-          "path": "/objects/purchasing/document-history",
+        "document": {
+          "displayName": "Document",
+          "path": "/objects/purchasing/document",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -2989,9 +2989,9 @@
             }
           }
         },
-        "document-line": {
-          "displayName": "Document Line",
-          "path": "/objects/purchasing/document-line",
+        "document-history": {
+          "displayName": "Document History",
+          "path": "/objects/purchasing/document-history",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -3825,6 +3825,28 @@
             }
           }
         },
+        "inventory-control-document": {
+          "displayName": "Inventory Control Document",
+          "path": "/objects/inventory-control/document",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "inventory-control-document-history": {
           "displayName": "Inventory Control Document History",
           "path": "/objects/inventory-control/document-history",
@@ -3869,9 +3891,75 @@
             }
           }
         },
+        "inventory-control-document-line-detail": {
+          "displayName": "Inventory Control Document Line Detail",
+          "path": "/objects/inventory-control/document-line-detail",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "inventory-control-document-subtotal": {
+          "displayName": "Inventory Control Document Subtotal",
+          "path": "/objects/inventory-control/document-subtotal",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "inventory-control-price-list": {
           "displayName": "Inventory Control Price List",
           "path": "/objects/inventory-control/price-list",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "inventory-control-price-list-entry": {
+          "displayName": "Inventory Control Price List Entry",
+          "path": "/objects/inventory-control/price-list-entry",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -4749,314 +4837,6 @@
             }
           }
         },
-        "objects/inventory-control/document": {
-          "displayName": "Objects/Inventory Control/Document",
-          "path": "/objects/inventory-control/document",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/inventory-control/document-line-detail": {
-          "displayName": "Objects/Inventory Control/Document Line Detail",
-          "path": "/objects/inventory-control/document-line-detail",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/inventory-control/document-subtotal": {
-          "displayName": "Objects/Inventory Control/Document Subtotal",
-          "path": "/objects/inventory-control/document-subtotal",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/inventory-control/price-list-entry": {
-          "displayName": "Objects/Inventory Control/Price List Entry",
-          "path": "/objects/inventory-control/price-list-entry",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/document-subtotal": {
-          "displayName": "Objects/Order Entry/Document Subtotal",
-          "path": "/objects/order-entry/document-subtotal",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/price-list": {
-          "displayName": "Objects/Order Entry/Price List",
-          "path": "/objects/order-entry/price-list",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/price-list-entry": {
-          "displayName": "Objects/Order Entry/Price List Entry",
-          "path": "/objects/order-entry/price-list-entry",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/price-schedule": {
-          "displayName": "Objects/Order Entry/Price Schedule",
-          "path": "/objects/order-entry/price-schedule",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/purchasing/document": {
-          "displayName": "Objects/Purchasing/Document",
-          "path": "/objects/purchasing/document",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/purchasing/document-line-detail": {
-          "displayName": "Objects/Purchasing/Document Line Detail",
-          "path": "/objects/purchasing/document-line-detail",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/purchasing/document-subtotal": {
-          "displayName": "Objects/Purchasing/Document Subtotal",
-          "path": "/objects/purchasing/document-subtotal",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/purchasing/price-list": {
-          "displayName": "Objects/Purchasing/Price List",
-          "path": "/objects/purchasing/price-list",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/purchasing/price-list-entry": {
-          "displayName": "Objects/Purchasing/Price List Entry",
-          "path": "/objects/purchasing/price-list-entry",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/purchasing/price-schedule": {
-          "displayName": "Objects/Purchasing/Price Schedule",
-          "path": "/objects/purchasing/price-schedule",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "order-entry-document": {
           "displayName": "Order Entry Document",
           "path": "/objects/order-entry/document",
@@ -5148,6 +4928,94 @@
         "order-entry-document-line-subtotal": {
           "displayName": "Order Entry Document Line Subtotal",
           "path": "/objects/order-entry/document-line-subtotal",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "order-entry-document-subtotal": {
+          "displayName": "Order Entry Document Subtotal",
+          "path": "/objects/order-entry/document-subtotal",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "order-entry-price-list": {
+          "displayName": "Order Entry Price List",
+          "path": "/objects/order-entry/price-list",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "order-entry-price-list-entry": {
+          "displayName": "Order Entry Price List Entry",
+          "path": "/objects/order-entry/price-list-entry",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "order-entry-price-schedule": {
+          "displayName": "Order Entry Price Schedule",
+          "path": "/objects/order-entry/price-schedule",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -5896,6 +5764,138 @@
         "provider-payment-method": {
           "displayName": "Provider Payment Method",
           "path": "/objects/cash-management/provider-payment-method",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "purchasing-document-line": {
+          "displayName": "Purchasing Document Line",
+          "path": "/objects/purchasing/document-line",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "purchasing-document-line-detail": {
+          "displayName": "Purchasing Document Line Detail",
+          "path": "/objects/purchasing/document-line-detail",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "purchasing-document-subtotal": {
+          "displayName": "Purchasing Document Subtotal",
+          "path": "/objects/purchasing/document-subtotal",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "purchasing-price-list": {
+          "displayName": "Purchasing Price List",
+          "path": "/objects/purchasing/price-list",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "purchasing-price-list-entry": {
+          "displayName": "Purchasing Price List Entry",
+          "path": "/objects/purchasing/price-list-entry",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "purchasing-price-schedule": {
+          "displayName": "Purchasing Price Schedule",
+          "path": "/objects/purchasing/price-schedule",
           "responseKey": "ia::result",
           "fields": {
             "href": {
