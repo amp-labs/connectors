@@ -334,6 +334,28 @@
             }
           }
         },
+        "account-label": {
+          "displayName": "Account Label",
+          "path": "/objects/accounts-receivable/account-label",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "account-label-tax-group": {
           "displayName": "Account Label Tax Group",
           "path": "/objects/tax/account-label-tax-group",
@@ -378,6 +400,336 @@
             }
           }
         },
+        "accounts-payable-account-label": {
+          "displayName": "Accounts Payable Account Label",
+          "path": "/objects/accounts-payable/account-label",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "accounts-payable-adjustment": {
+          "displayName": "Accounts Payable Adjustment",
+          "path": "/objects/accounts-payable/adjustment",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "accounts-payable-adjustment-line": {
+          "displayName": "Accounts Payable Adjustment Line",
+          "path": "/objects/accounts-payable/adjustment-line",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "accounts-payable-adjustment-tax-entry": {
+          "displayName": "Accounts Payable Adjustment Tax Entry",
+          "path": "/objects/accounts-payable/adjustment-tax-entry",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "accounts-payable-advance": {
+          "displayName": "Accounts Payable Advance",
+          "path": "/objects/accounts-payable/advance",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "accounts-payable-advance-line": {
+          "displayName": "Accounts Payable Advance Line",
+          "path": "/objects/accounts-payable/advance-line",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "accounts-payable-payment": {
+          "displayName": "Accounts Payable Payment",
+          "path": "/objects/accounts-payable/payment",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "accounts-receivable-adjustment": {
+          "displayName": "Accounts Receivable Adjustment",
+          "path": "/objects/accounts-receivable/adjustment",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "accounts-receivable-adjustment-line": {
+          "displayName": "Accounts Receivable Adjustment Line",
+          "path": "/objects/accounts-receivable/adjustment-line",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "accounts-receivable-adjustment-tax-entry": {
+          "displayName": "Accounts Receivable Adjustment Tax Entry",
+          "path": "/objects/accounts-receivable/adjustment-tax-entry",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "accounts-receivable-advance": {
+          "displayName": "Accounts Receivable Advance",
+          "path": "/objects/accounts-receivable/advance",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "accounts-receivable-payment-detail": {
+          "displayName": "Accounts Receivable Payment Detail",
+          "path": "/objects/accounts-receivable/payment-detail",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "accounts-receivable-payment-line": {
+          "displayName": "Accounts Receivable Payment Line",
+          "path": "/objects/accounts-receivable/payment-line",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "accounts-receivable-summary": {
+          "displayName": "Accounts Receivable Summary",
+          "path": "/objects/accounts-receivable/summary",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "accounts-receivable-term": {
+          "displayName": "Accounts Receivable Term",
+          "path": "/objects/accounts-receivable/term",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "accumulation-type": {
           "displayName": "Accumulation Type",
           "path": "/objects/construction/accumulation-type",
@@ -403,6 +755,28 @@
         "adjustment-summary": {
           "displayName": "Adjustment Summary",
           "path": "/objects/accounts-payable/adjustment-summary",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "advance-line": {
+          "displayName": "Advance Line",
+          "path": "/objects/accounts-receivable/advance-line",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -2556,6 +2930,109 @@
             }
           }
         },
+        "dimensions": {
+          "displayName": "Dimensions",
+          "path": "/services/company-config/dimensions/list",
+          "responseKey": "ia::result",
+          "fields": {
+            "dimensionEndpoint": {
+              "displayName": "dimensionEndpoint",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dimensionLabel": {
+              "displayName": "dimensionLabel",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dimensionName": {
+              "displayName": "dimensionName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isEnabledInGL": {
+              "displayName": "isEnabledInGL",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isUserDefinedDimension": {
+              "displayName": "isUserDefinedDimension",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "termName": {
+              "displayName": "termName",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "document-history": {
+          "displayName": "Document History",
+          "path": "/objects/purchasing/document-history",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "document-line": {
+          "displayName": "Document Line",
+          "path": "/objects/purchasing/document-line",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "document-line-subtotal": {
+          "displayName": "Document Line Subtotal",
+          "path": "/objects/purchasing/document-line-subtotal",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "document-sequence": {
           "displayName": "Document Sequence",
           "path": "/objects/company-config/document-sequence",
@@ -3329,6 +3806,116 @@
         "funds-transfer-line": {
           "displayName": "Funds Transfer Line",
           "path": "/objects/cash-management/funds-transfer-line",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "inventory-control-document-history": {
+          "displayName": "Inventory Control Document History",
+          "path": "/objects/inventory-control/document-history",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "inventory-control-document-line": {
+          "displayName": "Inventory Control Document Line",
+          "path": "/objects/inventory-control/document-line",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "inventory-control-price-list": {
+          "displayName": "Inventory Control Price List",
+          "path": "/objects/inventory-control/price-list",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "inventory-control-txn-definition-cogs-gl-detail": {
+          "displayName": "Inventory Control Txn Definition Cogs Gl Detail",
+          "path": "/objects/inventory-control/txn-definition-cogs-gl-detail",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "inventory-control-txn-definition-subtotal-detail": {
+          "displayName": "Inventory Control Txn Definition Subtotal Detail",
+          "path": "/objects/inventory-control/txn-definition-subtotal-detail",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -4162,537 +4749,9 @@
             }
           }
         },
-        "objects/accounts-payable/account-label": {
-          "displayName": "Objects/Accounts Payable/Account Label",
-          "path": "/objects/accounts-payable/account-label",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-payable/adjustment": {
-          "displayName": "Objects/Accounts Payable/Adjustment",
-          "path": "/objects/accounts-payable/adjustment",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-payable/adjustment-line": {
-          "displayName": "Objects/Accounts Payable/Adjustment Line",
-          "path": "/objects/accounts-payable/adjustment-line",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-payable/adjustment-tax-entry": {
-          "displayName": "Objects/Accounts Payable/Adjustment Tax Entry",
-          "path": "/objects/accounts-payable/adjustment-tax-entry",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-payable/advance": {
-          "displayName": "Objects/Accounts Payable/Advance",
-          "path": "/objects/accounts-payable/advance",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-payable/advance-line": {
-          "displayName": "Objects/Accounts Payable/Advance Line",
-          "path": "/objects/accounts-payable/advance-line",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-payable/payment": {
-          "displayName": "Objects/Accounts Payable/Payment",
-          "path": "/objects/accounts-payable/payment",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-payable/payment-detail": {
-          "displayName": "Objects/Accounts Payable/Payment Detail",
-          "path": "/objects/accounts-payable/payment-detail",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-payable/payment-line": {
-          "displayName": "Objects/Accounts Payable/Payment Line",
-          "path": "/objects/accounts-payable/payment-line",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-payable/summary": {
-          "displayName": "Objects/Accounts Payable/Summary",
-          "path": "/objects/accounts-payable/summary",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-payable/term": {
-          "displayName": "Objects/Accounts Payable/Term",
-          "path": "/objects/accounts-payable/term",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-receivable/account-label": {
-          "displayName": "Objects/Accounts Receivable/Account Label",
-          "path": "/objects/accounts-receivable/account-label",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-receivable/adjustment": {
-          "displayName": "Objects/Accounts Receivable/Adjustment",
-          "path": "/objects/accounts-receivable/adjustment",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-receivable/adjustment-line": {
-          "displayName": "Objects/Accounts Receivable/Adjustment Line",
-          "path": "/objects/accounts-receivable/adjustment-line",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-receivable/adjustment-tax-entry": {
-          "displayName": "Objects/Accounts Receivable/Adjustment Tax Entry",
-          "path": "/objects/accounts-receivable/adjustment-tax-entry",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-receivable/advance": {
-          "displayName": "Objects/Accounts Receivable/Advance",
-          "path": "/objects/accounts-receivable/advance",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-receivable/advance-line": {
-          "displayName": "Objects/Accounts Receivable/Advance Line",
-          "path": "/objects/accounts-receivable/advance-line",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-receivable/payment": {
-          "displayName": "Objects/Accounts Receivable/Payment",
-          "path": "/objects/accounts-receivable/payment",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-receivable/payment-detail": {
-          "displayName": "Objects/Accounts Receivable/Payment Detail",
-          "path": "/objects/accounts-receivable/payment-detail",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-receivable/payment-line": {
-          "displayName": "Objects/Accounts Receivable/Payment Line",
-          "path": "/objects/accounts-receivable/payment-line",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-receivable/summary": {
-          "displayName": "Objects/Accounts Receivable/Summary",
-          "path": "/objects/accounts-receivable/summary",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/accounts-receivable/term": {
-          "displayName": "Objects/Accounts Receivable/Term",
-          "path": "/objects/accounts-receivable/term",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "objects/inventory-control/document": {
           "displayName": "Objects/Inventory Control/Document",
           "path": "/objects/inventory-control/document",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/inventory-control/document-history": {
-          "displayName": "Objects/Inventory Control/Document History",
-          "path": "/objects/inventory-control/document-history",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/inventory-control/document-line": {
-          "displayName": "Objects/Inventory Control/Document Line",
-          "path": "/objects/inventory-control/document-line",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -4756,207 +4815,9 @@
             }
           }
         },
-        "objects/inventory-control/price-list": {
-          "displayName": "Objects/Inventory Control/Price List",
-          "path": "/objects/inventory-control/price-list",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "objects/inventory-control/price-list-entry": {
           "displayName": "Objects/Inventory Control/Price List Entry",
           "path": "/objects/inventory-control/price-list-entry",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/inventory-control/txn-definition": {
-          "displayName": "Objects/Inventory Control/Txn Definition",
-          "path": "/objects/inventory-control/txn-definition",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/inventory-control/txn-definition-cogs-gl-detail": {
-          "displayName": "Objects/Inventory Control/Txn Definition Cogs Gl Detail",
-          "path": "/objects/inventory-control/txn-definition-cogs-gl-detail",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/inventory-control/txn-definition-subtotal-detail": {
-          "displayName": "Objects/Inventory Control/Txn Definition Subtotal Detail",
-          "path": "/objects/inventory-control/txn-definition-subtotal-detail",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/document": {
-          "displayName": "Objects/Order Entry/Document",
-          "path": "/objects/order-entry/document",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/document-history": {
-          "displayName": "Objects/Order Entry/Document History",
-          "path": "/objects/order-entry/document-history",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/document-line": {
-          "displayName": "Objects/Order Entry/Document Line",
-          "path": "/objects/order-entry/document-line",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/document-line-detail": {
-          "displayName": "Objects/Order Entry/Document Line Detail",
-          "path": "/objects/order-entry/document-line-detail",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/document-line-subtotal": {
-          "displayName": "Objects/Order Entry/Document Line Subtotal",
-          "path": "/objects/order-entry/document-line-subtotal",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -5064,204 +4925,6 @@
             }
           }
         },
-        "objects/order-entry/recurring-document": {
-          "displayName": "Objects/Order Entry/Recurring Document",
-          "path": "/objects/order-entry/recurring-document",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/recurring-document-line": {
-          "displayName": "Objects/Order Entry/Recurring Document Line",
-          "path": "/objects/order-entry/recurring-document-line",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/recurring-document-subtotal": {
-          "displayName": "Objects/Order Entry/Recurring Document Subtotal",
-          "path": "/objects/order-entry/recurring-document-subtotal",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/subtotal-template": {
-          "displayName": "Objects/Order Entry/Subtotal Template",
-          "path": "/objects/order-entry/subtotal-template",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/subtotal-template-line": {
-          "displayName": "Objects/Order Entry/Subtotal Template Line",
-          "path": "/objects/order-entry/subtotal-template-line",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/txn-definition": {
-          "displayName": "Objects/Order Entry/Txn Definition",
-          "path": "/objects/order-entry/txn-definition",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/txn-definition-additional-gl-detail": {
-          "displayName": "Objects/Order Entry/Txn Definition Additional Gl Detail",
-          "path": "/objects/order-entry/txn-definition-additional-gl-detail",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/txn-definition-cogs-gl-detail": {
-          "displayName": "Objects/Order Entry/Txn Definition Cogs Gl Detail",
-          "path": "/objects/order-entry/txn-definition-cogs-gl-detail",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/order-entry/txn-definition-subtotal-detail": {
-          "displayName": "Objects/Order Entry/Txn Definition Subtotal Detail",
-          "path": "/objects/order-entry/txn-definition-subtotal-detail",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "objects/purchasing/document": {
           "displayName": "Objects/Purchasing/Document",
           "path": "/objects/purchasing/document",
@@ -5284,75 +4947,9 @@
             }
           }
         },
-        "objects/purchasing/document-history": {
-          "displayName": "Objects/Purchasing/Document History",
-          "path": "/objects/purchasing/document-history",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/purchasing/document-line": {
-          "displayName": "Objects/Purchasing/Document Line",
-          "path": "/objects/purchasing/document-line",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "objects/purchasing/document-line-detail": {
           "displayName": "Objects/Purchasing/Document Line Detail",
           "path": "/objects/purchasing/document-line-detail",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/purchasing/document-line-subtotal": {
-          "displayName": "Objects/Purchasing/Document Line Subtotal",
-          "path": "/objects/purchasing/document-line-subtotal",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -5460,9 +5057,9 @@
             }
           }
         },
-        "objects/purchasing/recurring-document": {
-          "displayName": "Objects/Purchasing/Recurring Document",
-          "path": "/objects/purchasing/recurring-document",
+        "order-entry-document": {
+          "displayName": "Order Entry Document",
+          "path": "/objects/order-entry/document",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -5482,9 +5079,9 @@
             }
           }
         },
-        "objects/purchasing/recurring-document-line": {
-          "displayName": "Objects/Purchasing/Recurring Document Line",
-          "path": "/objects/purchasing/recurring-document-line",
+        "order-entry-document-history": {
+          "displayName": "Order Entry Document History",
+          "path": "/objects/order-entry/document-history",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -5504,9 +5101,9 @@
             }
           }
         },
-        "objects/purchasing/recurring-document-subtotal": {
-          "displayName": "Objects/Purchasing/Recurring Document Subtotal",
-          "path": "/objects/purchasing/recurring-document-subtotal",
+        "order-entry-document-line": {
+          "displayName": "Order Entry Document Line",
+          "path": "/objects/order-entry/document-line",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -5526,9 +5123,9 @@
             }
           }
         },
-        "objects/purchasing/subtotal-template": {
-          "displayName": "Objects/Purchasing/Subtotal Template",
-          "path": "/objects/purchasing/subtotal-template",
+        "order-entry-document-line-detail": {
+          "displayName": "Order Entry Document Line Detail",
+          "path": "/objects/order-entry/document-line-detail",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -5548,9 +5145,9 @@
             }
           }
         },
-        "objects/purchasing/subtotal-template-line": {
-          "displayName": "Objects/Purchasing/Subtotal Template Line",
-          "path": "/objects/purchasing/subtotal-template-line",
+        "order-entry-document-line-subtotal": {
+          "displayName": "Order Entry Document Line Subtotal",
+          "path": "/objects/order-entry/document-line-subtotal",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -5570,31 +5167,9 @@
             }
           }
         },
-        "objects/purchasing/txn-definition": {
-          "displayName": "Objects/Purchasing/Txn Definition",
-          "path": "/objects/purchasing/txn-definition",
-          "responseKey": "ia::result",
-          "fields": {
-            "href": {
-              "displayName": "href",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "objects/purchasing/txn-definition-additional-gl-detail": {
-          "displayName": "Objects/Purchasing/Txn Definition Additional Gl Detail",
-          "path": "/objects/purchasing/txn-definition-additional-gl-detail",
+        "order-entry-subtotal-template-line": {
+          "displayName": "Order Entry Subtotal Template Line",
+          "path": "/objects/order-entry/subtotal-template-line",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -5680,6 +5255,28 @@
             }
           }
         },
+        "order-entry-txn-definition": {
+          "displayName": "Order Entry Txn Definition",
+          "path": "/objects/order-entry/txn-definition",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "other-receipt": {
           "displayName": "Other Receipt",
           "path": "/objects/cash-management/other-receipt",
@@ -5727,6 +5324,72 @@
         "other-receipt-tax-entry": {
           "displayName": "Other Receipt Tax Entry",
           "path": "/objects/cash-management/other-receipt-tax-entry",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "payment": {
+          "displayName": "Payment",
+          "path": "/objects/accounts-receivable/payment",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "payment-detail": {
+          "displayName": "Payment Detail",
+          "path": "/objects/accounts-payable/payment-detail",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "payment-line": {
+          "displayName": "Payment Line",
+          "path": "/objects/accounts-payable/payment-line",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -6252,6 +5915,116 @@
             }
           }
         },
+        "purchasing-recurring-document": {
+          "displayName": "Purchasing Recurring Document",
+          "path": "/objects/purchasing/recurring-document",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "purchasing-recurring-document-line": {
+          "displayName": "Purchasing Recurring Document Line",
+          "path": "/objects/purchasing/recurring-document-line",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "purchasing-recurring-document-subtotal": {
+          "displayName": "Purchasing Recurring Document Subtotal",
+          "path": "/objects/purchasing/recurring-document-subtotal",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "purchasing-subtotal-template": {
+          "displayName": "Purchasing Subtotal Template",
+          "path": "/objects/purchasing/subtotal-template",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "purchasing-subtotal-template-line": {
+          "displayName": "Purchasing Subtotal Template Line",
+          "path": "/objects/purchasing/subtotal-template-line",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "purchasing-tax-detail": {
           "displayName": "Purchasing Tax Detail",
           "path": "/objects/tax/purchasing-tax-detail",
@@ -6299,6 +6072,50 @@
         "purchasing-tax-schedule-detail": {
           "displayName": "Purchasing Tax Schedule Detail",
           "path": "/objects/tax/purchasing-tax-schedule-detail",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "purchasing-txn-definition": {
+          "displayName": "Purchasing Txn Definition",
+          "path": "/objects/purchasing/txn-definition",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "purchasing-txn-definition-additional-gl-detail": {
+          "displayName": "Purchasing Txn Definition Additional Gl Detail",
+          "path": "/objects/purchasing/txn-definition-additional-gl-detail",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -6607,6 +6424,72 @@
         "recurring-bill-tax-entry": {
           "displayName": "Recurring Bill Tax Entry",
           "path": "/objects/accounts-payable/recurring-bill-tax-entry",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "recurring-document": {
+          "displayName": "Recurring Document",
+          "path": "/objects/order-entry/recurring-document",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "recurring-document-line": {
+          "displayName": "Recurring Document Line",
+          "path": "/objects/order-entry/recurring-document-line",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "recurring-document-subtotal": {
+          "displayName": "Recurring Document Subtotal",
+          "path": "/objects/order-entry/recurring-document-subtotal",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -7000,43 +6883,6 @@
             }
           }
         },
-        "services/company-config/dimensions/list": {
-          "displayName": "Services/Company Config/Dimensions/List",
-          "path": "/services/company-config/dimensions/list",
-          "responseKey": "ia::result",
-          "fields": {
-            "dimensionEndpoint": {
-              "displayName": "dimensionEndpoint",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "dimensionLabel": {
-              "displayName": "dimensionLabel",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "dimensionName": {
-              "displayName": "dimensionName",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "isEnabledInGL": {
-              "displayName": "isEnabledInGL",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "isUserDefinedDimension": {
-              "displayName": "isUserDefinedDimension",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "termName": {
-              "displayName": "termName",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "setup": {
           "displayName": "Setup",
           "path": "/objects/fixed-assets/setup",
@@ -7301,6 +7147,50 @@
             }
           }
         },
+        "subtotal-template": {
+          "displayName": "Subtotal Template",
+          "path": "/objects/order-entry/subtotal-template",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "summary": {
+          "displayName": "Summary",
+          "path": "/objects/accounts-payable/summary",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "task": {
           "displayName": "Task",
           "path": "/objects/projects/task",
@@ -7414,6 +7304,28 @@
         "tax-solution": {
           "displayName": "Tax Solution",
           "path": "/objects/tax/tax-solution",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "term": {
+          "displayName": "Term",
+          "path": "/objects/accounts-payable/term",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -7697,6 +7609,50 @@
             }
           }
         },
+        "txn-definition": {
+          "displayName": "Txn Definition",
+          "path": "/objects/inventory-control/txn-definition",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "txn-definition-additional-gl-detail": {
+          "displayName": "Txn Definition Additional Gl Detail",
+          "path": "/objects/order-entry/txn-definition-additional-gl-detail",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "txn-definition-ap-direct-gl-detail": {
           "displayName": "Txn Definition Ap Direct Gl Detail",
           "path": "/objects/purchasing/txn-definition-ap-direct-gl-detail",
@@ -7722,6 +7678,28 @@
         "txn-definition-ar-direct-gl-detail": {
           "displayName": "Txn Definition Ar Direct Gl Detail",
           "path": "/objects/order-entry/txn-definition-ar-direct-gl-detail",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "txn-definition-cogs-gl-detail": {
+          "displayName": "Txn Definition Cogs Gl Detail",
+          "path": "/objects/order-entry/txn-definition-cogs-gl-detail",
           "responseKey": "ia::result",
           "fields": {
             "href": {
@@ -7832,6 +7810,28 @@
         "txn-definition-source-document-detail": {
           "displayName": "Txn Definition Source Document Detail",
           "path": "/objects/order-entry/txn-definition-source-document-detail",
+          "responseKey": "ia::result",
+          "fields": {
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "txn-definition-subtotal-detail": {
+          "displayName": "Txn Definition Subtotal Detail",
+          "path": "/objects/order-entry/txn-definition-subtotal-detail",
           "responseKey": "ia::result",
           "fields": {
             "href": {

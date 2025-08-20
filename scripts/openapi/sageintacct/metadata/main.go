@@ -23,6 +23,46 @@ var (
 		"/services/construction-forecasting/wip-journal/entry-history",
 	}
 
+	objectEndpoints = map[string]string{ //nolint:gochecknoglobals
+		"/services/company-config/dimensions/list":                  "dimensions",
+		"/objects/accounts-payable/account-label-tax-groups":        "account-label-tax-group",
+		"/objects/accounts-payable/account-label":                   "accounts-payable-account-label",
+		"/objects/accounts-payable/adjustment":                      "accounts-payable-adjustment",
+		"/objects/accounts-payable/adjustment-line":                 "accounts-payable-adjustment-line",
+		"/objects/accounts-payable/adjustment-tax-entry":            "accounts-payable-adjustment-tax-entry",
+		"/objects/accounts-payable/advance":                         "accounts-payable-advance",
+		"/objects/accounts-payable/advance-line":                    "accounts-payable-advance-line",
+		"/objects/accounts-payable/payment":                         "accounts-payable-payment",
+		"/objects/accounts-receivable/payment-detail":               "accounts-receivable-payment-detail",
+		"/objects/accounts-receivable/payment-line":                 "accounts-receivable-payment-line",
+		"/objects/accounts-receivable/summary":                      "accounts-receivable-summary",
+		"/objects/accounts-receivable/term":                         "accounts-receivable-term",
+		"/objects/order-entry/txn-definition":                       "order-entry-txn-definition",
+		"/objects/order-entry/subtotal-template-line":               "order-entry-subtotal-template-line",
+		"/objects/purchasing/txn-definition-additional-gl-detail":   "purchasing-txn-definition-additional-gl-detail",
+		"/objects/purchasing/txn-definition":                        "purchasing-txn-definition",
+		"/objects/purchasing/subtotal-template-line":                "purchasing-subtotal-template-line",
+		"/objects/purchasing/subtotal-template":                     "purchasing-subtotal-template",
+		"/objects/purchasing/recurring-document-subtotal":           "purchasing-recurring-document-subtotal",
+		"/objects/purchasing/recurring-document-line":               "purchasing-recurring-document-line",
+		"/objects/purchasing/recurring-document":                    "purchasing-recurring-document",
+		"/objects/accounts-receivable/adjustment-tax-entry":         "accounts-receivable-adjustment-tax-entry",
+		"/objects/accounts-receivable/advance":                      "accounts-receivable-advance",
+		"/objects/accounts-receivable/adjustment-line":              "accounts-receivable-adjustment-line",
+		"/objects/accounts-receivable/adjustment":                   "accounts-receivable-adjustment",
+		"/objects/accounts-receivable/account-label-tax-group":      "accounts-receivable-account-label-tax-group",
+		"/objects/inventory-control/document-line":                  "inventory-control-document-line",
+		"/objects/inventory-control/document-history":               "inventory-control-document-history",
+		"/objects/inventory-control/price-list":                     "inventory-control-price-list",
+		"/objects/inventory-control/txn-definition-cogs-gl-detail":  "inventory-control-txn-definition-cogs-gl-detail",
+		"/objects/inventory-control/txn-definition-subtotal-detail": "inventory-control-txn-definition-subtotal-detail",
+		"/objects/order-entry/document":                             "order-entry-document",
+		"/objects/order-entry/document-history":                     "order-entry-document-history",
+		"/objects/order-entry/document-line":                        "order-entry-document-line",
+		"/objects/order-entry/document-line-detail":                 "order-entry-document-line-detail",
+		"/objects/order-entry/document-line-subtotal":               "order-entry-document-line-subtotal",
+	}
+
 	ObjectNameToResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 		"v1/notes/": "results",
 	},
@@ -43,7 +83,7 @@ func main() {
 
 	readObjects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
-		nil, nil, api3.CustomMappingObjectCheck(ObjectNameToResponseField),
+		objectEndpoints, nil, api3.CustomMappingObjectCheck(ObjectNameToResponseField),
 	)
 
 	goutils.MustBeNil(err)
