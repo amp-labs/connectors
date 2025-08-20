@@ -1,0 +1,76 @@
+package main
+
+import (
+	"log/slog"
+
+	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/internal/staticschema"
+	"github.com/amp-labs/connectors/providers/sageintacct/metadata"
+	"github.com/amp-labs/connectors/providers/sageintacct/metadata/openapi"
+	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
+	"github.com/amp-labs/connectors/tools/fileconv/api3"
+	"github.com/amp-labs/connectors/tools/scrapper"
+)
+
+var (
+	ignoreEndpoints = []string{ // nolint:gochecknoglobals
+		"/services/reports/status",
+		"/services/bulk/job/status",
+		"/services/core/model",
+		"/services/core/session/id",
+		"/objects/core/system-view",
+		"/services/construction-forecasting/wip-journal/entry-history",
+	}
+
+	ObjectNameToResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+		"v1/notes/": "results",
+	},
+		func(objectName string) (fieldName string) {
+			return "ia::result"
+		})
+)
+
+func main() {
+	explorer, err := openapi.FileManager.GetExplorer(
+		api3.WithDisplayNamePostProcessors(
+			api3.CamelCaseToSpaceSeparated,
+			api3.CapitalizeFirstLetterEveryWord,
+		),
+	)
+
+	goutils.MustBeNil(err)
+
+	readObjects, err := explorer.ReadObjectsGet(
+		api3.NewDenyPathStrategy(ignoreEndpoints),
+		nil, nil, api3.CustomMappingObjectCheck(ObjectNameToResponseField),
+	)
+
+	goutils.MustBeNil(err)
+
+	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
+	registry := datautils.NamedLists[string]{}
+
+	for _, object := range readObjects {
+		if object.Problem != nil {
+			slog.Error("schema not extracted",
+				"objectName", object.ObjectName,
+				"error", object.Problem,
+			)
+		}
+
+		for _, field := range object.Fields {
+			schemas.Add("", object.ObjectName, api3.CapitalizeFirstLetterEveryWord(api3.KebabCaseToSpaceSeparated(object.ObjectName)), object.URLPath, object.ResponseKey, //nolint:lll
+				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
+		}
+
+		for _, queryParam := range object.QueryParams {
+			registry.Add(queryParam, object.ObjectName)
+		}
+	}
+
+	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+
+	slog.Info("Completed.")
+}
