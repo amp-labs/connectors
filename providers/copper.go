@@ -6,14 +6,23 @@ func init() {
 	// Copper configuration
 	SetInfo(Copper, ProviderInfo{
 		DisplayName: "Copper",
-		AuthType:    Oauth2,
-		BaseURL:     "https://api.copper.com/developer_api",
-		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://app.copper.com/oauth/authorize",
-			TokenURL:                  "https://app.copper.com/oauth/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
+		// AuthType:    Oauth2,
+		AuthType: ApiKey,
+		BaseURL:  "https://api.copper.com/developer_api",
+		// Oauth2Opts: &Oauth2Opts{
+		//	GrantType:                 AuthorizationCode,
+		//	AuthURL:                   "https://app.copper.com/oauth/authorize",
+		//	TokenURL:                  "https://app.copper.com/oauth/token",
+		//	ExplicitScopesRequired:    true,
+		//	ExplicitWorkspaceRequired: false,
+		// },
+		ApiKeyOpts: &ApiKeyOpts{
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name:        "Authorization",
+				ValuePrefix: "Bearer ",
+			},
+			DocsURL: "https://developer.copper.com/introduction/authentication.html#api-keys",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
