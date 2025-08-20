@@ -24,8 +24,8 @@ type ResponseError struct {
 	Title      string `json:"title"`
 	Type       string `json:"type,omitempty"`
 	Detail     string `json:"detail,omitempty"`
-	Trace_Id   string `json:"trace_id,omitempty"`
-	Span_Id    string `json:"span_id,omitempty"`
+	TraceId    string `json:"trace_id,omitempty"` // nolint:tagliatelle,revive
+	SpanId     string `json:"span_id,omitempty"`  // nolint:tagliatelle,revive
 }
 
 func (r ResponseError) CombineErr(base error) error {
