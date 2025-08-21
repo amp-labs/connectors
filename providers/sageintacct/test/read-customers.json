@@ -1,0 +1,21 @@
+{
+  "ia::result": [
+    {
+      "id": "CUST001",
+      "key": "1",
+      "href": "/objects/accounts-receivable/customer/1"
+    },
+    {
+      "id": "CUST002",
+      "key": "2", 
+      "href": "/objects/accounts-receivable/customer/2"
+    }
+  ],
+  "ia::meta": {
+    "totalCount": 2,
+    "start": 1,
+    "pageSize": 100,
+    "next": null,
+    "previous": null
+  }
+}

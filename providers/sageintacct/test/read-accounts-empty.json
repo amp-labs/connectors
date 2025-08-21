@@ -1,0 +1,10 @@
+{
+  "ia::result": [],
+  "ia::meta": {
+    "totalCount": 0,
+    "start": 1,
+    "pageSize": 100,
+    "next": null,
+    "previous": null
+  }
+}
