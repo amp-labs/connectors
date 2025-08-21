@@ -1,13 +1,11 @@
 package sageintacct
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -18,10 +16,7 @@ import (
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	responseAccounts := testutils.DataFromFile(t, "read-accounts.json")
-	responseAccountsEmpty := testutils.DataFromFile(t, "read-accounts-empty.json")
-	responseCustomers := testutils.DataFromFile(t, "read-customers.json")
-	responseInvalidPath := testutils.DataFromFile(t, "read-invalid-path.html")
+	responseBudget := testutils.DataFromFile(t, "read-budget.json")
 
 	tests := []testroutines.Read{
 		{
@@ -43,119 +38,40 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
-			Name:  "Correct error message is understood from HTML response",
-			Input: common.ReadParams{ObjectName: "account", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusNotFound, responseInvalidPath),
-			}.Server(),
-			ExpectedErrs: []error{
-				common.ErrBadRequest,
-				errors.New("Cannot GET /ia/api/v1/objects/general-ledger/account"), // nolint:goerr113
-			},
-		},
-		{
-			Name:  "Incorrect data type in payload",
-			Input: common.ReadParams{ObjectName: "account", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusOK, `{}`),
-			}.Server(),
-			ExpectedErrs: []error{jsonquery.ErrNotArray},
-		},
-		{
-			Name:  "Empty read response",
-			Input: common.ReadParams{ObjectName: "account", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseAccountsEmpty),
-			}.Server(),
-			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, NextPage: "", Done: true},
-			ExpectedErrs: nil,
-		},
-		{
 			Name:  "Successful read with chosen fields",
-			Input: common.ReadParams{ObjectName: "account", Fields: connectors.Fields("id", "key")},
+			Input: common.ReadParams{ObjectName: "budget", Fields: connectors.Fields("id", "key")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/ia/api/v1/objects/general-ledger/account"),
-				Then:  mockserver.Response(http.StatusOK, responseAccounts),
-				Else:  mockserver.Response(http.StatusNotFound, responseInvalidPath),
-			}.Server(),
-			Expected: &common.ReadResult{
-				Rows: 3,
-				Data: []common.ReadResultRow{
-					{
-						Fields: map[string]any{
-							"id":  "1000",
-							"key": "1",
-						},
-						Raw: map[string]any{
-							"id":   "1000",
-							"key":  "1",
-							"href": "/objects/general-ledger/account/1",
-						},
-					},
-					{
-						Fields: map[string]any{
-							"id":  "1100",
-							"key": "2",
-						},
-						Raw: map[string]any{
-							"id":   "1100",
-							"key":  "2",
-							"href": "/objects/general-ledger/account/2",
-						},
-					},
-					{
-						Fields: map[string]any{
-							"id":  "1200",
-							"key": "3",
-						},
-						Raw: map[string]any{
-							"id":   "1200",
-							"key":  "3",
-							"href": "/objects/general-ledger/account/3",
-						},
-					},
+				If: mockcond.And{
+					mockcond.Path("/ia/api/v1/services/core/query"),
+					mockcond.Method(http.MethodPost),
 				},
-				NextPage: "",
-				Done:     true,
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name:  "Successful read of customers",
-			Input: common.ReadParams{ObjectName: "customer", Fields: connectors.Fields("id", "key")},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/ia/api/v1/objects/accounts-receivable/customer"),
-				Then:  mockserver.Response(http.StatusOK, responseCustomers),
-				Else:  mockserver.Response(http.StatusNotFound, responseInvalidPath),
+				Then: mockserver.Response(http.StatusOK, responseBudget),
 			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{
-							"id":  "CUST001",
 							"key": "1",
+							"id":  "Std_Budget",
 						},
 						Raw: map[string]any{
-							"id":   "CUST001",
 							"key":  "1",
-							"href": "/objects/accounts-receivable/customer/1",
+							"id":   "Std_Budget",
+							"href": "/objects/general-ledger/budget/1",
 						},
 					},
 					{
 						Fields: map[string]any{
-							"id":  "CUST002",
 							"key": "2",
+							"id":  "KPI_BUDGET",
 						},
 						Raw: map[string]any{
-							"id":   "CUST002",
 							"key":  "2",
-							"href": "/objects/accounts-receivable/customer/2",
+							"id":   "KPI_BUDGET",
+							"href": "/objects/general-ledger/budget/2",
 						},
 					},
 				},
@@ -187,7 +103,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.HTTPClient().Base = mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL)
+	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, err
 }

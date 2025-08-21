@@ -1,14 +1,14 @@
 {
   "ia::result": [
     {
-      "id": "CUST001",
       "key": "1",
-      "href": "/objects/accounts-receivable/customer/1"
+      "id": "Std_Budget",
+      "href": "/objects/general-ledger/budget/1"
     },
     {
-      "id": "CUST002",
-      "key": "2", 
-      "href": "/objects/accounts-receivable/customer/2"
+      "key": "2",
+      "id": "KPI_BUDGET",
+      "href": "/objects/general-ledger/budget/2"
     }
   ],
   "ia::meta": {
