@@ -25,7 +25,7 @@ func main() {
 
 	slog.Info("Testing account read...")
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "contact",
+		ObjectName: "account",
 		Fields:     connectors.Fields("id", "key", "href"),
 	})
 	if err != nil {

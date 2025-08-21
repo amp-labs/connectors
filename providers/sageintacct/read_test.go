@@ -168,7 +168,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 	for _, tt := range tests {
 		// nolint:varnamelen
-		tt := tt // rebind, ref: https://github.com/golang/go/wiki/CommonMistakes#using-goroutines-on-loop-iterator-variables
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 

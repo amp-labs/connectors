@@ -13,13 +13,12 @@ import (
 
 const (
 	apiVersion      = "ia/api/v1"
-	defaultPageSize = 100
+	defaultPageSize = 3
 	pageSizeParam   = "size"
 	pageParam       = "start"
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-
 	url, body, err := buildURL(c.Module(), params, c.ProviderInfo().BaseURL)
 	if err != nil {
 		return nil, err
@@ -39,7 +38,6 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-
 	responseKey := metadata.Schemas.LookupArrayFieldName(c.Module(), params.ObjectName)
 
 	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
