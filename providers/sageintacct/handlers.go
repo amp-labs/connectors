@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers/sageintacct/metadata"
 )
 
@@ -40,20 +39,10 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	responseKey := metadata.Schemas.LookupArrayFieldName(c.Module(), params.ObjectName)
 
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
-	if err != nil {
-		return nil, err
-	}
-
-	baseURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
-	if err != nil {
-		return nil, err
-	}
-
 	return common.ParseResult(
 		response,
 		common.ExtractRecordsFromPath(responseKey),
-		makeNextRecordsURL(baseURL, params),
+		makeNextRecordsURL(),
 		common.GetMarshaledData,
 		params.Fields,
 	)
