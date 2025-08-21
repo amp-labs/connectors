@@ -1,7 +1,9 @@
 package sageintacct
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -17,23 +19,18 @@ const (
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	if params.NextPage != "" {
-		return http.NewRequestWithContext(ctx, http.MethodGet, params.NextPage.String(), nil)
-	}
 
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
+	url, body, err := buildURL(c.Module(), params, c.ProviderInfo().BaseURL)
 	if err != nil {
 		return nil, err
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
+	jsonData, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
-	// url.WithQueryParam(pageSizeParam, strconv.Itoa(defaultPageSize))
-	// url.WithQueryParam(pageParam, "1")
 
-	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
 }
 
 func (c *Connector) parseReadResponse(
