@@ -9,8 +9,11 @@ import (
 	"github.com/amp-labs/connectors/providers/sageintacct/metadata"
 )
 
-func buildURL(module common.ModuleID,
-	params common.ReadParams, baseURL string) (*urlbuilder.URL, map[string]interface{}, error) {
+func buildURL(
+	module common.ModuleID,
+	params common.ReadParams,
+	baseURL string,
+) (*urlbuilder.URL, map[string]interface{}, error) {
 	path, err := metadata.Schemas.LookupURLPath(module, params.ObjectName)
 	if err != nil {
 		return nil, nil, err

@@ -182,7 +182,6 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: mockutils.NewClient(),
 	})
-
 	if err != nil {
 		return nil, err
 	}
