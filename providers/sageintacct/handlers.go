@@ -12,7 +12,7 @@ import (
 
 const (
 	apiVersion      = "ia/api/v1"
-	defaultPageSize = 3
+	defaultPageSize = 500
 	pageSizeParam   = "size"
 	pageParam       = "start"
 )
