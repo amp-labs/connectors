@@ -95,7 +95,7 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
-	recordID, err := jsonquery.New(resp).StrWithDefault("id", "")
+	recordID, err := jsonquery.New(resp).StrWithDefault("key", "")
 	if err != nil {
 		return nil, err
 	}
