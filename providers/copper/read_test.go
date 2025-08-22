@@ -21,6 +21,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	errorInvalidParams := testutils.DataFromFile(t, "invalid-params.json")
 	responseProjectsFirstPage := testutils.DataFromFile(t, "read/projects/1-first-page.json")
 	responseProjectsLastPage := testutils.DataFromFile(t, "read/projects/2-last-page.json")
+	responseCompanies := testutils.DataFromFile(t, "read/companies/with-custom-fields.json")
+	responseCustomFields := testutils.DataFromFile(t, "custom/fields.json")
 
 	tests := []testroutines.Read{
 		{
@@ -81,6 +83,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					mockcond.Header(http.Header{"X-PW-UserEmail": []string{"john@test.com"}}),
 				},
 				Then: mockserver.Response(http.StatusOK, responseProjectsFirstPage),
+				Else: mockserver.Response(http.StatusOK, responseCustomFields),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -125,12 +128,60 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					mockcond.Header(http.Header{"X-PW-UserEmail": []string{"john@test.com"}}),
 				},
 				Then: mockserver.Response(http.StatusOK, responseProjectsLastPage),
+				Else: mockserver.Response(http.StatusOK, responseCustomFields),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows:     0,
 				Data:     []common.ReadResultRow{},
 				NextPage: "",
 				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read company where custom fields are resolved",
+			Input: common.ReadParams{
+				ObjectName: "companies",
+				Fields: connectors.Fields("name",
+					"custom_field_birthday", "custom_field_fruits", "custom_field_isbouillonsoup"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If: mockcond.And{
+						mockcond.Path("/developer_api/v1/companies/search"),
+						mockcond.Body(`{
+						"sort_by":"date_modified","sort_direction":"desc",
+						"page_number":"1","page_size":200}`),
+						mockcond.Header(http.Header{"X-PW-Application": []string{"developer_api"}}),
+						mockcond.Header(http.Header{"X-PW-UserEmail": []string{"john@test.com"}}),
+					},
+					Then: mockserver.Response(http.StatusOK, responseCompanies),
+				}, {
+					If: mockcond.And{
+						mockcond.Path("/developer_api/v1/custom_field_definitions"),
+						mockcond.Header(http.Header{"X-PW-Application": []string{"developer_api"}}),
+						mockcond.Header(http.Header{"X-PW-UserEmail": []string{"john@test.com"}}),
+					},
+					Then: mockserver.Response(http.StatusOK, responseCustomFields),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"name":                        "Demo Company",
+						"custom_field_birthday":       float64(1754031600),
+						"custom_field_fruits":         float64(2082340),
+						"custom_field_isbouillonsoup": true,
+					},
+					Raw: map[string]any{
+						"details": "This is a demo company",
+					},
+				}},
+				NextPage: "2",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},

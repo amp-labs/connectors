@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/copper"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -21,13 +23,14 @@ func main() {
 
 	conn := connTest.GetCopperConnector(ctx)
 
-	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		"companies", "people", "tags",
+	res, err := conn.Read(ctx, common.ReadParams{
+		ObjectName: "companies",
+		Fields:     connectors.Fields("name", "custom_field_story", "custom_field_many"),
 	})
 	if err != nil {
-		utils.Fail("error listing metadata", "error", err)
+		utils.Fail("error reading from connector", "error", err)
 	}
 
-	fmt.Println("Metadata...")
-	utils.DumpJSON(metadata, os.Stdout)
+	slog.Info("Reading...")
+	utils.DumpJSON(res, os.Stdout)
 }
