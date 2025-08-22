@@ -95,14 +95,25 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module(), params.ObjectName)
+	customFields, err := c.fetchCustomFields(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	return common.ParseResult(resp,
-		common.ExtractOptionalRecordsFromPath(responseFieldName),
+		makeGetRecords(params.ObjectName),
 		makeNextRecordsURL(params),
-		common.GetMarshaledData,
+		common.MakeMarshaledDataFunc(c.attachReadCustomFields(customFields)),
 		params.Fields,
 	)
+}
+
+func makeGetRecords(objectName string) common.NodeRecordsFunc {
+	return func(node *ajson.Node) ([]*ajson.Node, error) {
+		responseFieldName := metadata.Schemas.LookupArrayFieldName(common.ModuleRoot, objectName)
+
+		return jsonquery.New(node).ArrayOptional(responseFieldName)
+	}
 }
 
 // https://developer.copper.com/introduction/pagination.html#strategy-2-count-the-records-on-each-page
