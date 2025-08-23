@@ -1,0 +1,14 @@
+{
+    "ContactGroups": [
+        {
+            "ContactGroupID": "efd27a1e-a1f5-4cbf-8439-b0f912af709c",
+            "HasValidationErrors": false,
+            "Name": "Eusebio Damore",
+            "Status": "ACTIVE"
+        }
+    ],
+    "DateTimeUTC": "/Date(1755500881326)/",
+    "Id": "055712c7-0fcf-4ba2-a900-1200f10cfe28",
+    "ProviderName": "Ampersand test",
+    "Status": "OK"
+}
