@@ -39,7 +39,7 @@ func testCreatingProjects(ctx context.Context, conn *gl.Connector) error {
 	params := common.WriteParams{
 		ObjectName: "projects",
 		RecordData: map[string]any{
-			"name": "Test Project",
+			"name": "Test Project AB",
 		},
 	}
 
@@ -64,13 +64,13 @@ func testCreatingSnippets(ctx context.Context, conn *gl.Connector) error {
 	params := common.WriteParams{
 		ObjectName: "snippets",
 		RecordData: map[string]any{
-			"title":       "This is a snippet",
-			"description": "Hello World snippet",
+			"title":       "This is a snippet A",
+			"description": "Hello World snippet A",
 			"visibility":  "public",
 			"files": []map[string]string{
 				{
 					"content":   "Hello world",
-					"file_path": "test.txt",
+					"file_path": "testA.txt",
 				},
 			},
 		},
