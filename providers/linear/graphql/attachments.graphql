@@ -1,0 +1,29 @@
+query Attachments($filter: AttachmentFilter, $first: Int, $after: String) {
+  attachments(filter: $filter, first: $first, after: $after) {
+    nodes {
+      id
+      createdAt
+      updatedAt
+      archivedAt
+      title
+      subtitle
+      url
+      metadata
+      source
+      sourceType
+      groupBySource
+      bodyData
+      creator {
+        id
+        name
+        displayName
+      }
+    }
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
+  }
+}

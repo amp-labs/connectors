@@ -1,0 +1,34 @@
+query GetTeamMemberships($first: Int, $after: String) {
+  teamMemberships(first: $first, after: $after) {
+    nodes {
+      id
+      createdAt
+      updatedAt
+      archivedAt
+      owner
+      sortOrder
+      team {
+        name
+        id
+        description
+        updatedAt
+      }
+      user {
+        name
+        isMe
+        id
+        initials
+        email
+        displayName
+        description
+        avatarUrl
+      }
+    }
+    pageInfo {
+    hasPreviousPage
+    hasNextPage
+    startCursor
+    endCursor
+    }
+  }
+}

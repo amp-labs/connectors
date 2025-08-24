@@ -1,0 +1,43 @@
+query GetUsers($filter: UserFilter, $first: Int, $after: String) {
+  users(filter: $filter, first: $first, after: $after) {
+    nodes {
+      id
+      createdAt
+      updatedAt
+      archivedAt
+      name
+      displayName
+      email
+      avatarUrl
+      disableReason
+      calendarHash
+      description
+      statusEmoji
+      statusLabel
+      statusUntilAt
+      timezone
+      lastSeen
+      initials
+      avatarBackgroundColor
+      guest
+      app
+      active
+      url
+      createdIssueCount
+      isMe
+      admin
+      gitHubUserId
+      organization {
+        id
+        name
+      }
+    }
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+      
+    }
+  }
+}
