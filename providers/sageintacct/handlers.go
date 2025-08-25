@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -110,5 +111,35 @@ func (c *Connector) parseWriteResponse(
 		Data:     data,
 		Errors:   nil,
 		RecordId: recordID,
+	}, nil
+}
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path, params.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
+}
+
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context,
+	params common.DeleteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	if response.Code != http.StatusOK && response.Code != http.StatusNoContent && response.Code != http.StatusAccepted {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, response.Code)
+	}
+
+	// A successful delete returns 202 Accepted
+	return &common.DeleteResult{
+		Success: true,
 	}, nil
 }
