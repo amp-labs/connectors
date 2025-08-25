@@ -30,6 +30,8 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, err
 	}
 
+	// https://developer.xero.com/documentation/guides/oauth2/tenants
+	// Xero-Tenant-Id is required for all requests to Xero API
 	req.Header.Set("Xero-Tenant-Id", c.tenantId)
 	req.Header.Set("Accept", "application/json")
 
