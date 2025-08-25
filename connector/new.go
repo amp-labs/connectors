@@ -73,6 +73,7 @@ import (
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/teamleader"
+	"github.com/amp-labs/connectors/providers/xero"
 	"github.com/amp-labs/connectors/providers/zendeskchat"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/providers/zohocrm"
@@ -157,6 +158,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Smartlead:               wrapper(newSmartleadConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
+	providers.Xero:                    wrapper(newXeroConnector),
 	providers.ZendeskChat:             wrapper(newZendeskChatConnector),
 	providers.ZendeskSupport:          wrapper(newZendeskSupportConnector),
 	providers.Zoho:                    wrapper(newZohoConnector),
@@ -658,4 +660,10 @@ func newSeismicConnector(
 	params common.ConnectorParams,
 ) (*seismic.Connector, error) {
 	return seismic.NewConnector(params)
+}
+
+func newXeroConnector(
+	params common.ConnectorParams,
+) (*xero.Connector, error) {
+	return xero.NewConnector(params)
 }
