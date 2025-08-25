@@ -41,7 +41,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrMissingExpectedValues
 	}
 
-	records, ok := (*res)["data"].([]any)
+	records, ok := (*res)["items"].([]any)
 	if !ok {
 		return nil, fmt.Errorf("couldn't convert the data response field data to an array: %w", common.ErrMissingExpectedValues) // nolint:lll
 	}
@@ -53,6 +53,16 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	firstRecord, ok := records[0].(map[string]any)
 	if !ok {
 		return nil, fmt.Errorf("couldn't convert the first record data to a map: %w", common.ErrMissingExpectedValues)
+	}
+
+	for field, value := range firstRecord {
+		objectMetadata.Fields[field] = common.FieldMetadata{
+			DisplayName:  field,
+			ValueType:    inferValueTypeFromData(value),
+			ProviderType: "", // not available
+			ReadOnly:     false,
+			Values:       nil,
+		}
 	}
 
 	return &objectMetadata, nil
