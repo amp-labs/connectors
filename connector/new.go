@@ -17,6 +17,7 @@ import (
 	"github.com/amp-labs/connectors/providers/aws"
 	"github.com/amp-labs/connectors/providers/blueshift"
 	"github.com/amp-labs/connectors/providers/braze"
+	"github.com/amp-labs/connectors/providers/breakcold"
 	"github.com/amp-labs/connectors/providers/brevo"
 	"github.com/amp-labs/connectors/providers/campaignmonitor"
 	"github.com/amp-labs/connectors/providers/capsule"
@@ -102,6 +103,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Avoma:                   wrapper(newAvomaConnector),
 	providers.Blueshift:               wrapper(newBlueshiftConnector),
 	providers.Braze:                   wrapper(newBrazeConnector),
+	providers.Breakcold:               wrapper(newBreakcoldConnector),
 	providers.Brevo:                   wrapper(newBrevoConnector),
 	providers.CampaignMonitor:         wrapper(newCampaignMonitorConnector),
 	providers.Capsule:                 wrapper(newCapsuleConnector),
@@ -666,4 +668,10 @@ func newXeroConnector(
 	params common.ConnectorParams,
 ) (*xero.Connector, error) {
 	return xero.NewConnector(params)
+}
+
+func newBreakcoldConnector(
+	params common.ConnectorParams,
+) (*breakcold.Connector, error) {
+	return breakcold.NewConnector(params)
 }
