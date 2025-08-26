@@ -167,7 +167,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }
 
-func retrieveRecordId(data map[string]any) string {
+func parseRecordId(data map[string]any) string {
 	switch v := data["id"].(type) {
 	case string:
 		return v
@@ -203,7 +203,7 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
-	recordId := retrieveRecordId(data)
+	recordId := parseRecordId(data)
 
 	return &common.WriteResult{
 		Success:  true,
