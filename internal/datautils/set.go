@@ -1,5 +1,10 @@
 package datautils
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // NewStringSet and StringSet are Aliases.
 var NewStringSet = NewSet[string] // nolint:gochecknoglobals
 type StringSet = Set[string]
@@ -105,4 +110,19 @@ func (s Set[T]) Remove(key T) {
 
 func (s Set[T]) IsEmpty() bool {
 	return len(s) == 0
+}
+
+func (s Set[T]) MarshalJSON() ([]byte, error) {
+	return json.Marshal(s.List())
+}
+
+func (s *Set[T]) UnmarshalJSON(bytes []byte) error {
+	var items []T
+	if err := json.Unmarshal(bytes, &items); err != nil {
+		return fmt.Errorf("Set[T] unmarshal error: %w", err)
+	}
+
+	*s = NewSetFromList(items)
+
+	return nil
 }

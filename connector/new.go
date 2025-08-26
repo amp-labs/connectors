@@ -25,6 +25,7 @@ import (
 	"github.com/amp-labs/connectors/providers/clickup"
 	"github.com/amp-labs/connectors/providers/closecrm"
 	"github.com/amp-labs/connectors/providers/constantcontact"
+	"github.com/amp-labs/connectors/providers/copper"
 	"github.com/amp-labs/connectors/providers/customerapp"
 	"github.com/amp-labs/connectors/providers/dixa"
 	"github.com/amp-labs/connectors/providers/docusign"
@@ -67,10 +68,12 @@ import (
 	"github.com/amp-labs/connectors/providers/podium"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/providers/salesloft"
+	"github.com/amp-labs/connectors/providers/seismic"
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/teamleader"
+	"github.com/amp-labs/connectors/providers/xero"
 	"github.com/amp-labs/connectors/providers/zendeskchat"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/providers/zohocrm"
@@ -107,6 +110,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.ClickUp:                 wrapper(newClickUpConnector),
 	providers.Close:                   wrapper(newCloseConnector),
 	providers.ConstantContact:         wrapper(newConstantContactConnector),
+	providers.Copper:                  wrapper(newCopperConnector),
 	providers.CustomerJourneysApp:     wrapper(newCustomerJourneysAppConnector),
 	providers.Dixa:                    wrapper(newDixaConnector),
 	providers.Docusign:                wrapper(newDocusignConnector),
@@ -150,9 +154,11 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Salesforce:              wrapper(newSalesforceConnector),
 	providers.Salesloft:               wrapper(newSalesloftConnector),
 	providers.ServiceNow:              wrapper(newServiceNowConnector),
+	providers.Seismic:                 wrapper(newSeismicConnector),
 	providers.Smartlead:               wrapper(newSmartleadConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
+	providers.Xero:                    wrapper(newXeroConnector),
 	providers.ZendeskChat:             wrapper(newZendeskChatConnector),
 	providers.ZendeskSupport:          wrapper(newZendeskSupportConnector),
 	providers.Zoho:                    wrapper(newZohoConnector),
@@ -355,6 +361,12 @@ func newConstantContactConnector(
 	return constantcontact.NewConnector(
 		constantcontact.WithAuthenticatedClient(params.AuthenticatedClient),
 	)
+}
+
+func newCopperConnector(
+	params common.ConnectorParams,
+) (*copper.Connector, error) {
+	return copper.NewConnector(params)
 }
 
 func newKeapConnector(
@@ -642,4 +654,16 @@ func newNetsuiteConnector(
 	params common.ConnectorParams,
 ) (*netsuite.Connector, error) {
 	return netsuite.NewConnector(params)
+}
+
+func newSeismicConnector(
+	params common.ConnectorParams,
+) (*seismic.Connector, error) {
+	return seismic.NewConnector(params)
+}
+
+func newXeroConnector(
+	params common.ConnectorParams,
+) (*xero.Connector, error) {
+	return xero.NewConnector(params)
 }
