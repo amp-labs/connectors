@@ -180,7 +180,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		}
 
 		// Some update endpoints having plural objectname.
-		//Ref. https://developer.breakcold.com/v3/api-reference/leads/update-a-lead.
+		// Ref https://developer.breakcold.com/v3/api-reference/leads/update-a-lead.
 		urlRaw.Path = naming.NewPluralString(urlRaw.Path).String()
 
 		url, err = urlbuilder.FromRawURL(urlRaw)
