@@ -9,6 +9,7 @@ import (
 )
 
 func supportedOperations() components.EndpointRegistryInput {
+	// Refer the link https://developer.blackbaud.com/skyapi/products/crm for read endpoints.
 	readSupport := []string{
 		"crm-adnmg/businessprocessstatus",
 		"crm-adnmg/batchtemplates",

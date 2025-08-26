@@ -86,18 +86,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	url.WithQueryParam("limit", strconv.Itoa(defaultPageSize))
 
-	// offset := 0
-
-	// if params.NextPage != "" {
-	// 	// Parse the page number from NextPage
-	// 	offset, err = strconv.Atoi(params.NextPage.String())
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// }
-
-	// url.WithQueryParam("offset", strconv.Itoa(offset))
-
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
 		return nil, err
