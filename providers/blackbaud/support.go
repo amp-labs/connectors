@@ -43,98 +43,141 @@ func supportedOperations() components.EndpointRegistryInput {
 	}
 
 	writeSupport := []string{
+		// The following endpoints are available in CRM Administration.
+		// Ref https://developer.sky.blackbaud.com/api#api=crm-adnmg.
 		"crm-adnmg/batches",
-		"crm-adnmg/notifications",
 		"crm-adnmg/batches/revenue",
 		"crm-adnmg/businessprocess/launch",
-		"crm-conmg/constituents",
+		"crm-adnmg/notifications",
+
+		// The following endpoints are available in CRM Constituent.
+		// Ref https://developer.sky.blackbaud.com/api#api=crm-conmg.
 		"crm-conmg/addresses",
 		"crm-conmg/alternatelookupids",
-		"crm-conmg/constituentappeals",
 		"crm-conmg/constituentappealresponses",
+		"crm-conmg/constituentappeals",
 		"crm-conmg/constituentattributes",
 		"crm-conmg/constituentcorrespondencecodes",
+		"crm-conmg/constituentnotes",
+		"crm-conmg/constituents",
+		"crm-conmg/educationalhistories",
 		"crm-conmg/emailaddresses",
 		"crm-conmg/fundraisers",
-		"crm-conmg/interaction",
-		"crm-conmg/constituentnotes",
-		"crm-conmg/phones",
-		"crm-conmg/solicitcodes",
-		"crm-conmg/relationshipjobsinfo",
-		"crm-conmg/tribute",
-		"crm-conmg/educationalhistories",
 		"crm-conmg/individuals",
-		"crm-conmg/organizations",
+		"crm-conmg/interaction",
 		"crm-conmg/mergetwoconstituents",
+		"crm-conmg/organizations",
+		"crm-conmg/phones",
+		"crm-conmg/relationshipjobsinfo",
+		"crm-conmg/solicitcodes",
+		"crm-conmg/tribute",
+
+		// The following endpoints are available in CRM Event.
+		// https://developer.sky.blackbaud.com/api#api=crm-evtmg.
 		"crm-evtmg/events",
+		"crm-evtmg/locations",
 		"crm-evtmg/registrants",
 		"crm-evtmg/registrationoptions",
 		"crm-evtmg/registrationtypes",
-		"crm-evtmg/locations",
-		"crm-fndmg/fundraisingpurposes",
+
+		// The following endpoints are available in CRM Fundraising.
+		// https://developer.sky.blackbaud.com/api#api=crm-fndmg.
 		"crm-fndmg/fundraisingpurposerecipients",
-		"crm-mktmg/correspondencecodes",
+		"crm-fndmg/fundraisingpurposes",
+
+		// The following endpoints are available in CRM Marketing.
+		// https://developer.sky.blackbaud.com/api#api=crm-mktmg.
 		"crm-mktmg/appeals",
-		"crm-mktmg/segments",
+		"crm-mktmg/correspondencecodes",
 		"crm-mktmg/responsecategories",
-		"crm-prsmg/prospects",
-		"crm-prsmg/prospectsconstituency",
+		"crm-mktmg/segments",
+
+		// The following endpoints are available in CRM Prospect.
+		// https://developer.sky.blackbaud.com/api#api=crm-prsmg.
 		"crm-prsmg/prospectcontactreports",
-		"crm-prsmg/prospectsegmentations",
 		"crm-prsmg/prospectopportunities",
 		"crm-prsmg/prospectplans",
+		"crm-prsmg/prospectsegmentations",
+		"crm-prsmg/prospects",
+		"crm-prsmg/prospectsconstituency",
 		"crm-prsmg/prospectsteps",
 		"crm-prsmg/stewardshipplans",
 		"crm-prsmg/stewardshipplansteps",
+
+		// The following endpoints are available in CRM Revenue.
+		// https://developer.sky.blackbaud.com/api#api=crm-revmg.
+		"crm-revmg/payments",
 		"crm-revmg/recurringgifts",
 		"crm-revmg/revenuenotes",
-		"crm-revmg/payments",
+
+		// The following endpoints are available in CRM Volunteer.
+		// https://developer.sky.blackbaud.com/api#api=crm-volmg.
 		"crm-volmg/jobs",
 		"crm-volmg/occurrences",
 		"crm-volmg/timesheets",
+		"crm-volmg/volunteerassignments",
 		"crm-volmg/volunteers",
 		"crm-volmg/volunteerschedules",
-		"crm-volmg/volunteerassignments",
 	}
 
 	deleteSupport := []string{
+		// The following endpoints are available in CRM Constituent.
+		// Ref https://developer.sky.blackbaud.com/api#api=crm-conmg.
 		"crm-conmg/addresses",
 		"crm-conmg/alternatelookupids",
 		"crm-conmg/constituentappeals",
 		"crm-conmg/constituentattributes",
 		"crm-conmg/constituentcorrespondencecodes",
+		"crm-conmg/constituentnotes",
+		"crm-conmg/educationalhistories",
 		"crm-conmg/emailaddresses",
 		"crm-conmg/fundraisers",
 		"crm-conmg/interaction",
-		"crm-conmg/constituentnotes",
 		"crm-conmg/phones",
-		"crm-conmg/solicitcodes",
 		"crm-conmg/relationshipjobsinfo",
+		"crm-conmg/solicitcodes",
 		"crm-conmg/tribute",
-		"crm-conmg/educationalhistories",
+
+		// The following endpoints are available in CRM Event.
+		// https://developer.sky.blackbaud.com/api#api=crm-evtmg.
 		"crm-evtmg/events",
+		"crm-evtmg/locations",
 		"crm-evtmg/registrants",
 		"crm-evtmg/registrationoptions",
 		"crm-evtmg/registrationtypes",
-		"crm-evtmg/locations",
+
+		// The following endpoints are available in CRM Fundraising.
+		// https://developer.sky.blackbaud.com/api#api=crm-fndmg.
 		"crm-fndmg/fundraisingpurposes",
 		"crm-fndmg/fundraisingpurposerecipients",
-		"crm-mktmg/correspondencecodes",
+
+		// The following endpoints are available in CRM Marketing.
+		// https://developer.sky.blackbaud.com/api#api=crm-mktmg.
 		"crm-mktmg/appeals",
-		"crm-mktmg/segments",
+		"crm-mktmg/correspondencecodes",
 		"crm-mktmg/responsecategories",
-		"crm-prsmg/prospectsegmentations",
+		"crm-mktmg/segments",
+
+		// The following endpoints are available in CRM Prospect.
+		// https://developer.sky.blackbaud.com/api#api=crm-prsmg.
 		"crm-prsmg/prospectopportunities",
 		"crm-prsmg/prospectplans",
+		"crm-prsmg/prospectsegmentations",
 		"crm-prsmg/prospectsteps",
 		"crm-prsmg/stewardshipplans",
 		"crm-prsmg/stewardshipplansteps",
+
+		// The following endpoints are available in CRM Revenue.
+		// https://developer.sky.blackbaud.com/api#api=crm-revmg.
 		"crm-revmg/payments",
+
+		// The following endpoints are available in CRM Volunteer.
+		// https://developer.sky.blackbaud.com/api#api=crm-volmg.
 		"crm-volmg/jobs",
 		"crm-volmg/occurrences",
 		"crm-volmg/timesheets",
-		"crm-volmg/volunteers",
 		"crm-volmg/volunteerassignments",
+		"crm-volmg/volunteers",
 	}
 
 	return components.EndpointRegistryInput{
