@@ -19,10 +19,10 @@ func init() {
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1756274754/media/usepylon.com_1756274753.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1756274730/media/usepylon.com_1756274729.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1756274754/media/usepylon.com_1756274753.jpg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1756274754/media/usepylon.com_1756274753.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1756274730/media/usepylon.com_1756274729.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1756274730/media/usepylon.com_1756274729.png",
 			},
 		},
