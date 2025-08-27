@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -152,8 +153,38 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
+	recordId := parseRecordId(data)
+
 	return &common.WriteResult{
-		Success: true,
-		Data:    data,
+		Success:  true,
+		Data:     data,
+		RecordId: recordId,
 	}, nil
+}
+
+func parseRecordId(data map[string]any) string {
+	// id fields in the response can be either in _id or id
+	// we check which one exists and use that
+	var idField string
+
+	if _, exists := data["id"]; exists {
+		idField = "id"
+	} else if _, exists := data["_id"]; exists {
+		idField = "_id"
+	}
+
+	if idField == "" {
+		return ""
+	}
+
+	switch v := data[idField].(type) {
+	case string:
+		return v
+	case float64:
+		return strconv.Itoa(int(v))
+	case int:
+		return strconv.Itoa(v)
+	}
+
+	return ""
 }
