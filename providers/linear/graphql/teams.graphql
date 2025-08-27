@@ -1,0 +1,60 @@
+query Teams($filter: TeamFilter, $first: Int, $after: String) {
+  teams(filter: $filter, first: $first, after: $after) {
+    nodes {
+      id
+      createdAt
+      updatedAt
+      archivedAt
+      name
+      key
+      description
+      icon
+      color
+      cyclesEnabled
+      cycleStartDay
+      cycleDuration
+      cycleCooldownTime
+      cycleIssueAutoAssignStarted
+      cycleIssueAutoAssignCompleted
+      cycleLockToActive
+      upcomingCycleCount
+      timezone
+      inviteHash
+      inheritWorkflowStatuses
+      inheritIssueEstimation
+      issueEstimationType
+      issueEstimationAllowZero
+      setIssueSortOrderOnStateChange
+      issueEstimationExtended
+      defaultIssueEstimate
+      triageEnabled
+      requirePriorityToLeaveTriage
+      private
+      scimManaged
+      scimGroupName
+      progressHistory
+      currentProgress
+      groupIssueHistory
+      aiThreadSummariesEnabled
+      autoClosePeriod
+      autoCloseStateId
+      autoArchivePeriod
+      autoCloseParentIssues
+      autoCloseChildIssues
+      joinByDefault
+      cycleCalenderUrl
+      displayName
+      issueCount
+      organization {
+        id
+        name
+      }
+    }
+      pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
+  }
+}
