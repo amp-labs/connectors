@@ -12,7 +12,7 @@ require (
 	github.com/chromedp/chromedp v0.13.7
 	github.com/deiu/linkparser v0.0.0-20170608193052-9b6849e15168
 	github.com/gertd/go-pluralize v0.2.1
-	github.com/getkin/kin-openapi v0.132.0
+	github.com/getkin/kin-openapi v0.133.0
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/go-test/deep v1.1.1
 	github.com/gobwas/glob v0.2.3
@@ -62,6 +62,7 @@ require (
 	github.com/oasdiff/yaml3 v0.0.0-20250309153720-d2182401db90 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
+	github.com/woodsbury/decimal128 v1.3.0 // indirect
 	golang.org/x/sys v0.35.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )
