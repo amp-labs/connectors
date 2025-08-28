@@ -11,10 +11,61 @@ const (
 	UpsertMetadataActionNone UpsertMetadataAction = "none"
 )
 
+func (a UpsertMetadataAction) IsValid() bool {
+	switch a {
+	case UpsertMetadataActionCreate,
+		UpsertMetadataActionUpdate,
+		UpsertMetadataActionNone:
+		return true
+	default:
+		return false
+	}
+}
+
+type AssociationCardinality string
+
+const (
+	associationCardinalityNotSet    AssociationCardinality = ""
+	AssociationCardinalityManyToOne AssociationCardinality = "many-to-one"
+	AssociationCardinalityOneToOne  AssociationCardinality = "one-to-one"
+)
+
+func (ac AssociationCardinality) IsValid() bool {
+	switch ac {
+	case associationCardinalityNotSet,
+		AssociationCardinalityManyToOne,
+		AssociationCardinalityOneToOne:
+		return true
+	default:
+		return false
+	}
+}
+
+type AssociationOnDeleteAction string
+
+const (
+	associationOnDeleteActionNotSet   AssociationOnDeleteAction = ""
+	AssociationOnDeleteActionCascade  AssociationOnDeleteAction = "cascade"
+	AssociationOnDeleteActionRestrict AssociationOnDeleteAction = "restrict"
+	AssociationOnDeleteActionSetNull  AssociationOnDeleteAction = "setNull"
+)
+
+func (a AssociationOnDeleteAction) IsValid() bool {
+	switch a {
+	case associationOnDeleteActionNotSet,
+		AssociationOnDeleteActionCascade,
+		AssociationOnDeleteActionRestrict,
+		AssociationOnDeleteActionSetNull:
+		return true
+	default:
+		return false
+	}
+}
+
 // UpsertMetadataParams represents parameters for upserting metadata.
 type UpsertMetadataParams struct {
 	// Maps object names to field definitions.
-	FieldsDefinitions map[string][]*FieldDefinition `json:"customFields"`
+	FieldsDefinitions map[string][]FieldDefinition `json:"fieldDefinitions"`
 }
 
 // FieldType represents the data type of a field.
@@ -111,11 +162,11 @@ type AssociationDefinition struct {
 	// TargetField is the name of the referenced field on the target object.
 	// Defaults to the target's primary key when omitted.
 	TargetField string `json:"targetField,omitempty"`
-	// Relationship cardinality from the referencing field's perspective (e.g., 'many-to-one', 'one-to-one').
-	Cardinality string `json:"cardinality,omitempty"`
+	// Association cardinality from the referencing field's perspective (e.g., 'many-to-one', 'one-to-one').
+	Cardinality AssociationCardinality `json:"cardinality,omitempty"`
 	// OnDelete defines the behavior upon foreign object deletion, where supported.
 	// E.g., 'cascade', 'restrict', 'setNull'.
-	OnDelete string `json:"onDelete,omitempty"`
+	OnDelete AssociationOnDeleteAction `json:"onDelete,omitempty"`
 	// Required means that, if true, a referenced record must exist (i.e., NOT NULL foreign key).
 	Required bool `json:"required,omitempty"`
 	// InverseName is an optional inverse relationship/property name exposed on the target object.
@@ -136,7 +187,7 @@ type UpsertMetadataResult struct {
 	Success bool `json:"success"`
 
 	// Maps object names to field upsert results.
-	Fields map[string][]*FieldUpsertResult `json:"fields"`
+	Fields map[string]map[string]FieldUpsertResult `json:"fields"`
 }
 
 // FieldUpsertResult is the result of an upsert operation for a single field.
