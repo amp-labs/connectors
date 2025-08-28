@@ -17,6 +17,7 @@ type UpsertMetadataParams struct {
 	FieldsDefinitions map[string][]*FieldDefinition `json:"customFields"`
 }
 
+// FieldType represents the data type of a field.
 type FieldType string
 
 const (
@@ -30,6 +31,7 @@ const (
 	FieldTypeFloat        FieldType = "float"
 )
 
+// IsValid checks if the FieldType is known.
 func (ft FieldType) IsValid() bool {
 	switch ft {
 	case
