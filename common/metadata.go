@@ -84,27 +84,46 @@ type FieldDefinition struct {
 	// Pattern is a regex pattern that the field value must match (if any).
 	Pattern string `json:"pattern,omitempty"`
 	// Values is a list of allowed values for enum fields (if any).
-	Values []string `json:"enumValues,omitempty"`
+	Values []string `json:"values,omitempty"`
 	// ValuesRestricted indicates if the field value must be limited to what's in Values.
-	ValuesRestricted bool `json:"enumRestricted,omitempty"`
+	ValuesRestricted bool `json:"valuesRestricted,omitempty"`
 	// Association defines association/relationship information for the field (if any).
-	Association *Relationship `json:"relationship,omitempty"`
+	Association *AssociationDefinition `json:"association,omitempty"`
 }
 
-// Relationship is a supporting type from schema.yaml.
-type Relationship struct {
-	Kind         string              `json:"kind"`
-	TargetObject string              `json:"targetObject"`
-	TargetField  string              `json:"targetField,omitempty"`
-	Cardinality  string              `json:"cardinality,omitempty"`
-	OnDelete     string              `json:"onDelete,omitempty"`
-	Required     bool                `json:"required,omitempty"`
-	InverseName  string              `json:"inverseName,omitempty"`
-	Labels       *RelationshipLabels `json:"labels,omitempty"`
+// AssociationDefinition defines relationship information for a field
+// to another object. Note that not all providers will support all
+// aspects of the association. This is a best-effort attempt to create
+// a common schema for associations across providers.
+//
+// In the event that a provider doesn't support a particular aspect of
+// the association, and assuming that the field has a value, then the
+// value should be ignored, and a warning should be added to the
+// UpsertMetadataResult.
+type AssociationDefinition struct {
+	// Kind is the high-level association variety (e.g., 'foreignKey', 'lookup', 'ref').
+	// The provider determines the exact behavior.
+	Kind string `json:"kind"`
+	// TargetObject is the name of the referenced/parent object.
+	TargetObject string `json:"targetObject"`
+	// TargetField is the name of the referenced field on the target object.
+	// Defaults to the target's primary key when omitted.
+	TargetField string `json:"targetField,omitempty"`
+	// Relationship cardinality from the referencing field's perspective (e.g., 'many-to-one', 'one-to-one').
+	Cardinality string `json:"cardinality,omitempty"`
+	// OnDelete defines the behavior upon foreign object deletion, where supported.
+	// E.g., 'cascade', 'restrict', 'setNull'.
+	OnDelete string `json:"onDelete,omitempty"`
+	// Required means that, if true, a referenced record must exist (i.e., NOT NULL foreign key).
+	Required bool `json:"required,omitempty"`
+	// InverseName is an optional inverse relationship/property name exposed on the target object.
+	InverseName string `json:"inverseName,omitempty"`
+	// Labels represents optional UI labels for the association
+	Labels *AssociationLabels `json:"labels,omitempty"`
 }
 
-// RelationshipLabels is a supporting type from schema.yaml.
-type RelationshipLabels struct {
+// AssociationLabels represents UI labels for an association.
+type AssociationLabels struct {
 	Singular string `json:"singular"`
 	Plural   string `json:"plural"`
 }
