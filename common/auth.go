@@ -8,6 +8,9 @@ import (
 // authTokenContextKey is the type used for the context key for the auth token.
 type authTokenContextKey string
 
+// authTokenKey is the context key for the auth token.
+const authTokenKey = authTokenContextKey("authToken")
+
 // AuthenticatedHTTPClient is an interface for an http client which can automatically
 // authenticate itself. This is useful for OAuth authentication, where the access token
 // needs to be refreshed automatically. The signatures are a subset of http.Client,
@@ -27,7 +30,7 @@ func WithAuthToken(ctx context.Context, token AuthToken) context.Context {
 		ctx = context.Background()
 	}
 
-	return context.WithValue(ctx, authTokenContextKey("authToken"), token)
+	return context.WithValue(ctx, authTokenKey, token)
 }
 
 // GetAuthToken returns the auth token from the context, if it exists.
@@ -36,7 +39,7 @@ func GetAuthToken(ctx context.Context) (AuthToken, bool) {
 		return "", false
 	}
 
-	sub := ctx.Value(authTokenContextKey("authToken"))
+	sub := ctx.Value(authTokenKey)
 	if sub == nil {
 		return "", false
 	}
