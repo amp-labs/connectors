@@ -77,6 +77,14 @@ type ObjectMetadataConnector interface {
 	ListObjectMetadata(ctx context.Context, objectNames []string) (*ListObjectMetadataResult, error)
 }
 
+// MetadataUpsertConnector is an interface that extends the Connector interface with
+// the ability to create metadata.
+type MetadataUpsertConnector interface {
+	Connector
+
+	UpsertMetadata(ctx context.Context, params *common.UpsertMetadataParams) (*common.UpsertMetadataResult, error)
+}
+
 // AuthMetadataConnector is an interface that extends the Connector interface with
 // the ability to retrieve metadata information about authentication.
 type AuthMetadataConnector interface {
