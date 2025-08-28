@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -13,6 +14,12 @@ import (
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
 	url.WithQueryParam("limit", "1")
+
+	if objectName == "issues" {
+		// start_time and end_time is required for issues object
+		url.WithQueryParam("start_time", time.Now().AddDate(0, 0, -30).Format(time.RFC3339))
+		url.WithQueryParam("end_time", time.Now().Format(time.RFC3339))
+	}
 
 	if err != nil {
 		return nil, err

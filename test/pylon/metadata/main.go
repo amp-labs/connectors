@@ -19,7 +19,7 @@ func run() error {
 	ctx := context.Background()
 	connector := pylon.GetConnector(ctx)
 
-	m, err := connector.ListObjectMetadata(ctx, []string{"contacts", "tags", "teams"})
+	m, err := connector.ListObjectMetadata(ctx, []string{"contacts", "accounts", "issues"})
 	if err != nil {
 		log.Fatal(err)
 	}
