@@ -57,7 +57,7 @@ func (ft FieldType) IsValid() bool {
 // and assuming that the field has a value, then the value should be
 // ignored, and a warning should be added to the UpsertMetadataResult.
 type FieldDefinition struct {
-	// FieldName is the short name of the field, e.g. "My_Custom_Field".
+	// FieldName is the identifier of the field, e.g. "My_Custom_Field".
 	FieldName string `json:"fieldName"`
 	// DisplayName is the human-readable name of the field, e.g. "My Custom Field".
 	DisplayName string `json:"displayName"`
