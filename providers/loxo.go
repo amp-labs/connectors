@@ -8,7 +8,7 @@ func init() {
 	SetInfo(Loxo, ProviderInfo{
 		DisplayName: "Loxo",
 		AuthType:    ApiKey,
-		BaseURL:     "https://pod4.app.loxo.co/api/integration-user-loxo-withampersand-com",
+		BaseURL:     "https://{{.domain}}/api/{{.agency_slug}}",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
