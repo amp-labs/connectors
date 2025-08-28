@@ -11,6 +11,8 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+var limit = "100" //nolint:gochecknoglobals
+
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
 	url.WithQueryParam("limit", "1")
@@ -87,35 +89,18 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	if params.ObjectName == "issues" {
-		// Issues Object requires start_time and end_time query parameters
-		// Time window should not exceed 30 days
-		// If since is not provided, default to last 30 days
-
-		var startTime, endTime time.Time
-
-		if params.Since.IsZero() {
-			startTime = time.Now().UTC().AddDate(0, 0, -30)
-		} else {
-			startTime = params.Since
+		// issues required start_time and end_time query params.
+		// The time window cannot exceed 30 days.
+		// addIssuesTimeWindowQuery adds start_time and end_time query params for the "issues" object
+		// and validates the time window does not exceed 30 days.
+		if err := addIssuesTimeWindowQuery(url, params); err != nil {
+			return nil, err
 		}
-
-		if params.Until.IsZero() {
-			endTime = time.Now().UTC()
-		} else {
-			endTime = params.Until
-		}
-
-		//Validate the time window does not exceed 30 days
-		if endTime.Sub(startTime) > 30*24*time.Hour {
-			return nil, fmt.Errorf("time window exceeds 30 days")
-		}
-
-		url.WithQueryParam("start_time", startTime.Format(time.RFC3339))
-		url.WithQueryParam("end_time", endTime.Format(time.RFC3339))
 	}
 
 	if params.NextPage != "" {
 		url.WithQueryParam("cursor", params.NextPage.String())
+		url.WithQueryParam("limit", limit)
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -129,7 +114,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		response,
-		common.ExtractRecordsFromPath("items"),
+		common.ExtractRecordsFromPath("data"),
 		nextRecordsURL(),
 		common.GetMarshaledData,
 		params.Fields,

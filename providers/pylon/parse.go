@@ -8,7 +8,17 @@ import (
 
 func nextRecordsURL() common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		nextCursor, err := jsonquery.New(node).StringOptional("next_cursor")
+		pagination, err := jsonquery.New(node).ObjectOptional("pagination")
+		if err != nil || pagination == nil {
+			return "", err
+		}
+
+		hasNextPage, err := jsonquery.New(pagination).BoolRequired("has_next_page")
+		if err != nil || !hasNextPage {
+			return "", nil //nolint:nilerr
+		}
+
+		nextCursor, err := jsonquery.New(pagination).StringOptional("cursor")
 		if err != nil || nextCursor == nil {
 			return "", err
 		}
