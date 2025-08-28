@@ -1,5 +1,6 @@
 package common
 
+// UpsertMetadataAction represents the action taken during an upsert operation.
 type UpsertMetadataAction string
 
 const (
@@ -11,6 +12,7 @@ const (
 	UpsertMetadataActionNone UpsertMetadataAction = "none"
 )
 
+// IsValid checks if the UpsertMetadataAction is known.
 func (a UpsertMetadataAction) IsValid() bool {
 	switch a {
 	case UpsertMetadataActionCreate,
@@ -22,14 +24,23 @@ func (a UpsertMetadataAction) IsValid() bool {
 	}
 }
 
+// AssociationCardinality represents the cardinality of an association/relationship.
 type AssociationCardinality string
 
 const (
-	associationCardinalityNotSet    AssociationCardinality = ""
+	// associationCardinalityNotSet means the cardinality is not specified.
+	associationCardinalityNotSet AssociationCardinality = ""
+
+	// AssociationCardinalityManyToOne indicates that many records in the referencing object
+	// can reference a single record in the target object.
 	AssociationCardinalityManyToOne AssociationCardinality = "many-to-one"
-	AssociationCardinalityOneToOne  AssociationCardinality = "one-to-one"
+
+	// AssociationCardinalityOneToOne indicates that each record in the referencing object
+	// can reference only one record in the target object, and vice versa.
+	AssociationCardinalityOneToOne AssociationCardinality = "one-to-one"
 )
 
+// IsValid checks if the AssociationCardinality is known.
 func (ac AssociationCardinality) IsValid() bool {
 	switch ac {
 	case associationCardinalityNotSet,
@@ -44,10 +55,20 @@ func (ac AssociationCardinality) IsValid() bool {
 type AssociationOnDeleteAction string
 
 const (
-	associationOnDeleteActionNotSet   AssociationOnDeleteAction = ""
-	AssociationOnDeleteActionCascade  AssociationOnDeleteAction = "cascade"
+	// associationOnDeleteActionNotSet means the action is not specified.
+	associationOnDeleteActionNotSet AssociationOnDeleteAction = ""
+
+	// AssociationOnDeleteActionCascade means that when the parent record is deleted,
+	// all child records referencing it are also deleted.
+	AssociationOnDeleteActionCascade AssociationOnDeleteAction = "cascade"
+
+	// AssociationOnDeleteActionRestrict means that the parent record cannot be deleted
+	// if there are any child records referencing it.
 	AssociationOnDeleteActionRestrict AssociationOnDeleteAction = "restrict"
-	AssociationOnDeleteActionSetNull  AssociationOnDeleteAction = "setNull"
+
+	// AssociationOnDeleteActionSetNull means that when the parent record is deleted,
+	// the foreign key field in the child records is set to NULL.
+	AssociationOnDeleteActionSetNull AssociationOnDeleteAction = "setNull"
 )
 
 func (a AssociationOnDeleteAction) IsValid() bool {
@@ -65,7 +86,7 @@ func (a AssociationOnDeleteAction) IsValid() bool {
 // UpsertMetadataParams represents parameters for upserting metadata.
 type UpsertMetadataParams struct {
 	// Maps object names to field definitions.
-	FieldsDefinitions map[string][]FieldDefinition `json:"fieldDefinitions"`
+	Fields map[string][]FieldDefinition `json:"fields"`
 }
 
 // FieldType represents the data type of a field.
@@ -197,8 +218,8 @@ type AssociationDefinition struct {
 	OnDelete AssociationOnDeleteAction `json:"onDelete,omitempty"`
 	// Required means that, if true, a referenced record must exist (i.e., NOT NULL foreign key).
 	Required bool `json:"required,omitempty"`
-	// InverseName is an optional inverse relationship/property name exposed on the target object.
-	InverseName string `json:"inverseName,omitempty"`
+	// ReverseLookupFieldName is an optional inverse relationship/property name exposed on the target object.
+	ReverseLookupFieldName string `json:"reverseLookupFieldName,omitempty"`
 	// Labels represents optional UI labels for the association
 	Labels *AssociationLabels `json:"labels,omitempty"`
 }
