@@ -116,32 +116,60 @@ type FieldDefinition struct {
 	Description string `json:"description,omitempty"`
 	// ValueType is the data type of the field.
 	ValueType FieldType `json:"valueType"`
-	// Length is the maximum length of the field (for string types).
-	Length *int `json:"length,omitempty"`
-	// Precision is the total number of digits (for decimal types).
-	Precision *int `json:"precision,omitempty"`
-	// Scale is the number of digits to the right of the decimal point (for decimal types).
-	Scale *int `json:"scale,omitempty"`
 	// Required indicates if the field is required.
 	Required bool `json:"required,omitempty"`
 	// Unique indicates if the field must be unique across all records.
 	Unique bool `json:"unique,omitempty"`
 	// Indexed indicates if the field should be indexed for faster search.
 	Indexed bool `json:"indexed,omitempty"`
-	// DefaultValue is the default value for the field (if any).
-	DefaultValue string `json:"defaultValue,omitempty"`
+	// StringOptions contains additional options for string fields (if any).
+	StringOptions *StringFieldOptions `json:"stringOptions,omitempty"`
+	// NumericOptions contains additional options for numeric fields (if any).
+	NumericOptions *NumericFieldOptions `json:"numericOptions,omitempty"`
+	// Association defines association/relationship information for the field (if any).
+	Association *AssociationDefinition `json:"association,omitempty"`
+}
+
+// NumericFieldOptions contains additional options for numeric fields.
+// Note that not all providers will support all options.
+// This is a best-effort attempt to create a common schema for numeric
+// field options across providers.
+//
+// In the event that a provider doesn't support a particular option,
+// and assuming that the option has a value, then the value should be
+// ignored, and a warning should be added to the UpsertMetadataResult.
+type NumericFieldOptions struct {
+	// Precision is the total number of digits (for decimal types).
+	Precision *int `json:"precision,omitempty"`
+	// Scale is the number of digits to the right of the decimal point (for decimal types).
+	Scale *int `json:"scale,omitempty"`
 	// Min is the minimum value for numeric fields (if any).
 	Min *float64 `json:"min,omitempty"`
 	// Max is the maximum value for numeric fields (if any).
 	Max *float64 `json:"max,omitempty"`
-	// Pattern is a regex pattern that the field value must match (if any).
+	// DefaultValue is the default value for the field (if any).
+	DefaultValue *float64 `json:"defaultValue,omitempty"`
+}
+
+// StringFieldOptions contains additional options for string fields.
+// Note that not all providers will support all options.
+// This is a best-effort attempt to create a common schema for string
+// field options across providers.
+//
+// In the event that a provider doesn't support a particular option,
+// and assuming that the option has a value, then the value should be
+// ignored, and a warning should be added to the UpsertMetadataResult.
+type StringFieldOptions struct {
+	// Length is the maximum length of the string field.
+	Length *int `json:"length,omitempty"`
+	// Pattern is a regex pattern that the string field value must match (if any).
 	Pattern string `json:"pattern,omitempty"`
 	// Values is a list of allowed values for enum fields (if any).
 	Values []string `json:"values,omitempty"`
 	// ValuesRestricted indicates if the field value must be limited to what's in Values.
 	ValuesRestricted bool `json:"valuesRestricted,omitempty"`
-	// Association defines association/relationship information for the field (if any).
-	Association *AssociationDefinition `json:"association,omitempty"`
+	// DefaultValue is the default value for the field (if any).
+	DefaultValue *string `json:"defaultValue,omitempty"`
 }
 
 // AssociationDefinition defines relationship information for a field
@@ -154,9 +182,9 @@ type FieldDefinition struct {
 // value should be ignored, and a warning should be added to the
 // UpsertMetadataResult.
 type AssociationDefinition struct {
-	// Kind is the high-level association variety (e.g., 'foreignKey', 'lookup', 'ref').
+	// AssociationType is the high-level association variety (e.g., 'foreignKey', 'lookup', 'ref').
 	// The provider determines the exact behavior.
-	Kind string `json:"kind"`
+	AssociationType string `json:"associationType"`
 	// TargetObject is the name of the referenced/parent object.
 	TargetObject string `json:"targetObject"`
 	// TargetField is the name of the referenced field on the target object.
@@ -186,7 +214,7 @@ type UpsertMetadataResult struct {
 	// Indicates if the upsert operation was successful.
 	Success bool `json:"success"`
 
-	// Maps object names to field upsert results.
+	// Maps object name -> field name -> upsert result.
 	Fields map[string]map[string]FieldUpsertResult `json:"fields"`
 }
 
