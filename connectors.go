@@ -78,7 +78,7 @@ type ObjectMetadataConnector interface {
 }
 
 // MetadataUpsertConnector is an interface that extends the Connector interface with
-// the ability to create metadata.
+// the ability to create custom objects and fields in the SaaS instance.
 type MetadataUpsertConnector interface {
 	Connector
 
