@@ -11,7 +11,7 @@ const (
 	UpsertMetadataActionNone UpsertMetadataAction = "none"
 )
 
-// UpsertMetadataParams matches the schema.yaml CreateMetadata structure.
+// UpsertMetadataParams represents parameters for upserting metadata.
 type UpsertMetadataParams struct {
 	// Maps object names to field definitions.
 	FieldsDefinitions map[string][]*FieldDefinition `json:"customFields"`
@@ -137,13 +137,16 @@ type UpsertMetadataResult struct {
 	Fields map[string][]*FieldUpsertResult `json:"fields"`
 }
 
-// FieldUpsertResult is a supporting type from schema.yaml.
+// FieldUpsertResult is the result of an upsert operation for a single field.
+// It indicates what action was taken (create, update, none) and any
+// provider-specific metadata or warnings.
 type FieldUpsertResult struct {
 	// FieldName is the name of the field.
 	FieldName string `json:"fieldName"`
 	// Action indicates what action was taken (create, update, none).
 	Action UpsertMetadataAction `json:"action"`
 	// Metadata contains provider-specific metadata about the field (if any).
+	// Specific keys/values will vary by provider. Considered strictly informational.
 	Metadata map[string]any `json:"metadata,omitempty"`
 	// Warnings contains any warnings that occurred during the upsert operation,
 	// such as unsupported field attributes.
