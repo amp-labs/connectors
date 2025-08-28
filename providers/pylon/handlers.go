@@ -74,3 +74,64 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	return &objectMetadata, nil
 }
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.ObjectName == "issues" {
+		// Issues Object requires start_time and end_time query parameters
+		// Time window should not exceed 30 days
+		// If since is not provided, default to last 30 days
+
+		var startTime, endTime time.Time
+
+		if params.Since.IsZero() {
+			startTime = time.Now().UTC().AddDate(0, 0, -30)
+		} else {
+			startTime = params.Since
+		}
+
+		if params.Until.IsZero() {
+			endTime = time.Now().UTC()
+		} else {
+			endTime = params.Until
+		}
+
+		//Validate the time window does not exceed 30 days
+		if endTime.Sub(startTime) > 30*24*time.Hour {
+			return nil, fmt.Errorf("time window exceeds 30 days")
+		}
+
+		url.WithQueryParam("start_time", startTime.Format(time.RFC3339))
+		url.WithQueryParam("end_time", endTime.Format(time.RFC3339))
+	}
+
+	if params.NextPage != "" {
+		url.WithQueryParam("cursor", params.NextPage.String())
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath("items"),
+		nextRecordsURL(),
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}
