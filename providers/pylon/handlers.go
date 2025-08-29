@@ -11,6 +11,8 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+var limit = "1000" //nolint:gochecknoglobals
+
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
 	url.WithQueryParam("limit", "1")
@@ -73,4 +75,49 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.ObjectName == "issues" {
+		// issues required start_time and end_time query params.
+		// The time window cannot exceed 30 days.
+		// addIssuesTimeWindowQuery adds start_time and end_time query params for the "issues" object
+		// and validates the time window does not exceed 30 days.
+		if err := addIssuesTimeWindowQuery(url, params); err != nil {
+			return nil, err
+		}
+	}
+
+	url.WithQueryParam("limit", limit)
+
+	if params.NextPage != "" {
+		url.WithQueryParam("cursor", params.NextPage.String())
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath("data"),
+		nextRecordsURL(),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
