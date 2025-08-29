@@ -76,7 +76,7 @@ func testUpdateTasks(ctx context.Context, conn *cc.Connector, taskId string) err
 		ObjectName: "tasks",
 		RecordId:   taskId,
 		RecordData: map[string]any{
-			"name": "Updated ampersand test demo",
+			"title": "Updated ampersand test demo",
 		},
 	}
 
