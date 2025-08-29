@@ -67,6 +67,7 @@ import (
 	"github.com/amp-labs/connectors/providers/pipedrive"
 	"github.com/amp-labs/connectors/providers/pipeliner"
 	"github.com/amp-labs/connectors/providers/podium"
+	"github.com/amp-labs/connectors/providers/pylon"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/seismic"
@@ -153,6 +154,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Pipedrive:               wrapper(newPipedriveConnector),
 	providers.Pipeliner:               wrapper(newPipelinerConnector),
 	providers.Podium:                  wrapper(newPodiumConnector),
+	providers.Pylon:                   wrapper(newPylonConnector),
 	providers.Salesforce:              wrapper(newSalesforceConnector),
 	providers.Salesloft:               wrapper(newSalesloftConnector),
 	providers.ServiceNow:              wrapper(newServiceNowConnector),
@@ -674,4 +676,10 @@ func newBreakcoldConnector(
 	params common.ConnectorParams,
 ) (*breakcold.Connector, error) {
 	return breakcold.NewConnector(params)
+}
+
+func newPylonConnector(
+	params common.ConnectorParams,
+) (*pylon.Connector, error) {
+	return pylon.NewConnector(params)
 }
