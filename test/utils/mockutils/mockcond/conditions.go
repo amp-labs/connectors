@@ -41,6 +41,7 @@ func (o Or) EvaluateCondition(w http.ResponseWriter, r *http.Request) bool {
 
 	return false
 }
+
 func (a And) EvaluateCondition(w http.ResponseWriter, r *http.Request) bool {
 	if len(a) == 0 {
 		return false

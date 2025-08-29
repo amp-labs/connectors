@@ -21,7 +21,6 @@ func GetXeroConnector(ctx context.Context) *xero.Connector {
 		common.WithOAuthConfig(getConfig(reader)),
 		common.WithOAuthToken(reader.GetOauthToken()),
 	)
-
 	if err != nil {
 		utils.Fail(err.Error())
 	}
@@ -37,7 +36,6 @@ func GetXeroConnector(ctx context.Context) *xero.Connector {
 }
 
 func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
-
 	cfg := &oauth2.Config{
 		ClientID:     reader.Get(credscanning.Fields.ClientId),
 		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),

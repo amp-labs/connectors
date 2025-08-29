@@ -89,7 +89,6 @@ func main() {
 			ObjectName: "customer",
 			RecordId:   writeRes.RecordId,
 		})
-
 		if err != nil {
 			utils.Fail("error deleting customer", "error", err)
 		}

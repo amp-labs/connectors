@@ -30,7 +30,6 @@ func main() {
 		ObjectName: "emails",
 		Fields:     datautils.NewStringSet("email", "primary"),
 	})
-
 	if err != nil {
 		slog.Error(err.Error())
 	}
@@ -42,7 +41,7 @@ func main() {
 	res, err = connector.Read(ctx, common.ReadParams{
 		ObjectName: "repos",
 		Fields:     datautils.NewStringSet("full_name", "downloads_url", "description", "default_branch"),
-		Since:      time.Date(2024, 03, 1, 0, 0, 0, 0, time.UTC),
+		Since:      time.Date(2024, 0o3, 1, 0, 0, 0, 0, time.UTC),
 	})
 	if err != nil {
 		slog.Error(err.Error())
