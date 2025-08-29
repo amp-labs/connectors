@@ -101,9 +101,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		}
 	}
 
+	url.WithQueryParam("limit", limit)
+
 	if params.NextPage != "" {
 		url.WithQueryParam("cursor", params.NextPage.String())
-		url.WithQueryParam("limit", limit)
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
