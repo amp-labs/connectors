@@ -1,0 +1,22 @@
+{
+    "data": [
+        {
+            "id": "fb7c3918-5a16-45e9-ba4a-35fed505d07f",
+            "name": "Aurasell",
+            "owner": null,
+            "domain": "aurasell.ai",
+            "primary_domain": "aurasell.ai",
+            "type": "customer",
+            "created_at": "2025-08-26T16:11:58Z",
+            "tags": null,
+            "custom_fields": {},
+            "latest_customer_activity_time": "2025-08-28T18:08:38Z",
+            "external_ids": null
+        }
+    ],
+    "pagination": {
+        "cursor": "MjAyNS0wOC0yNlQxNjoxMTo1OC44NzFafGZiN2MzOTE4LTVhMTYtNDVlOS1iYTRhLTM1ZmVkNTA1ZDA3Zg==",
+        "has_next_page": true
+    },
+    "request_id": "926e3ec9-d7bc-4ef9-b704-f527cb6f4748"
+}
