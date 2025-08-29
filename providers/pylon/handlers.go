@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-var limit = "2" //nolint:gochecknoglobals
+var limit = "1000" //nolint:gochecknoglobals
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)

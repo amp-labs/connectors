@@ -29,7 +29,8 @@ func addIssuesTimeWindowQuery(url *urlbuilder.URL, params common.ReadParams) err
 	var startTime, endTime time.Time
 
 	if params.Since.IsZero() {
-		startTime = time.Now().UTC().AddDate(0, 0, -30)
+		//Default to last 29 days to be on safe side.
+		startTime = time.Now().UTC().AddDate(0, 0, -29)
 	} else {
 		startTime = params.Since.UTC()
 	}
@@ -40,7 +41,6 @@ func addIssuesTimeWindowQuery(url *urlbuilder.URL, params common.ReadParams) err
 		endTime = params.Until.UTC()
 	}
 
-	// Validate the time window does not exceed 30 days
 	if endTime.Sub(startTime) > 30*24*time.Hour {
 		return errors.New("time window exceeds 30 days") // nolint:goerr113
 	}
