@@ -29,7 +29,7 @@ func addIssuesTimeWindowQuery(url *urlbuilder.URL, params common.ReadParams) err
 	var startTime, endTime time.Time
 
 	if params.Since.IsZero() {
-		//Default to last 29 days to be on safe side.
+		// Default to last 29 days to be on safe side.
 		startTime = time.Now().UTC().AddDate(0, 0, -29)
 	} else {
 		startTime = params.Since.UTC()
