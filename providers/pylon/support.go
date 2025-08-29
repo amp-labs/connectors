@@ -14,7 +14,7 @@ func supportedOperations() components.EndpointRegistryInput {
 	}
 
 	writeSupport := []string{
-		"attachments", "tasks",
+		"attachments", "accounts", "contacts", "issues", "tasks", "teams", "projects", "tags",
 	}
 
 	return components.EndpointRegistryInput{

@@ -127,13 +127,15 @@ func (c *Connector) parseReadResponse(
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	method := http.MethodPost
 
-	if params.RecordId != "" {
-		method = http.MethodPut
-	}
-
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
 	if err != nil {
 		return nil, err
+	}
+
+	if params.RecordId != "" {
+		method = http.MethodPatch
+
+		url.AddPath(params.RecordId)
 	}
 
 	jsonData, err := json.Marshal(params.RecordData)
