@@ -1,7 +1,9 @@
 package pylon
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -9,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 var limit = "1000" //nolint:gochecknoglobals
@@ -120,4 +123,62 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	method := http.MethodPost
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		method = http.MethodPatch
+
+		url.AddPath(params.RecordId)
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	dataNode, err := jsonquery.New(body).ObjectOptional("data")
+	if err != nil {
+		return nil, err
+	}
+
+	recordID, err := jsonquery.New(dataNode).StrWithDefault("id", "")
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := jsonquery.Convertor.ObjectToMap(dataNode)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     resp,
+	}, nil
 }
