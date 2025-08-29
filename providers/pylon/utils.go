@@ -29,7 +29,9 @@ func addIssuesTimeWindowQuery(url *urlbuilder.URL, params common.ReadParams) err
 	var startTime, endTime time.Time
 
 	if params.Since.IsZero() {
-		// Default to last 29 days to be on safe side.
+		// Default to last 29 days instead of 30 to account for potential
+		// timezone transitions and microsecond precision differences that
+		// could cause the API to reject requests exceeding 30 days exactly.
 		startTime = time.Now().UTC().AddDate(0, 0, -29)
 	} else {
 		startTime = params.Since.UTC()
