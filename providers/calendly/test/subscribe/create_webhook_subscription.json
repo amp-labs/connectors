@@ -1,0 +1,19 @@
+{
+  "resource": {
+    "uri": "https://api.calendly.com/webhook_subscriptions/MOCK_SUBSCRIPTION_ID",
+    "callback_url": "https://example.com/webhook",
+    "created_at": "2024-01-01T00:00:00.000000Z",
+    "updated_at": "2024-01-01T00:00:00.000000Z",
+    "retry_started_at": null,
+    "state": "active",
+    "events": [
+      "invitee.created",
+      "invitee.canceled"
+    ],
+    "scope": "organization",
+    "organization": "https://api.calendly.com/organizations/ORG123",
+    "user": null,
+    "group": null,
+    "creator": "https://api.calendly.com/users/MOCK_USER_ID"
+  }
+} 
