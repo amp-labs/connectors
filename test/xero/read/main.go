@@ -32,9 +32,8 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "contacts",
 		Fields:     connectors.Fields("ContactID", "ContactNumber", "AccountNumber"),
-		Since:      time.Date(2025, 6, 01, 0, 0, 0, 0, time.UTC),
+		Since:      time.Date(2025, 6, 0o1, 0, 0, 0, 0, time.UTC),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from Xero", "error", err)
 	}
@@ -46,7 +45,6 @@ func main() {
 		ObjectName: "contactGroups",
 		Fields:     connectors.Fields("Name", "ContactGroupID", "Status"),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from Xero", "error", err)
 	}
@@ -58,7 +56,6 @@ func main() {
 		ObjectName: "purchaseOrders",
 		Fields:     connectors.Fields("PurchaseOrderID", "PurchaseOrderNumber", "FirstName"),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from Xero", "error", err)
 	}

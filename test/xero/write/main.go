@@ -29,7 +29,6 @@ func run() error {
 	conn := xero.GetXeroConnector(ctx)
 
 	_, err := conn.GetPostAuthInfo(ctx)
-
 	if err != nil {
 		utils.Fail(err.Error())
 	}
@@ -76,7 +75,6 @@ func testCreatingContactGroups(ctx context.Context, conn *cc.Connector) (string,
 	_, _ = os.Stdout.WriteString("\n")
 
 	return res.RecordId, nil
-
 }
 
 func testUpdateContactGroups(ctx context.Context, conn *cc.Connector, recordId string) error {
@@ -105,7 +103,6 @@ func testUpdateContactGroups(ctx context.Context, conn *cc.Connector, recordId s
 	_, _ = os.Stdout.WriteString("\n")
 
 	return nil
-
 }
 
 func testCreatingTaxRates(ctx context.Context, conn *cc.Connector) (string, error) {
@@ -140,5 +137,4 @@ func testCreatingTaxRates(ctx context.Context, conn *cc.Connector) (string, erro
 	_, _ = os.Stdout.WriteString("\n")
 
 	return res.RecordId, nil
-
 }
