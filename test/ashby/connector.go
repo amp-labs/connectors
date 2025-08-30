@@ -15,7 +15,6 @@ func GetAshbyConnector(ctx context.Context) *ashby.Connector {
 	reader := testUtils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewBasicAuthHTTPClient(ctx, reader.Get(credscanning.Fields.Username), reader.Get(credscanning.Fields.Password))
-
 	if err != nil {
 		testUtils.Fail(err.Error())
 	}

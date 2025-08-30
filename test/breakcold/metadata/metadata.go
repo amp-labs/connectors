@@ -15,7 +15,6 @@ func main() {
 	conn := breakcold.GetBreakcoldConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"status", "workspaces", "members", "tags", "lists", "leads"})
-
 	if err != nil {
 		log.Fatal(err)
 	}

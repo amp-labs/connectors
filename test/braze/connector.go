@@ -16,7 +16,6 @@ func NewBrazeConnector(ctx context.Context) *braze.Connector {
 	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, "Authorization", "Bearer "+reader.Get(credscanning.Fields.ApiKey))
-
 	if err != nil {
 		utils.Fail(err.Error())
 	}
