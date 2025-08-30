@@ -1,0 +1,14 @@
+{
+    "count": 1,
+    "value": [{
+        "id": "6802eae7-b10d-49b1-8ffd-ec5611d69af8",
+        "name": "US Dollar",
+        "iso_4217": "USD",
+        "locale": "United States",
+        "decimal_digits": 2,
+        "currency_symbol": "$",
+        "rounding_type": "Half rounds away from zero",
+        "active": true,
+        "organization_currency": true
+    }]
+}
