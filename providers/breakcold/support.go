@@ -34,7 +34,6 @@ func supportedOperations() components.EndpointRegistryInput {
 	deleteSupport := []string{
 		"status",
 		"lead",
-		"leads/add-list",
 		"tags",
 		"lists",
 		"notes",

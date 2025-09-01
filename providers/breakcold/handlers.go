@@ -173,7 +173,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	method := http.MethodPost
 
-	if len(params.RecordId) > 0 {
+	if params.RecordId != "" {
 		urlRaw, err := url.ToURL()
 		if err != nil {
 			return nil, err
