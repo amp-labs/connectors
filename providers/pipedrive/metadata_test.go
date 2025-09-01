@@ -17,6 +17,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	zeroRecords := testutils.DataFromFile(t, "zero-records.json")
 	success := testutils.DataFromFile(t, "currencies.json")
+	activityFields := testutils.DataFromFile(t, "activityFields.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -61,7 +62,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Zero records returned from server fallback to static file",
-			Input: []string{"activities", "leadLabels"},
+			Input: []string{"leadLabels"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, zeroRecords),
@@ -69,28 +70,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"activities": {
-						DisplayName: "Activities",
-						Fields: map[string]common.FieldMetadata{
-							"busy_flag": {
-								DisplayName:  "busy_flag",
-								ValueType:    "boolean",
-								ProviderType: "boolean",
-							},
-							"deal_title": {
-								DisplayName:  "deal_title",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-						},
-						FieldsMap: map[string]string{
-							"active_flag":         "active_flag",
-							"add_time":            "add_time",
-							"assigned_to_user_id": "assigned_to_user_id",
-							"attendees":           "attendees",
-							"busy_flag":           "busy_flag",
-						},
-					},
 					"leadLabels": {
 						DisplayName: "Lead Labels",
 						Fields: map[string]common.FieldMetadata{
@@ -117,6 +96,43 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 									}, {
 										Value:        "gray",
 										DisplayValue: "gray",
+									},
+								},
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Objects using metadata discovery endpoints",
+			Input: []string{"activities"},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, activityFields),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"activities": {
+						DisplayName: "Activities",
+						Fields: map[string]common.FieldMetadata{
+							"priority": {
+								DisplayName:  "Priority",
+								ValueType:    "singleSelect",
+								ProviderType: "enum",
+								Values: common.FieldValues{
+									{
+										Value:        "24",
+										DisplayValue: "Low",
+									}, {
+										Value:        "25",
+										DisplayValue: "Medium",
+									}, {
+										Value:        "26",
+										DisplayValue: "High",
 									},
 								},
 							},
