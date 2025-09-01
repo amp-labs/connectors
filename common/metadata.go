@@ -121,6 +121,10 @@ func (ft FieldType) IsValid() bool {
 	}
 }
 
+func (ft FieldType) IsSelectionType() bool {
+	return ft == FieldTypeSingleSelect || ft == FieldTypeMultiSelect
+}
+
 // FieldDefinition represents a field definition. Note that not all
 // providers will support all fields. This is a best-effort attempt
 // to create a common schema for custom fields across providers.

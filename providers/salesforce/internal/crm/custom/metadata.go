@@ -1,7 +1,8 @@
-package salesforce
+package custom
 
 import (
 	"context"
+	"encoding/xml"
 	"errors"
 
 	"github.com/amp-labs/connectors/common"
@@ -10,32 +11,57 @@ import (
 
 var ErrCreateMetadata = errors.New("error in CreateMetadata")
 
+// UpsertMetadata creates or updates definition of a custom field.
+// https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_upsertMetadata.htm
+func (a *Adapter) UpsertMetadata(
+	ctx context.Context, params *common.UpsertMetadataParams,
+) (*common.UpsertMetadataResult, error) {
+	customFields := NewCustomFieldsPayload(params)
+
+	data, err := xml.MarshalIndent(customFields, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+
+	accessToken, present := common.GetAuthToken(ctx)
+	if !present {
+		return nil, common.ErrMissingAccessToken
+	}
+
+	response, err := a.CreateMetadata(ctx, data, accessToken.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return parseResponse(response)
+}
+
 // CreateMetadata creates custom metadata.
 // Requires non-expired access token to be passed directly.
 // According to documentation every XML type of request must include SessionHeader with access token.
 // See: https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_header_sessionheader.htm.
-func (c *Connector) CreateMetadata(ctx context.Context, data []byte, accessToken string) (string, error) {
+func (a *Adapter) CreateMetadata(ctx context.Context, data []byte, accessToken string) ([]byte, error) {
 	body, err := xquery.NewXML(data)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	body, err = putInsideEnvelope(body, accessToken)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	url, err := c.getSoapURL()
+	url, err := a.getSoapURL()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	resp, err := c.XMLClient.Post(ctx, url.String(), body, getSOAPHeaders()...)
+	resp, err := a.XMLClient.Post(ctx, url.String(), body, getSOAPHeaders()...)
 	if err != nil {
-		return "", errors.Join(ErrCreateMetadata, err)
+		return nil, errors.Join(ErrCreateMetadata, err)
 	}
 
-	return resp.Body.RawXML(), nil
+	return []byte(resp.Body.RawXML()), nil
 }
 
 func putInsideEnvelope(content *xquery.XML, accessToken string) (*xquery.XML, error) {
