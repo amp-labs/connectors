@@ -74,7 +74,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 		data, err := parseMetadata(res, c.Module.ID, obj)
 		if err != nil {
-			return nil, err
+			objMetadata.Errors[obj] = err
 		}
 
 		objMetadata.Result[obj] = *data
