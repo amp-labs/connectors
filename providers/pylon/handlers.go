@@ -14,7 +14,7 @@ import (
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
-var limit = "1000" //nolint:gochecknoglobals
+var limit = "999" //nolint:gochecknoglobals
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
