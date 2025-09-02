@@ -38,6 +38,8 @@ func NewCustomFieldsPayload(params *common.UpsertMetadataParams) UpsertMetadataP
 
 const metadataTypeCustomField = "CustomField"
 
+// UpsertMetadataCustomField fields can be found here:
+// https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/customfield.htm
 type UpsertMetadataCustomField struct {
 	XMLName               xml.Name `xml:"metadata"`
 	AttributeMetadataType string   `xml:"xsi:type,attr"`
