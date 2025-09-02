@@ -102,7 +102,7 @@ func handleTypeRequirements(
 	}
 
 	if definition.Association != nil {
-		return handleTypeAssociation(field)
+		return handleTypeAssociation(field, definition)
 	}
 
 	if definition.ValueType.IsSelectionType() {
@@ -161,8 +161,14 @@ func handleTypeString(field UpsertMetadataCustomField, definition common.FieldDe
 // This is limited at the moment. There is no lookup object in Ampersand but if association options
 // are supplied then we automatically imply the Lookup field type.
 // Note that there are other types, ex: ExternalLookup, IndirectLookup.
-func handleTypeAssociation(field UpsertMetadataCustomField) UpsertMetadataCustomField {
+func handleTypeAssociation(
+	field UpsertMetadataCustomField, definition common.FieldDefinition,
+) UpsertMetadataCustomField {
 	field.Type = "Lookup"
+
+	if definition.Association.TargetField != "" {
+		field.Type = "IndirectLookup"
+	}
 
 	return field
 }
@@ -248,15 +254,12 @@ func enhanceWithAssociation(
 	}
 
 	field.ReferenceTo = goutils.Pointer(definition.Association.TargetObject)
-	field.DeleteConstraint = goutils.Pointer(string(definition.Association.OnDelete))
 
 	if definition.Association.TargetField != "" {
 		field.ReferenceTargetField = goutils.Pointer(definition.Association.TargetField)
 	}
 
-	if field.ReferenceTargetField != nil {
-		field.Type = "IndirectLookup"
-	} else {
+	if field.ReferenceTargetField == nil {
 		field.DeleteConstraint = goutils.Pointer(string(definition.Association.OnDelete))
 	}
 
