@@ -53,7 +53,8 @@ func main() {
 					Unique:      false,
 					Indexed:     false,
 					StringOptions: &common.StringFieldOptions{
-						Length: goutils.Pointer(444),
+						Length:          goutils.Pointer(444),
+						NumDisplayLines: goutils.Pointer(39),
 					},
 				},
 				{

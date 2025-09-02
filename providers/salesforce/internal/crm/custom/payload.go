@@ -3,6 +3,7 @@ package custom
 import (
 	"encoding/xml"
 	"fmt"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
@@ -10,9 +11,10 @@ import (
 
 const (
 	// Data type LongTextArea must be at least 256 in length.
-	longTextAreaLength = 256
-	fieldTypeText      = "Text"
-	fieldTypeLongText  = "LongTextArea"
+	longTextAreaLength     = 256
+	fieldTypeText          = "Text"
+	fieldTypeLongText      = "LongTextArea"
+	defaultNumDisplayLines = 10
 )
 
 type UpsertMetadataPayload struct {
@@ -155,7 +157,8 @@ func handleTypeString(field UpsertMetadataCustomField, definition common.FieldDe
 
 	field.Type = fieldTypeLongText
 	// Must specify 'visibleLines' for a CustomField of type LongTextArea
-	field.VisibleLines = goutils.Pointer("10")
+	visibleLines := valueOrDefault(definition.StringOptions.NumDisplayLines, defaultNumDisplayLines)
+	field.VisibleLines = goutils.Pointer(strconv.Itoa(visibleLines))
 
 	return field
 }
@@ -181,7 +184,8 @@ func handleTypeSelections(
 ) UpsertMetadataCustomField {
 	if definition.ValueType == common.ValueTypeMultiSelect {
 		// Must specify 'visibleLines' for a CustomField of type MultiselectPicklist.
-		field.VisibleLines = goutils.Pointer("10")
+		visibleLines := valueOrDefault(definition.StringOptions.NumDisplayLines, defaultNumDisplayLines)
+		field.VisibleLines = goutils.Pointer(strconv.Itoa(visibleLines))
 	}
 
 	if definition.StringOptions != nil {
@@ -287,4 +291,12 @@ type Value struct {
 	FullName string `xml:"fullName"`
 	Default  bool   `xml:"default"`
 	Label    string `xml:"label"`
+}
+
+func valueOrDefault(value *int, defaultValue int) int {
+	if value == nil {
+		return defaultValue
+	}
+
+	return *value
 }

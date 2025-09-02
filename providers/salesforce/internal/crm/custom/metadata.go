@@ -4,12 +4,16 @@ import (
 	"context"
 	"encoding/xml"
 	"errors"
+	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/xquery"
 )
 
-var ErrCreateMetadata = errors.New("error in CreateMetadata")
+var (
+	ErrCreateMetadata = errors.New("error in performSOAPRequest")
+	ErrMarshalIndent  = errors.New("xml.MarshalIndent failed")
+)
 
 // UpsertMetadata creates or updates definition of a custom field.
 // https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_upsertMetadata.htm
@@ -20,7 +24,7 @@ func (a *Adapter) UpsertMetadata(
 
 	data, err := xml.MarshalIndent(customFields, "", "  ")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %w", ErrMarshalIndent, err)
 	}
 
 	accessToken, present := common.GetAuthToken(ctx)
@@ -28,7 +32,7 @@ func (a *Adapter) UpsertMetadata(
 		return nil, common.ErrMissingAccessToken
 	}
 
-	response, err := a.CreateMetadata(ctx, data, accessToken.String())
+	response, err := a.performSOAPRequest(ctx, data, accessToken.String())
 	if err != nil {
 		return nil, err
 	}
@@ -36,12 +40,16 @@ func (a *Adapter) UpsertMetadata(
 	return parseResponse(response)
 }
 
-// CreateMetadata creates custom metadata.
-// Requires non-expired access token to be passed directly.
-// According to documentation every XML type of request must include SessionHeader with access token.
-// See: https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_header_sessionheader.htm.
-func (a *Adapter) CreateMetadata(ctx context.Context, data []byte, accessToken string) ([]byte, error) {
-	body, err := xquery.NewXML(data)
+// performSOAPRequest sends a SOAP request to the Salesforce API using the provided xmlPayload.
+// The query in the payload determines the operation (e.g., read, create, update).
+//
+// A valid, non-expired accessToken must be passed directly.
+// Each SOAP request must include a SessionHeader with the access token, as required by Salesforce.
+// See: https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_header_sessionheader.htm
+//
+// Returns the raw SOAP response body.
+func (a *Adapter) performSOAPRequest(ctx context.Context, xmlPayload []byte, accessToken string) ([]byte, error) {
+	body, err := xquery.NewXML(xmlPayload)
 	if err != nil {
 		return nil, err
 	}

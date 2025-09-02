@@ -195,6 +195,9 @@ type StringFieldOptions struct {
 	ValuesRestricted bool `json:"valuesRestricted,omitempty"`
 	// DefaultValue is the default value for the field (if any).
 	DefaultValue *string `json:"defaultValue,omitempty"`
+	// NumDisplayLines defines how many lines of text are shown in the UI.
+	// If the text exceeds this number, it will be truncated.
+	NumDisplayLines *int `json:"lines,omitempty"`
 }
 
 // AssociationDefinition defines relationship information for a field

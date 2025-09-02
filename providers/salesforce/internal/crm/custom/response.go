@@ -2,11 +2,12 @@ package custom
 
 import (
 	"encoding/xml"
-	"errors"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 // Parses XML output from Salesforce.
@@ -33,12 +34,12 @@ func parseResponse(response []byte) (*common.UpsertMetadataResult, error) {
 		return nil, err
 	}
 
-	errorMessages := make([]error, 0)
+	errorMessages := datautils.NewStringSet()
 	fields := make(map[string]map[string]common.FieldUpsertResult)
 
 	for _, result := range envelope.Body.Response.Results {
 		for _, errorObj := range result.Errors {
-			errorMessages = append(errorMessages, errors.New(errorObj.Message)) // nolint:err113
+			errorMessages.AddOne(errorObj.Message)
 		}
 
 		parts := strings.Split(result.FullName, ".")
@@ -68,7 +69,11 @@ func parseResponse(response []byte) (*common.UpsertMetadataResult, error) {
 	}
 
 	if len(errorMessages) != 0 {
-		return nil, fmt.Errorf("%w: %w", common.ErrBadRequest, errors.Join(errorMessages...))
+		// Only unique errors should be surfaced.
+		messages := errorMessages.List()
+		sort.Strings(messages)
+
+		return nil, fmt.Errorf("%w: %v", common.ErrBadRequest, strings.Join(messages, "; "))
 	}
 
 	return &common.UpsertMetadataResult{
