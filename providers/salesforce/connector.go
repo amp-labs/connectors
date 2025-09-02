@@ -6,6 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/custom"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/pardot"
 )
 
@@ -20,17 +21,16 @@ const (
 
 // Connector is a Salesforce connector.
 type Connector struct {
-	Client    *common.JSONHTTPClient
-	XMLClient *common.XMLHTTPClient
+	Client *common.JSONHTTPClient
 
-	providerInfo  *providers.ProviderInfo
-	moduleInfo    *providers.ModuleInfo
-	moduleID      common.ModuleID
+	providerInfo *providers.ProviderInfo
+	moduleInfo   *providers.ModuleInfo
+	moduleID     common.ModuleID
+	// Module Pardot -- lives in its own struct:
 	pardotAdapter *pardot.Adapter
-}
-
-func APIVersionSOAP() string {
-	return apiVersion
+	// Module CRM -- is partially delegated to other structs
+	// some functionality is delegated into the following structs:
+	customAdapter *custom.Adapter
 }
 
 // NewConnector returns a new Salesforce connector.
@@ -45,9 +45,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	httpClient := params.Client.Caller
 	conn = &Connector{
 		Client: &common.JSONHTTPClient{
-			HTTPClient: httpClient,
-		},
-		XMLClient: &common.XMLHTTPClient{
 			HTTPClient: httpClient,
 		},
 		moduleID: params.Module.Selection.ID,
@@ -67,6 +64,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		JSON: &interpreter.DirectFaultyResponder{Callback: conn.interpretJSONError},
 		XML:  &interpreter.DirectFaultyResponder{Callback: conn.interpretXMLError},
 	}.Handle
+
+	conn.customAdapter = custom.NewAdapter(httpClient, conn.moduleInfo)
 
 	// Empty module name, root module, standard salesforce module fallback to default Salesforce behaviour.
 	// Account Engagement module will initialize the pardot adapter.
@@ -102,10 +101,6 @@ func (c *Connector) getRestApiURL(paths ...string) (*urlbuilder.URL, error) {
 
 func (c *Connector) getDomainURL(paths ...string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.getModuleURL(), paths...)
-}
-
-func (c *Connector) getSoapURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.getModuleURL(), "services/Soap/m", APIVersionSOAP())
 }
 
 // nolint: lll
