@@ -371,7 +371,7 @@ type ObjectMetadata struct {
 	// Some legacy connectors do not populate this, but only populates FieldsMap.
 	Fields FieldsMetadata
 
-	// DEPRECATED: for new connectors, please only populate and read `ObjectMetadata.Fields`.
+	// Deprecated: for new connectors, please only populate and read `ObjectMetadata.Fields`.
 	// FieldsMap is a map of field names to field display names.
 	// TODO: Remove this field once all connectors populate Fields.
 	FieldsMap map[string]string
