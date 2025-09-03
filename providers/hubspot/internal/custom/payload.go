@@ -2,7 +2,6 @@ package custom
 
 import (
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -210,22 +209,14 @@ func (r BatchResults) populateFields(
 	fields map[string]common.FieldUpsertResult, action common.UpsertMetadataAction,
 ) {
 	for _, result := range r {
-		result.populateField(fields, action, nil)
+		result.populateField(fields, action)
 	}
 }
 
-func (r Response) populateField(
-	fields map[string]common.FieldUpsertResult, action common.UpsertMetadataAction, mutex *sync.Mutex,
-) {
+func (r Response) populateField(fields map[string]common.FieldUpsertResult, action common.UpsertMetadataAction) {
 	metadata, err := datautils.StructToMap(r)
 	if err != nil {
 		metadata = nil // No need to fail. Sending empty data is fine.
-	}
-
-	if mutex != nil {
-		// Concurrent processing.
-		mutex.Lock()
-		defer mutex.Unlock()
 	}
 
 	fields[r.Name] = common.FieldUpsertResult{

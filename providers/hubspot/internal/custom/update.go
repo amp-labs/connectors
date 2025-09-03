@@ -2,7 +2,6 @@ package custom
 
 import (
 	"context"
-	"sync"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -11,21 +10,17 @@ import (
 func (a *Adapter) updateCustomFields(ctx context.Context, objectName string, definitions []common.FieldDefinition,
 	fields map[string]common.FieldUpsertResult,
 ) error {
-	ctx2, cancel := context.WithCancel(ctx)
-	defer cancel()
-
 	// There is no batch update, therefore for each definition we have to make a dedicated call.
-	return concurrentProcessing(ctx2, definitions,
-		func(ctx3 context.Context, definition common.FieldDefinition, mutex *sync.Mutex) error {
-			return a.updateCustomField(ctx3, objectName, definition, fields, mutex)
-		},
-	)
+	for _, definition := range definitions {
+		if err := a.updateCustomField(ctx, objectName, definition, fields); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
-func (a *Adapter) updateCustomField(
-	ctx context.Context, objectName string, definition common.FieldDefinition,
-	fields map[string]common.FieldUpsertResult, mutex *sync.Mutex,
-) error {
+func (a *Adapter) updateCustomField(ctx context.Context, objectName string, definition common.FieldDefinition, fields map[string]common.FieldUpsertResult, ) error {
 	url, err := a.getPropertyUpdateURL(objectName, definition.FieldName)
 	if err != nil {
 		return err
@@ -41,7 +36,7 @@ func (a *Adapter) updateCustomField(
 		return err
 	}
 
-	response.populateField(fields, common.UpsertMetadataActionUpdate, mutex)
+	response.populateField(fields, common.UpsertMetadataActionUpdate)
 
 	return nil
 }
