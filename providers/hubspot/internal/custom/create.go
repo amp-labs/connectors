@@ -19,7 +19,10 @@ func (a *Adapter) createCustomFields(ctx context.Context, objectName string, def
 		return nil, err
 	}
 
-	payload := newBatchPayload(definitions)
+	payload, err := newBatchPayload(definitions)
+	if err != nil {
+		return nil, err
+	}
 
 	response, err := a.makeRequestCreate(ctx, url, payload)
 	if err != nil {

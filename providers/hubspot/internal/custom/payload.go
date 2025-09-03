@@ -1,6 +1,7 @@
 package custom
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -8,71 +9,86 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-func newBatchPayload(fieldDefinitions []common.FieldDefinition) *BatchPayload {
+func newBatchPayload(fieldDefinitions []common.FieldDefinition) (*BatchPayload, error) {
 	payloads := make([]Payload, len(fieldDefinitions))
 
 	for index, definition := range fieldDefinitions {
-		payloads[index] = *newPayload(definition)
+		payload, err := newPayload(definition)
+		if err != nil {
+			return nil, err
+		}
+
+		payloads[index] = *payload
 	}
 
 	return &BatchPayload{
 		Inputs: payloads,
-	}
+	}, nil
 }
 
-func newPayload(definition common.FieldDefinition) *Payload {
+func newPayload(definition common.FieldDefinition) (*Payload, error) {
+	theType, err := matchType(definition)
+	if err != nil {
+		return nil, err
+	}
+
+	fieldType, err := matchFieldType(definition)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Payload{
 		Name:            definition.FieldName,
 		Label:           definition.DisplayName,
 		GroupName:       definition.UniqueProperties.HubspotGroupName,
-		Type:            matchType(definition),
-		FieldType:       matchFieldType(definition),
+		Type:            theType,
+		FieldType:       fieldType,
 		Hidden:          false,
 		Description:     definition.Description,
 		FormField:       true,
 		DataSensitivity: "non_sensitive",
 		HasUniqueValue:  definition.Unique,
 		Options:         newOptions(definition),
-	}
+	}, nil
 }
 
-func matchType(definition common.FieldDefinition) string {
+func matchType(definition common.FieldDefinition) (string, error) {
 	switch definition.ValueType {
 	case common.FieldTypeString:
-		return "string"
+		return "string", nil
 	case common.FieldTypeBoolean:
-		return "bool"
+		return "bool", nil
 	case common.FieldTypeDate:
-		return "date"
+		return "date", nil
 	case common.FieldTypeDateTime:
-		return "datetime"
+		return "datetime", nil
 	case common.FieldTypeSingleSelect, common.FieldTypeMultiSelect:
-		return "enumeration"
+		return "enumeration", nil
 	case common.FieldTypeInt, common.FieldTypeFloat:
-		return "number"
+		return "number", nil
 	default:
-		return "string"
+		return "", fmt.Errorf("%w, fieldName: %v", common.ErrFieldTypeUnknown, definition.FieldName)
 	}
 }
 
-func matchFieldType(definition common.FieldDefinition) string {
+func matchFieldType(definition common.FieldDefinition) (string, error) {
 	switch definition.ValueType {
 	case common.FieldTypeString:
-		return "text"
+		return "text", nil
 	case common.FieldTypeBoolean:
-		return "booleancheckbox"
+		return "booleancheckbox", nil
 	case common.FieldTypeDate:
-		return "date"
+		return "date", nil
 	case common.FieldTypeDateTime:
-		return "datetime"
+		return "datetime", nil
 	case common.FieldTypeSingleSelect:
-		return "radio"
+		return "radio", nil
 	case common.FieldTypeMultiSelect:
-		return "select"
+		return "select", nil
 	case common.FieldTypeInt, common.FieldTypeFloat:
-		return "number"
+		return "number", nil
 	default:
-		return "text"
+		return "", fmt.Errorf("%w, fieldName: %v", common.ErrFieldTypeUnknown, definition.FieldName)
 	}
 }
 

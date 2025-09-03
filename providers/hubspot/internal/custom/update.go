@@ -31,7 +31,10 @@ func (a *Adapter) updateCustomField(
 		return err
 	}
 
-	payload := newPayload(definition)
+	payload, err := newPayload(definition)
+	if err != nil {
+		return err
+	}
 
 	response, err := a.makeRequestUpdate(ctx, url, payload)
 	if err != nil {
