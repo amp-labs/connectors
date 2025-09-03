@@ -5,6 +5,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/custom"
 )
 
 // Connector is a Hubspot connector.
@@ -13,6 +14,9 @@ type Connector struct {
 	providerInfo *providers.ProviderInfo
 	moduleInfo   *providers.ModuleInfo
 	moduleID     common.ModuleID
+
+	// Delegate for the UpsertMetadat functionality.
+	customAdapter *custom.Adapter
 }
 
 const (
@@ -47,6 +51,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	conn.Client.HTTPClient.Base = conn.providerInfo.BaseURL
 	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
 	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
+
+	conn.customAdapter = custom.NewAdapter(conn.Client, conn.moduleInfo)
 
 	return conn, nil
 }
