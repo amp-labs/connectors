@@ -20,7 +20,10 @@ var (
 func (a *Adapter) UpsertMetadata(
 	ctx context.Context, params *common.UpsertMetadataParams,
 ) (*common.UpsertMetadataResult, error) {
-	customFields := NewCustomFieldsPayload(params)
+	customFields, err := NewCustomFieldsPayload(params)
+	if err != nil {
+		return nil, err
+	}
 
 	data, err := xml.MarshalIndent(customFields, "", "  ")
 	if err != nil {

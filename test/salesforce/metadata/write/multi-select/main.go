@@ -81,8 +81,8 @@ func performUpsert(conn *salesforce.Connector, ctx context.Context, params *comm
 	}
 
 	for objectName, fields := range res.Fields {
-		for fieldName := range fields {
-			slog.Info("SUCCESS", "object", objectName, "field", fieldName)
+		for fieldName, field := range fields {
+			slog.Info("SUCCESS", "object", objectName, "field", fieldName, "action", field.Action)
 		}
 	}
 }
