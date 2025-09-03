@@ -57,7 +57,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			return nil, err
 		}
 
-		// we only add this limit incase we're reading actual data not fields.
+		// we only add this limit incase we're sampling fields from actual data.
 		if !metadataDiscoveryEndpoints.Has(obj) {
 			// Limiting the response data to 1 record.
 			// we only use 1 record for the metadata generation.
@@ -136,7 +136,7 @@ func parseMetadata(
 }
 
 func processFieldOptions(mdtFlds *common.FieldMetadata, fldRcd fieldResults, obj string) {
-	if fldRcd.FieldType == enum || fldRcd.FieldType == set && len(fldRcd.Options) != 0 {
+	if fldRcd.FieldType == enum || fldRcd.FieldType == set {
 		for _, opt := range fldRcd.Options {
 			if obj == notes && notesFlagFields.Has(fldRcd.Key) {
 				mdtFlds.Values = append(mdtFlds.Values, common.FieldValue{
