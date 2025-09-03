@@ -24,18 +24,23 @@ type UpsertMetadataPayload struct {
 	FieldsMetadata []UpsertMetadataCustomField `xml:"metadata"`
 }
 
-func NewCustomFieldsPayload(params *common.UpsertMetadataParams) UpsertMetadataPayload {
+func NewCustomFieldsPayload(params *common.UpsertMetadataParams) (*UpsertMetadataPayload, error) {
 	fields := make([]UpsertMetadataCustomField, 0)
 
 	for objectName, fieldDefinitions := range params.Fields {
 		for _, fieldDefinition := range fieldDefinitions {
-			fields = append(fields, newUpsertMetadataCustomField(objectName, fieldDefinition))
+			field, err := newUpsertMetadataCustomField(objectName, fieldDefinition)
+			if err != nil {
+				return nil, err
+			}
+
+			fields = append(fields, *field)
 		}
 	}
 
-	return UpsertMetadataPayload{
+	return &UpsertMetadataPayload{
 		FieldsMetadata: fields,
-	}
+	}, nil
 }
 
 const metadataTypeCustomField = "CustomField"
@@ -74,24 +79,30 @@ type UpsertMetadataCustomField struct {
 }
 
 func newUpsertMetadataCustomField(
-	objectName string, field common.FieldDefinition,
-) UpsertMetadataCustomField {
-	result := UpsertMetadataCustomField{
-		AttributeMetadataType: metadataTypeCustomField,
-		FullName:              fmt.Sprintf("%v.%v", objectName, field.FieldName),
-		Label:                 field.DisplayName,
-		Description:           field.Description,
-		Required:              field.Required,
-		Unique:                field.Unique,
-		Indexed:               field.Indexed,
+	objectName string, definition common.FieldDefinition,
+) (*UpsertMetadataCustomField, error) {
+	fieldType, err := matchFieldType(definition)
+	if err != nil {
+		return nil, err
 	}
 
-	result = handleTypeRequirements(result, field)
-	result = enhanceWithStringOptions(result, field)
-	result = enhanceWithNumericOptions(result, field)
-	result = enhanceWithAssociation(result, field)
+	result := UpsertMetadataCustomField{
+		AttributeMetadataType: metadataTypeCustomField,
+		Type:                  fieldType,
+		FullName:              fmt.Sprintf("%v.%v", objectName, definition.FieldName),
+		Label:                 definition.DisplayName,
+		Description:           definition.Description,
+		Required:              definition.Required,
+		Unique:                definition.Unique,
+		Indexed:               definition.Indexed,
+	}
 
-	return result
+	result = handleTypeRequirements(result, definition)
+	result = enhanceWithStringOptions(result, definition)
+	result = enhanceWithNumericOptions(result, definition)
+	result = enhanceWithAssociation(result, definition)
+
+	return &result, nil
 }
 
 // Each data type requires unique payload setup.
@@ -99,8 +110,6 @@ func newUpsertMetadataCustomField(
 func handleTypeRequirements(
 	field UpsertMetadataCustomField, definition common.FieldDefinition,
 ) UpsertMetadataCustomField {
-	field.Type = matchFieldType(definition)
-
 	if definition.ValueType == common.ValueTypeString {
 		return handleTypeString(field, definition)
 	}
@@ -117,25 +126,31 @@ func handleTypeRequirements(
 }
 
 // https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_field_types.htm
-func matchFieldType(definition common.FieldDefinition) string {
+func matchFieldType(definition common.FieldDefinition) (string, error) {
 	switch definition.ValueType {
 	case common.FieldTypeString:
 		// Handled separately because it could be either `Text` or `LongTextArea`.
-		return fieldTypeText
+		return fieldTypeText, nil
 	case common.FieldTypeBoolean:
-		return "Checkbox"
+		return "Checkbox", nil
 	case common.FieldTypeDate:
-		return "Date"
+		return "Date", nil
 	case common.FieldTypeDateTime:
-		return "DateTime"
+		return "DateTime", nil
 	case common.FieldTypeSingleSelect:
-		return "Picklist"
+		return "Picklist", nil
 	case common.FieldTypeMultiSelect:
-		return "MultiselectPicklist"
+		return "MultiselectPicklist", nil
 	case common.FieldTypeInt, common.FieldTypeFloat:
-		return "Number"
+		return "Number", nil
 	default:
-		return fieldTypeText
+		if definition.Association != nil {
+			// Real type of the field is determined by the presence of Association struct.
+			// This means that common.FieldDefinition.ValueType can be set to anything.
+			return "", nil
+		}
+
+		return "", fmt.Errorf("%w, fieldName: %v", common.ErrFieldTypeUnknown, definition.FieldName)
 	}
 }
 

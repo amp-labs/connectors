@@ -1,5 +1,7 @@
 package common
 
+import "errors"
+
 // UpsertMetadataAction represents the action taken during an upsert operation.
 type UpsertMetadataAction string
 
@@ -88,6 +90,8 @@ type UpsertMetadataParams struct {
 	// Maps object names to field definitions.
 	Fields map[string][]FieldDefinition `json:"fields"`
 }
+
+var ErrFieldTypeUnknown = errors.New("unrecognized field type")
 
 // FieldType represents the data type of a field.
 type FieldType string
