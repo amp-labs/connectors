@@ -153,6 +153,21 @@ type FieldDefinition struct {
 	NumericOptions *NumericFieldOptions `json:"numericOptions,omitempty"`
 	// Association defines association/relationship information for the field (if any).
 	Association *AssociationDefinition `json:"association,omitempty"`
+	// UniqueProperties are fields unique to some providers.
+	UniqueProperties UniqueProperties `json:"specialFields"`
+}
+
+// nolint:lll
+// UniqueProperties is a list of special properties unique to providers.
+type UniqueProperties struct {
+	// HubspotGroupName identifies the HubSpot property group that a custom
+	// field belongs to. This is required when creating or updating fields in HubSpot.
+	// https://developers.hubspot.com/docs/api-reference/crm-properties-v3/properties/post-crm-properties-v3-objectType#body-group-name
+	//
+	// In Hubspot you can create property groups which act as tags/folders for the properties.
+	// See API example for company:
+	// https://developers.hubspot.com/docs/api-reference/legacy/crm-properties-v1-companies/post-properties-v1-companies-groups#create-a-company-property-group
+	HubspotGroupName string `json:"hubspotGroupName"`
 }
 
 // NumericFieldOptions contains additional options for numeric fields.
