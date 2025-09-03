@@ -20,7 +20,10 @@ func (a *Adapter) updateCustomFields(ctx context.Context, objectName string, def
 	return nil
 }
 
-func (a *Adapter) updateCustomField(ctx context.Context, objectName string, definition common.FieldDefinition, fields map[string]common.FieldUpsertResult, ) error {
+func (a *Adapter) updateCustomField(
+	ctx context.Context, objectName string, definition common.FieldDefinition,
+	fields map[string]common.FieldUpsertResult,
+) error {
 	url, err := a.getPropertyUpdateURL(objectName, definition.FieldName)
 	if err != nil {
 		return err
