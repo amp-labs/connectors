@@ -5,7 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -17,6 +19,7 @@ const (
 	users         = "users"
 	conversations = "conversations"
 	playbooks     = "playbooks"
+	userMeetings  = "users/meetings/org"
 
 	ListSuffix = "/list"
 )
@@ -35,6 +38,24 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	if params.ObjectName == userMeetings {
+		// For this object, we need both min_start_time and max_start_time values.
+		// which correspond to Since and Until, respectively.
+		minTime := time.Now().Add(-30 * 24 * time.Hour) // Default: 30 days ago
+		if !params.Since.IsZero() {
+			minTime = params.Since
+		}
+
+		url.WithQueryParam("min_start_time", strconv.FormatInt(minTime.UnixMilli(), 10))
+
+		maxTime := time.Now()
+		if !params.Until.IsZero() {
+			maxTime = params.Until
+		}
+
+		url.WithQueryParam("max_start_time", strconv.FormatInt(maxTime.UnixMilli(), 10))
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)

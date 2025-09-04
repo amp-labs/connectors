@@ -37,6 +37,10 @@ func main() {
 	if err := testRead(ctx, conn, "scim/Users", []string{"Resources", "schemas", "id"}); err != nil {
 		slog.Error(err.Error())
 	}
+
+	if err := testRead(ctx, conn, "users/meetings/org", []string{"orgId", "conversationId", "agentId"}); err != nil {
+		slog.Error(err.Error())
+	}
 }
 
 func testRead(ctx context.Context, conn *dr.Connector, objectName string, fields []string) error {
