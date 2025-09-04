@@ -11,15 +11,16 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-func (a *Adapter) createCustomFields(ctx context.Context, objectName string, definitions []common.FieldDefinition,
-	fields map[string]common.FieldUpsertResult,
+func (a *Adapter) createCustomFields(
+	ctx context.Context, objectName string, groupName string,
+	definitions []common.FieldDefinition, fields map[string]common.FieldUpsertResult,
 ) ([]string, error) {
 	url, err := a.getPropertyBatchCreateURL(objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	payload, err := newBatchPayload(definitions)
+	payload, err := newBatchPayload(groupName, definitions)
 	if err != nil {
 		return nil, err
 	}

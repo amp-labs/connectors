@@ -7,12 +7,13 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-func (a *Adapter) updateCustomFields(ctx context.Context, objectName string, definitions []common.FieldDefinition,
-	fields map[string]common.FieldUpsertResult,
+func (a *Adapter) updateCustomFields(
+	ctx context.Context, objectName string, groupName string,
+	definitions []common.FieldDefinition, fields map[string]common.FieldUpsertResult,
 ) error {
 	// There is no batch update, therefore for each definition we have to make a dedicated call.
 	for _, definition := range definitions {
-		if err := a.updateCustomField(ctx, objectName, definition, fields); err != nil {
+		if err := a.updateCustomField(ctx, objectName, groupName, definition, fields); err != nil {
 			return err
 		}
 	}
@@ -21,15 +22,15 @@ func (a *Adapter) updateCustomFields(ctx context.Context, objectName string, def
 }
 
 func (a *Adapter) updateCustomField(
-	ctx context.Context, objectName string, definition common.FieldDefinition,
-	fields map[string]common.FieldUpsertResult,
+	ctx context.Context, objectName string, groupName string,
+	definition common.FieldDefinition, fields map[string]common.FieldUpsertResult,
 ) error {
 	url, err := a.getPropertyUpdateURL(objectName, definition.FieldName)
 	if err != nil {
 		return err
 	}
 
-	payload, err := newPayload(definition)
+	payload, err := newPayload(groupName, definition)
 	if err != nil {
 		return err
 	}
