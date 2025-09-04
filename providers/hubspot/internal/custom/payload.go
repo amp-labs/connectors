@@ -8,11 +8,11 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-func newBatchPayload(fieldDefinitions []common.FieldDefinition) (*BatchPayload, error) {
+func newBatchPayload(groupName string, fieldDefinitions []common.FieldDefinition) (*BatchPayload, error) {
 	payloads := make([]Payload, len(fieldDefinitions))
 
 	for index, definition := range fieldDefinitions {
-		payload, err := newPayload(definition)
+		payload, err := newPayload(groupName, definition)
 		if err != nil {
 			return nil, err
 		}
@@ -25,7 +25,7 @@ func newBatchPayload(fieldDefinitions []common.FieldDefinition) (*BatchPayload, 
 	}, nil
 }
 
-func newPayload(definition common.FieldDefinition) (*Payload, error) {
+func newPayload(groupName string, definition common.FieldDefinition) (*Payload, error) {
 	theType, err := matchType(definition)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func newPayload(definition common.FieldDefinition) (*Payload, error) {
 	return &Payload{
 		Name:            definition.FieldName,
 		Label:           definition.DisplayName,
-		GroupName:       definition.UniqueProperties.HubspotGroupName,
+		GroupName:       groupName,
 		Type:            theType,
 		FieldType:       fieldType,
 		Hidden:          false,

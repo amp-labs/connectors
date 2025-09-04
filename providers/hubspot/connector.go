@@ -49,6 +49,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	conn.Client.HTTPClient.Base = conn.providerInfo.BaseURL
+	// Note: error handler must return common.HTTPError.
+	// Check method in the internal package "custom", method "readGroupName" which relies on error casting.
 	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
 	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
 

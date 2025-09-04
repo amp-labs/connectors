@@ -35,9 +35,6 @@ func main() {
 					Description: "Your hobby description",
 					ValueType:   common.ValueTypeString,
 					Unique:      true,
-					UniqueProperties: common.UniqueProperties{
-						HubspotGroupName: "contactinformation",
-					},
 				},
 				{
 					FieldName:   "age__c",
@@ -45,9 +42,6 @@ func main() {
 					Description: "How many years you lived.",
 					ValueType:   common.ValueTypeInt,
 					Unique:      false,
-					UniqueProperties: common.UniqueProperties{
-						HubspotGroupName: "contactinformation",
-					},
 				},
 				{
 					FieldName:   "interests__c",
@@ -58,9 +52,6 @@ func main() {
 					StringOptions: &common.StringFieldOptions{
 						Values: []string{"art", "travel", "swimming"},
 					},
-					UniqueProperties: common.UniqueProperties{
-						HubspotGroupName: "contactinformation",
-					},
 				},
 				{
 					FieldName:   "isready__c",
@@ -68,9 +59,6 @@ func main() {
 					Description: "Indicates the readiness for next steps.",
 					ValueType:   common.ValueTypeBoolean,
 					Unique:      false,
-					UniqueProperties: common.UniqueProperties{
-						HubspotGroupName: "contactinformation",
-					},
 				},
 			},
 		},
