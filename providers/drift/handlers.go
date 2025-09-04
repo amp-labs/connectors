@@ -90,7 +90,13 @@ func (c *Connector) constructReadURL(objectName string) (*urlbuilder.URL, error)
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	method := http.MethodPost
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	objectName := params.ObjectName
+
+	if params.ObjectName == conversations {
+		objectName += "/new"
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
 	if err != nil {
 		return nil, err
 	}

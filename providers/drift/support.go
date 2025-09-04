@@ -42,7 +42,7 @@ func supportedOperations() components.EndpointRegistryInput {
 	}
 
 	writeSupport := []string{
-		"contacts", "emails/unsubscribe", "contacts/timeline", "conversations/new", "accounts/create",
+		"contacts", "emails/unsubscribe", "contacts/timeline", "conversations", "accounts/create",
 		"accounts/update", // updates do not need recordIdPath
 		"scim/Users",
 	}
