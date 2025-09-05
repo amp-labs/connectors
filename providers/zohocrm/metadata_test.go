@@ -28,61 +28,87 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:  "Successfully describe supported & unsupported objects",
-			Input: []string{"deals", "arsenal"},
+			Name:  "Unsupported objects",
+			Input: []string{"arsenal"},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.QueryParam("module", "Deals"),
-					Then: mockserver.Response(http.StatusOK, dealResponse),
-				}, {
 					If:   mockcond.QueryParam("module", "Arsenal"),
 					Then: mockserver.Response(http.StatusBadRequest, unsupported),
 				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
-				Result: map[string]common.ObjectMetadata{
-					"deals": {
-						DisplayName: "Deals",
-						FieldsMap: map[string]string{
-							"account_name":           "account_name",
-							"amount":                 "amount",
-							"campaign_source":        "campaign_source",
-							"change_log_time__s":     "change_log_time__s",
-							"closing_date":           "closing_date",
-							"contact_name":           "contact_name",
-							"created_by":             "created_by",
-							"created_time":           "created_time",
-							"deal_name":              "deal_name",
-							"description":            "description",
-							"expected_revenue":       "expected_revenue",
-							"id":                     "id",
-							"last_activity_time":     "last_activity_time",
-							"lead_conversion_time":   "lead_conversion_time",
-							"lead_source":            "lead_source",
-							"locked__s":              "locked__s",
-							"modified_by":            "modified_by",
-							"modified_time":          "modified_time",
-							"next_step":              "next_step",
-							"overall_sales_duration": "overall_sales_duration",
-							"owner":                  "owner",
-							"probability":            "probability",
-							"reason_for_loss__s":     "reason_for_loss__s",
-							"record_image":           "record_image",
-							"record_status__s":       "record_status__s",
-							"sales_cycle_duration":   "sales_cycle_duration",
-							"stage":                  "stage",
-							"type":                   "type",
-						},
-					},
-				},
 				Errors: map[string]error{
 					"arsenal": mockutils.ExpectedSubsetErrors{
 						common.ErrCaller,
 						errors.New(string(unsupported)), // nolint:goerr113
 					},
 				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Supported objects",
+			Input: []string{"Deals"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.QueryParam("module", "Deals"),
+					Then: mockserver.Response(http.StatusOK, dealResponse),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"Deals": {
+						DisplayName: "Deals",
+						Fields: map[string]common.FieldMetadata{
+							"Owner": {
+								DisplayName:  "Deal Owner",
+								ValueType:    "other",
+								ProviderType: "ownerlookup",
+								Values:       nil,
+							},
+							"Stage": {
+								DisplayName:  "Stage",
+								ValueType:    "singleSelect",
+								ProviderType: "picklist",
+								Values: common.FieldValues{
+									{
+										Value:        "Qualification",
+										DisplayValue: "Qualification",
+									}, {
+										Value:        "Needs Analysis",
+										DisplayValue: "Needs Analysis",
+									}, {
+										Value:        "Value Proposition",
+										DisplayValue: "Value Proposition",
+									}, {
+										Value:        "Id. Decision Makers",
+										DisplayValue: "Identify Decision Makers",
+									}, {
+										Value:        "Proposal/Price Quote",
+										DisplayValue: "Proposal/Price Quote",
+									}, {
+										Value:        "Negotiation/Review",
+										DisplayValue: "Negotiation/Review",
+									}, {
+										Value:        "Closed Won",
+										DisplayValue: "Closed Won",
+									}, {
+										Value:        "Closed Lost",
+										DisplayValue: "Closed Lost",
+									}, {
+										Value:        "Closed Lost to Competition",
+										DisplayValue: "Closed Lost to Competition",
+									},
+								},
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
 			},
 			ExpectedErrs: nil,
 		},
