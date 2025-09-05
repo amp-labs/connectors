@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -163,21 +164,12 @@ func (c *Connector) parseWriteResponse(
 }
 
 func parseRecordId(data map[string]any) string {
-	// id fields in the response can be either in _id or id
-	// we check which one exists and use that
-	var idField string
-
-	if _, exists := data["id"]; exists {
-		idField = "id"
-	} else if _, exists := data["_id"]; exists {
-		idField = "_id"
-	}
-
-	if idField == "" {
+	val := getID(data)
+	if val == nil {
 		return ""
 	}
 
-	switch v := data[idField].(type) {
+	switch v := val.(type) {
 	case string:
 		return v
 	case float64:
@@ -187,4 +179,18 @@ func parseRecordId(data map[string]any) string {
 	}
 
 	return ""
+}
+
+func getID(data map[string]any) any {
+	for key, value := range data {
+		if strings.EqualFold(key, "id") {
+			return value
+		}
+
+		if strings.EqualFold(key, "_id") {
+			return value
+		}
+	}
+
+	return nil
 }
