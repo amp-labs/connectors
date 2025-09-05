@@ -2,6 +2,7 @@ package common
 
 import (
 	"context"
+	"errors"
 	"net/http"
 )
 
@@ -23,6 +24,13 @@ type AuthenticatedHTTPClient interface {
 // AuthToken is a type alias for a string representing an authentication token.
 // This can be used to store the token in a context.
 type AuthToken string
+
+func (t AuthToken) String() string {
+	return string(t)
+}
+
+// ErrMissingAccessToken returned when access token was not present in the context.Context.
+var ErrMissingAccessToken = errors.New("missing access token")
 
 // WithAuthToken returns a new context with the given auth token.
 func WithAuthToken(ctx context.Context, token AuthToken) context.Context {

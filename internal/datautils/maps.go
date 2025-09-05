@@ -66,6 +66,24 @@ func (m Map[K, V]) AddMapValues(source Map[K, V]) {
 	}
 }
 
+// Select returns the values for the given keys, along with the keys not found.
+// It is the multi-key equivalent of a map lookup.
+func (m Map[K, V]) Select(keys []K) ([]V, []K) {
+	values := make([]V, 0)
+	missingKeys := make([]K, 0)
+
+	for _, key := range keys {
+		value, ok := m[key]
+		if !ok {
+			missingKeys = append(missingKeys, key)
+		} else {
+			values = append(values, value)
+		}
+	}
+
+	return values, missingKeys
+}
+
 // DefaultMap wrapper of the map that allows setting default return value on missing keys.
 type DefaultMap[K comparable, V any] struct {
 	// Map is a delegate.
