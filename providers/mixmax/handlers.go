@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -152,8 +154,43 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
+	recordId := parseRecordId(data)
+
 	return &common.WriteResult{
-		Success: true,
-		Data:    data,
+		Success:  true,
+		Data:     data,
+		RecordId: recordId,
 	}, nil
+}
+
+func parseRecordId(data map[string]any) string {
+	val := getID(data)
+	if val == nil {
+		return ""
+	}
+
+	switch v := val.(type) {
+	case string:
+		return v
+	case float64:
+		return strconv.Itoa(int(v))
+	case int:
+		return strconv.Itoa(v)
+	}
+
+	return ""
+}
+
+func getID(data map[string]any) any {
+	for key, value := range data {
+		if strings.EqualFold(key, "id") {
+			return value
+		}
+
+		if strings.EqualFold(key, "_id") {
+			return value
+		}
+	}
+
+	return nil
 }
