@@ -43,33 +43,87 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Result: map[string]common.ObjectMetadata{
 					"crm-adnmg/currencies": {
 						DisplayName: "Crm-Adnmg/Currencies",
-						Fields:      map[string]common.FieldMetadata{},
-						FieldsMap: map[string]string{
-							"id":                    "id",
-							"name":                  "name",
-							"iso_4217":              "iso_4217",
-							"locale":                "locale",
-							"decimal_digits":        "decimal_digits",
-							"currency_symbol":       "currency_symbol",
-							"rounding_type":         "rounding_type",
-							"active":                "active",
-							"organization_currency": "organization_currency",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName: "id",
+								ValueType:   "other",
+							},
+							"name": {
+								DisplayName: "name",
+								ValueType:   "other",
+							},
+							"iso_4217": {
+								DisplayName: "iso_4217",
+								ValueType:   "other",
+							},
+							"locale": {
+								DisplayName: "locale",
+								ValueType:   "other",
+							},
+							"decimal_digits": {
+								DisplayName: "decimal_digits",
+								ValueType:   "other",
+							},
+							"currency_symbol": {
+								DisplayName: "currency_symbol",
+								ValueType:   "other",
+							},
+							"rounding_type": {
+								DisplayName: "rounding_type",
+								ValueType:   "other",
+							},
+							"active": {
+								DisplayName: "active",
+								ValueType:   "other",
+							},
+							"organization_currency": {
+								DisplayName: "organization_currency",
+								ValueType:   "other",
+							},
 						},
+						FieldsMap: map[string]string{},
 					},
 					"crm-volmg/volunteers": {
 						DisplayName: "Crm-Volmg/Volunteers",
-						Fields:      map[string]common.FieldMetadata{},
-						FieldsMap: map[string]string{
-							"id":                    "id",
-							"name":                  "name",
-							"address":               "address",
-							"city":                  "city",
-							"state":                 "state",
-							"post_code":             "post_code",
-							"lookup_id":             "lookup_id",
-							"constituent_type":      "constituent_type",
-							"sort_constituent_name": "sort_constituent_name",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName: "id",
+								ValueType:   "other",
+							},
+							"name": {
+								DisplayName: "name",
+								ValueType:   "other",
+							},
+							"address": {
+								DisplayName: "address",
+								ValueType:   "other",
+							},
+							"city": {
+								DisplayName: "city",
+								ValueType:   "other",
+							},
+							"state": {
+								DisplayName: "state",
+								ValueType:   "other",
+							},
+							"post_code": {
+								DisplayName: "post_code",
+								ValueType:   "other",
+							},
+							"lookup_id": {
+								DisplayName: "lookup_id",
+								ValueType:   "other",
+							},
+							"constituent_type": {
+								DisplayName: "constituent_type",
+								ValueType:   "other",
+							},
+							"sort_constituent_name": {
+								DisplayName: "sort_constituent_name",
+								ValueType:   "other",
+							},
 						},
+						FieldsMap: map[string]string{},
 					},
 				},
 				Errors: nil,
