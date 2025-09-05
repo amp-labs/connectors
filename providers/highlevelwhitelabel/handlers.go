@@ -76,7 +76,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
 	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
+		Fields:      make(map[string]common.FieldMetadata),
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
 
@@ -102,7 +102,13 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	for field := range data[0] {
-		objectMetadata.FieldsMap[field] = field
+		objectMetadata.Fields[field] = common.FieldMetadata{
+			DisplayName:  field,
+			ValueType:    "other",
+			ProviderType: "",
+			ReadOnly:     false,
+			Values:       nil,
+		}
 	}
 
 	return &objectMetadata, nil

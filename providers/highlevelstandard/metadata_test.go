@@ -50,29 +50,71 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Result: map[string]common.ObjectMetadata{
 					"businesses": {
 						DisplayName: "Businesses",
-						Fields:      map[string]common.FieldMetadata{},
-						FieldsMap: map[string]string{
-							"customFields": "customFields",
-							"name":         "name",
-							"locationId":   "locationId",
-							"createdBy":    "createdBy",
-							"createdAt":    "createdAt",
-							"updatedAt":    "updatedAt",
-							"id":           "id",
+						Fields: map[string]common.FieldMetadata{
+							"customFields": {
+								DisplayName: "customFields",
+								ValueType:   "other",
+							},
+							"name": {
+								DisplayName: "name",
+								ValueType:   "other",
+							},
+							"locationId": {
+								DisplayName: "locationId",
+								ValueType:   "other",
+							},
+							"createdBy": {
+								DisplayName: "createdBy",
+								ValueType:   "other",
+							},
+							"createdAt": {
+								DisplayName: "createdAt",
+								ValueType:   "other",
+							},
+							"updatedAt": {
+								DisplayName: "updatedAt",
+								ValueType:   "other",
+							},
+							"id": {
+								DisplayName: "id",
+								ValueType:   "other",
+							},
 						},
+						FieldsMap: map[string]string{},
 					},
 					"calendars/groups": {
 						DisplayName: "Calendars/Groups",
-						Fields:      map[string]common.FieldMetadata{},
-						FieldsMap: map[string]string{
-							"id":          "id",
-							"name":        "name",
-							"description": "description",
-							"slug":        "slug",
-							"isActive":    "isActive",
-							"dateAdded":   "dateAdded",
-							"dateUpdated": "dateUpdated",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName: "id",
+								ValueType:   "other",
+							},
+							"name": {
+								DisplayName: "name",
+								ValueType:   "other",
+							},
+							"description": {
+								DisplayName: "description",
+								ValueType:   "other",
+							},
+							"slug": {
+								DisplayName: "slug",
+								ValueType:   "other",
+							},
+							"isActive": {
+								DisplayName: "isActive",
+								ValueType:   "other",
+							},
+							"dateAdded": {
+								DisplayName: "dateAdded",
+								ValueType:   "other",
+							},
+							"dateUpdated": {
+								DisplayName: "dateUpdated",
+								ValueType:   "other",
+							},
 						},
+						FieldsMap: map[string]string{},
 					},
 				},
 				Errors: nil,
