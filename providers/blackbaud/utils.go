@@ -1,6 +1,12 @@
 package blackbaud
 
-import "github.com/amp-labs/connectors/internal/datautils"
+import (
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/spyzhov/ajson"
+)
+
+const defaultPageSize = 1
 
 var objectNameWithSearchResource = datautils.NewSet( //nolint:gochecknoglobals
 	"crm-adnmg/sites",
@@ -34,3 +40,9 @@ var objectNameWithListResource = datautils.NewSet( //nolint:gochecknoglobals
 	"crm-mktmg/appeals",
 	"crm-mktmg/solicitcodes",
 )
+
+func makeNextRecord() common.NextPageFunc {
+	return func(node *ajson.Node) (string, error) {
+		return "", nil
+	}
+}
