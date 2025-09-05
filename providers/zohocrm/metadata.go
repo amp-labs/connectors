@@ -3,7 +3,6 @@ package zohocrm
 import (
 	"context"
 	"fmt"
-	"strings"
 	"sync"
 
 	"github.com/amp-labs/connectors/common"
@@ -14,11 +13,28 @@ import (
 // doc: https://www.zoho.com/crm/developer/docs/api/v6/field-meta.html
 const restMetadataEndpoint = "settings/fields"
 
-// apiKeyField is the key holding the metadata field name.
-const apiKeyField = "api_name"
-
 type metadataFields struct {
 	Fields []map[string]any `json:"fields"`
+}
+
+type metadataFieldsV2 struct {
+	Fields []field `json:"fields"`
+}
+
+//nolint:tagliatelle
+type field struct {
+	Name           string        `json:"api_name"`
+	DisplayName    string        `json:"field_label"`
+	Type           string        `json:"data_type"`
+	ReadOnly       bool          `json:"read_only"`
+	PickListValues []fieldValues `json:"pick_list_values,omitempty"`
+	// The rest metadata details
+}
+
+//nolint:tagliatelle
+type fieldValues struct {
+	DisplayValue string `json:"display_value"`
+	ActualValue  string `json:"actual_value"`
 }
 
 func (c *Connector) ListObjectMetadata(ctx context.Context,
@@ -87,33 +103,68 @@ func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common
 		return nil, fmt.Errorf("error fetching metadata: %w", err)
 	}
 
-	metadata, err := parseMetadataResponse(resp)
+	metadata, err := parseMetadataResponse(resp, capObj)
 	if err != nil {
 		return nil, err
 	}
 
-	metadata.DisplayName = capObj
-
 	return metadata, nil
 }
 
-func parseMetadataResponse(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
-	response, err := common.UnmarshalJSON[metadataFields](resp)
+func parseMetadataResponse(resp *common.JSONHTTPResponse, objectName string) (*common.ObjectMetadata, error) {
+	response, err := common.UnmarshalJSON[metadataFieldsV2](resp)
 	if err != nil {
 		return nil, err
 	}
 
 	metadata := &common.ObjectMetadata{
-		FieldsMap: make(map[string]string),
+		DisplayName: objectName,
+		Fields:      make(common.FieldsMetadata),
+		FieldsMap:   make(map[string]string),
 	}
 
 	// Ranging on the fields Slice, to construct the metadata fields.
-	for _, f := range response.Fields {
-		apiField, ok := f[apiKeyField].(string)
-		if ok {
-			metadata.FieldsMap[strings.ToLower(apiField)] = strings.ToLower(apiField)
+	for _, fld := range response.Fields {
+		var fieldValues []common.FieldValue
+
+		for _, opt := range fld.PickListValues {
+			fieldValues = append(fieldValues, common.FieldValue{
+				Value:        opt.ActualValue,
+				DisplayValue: opt.DisplayValue,
+			})
 		}
+
+		mdt := common.FieldMetadata{
+			DisplayName:  fld.DisplayName,
+			ValueType:    nativeType(fld.Type),
+			ProviderType: fld.Type,
+			ReadOnly:     fld.ReadOnly,
+			Values:       fieldValues,
+		}
+
+		metadata.AddFieldMetadata(fld.Name, mdt)
 	}
 
 	return metadata, nil
+}
+
+func nativeType(typ string) common.ValueType {
+	switch typ {
+	case "text", "textarea", "email", "phone", "website":
+		return common.ValueTypeString
+	case "date":
+		return common.ValueTypeDate
+	case "datetime":
+		return common.ValueTypeDateTime
+	case "boolean":
+		return common.ValueTypeBoolean
+	case "integer":
+		return common.ValueTypeInt
+	case "picklist":
+		return common.ValueTypeSingleSelect
+	case "multiselectpicklist":
+		return common.ValueTypeMultiSelect
+	default:
+		return common.ValueTypeOther
+	}
 }
