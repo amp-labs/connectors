@@ -41,7 +41,6 @@ func main() {
 			slog.Error(err.Error())
 		}
 	}
-
 }
 
 func testRead(ctx context.Context, conn *sm.Connector, objectName string, fields []string) error {

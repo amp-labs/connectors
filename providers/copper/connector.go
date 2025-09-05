@@ -8,7 +8,6 @@ import (
 	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
-	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/copper/internal/metadata"
@@ -28,7 +27,6 @@ type Connector struct {
 	common.RequireAuthenticatedClient
 	common.RequireMetadata
 
-	components.SchemaProvider
 	components.Reader
 	components.Writer
 	components.Deleter
@@ -58,8 +56,6 @@ func constructor(base *components.Connector) (*Connector, error) {
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
 	}.Handle
-
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
@@ -109,6 +105,10 @@ func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 
 func (c *Connector) getWriteURL(objectName string, id string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName, id)
+}
+
+func (c *Connector) getCustomFieldsURL() (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "custom_field_definitions")
 }
 
 // emailHeader is required for all REST API calls.

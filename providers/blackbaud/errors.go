@@ -19,6 +19,29 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 )
 
 // ResponseError represents an error response from the blankbaud API.
+// In this connector, based on my analysis, there are two types of error responses:
+//
+// 1. Example:
+//
+//	{
+//	   "type": "urn:blackbaud:general-translation-error",
+//	   "title": "One or more validation errors occurred.",
+//	   "status": 400,
+//	   "detail": "Error processing Infinity response: <HTML format>",
+//	   "trace_id": "c93436f067024cafbd34a3477fe0baec",
+//	   "span_id": "fc0101290b2ab96e"
+//	}
+//
+// 2. Example:
+//
+//	{
+//	   "statusCode": 404,
+//	   "message": "Resource not found",
+//	   "status": 404,
+//	   "title": "Resource not found"
+//	}
+//
+// Define a struct that can handle both types of error responses shown above.
 type ResponseError struct {
 	StatusCode int    `json:"statusCode,omitempty"`
 	Message    string `json:"message,omitempty"`
