@@ -151,7 +151,7 @@ func testUploadAudio(ctx context.Context) error {
 
 	slog.Info("Upload the audio file")
 
-	var attendees = []any{
+	attendees := []any{
 		map[string]string{
 			"displayName": "Fireflies Notetaker",
 			"email":       "notetaker@fireflies.ai",

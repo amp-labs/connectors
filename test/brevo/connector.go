@@ -16,7 +16,6 @@ func GetBrevoConnector(ctx context.Context) *brevo.Connector {
 	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, "api-key", reader.Get(credscanning.Fields.ApiKey))
-
 	if err != nil {
 		utils.Fail(err.Error())
 	}
