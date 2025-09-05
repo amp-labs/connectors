@@ -15,7 +15,6 @@ func main() {
 	conn := avoma.GetAvomaConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"calls", "custom_categories", "meetings", "notes", "scorecard_evaluations", "scorecards", "smart_categories", "template", "users"})
-
 	if err != nil {
 		log.Fatal(err)
 	}

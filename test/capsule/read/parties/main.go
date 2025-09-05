@@ -28,7 +28,7 @@ func main() {
 	data, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
 		Fields:     datautils.NewSet("firstName", "name"),
-		//NextPage:   "https://api.capsulecrm.com/api/v2/parties?page=2&perPage=2",
+		// NextPage:   "https://api.capsulecrm.com/api/v2/parties?page=2&perPage=2",
 	})
 	if err != nil {
 		utils.Fail("error reading data", "error", err)

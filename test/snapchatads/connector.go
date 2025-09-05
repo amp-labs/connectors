@@ -21,7 +21,6 @@ func GetConnector(ctx context.Context) *snapchatads.Connector {
 		common.WithOAuthConfig(getConfig(reader)),
 		common.WithOAuthToken(reader.GetOauthToken()),
 	)
-
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
 	}
@@ -29,7 +28,6 @@ func GetConnector(ctx context.Context) *snapchatads.Connector {
 	conn, err := snapchatads.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
-
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
 	}

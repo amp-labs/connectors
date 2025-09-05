@@ -22,7 +22,7 @@ func main() {
 	conn := connTest.GetCopperConnector(ctx)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		"people", "tags",
+		"companies", "people", "tags",
 	})
 	if err != nil {
 		utils.Fail("error listing metadata", "error", err)

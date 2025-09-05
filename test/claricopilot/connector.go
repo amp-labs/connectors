@@ -25,7 +25,6 @@ func GetConnector(ctx context.Context) *claricopilot.Connector {
 	conn, err := claricopilot.NewConnector(
 		common.ConnectorParams{AuthenticatedClient: client},
 	)
-
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
 	}
