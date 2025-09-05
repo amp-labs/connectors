@@ -368,11 +368,12 @@ type ObjectMetadata struct {
 	DisplayName string
 
 	// Fields is a map of field names to FieldMetadata.
+	// Some legacy connectors do not populate this, but only populates FieldsMap.
 	Fields FieldsMetadata
 
+	// Deprecated: for new connectors, please only populate and read `ObjectMetadata.Fields`.
 	// FieldsMap is a map of field names to field display names.
-	// Deprecated: this map includes only display names.
-	// Refer to Fields for extended description of field properties.
+	// TODO: Remove this field once all connectors populate Fields.
 	FieldsMap map[string]string
 }
 
