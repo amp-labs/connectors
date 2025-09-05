@@ -26,7 +26,7 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "Customers",
 		Fields:     connectors.Fields("id", "displayName", "email"),
-		//NextPage:   "https://api.businesscentral.dynamics.com/v2.0/5c6241d0-74cc-48a2-b667-3eb0d738af72/Production/api/v2.0/companies(70c0c603-f4f9-ef11-9344-6045bdc8c234)/customers?$select=id%2CdisplayName%2Cemail&aid=FIN&$skiptoken=75e545bc-f6f9-ef11-9344-6045bdc8c234", // nolint:lll
+		// NextPage:   "https://api.businesscentral.dynamics.com/v2.0/5c6241d0-74cc-48a2-b667-3eb0d738af72/Production/api/v2.0/companies(70c0c603-f4f9-ef11-9344-6045bdc8c234)/customers?$select=id%2CdisplayName%2Cemail&aid=FIN&$skiptoken=75e545bc-f6f9-ef11-9344-6045bdc8c234", // nolint:lll
 	})
 	if err != nil {
 		utils.Fail("error reading from provider", "error", err)

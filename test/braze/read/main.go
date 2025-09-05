@@ -42,7 +42,6 @@ func main() {
 }
 
 func testReadCampaigns(ctx context.Context, conn *br.Connector) error {
-
 	params := common.ReadParams{
 		ObjectName: "campaigns",
 		Fields:     connectors.Fields("id", "name"),

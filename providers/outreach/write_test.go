@@ -62,7 +62,8 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					"type":        "sequence",
 					"name":        "string",
 					"tags":        []string{"sequence", "coffee"},
-				}},
+				},
+			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPOST(),
