@@ -57,9 +57,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
 
-	// Proxy actions use the base URL set on the HTTP client, so we need to set it here.
-	conn.SetBaseURL(conn.moduleInfo.BaseURL)
-
+	conn.Client.HTTPClient.Base = conn.providerInfo.BaseURL
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
 		JSON: &interpreter.DirectFaultyResponder{Callback: conn.interpretJSONError},
 		XML:  &interpreter.DirectFaultyResponder{Callback: conn.interpretXMLError},
@@ -72,10 +70,15 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	// Read/Write/ListObjectMetadata will delegate to this adapter.
 	moduleID := params.Module.Selection.ID
 	if isPardotModule(moduleID) {
-		conn.pardotAdapter, err = pardot.NewAdapter(conn.Client, conn.moduleInfo, params.Metadata.Map)
+		conn.pardotAdapter, err = pardot.NewAdapter(conn.Client, conn.moduleInfo,
+			params.Value(pardot.MetadataKeyBusinessUnitID),
+		)
 		if err != nil {
 			return nil, err
 		}
+
+		// Override error handler. Pardot has different format from Standard Salesforce.
+		conn.Client.HTTPClient.ErrorHandler = pardot.ErrorHandlerFunc
 	}
 
 	return conn, nil
@@ -110,11 +113,17 @@ func (c *Connector) getURLEventRelayConfig(identifier string) (*urlbuilder.URL, 
 }
 
 // SetBaseURL
+// Warning: this method is to be used by mock tests.
+// The code is in the intermediate state and improved URL storage and handling is anticipated.
 // TODO use components.Connector to inherit this method.
 func (c *Connector) SetBaseURL(newURL string) {
 	c.providerInfo.BaseURL = newURL
 	c.moduleInfo.BaseURL = newURL
-	c.HTTPClient().Base = newURL
+	c.Client.HTTPClient.Base = newURL
+
+	if c.pardotAdapter != nil {
+		c.pardotAdapter.BaseURL = newURL
+	}
 }
 
 // Gateway access to URLs.
