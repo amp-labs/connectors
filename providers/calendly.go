@@ -15,6 +15,7 @@ func init() {
 			SuccessStatusCodes: []int{http.StatusOK},
 			Url:                "https://api.calendly.com/users/me",
 		},
+		PostAuthInfoNeeded: true,
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.calendly.com/oauth/authorize",
@@ -40,8 +41,8 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
-			Subscribe: false,
+			Read:      true,
+			Subscribe: true,
 			Write:     false,
 		},
 	})
