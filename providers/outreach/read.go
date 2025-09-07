@@ -61,12 +61,18 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
-	// If Since is present, we turn it into the format the Outreach API expects
+	// Time based querying:
+	// https://developers.outreach.io/api/making-requests/#filter-by-a-less-than-or-equal-to-condition
+	// https://developers.outreach.io/api/making-requests/#new-filter-syntax
 	if !config.Since.IsZero() {
-		t := config.Since.Format(time.DateOnly)
-		fmtTime := t + "..inf"
-		url.WithQueryParam("filter[updatedAt]", fmtTime)
+		sinceTimestamp := config.Since.UTC().Format(time.DateOnly)
+
+		untilTimestamp := "inf"
+		if !config.Until.IsZero() {
+			untilTimestamp = config.Until.UTC().Format(time.DateOnly)
+		}
+
+		url.WithQueryParam("filter[updatedAt]", sinceTimestamp+".."+untilTimestamp)
 	}
 
 	return url, nil
