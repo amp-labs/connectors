@@ -3,10 +3,10 @@ package salesloft
 import (
 	"context"
 	"strconv"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -51,13 +51,18 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 
 	url.WithQueryParam("per_page", strconv.Itoa(DefaultPageSize))
 
+	// Documentation states ISO8601, while server accepts different formats
+	// but for consistency we are sticking to one format to be sent.
+	// For the reference any API resource that includes time data type mentions iso8601 string format.
+	// One example, say accounts is https://developers.salesloft.com/docs/api/accounts-index
 	if !config.Since.IsZero() {
-		// Documentation states ISO8601, while server accepts different formats
-		// but for consistency we are sticking to one format to be sent.
-		// For the reference any API resource that includes time data type mentions iso8601 string format.
-		// One example, say accounts is https://developers.salesloft.com/docs/api/accounts-index
-		updatedSince := config.Since.Format(time.RFC3339Nano)
+		updatedSince := datautils.Time.FormatRFC3339inUTCWithMicrosecondsAndOffset(config.Since)
 		url.WithQueryParam("updated_at[gte]", updatedSince)
+	}
+
+	if !config.Until.IsZero() {
+		updatedUntil := datautils.Time.FormatRFC3339inUTCWithMicrosecondsAndOffset(config.Until)
+		url.WithQueryParam("updated_at[lte]", updatedUntil)
 	}
 
 	return url, nil

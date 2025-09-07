@@ -26,6 +26,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseListAccountsSince := testutils.DataFromFile(t, "read-list-accounts-since.json")
 	accountsSince, err := time.Parse(time.RFC3339Nano, "2024-06-07T10:51:20.851224-04:00")
 	mockutils.NoErrors(t, err)
+	accountsUntil, err := time.Parse(time.RFC3339Nano, "2025-01-01T00:00:00.000000-00:00")
+	mockutils.NoErrors(t, err)
 
 	tests := []testroutines.Read{
 		{
@@ -221,12 +223,31 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/v2/accounts"),
-					mockcond.QueryParam("updated_at[gte]", "2024-06-07T10:51:20.851224-04:00"),
+					mockcond.QueryParam("updated_at[gte]", "2024-06-07T14:51:20.851224+00:00"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseListAccountsSince),
 			}.Server(),
 			Comparator:   testroutines.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 2, NextPage: "", Done: true},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Successful read accounts until point in time",
+			Input: common.ReadParams{
+				ObjectName: "accounts",
+				Until:      accountsUntil,
+				Fields:     connectors.Fields("id"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v2/accounts"),
+					mockcond.QueryParam("updated_at[lte]", "2025-01-01T00:00:00.000000+00:00"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseListAccounts),
+			}.Server(),
+			Comparator:   testroutines.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 4, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 	}
