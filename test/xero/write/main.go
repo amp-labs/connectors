@@ -58,6 +58,7 @@ func testCreatingContactGroups(ctx context.Context, conn *cc.Connector) (string,
 			"name": gofakeit.Name(),
 		},
 	}
+
 	slog.Info("Creating an contact group...")
 
 	res, err := conn.Write(ctx, params)
@@ -86,6 +87,7 @@ func testUpdateContactGroups(ctx context.Context, conn *cc.Connector, recordId s
 			"name":           gofakeit.Name(),
 		},
 	}
+
 	slog.Info("Updating a contact group...")
 
 	res, err := conn.Write(ctx, params)
@@ -120,6 +122,7 @@ func testCreatingTaxRates(ctx context.Context, conn *cc.Connector) (string, erro
 			},
 		},
 	}
+
 	slog.Info("Creating an tax rate...")
 
 	res, err := conn.Write(ctx, params)

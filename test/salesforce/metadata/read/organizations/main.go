@@ -16,6 +16,7 @@ func main() {
 	defer done()
 
 	utils.SetupLogging()
+
 	conn := connTest.GetSalesforceConnector(ctx)
 
 	testscenario.ValidateMetadataContainsRead(ctx, conn, "Organization", sanitizeReadResponse)
