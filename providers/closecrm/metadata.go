@@ -110,7 +110,8 @@ func parseMetadataResponse(resp *common.JSONHTTPResponse) (*common.ObjectMetadat
 
 	// Ranging on the fields Slice, to construct the metadata fields.
 	for k := range response.Data[0] {
-		metadata.FieldsMap[k] = k
+		// TODO fix deprecated
+		metadata.FieldsMap[k] = k // nolint:staticcheck
 	}
 
 	return metadata, nil

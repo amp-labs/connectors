@@ -80,7 +80,8 @@ func fetchDataFields(
 	}
 
 	for fld := range resp.Results[0] {
-		mtd.FieldsMap[fld] = fld
+		// TODO fix deprecated
+		mtd.FieldsMap[fld] = fld // nolint:staticcheck
 	}
 
 	res.Result[obj] = *mtd
