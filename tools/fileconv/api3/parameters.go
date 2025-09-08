@@ -60,6 +60,11 @@ func CamelCaseToSpaceSeparated(displayName string) string {
 	return strcase.ToDelimited(displayName, ' ')
 }
 
+// SlashesToSpaceSeparated replaces URL slashes with spaces.
+func SlashesToSpaceSeparated(displayName string) string {
+	return strings.ReplaceAll(displayName, "/", " ")
+}
+
 // Pluralize will apply pluralization to the display name.
 func Pluralize(displayName string) string {
 	return naming.NewPluralString(displayName).String()
