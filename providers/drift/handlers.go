@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -20,6 +23,8 @@ const (
 
 	ListSuffix = "/list"
 )
+
+var ErrUnexpectedFieldId = errors.New("received unexpected data type in recordId field") //nolint: gochecknoglobals
 
 // Create a set of endpoints that require the list suffix.
 var endpointsRequiringListSuffix = datautils.NewSet(users, conversations, playbooks) //nolint: gochecknoglobals
@@ -69,7 +74,7 @@ func (c *Connector) constructReadURL(objectName string) (*urlbuilder.URL, error)
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	method := http.MethodPost
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	url, err := c.constructWriteURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -92,12 +97,25 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }
 
+func (c *Connector) constructWriteURL(objectName string) (*urlbuilder.URL, error) {
+	lowerCaseObject := strings.ToLower(objectName)
+
+	// Check if this endpoint requires the create suffix
+	if lowerCaseObject == conversations {
+		objectName += "/new"
+	}
+
+	return urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
+}
+
 func (c *Connector) parseWriteResponse(
 	ctx context.Context,
 	params common.WriteParams,
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.WriteResult, error) {
+	logging.With(ctx, "drift connector")
+
 	body, ok := response.Body()
 	if !ok {
 		return &common.WriteResult{
@@ -115,8 +133,32 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
+	recordId, err := retrieveRecordId(params.ObjectName, data)
+	if err != nil {
+		logging.Logger(ctx).Error("failed to retrieve the recordId from response data",
+			"object", params.ObjectName, "response", data)
+	}
+
 	return &common.WriteResult{
-		Success: true,
-		Data:    data,
+		Success:  true,
+		Data:     data,
+		RecordId: recordId,
 	}, nil
+}
+
+func retrieveRecordId(objectName string, data map[string]any) (string, error) {
+	if !recordIdFields.Has(objectName) {
+		return "", nil
+	}
+
+	fld := recordIdFields.Get(objectName)
+
+	id, ok := data[fld].(float64)
+	if !ok {
+		return "", ErrUnexpectedFieldId
+	}
+
+	recordId := strconv.Itoa(int(id))
+
+	return recordId, nil
 }
