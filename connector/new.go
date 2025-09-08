@@ -46,6 +46,8 @@ import (
 	"github.com/amp-labs/connectors/providers/groove"
 	"github.com/amp-labs/connectors/providers/helpscoutmailbox"
 	"github.com/amp-labs/connectors/providers/heyreach"
+	"github.com/amp-labs/connectors/providers/highlevelstandard"
+	"github.com/amp-labs/connectors/providers/highlevelwhitelabel"
 	"github.com/amp-labs/connectors/providers/hubspot"
 	"github.com/amp-labs/connectors/providers/hunter"
 	"github.com/amp-labs/connectors/providers/insightly"
@@ -133,6 +135,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Groove:                  wrapper(newGrooveConnector),
 	providers.HelpScoutMailbox:        wrapper(newHelpScoutMailboxConnector),
 	providers.HeyReach:                wrapper(newHeyReachConnector),
+	providers.HighLevelStandard:       wrapper(newHighLevelStandardConnector),
+	providers.HighLevelWhiteLabel:     wrapper(newHighLevelWhiteLabelConnector),
 	providers.Hubspot:                 wrapper(newHubspotConnector),
 	providers.Hunter:                  wrapper(newHunterConnector),
 	providers.Insightly:               wrapper(newInsightlyConnector),
@@ -682,4 +686,16 @@ func newPylonConnector(
 	params common.ConnectorParams,
 ) (*pylon.Connector, error) {
 	return pylon.NewConnector(params)
+}
+
+func newHighLevelStandardConnector(
+	params common.ConnectorParams,
+) (*highlevelstandard.Connector, error) {
+	return highlevelstandard.NewConnector(params)
+}
+
+func newHighLevelWhiteLabelConnector(
+	params common.ConnectorParams,
+) (*highlevelwhitelabel.Connector, error) {
+	return highlevelwhitelabel.NewConnector(params)
 }
