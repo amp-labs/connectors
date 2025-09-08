@@ -62,7 +62,8 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		}
 
 		for fld := range *record {
-			objectMetadata.FieldsMap[fld] = fld
+			// TODO fix deprecated
+			objectMetadata.FieldsMap[fld] = fld // nolint:staticcheck
 		}
 	default:
 		records, err := common.UnmarshalJSON[dataResponse](response)
@@ -75,7 +76,8 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		}
 
 		for fld := range records.Data[0] {
-			objectMetadata.FieldsMap[fld] = fld
+			// TODO fix deprecated
+			objectMetadata.FieldsMap[fld] = fld // nolint:staticcheck
 		}
 	}
 
