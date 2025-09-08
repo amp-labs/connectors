@@ -40,6 +40,14 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			return nil, err
 		}
 	case in(config.ObjectName, readingSearchObjectsPOST):
+		if config.ObjectName == "accounts" {
+			url.WithQueryParam("sort_by_field", "account_updated_at")
+		}
+
+		if config.ObjectName == "contacts" {
+			url.WithQueryParam("sort_by_field", "contact_updated_at")
+		}
+
 		return c.Search(ctx, config, url)
 	default:
 		return nil, common.ErrObjectNotSupported
