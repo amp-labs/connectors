@@ -16,6 +16,7 @@ func main() {
 	defer done()
 
 	utils.SetupLogging()
+
 	conn := connTest.GetSmartleadV2Connector(ctx)
 
 	testscenario.ValidateMetadataExactlyMatchesRead(ctx, conn, "client")
