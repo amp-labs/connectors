@@ -17,6 +17,7 @@ func main() {
 	defer done()
 
 	utils.SetupLogging()
+
 	conn := connTest.GetPipelinerConnector(ctx)
 
 	testscenario.ValidateMetadataContainsRead(ctx, conn, "Leads", sanitizeReadResponse)

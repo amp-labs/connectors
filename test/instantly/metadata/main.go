@@ -16,6 +16,7 @@ func main() {
 	defer done()
 
 	utils.SetupLogging()
+
 	conn := connTest.GetInstantlyConnector(ctx)
 
 	testscenario.ValidateMetadataExactlyMatchesRead(ctx, conn, "tags")

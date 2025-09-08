@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/amp-labs/connectors/test/highlevelstandard"
-
 	"github.com/amp-labs/connectors/test/utils"
 )
 

@@ -16,6 +16,7 @@ func main() {
 	defer done()
 
 	utils.SetupLogging()
+
 	conn := connTest.GetMSDynamics365CRMConnector(ctx)
 
 	testscenario.ValidateMetadataExactlyMatchesRead(ctx, conn, "contacts")

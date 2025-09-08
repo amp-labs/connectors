@@ -20,12 +20,14 @@ func MainFn() int {
 	conn := highlevelstandard.GetHighLevelStandardConnector(context.Background())
 
 	slog.Info("Deleting the business")
+
 	err := testDelete(context.Background(), conn, "businesses", "68921533fe980be6f4421cf8")
 	if err != nil {
 		return 1
 	}
 
 	slog.Info("Deleting the calendars groups")
+
 	err = testDelete(context.Background(), conn, "calendars/groups", "c5d87HDX906XNUdQD3rS")
 	if err != nil {
 		return 1

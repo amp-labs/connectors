@@ -1,7 +1,9 @@
 package nutshell
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -21,6 +23,14 @@ const defaultPageSize = "10000"
 
 // Events: https://developers.nutshell.com/reference/get_events
 const objectNameEvents = "events"
+
+// https://developers.nutshell.com/reference/post_notes
+const objectNameNotes = "notes"
+
+var updateHeader = common.Header{ // nolint:gochecknoglobals
+	Key:   "Content-Type",
+	Value: "application/json-patch+json",
+}
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if err := params.ValidateParams(true); err != nil {
@@ -142,4 +152,172 @@ func makeNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 
 		return url.String(), nil
 	}
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	url, err := c.getWriteURL(params.ObjectName, params.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(params.RecordId) == 0 {
+		return c.buildCreateRequest(ctx, params, url)
+	}
+
+	return c.buildUpdateRequest(ctx, params, url)
+}
+
+func (c *Connector) buildCreateRequest(
+	ctx context.Context, params common.WriteParams, url *urlbuilder.URL,
+) (*http.Request, error) {
+	recordData, err := common.RecordDataToMap(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create payload must be wrapped in the object name.
+	/* {
+	  "sources": [
+	    {
+	      "name": "NorthWest",
+	      "channel": 3
+	    }
+	  ]
+	} */
+	payloadWrapperKey := payloadWrapperKeyRegistry.Get(params.ObjectName)
+	if _, correctlyFormatted := recordData[payloadWrapperKey]; !correctlyFormatted {
+		var value any = []any{recordData}
+
+		if params.ObjectName == objectNameNotes {
+			/* {
+			  "data": {
+			    "links": {
+			      "parent": "object-id-which-is-target-for-the-note"
+			    },
+			    "body": "Note content goes here"
+			  }
+			} */
+			value = recordData
+		}
+
+		recordData = map[string]any{
+			payloadWrapperKey: value,
+		}
+	}
+
+	jsonData, err := json.Marshal(recordData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal record data: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	return req, nil
+}
+
+func (c *Connector) buildUpdateRequest(
+	ctx context.Context, params common.WriteParams, url *urlbuilder.URL,
+) (*http.Request, error) {
+	// Operations must be provided as an array.
+	// Since params.RecordData cannot be an array itself,
+	// we wrap it in a single-element array.
+	recordData := []any{
+		params.RecordData,
+	}
+
+	jsonData, err := json.Marshal(recordData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal record data: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url.String(), bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	updateHeader.ApplyToRequest(req)
+
+	return req, nil
+}
+
+// Creating objects requires payload to be wrapped with some key.
+// The object name doesn't always match the payload key, the registry bellow hadnles this.
+var payloadWrapperKeyRegistry = datautils.NewDefaultMap(map[string]string{ // nolint:gochecknoglobals
+	"audiences": "emAudiences",
+	"notes":     "data",
+}, func(objectName string) (payloadKey string) {
+	return objectName
+})
+
+func (c *Connector) parseWriteResponse(ctx context.Context, params common.WriteParams,
+	request *http.Request, response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		// it is unlikely to have no payload
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	array, err := jsonquery.New(body).ArrayRequired(params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(array) == 0 {
+		// Response doesn't hold any data for the object.
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	nested := array[0]
+
+	recordID, err := jsonquery.New(nested).TextWithDefault("id", params.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(nested)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     data,
+	}, nil
+}
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	url, err := c.getWriteURL(params.ObjectName, params.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	return req, nil
+}
+
+func (c *Connector) parseDeleteResponse(ctx context.Context, params common.DeleteParams,
+	request *http.Request, response *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	if response.Code != http.StatusOK && response.Code != http.StatusNoContent {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, response.Code)
+	}
+
+	// Response body is not used.
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
 }
