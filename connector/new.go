@@ -15,6 +15,7 @@ import (
 	"github.com/amp-labs/connectors/providers/attio"
 	"github.com/amp-labs/connectors/providers/avoma"
 	"github.com/amp-labs/connectors/providers/aws"
+	"github.com/amp-labs/connectors/providers/blackbaud"
 	"github.com/amp-labs/connectors/providers/blueshift"
 	"github.com/amp-labs/connectors/providers/braze"
 	"github.com/amp-labs/connectors/providers/breakcold"
@@ -104,6 +105,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Atlassian:               wrapper(newAtlassianConnector),
 	providers.Attio:                   wrapper(newAttioConnector),
 	providers.Avoma:                   wrapper(newAvomaConnector),
+	providers.Blackbaud:               wrapper(newBlackbaudConnector),
 	providers.Blueshift:               wrapper(newBlueshiftConnector),
 	providers.Braze:                   wrapper(newBrazeConnector),
 	providers.Breakcold:               wrapper(newBreakcoldConnector),
@@ -686,6 +688,12 @@ func newPylonConnector(
 	params common.ConnectorParams,
 ) (*pylon.Connector, error) {
 	return pylon.NewConnector(params)
+}
+
+func newBlackbaudConnector(
+	params common.ConnectorParams,
+) (*blackbaud.Connector, error) {
+	return blackbaud.NewConnector(params)
 }
 
 func newHighLevelStandardConnector(
