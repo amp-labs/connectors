@@ -1,0 +1,122 @@
+{
+  "meta": {
+    "count": 4,
+    "countFormatted": {
+      "formatted": "4",
+      "prefix": "",
+      "suffix": "",
+      "value": 4
+    },
+    "total": 4,
+    "totalFormatted": {
+      "formatted": "4",
+      "prefix": "",
+      "suffix": "",
+      "value": 4
+    },
+    "facets": {
+      "accountType": {
+        "1-accountTypes": 4,
+        "2-accountTypes": 0,
+        "3-accountTypes": 0,
+        "4-accountTypes": 0,
+        "5-accountTypes": 0
+      }
+    },
+    "instanceId": "379104",
+    "siteId": "6smEpVK1"
+  },
+  "links": {},
+  "accounts": [
+    {
+      "id": "15-accounts",
+      "type": "accounts",
+      "name": "Apple",
+      "description": null,
+      "emails": [],
+      "addresses": [],
+      "phones": [],
+      "urls": [],
+      "href": "https://app.nutshell.com/rest/accounts/15-accounts",
+      "revenue": null,
+      "employeeCount": null,
+      "avatarUrl": "https://app.nutshell.com/avatar/accounts/15/379104/k6bcCQk1OkiST-h0C4BRhJ_JwnlzJJAsiALej4pJ5d0.2/1755182574",
+      "initials": "A",
+      "htmlUrl": "https://app.nutshell.com/company/15-apple",
+      "htmlUrlPath": "/company/15-apple",
+      "links": {
+        "creator": "1-users",
+        "owner": "1-users",
+        "territory": null,
+        "tags": [],
+        "files": [],
+        "relatedFiles": [],
+        "followup": null,
+        "recurringTask": null,
+        "contacts": [],
+        "accountType": "1-accountTypes",
+        "industry": null
+      }
+    },
+    {
+      "id": "11-accounts",
+      "type": "accounts",
+      "name": "Banana",
+      "description": null,
+      "emails": [],
+      "addresses": [],
+      "phones": [],
+      "urls": [],
+      "href": "https://app.nutshell.com/rest/accounts/11-accounts",
+      "revenue": null,
+      "employeeCount": null,
+      "avatarUrl": "https://app.nutshell.com/avatar/accounts/11/379104/bRiGRMwY6BAVMfPW-8e1_PsZNgovuHD6dmaxVEv460w.2/1755182569",
+      "initials": "B",
+      "htmlUrl": "https://app.nutshell.com/company/11-banana",
+      "htmlUrlPath": "/company/11-banana",
+      "links": {
+        "creator": "1-users",
+        "owner": "1-users",
+        "territory": null,
+        "tags": [],
+        "files": [],
+        "relatedFiles": [],
+        "followup": null,
+        "recurringTask": null,
+        "contacts": [],
+        "accountType": "1-accountTypes",
+        "industry": null
+      }
+    },
+    {
+      "id": "19-accounts",
+      "type": "accounts",
+      "name": "Cucumber",
+      "description": null,
+      "emails": [],
+      "addresses": [],
+      "phones": [],
+      "urls": [],
+      "href": "https://app.nutshell.com/rest/accounts/19-accounts",
+      "revenue": null,
+      "employeeCount": null,
+      "avatarUrl": "https://app.nutshell.com/avatar/accounts/19/379104/_aasEbrNrr5uTkpTt_DYNuqSiM1tKE92DkDGwWYPybI.2/1755182580",
+      "initials": "C",
+      "htmlUrl": "https://app.nutshell.com/company/19-cucumber",
+      "htmlUrlPath": "/company/19-cucumber",
+      "links": {
+        "creator": "1-users",
+        "owner": "1-users",
+        "territory": null,
+        "tags": [],
+        "files": [],
+        "relatedFiles": [],
+        "followup": null,
+        "recurringTask": null,
+        "contacts": [],
+        "accountType": "1-accountTypes",
+        "industry": null
+      }
+    }
+  ]
+}
