@@ -2,7 +2,6 @@
 package salesforce
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -99,6 +98,6 @@ type (
 func (c bulkReadTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
-	output, err := conn.BulkRead(context.Background(), c.Input)
+	output, err := conn.BulkRead(t.Context(), c.Input)
 	bulkReadTestCaseType(c).Validate(t, err, output)
 }
