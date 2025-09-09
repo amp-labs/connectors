@@ -1,7 +1,6 @@
 package salesforce
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -110,6 +109,6 @@ type (
 func (c bulkQueryTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
-	output, err := conn.BulkQuery(context.Background(), c.Input.query, c.Input.includeDeleted)
+	output, err := conn.BulkQuery(t.Context(), c.Input.query, c.Input.includeDeleted)
 	bulkQueryTestCaseType(c).Validate(t, err, output)
 }
