@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -156,6 +157,7 @@ func testReadContacts(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "contacts",
 		Fields:     connectors.Fields("id", "first_name", "name"),
+		Since:      time.Now().Add(-10 * time.Hour),
 	}
 
 	res, err := conn.Read(ctx, params)

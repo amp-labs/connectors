@@ -6,6 +6,11 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
+const (
+	accounts = "accounts"
+	contacts = "contacts"
+)
+
 // Read retrieves data based on the provided configuration parameters.
 //
 // This function executes a read operation using the given context and provided read parameters.
@@ -40,11 +45,11 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			return nil, err
 		}
 	case in(config.ObjectName, readingSearchObjectsPOST):
-		if config.ObjectName == "accounts" {
+		if config.ObjectName == accounts {
 			url.WithQueryParam("sort_by_field", "account_updated_at")
 		}
 
-		if config.ObjectName == "contacts" {
+		if config.ObjectName == contacts {
 			url.WithQueryParam("sort_by_field", "contact_updated_at")
 		}
 
