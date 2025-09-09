@@ -46,11 +46,11 @@ var ErrKeyNotFound = errors.New("incsync: key not found in one or more records; 
 func IncrementalSync(data *ajson.Node, recordsKey string, since time.Time, //nolint:cyclop
 	sinceKey string, providerFormat string, nextPageFunc NextPageFunc,
 ) ([]map[string]any, string, error) {
-	var updatedNodeRecords []*ajson.Node
-
-	var hasMore bool
-
-	var next string
+	var (
+		updatedNodeRecords []*ajson.Node
+		hasMore            bool
+		next               string
+	)
 
 	nodeQuery := jsonquery.New(data)
 
