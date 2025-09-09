@@ -58,6 +58,11 @@ func MainFn() int {
 		return 1
 	}
 
+	err = testReadAccounts(ctx, conn)
+	if err != nil {
+		return 1
+	}
+
 	return 0
 }
 
@@ -158,6 +163,7 @@ func testReadContacts(ctx context.Context, conn *ap.Connector) error {
 		ObjectName: "contacts",
 		Fields:     connectors.Fields("id", "first_name", "name"),
 		Since:      time.Now().Add(-10 * time.Hour),
+		// NextPage:   "3",
 	}
 
 	res, err := conn.Read(ctx, params)
@@ -204,6 +210,31 @@ func testReadLabels(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "labels",
 		Fields:     connectors.Fields("name", "modality"),
+	}
+
+	res, err := conn.Read(ctx, params)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testReadAccounts(ctx context.Context, conn *ap.Connector) error {
+	params := common.ReadParams{
+		ObjectName: "accounts",
+		Fields:     connectors.Fields("id", "modality", "name"),
+		Since:      time.Now().Add(-10 * time.Hour),
+		// NextPage:   "3",
 	}
 
 	res, err := conn.Read(ctx, params)

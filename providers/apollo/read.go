@@ -7,8 +7,10 @@ import (
 )
 
 const (
-	accounts = "accounts"
-	contacts = "contacts"
+	accounts  = "accounts"
+	contacts  = "contacts"
+	updatedAt = "updated_at"
+	createdAt = "created_at"
 )
 
 // Read retrieves data based on the provided configuration parameters.

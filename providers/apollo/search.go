@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/spyzhov/ajson"
 )
 
 // search uses POST method to read data.It has a display limit of 50,000 records.
@@ -24,29 +25,16 @@ func (c *Connector) Search(ctx context.Context, config common.ReadParams, url *u
 		return nil, err
 	}
 
-	if !config.Since.IsZero() && config.ObjectName == contacts {
-		records, nextPage, err := common.IncrementalSync(node, constructSupportedObjectName(config.ObjectName),
-			config.Since, "updated_at", time.RFC3339, getNextRecords)
-		if err != nil {
-			return nil, err
+	recordsFieldKey := constructSupportedObjectName(config.ObjectName)
+
+	if !config.Since.IsZero() {
+		if config.ObjectName == contacts {
+			return manualIncrementalSync(node, recordsFieldKey, config, updatedAt, time.RFC3339, getNextRecords)
 		}
 
-		rows, err := common.GetMarshaledData(records, config.Fields.List())
-		if err != nil {
-			return nil, err
+		if config.ObjectName == accounts {
+			return manualIncrementalSync(node, recordsFieldKey, config, createdAt, time.RFC3339, getNextRecords)
 		}
-
-		var done bool
-		if len(nextPage) > 0 {
-			done = true
-		}
-
-		return &common.ReadResult{
-			Rows:     int64(len(records)),
-			Data:     rows,
-			NextPage: common.NextPageToken(nextPage),
-			Done:     done,
-		}, nil
 	}
 
 	return common.ParseResult(
@@ -56,4 +44,31 @@ func (c *Connector) Search(ctx context.Context, config common.ReadParams, url *u
 		common.GetMarshaledData,
 		config.Fields,
 	)
+}
+
+func manualIncrementalSync(node *ajson.Node, recordsKey string, config common.ReadParams, //nolint:cyclop
+	sinceKey string, providerFormat string, nextPageFunc common.NextPageFunc,
+) (*common.ReadResult, error) {
+	records, nextPage, err := common.IncrementalSync(node, recordsKey,
+		config.Since, sinceKey, providerFormat, nextPageFunc)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := common.GetMarshaledData(records, config.Fields.List())
+	if err != nil {
+		return nil, err
+	}
+
+	var done bool
+	if nextPage == "" {
+		done = true
+	}
+
+	return &common.ReadResult{
+		Rows:     int64(len(records)),
+		Data:     rows,
+		NextPage: common.NextPageToken(nextPage),
+		Done:     done,
+	}, nil
 }
