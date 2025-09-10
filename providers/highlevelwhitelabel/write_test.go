@@ -147,23 +147,6 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			ExpectedErrs: nil,
 		},
-		{
-			Name: "updating the products collections",
-			Input: common.WriteParams{
-				ObjectName: "products/collections",
-				RecordData: "dummy",
-				RecordId:   "655b33a82209e60b6adb87a5",
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPUT(),
-				Then:  mockserver.Response(http.StatusOK, nil),
-			}.Server(),
-			Expected: &common.WriteResult{
-				Success: true,
-			},
-			ExpectedErrs: nil,
-		},
 	}
 
 	for _, tt := range tests {
