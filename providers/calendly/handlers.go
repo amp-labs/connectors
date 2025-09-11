@@ -27,6 +27,9 @@ const (
 	scheduledEvents        = "scheduled_events"
 )
 
+// when reading the objects "scheduled_events" and "user_busy_times" with since and until params provided
+// This connector uses event start timestamps rather than create/update timestamps because they are calendar items,
+// unlike other objects.
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	url, err := c.buildReadURL(params)
 	if err != nil {
