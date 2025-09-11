@@ -53,7 +53,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, err
 	}
 
-	req.Header.Add("X-JOBBER-GRAPHQL-VERSION", apiVersion) // nolint:canonicalheader
+	req.Header.Add("X-Jobber-Graphql-Version", apiVersion)
 
 	return req, nil
 }
