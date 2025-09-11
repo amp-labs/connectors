@@ -280,3 +280,89 @@ func TestContactsWrite(t *testing.T) { // nolint:funlen,cyclop
 		})
 	}
 }
+
+func TestMailWrite(t *testing.T) { // nolint:funlen,cyclop
+	t.Parallel()
+
+	responseDrafts := testutils.DataFromFile(t, "mail/write/drafts/new.json")
+
+	tests := []testroutines.Write{
+		{
+			Name:         "Write object must be included",
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:         "Write needs data payload",
+			Input:        common.WriteParams{ObjectName: "drafts"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingRecordData},
+		},
+		{
+			Name:  "Create contact group",
+			Input: common.WriteParams{ObjectName: "drafts", RecordData: "dummy"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/gmail/v1/users/me/drafts"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseDrafts),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "r5151461288000502025",
+				Errors:   nil,
+				Data: map[string]any{
+					"id": "r5151461288000502025",
+					"message": map[string]any{
+						"id":       "199400f21a8f1186",
+						"threadId": "199400f21a8f1186",
+						"labelIds": []any{
+							"DRAFT",
+						},
+					},
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Update contact group",
+			Input: common.WriteParams{
+				ObjectName: "drafts",
+				RecordData: "dummy",
+				RecordId:   "r5151461288000502025",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPUT(),
+					mockcond.Path("/gmail/v1/users/me/drafts/r5151461288000502025"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseDrafts),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "r5151461288000502025",
+				Errors:   nil,
+				Data: map[string]any{
+					"id": "r5151461288000502025",
+				},
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.WriteConnector, error) {
+				return constructTestMailConnector(tt.Server.URL)
+			})
+		})
+	}
+}
