@@ -23,9 +23,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -35,6 +35,14 @@ func init() {
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1753783203/media/blackbaud.com_1753783202.jpg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1753783228/media/blackbaud.com_1753783228.png",
+			},
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "BbApiSubscriptionKey",
+					DisplayName: "Blackbaud API subscription key",
+				},
 			},
 		},
 	})

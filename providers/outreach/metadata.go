@@ -88,19 +88,21 @@ func metadataMapper(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, erro
 		FieldsMap: make(map[string]string),
 	}
 
-	if len(response.Data) == 0 {
+	if response == nil || len(response.Data) == 0 {
 		return nil, fmt.Errorf("%w: could not find a record to sample fields from", common.ErrMissingExpectedValues)
 	}
 
 	attributes := response.Data[0].Attributes
 	for k := range attributes {
-		metadata.FieldsMap[k] = k
+		// TODO fix deprecated
+		metadata.FieldsMap[k] = k // nolint:staticcheck
 	}
 
 	// Append id in the metadata response. Only adds it, if available.
 	// 0 is not a valid id in outreach types. Id are read-only and starts at 1.
 	if response.Data[0].ID != 0 {
-		metadata.FieldsMap[idKey] = idKey
+		// TODO fix deprecated
+		metadata.FieldsMap[idKey] = idKey // nolint:staticcheck
 	}
 
 	return metadata, nil

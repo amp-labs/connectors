@@ -27,9 +27,8 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "departments",
 		Fields:     connectors.Fields("id", "name", "currency"),
-		Since:      time.Date(2025, 03, 01, 0, 0, 0, 0, time.UTC),
+		Since:      time.Date(2025, 0o3, 0o1, 0, 0, 0, 0, time.UTC),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from Teamleader", "error", err)
 	}
@@ -40,9 +39,8 @@ func main() {
 	res, err = conn.Read(ctx, common.ReadParams{
 		ObjectName: "contacts",
 		Fields:     connectors.Fields("id", "first_name", "last_name", "emails"),
-		Since:      time.Date(2025, 03, 01, 0, 0, 0, 0, time.UTC),
+		Since:      time.Date(2025, 0o3, 0o1, 0, 0, 0, 0, time.UTC),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from Teamleader", "error", err)
 	}
@@ -53,9 +51,8 @@ func main() {
 	res, err = conn.Read(ctx, common.ReadParams{
 		ObjectName: "users",
 		Fields:     connectors.Fields("id", "first_name", "last_name", "email"),
-		Since:      time.Date(2025, 03, 01, 0, 0, 0, 0, time.UTC),
+		Since:      time.Date(2025, 0o3, 0o1, 0, 0, 0, 0, time.UTC),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from Teamleader", "error", err)
 	}

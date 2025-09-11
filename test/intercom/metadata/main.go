@@ -16,6 +16,7 @@ func main() {
 	defer done()
 
 	utils.SetupLogging()
+
 	conn := connTest.GetIntercomConnector(ctx)
 
 	testscenario.ValidateMetadataContainsRead(ctx, conn, "admins", nil)

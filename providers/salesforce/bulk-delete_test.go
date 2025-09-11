@@ -1,7 +1,6 @@
 package salesforce
 
 import (
-	"context"
 	"net/http"
 	"strings"
 	"testing"
@@ -71,6 +70,6 @@ type bulkDeleteTestCase bulkWriteTestCase
 func (c bulkDeleteTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
-	output, err := conn.BulkDelete(context.Background(), c.Input)
+	output, err := conn.BulkDelete(t.Context(), c.Input)
 	bulkWriteTestCaseType(c).Validate(t, err, output)
 }

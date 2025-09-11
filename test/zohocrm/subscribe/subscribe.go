@@ -29,7 +29,7 @@ func main() {
 
 	subscribeParams := common.SubscribeParams{
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-			"Leads": common.ObjectEvents{
+			"Leads": {
 				Events: []common.SubscriptionEventType{
 					common.SubscriptionEventTypeCreate,
 					common.SubscriptionEventTypeUpdate,
@@ -39,7 +39,7 @@ func main() {
 					"phone",
 				},
 			},
-			"Contacts": common.ObjectEvents{
+			"Contacts": {
 				Events: []common.SubscriptionEventType{
 					common.SubscriptionEventTypeCreate,
 					common.SubscriptionEventTypeUpdate,
