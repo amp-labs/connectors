@@ -36,17 +36,18 @@ Below is an exhaustive list of objects & methods supported on the objects
 | proposals/document              | proposals/document              | read         |
 | proposals/templates             | proposals/templates             | read         |
 | store/shipping-zone             | store/shipping-zone             | read, write  |
-| store/shipping-carrier          | store/shipping-carrier          | read         |
+| store/shipping-carrier          | store/shipping-carrier          | read, write  |
 | store/store-setting             | store/store-setting             | read         |
 | surveys                         | surveys                         | read         |
 | users                           | users                           | read, write  |
 | workflows                       | workflows                       | read         |
 | locations/search                | locations/search                | read         |
 | custom-menus                    | custom-menus                    | read, write  |
+| marketplace/billing/charges     | marketplace/billing/charges     | read         |
 | calendars/events/appointments   | calendars/events/appointments   | write        |
 | calendars/events/block-slots    | calendars/events/block-slots    | write        |
 | contacts                        | contacts                        | write        |
-| objects                         | objects                         | write        |
+| objects                         | objects                         | read, write  |
 | associations                    | associations                    | write        |
 | associations/relations          | associations/relations          | write        |
 | custom-fields                   | custom-fields                   | write        |
