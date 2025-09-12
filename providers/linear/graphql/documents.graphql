@@ -1,0 +1,27 @@
+query Documents($filter: DocumentFilter, $first: Int, $after: String) {
+  documents(filter: $filter, first: $first, after: $after) {
+    nodes {
+      id
+      createdAt
+      updatedAt
+      archivedAt
+      title
+      icon
+      color
+      slugId
+      hiddenAt
+      trashed
+      sortOrder
+      content
+      contentState
+      documentContentId
+      url
+    }
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
+  }
+}
