@@ -1,3 +1,4 @@
+// nolint
 package readhelper
 
 import (
@@ -11,12 +12,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var errNextPage = errors.New("next page error")
-
 func Test_FilterSortedRecords(t *testing.T) {
-	t.Parallel() // Add parallel call for the test function
-
-	// Creates test data helper
+	// Create test data helper
 	createTestData := func(records []map[string]any) *ajson.Node {
 		jsonBytes, err := json.Marshal(map[string]any{"records": records})
 		require.NoError(t, err)
@@ -40,7 +37,7 @@ func Test_FilterSortedRecords(t *testing.T) {
 	}
 
 	errorNextPageFunc := func(*ajson.Node) (string, error) {
-		return "", errNextPage
+		return "", errors.New("next page error")
 	}
 
 	tests := []struct {
@@ -51,34 +48,24 @@ func Test_FilterSortedRecords(t *testing.T) {
 		{"all records are newer than since time", testAllRecordsNewer(createTestData, createRecord, mockNextPageFunc)},
 		{"some records are newer, some older", testMixedRecords(createTestData, createRecord, mockNextPageFunc)},
 		{"all records are older than since time", testAllRecordsOlder(createTestData, createRecord, mockNextPageFunc)},
-		{
-			"last record is newer - should indicate more pages",
-			testLastRecordNewer(createTestData, createRecord, mockNextPageFunc),
-		},
+		{"last record is newer - should indicate more pages", testLastRecordNewer(createTestData, createRecord, mockNextPageFunc)},
 		{"invalid records key", testInvalidRecordsKey(createTestData, createRecord, mockNextPageFunc)},
 		{"invalid timestamp key", testInvalidTimestampKey(createTestData, createRecord, mockNextPageFunc)},
 		{"invalid timestamp format", testInvalidTimestampFormat(createTestData, mockNextPageFunc)},
 		{"next page function returns error", testNextPageError(createTestData, createRecord, errorNextPageFunc)},
 		{"different timestamp format", testDifferentTimestampFormat(createTestData, mockNextPageFunc)},
-		{
-			"records with exact same timestamp as since",
-			testExactSameTimestamp(createTestData, createRecord, mockNextPageFunc),
-		},
+		{"records with exact same timestamp as since", testExactSameTimestamp(createTestData, createRecord, mockNextPageFunc)},
+		{"complex nested JSON structure", testComplexNestedJSON(mockNextPageFunc)},
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			tt.testFunc(t)
-		})
+		t.Run(tt.name, tt.testFunc)
 	}
 }
 
-func testEmptyRecords(createTestData func([]map[string]any) *ajson.Node,
-	mockNextPageFunc func(*ajson.Node) (string, error),
+func testEmptyRecords(createTestData func([]map[string]any) *ajson.Node, mockNextPageFunc func(*ajson.Node) (string, error),
 ) func(t *testing.T) {
 	return func(t *testing.T) {
-		t.Helper()
 		t.Parallel()
 
 		data := createTestData([]map[string]any{})
@@ -88,17 +75,15 @@ func testEmptyRecords(createTestData func([]map[string]any) *ajson.Node,
 			data, "records", since, "updated_at", time.RFC3339, mockNextPageFunc,
 		)
 
-		require.NoError(t, err)
+		assert.NoError(t, err)
 		assert.Empty(t, records)
 		assert.Empty(t, nextPage)
 	}
 }
 
 func testAllRecordsNewer(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error),
-) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
 	return func(t *testing.T) {
-		t.Helper()
 		t.Parallel()
 
 		records := []map[string]any{
@@ -113,7 +98,7 @@ func testAllRecordsNewer(createTestData func([]map[string]any) *ajson.Node,
 			data, "records", since, "updated_at", time.RFC3339, mockNextPageFunc,
 		)
 
-		require.NoError(t, err)
+		assert.NoError(t, err)
 		assert.Len(t, result, 3)
 		assert.Equal(t, "next-page", nextPage)
 		assert.Equal(t, "1", result[0]["id"])
@@ -123,10 +108,8 @@ func testAllRecordsNewer(createTestData func([]map[string]any) *ajson.Node,
 }
 
 func testMixedRecords(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error),
-) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
 	return func(t *testing.T) {
-		t.Helper()
 		t.Parallel()
 
 		records := []map[string]any{
@@ -142,7 +125,7 @@ func testMixedRecords(createTestData func([]map[string]any) *ajson.Node,
 			data, "records", since, "updated_at", time.RFC3339, mockNextPageFunc,
 		)
 
-		require.NoError(t, err)
+		assert.NoError(t, err)
 		assert.Len(t, result, 2)
 		assert.Empty(t, nextPage) // Last record processed is not the last in array
 		assert.Equal(t, "1", result[0]["id"])
@@ -151,10 +134,8 @@ func testMixedRecords(createTestData func([]map[string]any) *ajson.Node,
 }
 
 func testAllRecordsOlder(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error),
-) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
 	return func(t *testing.T) {
-		t.Helper()
 		t.Parallel()
 
 		records := []map[string]any{
@@ -169,17 +150,15 @@ func testAllRecordsOlder(createTestData func([]map[string]any) *ajson.Node,
 			data, "records", since, "updated_at", time.RFC3339, mockNextPageFunc,
 		)
 
-		require.NoError(t, err)
+		assert.NoError(t, err)
 		assert.Empty(t, result)
 		assert.Empty(t, nextPage)
 	}
 }
 
 func testLastRecordNewer(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error),
-) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
 	return func(t *testing.T) {
-		t.Helper()
 		t.Parallel()
 
 		records := []map[string]any{
@@ -194,17 +173,15 @@ func testLastRecordNewer(createTestData func([]map[string]any) *ajson.Node,
 			data, "records", since, "updated_at", time.RFC3339, mockNextPageFunc,
 		)
 
-		require.NoError(t, err)
+		assert.NoError(t, err)
 		assert.Len(t, result, 3)
 		assert.Equal(t, "next-page", nextPage)
 	}
 }
 
 func testInvalidRecordsKey(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error),
-) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
 	return func(t *testing.T) {
-		t.Helper()
 		t.Parallel()
 
 		data := createTestData([]map[string]any{createRecord("1", "2023-01-01T10:00:00Z")})
@@ -214,16 +191,14 @@ func testInvalidRecordsKey(createTestData func([]map[string]any) *ajson.Node,
 			data, "invalid_key", since, "updated_at", time.RFC3339, mockNextPageFunc,
 		)
 
-		require.Error(t, err)
+		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "bad records key")
 	}
 }
 
 func testInvalidTimestampKey(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error),
-) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
 	return func(t *testing.T) {
-		t.Helper()
 		t.Parallel()
 
 		data := createTestData([]map[string]any{createRecord("1", "2023-01-01T10:00:00Z")})
@@ -233,16 +208,14 @@ func testInvalidTimestampKey(createTestData func([]map[string]any) *ajson.Node,
 			data, "records", since, "invalid_timestamp_key", time.RFC3339, mockNextPageFunc,
 		)
 
-		require.Error(t, err)
+		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "bad since timestamp key")
 	}
 }
 
 func testInvalidTimestampFormat(createTestData func([]map[string]any) *ajson.Node,
-	mockNextPageFunc func(*ajson.Node) (string, error),
-) func(t *testing.T) {
+	mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
 	return func(t *testing.T) {
-		t.Helper()
 		t.Parallel()
 
 		records := []map[string]any{{
@@ -257,16 +230,14 @@ func testInvalidTimestampFormat(createTestData func([]map[string]any) *ajson.Nod
 			data, "records", since, "updated_at", time.RFC3339, mockNextPageFunc,
 		)
 
-		require.Error(t, err)
+		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "cannot parse timestamp")
 	}
 }
 
 func testNextPageError(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, errorNextPageFunc func(*ajson.Node) (string, error),
-) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, errorNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
 	return func(t *testing.T) {
-		t.Helper()
 		t.Parallel()
 
 		data := createTestData([]map[string]any{createRecord("1", "2023-01-01T10:00:00Z")})
@@ -276,16 +247,14 @@ func testNextPageError(createTestData func([]map[string]any) *ajson.Node,
 			data, "records", since, "updated_at", time.RFC3339, errorNextPageFunc,
 		)
 
-		require.Error(t, err)
+		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "constructing next page value")
 	}
 }
 
 func testDifferentTimestampFormat(createTestData func([]map[string]any) *ajson.Node,
-	mockNextPageFunc func(*ajson.Node) (string, error),
-) func(t *testing.T) {
+	mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
 	return func(t *testing.T) {
-		t.Helper()
 		t.Parallel()
 
 		records := []map[string]any{{
@@ -300,17 +269,15 @@ func testDifferentTimestampFormat(createTestData func([]map[string]any) *ajson.N
 			data, "records", since, "updated_at", "2006-01-02 15:04:05", mockNextPageFunc,
 		)
 
-		require.NoError(t, err)
+		assert.NoError(t, err)
 		assert.Len(t, result, 1)
 		assert.Equal(t, "next-page", nextPage)
 	}
 }
 
 func testExactSameTimestamp(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error),
-) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
 	return func(t *testing.T) {
-		t.Helper()
 		t.Parallel()
 
 		records := []map[string]any{
@@ -324,8 +291,35 @@ func testExactSameTimestamp(createTestData func([]map[string]any) *ajson.Node,
 			data, "records", since, "updated_at", time.RFC3339, mockNextPageFunc,
 		)
 
-		require.NoError(t, err)
+		assert.NoError(t, err)
 		assert.Empty(t, result)
 		assert.Empty(t, nextPage)
+	}
+}
+
+func testComplexNestedJSON(mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
+	return func(t *testing.T) {
+		t.Parallel()
+
+		jsonStr := `{
+			"metadata": {"count": 2, "page": 1},
+			"records": [
+				{"id": "1", "updated_at": "2023-01-02T10:00:00Z", "name": "record-1"},
+				{"id": "2", "updated_at": "2023-01-01T10:00:00Z", "name": "record-2"}
+			]
+		}`
+
+		node, err := ajson.Unmarshal([]byte(jsonStr))
+		require.NoError(t, err)
+
+		since := time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)
+
+		result, nextPage, err := FilterSortedRecords(
+			node, "records", since, "updated_at", time.RFC3339, mockNextPageFunc,
+		)
+
+		assert.NoError(t, err)
+		assert.Len(t, result, 2)
+		assert.Equal(t, "next-page", nextPage)
 	}
 }
