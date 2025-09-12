@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/spyzhov/ajson"
 )
@@ -46,11 +47,15 @@ func (c *Connector) Search(ctx context.Context, config common.ReadParams, url *u
 	)
 }
 
+// Manual incremental synchronization implementation for Apollo
+//
+// Apollo lacks native incremental sync support. This function iterates through records
+// and returns those created or updated after the specified timestamp.
 func manualIncrementalSync(node *ajson.Node, recordsKey string, config common.ReadParams, //nolint:cyclop
-	sinceKey string, providerFormat string, nextPageFunc common.NextPageFunc,
+	timestampKey string, timestampFormat string, nextPageFunc common.NextPageFunc,
 ) (*common.ReadResult, error) {
-	records, nextPage, err := common.IncrementalSync(node, recordsKey,
-		config.Since, sinceKey, providerFormat, nextPageFunc)
+	records, nextPage, err := readhelper.FilterSortedRecords(node, recordsKey,
+		config.Since, timestampKey, timestampFormat, nextPageFunc)
 	if err != nil {
 		return nil, err
 	}
