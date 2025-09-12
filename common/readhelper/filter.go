@@ -107,3 +107,56 @@ func FilterSortedRecords(data *ajson.Node, recordsKey string, since time.Time, /
 
 	return updatedRecords, next, nil
 }
+
+func FilterUnSortedRecords(data *ajson.Node, recordsKey string, since time.Time, //nolint:cyclop
+	timestampKey string, timestampFormat string, nextPageFunc common.NextPageFunc,
+) ([]map[string]any, string, error) {
+	var (
+		updatedNodeRecords []*ajson.Node
+		next               string
+	)
+
+	nodeQuery := jsonquery.New(data)
+
+	nodeRecords, err := nodeQuery.ArrayRequired(recordsKey)
+	if err != nil {
+		return nil, "", fmt.Errorf("error: bad records key: %w", err)
+	}
+
+	if len(nodeRecords) == 0 {
+		return nil, next, nil
+	}
+
+	for _, nodeRecord := range nodeRecords {
+		// Extract the timestamp value from the record
+		timestamp, err := jsonquery.New(nodeRecord).StringRequired(timestampKey)
+		if err != nil {
+			return nil, next, fmt.Errorf("error: bad since timestamp key: %w", err)
+		}
+
+		// Parse the timestamp using the provider's specific format
+		recordTimestamp, err := time.Parse(timestampFormat, timestamp)
+		if err != nil {
+			return nil, next, fmt.Errorf("error: cannot parse timestamp for key %q: %w", timestampKey, err)
+		}
+
+		// Check if this record is newer than our reference time
+		if since.Before(recordTimestamp) {
+			updatedNodeRecords = append(updatedNodeRecords, nodeRecord)
+		} else {
+			continue
+		}
+	}
+
+	next, err = nextPageFunc(data)
+	if err != nil {
+		return nil, next, fmt.Errorf("error: constructing next page value: %w", err)
+	}
+
+	updatedRecords, err := jsonquery.Convertor.ArrayToMap(updatedNodeRecords)
+	if err != nil {
+		return nil, next, fmt.Errorf("error: conversion of node records to map: %w", err)
+	}
+
+	return updatedRecords, next, nil
+}

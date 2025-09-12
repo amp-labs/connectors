@@ -30,11 +30,11 @@ func (c *Connector) Search(ctx context.Context, config common.ReadParams, url *u
 
 	if !config.Since.IsZero() {
 		if config.ObjectName == contacts {
-			return manualIncrementalSync(node, recordsFieldKey, config, updatedAt, time.RFC3339, getNextRecords)
+			return manualIncrementalSyncSorted(node, recordsFieldKey, config, updatedAt, time.RFC3339, getNextRecords)
 		}
 
 		if config.ObjectName == accounts {
-			return manualIncrementalSync(node, recordsFieldKey, config, createdAt, time.RFC3339, getNextRecords)
+			return manualIncrementalSyncSorted(node, recordsFieldKey, config, createdAt, time.RFC3339, getNextRecords)
 		}
 	}
 
@@ -51,7 +51,7 @@ func (c *Connector) Search(ctx context.Context, config common.ReadParams, url *u
 //
 // Apollo lacks native incremental sync support. This function iterates through records
 // and returns those created or updated after the specified timestamp.
-func manualIncrementalSync(node *ajson.Node, recordsKey string, config common.ReadParams, //nolint:cyclop
+func manualIncrementalSyncSorted(node *ajson.Node, recordsKey string, config common.ReadParams, //nolint:cyclop
 	timestampKey string, timestampFormat string, nextPageFunc common.NextPageFunc,
 ) (*common.ReadResult, error) {
 	records, nextPage, err := readhelper.FilterSortedRecords(node, recordsKey,
