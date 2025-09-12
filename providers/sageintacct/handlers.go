@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers/sageintacct/metadata"
 )
 
@@ -18,7 +19,12 @@ const (
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, body, err := buildURL(c.Module(), params, c.ProviderInfo().BaseURL)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "services/core/query")
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := buildReadBody(c.Module(), params)
 	if err != nil {
 		return nil, err
 	}

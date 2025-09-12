@@ -5,25 +5,20 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers/sageintacct/metadata"
 )
 
-func buildURL(
-	module common.ModuleID,
-	params common.ReadParams,
-	baseURL string,
-) (*urlbuilder.URL, map[string]interface{}, error) {
+func buildReadBody(module common.ModuleID, params common.ReadParams) (map[string]interface{}, error) {
 	path, err := metadata.Schemas.LookupURLPath(module, params.ObjectName)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	fullObjectName := strings.Split(path, "/objects/")[1]
 
 	objectMetadata, err := metadata.Schemas.Select(module, []string{params.ObjectName})
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	var fieldNames []string
@@ -44,16 +39,11 @@ func buildURL(
 	if params.NextPage != "" {
 		pageNum, err := strconv.Atoi(string(params.NextPage))
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 
 		payload[pageParam] = pageNum
 	}
 
-	url, err := urlbuilder.New(baseURL, apiVersion, "services/core/query")
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return url, payload, nil
+	return payload, nil
 }
