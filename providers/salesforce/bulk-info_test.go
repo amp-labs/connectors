@@ -1,7 +1,6 @@
 package salesforce
 
 import (
-	"context"
 	"net/http"
 	"reflect"
 	"testing"
@@ -280,21 +279,21 @@ type (
 func (c bulkJobInfoTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
-	output, err := conn.GetJobInfo(context.Background(), c.Input)
+	output, err := conn.GetJobInfo(t.Context(), c.Input)
 	testCaseTypeJobInfo(c).Validate(t, err, output)
 }
 
 func (c bulkJobInfoQueryTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
-	output, err := conn.GetBulkQueryInfo(context.Background(), c.Input)
+	output, err := conn.GetBulkQueryInfo(t.Context(), c.Input)
 	testCaseTypeJobInfo(c).Validate(t, err, output)
 }
 
 func (c bulkJobResultTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
-	output, err := conn.GetJobResults(context.Background(), c.Input)
+	output, err := conn.GetJobResults(t.Context(), c.Input)
 	testCaseTypeJobResults(c).Validate(t, err, output)
 }
 
@@ -303,7 +302,7 @@ func (c bulkGetSuccessfulJobResultsTestCase) Run(t *testing.T, builder testrouti
 	t.Helper()
 	conn := builder.Build(t, c.Name)
 
-	output, err := conn.GetSuccessfulJobResults(context.Background(), c.Input) // nosemgrep: trailofbits.go.invalid-usage-of-modified-variable.invalid-usage-of-modified-variable, nolint: lll
+	output, err := conn.GetSuccessfulJobResults(t.Context(), c.Input) // nosemgrep: trailofbits.go.invalid-usage-of-modified-variable.invalid-usage-of-modified-variable, nolint: lll
 	if err != nil {
 		_ = output.Body.Close()
 	}
@@ -316,7 +315,7 @@ func (c bulkGetBulkQueryResultsTestCase) Run(t *testing.T, builder testroutines.
 	t.Helper()
 	conn := builder.Build(t, c.Name)
 
-	output, err := conn.GetBulkQueryResults(context.Background(), c.Input) // nosemgrep: trailofbits.go.invalid-usage-of-modified-variable.invalid-usage-of-modified-variable
+	output, err := conn.GetBulkQueryResults(t.Context(), c.Input) // nosemgrep: trailofbits.go.invalid-usage-of-modified-variable.invalid-usage-of-modified-variable
 	if err != nil {
 		_ = output.Body.Close()
 	}

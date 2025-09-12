@@ -92,14 +92,15 @@ func searchContactByID(res *common.ReadResult, value string) map[string]any {
 }
 
 func searchContactByEmail(res *common.ReadResult, value string) map[string]any {
-	return searcher.Find(res, []searcher.Key{{
-		Type:  searcher.Array,
-		At:    "email_addresses",
-		Index: 0,
-	}, {
-		Type: searcher.String,
-		At:   "email",
-	},
+	return searcher.Find(res, []searcher.Key{
+		{
+			Type:  searcher.Array,
+			At:    "email_addresses",
+			Index: 0,
+		}, {
+			Type: searcher.String,
+			At:   "email",
+		},
 	}, value)
 }
 

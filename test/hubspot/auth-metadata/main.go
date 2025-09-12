@@ -22,7 +22,6 @@ func main() {
 	conn := connTest.GetHubspotConnector(ctx)
 
 	postAuthInfo, err := conn.GetPostAuthInfo(ctx)
-
 	if err != nil {
 		utils.Fail("error getting post auth info", "error", err)
 	}

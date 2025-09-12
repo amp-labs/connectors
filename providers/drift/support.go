@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 const (
@@ -15,11 +16,19 @@ const (
 	updateAccount = "accounts/update"
 )
 
+var recordIdFields = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
+	"accounts":      "accountId",
+	"conversations": "id",
+	"contacts":      "id",
+}, func(k string) string {
+	return ""
+})
+
 func responseSchema(objectName string) (string, string) {
 	switch objectName {
-	case "users/list", "conversations/list", "teams/org", "users/meetings/org":
+	case "users", "conversations", "teams/org", "users/meetings/org":
 		return object, data
-	case "playbooks/list", "playbooks/clp":
+	case "playbooks", "playbooks/clp":
 		return list, ""
 	default:
 		return object, ""
@@ -37,12 +46,12 @@ func writeResponseField(objectName string) string {
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
-		"users/list", "conversations/list", "teams/org", "users/meetings/org",
-		"playbooks/list", "playbooks/clp", "conversations/stats", "scim/Users",
+		"users", "conversations", "teams/org", "users/meetings/org",
+		"playbooks", "playbooks/clp", "conversations/stats", "scim/Users",
 	}
 
 	writeSupport := []string{
-		"contacts", "emails/unsubscribe", "contacts/timeline", "conversations/new", "accounts/create",
+		"contacts", "emails/unsubscribe", "contacts/timeline", "conversations", "accounts/create",
 		"accounts/update", // updates do not need recordIdPath
 		"scim/Users",
 	}

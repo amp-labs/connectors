@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "business": {
+    "id": "63771dcac1116f0e21de8e12",
+    "name": "Microsoft",
+    "phone": "string",
+    "email": "abc@microsoft.com",
+    "createdAt": "2019-08-24T14:15:22Z",
+    "updatedAt": "2019-08-24T14:15:22Z"
+  }
+}

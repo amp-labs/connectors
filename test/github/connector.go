@@ -26,7 +26,6 @@ func GetGithubConnector(ctx context.Context) *github.Connector {
 	}
 
 	client, err := common.NewOAuthHTTPClient(ctx, options...)
-
 	if err != nil {
 		utils.Fail(err.Error())
 	}
