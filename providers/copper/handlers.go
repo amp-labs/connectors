@@ -102,7 +102,7 @@ func (c *Connector) parseReadResponse(
 
 	return common.ParseResult(resp,
 		makeGetRecords(params.ObjectName),
-		makeNextRecordsURL(params),
+		makeNextRecordsURL(params, request),
 		common.MakeMarshaledDataFunc(c.attachReadCustomFields(customFields)),
 		params.Fields,
 	)
@@ -117,9 +117,14 @@ func makeGetRecords(objectName string) common.NodeRecordsFunc {
 }
 
 // https://developer.copper.com/introduction/pagination.html#strategy-2-count-the-records-on-each-page
-func makeNextRecordsURL(params common.ReadParams) common.NextPageFunc {
+func makeNextRecordsURL(params common.ReadParams, request *http.Request) common.NextPageFunc {
 	// Alter current request URL to progress with the next page token.
 	return func(node *ajson.Node) (string, error) {
+		if request.Method == http.MethodGet {
+			// Only search endpoints support pagination.
+			return "", nil
+		}
+
 		nextPage := params.NextPage.String()
 		if nextPage == "" {
 			// Default to the second page, the first page was already read.
