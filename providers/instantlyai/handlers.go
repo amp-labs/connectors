@@ -24,8 +24,14 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
 	}
 
-	if sinceSupportedEndpoints.Has(params.ObjectName) {
+	// https://developer.instantly.ai/api/v2/analytics/getdailycampaignanalytics
+	if !params.Since.IsZero() && sinceSupportedEndpoints.Has(params.ObjectName) {
 		url.WithQueryParam("start_date", params.Since.Format(time.DateOnly))
+	}
+
+	// https://developer.instantly.ai/api/v2/analytics/getdailycampaignanalytics
+	if !params.Until.IsZero() && untilSupportedEndpoints.Has(params.ObjectName) {
+		url.WithQueryParam("end_date", params.Until.Format(time.DateOnly))
 	}
 
 	if len(params.NextPage) != 0 {
