@@ -10,7 +10,7 @@ type SageIntacctResult struct {
 	Groups               map[string]SageIntacctGroup    `json:"groups,omitempty"`
 	HTTPMethods          string                         `json:"httpMethods"`
 	Refs                 map[string]SageIntacctRef      `json:"refs,omitempty"`
-	Lists                []any                          `json:"lists,omitempty"`
+	Lists                any                            `json:"lists,omitempty"`
 	IdempotenceSupported bool                           `json:"idempotenceSupported"`
 	Href                 string                         `json:"href,omitempty"`
 	Type                 string                         `json:"type,omitempty"`

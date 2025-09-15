@@ -34,7 +34,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 ) (*common.ObjectMetadata, error) {
 	objectMetadata := common.ObjectMetadata{
 		Fields:      make(map[string]common.FieldMetadata),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
+		DisplayName: naming.CapitalizeFirstLetter(objectName),
 	}
 
 	res, err := common.UnmarshalJSON[SageIntacctMetadataResponse](response)
@@ -56,7 +56,6 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		}
 	}
 
-	// Add group names as object-type fields since they appear as top-level properties in data
 	for groupName := range res.Result.Groups {
 		objectMetadata.Fields[groupName] = common.FieldMetadata{
 			DisplayName:  naming.CapitalizeFirstLetterEveryWord(groupName),
