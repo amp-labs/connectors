@@ -20,12 +20,11 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, err
 	}
 
-	fullObjectName, err := getFullObjectName(c.Module(), objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	url.WithQueryParam("name", fullObjectName)
+	url.WithQueryParam("name", objectName)
 	url.WithQueryParam("version", apiVersion)
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
