@@ -47,12 +47,12 @@ func buildReadBody(params common.ReadParams) (map[string]interface{}, error) {
 	}
 
 	if params.NextPage != "" {
-		pageNum, err := strconv.Atoi(string(params.NextPage))
+		startPage, err := strconv.Atoi(string(params.NextPage))
 		if err != nil {
 			return nil, err
 		}
 
-		payload[pageParam] = pageNum
+		payload[pageParam] = startPage
 	}
 
 	return payload, nil
