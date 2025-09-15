@@ -20,10 +20,6 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, err
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
 	url.WithQueryParam("name", objectName)
 	url.WithQueryParam("version", apiVersion)
 
