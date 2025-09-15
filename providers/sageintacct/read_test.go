@@ -31,14 +31,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrMissingFields},
 		},
 		{
-			Name:         "Unsupported object name",
-			Input:        common.ReadParams{ObjectName: "butterflies", Fields: connectors.Fields("id")},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
 			Name:  "Successful read with chosen fields",
-			Input: common.ReadParams{ObjectName: "budget", Fields: connectors.Fields("id", "key")},
+			Input: common.ReadParams{ObjectName: "general-ledger/budget", Fields: connectors.Fields("id", "key", "href")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{

@@ -1,7 +1,9 @@
 package sageintacct
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -10,14 +12,15 @@ import (
 )
 
 const (
-	apiVersion      = "ia/api/v1"
+	apiPrefix       = "ia/api"
+	apiVersion      = "v1"
 	defaultPageSize = 500
 	pageSizeParam   = "size"
 	pageParam       = "start"
 )
 
-func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "services/core/query")
+func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiPrefix, apiVersion, "services/core/model")
 	if err != nil {
 		return nil, err
 	}
@@ -82,4 +85,38 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiPrefix, apiVersion, "services/core/query")
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := buildReadBody(params)
+	if err != nil {
+		return nil, err
+	}
+
+	jsonData, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath("ia::result"),
+		makeNextRecordsURL(),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }

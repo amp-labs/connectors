@@ -1,6 +1,8 @@
 package sageintacct
 
 import (
+	"strconv"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 )
@@ -33,4 +35,25 @@ func mapValuesFromEnum(fieldDef SageIntacctFieldDef) []common.FieldValue {
 	}
 
 	return values
+}
+
+func buildReadBody(params common.ReadParams) (map[string]interface{}, error) {
+	fieldNames := params.Fields.List()
+	payload := map[string]any{
+		"object":      params.ObjectName,
+		"fields":      fieldNames,
+		pageSizeParam: defaultPageSize,
+		pageParam:     1,
+	}
+
+	if params.NextPage != "" {
+		pageNum, err := strconv.Atoi(string(params.NextPage))
+		if err != nil {
+			return nil, err
+		}
+
+		payload[pageParam] = pageNum
+	}
+
+	return payload, nil
 }
