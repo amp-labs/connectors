@@ -54,10 +54,21 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	for fieldName, fieldDef := range res.Result.Fields {
 		objectMetadata.Fields[fieldName] = common.FieldMetadata{
 			DisplayName:  naming.CapitalizeFirstLetterEveryWord(fieldName),
-			ValueType:    common.ValueType(fieldDef.Type),
+			ValueType:    mapSageIntacctTypeToValueType(fieldDef.Type),
 			ProviderType: fieldDef.Type,
 			ReadOnly:     fieldDef.ReadOnly,
 			Values:       mapValuesFromEnum(fieldDef),
+		}
+	}
+
+	// Add group names as object-type fields since they appear as top-level properties in data
+	for groupName := range res.Result.Groups {
+		objectMetadata.Fields[groupName] = common.FieldMetadata{
+			DisplayName:  naming.CapitalizeFirstLetterEveryWord(groupName),
+			ValueType:    common.ValueTypeOther,
+			ProviderType: "object",
+			ReadOnly:     false,
+			Values:       nil,
 		}
 	}
 

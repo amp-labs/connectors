@@ -19,6 +19,21 @@ func getFullObjectName(module common.ModuleID, object string) (string, error) {
 	return fullObjectName, nil
 }
 
+func mapSageIntacctTypeToValueType(sageType string) common.ValueType {
+	switch sageType {
+	case "string":
+		return common.ValueTypeString
+	case "integer", "number":
+		return common.ValueTypeFloat
+	case "boolean":
+		return common.ValueTypeBoolean
+	case "date", "date-time":
+		return common.ValueTypeString
+	default:
+		return common.ValueTypeOther
+	}
+}
+
 func mapValuesFromEnum(fieldDef SageIntacctFieldDef) []common.FieldValue {
 	values := []common.FieldValue{}
 
