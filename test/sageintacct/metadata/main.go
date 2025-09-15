@@ -14,7 +14,7 @@ func main() {
 
 	conn := sageintacct.GetSageIntacctConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"account", "account-label-tax-group"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"general-ledger/account", "tax/account-label-tax-group"})
 
 	if err != nil {
 		log.Fatal(err)
