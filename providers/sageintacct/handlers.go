@@ -10,7 +10,6 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/amp-labs/connectors/providers/salesloft/metadata"
 )
 
 const (
@@ -126,12 +125,7 @@ func (c *Connector) parseReadResponse(
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	method := http.MethodPost
 
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
-	if err != nil {
-		return nil, err
-	}
-
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiPrefix, apiVersion, "objects", params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

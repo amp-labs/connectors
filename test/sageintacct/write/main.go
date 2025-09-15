@@ -38,9 +38,9 @@ func run() error {
 
 func testCreatingAccount(ctx context.Context, conn *cc.Connector) (string, error) {
 	params := common.WriteParams{
-		ObjectName: "account",
+		ObjectName: "general-ledger/account",
 		RecordData: map[string]any{
-			"id":                    "15677",
+			"id":                    "15678",
 			"name":                  "Vehicle parts - Transmission",
 			"accountType":           "balanceSheet",
 			"closingType":           "nonClosingAccount",
@@ -73,7 +73,7 @@ func testCreatingAccount(ctx context.Context, conn *cc.Connector) (string, error
 
 func updateAccount(ctx context.Context, conn *cc.Connector, accountId string) error {
 	params := common.WriteParams{
-		ObjectName: "account",
+		ObjectName: "general-ledger/account",
 		RecordId:   accountId,
 		RecordData: map[string]any{
 			"name": "Updated Account Name",

@@ -10,7 +10,7 @@ import (
 
 // nolint:funlen,maintidx
 func supportedOperations() components.EndpointRegistryInput {
-	readSupport := []string{
+	readWriteSupport := []string{
 		"accounts-payable/account-label",
 		"accounts-payable/adjustment",
 		"accounts-payable/adjustment-line",
@@ -398,16 +398,14 @@ func supportedOperations() components.EndpointRegistryInput {
 		"time/timesheet-to-approve",
 	}
 
-	writeSupport := metadata.Schemas.ObjectNames().GetList(common.ModuleRoot)
-
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
-				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(readWriteSupport, ",")),
 				Support:  components.ReadSupport,
 			},
 			{
-				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(readWriteSupport, ",")),
 				Support:  components.WriteSupport,
 			},
 		},
