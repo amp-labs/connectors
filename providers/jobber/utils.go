@@ -1,8 +1,16 @@
 package jobber
 
-import "github.com/amp-labs/connectors/internal/datautils"
+import (
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
+)
 
-const apiVersion = "2025-01-20"
+const (
+	apiVersion      = "2025-01-20"
+	defaultPageSize = 100
+)
 
 var objectNameMapping = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 	"appAlerts":                 "AppAlert",
@@ -32,3 +40,32 @@ var objectNameMapping = datautils.NewDefaultMap(map[string]string{ //nolint:goch
 }, func(objectName string) string {
 	return "id"
 })
+
+func makeNextRecordsURL(objName string) common.NextPageFunc {
+	return func(node *ajson.Node) (string, error) {
+		pagination, err := jsonquery.New(node, "data", objName).ObjectOptional("pageInfo")
+		if err != nil {
+			return "", err
+		}
+
+		if pagination != nil {
+			hasNextPage, err := jsonquery.New(pagination).BoolOptional("hasNextPage")
+			if err != nil {
+				return "", err
+			}
+
+			if !(*hasNextPage) {
+				return "", nil
+			}
+
+			endCursorToken, err := jsonquery.New(pagination).StringOptional("endCursor")
+			if err != nil {
+				return "", err
+			}
+
+			return *endCursorToken, nil
+		}
+
+		return "", nil
+	}
+}

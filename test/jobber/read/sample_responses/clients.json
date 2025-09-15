@@ -1,0 +1,34 @@
+{
+  "rows": 1,
+  "data": [
+    {
+      "fields": {},
+      "raw": {
+        "balance": 0,
+        "billingAddress": null,
+        "billingAddressPresent": false,
+        "companyName": null,
+        "createdAt": "2025-09-15T14:09:40Z",
+        "firstName": "Deep",
+        "id": "Z2lkOi8vSm9iYmVyL0NsaWVudC8xMTg0MDQwMzk=",
+        "isArchivable": true,
+        "isArchived": false,
+        "isCompany": false,
+        "isLead": true,
+        "jobberWebUri": "https://secure.getjobber.com/clients/118404039",
+        "lastName": "",
+        "name": "Mr. Deep",
+        "receivesFollowUps": true,
+        "receivesInvoiceFollowUps": true,
+        "receivesQuoteFollowUps": true,
+        "receivesReminders": true,
+        "receivesReviewRequests": true,
+        "sampleData": false,
+        "secondaryName": null,
+        "title": "Mr.",
+        "updatedAt": "2025-09-15T14:09:40Z"
+      }
+    }
+  ],
+  "done": true
+}

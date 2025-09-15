@@ -3,6 +3,7 @@ package jobber
 import (
 	"bytes"
 	"context"
+	"embed"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -11,7 +12,11 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/graphql"
 )
+
+//go:embed graphql/*.graphql
+var queryFiles embed.FS
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
@@ -117,4 +122,65 @@ func getFieldValueType(field string) common.ValueType {
 	default:
 		return common.ValueTypeOther
 	}
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
+	if err != nil {
+		return nil, err
+	}
+
+	var (
+		after string
+		first int
+	)
+
+	if params.NextPage != "" {
+		after = params.NextPage.String()
+	}
+
+	first = defaultPageSize
+
+	pagination := graphql.PaginationParameter{
+		First: first,
+		After: after,
+	}
+
+	query, err := graphql.Operation(queryFiles, "query", params.ObjectName, pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	requestBody := map[string]string{
+		"query": query,
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("X-Jobber-Graphql-Version", apiVersion)
+
+	return req, nil
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		resp,
+		common.ExtractOptionalRecordsFromPath("nodes", "data", params.ObjectName),
+		makeNextRecordsURL(params.ObjectName),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
