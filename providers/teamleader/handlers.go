@@ -141,13 +141,15 @@ func buildRequestBody(params *common.ReadParams) map[string]any {
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	var (
-		payload = params.RecordData
+		payload = params.RecordData.(map[string]any)
 		method  = http.MethodPost
 	)
 
 	var fullObjectName string
 	if params.RecordId != "" {
 		fullObjectName = params.ObjectName + ".update"
+		payload["id"] = params.RecordId
+
 	} else {
 		fullObjectName = writeFullObjectNames.Get(params.ObjectName)
 	}
