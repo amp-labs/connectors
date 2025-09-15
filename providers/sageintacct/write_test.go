@@ -33,7 +33,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 		{
 			Name: "Successfully creation of a payment",
-			Input: common.WriteParams{ObjectName: "payment", RecordData: map[string]any{
+			Input: common.WriteParams{ObjectName: "accounts-receivable/payment", RecordData: map[string]any{
 				"paymentMethod": "cash",
 				"customer": map[string]any{
 					"id": "Cust-00064",
@@ -60,7 +60,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name: "Successfully update a payment summary",
 			Input: common.WriteParams{
-				ObjectName: "payment-summary",
+				ObjectName: "accounts-receivable/payment-summary",
 				RecordId:   "110",
 				RecordData: map[string]any{
 					"name": "Johntest updated",
