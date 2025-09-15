@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -140,14 +141,15 @@ func buildRequestBody(params *common.ReadParams) map[string]any {
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	var (
-		payload = params.RecordData
-		method  = http.MethodPost
-	)
+	payload, ok := params.RecordData.(map[string]any)
+	if !ok {
+		return nil, errors.New("invalid record data") //nolint:goerr113
+	}
 
 	var fullObjectName string
 	if params.RecordId != "" {
 		fullObjectName = params.ObjectName + ".update"
+		payload["id"] = params.RecordId
 	} else {
 		fullObjectName = writeFullObjectNames.Get(params.ObjectName)
 	}
@@ -162,7 +164,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
 }
 
 func (c *Connector) parseWriteResponse(
