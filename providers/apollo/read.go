@@ -48,7 +48,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		}
 	case in(config.ObjectName, readingSearchObjectsPOST):
 		if config.ObjectName == accounts {
-			url.WithQueryParam("sort_by_field", "account_updated_at")
+			url.WithQueryParam("sort_by_field", "account_created_at")
 		}
 
 		if config.ObjectName == contacts {
