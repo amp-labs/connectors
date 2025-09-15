@@ -16,6 +16,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 	t.Parallel()
 
 	responseUserSchema := testutils.DataFromFile(t, "user-metadata.json")
+	responseUnsupportedObject := testutils.DataFromFile(t, "unsupported-object-metadata.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -30,9 +31,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Input: []string{"butterflies"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusOK, `{ "ia::result": { "fields": {} } }`),
+				Always: mockserver.Response(http.StatusOK, responseUnsupportedObject),
 			}.Server(),
-			ExpectedErrs: []error{common.ErrMissingExpectedValues},
+			ExpectedErrs: []error{common.ErrObjectNotSupported},
 		},
 
 		{

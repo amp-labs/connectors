@@ -37,13 +37,23 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		DisplayName: naming.CapitalizeFirstLetter(objectName),
 	}
 
-	res, err := common.UnmarshalJSON[SageIntacctMetadataResponse](response)
+	bodyNode, ok := response.Body()
+	if !ok {
+		return nil, common.ErrFailedToUnmarshalBody
+	}
+
+	resultNode, err := bodyNode.GetKey("ia::result")
 	if err != nil {
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
-	if res == nil || len(res.Result.Fields) == 0 {
-		return nil, common.ErrMissingExpectedValues
+	if resultNode.IsArray() {
+		return nil, common.ErrObjectNotSupported
+	}
+
+	res, err := common.UnmarshalJSON[SageIntacctMetadataResponse](response)
+	if err != nil {
+		return nil, common.ErrFailedToUnmarshalBody
 	}
 
 	for fieldName, fieldDef := range res.Result.Fields {
