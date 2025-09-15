@@ -47,6 +47,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
+	// api returns array when object is not supported.
 	if resultNode.IsArray() {
 		return nil, common.ErrObjectNotSupported
 	}
