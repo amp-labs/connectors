@@ -105,6 +105,10 @@ func (c Connector) Read(ctx context.Context, params connectors.ReadParams) (*con
 		return c.Contacts.Read(ctx, params)
 	}
 
+	if c.Mail != nil {
+		return c.Mail.Read(ctx, params)
+	}
+
 	return nil, common.ErrNotImplemented
 }
 
