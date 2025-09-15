@@ -7,13 +7,13 @@ type SageIntacctMetadataResponse struct {
 
 type SageIntacctResult struct {
 	Fields               map[string]SageIntacctFieldDef `json:"fields"`
-	Groups               map[string]SageIntacctGroup    `json:"groups,omitempty"`
+	Groups               map[string]SageIntacctGroup    `json:"groups"`
 	HTTPMethods          string                         `json:"httpMethods"`
-	Refs                 map[string]SageIntacctRef      `json:"refs,omitempty"`
-	Lists                any                            `json:"lists,omitempty"`
+	Refs                 map[string]SageIntacctRef      `json:"refs"`
+	Lists                any                            `json:"lists"`
 	IdempotenceSupported bool                           `json:"idempotenceSupported"`
-	Href                 string                         `json:"href,omitempty"`
-	Type                 string                         `json:"type,omitempty"`
+	Href                 string                         `json:"href"`
+	Type                 string                         `json:"type"`
 }
 
 type SageIntacctFieldDef struct {

@@ -56,13 +56,15 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		}
 	}
 
-	for groupName := range res.Result.Groups {
-		objectMetadata.Fields[groupName] = common.FieldMetadata{
-			DisplayName:  naming.CapitalizeFirstLetterEveryWord(groupName),
-			ValueType:    common.ValueTypeOther,
-			ProviderType: "object",
-			ReadOnly:     false,
-			Values:       nil,
+	if len(res.Result.Groups) > 0 {
+		for groupName := range res.Result.Groups {
+			objectMetadata.Fields[groupName] = common.FieldMetadata{
+				DisplayName:  naming.CapitalizeFirstLetterEveryWord(groupName),
+				ValueType:    common.ValueTypeOther,
+				ProviderType: "object",
+				ReadOnly:     false,
+				Values:       []common.FieldValue{},
+			}
 		}
 	}
 

@@ -1,0 +1,967 @@
+{
+    "ia::result": {
+        "additionalQueryFilterParameters": {
+            "approvalsForUser": {
+                "description": "Filter expenses for logged-in user",
+                "parameters": {
+                    "submitState": {
+                        "description": "apply enhanced filters",
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "fields": {
+            "billNumber": {
+                "nullable": true,
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "required": false,
+                "mutable": true
+            },
+            "createdDate": {
+                "format": "date",
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": true
+            },
+            "description": {
+                "nullable": true,
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "required": false,
+                "mutable": true
+            },
+            "discountCutOffDate": {
+                "format": "date",
+                "nullable": true,
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "required": false,
+                "mutable": true
+            },
+            "documentSource": {
+                "enum": [
+                    "billUpload",
+                    "email",
+                    null
+                ],
+                "nullable": true,
+                "readOnly": true,
+                "type": "string",
+                "writeOnly": false,
+                "required": false,
+                "mutable": false
+            },
+            "dueDate": {
+                "format": "date",
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": true
+            },
+            "dueInDays": {
+                "readOnly": true,
+                "type": "string",
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": false
+            },
+            "id": {
+                "readOnly": true,
+                "type": "string",
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": false
+            },
+            "importErrorMessage": {
+                "readOnly": true,
+                "type": "string",
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": false
+            },
+            "importStatus": {
+                "enum": [
+                    "resolve",
+                    "completed",
+                    "pending",
+                    "draftReady",
+                    "cancelled",
+                    null
+                ],
+                "readOnly": true,
+                "type": "string",
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": false
+            },
+            "isOnHold": {
+                "default": false,
+                "type": "boolean",
+                "readOnly": false,
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": true
+            },
+            "isSystemGenerated": {
+                "default": false,
+                "readOnly": true,
+                "type": "boolean",
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": false
+            },
+            "isTaxInclusive": {
+                "default": false,
+                "type": "boolean",
+                "readOnly": false,
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": true
+            },
+            "key": {
+                "readOnly": true,
+                "type": "string",
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": false
+            },
+            "paymentPriority": {
+                "default": "normal",
+                "enum": [
+                    "urgent",
+                    "high",
+                    "normal",
+                    "low"
+                ],
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "required": false,
+                "nullable": false,
+                "mutable": true
+            },
+            "postingDate": {
+                "format": "date",
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": true
+            },
+            "recipientEmail": {
+                "readOnly": true,
+                "type": "string",
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": false
+            },
+            "recommendedPaymentDate": {
+                "format": "date",
+                "nullable": true,
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "required": false,
+                "mutable": true
+            },
+            "recordType": {
+                "readOnly": true,
+                "type": "string",
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": false
+            },
+            "referenceNumber": {
+                "nullable": true,
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "required": false,
+                "mutable": true
+            },
+            "senderEmail": {
+                "readOnly": true,
+                "type": "string",
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": false
+            },
+            "sourceModule": {
+                "default": "accountsPayable",
+                "enum": [
+                    "accountsPayable",
+                    "purchasing"
+                ],
+                "readOnly": true,
+                "type": "string",
+                "writeOnly": false,
+                "required": false,
+                "nullable": false,
+                "mutable": false
+            },
+            "state": {
+                "default": "draft",
+                "enum": [
+                    "reversed",
+                    "reversal",
+                    "analyzing",
+                    "partiallyApproved",
+                    "submitted",
+                    "declined",
+                    "noValue",
+                    "posted",
+                    "paid",
+                    "partiallyPaid",
+                    "selected",
+                    "draft"
+                ],
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "required": false,
+                "nullable": false,
+                "mutable": true
+            },
+            "totalBaseAmount": {
+                "format": "decimal-precision-2",
+                "readOnly": true,
+                "type": "string",
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": false
+            },
+            "totalBaseAmountDue": {
+                "format": "decimal-precision-2",
+                "readOnly": true,
+                "type": "string",
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": false
+            },
+            "totalTxnAmount": {
+                "format": "decimal-precision-2",
+                "readOnly": true,
+                "type": "string",
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": false
+            },
+            "totalTxnAmountDue": {
+                "format": "decimal-precision-2",
+                "readOnly": true,
+                "type": "string",
+                "writeOnly": false,
+                "required": false,
+                "nullable": true,
+                "mutable": false
+            }
+        },
+        "groups": {
+            "audit": {
+                "fields": {
+                    "createdBy": {
+                        "deprecated": true,
+                        "nullable": true,
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": false
+                    },
+                    "createdDateTime": {
+                        "format": "date-time",
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    },
+                    "modifiedBy": {
+                        "deprecated": true,
+                        "nullable": true,
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": false
+                    },
+                    "modifiedDateTime": {
+                        "format": "date-time",
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    }
+                },
+                "refs": {
+                    "createdByUser": {
+                        "apiObject": "company-config/user",
+                        "fields": {
+                            "id": {
+                                "nullable": true,
+                                "readOnly": true,
+                                "type": "string",
+                                "writeOnly": false,
+                                "required": false,
+                                "mutable": false
+                            },
+                            "key": {
+                                "nullable": true,
+                                "readOnly": true,
+                                "type": "string",
+                                "writeOnly": false,
+                                "required": false,
+                                "mutable": false
+                            }
+                        }
+                    },
+                    "modifiedByUser": {
+                        "apiObject": "company-config/user",
+                        "fields": {
+                            "id": {
+                                "nullable": true,
+                                "readOnly": true,
+                                "type": "string",
+                                "writeOnly": false,
+                                "required": false,
+                                "mutable": false
+                            },
+                            "key": {
+                                "nullable": true,
+                                "readOnly": true,
+                                "type": "string",
+                                "writeOnly": false,
+                                "required": false,
+                                "mutable": false
+                            }
+                        }
+                    }
+                }
+            },
+            "contacts": {
+                "refs": {
+                    "payTo": {
+                        "apiObject": "company-config/contact",
+                        "fields": {
+                            "id": {
+                                "type": "string",
+                                "readOnly": false,
+                                "writeOnly": false,
+                                "required": false,
+                                "nullable": true,
+                                "mutable": true
+                            },
+                            "key": {
+                                "type": "string",
+                                "readOnly": false,
+                                "writeOnly": false,
+                                "required": false,
+                                "nullable": true,
+                                "mutable": true
+                            }
+                        },
+                        "groups": {
+                            "tax": {
+                                "fields": {
+                                    "taxId": {
+                                        "nullable": true,
+                                        "type": "string",
+                                        "readOnly": false,
+                                        "writeOnly": false,
+                                        "required": false,
+                                        "mutable": true
+                                    }
+                                },
+                                "refs": {
+                                    "group": {
+                                        "apiObject": "tax/contact-tax-group",
+                                        "fields": {
+                                            "id": {
+                                                "nullable": true,
+                                                "type": "string",
+                                                "readOnly": false,
+                                                "writeOnly": false,
+                                                "required": false,
+                                                "mutable": true
+                                            },
+                                            "key": {
+                                                "nullable": true,
+                                                "type": "string",
+                                                "readOnly": false,
+                                                "writeOnly": false,
+                                                "required": false,
+                                                "mutable": true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "returnTo": {
+                        "apiObject": "company-config/contact",
+                        "fields": {
+                            "id": {
+                                "type": "string",
+                                "readOnly": false,
+                                "writeOnly": false,
+                                "required": false,
+                                "nullable": true,
+                                "mutable": true
+                            },
+                            "key": {
+                                "type": "string",
+                                "readOnly": false,
+                                "writeOnly": false,
+                                "required": false,
+                                "nullable": true,
+                                "mutable": true
+                            }
+                        }
+                    }
+                }
+            },
+            "currency": {
+                "fields": {
+                    "baseCurrency": {
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": true
+                    },
+                    "txnCurrency": {
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": true
+                    }
+                },
+                "groups": {
+                    "exchangeRate": {
+                        "fields": {
+                            "date": {
+                                "format": "date",
+                                "nullable": true,
+                                "type": "string",
+                                "readOnly": false,
+                                "writeOnly": false,
+                                "required": false,
+                                "mutable": true
+                            },
+                            "rate": {
+                                "nullable": true,
+                                "type": "number",
+                                "readOnly": false,
+                                "writeOnly": false,
+                                "required": false,
+                                "mutable": true
+                            },
+                            "typeId": {
+                                "nullable": true,
+                                "type": "string",
+                                "readOnly": false,
+                                "writeOnly": false,
+                                "required": false,
+                                "mutable": true
+                            }
+                        }
+                    }
+                }
+            },
+            "paymentInformation": {
+                "fields": {
+                    "fullyPaidDate": {
+                        "format": "date",
+                        "nullable": true,
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": true
+                    },
+                    "totalBaseAmountPaid": {
+                        "format": "decimal-precision-2",
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    },
+                    "totalBaseAmountSelectedForPayment": {
+                        "format": "decimal-precision-2",
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    },
+                    "totalTxnAmountPaid": {
+                        "format": "decimal-precision-2",
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    },
+                    "totalTxnAmountSelectedForPayment": {
+                        "format": "decimal-precision-2",
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    }
+                }
+            },
+            "retainage": {
+                "fields": {
+                    "defaultPercentage": {
+                        "format": "decimal-precision-2",
+                        "nullable": true,
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": false
+                    },
+                    "totalBaseAmountRetained": {
+                        "format": "decimal-precision-2",
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    },
+                    "totalTxnAmountReleased": {
+                        "format": "decimal-precision-2",
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    },
+                    "totalTxnAmountRetained": {
+                        "format": "decimal-precision-2",
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    }
+                }
+            }
+        },
+        "httpMethods": "OPTIONS,GET,POST,DELETE,PATCH",
+        "lists": {
+            "lines": {
+                "apiObject": "accounts-payable/bill-line"
+            }
+        },
+        "refs": {
+            "attachment": {
+                "apiObject": "company-config/attachment",
+                "fields": {
+                    "id": {
+                        "nullable": true,
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": true
+                    },
+                    "key": {
+                        "nullable": true,
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": true
+                    }
+                }
+            },
+            "billBackTemplate": {
+                "apiObject": "accounts-receivable/billback-template",
+                "fields": {
+                    "enableInterEntityPostings": {
+                        "default": true,
+                        "readOnly": true,
+                        "type": "boolean",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    },
+                    "id": {
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": true
+                    },
+                    "key": {
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": true
+                    }
+                }
+            },
+            "billSummary": {
+                "apiObject": "accounts-payable/bill-summary",
+                "fields": {
+                    "id": {
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": true
+                    },
+                    "isSummaryOpen": {
+                        "enum": [
+                            "open",
+                            "closed"
+                        ],
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": false,
+                        "mutable": false
+                    },
+                    "isSummaryPosted": {
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    },
+                    "key": {
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": true
+                    },
+                    "name": {
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    }
+                }
+            },
+            "entity": {
+                "apiObject": "company-config/entity",
+                "fields": {
+                    "id": {
+                        "nullable": true,
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": false
+                    },
+                    "key": {
+                        "nullable": true,
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": false
+                    },
+                    "name": {
+                        "nullable": true,
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": false
+                    }
+                }
+            },
+            "location": {
+                "apiObject": "company-config/location",
+                "fields": {
+                    "id": {
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": true
+                    },
+                    "key": {
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": true
+                    },
+                    "name": {
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    }
+                }
+            },
+            "purchasing": {
+                "apiObject": "purchasing/document",
+                "fields": {
+                    "id": {
+                        "nullable": true,
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": true
+                    },
+                    "key": {
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    }
+                }
+            },
+            "purchasingDocument": {
+                "apiObject": "purchasing/document",
+                "fields": {
+                    "id": {
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    },
+                    "key": {
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    }
+                }
+            },
+            "recurringSchedule": {
+                "apiObject": "core/schedule",
+                "fields": {
+                    "id": {
+                        "nullable": true,
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": false
+                    },
+                    "key": {
+                        "nullable": true,
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": false
+                    }
+                }
+            },
+            "taxSolution": {
+                "apiObject": "tax/tax-solution",
+                "fields": {
+                    "id": {
+                        "nullable": true,
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": true
+                    },
+                    "key": {
+                        "nullable": true,
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": true
+                    },
+                    "method": {
+                        "deprecated": true,
+                        "nullable": true,
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": false
+                    },
+                    "showMultiLineTax": {
+                        "nullable": true,
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": false
+                    },
+                    "taxCalculationMethod": {
+                        "nullable": true,
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": false
+                    }
+                }
+            },
+            "term": {
+                "apiObject": "accounts-payable/term",
+                "fields": {
+                    "id": {
+                        "nullable": true,
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": true
+                    },
+                    "key": {
+                        "nullable": true,
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "mutable": true
+                    }
+                }
+            },
+            "vendor": {
+                "apiObject": "accounts-payable/vendor",
+                "fields": {
+                    "id": {
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": true
+                    },
+                    "key": {
+                        "type": "string",
+                        "readOnly": false,
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": true
+                    },
+                    "name": {
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    },
+                    "vendorDue": {
+                        "format": "decimal-precision-2",
+                        "readOnly": true,
+                        "type": "string",
+                        "writeOnly": false,
+                        "required": false,
+                        "nullable": true,
+                        "mutable": false
+                    }
+                },
+                "groups": {
+                    "form1099": {
+                        "fields": {
+                            "box": {
+                                "nullable": true,
+                                "readOnly": true,
+                                "type": "string",
+                                "writeOnly": false,
+                                "required": false,
+                                "mutable": false
+                            },
+                            "type": {
+                                "nullable": true,
+                                "readOnly": true,
+                                "type": "string",
+                                "writeOnly": false,
+                                "required": false,
+                                "mutable": false
+                            },
+                            "vendorTypeForm1099Type": {
+                                "nullable": true,
+                                "readOnly": true,
+                                "type": "string",
+                                "writeOnly": false,
+                                "required": false,
+                                "mutable": false
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "idempotenceSupported": true,
+        "apiObject": "objects/accounts-payable/bill",
+        "type": "rootObject",
+        "href": "/services/core/model?version=v1&name=objects/accounts-payable/bill"
+    },
+    "ia::meta": {
+        "totalCount": 1,
+        "totalSuccess": 1,
+        "totalError": 0
+    }
+}
