@@ -7,7 +7,6 @@ import (
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/sageintacct/metadata"
 )
 
 type Connector struct {
@@ -29,7 +28,15 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
+	connector.SchemaProvider = schema.NewObjectSchemaProvider(
+		connector.HTTPClient().Client,
+		schema.FetchModeParallel,
+		operations.SingleObjectMetadataHandlers{
+			BuildRequest:  connector.buildSingleObjectMetadataRequest,
+			ParseResponse: connector.parseSingleObjectMetadataResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
 
 	registry, err := components.NewEndpointRegistry(supportedOperations())
 	if err != nil {

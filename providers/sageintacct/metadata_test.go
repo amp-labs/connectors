@@ -1,6 +1,7 @@
 package sageintacct
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -8,10 +9,14 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
+
+	responseUserSchema := testutils.DataFromFile(t, "user-metadata.json")
+	responseUnsupportedObject := testutils.DataFromFile(t, "unsupported-object-metadata.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -22,11 +27,15 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		},
 
 		{
-			Name:       "Unknown object requested",
-			Input:      []string{"butterflies"},
-			Server:     mockserver.Dummy(),
+			Name:  "Server response must have at least one field",
+			Input: []string{"butterflies"},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseUnsupportedObject),
+			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{},
 				Errors: map[string]error{
 					"butterflies": common.ErrObjectNotSupported,
 				},
@@ -34,62 +43,44 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		},
 
 		{
-			Name:       "Successfully describe multiple objects with metadata",
-			Input:      []string{"account", "contact"},
-			Server:     mockserver.Dummy(),
+			Name:  "Successfully describe User metadata",
+			Input: []string{"company-config/user"},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseUserSchema),
+			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"account": {
-						DisplayName: "Account",
+					"company-config/user": {
+						DisplayName: "Company-config/user",
 						Fields: map[string]common.FieldMetadata{
-							"href": {
-								DisplayName:  "href",
+							"accountEmail": {
+								DisplayName:  "Accountemail",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     false,
-								Values:       nil,
+								Values:       []common.FieldValue{},
 							},
-							"id": {
-								DisplayName:  "id",
+							"adminPrivileges": {
+								DisplayName:  "Adminprivileges",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     false,
-								Values:       nil,
-							},
-							"key": {
-								DisplayName:  "key",
-								ValueType:    "string",
-								ProviderType: "string",
-								ReadOnly:     false,
-								Values:       nil,
-							},
-						},
-						FieldsMap: nil,
-					},
-					"contact": {
-						DisplayName: "Contact",
-						Fields: map[string]common.FieldMetadata{
-							"href": {
-								DisplayName:  "href",
-								ValueType:    "string",
-								ProviderType: "string",
-								ReadOnly:     false,
-								Values:       nil,
-							},
-							"id": {
-								DisplayName:  "id",
-								ValueType:    "string",
-								ProviderType: "string",
-								ReadOnly:     false,
-								Values:       nil,
-							},
-							"key": {
-								DisplayName:  "key",
-								ValueType:    "string",
-								ProviderType: "string",
-								ReadOnly:     false,
-								Values:       nil,
+								Values: []common.FieldValue{
+									{
+										DisplayValue: "Off",
+										Value:        "off",
+									},
+									{
+										DisplayValue: "Limited",
+										Value:        "limited",
+									},
+									{
+										DisplayValue: "Full",
+										Value:        "full",
+									},
+								},
 							},
 						},
 						FieldsMap: nil,

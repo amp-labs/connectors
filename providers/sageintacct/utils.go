@@ -1,49 +1,36 @@
 package sageintacct
 
 import (
-	"strconv"
-	"strings"
-
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/sageintacct/metadata"
+	"github.com/amp-labs/connectors/common/naming"
 )
 
-func buildReadBody(module common.ModuleID, params common.ReadParams) (map[string]interface{}, error) {
-	path, err := metadata.Schemas.LookupURLPath(module, params.ObjectName)
-	if err != nil {
-		return nil, err
+func mapSageIntacctTypeToValueType(sageType string) common.ValueType {
+	switch sageType {
+	case "string":
+		return common.ValueTypeString
+	case "integer", "number":
+		return common.ValueTypeFloat
+	case "boolean":
+		return common.ValueTypeBoolean
+	case "date", "date-time":
+		return common.ValueTypeString
+	default:
+		return common.ValueTypeOther
 	}
+}
 
-	fullObjectName := strings.Split(path, "/objects/")[1]
+func mapValuesFromEnum(fieldDef SageIntacctFieldDef) []common.FieldValue {
+	values := []common.FieldValue{}
 
-	objectMetadata, err := metadata.Schemas.Select(module, []string{params.ObjectName})
-	if err != nil {
-		return nil, err
-	}
-
-	var fieldNames []string
-
-	for _, objectFields := range objectMetadata.Result {
-		for fieldName := range objectFields.Fields {
-			fieldNames = append(fieldNames, fieldName)
+	if len(fieldDef.Enum) > 0 {
+		for _, v := range fieldDef.Enum {
+			values = append(values, common.FieldValue{
+				DisplayValue: naming.CapitalizeFirstLetter(v),
+				Value:        v,
+			})
 		}
 	}
 
-	payload := map[string]any{
-		"object":      fullObjectName,
-		"fields":      fieldNames,
-		pageSizeParam: defaultPageSize,
-		pageParam:     1,
-	}
-
-	if params.NextPage != "" {
-		pageNum, err := strconv.Atoi(string(params.NextPage))
-		if err != nil {
-			return nil, err
-		}
-
-		payload[pageParam] = pageNum
-	}
-
-	return payload, nil
+	return values
 }
