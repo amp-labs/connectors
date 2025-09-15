@@ -1,7 +1,6 @@
 package interpreter
 
 import (
-	"context"
 	"errors"
 	"io"
 	"net/http"
@@ -119,7 +118,7 @@ func TestErrorHandler(t *testing.T) { //nolint:funlen
 
 			defer tt.server.Close()
 
-			req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, tt.server.URL, nil)
+			req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, tt.server.URL, nil)
 			if err != nil {
 				t.Fatalf("test server failed to create request (%v)", err)
 			}

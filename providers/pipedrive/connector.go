@@ -65,6 +65,14 @@ func (c *Connector) getAPIURL(arg string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, apiVersion, arg)
 }
 
+func (c *Connector) constructMetadataURL(obj string) (*urlbuilder.URL, error) {
+	if metadataDiscoveryEndpoints.Has(obj) {
+		obj = metadataDiscoveryEndpoints.Get(obj)
+	}
+
+	return c.getAPIURL(obj)
+}
+
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
 	if err != nil {

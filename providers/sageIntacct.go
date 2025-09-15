@@ -13,6 +13,7 @@ func init() {
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,
+			DocsURL:                   "https://developer.sage.com/intacct/docs/developer-portal/getting-started/quick-start",
 		},
 		//nolint:lll
 		Media: &Media{

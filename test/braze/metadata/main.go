@@ -17,7 +17,6 @@ func main() {
 	objectNames := []string{"catalogs", "campaigns", "templates/email"}
 
 	m, err := conn.ListObjectMetadata(ctx, objectNames)
-
 	if err != nil {
 		log.Fatal(err)
 	}

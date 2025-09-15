@@ -16,6 +16,7 @@ func main() {
 	defer done()
 
 	utils.SetupLogging()
+
 	conn := connTest.GetZendeskSupportConnector(ctx)
 
 	testscenario.ValidateMetadataExactlyMatchesRead(ctx, conn, "brands")

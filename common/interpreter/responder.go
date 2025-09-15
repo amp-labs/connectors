@@ -15,7 +15,7 @@ var ErrCannotParseErrorResponse = errors.New("implementation cannot process erro
 // It uses common techniques to handle error response returned by provider.
 type FaultyResponder struct {
 	errorSwitch *FormatSwitch
-	statusCodeMapper
+	StatusCodeMapper
 }
 
 // NewFaultyResponder creates error responder that will be used when provider responds with erroneous payload.
@@ -26,7 +26,7 @@ type FaultyResponder struct {
 func NewFaultyResponder(errorSwitch *FormatSwitch, statusCodeMap map[int]error) *FaultyResponder {
 	return &FaultyResponder{
 		errorSwitch:      errorSwitch,
-		statusCodeMapper: statusCodeMapper{registry: statusCodeMap},
+		StatusCodeMapper: StatusCodeMapper{Registry: statusCodeMap},
 	}
 }
 
@@ -39,20 +39,20 @@ func (r FaultyResponder) HandleErrorResponse(res *http.Response, body []byte) er
 	schema := r.errorSwitch.ParseJSON(body)
 
 	// Match status code to error. Enhance it with schema message.
-	return schema.CombineErr(r.matchStatusCodeError(res, body))
+	return schema.CombineErr(r.MatchStatusCodeError(res, body))
 }
 
-type statusCodeMapper struct {
-	registry map[int]error
+type StatusCodeMapper struct {
+	Registry map[int]error
 }
 
-func (m statusCodeMapper) matchStatusCodeError(res *http.Response, body []byte) error {
-	if m.registry == nil {
+func (m StatusCodeMapper) MatchStatusCodeError(res *http.Response, body []byte) error {
+	if m.Registry == nil {
 		return DefaultStatusCodeMappingToErr(res, body)
 	}
 
 	// Check if status code was overridden.
-	mappedErr, ok := m.registry[res.StatusCode]
+	mappedErr, ok := m.Registry[res.StatusCode]
 	if !ok {
 		return DefaultStatusCodeMappingToErr(res, body)
 	}
@@ -78,7 +78,7 @@ func (r DirectFaultyResponder) HandleErrorResponse(res *http.Response, body []by
 // XMLFaultyResponder is an implementation of FaultyResponseHandler.
 type XMLFaultyResponder struct {
 	templates Templates
-	statusCodeMapper
+	StatusCodeMapper
 }
 
 // NewXMLFaultyResponder creates error responder that will be used when provider responds with erroneous payload.
@@ -88,7 +88,7 @@ type XMLFaultyResponder struct {
 func NewXMLFaultyResponder(templates Templates, statusCodeMap map[int]error) *XMLFaultyResponder {
 	return &XMLFaultyResponder{
 		templates:        templates,
-		statusCodeMapper: statusCodeMapper{registry: statusCodeMap},
+		StatusCodeMapper: StatusCodeMapper{Registry: statusCodeMap},
 	}
 }
 
@@ -106,7 +106,7 @@ func (r XMLFaultyResponder) HandleErrorResponse(res *http.Response, body []byte)
 
 		tmpl := template()
 		if err := xml.Unmarshal(body, &tmpl); err == nil {
-			return fmt.Errorf("provider error: %w", tmpl.CombineErr(r.matchStatusCodeError(res, body)))
+			return fmt.Errorf("provider error: %w", tmpl.CombineErr(r.MatchStatusCodeError(res, body)))
 		}
 	}
 

@@ -26,7 +26,8 @@ func (c *Connector) ListObjectMetadata(
 		// Attach fields to the object metadata.
 		objectMetadata := metadataResult.Result[objectName]
 		for _, field := range fields {
-			objectMetadata.FieldsMap[field.FieldName] = field.Label
+			// TODO fix deprecated
+			objectMetadata.FieldsMap[field.FieldName] = field.Label // nolint:staticcheck
 		}
 	}
 

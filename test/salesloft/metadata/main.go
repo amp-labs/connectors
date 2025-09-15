@@ -16,6 +16,7 @@ func main() {
 	defer done()
 
 	utils.SetupLogging()
+
 	conn := connTest.GetSalesloftConnector(ctx)
 
 	testscenario.ValidateMetadataContainsRead(ctx, conn, "groups", nil)

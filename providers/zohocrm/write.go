@@ -4,7 +4,10 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 /*
@@ -36,21 +39,24 @@ Sample Response Data:
 }
 */
 
-type writeResponse struct {
-	Data []map[string]any `json:"data"`
-}
+const dataKey = "data"
 
 // Write creates or updates records in a zohoCRM account.
 // A maximum of 100 records can be inserted per API call.
 // https://www.zoho.com/crm/developer/docs/api/v6/insert-records.html
+//
+// nolint: funlen, cyclop
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
-	var errs []any
+	ctx = logging.With(ctx, "connector", "zoho CRM")
+
+	var (
+		errs  []any
+		write common.WriteMethod
+	)
 
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
 	}
-
-	var write common.WriteMethod
 
 	// Object names in ZohoCRM API are case sensitive.
 	// Capitalizing the first character of object names to form correct URL.
@@ -79,22 +85,28 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	response, err := common.UnmarshalJSON[writeResponse](resp)
+	node, ok := resp.Body()
+	if !ok {
+		logging.Logger(ctx).Error("failed to retrieve the created/updated response data", "object", config.ObjectName)
+
+		return &common.WriteResult{Success: true}, nil
+	}
+
+	records, err := jsonquery.New(node).ArrayOptional(dataKey)
 	if err != nil {
 		return nil, err
 	}
 
-	// Looping in the response data to see if there is
-	// an error in any of the record Responses.
-	for _, r := range response.Data {
-		if r["code"] != "SUCCESS" {
-			errs = append(errs, r)
-		}
+	id, data, err := constructResponse(records, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	return &common.WriteResult{
-		Success: true,
-		Errors:  errs,
+		Success:  true,
+		Errors:   errs,
+		RecordId: id,
+		Data:     data,
 	}, nil
 }
 
@@ -129,4 +141,37 @@ func capitalizeKeys(data map[string]any) {
 			delete(data, k)
 		}
 	}
+}
+
+func constructResponse(records []*ajson.Node, errs []any) (string, map[string]any, error) {
+	var (
+		recordId   string
+		recordData map[string]any
+		err        error
+	)
+
+	for _, record := range records {
+		recordData, err = jsonquery.Convertor.ObjectToMap(record)
+		if err != nil {
+			return "", nil, err
+		}
+
+		objectId, err := jsonquery.New(record, "details").StrWithDefault("id", "")
+		if err != nil {
+			return "", nil, err
+		}
+
+		code, err := jsonquery.New(record).StrWithDefault("code", "")
+		if err != nil {
+			return "", nil, err
+		}
+
+		if code != "SUCCESS" {
+			errs = append(errs, record)
+		}
+
+		recordId = objectId
+	}
+
+	return recordId, recordData, err
 }

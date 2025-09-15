@@ -1,0 +1,20 @@
+{
+    "success": true,
+    "businesses": [
+        {
+            "customFields": [],
+            "name": "Msoft",
+            "locationId": "iV1BEzddaWWLqU2kXhcN",
+            "createdBy": {
+                "source": "INTEGRATION",
+                "channel": "OAUTH",
+                "sourceId": "6789ed53f93f9a428151c88f-m60czadz",
+                "createdAt": "2025-01-23T12:01:48.429Z"
+            },
+            "createdAt": "2025-01-23T12:01:48.430Z",
+            "updatedAt": "2025-01-23T12:01:48.430Z",
+            "id": "67922facc1844a515a6d72e5"
+        }
+    ],
+    "traceId": "894573c7-8d1c-4831-a32b-d36797738405"
+}

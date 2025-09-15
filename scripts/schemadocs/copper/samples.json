@@ -1,0 +1,454 @@
+[
+  {
+    "name": "users",
+    "displayName": "Users",
+    "url": "https://api.copper.com/developer_api/v1/users/search",
+    "sample": {
+      "id": 137658,
+      "name": "John Doe",
+      "email": "johndoe@copper.com",
+      "groups": []
+    }
+  },
+  {
+    "name": "leads",
+    "displayName": "Leads",
+    "url": "https://api.copper.com/developer_api/v1/leads/search",
+    "sample": {
+      "id": 9150547,
+      "name": "My Contact",
+      "prefix": "",
+      "first_name": "My",
+      "last_name": "Contact",
+      "middle_name": "",
+      "suffix": "",
+      "address": null,
+      "assignee_id": null,
+      "company_name": "",
+      "customer_source_id": null,
+      "details": "",
+      "email": {
+        "email": "mycontact@noemail.com",
+        "category": "work"
+      },
+      "interaction_count": 0,
+      "monetary_value": 123,
+      "socials": [],
+      "status": "New",
+      "status_id": 208231,
+      "tags": [],
+      "title": "",
+      "websites": [],
+      "phone_numbers": [],
+      "custom_fields": [
+        {
+          "custom_field_definition_id": 100764,
+          "value": null
+        },
+        {
+          "custom_field_definition_id": 103481,
+          "value": null
+        }
+      ],
+      "date_created": 1490045162,
+      "date_modified": 1490045162,
+      "date_last_contacted": 1490045162,
+      "converted_opportunity_id": null,
+      "converted_contact_id": null,
+      "converted_at": null
+    }
+  },
+  {
+    "name": "customer_sources",
+    "displayName": "Customer Sources",
+    "url": "https://api.copper.com/developer_api/v1/customer_sources",
+    "sample": {
+      "id": 331240,
+      "name": "Email"
+    }
+  },
+  {
+    "name": "lead_statuses",
+    "displayName": "Lead Statuses",
+    "url": "https://api.copper.com/developer_api/v1/lead_statuses",
+    "sample": {
+      "id": 208231,
+      "name": "New",
+      "order": 1,
+      "is_default": true
+    }
+  },
+  {
+    "name": "people",
+    "displayName": "People",
+    "url": "https://api.copper.com/developer_api/v1/people/search",
+    "sample": {
+      "id": 7,
+      "name": "Jim Halpert",
+      "prefix": "",
+      "first_name": "Jim",
+      "middle_name": "",
+      "last_name": "Halpert",
+      "suffix": "",
+      "address": {
+        "street": "221 Main Street Suite 1350",
+        "city": "Vancouver",
+        "state": "BC",
+        "postal_code": "A1A1A1",
+        "country": "CA"
+      },
+      "assignee_id": null,
+      "company_id": 2,
+      "company_name": "ProsperWorks",
+      "contact_type_id": 8,
+      "details": "",
+      "emails": [
+        {
+          "email": "jhalpert@prosperworks.com",
+          "category": "work"
+        }
+      ],
+      "phone_numbers": [
+        {
+          "number": "4158546956",
+          "category": "work"
+        }
+      ],
+      "socials": [
+        {
+          "url": "https://www.linkedin.com/in/jimhalpert",
+          "category": "linkedin"
+        }
+      ],
+      "tags": [
+        "tag1"
+      ],
+      "title": "Business Development",
+      "websites": [
+        {
+          "url": "www.prosperworks.com",
+          "category": "work"
+        }
+      ],
+      "custom_fields": [
+        {
+          "custom_field_definition_id": 6,
+          "value": 1515744000
+        },
+        {
+          "custom_field_definition_id": 12,
+          "value": [
+            8
+          ]
+        }
+      ],
+      "date_created": 1516262400,
+      "date_modified": 1516313340,
+      "date_last_contacted": 1516313330,
+      "interaction_count": 2,
+      "leads_converted_from": [],
+      "date_lead_created": 123
+    }
+  },
+  {
+    "name": "contact_types",
+    "displayName": "Contact Types",
+    "url": "https://api.copper.com/developer_api/v1/contact_types",
+    "sample": {
+      "id": 451490,
+      "name": "Potential Customer"
+    }
+  },
+  {
+    "name": "companies",
+    "displayName": "Companies",
+    "url": "https://api.copper.com/developer_api/v1/companies/search",
+    "sample": {
+      "id": 13358412,
+      "name": "Demo Company",
+      "address": {
+        "street": "123 Main St",
+        "city": "San Francisco",
+        "state": "CA",
+        "postal_code": "94105",
+        "country": null
+      },
+      "assignee_id": null,
+      "contact_type_id": null,
+      "details": "This is a demo company",
+      "email_domain": "democompany.com",
+      "phone_numbers": [
+        {
+          "number": "415-123-45678",
+          "category": "work"
+        }
+      ],
+      "primary_contact_id": 27140361,
+      "socials": [],
+      "tags": [],
+      "websites": [
+        {
+          "url": "http://democompany.com",
+          "category": "work"
+        }
+      ],
+      "custom_fields": [
+        {
+          "custom_field_definition_id": 100764,
+          "value": null
+        },
+        {
+          "custom_field_definition_id": 103481,
+          "value": null
+        }
+      ],
+      "interaction_count": 0,
+      "date_created": 1496707930,
+      "date_modified": 1496707932
+    }
+  },
+  {
+    "name": "opportunities",
+    "displayName": "Opportunities",
+    "url": "https://api.copper.com/developer_api/v1/opportunities/search",
+    "sample": {
+      "id": 2827699,
+      "name": "25 Office Chairs (sample)",
+      "assignee_id": null,
+      "close_date": "1/16/2017",
+      "company_id": 9607580,
+      "company_name": "Dunder Mifflin (sample)",
+      "customer_source_id": 331242,
+      "details": "Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.",
+      "loss_reason_id": null,
+      "pipeline_id": 213214,
+      "pipeline_is_revenue": false,
+      "pipeline_stage_id": 987793,
+      "pipeline_type": "opportunity",
+      "primary_contact_id": null,
+      "priority": "None",
+      "status": "Open",
+      "tags": [],
+      "interaction_count": 0,
+      "monetary_value": 75000,
+      "win_probability": 40,
+      "date_last_contacted": null,
+      "leads_converted_from": [],
+      "date_lead_created": null,
+      "date_created": 1483988829,
+      "date_modified": 1489018922,
+      "custom_fields": [
+        {
+          "custom_field_definition_id": 126240,
+          "value": null
+        },
+        {
+          "custom_field_definition_id": 103481,
+          "value": null
+        },
+        {
+          "custom_field_definition_id": 100764,
+          "value": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "loss_reasons",
+    "displayName": "Loss Reasons",
+    "url": "https://api.copper.com/developer_api/v1/loss_reasons",
+    "sample": {
+      "id": 308806,
+      "name": "Price"
+    }
+  },
+  {
+    "name": "pipelines",
+    "displayName": "Pipelines",
+    "url": "https://api.copper.com/developer_api/v1/pipelines",
+    "sample": {
+      "id": 213214,
+      "name": "Sales",
+      "stages": [
+        {
+          "id": 987790,
+          "name": "Qualified",
+          "win_probability": 5
+        },
+        {
+          "id": 987791,
+          "name": "Follow-up",
+          "win_probability": 10
+        },
+        {
+          "id": 987792,
+          "name": "Presentation",
+          "win_probability": 20
+        },
+        {
+          "id": 987793,
+          "name": "Contract Sent",
+          "win_probability": 40
+        },
+        {
+          "id": 987794,
+          "name": "Negotiation",
+          "win_probability": 80
+        }
+      ],
+      "type": "opportunity",
+      "is_revenue": false
+    }
+  },
+  {
+    "name": "pipeline_stages",
+    "displayName": "Pipeline Stages",
+    "url": "https://api.copper.com/developer_api/v1/pipeline_stages",
+    "sample": {
+      "id": 987790,
+      "name": "Qualified",
+      "pipeline_id": 213214,
+      "win_probability": 5
+    }
+  },
+  {
+    "name": "projects",
+    "displayName": "Projects",
+    "url": "https://api.copper.com/developer_api/v1/projects/search",
+    "sample": {
+      "id": 1,
+      "name": "Customize Your New CRM",
+      "related_resource": {
+        "id": 2,
+        "type": "company"
+      },
+      "assignee_id": 2,
+      "status": "Open",
+      "details": "Visit our settings section to discover all the ways you can customize Copper to fit your sales workflow.",
+      "tags": [
+        "tag1"
+      ],
+      "custom_fields": [
+        {
+          "custom_field_definition_id": 6,
+          "value": 1515744000
+        },
+        {
+          "custom_field_definition_id": 12,
+          "value": [
+            8
+          ]
+        },
+        {
+          "custom_field_definition_id": 8,
+          "value": null
+        },
+        {
+          "custom_field_definition_id": 11,
+          "value": null
+        },
+        {
+          "custom_field_definition_id": 9,
+          "value": null
+        },
+        {
+          "custom_field_definition_id": 7,
+          "value": false
+        },
+        {
+          "custom_field_definition_id": 3,
+          "value": null
+        },
+        {
+          "custom_field_definition_id": 4,
+          "value": null
+        },
+        {
+          "custom_field_definition_id": 10,
+          "value": null
+        },
+        {
+          "custom_field_definition_id": 5,
+          "value": null
+        }
+      ],
+      "date_created": 1515434872,
+      "date_modified": 1516819000
+    }
+  },
+  {
+    "name": "tags",
+    "displayName": "Tags",
+    "url": "https://api.copper.com/developer_api/v1/tags",
+    "sample": {
+      "name": "Apples",
+      "count": 5,
+      "count_people": 1,
+      "count_leads": 1,
+      "count_companies": 1,
+      "count_opportunities": 1,
+      "count_projects": 1,
+      "count_tasks": 0
+    }
+  },
+  {
+    "name": "tasks",
+    "displayName": "Tasks",
+    "url": "https://api.copper.com/developer_api/v1/tasks/search",
+    "sample": {
+      "id": 3726701,
+      "name": "Demo Task",
+      "related_resource": {
+        "id": null,
+        "type": null
+      },
+      "assignee_id": 137658,
+      "due_date": 123,
+      "reminder_date": 123,
+      "completed_date": null,
+      "priority": "None",
+      "status": "Open",
+      "details": "",
+      "tags": [],
+      "custom_fields": [],
+      "date_created": 1496771985,
+      "date_modified": 1496771985
+    }
+  },
+  {
+    "name": "activities",
+    "displayName": "Activities",
+    "url": "https://api.copper.com/developer_api/v1/activities/search",
+    "sample": {
+      "id": 3064242278,
+      "parent": {
+        "id": 27140359,
+        "type": "person"
+      },
+      "type": {
+        "id": 0,
+        "category": "user"
+      },
+      "user_id": 137658,
+      "details": "This is the description of this note",
+      "activity_date": 1496772355,
+      "old_value": null,
+      "new_value": null,
+      "date_created": 1496772355,
+      "date_modified": 1496772355
+    }
+  },
+  {
+    "name": "activity_types",
+    "displayName": "Activity Types",
+    "responseKey": "user",
+    "url": "https://api.copper.com/developer_api/v1/activity_types",
+    "sample": {
+      "id": 0,
+      "category": "user",
+      "name": "Note",
+      "is_disabled": false,
+      "count_as_interaction": false
+    }
+  }
+]

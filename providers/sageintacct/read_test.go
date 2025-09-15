@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -32,14 +31,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrMissingFields},
 		},
 		{
-			Name:         "Unsupported object name",
-			Input:        common.ReadParams{ObjectName: "butterflies", Fields: connectors.Fields("id")},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
 			Name:  "Successful read with chosen fields",
-			Input: common.ReadParams{ObjectName: "budget", Fields: connectors.Fields("id", "key")},
+			Input: common.ReadParams{ObjectName: "general-ledger/budget", Fields: connectors.Fields("id", "key", "href")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
@@ -92,18 +85,4 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			})
 		})
 	}
-}
-
-func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(common.ConnectorParams{
-		AuthenticatedClient: mockutils.NewClient(),
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	// for testing we want to redirect calls to our mock server
-	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
-
-	return connector, err
 }

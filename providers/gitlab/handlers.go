@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -82,7 +83,8 @@ func (c *Connector) parseSingleHandlerResponse(
 	}
 
 	for fld := range firstRecord {
-		objectMetadata.FieldsMap[fld] = fld
+		// TODO fix deprecated
+		objectMetadata.FieldsMap[fld] = fld // nolint:staticcheck
 	}
 
 	return &objectMetadata, nil
@@ -166,6 +168,19 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }
 
+func parseRecordId(data map[string]any) string {
+	switch v := data["id"].(type) {
+	case string:
+		return v
+	case float64:
+		return strconv.Itoa(int(v))
+	case int:
+		return strconv.Itoa(v)
+	}
+
+	return ""
+}
+
 func (c *Connector) parseWriteResponse(
 	ctx context.Context,
 	params common.WriteParams,
@@ -189,8 +204,11 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
+	recordId := parseRecordId(data)
+
 	return &common.WriteResult{
-		Success: true,
-		Data:    data,
+		Success:  true,
+		Data:     data,
+		RecordId: recordId,
 	}, nil
 }

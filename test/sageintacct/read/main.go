@@ -25,13 +25,32 @@ func main() {
 
 	slog.Info("Testing account read...")
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "account",
-		Fields:     connectors.Fields("id", "key", "href"),
+		ObjectName: "general-ledger/account",
+		Fields:     connectors.Fields("id", "name", "accountType"),
 	})
 	if err != nil {
 		utils.Fail("error reading accounts from Sage Intacct", "error", err)
 	}
-
 	slog.Info("Reading accounts..")
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "company-config/contact",
+		Fields:     connectors.Fields("id", "firstName", "lastName", "mobile"),
+	})
+	if err != nil {
+		utils.Fail("error reading contacts from Sage Intacct", "error", err)
+	}
+	slog.Info("Reading contacts..")
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "company-config/employee",
+		Fields:     connectors.Fields("id", "jobTitle", "name", "gender"),
+	})
+	if err != nil {
+		utils.Fail("error reading employees from Sage Intacct", "error", err)
+	}
+	slog.Info("Reading employees..")
 	utils.DumpJSON(res, os.Stdout)
 }

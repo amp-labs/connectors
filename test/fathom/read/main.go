@@ -27,7 +27,7 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "meetings",
 		Fields:     connectors.Fields("title", "meeting_title", "url"),
-		Since:      time.Date(2025, 07, 03, 0, 0, 0, 0, time.UTC),
+		Since:      time.Date(2025, 0o7, 0o3, 0, 0, 0, 0, time.UTC),
 	})
 	if err != nil {
 		utils.Fail("error reading from Fathom", "error", err)
@@ -39,7 +39,7 @@ func main() {
 	res, err = conn.Read(ctx, common.ReadParams{
 		ObjectName: "teams",
 		Fields:     connectors.Fields("name", "created_at"),
-		Since:      time.Date(2025, 06, 20, 0, 0, 0, 0, time.UTC),
+		Since:      time.Date(2025, 0o6, 20, 0, 0, 0, 0, time.UTC),
 	})
 	if err != nil {
 		utils.Fail("error reading from Fathom", "error", err)

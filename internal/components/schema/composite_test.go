@@ -212,7 +212,7 @@ func TestCompositeSchemaProvider_ListObjectMetadata(t *testing.T) {
 			compositeProvider := NewCompositeSchemaProvider(mockProvider1, mockProvider2)
 
 			// Execute test
-			result, err := compositeProvider.ListObjectMetadata(context.Background(), tt.objects)
+			result, err := compositeProvider.ListObjectMetadata(t.Context(), tt.objects)
 
 			// Assertions
 			if tt.expectedError != nil {

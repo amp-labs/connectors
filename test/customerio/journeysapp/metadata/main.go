@@ -15,6 +15,7 @@ func main() {
 	defer done()
 
 	utils.SetupLogging()
+
 	conn := connTest.GetCustomerJourneysAppConnector(ctx)
 
 	testscenario.ValidateMetadataExactlyMatchesRead(ctx, conn, "segments")

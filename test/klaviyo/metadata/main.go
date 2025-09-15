@@ -16,6 +16,7 @@ func main() {
 	defer done()
 
 	utils.SetupLogging()
+
 	conn := connTest.GetKlaviyoConnector(ctx)
 
 	testscenario.ValidateMetadataExactlyMatchesRead(ctx, conn, "accounts")

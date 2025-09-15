@@ -15,18 +15,9 @@ func makeNextRecordsURL() common.NextPageFunc {
 			return "", nil //nolint: nilerr
 		}
 
-		totalCount, err := jsonquery.New(meta).IntegerRequired("totalCount")
-		if err != nil {
-			return "", nil //nolint: nilerr
-		}
-
 		nextStartPosition, err := jsonquery.New(meta).IntegerOptional("next")
 		if err != nil || nextStartPosition == nil {
 			return "", nil //nolint: nilerr
-		}
-
-		if totalCount < defaultPageSize {
-			return "", nil
 		}
 
 		return strconv.Itoa(int(*nextStartPosition)), nil
