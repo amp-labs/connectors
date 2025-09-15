@@ -33,7 +33,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseUnsupportedObject),
 			}.Server(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{},
+				Errors: map[string]error{
+					"butterflies": common.ErrObjectNotSupported,
+				},
+			},
 		},
 
 		{
