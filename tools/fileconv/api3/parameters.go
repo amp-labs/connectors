@@ -60,10 +60,6 @@ func CamelCaseToSpaceSeparated(displayName string) string {
 	return strcase.ToDelimited(displayName, ' ')
 }
 
-func KebabCaseToSpaceSeparated(displayName string) string {
-	return strings.ReplaceAll(displayName, "-", " ")
-}
-
 // SlashesToSpaceSeparated replaces URL slashes with spaces.
 func SlashesToSpaceSeparated(displayName string) string {
 	return strings.ReplaceAll(displayName, "/", " ")
