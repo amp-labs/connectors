@@ -72,6 +72,7 @@ import (
 	"github.com/amp-labs/connectors/providers/pipeliner"
 	"github.com/amp-labs/connectors/providers/podium"
 	"github.com/amp-labs/connectors/providers/pylon"
+	"github.com/amp-labs/connectors/providers/sageintacct"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/seismic"
@@ -163,6 +164,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Pipeliner:               wrapper(newPipelinerConnector),
 	providers.Podium:                  wrapper(newPodiumConnector),
 	providers.Pylon:                   wrapper(newPylonConnector),
+	providers.SageIntacct:             wrapper(newSageIntacctConnector),
 	providers.Salesforce:              wrapper(newSalesforceConnector),
 	providers.Salesloft:               wrapper(newSalesloftConnector),
 	providers.ServiceNow:              wrapper(newServiceNowConnector),
@@ -714,4 +716,10 @@ func newHighLevelWhiteLabelConnector(
 	params common.ConnectorParams,
 ) (*highlevelwhitelabel.Connector, error) {
 	return highlevelwhitelabel.NewConnector(params)
+}
+
+func newSageIntacctConnector(
+	params common.ConnectorParams,
+) (*sageintacct.Connector, error) {
+	return sageintacct.NewConnector(params)
 }
