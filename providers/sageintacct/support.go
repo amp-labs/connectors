@@ -11,7 +11,7 @@ import (
 // API reference: https://developer.sage.com/intacct/docs/openapi/z-indexes/
 // nolint:funlen,maintidx
 func supportedOperations() components.EndpointRegistryInput {
-	readSupport := []string{
+	readWriteSupport := []string{
 		"accounts-payable/account-label",
 		"accounts-payable/adjustment",
 		"accounts-payable/adjustment-line",
@@ -402,8 +402,12 @@ func supportedOperations() components.EndpointRegistryInput {
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
-				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(readWriteSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(readWriteSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
