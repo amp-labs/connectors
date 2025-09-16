@@ -16,7 +16,6 @@ func GetBlueshiftConnector(ctx context.Context) *blueshift.Connector {
 	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewBasicAuthHTTPClient(ctx, reader.Get(credscanning.Fields.Username), reader.Get(credscanning.Fields.Password))
-
 	if err != nil {
 		utils.Fail(err.Error())
 	}

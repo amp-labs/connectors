@@ -29,7 +29,7 @@ func main() {
 
 	subscribeParams := common.SubscribeParams{
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-			"Leads": common.ObjectEvents{
+			"Leads": {
 				Events: []common.SubscriptionEventType{
 					common.SubscriptionEventTypeCreate,
 					common.SubscriptionEventTypeUpdate,
@@ -39,7 +39,7 @@ func main() {
 					"phone",
 				},
 			},
-			"Contacts": common.ObjectEvents{
+			"Contacts": {
 				Events: []common.SubscriptionEventType{
 					common.SubscriptionEventTypeCreate,
 					common.SubscriptionEventTypeUpdate,
@@ -47,13 +47,15 @@ func main() {
 				},
 				WatchFields: []string{
 					"phone",
+					"Last_Name",
+					"First_Name",
 				},
 			},
 		},
 		Request: &zohocrm.SubscriptionRequest{
-			UniqueRef:       uniqueRef,
+			UniqueRef:       "amp_" + uniqueRef,
 			WebhookEndPoint: "https://play.svix.com/in/e_BVbta2ttNmjqeA1md230npV13f5/",
-			// Duration:        &dur,
+			Duration:        &dur,
 		},
 	}
 
@@ -77,6 +79,9 @@ func main() {
 				WatchFields: []string{
 					"phone",
 					"company",
+					"Last_Name",
+					"First_Name",
+					"industry",
 				},
 			},
 			"Accounts": {
@@ -92,7 +97,7 @@ func main() {
 			},
 		},
 		Request: &zohocrm.SubscriptionRequest{
-			UniqueRef:       uniqueRef,
+			UniqueRef:       "amp_" + uniqueRef,
 			WebhookEndPoint: "https://play.svix.com/in/e_BVbta2ttNmjqeA1md230npV13f5/",
 			Duration:        &dur,
 		},
@@ -105,8 +110,6 @@ func main() {
 		return
 	}
 
-	fmt.Println("Update subscription results:", prettyPrint(updateResult))
-
 	err = conn.DeleteSubscription(ctx, *updateResult)
 	if err != nil {
 		logging.Logger(ctx).Error("Error deleting subscription", "error", err)
@@ -115,15 +118,6 @@ func main() {
 	}
 
 	fmt.Println("Delete subscription successful")
-
-	records, err := conn.GetRecordsByIds(ctx, "Leads", []string{"6756839000000575405", "6756839000000575402"}, []string{"phone", "company"}, []string{})
-	if err != nil {
-		logging.Logger(ctx).Error("Error getting records", "error", err)
-
-		return
-	}
-
-	fmt.Println("Records:", prettyPrint(records))
 }
 
 func prettyPrint(v any) string {

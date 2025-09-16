@@ -1,7 +1,6 @@
 package atlassian
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -73,7 +72,7 @@ func TestGetPostAuthInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 
 			defer tt.server.Close()
 
-			ctx := context.Background()
+			ctx := t.Context()
 
 			connector, err := NewConnector(
 				WithAuthenticatedClient(mockutils.NewClient()),
@@ -85,7 +84,10 @@ func TestGetPostAuthInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 			}
 
 			// for testing we want to redirect calls to our mock server
-			connector.setBaseURL(tt.server.URL)
+			connector.setBaseURL(
+				mockutils.ReplaceURLOrigin(connector.providerInfo.BaseURL, tt.server.URL),
+				mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, tt.server.URL),
+			)
 
 			if err != nil {
 				t.Fatalf("%s: failed to setup auth metadata connector %v", tt.name, err)

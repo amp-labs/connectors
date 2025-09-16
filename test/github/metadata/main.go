@@ -15,7 +15,6 @@ func main() {
 	conn := github.GetGithubConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"deliveries", "installation/repositories"})
-
 	if err != nil {
 		log.Fatal(err)
 	}

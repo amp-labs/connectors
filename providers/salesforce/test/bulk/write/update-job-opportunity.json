@@ -9,5 +9,5 @@
   "externalIdFieldName" : "external_id__c",
   "concurrencyMode" : "Parallel",
   "contentType" : "CSV",
-  "apiVersion" : 59.0
+  "apiVersion" : 60.0
 }

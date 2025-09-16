@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -22,6 +23,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseCustomersFirstPage := testutils.DataFromFile(t, "read/customers/1-first-page.json")
 	responseCustomersLastPage := testutils.DataFromFile(t, "read/customers/2-last-page.json")
 	responsePaymentsExpandedCustomer := testutils.DataFromFile(t, "read/payment_intents/expand_customer.json")
+	responseInvoices := testutils.DataFromFile(t, "read/invoices/incremental.json")
 
 	tests := []testroutines.Read{
 		{
@@ -35,15 +37,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input:        common.ReadParams{ObjectName: "accounts"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingFields},
-		},
-		{
-			Name:     "Unknown object name is not supported",
-			Input:    common.ReadParams{ObjectName: "videos", Fields: connectors.Fields("id")},
-			Server:   mockserver.Dummy(),
-			Expected: nil,
-			ExpectedErrs: []error{
-				common.ErrOperationNotSupportedForObject,
-			},
 		},
 		{
 			Name:  "Error response is understood when payload is sent for GET operation",
@@ -173,6 +166,43 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				}},
 				NextPage: testroutines.URLTestServer + "/v1/payment_intents?expand%5B%5D=data.application&expand%5B%5D=data.customer&limit=100&starting_after=pi_3QjoLeES6gLOjP910d0QwpzI", // nolint:lll
 				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Incremental read of Invoices",
+			Input: common.ReadParams{
+				ObjectName: "invoices",
+				Fields:     connectors.Fields("description"),
+				Since:      time.Unix(1753116395, 0),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1/invoices"),
+					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("created[gte]", "1753116395"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseInvoices),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"description": "Invoice 8887. Potatoes",
+					},
+					Raw: map[string]any{
+						"billing_reason":    "manual",
+						"collection_method": "charge_automatically",
+						"customer":          "cus_Sbim60412VKvja",
+						"customer_email":    "freddy.buckley@company.com",
+						"customer_name":     "Freddy Buckley",
+					},
+				}},
+				NextPage: testroutines.URLTestServer + "/v1/invoices?" +
+					"created[gte]=1753116395&limit=100&starting_after=in_1RnN00ES6gLOjP91auKbmxwS",
+				Done: false,
 			},
 			ExpectedErrs: nil,
 		},

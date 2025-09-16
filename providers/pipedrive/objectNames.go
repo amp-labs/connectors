@@ -8,3 +8,17 @@ var ObjectNameToResponseField = datautils.NewDefaultMap(map[string]string{}, //n
 		return key
 	},
 )
+
+var notesFlagFields = datautils.NewSet("pinned_to_deal_flag", "pinned_to_person_flag", // nolint: gochecknoglobals
+	"pinned_to_organization_flag", "pinned_to_lead_flag")
+
+var metadataDiscoveryEndpoints = datautils.NewDefaultMap(datautils.Map[string, string]{ // nolint: gochecknoglobals
+	"activities":    "activityFields",
+	"deals":         "dealFields",
+	"products":      "productFields",
+	"persons":       "personFields",
+	"organizations": "organizationFields",
+	"notes":         "noteFields",
+}, func(k string) string {
+	return k
+})

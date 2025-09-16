@@ -14,7 +14,7 @@ func (c *Connector) GetRecordsByIds( // nolint:revive
 	objectName string,
 	ids []string,
 	fields []string,
-	associations []string, // no-op, preserved to match other deep connectors
+	associations []string,
 ) ([]common.ReadResultRow, error) {
 	// Sanitize method arguments.
 	config := recordsByIDsParams{
@@ -44,7 +44,7 @@ func (c *Connector) GetRecordsByIds( // nolint:revive
 		rsp,
 		getRecords,
 		getNextRecordsURL,
-		common.GetMarshalledDataWithId,
+		getSalesforceDataMarshaller(config.AssociatedObjects),
 		config.Fields,
 	)
 	if err != nil {
