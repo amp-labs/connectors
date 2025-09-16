@@ -40,7 +40,7 @@ func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 	cfg := oauth2.Config{
 		ClientID:     reader.Get(credscanning.Fields.ClientId),
 		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
-		RedirectURL:  "http://api.withampersand.com/callbacks/v1/oauth",
+		RedirectURL:  "https://api.withampersand.com/callbacks/v1/oauth",
 		Endpoint: oauth2.Endpoint{
 			AuthURL:   "https://api.intacct.com/ia/api/v1/oauth2/authorize",
 			TokenURL:  "https://api.intacct.com/ia/api/v1/oauth2/token",
