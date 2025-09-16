@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 )
 
+// API reference: https://developer.sage.com/intacct/docs/openapi/z-indexes/
 // nolint:funlen,maintidx
 func supportedOperations() components.EndpointRegistryInput {
 	readWriteSupport := []string{
