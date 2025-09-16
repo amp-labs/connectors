@@ -15,6 +15,10 @@ func GetGoogleCalendarConnector(ctx context.Context) *google.Connector {
 	return getGoogleConnector(ctx, providers.ModuleGoogleCalendar)
 }
 
+func GetGoogleContactsConnector(ctx context.Context) *google.Connector {
+	return getGoogleConnector(ctx, providers.ModuleGoogleContacts)
+}
+
 func getGoogleConnector(ctx context.Context, moduleID common.ModuleID) *google.Connector {
 	filePath := credscanning.LoadPath(providers.Google)
 	reader := utils.MustCreateProvCredJSON(filePath, true)

@@ -60,15 +60,16 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
-					Raw: map[string]any{
-						"id":    float64(1),
-						"name":  "ck_field_1_last_name",
-						"key":   "last_name",
-						"label": "Last name",
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{},
+						Raw: map[string]any{
+							"id":    float64(1),
+							"name":  "ck_field_1_last_name",
+							"key":   "last_name",
+							"label": "Last name",
+						},
 					},
-				},
 				},
 				Done: true,
 			},
@@ -85,15 +86,16 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{"id": float64(2)},
-					Raw: map[string]any{
-						"id":    float64(2),
-						"name":  "ck_field_2_first_name",
-						"key":   "first_name",
-						"label": "First name",
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"id": float64(2)},
+						Raw: map[string]any{
+							"id":    float64(2),
+							"name":  "ck_field_2_first_name",
+							"key":   "first_name",
+							"label": "First name",
+						},
 					},
-				},
 				},
 				NextPage: testroutines.URLTestServer + "/v4/custom_fields?after=WzFd&per_page=500",
 				Done:     false,
@@ -110,14 +112,15 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
-					Raw: map[string]any{
-						"id":         float64(5),
-						"name":       "Tag B",
-						"created_at": "2023-02-17T11:43:55Z",
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{},
+						Raw: map[string]any{
+							"id":         float64(5),
+							"name":       "Tag B",
+							"created_at": "2023-02-17T11:43:55Z",
+						},
 					},
-				},
 				},
 				Done: true,
 			},
@@ -144,15 +147,16 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
-					Raw: map[string]any{
-						"id":         float64(9),
-						"name":       "Custom HTML Template",
-						"is_default": false,
-						"category":   "HTML",
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{},
+						Raw: map[string]any{
+							"id":         float64(9),
+							"name":       "Custom HTML Template",
+							"is_default": false,
+							"category":   "HTML",
+						},
 					},
-				},
 				},
 				Done: true,
 			},

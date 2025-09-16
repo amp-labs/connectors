@@ -11,10 +11,10 @@ import (
 )
 
 func GetConnector(ctx context.Context) *flatfile.Connector {
-	filePath := credscanning.LoadPath(providers.FlatFile)
+	filePath := credscanning.LoadPath(providers.Flatfile)
 	reader := utils.MustCreateProvCredJSON(filePath, false)
 
-	info, err := providers.ReadInfo(providers.FlatFile)
+	info, err := providers.ReadInfo(providers.Flatfile)
 	if err != nil {
 		utils.Fail(err.Error())
 	}

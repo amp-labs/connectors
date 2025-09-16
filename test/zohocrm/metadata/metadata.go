@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/signal"
 	"syscall"
 
@@ -26,6 +27,6 @@ func main() {
 	}
 
 	// Print the results
-	fmt.Println("Results: ", m.Result)
+	utils.DumpJSON(m.Result, os.Stdout)
 	fmt.Println("Errors: ", m.Errors)
 }

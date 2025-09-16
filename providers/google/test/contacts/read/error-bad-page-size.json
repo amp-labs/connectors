@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": 400,
+    "message": "Page size must be less than or equal to 1000.",
+    "status": "INVALID_ARGUMENT"
+  }
+}

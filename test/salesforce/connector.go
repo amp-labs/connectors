@@ -51,10 +51,10 @@ func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 	}
 }
 
-func GetSalesforceAccessToken() string {
+func GetSalesforceAccessToken() common.AuthToken {
 	reader := getSalesforceJSONReader()
 
-	return reader.Get(credscanning.Fields.AccessToken)
+	return common.AuthToken(reader.Get(credscanning.Fields.AccessToken))
 }
 
 func getSalesforceJSONReader() *credscanning.ProviderCredentials {

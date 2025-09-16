@@ -58,6 +58,7 @@ func testCreatingApps(ctx context.Context, conn *cc.Connector) (string, error) {
 	}
 
 	slog.Info("Creating an app...")
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return "", err
@@ -85,6 +86,7 @@ func testUpdateApps(ctx context.Context, conn *cc.Connector, appId string) error
 	}
 
 	slog.Info("Updating app...")
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return err
@@ -100,7 +102,6 @@ func testUpdateApps(ctx context.Context, conn *cc.Connector, appId string) error
 	_, _ = os.Stdout.WriteString("\n")
 
 	return nil
-
 }
 
 func testCreateSpaces(ctx context.Context, conn *cc.Connector) error {
@@ -115,6 +116,7 @@ func testCreateSpaces(ctx context.Context, conn *cc.Connector) error {
 	}
 
 	slog.Info("Creating a space...")
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return err
