@@ -63,6 +63,7 @@ import (
 	"github.com/amp-labs/connectors/providers/lever"
 	"github.com/amp-labs/connectors/providers/linear"
 	"github.com/amp-labs/connectors/providers/marketo"
+	"github.com/amp-labs/connectors/providers/microsoft"
 	"github.com/amp-labs/connectors/providers/mixmax"
 	"github.com/amp-labs/connectors/providers/monday"
 	"github.com/amp-labs/connectors/providers/netsuite"
@@ -156,6 +157,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Lever:                   wrapper(newLeverConnector),
 	providers.Linear:                  wrapper(newLinearConnector),
 	providers.Marketo:                 wrapper(newMarketoConnector),
+	providers.Microsoft:               wrapper(newMicrosoftConnector),
 	providers.Mixmax:                  wrapper(newMixmaxConnector),
 	providers.Monday:                  wrapper(newMondayConnector),
 	providers.Netsuite:                wrapper(newNetsuiteConnector),
@@ -169,8 +171,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.SageIntacct:             wrapper(newSageIntacctConnector),
 	providers.Salesforce:              wrapper(newSalesforceConnector),
 	providers.Salesloft:               wrapper(newSalesloftConnector),
-	providers.ServiceNow:              wrapper(newServiceNowConnector),
 	providers.Seismic:                 wrapper(newSeismicConnector),
+	providers.ServiceNow:              wrapper(newServiceNowConnector),
 	providers.Smartlead:               wrapper(newSmartleadConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
@@ -291,6 +293,12 @@ func newMarketoConnector(
 		marketo.WithWorkspace(params.Workspace),
 		marketo.WithAuthenticatedClient(params.AuthenticatedClient),
 	)
+}
+
+func newMicrosoftConnector(
+	params common.ConnectorParams,
+) (*microsoft.Connector, error) {
+	return microsoft.NewConnector(params)
 }
 
 func newInstantlyConnector(
