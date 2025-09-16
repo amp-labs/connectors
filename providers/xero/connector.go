@@ -29,8 +29,16 @@ type Connector struct {
 
 // NewConnector.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	// Create base connector with provider info
-	return components.Initialize(providers.Xero, params, constructor)
+	conn, err := components.Initialize(providers.Xero, params, constructor)
+	if err != nil {
+		return nil, err
+	}
+
+	authMetadata := NewAuthMetadataVars(params.Metadata)
+
+	conn.tenantId = authMetadata.TenantId
+
+	return conn, nil
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
