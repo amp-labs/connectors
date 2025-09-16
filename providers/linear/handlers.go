@@ -14,6 +14,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 var perPage = 100 //nolint:gochecknoglobals
@@ -228,4 +229,71 @@ func buildGraphQLVariables(params common.ReadParams) map[string]any {
 	}
 
 	return variables
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build URL: %w", err)
+	}
+
+	query := getQuery("graphql/"+params.ObjectName+"-write.graphql", params.ObjectName)
+
+	requestBody := map[string]any{
+		"query": query,
+		"variables": map[string]any{
+			"input": params.RecordData,
+		},
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	node, ok := resp.Body()
+	if !ok {
+		return &common.WriteResult{Success: true}, nil
+	}
+
+	singularObjName := params.ObjectName[:len(params.ObjectName)-1]
+
+	// Construct the response key based on the singular object name
+	// For example, if the object name is "issues", the response key will be "issueCreate"
+	responseKey := singularObjName + "Create"
+
+	objectResponse, err := jsonquery.New(node, "data", responseKey).ObjectOptional(singularObjName)
+	if err != nil {
+		return nil, err
+	}
+
+	recordID, err := jsonquery.New(objectResponse).StrWithDefault("id", "")
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := jsonquery.Convertor.ObjectToMap(objectResponse)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Data:     response,
+	}, nil
 }
