@@ -157,6 +157,7 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
+	// example: https://developer.sage.com/intacct/docs/openapi/gl/general-ledger.budget/tag/Budgets
 	resp, err := jsonquery.New(body).ObjectOptional("ia::result")
 	if err != nil {
 		return nil, err
