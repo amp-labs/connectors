@@ -266,10 +266,7 @@ func newAtlassianConnector(
 func newPipelinerConnector(
 	params common.ConnectorParams,
 ) (*pipeliner.Connector, error) {
-	return pipeliner.NewConnector(
-		pipeliner.WithWorkspace(params.Workspace),
-		pipeliner.WithAuthenticatedClient(params.AuthenticatedClient),
-	)
+	return pipeliner.NewConnector(params)
 }
 
 func newSmartleadConnector(

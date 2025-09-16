@@ -4,11 +4,12 @@ import (
 	"log"
 	"log/slog"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers/pipeliner/metadata"
-	"github.com/amp-labs/connectors/providers/pipeliner/openapi"
+	"github.com/amp-labs/connectors/scripts/openapi/pipeliner/internal/files"
+	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
@@ -32,7 +33,7 @@ var (
 )
 
 func main() {
-	explorer, err := openapi.FileManager.GetExplorer(
+	explorer, err := files.InputPipedrive.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
 			api3.CamelCaseToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,
@@ -45,7 +46,7 @@ func main() {
 	)
 	goutils.MustBeNil(err)
 
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
+	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
 	registry := datautils.NamedLists[string]{}
 
 	for _, object := range objects {
@@ -57,10 +58,8 @@ func main() {
 		}
 
 		for _, field := range object.Fields {
-			schemas.Add("", object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
-				staticschema.FieldMetadataMapV1{
-					field.Name: field.Name,
-				}, nil, object.Custom)
+			schemas.Add(common.ModuleRoot, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
+				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
 		}
 
 		for _, queryParam := range object.QueryParams {
@@ -68,8 +67,8 @@ func main() {
 		}
 	}
 
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
-	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	goutils.MustBeNil(files.OutputPipedrive.FlushSchemas(schemas))
+	goutils.MustBeNil(files.OutputPipedrive.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	log.Println("Completed.")
 }
