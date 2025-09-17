@@ -9,14 +9,20 @@ import (
 )
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
+	obj := config.ObjectName
+
 	// Check if we're reading the next-page.
 	if len(config.NextPage) > 0 {
 		return urlbuilder.New(config.NextPage.String())
 	}
 
-	// Object names in ZohoCRM API are case sensitive.
-	// Capitalizing the first character of object names to form correct URL.
-	obj := naming.CapitalizeFirstLetterEveryWord(config.ObjectName)
+	// objects like user, org, org/currencies, __features,
+	// uses lowecased object-names
+	if config.ObjectName != users && config.ObjectName != org {
+		// Object names in ZohoCRM API are case sensitive.
+		// Capitalizing the first character of object names to form correct URL.
+		obj = naming.CapitalizeFirstLetterEveryWord(config.ObjectName)
+	}
 
 	url, err := c.getAPIURL(obj)
 	if err != nil {
