@@ -13,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/graphql"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 //go:embed graphql/*.graphql
@@ -183,4 +184,162 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		params.ObjectName = params.ObjectName + "Edit"
+	} else {
+		params.ObjectName = params.ObjectName + "Create"
+	}
+
+	// Build GraphQL mutation with input
+	mutation, err := graphql.Operation(queryFiles, "mutation", params.ObjectName, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Prepare request body with mutation & variables
+	requestBody := map[string]interface{}{
+		"query": mutation,
+		"variables": map[string]any{
+			"input": params.RecordData,
+		},
+	}
+
+	if params.RecordId != "" {
+		vars := requestBody["variables"].(map[string]any)
+
+		vars["id"] = params.RecordId
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("X-Jobber-Graphql-Version", apiVersion)
+
+	return req, nil
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := resp.Body()
+	if !ok {
+		return &common.WriteResult{ // nolint:nilerr
+			Success: true,
+		}, nil
+	}
+
+	originalObjName := params.ObjectName
+
+	if params.RecordId != "" {
+		originalObjName = originalObjName + "Edit"
+	} else {
+		originalObjName = params.ObjectName + "Create"
+	}
+
+	objectResponse, err := jsonquery.New(body, "data", originalObjName).ObjectOptional(params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	recordID, err := jsonquery.New(objectResponse).StrWithDefault("id", "")
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := jsonquery.Convertor.ObjectToMap(objectResponse)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     response,
+	}, nil
+}
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
+	if err != nil {
+		return nil, err
+	}
+
+	params.ObjectName = params.ObjectName + "Delete"
+
+	// Generate the mutation string by injecting the record ID.
+	// Assumes the template uses a key "record_Id" that maps to params.RecordId
+	mutation, err := graphql.Operation(queryFiles, "mutation", params.ObjectName, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	requestBody := map[string]any{
+		"query": mutation,
+		"variables": map[string]string{
+			"id": params.RecordId,
+		},
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("X-Jobber-Graphql-Version", apiVersion)
+
+	return req, nil
+}
+
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context,
+	params common.DeleteParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	body, ok := resp.Body()
+	if !ok {
+		return &common.DeleteResult{
+			Success: true,
+		}, nil
+	}
+
+	objectResponse, err := jsonquery.New(body).ArrayOptional("errors")
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("objectResponse", objectResponse)
+
+	if objectResponse != nil {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, http.StatusNotFound)
+	}
+
+	// A successful delete returns 200 OK
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
 }
