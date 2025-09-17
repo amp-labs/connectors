@@ -1,4 +1,4 @@
-package zohocrm
+package zoho
 
 import "github.com/amp-labs/connectors/common"
 

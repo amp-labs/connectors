@@ -10,7 +10,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
-	"github.com/amp-labs/connectors/providers/zohocrm"
+	"github.com/amp-labs/connectors/providers/zoho"
 	"github.com/amp-labs/connectors/test/utils"
 	connTest "github.com/amp-labs/connectors/test/zohocrm"
 	"github.com/google/uuid"
@@ -52,7 +52,7 @@ func main() {
 				},
 			},
 		},
-		Request: &zohocrm.SubscriptionRequest{
+		Request: &zoho.SubscriptionRequest{
 			UniqueRef:       "amp_" + uniqueRef,
 			WebhookEndPoint: "https://play.svix.com/in/e_BVbta2ttNmjqeA1md230npV13f5/",
 			Duration:        &dur,
@@ -96,7 +96,7 @@ func main() {
 				},
 			},
 		},
-		Request: &zohocrm.SubscriptionRequest{
+		Request: &zoho.SubscriptionRequest{
 			UniqueRef:       "amp_" + uniqueRef,
 			WebhookEndPoint: "https://play.svix.com/in/e_BVbta2ttNmjqeA1md230npV13f5/",
 			Duration:        &dur,

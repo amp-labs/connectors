@@ -6,17 +6,17 @@ import (
 
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/zohocrm"
+	"github.com/amp-labs/connectors/providers/zoho"
 	"github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )
 
-func GetZohoConnector(ctx context.Context) *zohocrm.Connector {
+func GetZohoConnector(ctx context.Context) *zoho.Connector {
 	filePath := credscanning.LoadPath(providers.Zoho)
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
-	conn, err := zohocrm.NewConnector(
-		zohocrm.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
+	conn, err := zoho.NewConnector(
+		zoho.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

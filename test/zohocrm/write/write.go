@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/zohocrm"
+	"github.com/amp-labs/connectors/providers/zoho"
 	"github.com/amp-labs/connectors/test/utils"
 	testConn "github.com/amp-labs/connectors/test/zohocrm"
 )
@@ -37,7 +37,7 @@ func main() {
 	}
 }
 
-func createDeals(ctx context.Context, conn *zohocrm.Connector) error {
+func createDeals(ctx context.Context, conn *zoho.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "Deals",
 		RecordData: map[string]any{
@@ -63,7 +63,7 @@ func createDeals(ctx context.Context, conn *zohocrm.Connector) error {
 	return nil
 }
 
-func createLeads(ctx context.Context, conn *zohocrm.Connector) error {
+func createLeads(ctx context.Context, conn *zoho.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "leads",
 		RecordData: []map[string]any{
@@ -94,7 +94,7 @@ func createLeads(ctx context.Context, conn *zohocrm.Connector) error {
 	return nil
 }
 
-func updateContacts(ctx context.Context, conn *zohocrm.Connector) error {
+func updateContacts(ctx context.Context, conn *zoho.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "contacts",
 		RecordId:   "6172731000000472189",
