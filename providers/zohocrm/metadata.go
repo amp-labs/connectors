@@ -14,6 +14,7 @@ import (
 const (
 	restMetadataEndpoint = "settings/fields"
 	users                = "users"
+	org                  = "org"
 )
 
 type metadataFields struct {

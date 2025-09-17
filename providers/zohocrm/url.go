@@ -18,7 +18,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 
 	// objects like user, org, org/currencies, __features,
 	// uses lowecased object-names
-	if config.ObjectName != users {
+	if config.ObjectName != users && config.ObjectName != org {
 		// Object names in ZohoCRM API are case sensitive.
 		// Capitalizing the first character of object names to form correct URL.
 		obj = naming.CapitalizeFirstLetterEveryWord(config.ObjectName)
