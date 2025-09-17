@@ -23,38 +23,38 @@ func locationToDomains(location string) (*locationDomains, error) {
 	switch strings.ToLower(strings.TrimSpace(location)) {
 	case "us":
 		return &locationDomains{
-			ApiDomain:   "https://www.zohoapis.com",
-			TokenDomain: "https://accounts.zoho.com",
+			ApiDomain:   "www.zohoapis.com",
+			TokenDomain: "accounts.zoho.com",
 		}, nil
 	case "eu":
 		return &locationDomains{
-			ApiDomain:   "https://www.zohoapis.eu",
-			TokenDomain: "https://accounts.zoho.eu",
+			ApiDomain:   "www.zohoapis.eu",
+			TokenDomain: "accounts.zoho.eu",
 		}, nil
 	case "in":
 		return &locationDomains{
-			ApiDomain:   "https://www.zohoapis.in",
-			TokenDomain: "https://accounts.zoho.in",
+			ApiDomain:   "www.zohoapis.in",
+			TokenDomain: "accounts.zoho.in",
 		}, nil
 	case "au":
 		return &locationDomains{
-			ApiDomain:   "https://www.zohoapis.com.au",
-			TokenDomain: "https://accounts.zoho.com.au",
+			ApiDomain:   "www.zohoapis.com.au",
+			TokenDomain: "accounts.zoho.com.au",
 		}, nil
 	case "cn":
 		return &locationDomains{
-			ApiDomain:   "https://www.zohoapis.com.cn",
-			TokenDomain: "https://accounts.zoho.com.cn",
+			ApiDomain:   "www.zohoapis.com.cn",
+			TokenDomain: "accounts.zoho.com.cn",
 		}, nil
 	case "jp":
 		return &locationDomains{
-			ApiDomain:   "https://www.zohoapis.jp",
-			TokenDomain: "https://accounts.zoho.jp",
+			ApiDomain:   "www.zohoapis.jp",
+			TokenDomain: "accounts.zoho.jp",
 		}, nil
 	case "ca":
 		return &locationDomains{
-			ApiDomain:   "https://www.zohoapis.ca",
-			TokenDomain: "https://accounts.zohocloud.ca",
+			ApiDomain:   "www.zohoapis.ca",
+			TokenDomain: "accounts.zohocloud.ca",
 		}, nil
 	default:
 		return nil, fmt.Errorf("%w %q; must be one of US, EU, IN, AU, CN, JP, CA",
