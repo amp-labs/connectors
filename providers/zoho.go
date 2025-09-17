@@ -8,7 +8,18 @@ func init() {
 		DisplayName: "Zoho",
 		AuthType:    Oauth2,
 		// E.g. www.zohoapis.com, www.zohoapis.eu, www.zohoapis.in, etc.
-		BaseURL: "https://{{.zoho_api_domain}}",
+		BaseURL:            "https://{{.zoho_api_domain}}",
+		PostAuthInfoNeeded: true,
+		Metadata: &ProviderMetadata{
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "zoho_api_domain",
+				},
+				{
+					Name: "zoho_token_domain",
+				},
+			},
+		},
 		Oauth2Opts: &Oauth2Opts{
 			GrantType: AuthorizationCode,
 			// NB: This works for all Zoho regions (com, eu, in, cn, au, etc). It will redirect
