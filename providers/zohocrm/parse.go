@@ -48,3 +48,11 @@ func getNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 		return "", nil
 	}
 }
+
+func extractRecordsFromPath(objectName string) common.RecordsFunc {
+	if objectName == users {
+		return common.ExtractRecordsFromPath(users)
+	}
+
+	return common.ExtractRecordsFromPath("data")
+}
