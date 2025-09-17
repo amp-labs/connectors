@@ -34,7 +34,14 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrEmptyJSONHTTPResponse
 	}
 
-	objectResponse, err := jsonquery.New(node).ArrayRequired(objectName)
+	// Determine correct node path
+	nodePath := "targeting_dimensions"
+	if endpointsWithSharedId.Has(objectName) {
+		nodePath = objectName
+	}
+
+	// Extract array node
+	objectResponse, err := jsonquery.New(node).ArrayRequired(nodePath)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +55,11 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrEmptyJSONHTTPResponse
 	}
 
-	objKey := naming.NewSingularString(objectName).String()
+	// Determine key for inner map
+	objKey := objectName
+	if endpointsWithSharedId.Has(objectName) {
+		objKey = naming.NewSingularString(objectName).String()
+	}
 
 	// Extract and assert the inner map
 	innerData, ok := data[0][objKey].(map[string]any)
