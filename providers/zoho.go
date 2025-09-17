@@ -8,6 +8,7 @@ const (
 	ZohoDeskV2 common.ModuleID = "zohodesk"
 )
 
+// nolint: funlen
 func init() {
 	// Zoho configuration
 	SetInfo(Zoho, ProviderInfo{

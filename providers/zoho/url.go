@@ -6,24 +6,12 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/providers"
 )
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
-	switch c.moduleID {
-	case providers.ZohoDeskV2:
-		return c.buildURL(config, func(objectName string) string {
-			return objectName
-		})
-	default:
-		return c.buildURL(config, naming.CapitalizeFirstLetter)
-	}
-}
-
-func (c *Connector) buildURL(params common.ReadParams, objectNameTransformer func(string) string) (*urlbuilder.URL, error) {
 	// Check if we're reading the next-page.
-	if len(params.NextPage) > 0 {
-		return urlbuilder.New(params.NextPage.String())
+	if len(config.NextPage) > 0 {
+		return urlbuilder.New(config.NextPage.String())
 	}
 
 	// objects like user, org, org/currencies, __features,
@@ -34,12 +22,12 @@ func (c *Connector) buildURL(params common.ReadParams, objectNameTransformer fun
 		obj = naming.CapitalizeFirstLetterEveryWord(config.ObjectName)
 	}
 
-	url, err := c.getAPIURL(obj)
+	url, err := c.getAPIURL(crmAPIVersion, obj)
 	if err != nil {
 		return nil, err
 	}
 
-	fields := constructFieldNames(params.Fields.List())
+	fields := constructFieldNames(config.Fields.List())
 	url.WithQueryParam("fields", fields)
 
 	return url, nil
