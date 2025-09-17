@@ -284,7 +284,7 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 		return nil, err
 	}
 
-	params.ObjectName = params.ObjectName + "Delete"
+	params.ObjectName += "Delete"
 
 	// Generate the mutation string by injecting the record ID.
 	// Assumes the template uses a key "record_Id" that maps to params.RecordId
