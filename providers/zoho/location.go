@@ -1,12 +1,9 @@
 package zoho
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"strings"
-
-	"github.com/amp-labs/connectors/common"
 )
 
 var (
@@ -21,6 +18,8 @@ type LocationDomains struct {
 
 func GetDomainsForLocation(location string) (*LocationDomains, error) {
 	switch strings.ToLower(strings.TrimSpace(location)) {
+	case "":
+		return nil, ErrMissingLocation
 	case "us":
 		return &LocationDomains{
 			ApiDomain:   "www.zohoapis.com",
@@ -60,23 +59,4 @@ func GetDomainsForLocation(location string) (*LocationDomains, error) {
 		return nil, fmt.Errorf("%w %q; must be one of US, EU, IN, AU, CN, JP, CA",
 			ErrInvalidLocation, location)
 	}
-}
-
-func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error) {
-	loc, found := getLocation(ctx)
-	if !found {
-		return nil, ErrMissingLocation
-	}
-
-	domains, err := GetDomainsForLocation(loc)
-	if err != nil {
-		return nil, err
-	}
-
-	return &common.PostAuthInfo{
-		CatalogVars: &map[string]string{
-			"zoho_api_domain":   domains.ApiDomain,
-			"zoho_token_domain": domains.TokenDomain,
-		},
-	}, nil
 }
