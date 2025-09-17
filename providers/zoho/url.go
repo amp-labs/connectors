@@ -44,8 +44,8 @@ func (c *Connector) buildModuleURL(params common.ReadParams, apiVersion string,
 	objTransformer objectNameTransformer, fldTransformer fieldsTransformer,
 ) (*urlbuilder.URL, error) {
 	// Check if we're reading the next-page.
-	if len(params.NextPage) > 0 {
-		return urlbuilder.New(params.NextPage.String())
+	if len(config.NextPage) > 0 {
+		return urlbuilder.New(config.NextPage.String())
 	}
 
 	objectName := c.transformedObjectName(params, objTransformer)
