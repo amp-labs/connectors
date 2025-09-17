@@ -1,6 +1,12 @@
 package providers
 
-const Zoho Provider = "zoho"
+import "github.com/amp-labs/connectors/common"
+
+const (
+	Zoho       Provider        = "zoho"
+	ZohoCRM    common.ModuleID = "zohocrm"
+	ZohoDeskV2 common.ModuleID = "zohodesk"
+)
 
 func init() {
 	// Zoho configuration
@@ -51,6 +57,39 @@ func init() {
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722471890/media/zoho_1722471890.svg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722471890/media/zoho_1722471890.svg",
+			},
+		},
+		DefaultModule: ZohoCRM,
+		Modules: &Modules{
+			ZohoCRM: {
+				BaseURL:     "https://www.zohoapis.com",
+				DisplayName: "Zoho CRM",
+				Support: Support{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
+			ZohoDeskV2: {
+				BaseURL:     "https://desk.zoho.com",
+				DisplayName: "Zoho Desk",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "orgId",
+					DisplayName: "Organization ID",
+					DocsURL:     "https://help.zoho.com/portal/en/community/topic/getting-organisation-id-in-zoho-desk",
+					ModuleDependencies: &ModuleDependencies{
+						ZohoDeskV2: ModuleDependency{},
+					},
+				},
 			},
 		},
 	})

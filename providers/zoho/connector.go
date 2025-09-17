@@ -13,6 +13,12 @@ const apiVersion = "crm/v6"
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
+
+	moduleInfo   *providers.ModuleInfo
+	providerInfo *providers.ProviderInfo
+	moduleID     common.ModuleID
+
+	orgID string
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -28,6 +34,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 				ResponseHandler: responseHandler,
 			},
 		},
+		moduleID: params.Module.Selection.ID,
 	}
 
 	// Use US region domains as default for testing
@@ -54,7 +61,13 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	conn.setBaseURL(providerInfo.BaseURL)
+	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
+
+	conn.setBaseURL(conn.moduleInfo.BaseURL)
+
+	if conn.moduleID == providers.ZohoDeskV2 {
+		conn.orgID = conn.
+	}
 
 	return conn, nil
 }
