@@ -14,45 +14,45 @@ var (
 	ErrInvalidLocation = errors.New("invalid location")
 )
 
-type locationDomains struct {
+type LocationDomains struct {
 	ApiDomain   string `json:"api_domain"`
 	TokenDomain string `json:"token_domain"`
 }
 
-func locationToDomains(location string) (*locationDomains, error) {
+func GetDomainsForLocation(location string) (*LocationDomains, error) {
 	switch strings.ToLower(strings.TrimSpace(location)) {
 	case "us":
-		return &locationDomains{
+		return &LocationDomains{
 			ApiDomain:   "www.zohoapis.com",
 			TokenDomain: "accounts.zoho.com",
 		}, nil
 	case "eu":
-		return &locationDomains{
+		return &LocationDomains{
 			ApiDomain:   "www.zohoapis.eu",
 			TokenDomain: "accounts.zoho.eu",
 		}, nil
 	case "in":
-		return &locationDomains{
+		return &LocationDomains{
 			ApiDomain:   "www.zohoapis.in",
 			TokenDomain: "accounts.zoho.in",
 		}, nil
 	case "au":
-		return &locationDomains{
+		return &LocationDomains{
 			ApiDomain:   "www.zohoapis.com.au",
 			TokenDomain: "accounts.zoho.com.au",
 		}, nil
 	case "cn":
-		return &locationDomains{
+		return &LocationDomains{
 			ApiDomain:   "www.zohoapis.com.cn",
 			TokenDomain: "accounts.zoho.com.cn",
 		}, nil
 	case "jp":
-		return &locationDomains{
+		return &LocationDomains{
 			ApiDomain:   "www.zohoapis.jp",
 			TokenDomain: "accounts.zoho.jp",
 		}, nil
 	case "ca":
-		return &locationDomains{
+		return &LocationDomains{
 			ApiDomain:   "www.zohoapis.ca",
 			TokenDomain: "accounts.zohocloud.ca",
 		}, nil
@@ -68,7 +68,7 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 		return nil, ErrMissingLocation
 	}
 
-	domains, err := locationToDomains(loc)
+	domains, err := GetDomainsForLocation(loc)
 	if err != nil {
 		return nil, err
 	}
