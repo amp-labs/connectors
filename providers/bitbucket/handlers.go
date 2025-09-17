@@ -64,7 +64,7 @@ func (c *Connector) parseSingleHandlerResponse(
 	}
 
 	for fld := range data.Values[0] {
-		objectMetadata.FieldsMap[fld] = fld
+		objectMetadata.Fields.AddFieldWithDisplayOnly(fld, fld)
 	}
 
 	return &objectMetadata, nil
