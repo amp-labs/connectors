@@ -21,7 +21,7 @@ func main() {
 
 	conn := zohocrm.GetZohoConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"leads", "deals", "contacts"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"leads", "deals", "contacts", "users"})
 	if err != nil {
 		utils.Fail("error listing metadata for Zoho", "error", err)
 	}

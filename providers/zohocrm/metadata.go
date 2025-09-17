@@ -11,7 +11,11 @@ import (
 
 // restMetadataEndpoint is the resource for retrieving metadata details.
 // doc: https://www.zoho.com/crm/developer/docs/api/v6/field-meta.html
-const restMetadataEndpoint = "settings/fields"
+const (
+	restMetadataEndpoint = "settings/fields"
+	users                = "users"
+	org                  = "org"
+)
 
 type metadataFields struct {
 	Fields []map[string]any `json:"fields"`
@@ -96,7 +100,10 @@ func (c *Connector) fetchFieldMetadata(ctx context.Context, capObj string) (*com
 }
 
 func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
-	capObj := naming.CapitalizeFirstLetterEveryWord(objectName)
+	capObj := objectName
+	if objectName != users {
+		capObj = naming.CapitalizeFirstLetterEveryWord(objectName)
+	}
 
 	resp, err := c.fetchFieldMetadata(ctx, capObj)
 	if err != nil {
