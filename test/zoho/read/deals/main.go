@@ -10,7 +10,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/test/utils"
-	connTest "github.com/amp-labs/connectors/test/zohocrm"
+	connTest "github.com/amp-labs/connectors/test/zoho"
 )
 
 func main() {
@@ -24,9 +24,9 @@ func main() {
 	conn := connTest.GetZohoConnector(ctx)
 
 	res, err := conn.Read(ctx, connectors.ReadParams{
-		ObjectName: "users",
-		Since:      time.Now().Add(-3000 * time.Hour),
-		Fields:     connectors.Fields("Name", "id"),
+		ObjectName: "deals",
+		Since:      time.Now().Add(-720 * time.Hour),
+		Fields:     connectors.Fields("Deal_Name", "Closing_Date", "id"),
 	})
 	if err != nil {
 		utils.Fail("error reading from connector", "error", err)

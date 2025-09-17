@@ -12,7 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/providers/zoho"
 	"github.com/amp-labs/connectors/test/utils"
-	connTest "github.com/amp-labs/connectors/test/zohocrm"
+	connTest "github.com/amp-labs/connectors/test/zoho"
 	"github.com/google/uuid"
 )
 

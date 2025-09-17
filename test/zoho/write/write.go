@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/zoho"
 	"github.com/amp-labs/connectors/test/utils"
-	testConn "github.com/amp-labs/connectors/test/zohocrm"
+	testConn "github.com/amp-labs/connectors/test/zoho"
 )
 
 func main() {
