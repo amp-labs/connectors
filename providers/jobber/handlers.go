@@ -193,9 +193,9 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	if params.RecordId != "" {
-		params.ObjectName = params.ObjectName + "Edit"
+		params.ObjectName += "Edit"
 	} else {
-		params.ObjectName = params.ObjectName + "Create"
+		params.ObjectName += "Create"
 	}
 
 	// Build GraphQL mutation with input
@@ -213,9 +213,10 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	if params.RecordId != "" {
-		vars := requestBody["variables"].(map[string]any)
-
-		vars["id"] = params.RecordId
+		vars, ok := requestBody["variables"].(map[string]any)
+		if ok {
+			vars["id"] = params.RecordId
+		}
 	}
 
 	jsonBody, err := json.Marshal(requestBody)
@@ -249,9 +250,9 @@ func (c *Connector) parseWriteResponse(
 	originalObjName := params.ObjectName
 
 	if params.RecordId != "" {
-		originalObjName = originalObjName + "Edit"
+		params.ObjectName += "Edit"
 	} else {
-		originalObjName = params.ObjectName + "Create"
+		params.ObjectName += "Create"
 	}
 
 	objectResponse, err := jsonquery.New(body, "data", originalObjName).ObjectOptional(params.ObjectName)
@@ -331,8 +332,6 @@ func (c *Connector) parseDeleteResponse(
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println("objectResponse", objectResponse)
 
 	if objectResponse != nil {
 		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, http.StatusNotFound)
