@@ -8,7 +8,10 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const apiVersion = "crm/v6"
+const (
+	crmAPIVersion  = "crm/v6"
+	deskAPIVersion = "api/v1"
+)
 
 type Connector struct {
 	BaseURL string
@@ -65,9 +68,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	conn.setBaseURL(conn.moduleInfo.BaseURL)
 
-	if conn.moduleID == providers.ZohoDeskV2 {
-		conn.orgID = conn.
-	}
+	conn.orgID = params.Metadata.Map["orgId"]
 
 	return conn, nil
 }
@@ -82,7 +83,7 @@ func (c *Connector) Provider() providers.Provider {
 	return providers.Zoho
 }
 
-func (c *Connector) getAPIURL(suffix string) (*urlbuilder.URL, error) {
+func (c *Connector) getAPIURL(apiVersion string, suffix string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, apiVersion, suffix)
 }
 

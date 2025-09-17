@@ -22,7 +22,7 @@ func (c *Connector) GetRecordsByIds(
 		return nil, fmt.Errorf("%w: recordIds is empty", errMissingParams)
 	}
 
-	url, err := c.getAPIURL(objectName)
+	url, err := c.getAPIURL(crmAPIVersion, objectName)
 	if err != nil {
 		return nil, err
 	}

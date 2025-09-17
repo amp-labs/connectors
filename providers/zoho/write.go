@@ -62,7 +62,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	// Capitalizing the first character of object names to form correct URL.
 	obj := naming.CapitalizeFirstLetterEveryWord(config.ObjectName)
 
-	url, err := c.getAPIURL(obj)
+	url, err := c.getAPIURL(crmAPIVersion, obj)
 	if err != nil {
 		return nil, err
 	}

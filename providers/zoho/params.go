@@ -16,6 +16,7 @@ type Option = func(params *parameters)
 type parameters struct {
 	paramsbuilder.Client
 	paramsbuilder.Module
+	paramsbuilder.Metadata
 }
 
 func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
@@ -52,5 +53,11 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 func WithModule(module common.ModuleID) Option {
 	return func(params *parameters) {
 		params.WithModule(module, supportedModules, providers.ZohoCRM)
+	}
+}
+
+func WithMetadata(metadata map[string]string) Option {
+	return func(params *parameters) {
+		params.WithMetadata(metadata, nil)
 	}
 }

@@ -5,22 +5,11 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
 )
 
 // Read retrieves data based on the provided common.ReadParams configuration parameters.
 // ref: https://www.zoho.com/crm/developer/docs/api/v6/get-records.html
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	switch c.moduleID {
-	case providers.ZohoDeskV2:
-		return c.read(ctx, config, nil)
-	default:
-		headers := constructHeaders(config)
-		return c.read(ctx, config, headers)
-	}
-}
-
-func (c *Connector) read(ctx context.Context, config common.ReadParams, headers []common.Header) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
@@ -30,7 +19,8 @@ func (c *Connector) read(ctx context.Context, config common.ReadParams, headers 
 		return nil, err
 	}
 
-	// If headers is nil, the variadic argument will be empty, making the call equivalent to Get(ctx, url.String())
+	headers := constructHeaders(config)
+
 	res, err := c.Client.Get(ctx, url.String(), headers...)
 	if err != nil {
 		return nil, err
