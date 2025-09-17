@@ -14,11 +14,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return urlbuilder.New(config.NextPage.String())
 	}
 
-	// Object names in ZohoCRM API are case sensitive.
-	// Capitalizing the first character of object names to form correct URL.
-	obj := naming.CapitalizeFirstLetterEveryWord(config.ObjectName)
-
-	url, err := c.getAPIURL(obj)
+	url, err := c.getAPIURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
