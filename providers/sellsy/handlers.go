@@ -26,20 +26,9 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	readURL, err := c.getReadURL(params.ObjectName)
+	readURL, err := c.constructReadURL(ctx, params)
 	if err != nil {
 		return nil, err
-	}
-
-	endpointURL := params.NextPage.String()
-
-	if params.NextPage == "" {
-		// This is the first, initial page for the object.
-		// Page size query parameters:
-		// https://docs.sellsy.com/api/v2/#operation/get-contacts
-		readURL.WithQueryParam("limit", defaultPageSize)
-
-		endpointURL = readURL.String()
 	}
 
 	method, jsonData, err := createReadOperation(readURL, params)
@@ -47,12 +36,45 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, endpointURL, bytes.NewReader(jsonData))
+	req, err := http.NewRequestWithContext(ctx, method, readURL.String(), bytes.NewReader(jsonData))
 	if err != nil {
 		return nil, err
 	}
 
 	return req, nil
+}
+
+func (c *Connector) constructReadURL(ctx context.Context, params common.ReadParams) (*urlbuilder.URL, error) {
+	if params.NextPage != "" {
+		return urlbuilder.New(params.NextPage.String())
+	}
+
+	// This is the first, initial page for the object.
+	// Page size query parameters:
+	// https://docs.sellsy.com/api/v2/#operation/get-contacts
+	readURL, err := c.getReadURL(params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	readURL.WithQueryParam("limit", defaultPageSize)
+
+	// Request custom field embedding.
+	definitions, err := c.fetchCustomFieldDefinitions(ctx, []string{params.ObjectName})
+	if err != nil {
+		return nil, err
+	}
+
+	embedQueryParams := make([]string, 0)
+	for _, fieldDefinitionID := range definitions[params.ObjectName].getIDs() {
+		embedQueryParams = append(embedQueryParams, fmt.Sprintf("cf.%v", fieldDefinitionID))
+	}
+
+	if len(embedQueryParams) != 0 {
+		readURL.WithQueryParamList("embed[]", embedQueryParams)
+	}
+
+	return readURL, nil
 }
 
 type readSearchPayload struct {
@@ -146,14 +168,65 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module(), params.ObjectName)
-
-	return common.ParseResult(resp,
-		common.ExtractOptionalRecordsFromPath(responseFieldName),
+	return common.ParseResult(
+		resp,
+		getRecords,
 		makeNextRecordsURL(request.URL),
-		common.GetMarshaledData,
+		common.MakeMarshaledDataFunc(flattenCustomEmbed),
 		params.Fields,
 	)
+}
+
+func getRecords(node *ajson.Node) ([]*ajson.Node, error) {
+	return jsonquery.New(node).ArrayOptional("data")
+}
+
+func flattenCustomEmbed(node *ajson.Node) (map[string]any, error) {
+	object, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil {
+		return nil, err
+	}
+
+	customFieldsResponse, err := jsonquery.ParseNode[customFieldReadResponse](node)
+	if err != nil {
+		return nil, err
+	}
+
+	// Attach custom fields on the top read object.
+	for _, customField := range customFieldsResponse.Embed.CustomFields {
+		object[customField.Code] = customField.Value
+	}
+
+	return object, nil
+}
+
+func (c *Connector) ListObjectMetadata(
+	ctx context.Context, objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
+	metadataResult, err := metadata.Schemas.Select(common.ModuleRoot, objectNames)
+	if err != nil {
+		return nil, err
+	}
+
+	definitions, err := c.fetchCustomFieldDefinitions(ctx, objectNames)
+	if err != nil {
+		return nil, err
+	}
+
+	for objectName, fields := range definitions {
+		objectMetadata := metadataResult.Result[objectName]
+		for _, field := range fields {
+			objectMetadata.AddFieldMetadata(field.Code, common.FieldMetadata{
+				DisplayName:  field.Name,
+				ValueType:    field.getValueType(),
+				ProviderType: field.Type,
+				ReadOnly:     false,
+				Values:       field.getValues(),
+			})
+		}
+	}
+
+	return metadataResult, nil
 }
 
 /*
