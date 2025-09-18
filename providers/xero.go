@@ -46,7 +46,7 @@ func init() {
 		Metadata: &ProviderMetadata{
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
-					Name: "Xero-Tenant-Id",
+					Name: "tenantId",
 				},
 			},
 		},
