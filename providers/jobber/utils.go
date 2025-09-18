@@ -38,7 +38,7 @@ var objectNameMapping = datautils.NewDefaultMap(map[string]string{ //nolint:goch
 	"vehicles":                  "Vehicle",
 	"vists":                     "Visit",
 }, func(objectName string) string {
-	return "id"
+	return objectName
 })
 
 func makeNextRecordsURL(objName string) common.NextPageFunc {
