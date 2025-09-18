@@ -3,6 +3,7 @@ package zoho
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -29,7 +30,26 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		},
 	}
 
-	providerInfo, err := providers.ReadInfo(conn.Provider())
+	// Use US region domains as default for testing
+	domains, err := GetDomainsForLocation("us")
+	if err != nil {
+		return nil, err
+	}
+
+	providerInfo, err := providers.ReadInfo(conn.Provider(),
+		catalogreplacer.CustomCatalogVariable{
+			Plan: catalogreplacer.SubstitutionPlan{
+				From: "zoho_api_domain",
+				To:   domains.ApiDomain,
+			},
+		},
+		catalogreplacer.CustomCatalogVariable{
+			Plan: catalogreplacer.SubstitutionPlan{
+				From: "zoho_token_domain",
+				To:   domains.TokenDomain,
+			},
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
