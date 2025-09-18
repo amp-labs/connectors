@@ -9,6 +9,11 @@ import (
 )
 
 func supportedOperations() components.EndpointRegistryInput {
+	supportRead := []string{
+		"adTargetingFacets",
+		"dmpEngagementSourceTypes",
+	}
+
 	supportWrite := []string{
 		"adAccounts",
 		"adTargetTemplates",
@@ -32,6 +37,10 @@ func supportedOperations() components.EndpointRegistryInput {
 
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(supportRead, ",")),
+				Support:  components.ReadSupport,
+			},
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(supportWrite, ",")),
 				Support:  components.WriteSupport,
