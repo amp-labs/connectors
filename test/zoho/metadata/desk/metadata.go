@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/zoho"
 )
@@ -19,7 +20,9 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := zoho.GetZohoDeskConnector(ctx)
+	conn := zoho.GetZohoConnector(ctx, providers.ZohoDeskV2, map[string]string{
+		"orgId": "899917812",
+	})
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"accounts", "contacts", "agents"})
 	if err != nil {
