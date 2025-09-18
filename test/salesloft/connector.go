@@ -13,7 +13,7 @@ import (
 
 func GetSalesloftConnector(ctx context.Context) *salesloft.Connector {
 	filePath := credscanning.LoadPath(providers.Salesloft)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := salesloft.NewConnector(
 		salesloft.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),

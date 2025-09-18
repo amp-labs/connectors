@@ -6,6 +6,10 @@ var (
 	// ErrMissingObjects is returned when no objects are provided in the request.
 	ErrMissingObjects = errors.New("no objects provided")
 
+	// ErrEmptyObject is returned when empty string is used as an object name.
+	// Some APIs, connectors could be strict about it.
+	ErrEmptyObject = errors.New("object name is empty")
+
 	// ErrMissingRecordID is returned when resource id is missing in the request.
 	ErrMissingRecordID = errors.New("no object ID provided")
 
@@ -14,6 +18,9 @@ var (
 
 	// ErrMissingFields is returned when no fields are provided for reading.
 	ErrMissingFields = errors.New("no fields provided in ReadParams")
+
+	// ErrSinceUntilChronOrder is returned when the 'since' timestamp is after the 'until' timestamp in ReadParams.
+	ErrSinceUntilChronOrder = errors.New("since cannot come after until")
 )
 
 func (p ReadParams) ValidateParams(withRequiredFields bool) error {
@@ -23,6 +30,14 @@ func (p ReadParams) ValidateParams(withRequiredFields bool) error {
 
 	if withRequiredFields && len(p.Fields) == 0 {
 		return ErrMissingFields
+	}
+
+	// If both 'since' and 'until' are set, ensure correct chronological order.
+	if !p.Since.IsZero() && !p.Until.IsZero() {
+		// Until must be after since, otherwise error.
+		if p.Since.After(p.Until) {
+			return ErrSinceUntilChronOrder
+		}
 	}
 
 	return nil

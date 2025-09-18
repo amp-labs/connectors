@@ -1,0 +1,38 @@
+{
+  "otherContacts": [
+    {
+      "resourceName": "otherContacts/c6949365612481516512",
+      "etag": "%EgcBAgkuNz0+GgQBAgUHIgxJVnA4dkJSUTBQMD0=",
+      "names": [
+        {
+          "metadata": {
+            "primary": true,
+            "source": {
+              "type": "OTHER_CONTACT",
+              "id": "60711b348a4693e0"
+            },
+            "sourcePrimary": true
+          },
+          "displayName": "Capsule Support",
+          "familyName": "Support",
+          "givenName": "Capsule",
+          "displayNameLastFirst": "Support, Capsule",
+          "unstructuredName": "Capsule Support"
+        }
+      ],
+      "emailAddresses": [
+        {
+          "metadata": {
+            "primary": true,
+            "source": {
+              "type": "OTHER_CONTACT",
+              "id": "60711b348a4693e0"
+            }
+          },
+          "value": "support@capsulecrm.com"
+        }
+      ]
+    }
+  ],
+  "totalSize": 1
+}

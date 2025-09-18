@@ -11,12 +11,12 @@ import (
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
-	metadataResult, err := metadata.Schemas.Select(c.Module.ID, objectNames)
+	metadataResult, err := metadata.Schemas.Select(common.ModuleRoot, objectNames)
 	if err != nil {
 		return nil, err
 	}
 
-	customObjectNames := objectsWithCustomFields[c.Module.ID].Intersection(datautils.NewSetFromList(objectNames))
+	customObjectNames := objectsWithCustomFields[common.ModuleRoot].Intersection(datautils.NewSetFromList(objectNames))
 	if len(customObjectNames) == 0 {
 		return metadataResult, nil
 	}

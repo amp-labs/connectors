@@ -95,7 +95,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{ObjectName: "people", Fields: connectors.Fields("id")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v2/people"),
+				If:    mockcond.Path("/v2/people"),
 				Then:  mockserver.Response(http.StatusOK, responseListPeople),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
@@ -111,7 +111,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{ObjectName: "people", Fields: connectors.Fields("id")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v2/people"),
+				If:    mockcond.Path("/v2/people"),
 				Then:  mockserver.Response(http.StatusOK, responseListPeople),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
@@ -142,7 +142,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v2/people"),
+				If:    mockcond.Path("/v2/people"),
 				Then:  mockserver.Response(http.StatusOK, responseListPeople),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
@@ -173,7 +173,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v2/users"),
+				If:    mockcond.Path("/v2/users"),
 				Then:  mockserver.Response(http.StatusOK, responseListUsers),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
@@ -201,7 +201,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v2/accounts"),
+					mockcond.Path("/v2/accounts"),
 					mockcond.QueryParamsMissing("updated_at[gte]"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseListAccounts),
@@ -220,7 +220,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v2/accounts"),
+					mockcond.Path("/v2/accounts"),
 					mockcond.QueryParam("updated_at[gte]", "2024-06-07T10:51:20.851224-04:00"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseListAccountsSince),
@@ -245,14 +245,14 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }

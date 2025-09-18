@@ -1,0 +1,12 @@
+{
+  "ia::result": {
+    "id": "2096",
+    "key": "2096",
+    "href": "/objects/accounts-receivable/payment/2096"
+  },
+  "ia::meta": {
+    "totalCount": 1,
+    "totalSuccess": 1,
+    "totalError": 0
+  }
+}

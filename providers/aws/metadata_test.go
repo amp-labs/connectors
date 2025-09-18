@@ -1,14 +1,15 @@
 package aws
 
 import (
-	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
@@ -96,9 +97,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(common.Parameters{
+	connector, err := NewConnector(common.ConnectorParams{
 		Module:              providers.ModuleAWSIdentityCenter,
-		AuthenticatedClient: http.DefaultClient,
+		AuthenticatedClient: mockutils.NewClient(),
 		Metadata: map[string]string{
 			"region":          "test-region",
 			"identityStoreId": "test-identity-store-id",
@@ -109,13 +110,29 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		return nil, err
 	}
 
-	moduleInfo := (*connector.ProviderInfo().Modules)[providers.ModuleAWSIdentityCenter]
-
-	moduleInfo.BaseURL = serverURL
-
-	connector.ProviderInfo().Modules = &providers.Modules{
-		providers.ModuleAWSIdentityCenter: moduleInfo,
-	}
+	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.getModuleURL(), serverURL))
 
 	return connector, nil
+}
+
+func TestURLDomain(t *testing.T) {
+	t.Parallel()
+
+	connector, err := NewConnector(common.ConnectorParams{
+		Module:              providers.ModuleAWSIdentityCenter,
+		AuthenticatedClient: mockutils.NewClient(),
+		Metadata: map[string]string{
+			"region":          "test-region",
+			"identityStoreId": "test-identity-store-id",
+			"instanceARN":     "test-instance-arn",
+		},
+	})
+	if err != nil {
+		t.Fatalf("failed to build AWS connector: %v", err)
+	}
+
+	moduleURL := connector.getModuleURL()
+
+	testutils.CheckOutput(t, "AWS domain substitution",
+		"https://<<SERVICE_DOMAIN>>.test-region.amazonaws.com", moduleURL)
 }

@@ -14,12 +14,11 @@ import (
 
 func GetZendeskSupportConnector(ctx context.Context) *zendesksupport.Connector {
 	filePath := credscanning.LoadPath(providers.ZendeskSupport)
-	reader := utils.MustCreateProvCredJSON(filePath, true, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := zendesksupport.NewConnector(
 		zendesksupport.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
 		zendesksupport.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
-		zendesksupport.WithModule(providers.ModuleZendeskTicketing),
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

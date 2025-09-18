@@ -58,7 +58,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodDELETE(),
-					mockcond.PathSuffix("/api/lists/5052803"),
+					mockcond.Path("/api/lists/5052803"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseList),
 			}.Server(),

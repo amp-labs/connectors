@@ -1,6 +1,8 @@
 package api3
 
 import (
+	"strings"
+
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
@@ -58,6 +60,11 @@ func CamelCaseToSpaceSeparated(displayName string) string {
 	return strcase.ToDelimited(displayName, ' ')
 }
 
+// SlashesToSpaceSeparated replaces URL slashes with spaces.
+func SlashesToSpaceSeparated(displayName string) string {
+	return strings.ReplaceAll(displayName, "/", " ")
+}
+
 // Pluralize will apply pluralization to the display name.
 func Pluralize(displayName string) string {
 	return naming.NewPluralString(displayName).String()
@@ -102,7 +109,10 @@ func SingleItemDuplicatesResolver(mapping func(string) string) DuplicatesResolve
 
 		for _, endpoints := range collidingEndpoints {
 			for _, endpoint := range endpoints {
-				result[endpoint] = mapping(endpoint)
+				value := mapping(endpoint)
+				// Object name can never start with a slash
+				value, _ = strings.CutPrefix(value, "/")
+				result[endpoint] = value
 			}
 		}
 

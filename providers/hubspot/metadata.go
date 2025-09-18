@@ -23,6 +23,13 @@ type objectMetadataError struct {
 	Error      error
 }
 
+func (c *Connector) UpsertMetadata(
+	ctx context.Context, params *common.UpsertMetadataParams,
+) (*common.UpsertMetadataResult, error) {
+	// Delegated.
+	return c.customAdapter.UpsertMetadata(ctx, params)
+}
+
 // ListObjectMetadata returns object metadata for each object name provided.
 func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 	ctx context.Context,
@@ -137,12 +144,12 @@ func (c *Connector) getObjectMetadataFromCRMSearch(
 	})
 	if err != nil {
 		// Ignore an error and fallback to static schema.
-		return metadata.Schemas.SelectOne(c.Module.ID, objectName)
+		return metadata.Schemas.SelectOne(c.moduleID, objectName)
 	}
 
 	if len(readResult.Data) == 0 {
 		// Read returned no rows.
-		return metadata.Schemas.SelectOne(c.Module.ID, objectName)
+		return metadata.Schemas.SelectOne(c.moduleID, objectName)
 	}
 
 	fields := make(map[string]common.FieldMetadata)
@@ -336,7 +343,7 @@ func (c *Connector) fetchExternalMetadataEnumValues(
 	// For each external field that we support make an API call to fetch enumeration options.
 	// Store this values for each field within each object.
 	for _, discovery := range externalFields {
-		rsp, err := c.Client.Get(ctx, c.getRawURL()+discovery.EndpointPath)
+		rsp, err := c.Client.Get(ctx, c.providerInfo.BaseURL+discovery.EndpointPath)
 		if err != nil {
 			return nil, fmt.Errorf("error resolving external metadata values for HubSpot: %w", err)
 		}

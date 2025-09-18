@@ -9,8 +9,8 @@
   "externalIdFieldName" : "external_id__c",
   "concurrencyMode" : "Parallel",
   "contentType" : "CSV",
-  "apiVersion" : 59.0,
-  "contentUrl" : "services/data/v59.0/jobs/ingest/750ak000009BWKLAA4/batches",
+  "apiVersion" : 60.0,
+  "contentUrl" : "services/data/v60.0/jobs/ingest/750ak000009BWKLAA4/batches",
   "lineEnding" : "LF",
   "columnDelimiter" : "COMMA"
 }

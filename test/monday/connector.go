@@ -12,16 +12,15 @@ import (
 
 func GetMondayConnector(ctx context.Context) *monday.Connector {
 	filePath := credscanning.LoadPath(providers.Monday)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, "Authorization", reader.Get(credscanning.Fields.ApiKey))
-
 	if err != nil {
 		utils.Fail("error creating client", "error", err)
 	}
 
 	conn, err := monday.NewConnector(
-		common.Parameters{AuthenticatedClient: client},
+		common.ConnectorParams{AuthenticatedClient: client},
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

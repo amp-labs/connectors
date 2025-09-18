@@ -1,0 +1,89 @@
+{
+  "contacts": [
+    {
+      "tag_ids": [],
+      "id": 22,
+      "company": null,
+      "email_opted_in": false,
+      "email_status": "NonMarketable",
+      "date_created": "2024-11-20T18:34:12.000+0000",
+      "last_updated": "2024-11-20T18:34:12.000+0000",
+      "ScoreValue": "0",
+      "last_updated_utc_millis": 1732127651841,
+      "email_addresses": [
+        {
+          "email": "erica.lewis@gmail.com",
+          "field": "EMAIL1"
+        }
+      ],
+      "addresses": [],
+      "phone_numbers": [],
+      "given_name": "Erica",
+      "family_name": "Lewis",
+      "middle_name": null,
+      "owner_id": null,
+      "custom_fields": [
+        {
+          "id": 12,
+          "content": "8 years in 3 companies"
+        },
+        {
+          "id": 6,
+          "content": "Product Owner"
+        },
+        {
+          "id": 8,
+          "content": "AI application in commerce"
+        },
+        {
+          "id": 14,
+          "content": 32
+        }
+      ]
+    },
+    {
+      "tag_ids": [],
+      "id": 20,
+      "company": null,
+      "email_opted_in": false,
+      "email_status": "NonMarketable",
+      "date_created": "2024-11-07T20:35:09.000+0000",
+      "last_updated": "2024-11-07T20:35:09.000+0000",
+      "ScoreValue": null,
+      "last_updated_utc_millis": 1731011708544,
+      "email_addresses": [
+        {
+          "email": "john.doe@gmail.com",
+          "field": "EMAIL1"
+        }
+      ],
+      "addresses": [],
+      "phone_numbers": [],
+      "given_name": "John",
+      "family_name": "Doe",
+      "middle_name": null,
+      "owner_id": null,
+      "custom_fields": [
+        {
+          "id": 12,
+          "content": null
+        },
+        {
+          "id": 6,
+          "content": null
+        },
+        {
+          "id": 8,
+          "content": null
+        },
+        {
+          "id": 14,
+          "content": null
+        }
+      ]
+    }
+  ],
+  "count": 2,
+  "next": "https://api.infusionsoft.com/crm/rest/v2/contacts/?limit=2&offset=2&since=2024-06-03T22:17:59.039Z&order=id",
+  "previous": "https://api.infusionsoft.com/crm/rest/v2/contacts/?limit=2&offset=0&since=2024-06-03T22:17:59.039Z&order=id"
+}

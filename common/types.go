@@ -118,6 +118,11 @@ var (
 	ErrResolvingCustomFields = errors.New("cannot resolve custom fields")
 
 	ErrGetRecordNotSupportedForObject = errors.New("getRecord is not supported for the object")
+
+	// ErrImplementation is returned when the code takes an unexpected or logically invalid execution path.
+	// It should be used to explicitly catch cases that would otherwise lead to panics (e.g., nil pointer dereference).
+	// This typically indicates a broken assumption or inconsistency in the implementation logic.
+	ErrImplementation = errors.New("code took invalid execution path")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -131,8 +136,13 @@ type ReadParams struct {
 	// NextPage is an opaque token that can be used to get the next page of results.
 	NextPage NextPageToken // optional, only set this if you want to read the next page of results
 
-	// Since is a timestamp that can be used to get only records that have changed since that time.
-	Since time.Time // optional, omit this to fetch all records
+	// Since is an optional timestamp to fetch only records updated **after** this time.
+	// Used for incremental reads.
+	Since time.Time
+
+	// Until is an optional timestamp to fetch only records updated **up to and including** this time.
+	// Pagination stops when records exceed this timestamp.
+	Until time.Time
 
 	// Deleted is true if we want to read deleted records instead of active records.
 	Deleted bool // optional, defaults to false
@@ -252,7 +262,8 @@ type Association struct {
 	// ObjectID is the ID of the associated object.
 	ObjectId string `json:"objectId"`
 	// AssociationType is the type of association.
-	AssociationType string `json:"associationType,omitempty"`
+	AssociationType string         `json:"associationType,omitempty"`
+	Raw             map[string]any `json:"raw,omitempty"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.
@@ -277,36 +288,57 @@ type DeleteResult struct {
 // Ex: Post/Put/Patch.
 type WriteMethod func(context.Context, string, any, ...Header) (*JSONHTTPResponse, error)
 
-// NewHTTPStatusError creates a new error with the given HTTP status.
-func NewHTTPStatusError(status int, err error) error {
+// NewHTTPError creates a new error with the given HTTP status.
+func NewHTTPError(status int, body []byte, headers Headers, err error) error {
 	if status < 1 || status > 599 {
 		return err
 	}
 
-	return &HTTPStatusError{
-		HTTPStatus: status,
-		err:        err,
+	// Just in case the caller mutates the body after passing it in,
+	// we make a copy of the body to ensure that the error contains
+	// the original body.
+	var bodyCopy []byte
+
+	if body != nil {
+		bodyCopy = make([]byte, len(body))
+		copy(bodyCopy, body)
+	}
+
+	return &HTTPError{
+		Status:  status,
+		Headers: headers,
+		Body:    bodyCopy,
+		err:     err,
 	}
 }
 
-// HTTPStatusError is an error that contains an HTTP status code.
-type HTTPStatusError struct {
-	// HTTPStatus is the original HTTP status.
-	HTTPStatus int
+// HTTPError is an error that contains both an error and details
+// about the HTTP response that caused the error. It includes
+// the HTTP status code, headers, and body of the response.
+// Body and Headers are optional and may be nil if not available.
+type HTTPError struct {
+	// Status is the original HTTP status.
+	Status int
+
+	// Headers are the HTTP headers of the response, if available.
+	Headers Headers // optional
+
+	// Body is the raw response body, if available.
+	Body []byte // optional
 
 	// The underlying error
 	err error
 }
 
-func (r HTTPStatusError) Error() string {
-	if r.HTTPStatus > 0 {
-		return fmt.Sprintf("HTTP status %d: %v", r.HTTPStatus, r.err)
+func (r HTTPError) Error() string {
+	if r.Status > 0 {
+		return fmt.Sprintf("HTTP status %d: %v", r.Status, r.err)
 	}
 
 	return r.err.Error()
 }
 
-func (r HTTPStatusError) Unwrap() error {
+func (r HTTPError) Unwrap() error {
 	return r.err
 }
 
@@ -336,11 +368,12 @@ type ObjectMetadata struct {
 	DisplayName string
 
 	// Fields is a map of field names to FieldMetadata.
-	Fields map[string]FieldMetadata
+	// Some legacy connectors do not populate this, but only populates FieldsMap.
+	Fields FieldsMetadata
 
+	// Deprecated: for new connectors, please only populate and read `ObjectMetadata.Fields`.
 	// FieldsMap is a map of field names to field display names.
-	// Deprecated: this map includes only display names.
-	// Refer to Fields for extended description of field properties.
+	// TODO: Remove this field once all connectors populate Fields.
 	FieldsMap map[string]string
 }
 
@@ -352,7 +385,7 @@ func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldM
 
 // NewObjectMetadata constructs ObjectMetadata.
 // This will automatically infer fields map from field metadata map. This construct exists for such convenience.
-func NewObjectMetadata(displayName string, fields map[string]FieldMetadata) *ObjectMetadata {
+func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadata {
 	return &ObjectMetadata{
 		DisplayName: displayName,
 		Fields:      fields,
@@ -377,6 +410,18 @@ type FieldMetadata struct {
 	// Values is a list of possible values for this field.
 	// It is applicable only if the type is either singleSelect or multiSelect, otherwise slice is nil.
 	Values []FieldValue
+}
+
+type FieldsMetadata map[string]FieldMetadata
+
+func (f FieldsMetadata) AddFieldWithDisplayOnly(fieldName string, displayName string) {
+	f[fieldName] = FieldMetadata{
+		DisplayName:  displayName,
+		ValueType:    "",
+		ProviderType: "",
+		ReadOnly:     false,
+		Values:       nil,
+	}
 }
 
 type FieldValue struct {
@@ -411,6 +456,7 @@ type SubscriptionEvent interface {
 	Workspace() (string, error)
 	RecordId() (string, error)
 	EventTimeStampNano() (int64, error)
+	RawMap() (map[string]any, error)
 }
 
 type SubscriptionUpdateEvent interface {
@@ -424,18 +470,23 @@ type SubscriptionUpdateEvent interface {
 // from a collapsed event for webhook parsing and processing.
 type CollapsedSubscriptionEvent interface {
 	SubscriptionEventList() ([]SubscriptionEvent, error)
+	RawMap() (map[string]any, error)
 }
 
-// WebhookVerificationParameters is a struct that contains the parameters required to verify a webhook.
-type WebhookVerificationParameters struct {
-	Headers      http.Header
-	Body         []byte
-	URL          string
-	ClientSecret string
-	Method       string
+// WebhookRequest is a struct that contains the request parameters for a webhook.
+type WebhookRequest struct {
+	Headers http.Header
+	Body    []byte
+	URL     string
+	Method  string
 }
 
-func inferDeprecatedFieldsMap(fields map[string]FieldMetadata) map[string]string {
+// VerificationParams is a struct that contains the parameters specific to the provider.
+type VerificationParams struct {
+	Param any
+}
+
+func inferDeprecatedFieldsMap(fields FieldsMetadata) map[string]string {
 	fieldsMap := make(map[string]string)
 
 	for name, field := range fields {

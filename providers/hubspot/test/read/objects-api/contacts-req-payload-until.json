@@ -1,0 +1,23 @@
+{
+  "filterGroups": [
+    {
+      "filters": [
+        {
+          "propertyName": "lastmodifieddate",
+          "operator": "LTE",
+          "value": "2025-01-01T00:00:00-08:00"
+        }
+      ]
+    }
+  ],
+  "limit": "100",
+  "properties": [
+    "email"
+  ],
+  "sorts": [
+    {
+      "propertyName": "hs_object_id",
+      "direction": "ASCENDING"
+    }
+  ]
+}

@@ -4,9 +4,11 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -21,6 +23,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseCustomersFirstPage := testutils.DataFromFile(t, "read/customers/1-first-page.json")
 	responseCustomersLastPage := testutils.DataFromFile(t, "read/customers/2-last-page.json")
 	responsePaymentsExpandedCustomer := testutils.DataFromFile(t, "read/payment_intents/expand_customer.json")
+	responseInvoices := testutils.DataFromFile(t, "read/invoices/incremental.json")
 
 	tests := []testroutines.Read{
 		{
@@ -34,15 +37,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input:        common.ReadParams{ObjectName: "accounts"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingFields},
-		},
-		{
-			Name:     "Unknown object name is not supported",
-			Input:    common.ReadParams{ObjectName: "videos", Fields: connectors.Fields("id")},
-			Server:   mockserver.Dummy(),
-			Expected: nil,
-			ExpectedErrs: []error{
-				common.ErrOperationNotSupportedForObject,
-			},
 		},
 		{
 			Name:  "Error response is understood when payload is sent for GET operation",
@@ -65,7 +59,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v1/accounts"),
+				If:    mockcond.Path("/v1/accounts"),
 				Then:  mockserver.Response(http.StatusOK, responseEmptyAccounts),
 			}.Server(),
 			Expected: &common.ReadResult{
@@ -84,7 +78,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v1/customers"),
+				If:    mockcond.Path("/v1/customers"),
 				Then:  mockserver.Response(http.StatusOK, responseCustomersFirstPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
@@ -122,7 +116,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Comparator: testroutines.ComparatorSubsetRead,
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v1/customers?limit=100&starting_after=cus_Rd3NjdGWtynChD"),
+				If:    mockcond.Path("/v1/customers?limit=100&starting_after=cus_Rd3NjdGWtynChD"),
 				Then:  mockserver.Response(http.StatusOK, responseCustomersLastPage),
 			}.Server(),
 			Expected: &common.ReadResult{
@@ -151,7 +145,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v1/payment_intents"),
+					mockcond.Path("/v1/payment_intents"),
 					mockcond.QueryParam("expand[]", "data.customer"),
 					mockcond.QueryParam("expand[]", "data.application"),
 				},
@@ -175,6 +169,43 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Incremental read of Invoices",
+			Input: common.ReadParams{
+				ObjectName: "invoices",
+				Fields:     connectors.Fields("description"),
+				Since:      time.Unix(1753116395, 0),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1/invoices"),
+					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("created[gte]", "1753116395"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseInvoices),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"description": "Invoice 8887. Potatoes",
+					},
+					Raw: map[string]any{
+						"billing_reason":    "manual",
+						"collection_method": "charge_automatically",
+						"customer":          "cus_Sbim60412VKvja",
+						"customer_email":    "freddy.buckley@company.com",
+						"customer_name":     "Freddy Buckley",
+					},
+				}},
+				NextPage: testroutines.URLTestServer + "/v1/invoices?" +
+					"created[gte]=1753116395&limit=100&starting_after=in_1RnN00ES6gLOjP91auKbmxwS",
+				Done: false,
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {
@@ -191,14 +222,14 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }

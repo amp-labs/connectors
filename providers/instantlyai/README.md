@@ -9,7 +9,7 @@ InstantlyAI API version: v2
 | Object                     | Resource                    | Method          |
 | Accounts                   | accounts                    | read and write  |
 | Campaigns                  | campaigns                   | read and write  |
-| Emails                     | emails                      | read and write  |
+| Emails                     | emails                      | read            |
 | Lead-lists                 | lead-lists                  | read and write  |
 | Inbox-placement-tests      | inbox-placement-tests       | read and write  |
 | Background-jobs            | background-jobs             | read            |
@@ -26,6 +26,7 @@ InstantlyAI API version: v2
                               -service-provider-options  
 | Audit logs                 | audit-logs                  | read            |                   
 | Email verification         | email-verification          | write           |
+| Email reply                | emails/reply                | write           |
 | Leads merge                | leads/merge                 | write           |
 | Update interest status     | leads/update-interest-status| write           | 
 | Leads subsequence remove   | leads/subsequence/remove    | write           |

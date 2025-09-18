@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
-	"github.com/amp-labs/connectors/connector"
+	"github.com/amp-labs/connectors/generic"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -36,9 +36,9 @@ func setupAPIKeyHTTPClient(
 		panic(err)
 	}
 
-	cc, err := connector.NewConnector(prov.Name,
-		connector.WithAuthenticatedClient(client),
-		connector.WithMetadata(metadata),
+	cc, err := generic.NewConnector(prov.Name,
+		generic.WithAuthenticatedClient(client),
+		generic.WithMetadata(metadata),
 	)
 	if err != nil {
 		panic(err)

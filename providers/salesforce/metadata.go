@@ -9,6 +9,13 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
+func (c *Connector) UpsertMetadata(
+	ctx context.Context, params *common.UpsertMetadataParams,
+) (*common.UpsertMetadataResult, error) {
+	// Delegated.
+	return c.customAdapter.UpsertMetadata(ctx, params)
+}
+
 // ListObjectMetadata returns object metadata for each object name provided.
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context,
@@ -16,6 +23,10 @@ func (c *Connector) ListObjectMetadata(
 ) (*common.ListObjectMetadataResult, error) {
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
+	}
+
+	if c.isPardotModule() {
+		return c.pardotAdapter.ListObjectMetadata(ctx, objectNames)
 	}
 
 	requests := make([]compositeRequestItem, len(objectNames))
@@ -136,6 +147,11 @@ type fieldResult struct {
 	Type string `json:"type"`
 
 	PicklistValues []picklistValue `json:"picklistValues"`
+
+	Autonumber *bool `json:"autonumber,omitempty"`
+	Calculated *bool `json:"calculated,omitempty"`
+	Createable *bool `json:"createable,omitempty"`
+	Updateable *bool `json:"updateable,omitempty"`
 }
 
 type picklistValue struct {
@@ -152,6 +168,18 @@ func (r describeSObjectResult) transformToFields() map[string]common.FieldMetada
 	}
 
 	return fieldsMap
+}
+
+// See https://developer.salesforce.com/docs/atlas.en-us.244.0.api.meta/api/sforce_api_calls_describesobjects_describesobjectresult.htm#field
+//
+// Salesforce doesn't have a native concept of "read-only" fields, so we use some other
+// fields to determine if a field is read-only.
+//
+//nolint:lll
+func (o fieldResult) isReadOnly() bool {
+	return (o.Autonumber != nil && *o.Autonumber) ||
+		(o.Calculated != nil && *o.Calculated) ||
+		(o.Createable != nil && !*o.Createable && o.Updateable != nil && !*o.Updateable)
 }
 
 func (o fieldResult) transformToFieldMetadata() common.FieldMetadata {
@@ -189,7 +217,7 @@ func (o fieldResult) transformToFieldMetadata() common.FieldMetadata {
 		DisplayName:  o.DisplayName,
 		ValueType:    valueType,
 		ProviderType: o.Type,
-		ReadOnly:     true,
+		ReadOnly:     o.isReadOnly(),
 		Values:       values,
 	}
 }

@@ -39,7 +39,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		httpResp, body, err := c.Client.HTTPClient.Get(ctx, url.String())
 		if err != nil {
 			logging.Logger(ctx).Error("failed to get metadata", "object", obj, "body", body, "err", err.Error())
-			runFallback(c.Module.ID, obj, &metadataResult)
+			runFallback(obj, &metadataResult)
 
 			continue
 		}
@@ -49,13 +49,13 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		resp, err := common.ParseJSONResponse(httpResp, body)
 		if err != nil {
 			logging.Logger(ctx).Error("failed to parse metadata response", "object", obj, "body", body, "err", err.Error())
-			runFallback(c.Module.ID, obj, &metadataResult)
+			runFallback(obj, &metadataResult)
 
 			continue
 		}
 
 		if _, ok := resp.Body(); !ok {
-			runFallback(c.Module.ID, obj, &metadataResult)
+			runFallback(obj, &metadataResult)
 
 			continue
 		}
@@ -63,7 +63,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		data, err := parseMetadataFromResponse(resp, obj)
 		if err != nil {
 			if errors.Is(err, common.ErrMissingExpectedValues) {
-				runFallback(c.Module.ID, obj, &metadataResult)
+				runFallback(obj, &metadataResult)
 
 				continue
 			} else {
@@ -98,28 +98,26 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse, objectName string)
 
 	// Using the first result data to generate the metadata.
 	for k := range response.Result[0] {
-		data.FieldsMap[k] = k
+		// TODO fix deprecated
+		data.FieldsMap[k] = k // nolint:staticcheck
 	}
 
 	return &data, nil
 }
 
-func metadataFallback(moduleID common.ModuleID, objectName string) (*common.ObjectMetadata, error) {
-	metadatResult, err := metadata.Schemas.Select(moduleID, []string{objectName})
+func metadataFallback(objectName string) (*common.ObjectMetadata, error) {
+	metadata, err := metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	data := metadatResult.Result[objectName]
-
-	return &data, nil
+	return metadata, nil
 }
 
-func runFallback(
-	moduleID common.ModuleID, obj string, res *common.ListObjectMetadataResult,
+func runFallback(obj string, res *common.ListObjectMetadataResult,
 ) *common.ListObjectMetadataResult { //nolint:unparam
 	// Try fallback function
-	data, err := metadataFallback(moduleID, obj)
+	data, err := metadataFallback(obj)
 	if err != nil {
 		res.Errors[obj] = err
 
@@ -160,7 +158,8 @@ func parseDescribeResponse(results any) (*common.ObjectMetadata, error) {
 			return nil, ErrFailedConvertFields
 		}
 
-		data.FieldsMap[fld] = fld
+		// TODO fix deprecated
+		data.FieldsMap[fld] = fld // nolint:staticcheck
 	}
 
 	return &data, nil

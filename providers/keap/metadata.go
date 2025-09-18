@@ -10,7 +10,7 @@ import (
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
-	metadataResult, err := metadata.Schemas.Select(c.Module.ID, objectNames)
+	metadataResult, err := metadata.Schemas.Select(common.ModuleRoot, objectNames)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,8 @@ func (c *Connector) ListObjectMetadata(
 		// Attach fields to the object metadata.
 		objectMetadata := metadataResult.Result[objectName]
 		for _, field := range fields {
-			objectMetadata.FieldsMap[field.FieldName] = field.Label
+			// TODO fix deprecated
+			objectMetadata.FieldsMap[field.Name()] = field.Label // nolint:staticcheck
 		}
 	}
 

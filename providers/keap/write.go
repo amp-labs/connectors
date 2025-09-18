@@ -21,18 +21,18 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	var write common.WriteMethod
 
 	if len(config.RecordId) == 0 {
-		if supportedObjectsByCreate[c.Module.ID].Has(config.ObjectName) {
+		if supportedObjectsByCreate[common.ModuleRoot].Has(config.ObjectName) {
 			write = c.Client.Post
 		}
 	} else {
 		// Update is done either by PUT or PATCH. There is no object present in both sets.
-		if supportedObjectsByUpdatePUT[c.Module.ID].Has(config.ObjectName) {
+		if supportedObjectsByUpdatePUT[common.ModuleRoot].Has(config.ObjectName) {
 			write = c.Client.Put
 
 			url.AddPath(config.RecordId)
 		}
 
-		if supportedObjectsByUpdatePATCH[c.Module.ID].Has(config.ObjectName) {
+		if supportedObjectsByUpdatePATCH[common.ModuleRoot].Has(config.ObjectName) {
 			write = c.Client.Patch
 
 			url.AddPath(config.RecordId)
@@ -57,24 +57,22 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	}
 
 	// write response was with payload
-	return constructWriteResult(config, c.Module.ID, body)
+	return constructWriteResult(config, body)
 }
 
-func constructWriteResult(
-	config common.WriteParams, moduleID common.ModuleID, body *ajson.Node,
-) (*common.WriteResult, error) {
+func constructWriteResult(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 	identifierHolder := body
-	// Object "files" is the only exception where the identifier is located, it is nested.
-	if config.ObjectName == objectNameFiles {
-		var err error
-		// Identifier is nested under "file_descriptor" object.
-		identifierHolder, err = jsonquery.New(body).ObjectRequired("file_descriptor")
-		if err != nil {
-			return nil, err
-		}
-	}
+	//// Object "files" is the only exception where the identifier is located, it is nested.
+	// if config.ObjectName == objectNameFiles {
+	//	var err error
+	//	// Identifier is nested under "file_descriptor" object.
+	//	identifierHolder, err = jsonquery.New(body).ObjectRequired("file_descriptor")
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	// }
 
-	writeIdentifier := objectNameToWriteResponseIdentifier[moduleID].Get(config.ObjectName)
+	writeIdentifier := objectNameToWriteResponseIdentifier[common.ModuleRoot].Get(config.ObjectName)
 
 	recordID, err := jsonquery.New(identifierHolder).TextWithDefault(writeIdentifier, "")
 	if err != nil {

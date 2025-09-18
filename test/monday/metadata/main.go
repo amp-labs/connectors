@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"os"
 	"os/signal"
 	"syscall"
 
@@ -29,7 +29,5 @@ func main() {
 		utils.Fail("error listing metadata for Monday", "error", err)
 	}
 
-	// Print the results
-	fmt.Println("Results: ", m.Result)
-	fmt.Println("Errors: ", m.Errors)
+	utils.DumpJSON(m, os.Stdout)
 }

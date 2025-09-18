@@ -7,6 +7,8 @@ import (
 
 type HeaderAuthClientOption func(params *headerClientParams)
 
+var WithTrailingSlash = "/" //nolint:gochecknoglobals
+
 // NewHeaderAuthHTTPClient returns a new http client, which will
 // do generic header-based authentication. It does this by automatically
 // adding the provided headers to every request. There's no additional
@@ -84,7 +86,7 @@ func WithDynamicHeaders(f DynamicHeadersGenerator) HeaderAuthClientOption {
 	}
 }
 
-type DynamicHeadersGenerator func(http.Request) ([]Header, error)
+type DynamicHeadersGenerator func(*http.Request) ([]Header, error)
 
 // oauthClientParams is the internal configuration for the oauth http client.
 type headerClientParams struct {
@@ -134,7 +136,7 @@ func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	if c.dynamicHeaders != nil {
-		hdrs, err := c.dynamicHeaders(*req2)
+		hdrs, err := c.dynamicHeaders(req2)
 		if err != nil {
 			return nil, err
 		}
@@ -165,12 +167,20 @@ func (c *headerAuthClient) CloseIdleConnections() {
 	c.client.CloseIdleConnections()
 }
 
+func (c *headerAuthClient) isUnauthorizedResponse(rsp *http.Response) bool {
+	if c.isUnauthorized != nil {
+		return c.isUnauthorized(rsp)
+	}
+
+	return rsp.StatusCode == http.StatusUnauthorized
+}
+
 // handleUnauthorizedResponse handles 401 responses or custom unauthorized conditions.
 func (c *headerAuthClient) handleUnauthorizedResponse(
 	req *http.Request,
 	rsp *http.Response,
 ) (*http.Response, error) {
-	if rsp.StatusCode == http.StatusUnauthorized || (c.isUnauthorized != nil && c.isUnauthorized(rsp)) {
+	if c.isUnauthorizedResponse(rsp) {
 		if c.unauthorized != nil {
 			return c.unauthorized(c.headers, req, rsp)
 		}

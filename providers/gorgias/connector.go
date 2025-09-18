@@ -27,7 +27,7 @@ type Connector struct {
 	components.Writer
 }
 
-func NewConnector(params common.Parameters) (*Connector, error) {
+func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
 	return components.Initialize(providers.Gorgias, params, constructor)
 }
@@ -42,6 +42,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.SingleObjectMetadataHandlers{
 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
 			ParseResponse: connector.parseSingleObjectMetadataResponse,
+			ErrorHandler:  common.InterpretError,
 		},
 	)
 
@@ -69,6 +70,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
+			ErrorHandler:  common.InterpretError,
 		},
 	)
 

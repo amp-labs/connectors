@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -32,13 +33,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("public/campaign/GetAll"),
+					If:   mockcond.Path("public/campaign/GetAll"),
 					Then: mockserver.Response(http.StatusOK, campaignResponse),
 				}, {
-					If:   mockcond.PathSuffix("public/list/GetAll"),
+					If:   mockcond.Path("public/list/GetAll"),
 					Then: mockserver.Response(http.StatusOK, listResponse),
 				}, {
-					If:   mockcond.PathSuffix("public/li_account/GetAll"),
+					If:   mockcond.Path("public/li_account/GetAll"),
 					Then: mockserver.Response(http.StatusOK, liAccountResponse),
 				}},
 			}.Server(),
@@ -181,16 +182,16 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(common.Parameters{
+	connector, err := NewConnector(common.ConnectorParams{
 		Module:              common.ModuleRoot,
-		AuthenticatedClient: http.DefaultClient,
+		AuthenticatedClient: mockutils.NewClient(),
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.SetBaseURL(serverURL)
+	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }

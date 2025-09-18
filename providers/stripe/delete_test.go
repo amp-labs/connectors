@@ -31,21 +31,13 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: []error{common.ErrMissingRecordID},
 		},
 		{
-			Name:   "Object name is not supported",
-			Input:  common.DeleteParams{ObjectName: "videos", RecordId: "cus_Rd2zeYCh5b9gtC"},
-			Server: mockserver.Dummy(),
-			ExpectedErrs: []error{
-				common.ErrOperationNotSupportedForObject,
-			},
-		},
-		{
 			Name:  "Successful delete",
 			Input: common.DeleteParams{ObjectName: "customers", RecordId: "cus_Rd2zeYCh5b9gtC"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodDELETE(),
-					mockcond.PathSuffix("/v1/customers/cus_Rd2zeYCh5b9gtC"),
+					mockcond.Path("/v1/customers/cus_Rd2zeYCh5b9gtC"),
 				},
 				Then: mockserver.Response(http.StatusOK),
 			}.Server(),
@@ -58,7 +50,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodDELETE(),
-					mockcond.PathSuffix("/v1/customers/cus_Rd2zeYCh5b9gtC"),
+					mockcond.Path("/v1/customers/cus_Rd2zeYCh5b9gtC"),
 				},
 				Then: mockserver.Response(http.StatusNotFound, errorNotFound),
 			}.Server(),

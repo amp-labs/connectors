@@ -12,7 +12,7 @@ import (
 
 func GetHunterConnector(ctx context.Context) *hunter.Connector {
 	filePath := credscanning.LoadPath(providers.Hunter)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewApiKeyQueryParamAuthHTTPClient(ctx, "api_key", reader.Get(credscanning.Fields.ApiKey))
 	if err != nil {
@@ -20,7 +20,7 @@ func GetHunterConnector(ctx context.Context) *hunter.Connector {
 	}
 
 	conn, err := hunter.NewConnector(
-		common.Parameters{AuthenticatedClient: client},
+		common.ConnectorParams{AuthenticatedClient: client},
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

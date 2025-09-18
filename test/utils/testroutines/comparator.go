@@ -43,9 +43,13 @@ func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult)
 func ComparatorPagination(serverURL string, actual *common.ReadResult, expected *common.ReadResult) bool {
 	expectedNextPage := resolveTestServerURL(expected.NextPage.String(), serverURL)
 
-	return compareNextPageToken(actual.NextPage.String(), expectedNextPage) &&
-		actual.Rows == expected.Rows &&
-		actual.Done == expected.Done
+	a := compareNextPageToken(actual.NextPage.String(), expectedNextPage)
+	b := actual.Rows == expected.Rows
+	c := actual.Done == expected.Done
+
+	return a &&
+		b &&
+		c
 }
 
 func compareNextPageToken(actual, expected string) bool {
@@ -95,8 +99,8 @@ func ComparatorSubsetWrite(_ string, actual, expected *common.WriteResult) bool 
 //			common.ErrCaller,
 //			errors.New(string(unsupportedResponse)),
 //		},
-//		"arsenal": common.NewHTTPStatusError(http.StatusBadRequest,		// Is doing exact match.
-//			fmt.Errorf("%w: %s", common.ErrCaller, string(unsupportedResponse))),
+//		"arsenal": common.NewHTTPError(http.StatusBadRequest,		// Is doing exact match.
+//			headers, body, fmt.Errorf("%w: %s", common.ErrCaller, string(unsupportedResponse))),
 //	},
 func ComparatorSubsetMetadata(_ string, actual, expected *common.ListObjectMetadataResult) bool {
 	if len(expected.Result)+len(expected.Errors) == 0 {

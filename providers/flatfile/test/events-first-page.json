@@ -1,0 +1,42 @@
+{
+    "data": [
+        {
+            "id": "us_evt_qgpXn6x9veAtkSZ2",
+            "domain": "job",
+            "topic": "job:created",
+            "context": {
+                "appId": "us_app_Q54RyXLN",
+                "jobId": "us_jb_knnwsdvi",
+                "actorId": "us_key_l7DZXYfw",
+                "spaceId": "us_sp_cI9ZDGO4",
+                "accountId": "us_acc_o0dXXGmV",
+                "workbookId": "us_wb_CHCOSd6W",
+                "environmentId": "us_env_SK1Q9qyG"
+            },
+            "payload": {
+                "job": "workbook:submitAction",
+                "info": null,
+                "input": {},
+                "domain": "workbook",
+                "isPart": false,
+                "status": "created",
+                "operation": "submitAction"
+            },
+            "attributes": {
+                "progress": {
+                    "total": 0,
+                    "current": 0,
+                    "percent": 0
+                },
+                "targetUpdatedAt": "2025-07-03T11:52:35.523Z"
+            },
+            "callbackUrl": "",
+            "dataUrl": "",
+            "createdAt": "2025-07-03T11:52:35.564Z",
+            "origin": null,
+            "namespaces": [
+                "space:onboarding"
+            ]
+        }
+    ]
+}

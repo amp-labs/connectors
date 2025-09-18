@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"maps"
 	"strconv"
 	"strings"
 	"time"
@@ -36,19 +37,28 @@ var (
 	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
 )
 
+type HubspotVerificationParams struct {
+	ClientSecret string
+}
+
 // VerifyWebhookMessage verifies the signature of a webhook message from Hubspot.
 func (*Connector) VerifyWebhookMessage(
-	_ context.Context, params *common.WebhookVerificationParameters,
+	_ context.Context, request *common.WebhookRequest, params *common.VerificationParams,
 ) (bool, error) {
-	ts := params.Headers.Get(string(xHubspotRequestTimestamp))
+	hsParams, err := common.AssertType[*HubspotVerificationParams](params.Param)
+	if err != nil {
+		return false, fmt.Errorf("invalid verification params: %w", err)
+	}
 
-	rawString := params.Method + params.URL + string(params.Body) + ts
+	ts := request.Headers.Get(string(xHubspotRequestTimestamp))
 
-	mac := hmac.New(sha256.New, []byte(params.ClientSecret))
+	rawString := request.Method + request.URL + string(request.Body) + ts
+
+	mac := hmac.New(sha256.New, []byte(hsParams.ClientSecret))
 	mac.Write([]byte(rawString))
 	expectedMAC := mac.Sum(nil)
 
-	signature := params.Headers.Get(string(xHubspotSignatureV3))
+	signature := request.Headers.Get(string(xHubspotSignatureV3))
 
 	decodedSignature, err := base64.StdEncoding.DecodeString(signature)
 	if err != nil {
@@ -161,6 +171,10 @@ func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
 
 func (evt SubscriptionEvent) asMap() common.StringMap {
 	return common.StringMap(evt)
+}
+
+func (evt SubscriptionEvent) RawMap() (map[string]any, error) {
+	return maps.Clone(evt), nil
 }
 
 func (evt SubscriptionEvent) ObjectTypeId() (string, error) {

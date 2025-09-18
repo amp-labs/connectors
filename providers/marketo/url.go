@@ -2,7 +2,6 @@ package marketo
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -10,15 +9,16 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 const ( //nolint:gochecknoglobals
 	// API path components.
-	restAPIPrefix   = "rest"
 	activities      = "activities"
 	leads           = "leads"
 	pagingURLSuffix = "activities/pagingtoken"
+	assetsPrefix    = "rest/asset/v1"
+	leadsPrefix     = "rest/v1"
 
 	// URL parameter keys.
 	idFilter             = "id"
@@ -29,6 +29,7 @@ const ( //nolint:gochecknoglobals
 	filterTypeQuery      = "filterType"
 	earliestUpdatedQuery = "earliestUpdatedAt"
 	latestUpdatedAtQuery = "latestUpdatedAt"
+	fields               = "fields"
 
 	newLeadActivityType = "12"
 	startingIDIdx       = "1"
@@ -39,55 +40,110 @@ type pagingTokenResponse struct {
 	Success       bool   `json:"success"`
 }
 
-func (c *Connector) constructReadURL(ctx context.Context, params common.ReadParams) (*urlbuilder.URL, error) {
+var assetsObjects = datautils.NewSet( //nolint:gochecknoglobals
+	"channels",
+	"emailTemplates",
+	"emails",
+	"files",
+	"folders",
+	"form/fields",
+	"forms",
+	"landingPages",
+	"redirectRules",
+	"landingPageDomains",
+	"landingPageTemplates",
+	"programs",
+	"segmentation",
+	"smartLists",
+	"smartCampaigns",
+	"snippets",
+	"staticLists",
+	"tagTypes",
+)
+
+var leadsObjects = datautils.NewSet( //nolint: gochecknoglobals
+	"activities",
+	"ctivities/deletedleads",
+	"activities/external/types",
+	"activities/leadchanges",
+	"activities/pagingtoken",
+	"activities/types",
+	"campaigns",
+	"companies",
+	"customobjects",
+	"leads",
+	"leads/schema/fields",
+	"leads/partitions",
+	"leads/push",
+	"leads/submitForm",
+	"leads/delete",
+	"namedAccountLists",
+	"namedAccountLists/delete",
+	"namedaccounts",
+	"namedaccounts/delete",
+	"opportunities",
+	"opportunities/roles",
+	"salespersons",
+	"lists",
+	"stats/errors",
+	"stats/usage",
+	"stats/usage/last7days",
+)
+
+func constructAPIPrefix(objectName string) string {
+	switch {
+	case assetsObjects.Has(objectName):
+		return assetsPrefix
+	case leadsObjects.Has(objectName):
+		return leadsPrefix
+	default:
+		return leadsPrefix
+	}
+}
+
+func (c *Connector) constructReadURL(ctx context.Context, params common.ReadParams) (*urlbuilder.URL, string, error) {
 	url, err := c.getAPIURL(params.ObjectName)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
-	if err := c.constructURLQueries(ctx, url, params); err != nil {
-		return nil, err
+	nextPageToken, err := c.constructURLQueries(ctx, url, params)
+	if err != nil {
+		return nil, "", err
 	}
 
 	if err := c.handleActivitiesAPI(ctx, url, params); err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	// The only objects in Assets API supporting this are: Emails, Programs, SmartCampaigns,SmartLists
-	if !params.Since.IsZero() && c.Module.ID == providers.ModuleMarketoAssets {
-		fmtTime := params.Since.Format(time.RFC3339)
-		url.WithQueryParam(earliestUpdatedQuery, fmtTime)
-		url.WithQueryParam(latestUpdatedAtQuery, time.Now().Format(time.RFC3339))
+	// https://developer.adobe.com/marketo-apis/api/mapi/#operation/getProgramMembershipUsingGET
+	if assetsObjects.Has(params.ObjectName) {
+		if !params.Since.IsZero() {
+			fmtTime := params.Since.Format(time.RFC3339)
+			url.WithQueryParam(earliestUpdatedQuery, fmtTime)
+		}
+
+		if !params.Until.IsZero() {
+			fmtTime := params.Until.Format(time.RFC3339)
+			url.WithQueryParam(latestUpdatedAtQuery, fmtTime)
+		}
 	}
 
-	return url, nil
+	return url, nextPageToken, nil
 }
 
-func (c *Connector) constructURLQueries(ctx context.Context, url *urlbuilder.URL, params common.ReadParams) error {
-	// We don't handle this scenario here, this is handled in the handleLeadsAPI
-	// function, this indicates first call for the Incremental Lead Read.
-	if params.ObjectName == leads && !params.Since.IsZero() && params.NextPage == "" {
+func (c *Connector) constructURLQueries(
+	ctx context.Context, url *urlbuilder.URL, params common.ReadParams,
+) (string, error) {
+	// If were'reading leads, we don't handle this scenario here, this is handled in the handleLeadsAPI
+	if params.ObjectName == leads {
 		return c.handleLeadsAPI(ctx, url, params)
 	}
 
-	if paginatesByIDs(params.ObjectName) {
-		switch len(params.NextPage) {
-		case 0:
-			// For the initial API request, we start filtering from ID 1-300 to fetch the earliest records.
-			// Subsequent requests will use the last received ID for pagination.
-			if err := addFilteringIDQueries(url, startingIDIdx); err != nil {
-				return err
-			}
-		default:
-			// For reading next-page requests, we add 300 filtering ids.
-			// by ading +1 to the last record id.
-			return addFilteringIDQueries(url, params.NextPage.String())
-		}
+	// Handle other idfiltering objects like opportuities, companies
 
-		url.WithQueryParam(nextPageQuery, params.NextPage.String())
-	}
-
-	return nil
+	return "", nil
 }
 
 func (c *Connector) handleActivitiesAPI(ctx context.Context, url *urlbuilder.URL, params common.ReadParams) error {
@@ -110,61 +166,48 @@ func (c *Connector) handleActivitiesAPI(ctx context.Context, url *urlbuilder.URL
 	return nil
 }
 
-func (c *Connector) handleLeadsAPI(ctx context.Context, url *urlbuilder.URL, params common.ReadParams) error {
-	start, err := c.generateLeadStartID(ctx, params)
-	if err != nil {
-		return err
-	}
+func (c *Connector) generateLeadIDs(ctx context.Context, params common.ReadParams) ([]string, string, error) {
+	var (
+		token         string
+		err           error
+		nextPageToken string
+	)
 
-	if err := addFilteringIDQueries(url, start); err != nil {
-		return err
-	}
+	if params.NextPage == "" {
+		if params.Since.IsZero() {
+			// use 1970 when we are doing backfill for Leads
+			// similar to what we did with activities.
+			params.Since = time.Unix(0, 0).UTC()
+		}
 
-	return nil
-}
-
-func (c *Connector) addActivityNextParam(ctx context.Context, url *urlbuilder.URL, params common.ReadParams) error {
-	if params.NextPage != "" {
-		url.WithQueryParam(nextPageQuery, params.NextPage.String())
-
-		return nil
-	}
-
-	// Manually setting the since timestamp to `1970-01-01` for retrieving
-	// all lead activities in the instance.
-	if params.Since.IsZero() {
-		params.Since = time.Unix(0, 0).UTC()
-	}
-
-	// Get initial paging token for first request
-	token, err := c.getPagingToken(ctx, params.Since)
-	if err != nil {
-		return err
-	}
-
-	url.WithQueryParam(nextPageQuery, token)
-
-	return nil
-}
-
-func (c *Connector) generateLeadStartID(ctx context.Context, params common.ReadParams) (string, error) {
-	token, err := c.getPagingToken(ctx, params.Since)
-	if err != nil {
-		return "", fmt.Errorf("failed to retrieve paging token when reading leads: %w", err)
+		token, err = c.getPagingToken(ctx, params.Since)
+		if err != nil {
+			return nil, nextPageToken, fmt.Errorf("failed to retrieve paging token when reading leads: %w", err)
+		}
+	} else {
+		token = params.NextPage.String()
 	}
 
 	resp, err := c.getLeadActivities(ctx, token)
 	if err != nil {
-		return "", fmt.Errorf("failed to retrieve activities when reading leads: %w", err)
+		return nil, nextPageToken, fmt.Errorf("failed to retrieve activities when reading leads: %w", err)
+	}
+
+	if resp.MoreResult {
+		nextPageToken = resp.NextPageToken
 	}
 
 	if len(resp.Result) == 0 {
-		return "", ErrZeroRecords
+		return nil, nextPageToken, ErrZeroRecords
 	}
 
-	startIdx := strconv.Itoa(resp.Result[0].LeadID)
+	ids := make([]string, 0, batchSize)
 
-	return startIdx, nil
+	for _, act := range resp.Result {
+		ids = append(ids, strconv.Itoa(act.LeadID))
+	}
+
+	return ids, nextPageToken, nil
 }
 
 func (c *Connector) getLeadActivities(ctx context.Context, token string) (*readResponse, error) {
@@ -210,6 +253,43 @@ func (c *Connector) getPagingToken(ctx context.Context, since time.Time) (string
 	return pagingResponse.NextPageToken, nil
 }
 
+func (c *Connector) handleLeadsAPI(ctx context.Context, url *urlbuilder.URL, params common.ReadParams) (string, error) {
+	ids, nextPage, err := c.generateLeadIDs(ctx, params)
+	if err != nil {
+		return nextPage, err
+	}
+
+	url.WithQueryParam(filterValuesQuery, strings.Join(ids, ","))
+	url.WithQueryParam(filterTypeQuery, idFilter)
+	url.WithQueryParam(fields, strings.Join(params.Fields.List(), ","))
+
+	return nextPage, nil
+}
+
+func (c *Connector) addActivityNextParam(ctx context.Context, url *urlbuilder.URL, params common.ReadParams) error {
+	if params.NextPage != "" {
+		url.WithQueryParam(nextPageQuery, params.NextPage.String())
+
+		return nil
+	}
+
+	// Manually setting the since timestamp to `1970-01-01` for retrieving
+	// all lead activities in the instance.
+	if params.Since.IsZero() {
+		params.Since = time.Unix(0, 0).UTC()
+	}
+
+	// Get initial paging token for first request
+	token, err := c.getPagingToken(ctx, params.Since)
+	if err != nil {
+		return err
+	}
+
+	url.WithQueryParam(nextPageQuery, token)
+
+	return nil
+}
+
 func (c *Connector) constructMetadataURL(objectName string) (*urlbuilder.URL, error) {
 	path, ok := hasMetadataResource(objectName)
 	if !ok {
@@ -217,21 +297,4 @@ func (c *Connector) constructMetadataURL(objectName string) (*urlbuilder.URL, er
 	}
 
 	return urlbuilder.New(c.BaseURL, path)
-}
-
-func addFilteringIDQueries(urlbuilder *urlbuilder.URL, startIdx string) error {
-	start, err := strconv.Atoi(startIdx)
-	if err != nil {
-		return errors.Join(err, common.ErrNextPageInvalid)
-	}
-
-	ids := make([]string, batchSize)
-	for i := range ids {
-		ids[i] = strconv.Itoa(start + i)
-	}
-
-	urlbuilder.WithQueryParam(filterValuesQuery, strings.Join(ids, ","))
-	urlbuilder.WithQueryParam(filterTypeQuery, idFilter)
-
-	return nil
 }

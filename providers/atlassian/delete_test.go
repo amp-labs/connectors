@@ -1,14 +1,12 @@
 package atlassian
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -49,8 +47,11 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.DeleteParams{ObjectName: "issues", RecordId: "10010"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodDELETE(),
-				Then:  mockserver.Response(http.StatusNoContent),
+				If: mockcond.And{
+					mockcond.MethodDELETE(),
+					mockcond.Path("/ex/jira/ebc887b2-7e61-4059-ab35-71f15cc16e12/rest/api/3/issue/10010"),
+				},
+				Then: mockserver.Response(http.StatusNoContent),
 			}.Server(),
 			Expected:     &common.DeleteResult{Success: true},
 			ExpectedErrs: nil,
@@ -66,23 +67,5 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
-	}
-}
-
-func TestDeleteWithoutMetadata(t *testing.T) {
-	t.Parallel()
-
-	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
-		WithWorkspace("test-workspace"),
-		WithModule(providers.ModuleAtlassianJira),
-	)
-	if err != nil {
-		t.Fatal("failed to create connector")
-	}
-
-	_, err = connector.Delete(context.Background(), common.DeleteParams{ObjectName: "issues", RecordId: "123"})
-	if !errors.Is(err, ErrMissingCloudId) {
-		t.Fatalf("expected Delete method to complain about missing cloud id")
 	}
 }

@@ -9,17 +9,18 @@ import (
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 )
 
+const apiVersion = "/api/v2"
+
+// Connector covers ticketing as well as help center.
+// https://developer.zendesk.com/api-reference/ticketing/introduction/
+// https://developer.zendesk.com/api-reference/help_center/help-center-api/introduction/
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
-	Module  common.Module
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts,
-		// The module is resolved on behalf of the user if the option is missing.
-		WithModule(providers.ModuleZendeskTicketing),
-	)
+	params, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +30,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: httpClient,
 		},
-		Module: params.Module.Selection,
 	}
 
 	providerInfo, err := providers.ReadInfo(conn.Provider(), &params.Workspace)
@@ -55,22 +55,22 @@ func (c *Connector) String() string {
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
+	path, err := metadata.Schemas.FindURLPath(common.ModuleRoot, objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return urlbuilder.New(c.BaseURL, path)
+	return urlbuilder.New(c.BaseURL, apiVersion, path)
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
-	if objectsUnsupportedWrite[c.Module.ID].Has(objectName) {
+	if objectsUnsupportedWrite[common.ModuleRoot].Has(objectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	if path, ok := writeURLExceptions[c.Module.ID][objectName]; ok {
+	if path, ok := writeURLExceptions[common.ModuleRoot][objectName]; ok {
 		// URL for write differs from read.
-		return urlbuilder.New(c.BaseURL, path)
+		return urlbuilder.New(c.BaseURL, apiVersion, path)
 	}
 
 	return c.getReadURL(objectName)

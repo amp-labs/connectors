@@ -9,10 +9,8 @@ import (
 	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
-	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/insightly/metadata"
 )
 
 type Connector struct {
@@ -23,21 +21,17 @@ type Connector struct {
 	common.RequireAuthenticatedClient
 
 	// Supported operations
-	components.SchemaProvider
 	components.Reader
 	components.Writer
 	components.Deleter
 }
 
-func NewConnector(params common.Parameters) (*Connector, error) {
+func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return components.Initialize(providers.Insightly, params, constructor)
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
-
-	// Set the metadata provider for the connector
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
 
 	errorHandler := interpreter.ErrorHandler{}.Handle
 

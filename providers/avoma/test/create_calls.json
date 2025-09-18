@@ -1,0 +1,23 @@
+{
+    "external_id": "Xkeltda345",
+    "user_email": "sample@gmail.com",
+    "state": "created",
+    "frm": "+11234567890",
+    "to": "+12234567890",
+    "start_at": "2025-06-12T20:00:00Z",
+    "recording_url": "https://example.com/recording.mp3",
+    "direction": "Outbound",
+    "meeting": {
+        "id": 36422168,
+        "created": "2025-06-12T13:19:26.807495Z",
+        "modified": "2025-06-12T13:19:27.288047Z",
+        "uuid": "ef52f35e-14ef-47ea-bca8-dc94b9ce7eda",
+        "subject": "Call with string (+12234567890) on June 12, 2025",
+        "organizer_email": "sample@gmail.com",
+        "external_id": "ringcentral_string",
+        "ical_uid": "",
+        "state": "ended",
+        "start_at": "2025-06-12T20:00:00Z"
+    },
+    "source": "ringcentral"
+}

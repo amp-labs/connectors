@@ -12,7 +12,7 @@ import (
 
 func GetSmartleadConnector(ctx context.Context) *smartlead.Connector {
 	filePath := credscanning.LoadPath(providers.Smartlead)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	conn, err := smartlead.NewConnector(
 		smartlead.WithClient(ctx, http.DefaultClient,

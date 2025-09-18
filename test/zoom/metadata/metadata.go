@@ -7,7 +7,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils"
 	connTest "github.com/amp-labs/connectors/test/zoom"
 )
@@ -19,11 +18,10 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetZoomConnector(ctx, providers.ModuleZoomUser)
+	conn := connTest.GetZoomConnector(ctx)
 	defer utils.Close(conn)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{"users", "groups"})
-
 	if err != nil {
 		utils.Fail("error listing metadata for zoom", "error", err)
 	}

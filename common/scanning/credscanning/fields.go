@@ -26,13 +26,15 @@ var Fields = struct { // nolint:gochecknoglobals
 	Username Field
 	Password Field
 	// Key
-	ApiKey Field
+	ApiKey    Field
+	ApiSecret Field
 	// Catalog variables
 	Workspace Field
 	// Oauth2
 	State  Field
 	Scopes Field
 	Secret Field
+	Token  Field
 }{
 	Provider: Field{
 		Name:      "provider",
@@ -84,6 +86,11 @@ var Fields = struct { // nolint:gochecknoglobals
 		PathJSON:  "apiKey",
 		SuffixENV: "API_KEY",
 	},
+	ApiSecret: Field{
+		Name:      "apiSecret",
+		PathJSON:  "apiSecret",
+		SuffixENV: "API_SECRET",
+	},
 	Workspace: Field{
 		Name:      "workspace",
 		PathJSON:  "substitutions.workspace",
@@ -103,6 +110,11 @@ var Fields = struct { // nolint:gochecknoglobals
 		Name:      "secret",
 		PathJSON:  "secret",
 		SuffixENV: "SECRET",
+	},
+	Token: Field{
+		Name:      "token",
+		PathJSON:  "token",
+		SuffixENV: "TOKEN",
 	},
 }
 
@@ -129,7 +141,7 @@ func (f Field) GetENVReader(providerName string) *scanning.EnvReader {
 
 // nolint:cyclop
 func getFields(info providers.ProviderInfo,
-	withRequiredAccessToken, withRequiredWorkspace bool, customFields []Field,
+	withRequiredAccessToken bool, customFields []Field,
 ) (datautils.NamedLists[Field], error) {
 	lists := datautils.NamedLists[Field]{}
 	requiredType := "required"
@@ -156,23 +168,19 @@ func getFields(info providers.ProviderInfo,
 		lists.Add(requiredType, Fields.ClientId, Fields.ClientSecret)
 	case providers.Jwt:
 		lists.Add(requiredType, Fields.Secret)
+	case providers.Custom:
+		// Custom auth may have different fields, so we skip adding any default fields here.
 	default:
 		return nil, ErrProviderInfo
 	}
 
-	options := info.Oauth2Opts
-	if options != nil {
-		// FIXME imply workspace requirement when provider info will change
-		// As of now Workspace can only be implied for connectors supporting Oauth2.
-		// The changes extending to all connectors will happen
-		// at later time as indicated by https://github.com/amp-labs/openapi/pull/15.
-		// This field should be a general/universal workspace flag in which ever place it will be under ProviderInfo.
-		if options.ExplicitWorkspaceRequired {
-			withRequiredWorkspace = true
-		}
+	var withRequiredWorkspace bool
+	if info.Oauth2Opts != nil {
+		// ExplicitWorkspaceRequired will be deprecated.
+		withRequiredWorkspace = info.Oauth2Opts.ExplicitWorkspaceRequired
 	}
 
-	if withRequiredWorkspace {
+	if info.RequiresWorkspace() || withRequiredWorkspace {
 		lists.Add(requiredType, Fields.Workspace)
 	}
 

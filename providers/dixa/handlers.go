@@ -5,13 +5,18 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
-const restAPIVersion = "v1"
+const (
+	restAPIVersion = "v1"
+	queues         = "queues"
+)
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
@@ -48,8 +53,19 @@ func (c *Connector) parseReadResponse(
 	)
 }
 
+type request struct {
+	Request any `json:"request"`
+}
+
+func constructQueuePayload(recordData any) request {
+	return request{Request: recordData}
+}
+
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	method := http.MethodPost
+	var (
+		paylod = params.RecordData
+		method = http.MethodPost
+	)
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
 	if err != nil {
@@ -62,7 +78,11 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		method = http.MethodPatch
 	}
 
-	jsonData, err := json.Marshal(params.RecordData)
+	if params.ObjectName == queues {
+		paylod = constructQueuePayload(params.RecordData)
+	}
+
+	jsonData, err := json.Marshal(paylod)
 	if err != nil {
 		return nil, err
 	}
@@ -93,8 +113,39 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
+	recordId := parseRecordId(data)
+
 	return &common.WriteResult{
-		Success: true,
-		Data:    data,
+		Success:  true,
+		Data:     data,
+		RecordId: recordId,
 	}, nil
+}
+
+func parseRecordId(data map[string]any) string {
+	v := getID(data)
+	if v == nil {
+		return ""
+	}
+
+	switch v := v.(type) {
+	case string:
+		return v
+	case float64:
+		return strconv.Itoa(int(v))
+	case int:
+		return strconv.Itoa(v)
+	default:
+		return ""
+	}
+}
+
+func getID(data map[string]any) any {
+	for key, value := range data {
+		if strings.EqualFold(key, "id") {
+			return value
+		}
+	}
+
+	return nil
 }

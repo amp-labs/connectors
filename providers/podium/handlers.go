@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -14,11 +15,17 @@ import (
 )
 
 const (
-	limitQuery       = "limit"
-	cursorQuery      = "cursor"
-	dataField        = "data"
+	limitQuery  = "limit"
+	cursorQuery = "cursor"
+	dataField   = "data"
+
 	metadataPageSize = "1"
 	pageSize         = 100
+
+	locations     = "locations"
+	contacts      = "contacts"
+	reviews       = "reviews"
+	reviewInvites = "reviews/invites"
 )
 
 type readResponse struct {
@@ -58,10 +65,22 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	firstRecord := data.Data[0]
 
 	for fld := range firstRecord {
-		objectMetadata.FieldsMap[fld] = fld
+		// TODO fix deprecated
+		objectMetadata.FieldsMap[fld] = fld // nolint:staticcheck
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) applyIncrementalFilter(since time.Time, objectName string, url *urlbuilder.URL) {
+	switch objectName {
+	case locations:
+		url.WithQueryParam("updatedAfter", since.Format(time.RFC3339))
+	case contacts:
+		url.WithQueryParam("updated_at", since.Format(time.RFC3339))
+	case reviews, reviewInvites:
+		url.WithQueryParam("updatedAt[gte]", since.Format(time.RFC3339))
+	}
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -84,6 +103,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	if params.NextPage != "" {
 		url.WithQueryParam(cursorQuery, params.NextPage.String())
+	}
+
+	if !params.Since.IsZero() {
+		c.applyIncrementalFilter(params.Since, params.ObjectName, url)
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)

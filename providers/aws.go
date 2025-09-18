@@ -6,7 +6,7 @@ const AWS Provider = "aws"
 
 const ModuleAWSIdentityCenter common.ModuleID = "aws-identity-center"
 
-func init() {
+func init() { //nolint:funlen
 	SetInfo(AWS, ProviderInfo{
 		DisplayName: "Amazon Web Services",
 		AuthType:    Basic,
@@ -23,10 +23,15 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+		DefaultModule: ModuleAWSIdentityCenter,
 		Modules: &Modules{
 			ModuleAWSIdentityCenter: {
-				// TODO serviceDomain changes based on the request. This is not global to the connector.
-				BaseURL:     "https://{{.serviceDomain}}.{{.region}}.amazonaws.com",
+				// TODO: The service domain changes based on the request. This is not global to the connector.
+				// This is also not a metadata field. It's decided based on the request by the connector's logic.
+				// We are special casing this for now, but we'll revisit this in the future to decide how to model this case.
+				// Using the <<>> syntax to indicate that this is a special case. Find '<<SERVICE_DOMAIN>>' in the connector
+				// to understand how this is used.
+				BaseURL:     "https://<<SERVICE_DOMAIN>>.{{.region}}.amazonaws.com",
 				DisplayName: "AWS Identity Center",
 				Support: Support{
 					Read:      false,

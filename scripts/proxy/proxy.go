@@ -69,6 +69,7 @@ var readers = []scanning.Reader{
 	credscanning.Fields.ApiKey.GetJSONReader(DefaultCredsFile),
 	credscanning.Fields.Username.GetJSONReader(DefaultCredsFile),
 	credscanning.Fields.Password.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.ApiSecret.GetJSONReader(DefaultCredsFile),
 }
 
 var debug = flag.Bool("debug", false, "Enable debug logging")
@@ -142,6 +143,8 @@ func createProviderProxy(
 		return factory.CreateProxyAPIKey(ctx)
 	case providers.Basic:
 		return factory.CreateProxyBasic(ctx)
+	case providers.Custom:
+		return factory.CreateProxyCustom(ctx)
 	default:
 		log.Fatalf("Unsupported auth type: %s", info.AuthType)
 	}

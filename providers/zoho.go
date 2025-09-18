@@ -7,13 +7,23 @@ func init() {
 	SetInfo(Zoho, ProviderInfo{
 		DisplayName: "Zoho",
 		AuthType:    Oauth2,
-		BaseURL:     "https://www.zohoapis.com",
+		// E.g. www.zohoapis.com, www.zohoapis.eu, www.zohoapis.in, etc.
+		BaseURL:            "https://{{.zoho_api_domain}}",
+		PostAuthInfoNeeded: true,
 		Oauth2Opts: &Oauth2Opts{
 			GrantType: AuthorizationCode,
-			AuthURL:   "https://accounts.zoho.com/oauth/v2/auth",
+			// NB: This works for all Zoho regions (com, eu, in, cn, au, etc). It will redirect
+			// to the appropriate domain based on the user's account. It's ok to hard-code
+			// the .com domain here. And since we don't know the user's region in advance,
+			// we can't use a templated domain like in BaseURL and TokenURL.
+			// See: https://www.zoho.com/crm/developer/docs/api/v8/multi-dc.html
+			//
+			// Also NB: This won't work for CN region users. They must use accounts.zoho.com.cn
+			AuthURL: "https://accounts.zoho.com/oauth/v2/auth",
 			// ref: https://www.zoho.com/analytics/api/v2/authentication/generating-code.html
-			AuthURLParams:             map[string]string{"access_type": "offline"},
-			TokenURL:                  "https://accounts.zoho.com/oauth/v2/token",
+			AuthURLParams: map[string]string{"access_type": "offline"},
+			// E.g. accounts.zoho.com, accounts.zoho.eu, accounts.zoho.in, etc.
+			TokenURL:                  "https://{{.zoho_token_domain}}/oauth/v2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{

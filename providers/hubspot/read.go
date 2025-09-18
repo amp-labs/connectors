@@ -37,18 +37,22 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	// The Search endpoint has a 10K record limit. In case this limit is reached,
 	// the sorting allows the caller to continue in another call by offsetting
 	// until the ID of the last record that was successfully fetched.
-	if requiresFiltering(config) {
+	filters := make(Filters, 0)
+	if !config.Since.IsZero() {
+		filters = append(filters, BuildLastModifiedFilterGroup(&config))
+	}
+
+	if !config.Until.IsZero() {
+		filters = append(filters, BuildUntilTimestampFilterGroup(&config))
+	}
+
+	if len(filters) != 0 {
 		searchParams := SearchParams{
 			ObjectName: config.ObjectName,
-			FilterGroups: []FilterGroup{
-				{
-					Filters: []Filter{
-						BuildLastModifiedFilterGroup(&config),
-						// Add more filters to AND them together
-					},
-					// Add more filter groups to OR them together
-				},
-			},
+			FilterGroups: []FilterGroup{{
+				Filters: filters,
+				// Add more filter groups to OR them together
+			}},
 			SortBy: []SortBy{
 				BuildSort(ObjectFieldHsObjectId, SortDirectionAsc),
 			},

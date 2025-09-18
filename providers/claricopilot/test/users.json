@@ -1,0 +1,11 @@
+{
+    "users": [
+        {
+            "id": "e04483dd-fb82-460a-a14e-b6f3e6a2b7a4",
+            "email": "integration.user+clari@withampersand.com",
+            "name": "April",
+            "role": "MANAGER",
+            "is_recording": true
+        }
+    ]
+}

@@ -1,293 +1,7 @@
 {
   "modules": {
-    "help-center": {
-      "id": "help-center",
-      "path": "/api/v2",
-      "objects": {
-        "articles/labels": {
-          "displayName": "Article Labels",
-          "path": "/help_center/articles/labels",
-          "responseKey": "labels",
-          "fields": {
-            "created_at": {
-              "displayName": "created_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "name": {
-              "displayName": "name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "updated_at": {
-              "displayName": "updated_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "url": {
-              "displayName": "url",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          },
-          "custom": {
-            "pagination": "cursor"
-          }
-        },
-        "posts": {
-          "displayName": "Posts",
-          "path": "/community/posts",
-          "responseKey": "posts",
-          "fields": {
-            "author_id": {
-              "displayName": "author_id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "closed": {
-              "displayName": "closed",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "comment_count": {
-              "displayName": "comment_count",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "content_tag_ids": {
-              "displayName": "content_tag_ids",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "created_at": {
-              "displayName": "created_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "details": {
-              "displayName": "details",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "featured": {
-              "displayName": "featured",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "follower_count": {
-              "displayName": "follower_count",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "html_url": {
-              "displayName": "html_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "non_author_editor_id": {
-              "displayName": "non_author_editor_id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "non_author_updated_at": {
-              "displayName": "non_author_updated_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "pinned": {
-              "displayName": "pinned",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "status": {
-              "displayName": "status",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "title": {
-              "displayName": "title",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "topic_id": {
-              "displayName": "topic_id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "updated_at": {
-              "displayName": "updated_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "url": {
-              "displayName": "url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "vote_count": {
-              "displayName": "vote_count",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "vote_sum": {
-              "displayName": "vote_sum",
-              "valueType": "int",
-              "providerType": "integer"
-            }
-          },
-          "custom": {
-            "pagination": "cursor"
-          }
-        },
-        "topics": {
-          "displayName": "Topics",
-          "path": "/community/topics",
-          "responseKey": "topics",
-          "fields": {
-            "created_at": {
-              "displayName": "created_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "description": {
-              "displayName": "description",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "follower_count": {
-              "displayName": "follower_count",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "html_url": {
-              "displayName": "html_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "manageable_by": {
-              "displayName": "manageable_by",
-              "valueType": "singleSelect",
-              "providerType": "string",
-              "values": [
-                {
-                  "value": "staff",
-                  "displayValue": "staff"
-                },
-                {
-                  "value": "managers",
-                  "displayValue": "managers"
-                }
-              ]
-            },
-            "name": {
-              "displayName": "name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "position": {
-              "displayName": "position",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "updated_at": {
-              "displayName": "updated_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "url": {
-              "displayName": "url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "user_segment_id": {
-              "displayName": "user_segment_id",
-              "valueType": "int",
-              "providerType": "integer"
-            }
-          },
-          "custom": {
-            "pagination": "cursor"
-          }
-        },
-        "user_segments": {
-          "displayName": "User Segments",
-          "path": "/help_center/user_segments",
-          "responseKey": "user_segments",
-          "fields": {
-            "built_in": {
-              "displayName": "built_in",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "created_at": {
-              "displayName": "created_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "group_ids": {
-              "displayName": "group_ids",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "name": {
-              "displayName": "name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "or_tags": {
-              "displayName": "or_tags",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "organization_ids": {
-              "displayName": "organization_ids",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "tags": {
-              "displayName": "tags",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "updated_at": {
-              "displayName": "updated_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "user_type": {
-              "displayName": "user_type",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          },
-          "custom": {
-            "pagination": "cursor"
-          }
-        }
-      }
-    },
-    "ticketing": {
-      "id": "ticketing",
+    "root": {
+      "id": "root",
       "path": "/api/v2",
       "objects": {
         "activities": {
@@ -352,6 +66,41 @@
             },
             "verb": {
               "displayName": "verb",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          },
+          "custom": {
+            "pagination": "cursor"
+          }
+        },
+        "articles/labels": {
+          "displayName": "Article Labels",
+          "path": "/help_center/articles/labels",
+          "responseKey": "labels",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
               "valueType": "string",
               "providerType": "string"
             }
@@ -1788,6 +1537,116 @@
           "custom": {
             "pagination": "time",
             "incremental": true
+          }
+        },
+        "posts": {
+          "displayName": "Posts",
+          "path": "/community/posts",
+          "responseKey": "posts",
+          "fields": {
+            "author_id": {
+              "displayName": "author_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "closed": {
+              "displayName": "closed",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "comment_count": {
+              "displayName": "comment_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "content_tag_ids": {
+              "displayName": "content_tag_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "details": {
+              "displayName": "details",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "featured": {
+              "displayName": "featured",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "follower_count": {
+              "displayName": "follower_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "non_author_editor_id": {
+              "displayName": "non_author_editor_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "non_author_updated_at": {
+              "displayName": "non_author_updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pinned": {
+              "displayName": "pinned",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "topic_id": {
+              "displayName": "topic_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vote_count": {
+              "displayName": "vote_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "vote_sum": {
+              "displayName": "vote_sum",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "queues": {
@@ -3696,6 +3555,81 @@
             "incremental": true
           }
         },
+        "topics": {
+          "displayName": "Topics",
+          "path": "/community/topics",
+          "responseKey": "topics",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "follower_count": {
+              "displayName": "follower_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "manageable_by": {
+              "displayName": "manageable_by",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "staff",
+                  "displayValue": "staff"
+                },
+                {
+                  "value": "managers",
+                  "displayValue": "managers"
+                }
+              ]
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "position": {
+              "displayName": "position",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_segment_id": {
+              "displayName": "user_segment_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          },
+          "custom": {
+            "pagination": "cursor"
+          }
+        },
         "trigger_categories": {
           "displayName": "Trigger Categories",
           "path": "/trigger_categories",
@@ -3908,6 +3842,66 @@
             },
             "url": {
               "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          },
+          "custom": {
+            "pagination": "cursor"
+          }
+        },
+        "user_segments": {
+          "displayName": "User Segments",
+          "path": "/help_center/user_segments",
+          "responseKey": "user_segments",
+          "fields": {
+            "built_in": {
+              "displayName": "built_in",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "group_ids": {
+              "displayName": "group_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "or_tags": {
+              "displayName": "or_tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "organization_ids": {
+              "displayName": "organization_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_type": {
+              "displayName": "user_type",
               "valueType": "string",
               "providerType": "string"
             }

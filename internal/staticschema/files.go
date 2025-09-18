@@ -23,6 +23,8 @@ func NewFileManager[F FieldMetadataMap, C any](schemas []byte, locator fileconv.
 }
 
 // SaveSchemas is useful method when creating or updating static schema file.
+// Deprecated.
+// Use FlushSchemas. Common URL path stored as a module path will be removed from static files.
 func (m FileManager[F, C]) SaveSchemas(schemas *Metadata[F, C]) error {
 	schemas.refactorLongestCommonPath()
 

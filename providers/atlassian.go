@@ -7,8 +7,6 @@ const Atlassian Provider = "atlassian"
 const (
 	// ModuleAtlassianJira is the module used for listing Jira issues.
 	ModuleAtlassianJira common.ModuleID = "jira"
-	// ModuleAtlassianJiraConnect is the module used for Atlassian Connect.
-	ModuleAtlassianJiraConnect common.ModuleID = "atlassian-connect"
 )
 
 // nolint:funlen
@@ -17,7 +15,7 @@ func init() {
 	SetInfo(Atlassian, ProviderInfo{
 		DisplayName: "Atlassian",
 		AuthType:    Oauth2,
-		BaseURL:     "https://api.atlassian.com",
+		BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.atlassian.com/authorize",
@@ -26,19 +24,11 @@ func init() {
 			ExplicitWorkspaceRequired: true, // Needed for GetPostAuthInfo call
 		},
 		PostAuthInfoNeeded: true,
+		DefaultModule:      ModuleAtlassianJira,
 		Modules: &Modules{
 			ModuleAtlassianJira: {
-				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api/3",
+				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
 				DisplayName: "Atlassian Jira",
-				Support: Support{
-					Read:      true,
-					Subscribe: false,
-					Write:     true,
-				},
-			},
-			ModuleAtlassianJiraConnect: {
-				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api/3",
-				DisplayName: "Atlassian Connect",
 				Support: Support{
 					Read:      true,
 					Subscribe: false,
@@ -78,7 +68,8 @@ func init() {
 			Input: []MetadataItemInput{
 				{
 					Name:        "workspace",
-					DisplayName: "Site URL (Your domain)",
+					DisplayName: "App name",
+					DocsURL:     "https://support.atlassian.com/organization-administration/docs/update-your-product-and-site-url/",
 				},
 			},
 		},

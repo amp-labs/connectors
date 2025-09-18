@@ -653,9 +653,9 @@
         "undeletable": false,
         "updateable": true,
         "urls": {
-          "rowTemplate": "/services/data/v59.0/sobjects/Organization/{ID}",
-          "describe": "/services/data/v59.0/sobjects/Organization/describe",
-          "sobject": "/services/data/v59.0/sobjects/Organization"
+          "rowTemplate": "/services/data/v60.0/sobjects/Organization/{ID}",
+          "describe": "/services/data/v60.0/sobjects/Organization/describe",
+          "sobject": "/services/data/v60.0/sobjects/Organization"
         }
       },
       "httpHeaders": {

@@ -53,7 +53,7 @@ func FromRawURL(rawURL *url.URL) (*URL, error) {
 	return &URL{
 		delegate:           rawURL,
 		queryParams:        values,
-		encodingExceptions: nil,
+		encodingExceptions: make(map[string]string),
 	}, nil
 }
 
@@ -94,6 +94,18 @@ func (u *URL) ToURL() (*url.URL, error) {
 	}
 
 	return result, nil
+}
+
+func (u *URL) Path() string {
+	return u.delegate.Path
+}
+
+func (u *URL) Origin() string {
+	if u.delegate.Scheme == "" || u.delegate.Host == "" {
+		return ""
+	}
+
+	return u.delegate.Scheme + "://" + u.delegate.Host
 }
 
 func (u *URL) String() string {

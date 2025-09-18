@@ -1,0 +1,48 @@
+{
+  "_embedded": {
+    "users": [
+      {
+        "id": 856834,
+        "firstName": "Joseph",
+        "lastName": "Karage",
+        "email": "josephkarage@gmail.com",
+        "role": "owner",
+        "timezone": "UTC",
+        "createdAt": "2025-06-12T12:28:53Z",
+        "updatedAt": "2025-06-12T14:07:34Z",
+        "type": "user",
+        "mention": "joseph",
+        "initials": "JK",
+        "jobTitle": "",
+        "phone": "",
+        "alternateEmails": [],
+        "_links": {
+          "self": {
+            "href": "https://api.helpscout.net/v2/users/856834"
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "https://api.helpscout.net/v2/users"
+    },
+    "first": {
+      "href": "https://api.helpscout.net/v2/users?page=1"
+    },
+    "last": {
+      "href": "https://api.helpscout.net/v2/users?page=1"
+    },
+    "page": {
+      "href": "https://api.helpscout.net/v2/users{?page}",
+      "templated": true
+    }
+  },
+  "page": {
+    "size": 50,
+    "totalElements": 1,
+    "totalPages": 1,
+    "number": 1
+  }
+}

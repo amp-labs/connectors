@@ -1,8 +1,18 @@
 package providers
 
-const Seismic Provider = "seismic"
+import "github.com/amp-labs/connectors/common"
 
-func init() {
+const (
+	Seismic Provider = "seismic"
+
+	// ModuleReporting is the module used for accessing and manging reporting API.
+	ModuleReporting common.ModuleID = "reporting"
+
+	// ModuleIntegration is the module used for accessing and manging integration API.
+	ModuleIntegration common.ModuleID = "integration"
+)
+
+func init() { // nolint: funlen
 	SetInfo(Seismic, ProviderInfo{
 		DisplayName: "Seismic",
 		AuthType:    Oauth2,
@@ -36,10 +46,32 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+		DefaultModule: ModuleReporting,
+		Modules: &Modules{
+			ModuleReporting: {
+				DisplayName: "Seismic Reporting",
+				BaseURL:     "https://api.seismic.com/reporting",
+				Support: Support{
+					Proxy: false,
+					Read:  false,
+					Write: false,
+				},
+			},
+			ModuleIntegration: {
+				DisplayName: "Seismic Integration",
+				BaseURL:     "https://api.seismic.com/integration",
+				Support: Support{
+					Proxy: false,
+					Read:  false,
+					Write: false,
+				},
+			},
+		},
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name: "workspace",
+					Name:        "workspace",
+					DisplayName: "Tenant",
 				},
 			},
 		},

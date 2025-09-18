@@ -1,0 +1,37 @@
+query Initiatives($filter: InitiativeFilter, $first: Int, $after: String) {
+  initiatives(filter: $filter, first: $first, after: $after) {
+    nodes {
+      id
+      createdAt
+      updatedAt
+      archivedAt
+      updateReminderFrequencyInWeeks
+      updateReminderFrequency
+      frequencyResolution
+      updateRemindersDay
+      updateRemindersHour
+      name
+      description
+      slugId
+      sortOrder
+      color
+      icon
+      trashed
+      targetDate
+      targetDateResolution
+      status
+      health
+      healthUpdatedAt
+      startedAt
+      completedAt
+      url
+      content
+    }
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
+  }
+}

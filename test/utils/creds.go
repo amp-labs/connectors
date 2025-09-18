@@ -11,11 +11,11 @@ import (
 )
 
 func MustCreateProvCredJSON(filePath string,
-	withRequiredAccessToken, withRequiredWorkspace bool,
+	withRequiredAccessToken bool,
 	customFields ...credscanning.Field,
 ) *credscanning.ProviderCredentials {
 	reader, err := credscanning.NewJSONProviderCredentials(
-		filePath, withRequiredAccessToken, withRequiredWorkspace, customFields...,
+		filePath, withRequiredAccessToken, customFields...,
 	)
 	if err != nil {
 		Fail("json creds file error", "error", err)
@@ -26,9 +26,10 @@ func MustCreateProvCredJSON(filePath string,
 
 // MustCreateProvCredENV can be used by tests supplying variables via environment.
 func MustCreateProvCredENV(providerName string,
-	withRequiredAccessToken, withRequiredWorkspace bool,
+	withRequiredAccessToken bool,
+	customFields ...credscanning.Field,
 ) *credscanning.ProviderCredentials {
-	reader, err := credscanning.NewENVProviderCredentials(providerName, withRequiredAccessToken, withRequiredWorkspace)
+	reader, err := credscanning.NewENVProviderCredentials(providerName, withRequiredAccessToken, customFields...)
 	if err != nil {
 		Fail("environment error", "error", err)
 	}
@@ -84,6 +85,40 @@ func NewBasicAuthClient(
 	client, err := common.NewBasicAuthHTTPClient(ctx, username, password)
 	if err != nil {
 		Fail("error creating basic auth client", "error", err)
+	}
+
+	return client
+}
+
+func NewCustomAuthClient(
+	ctx context.Context,
+	reader *credscanning.ProviderCredentials,
+	provider providers.Provider,
+	fields ...credscanning.Field,
+) common.AuthenticatedHTTPClient {
+	providerInfo, err := providers.ReadInfo(provider)
+	if err != nil {
+		Fail("error reading provider info", "error", err)
+	}
+
+	vals := make(map[string]string)
+
+	for _, field := range fields {
+		val := reader.Get(field)
+		if val == "" {
+			Fail("missing custom auth field value", "field", field.Name)
+		}
+
+		vals[field.Name] = val
+	}
+
+	client, err := providerInfo.NewClient(ctx, &providers.NewClientParams{
+		CustomCreds: &providers.CustomAuthParams{
+			Values: vals,
+		},
+	})
+	if err != nil {
+		Fail("error creating custom auth client", "error", err)
 	}
 
 	return client
