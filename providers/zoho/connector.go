@@ -64,6 +64,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
+	conn.providerInfo = providerInfo
+
 	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
 
 	conn.setBaseURL(conn.moduleInfo.BaseURL)

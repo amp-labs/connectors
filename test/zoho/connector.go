@@ -25,14 +25,14 @@ func GetZohoConnector(ctx context.Context) *zoho.Connector {
 	return conn
 }
 
-func GetZohoDeskConnector(ctx context.Context) *zohocrm.Connector {
+func GetZohoDeskConnector(ctx context.Context) *zoho.Connector {
 	filePath := credscanning.LoadPath(providers.Zoho)
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
-	conn, err := zohocrm.NewConnector(
-		zohocrm.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		zohocrm.WithModule(providers.ZohoDeskV2),
-		zohocrm.WithMetadata(map[string]string{
+	conn, err := zoho.NewConnector(
+		zoho.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
+		zoho.WithModule(providers.ZohoDeskV2),
+		zoho.WithMetadata(map[string]string{
 			"orgId": "899917812",
 		}),
 	)

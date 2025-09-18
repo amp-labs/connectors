@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/test/zohocrm"
+	"github.com/amp-labs/connectors/test/zoho"
 )
 
 func main() {
@@ -19,7 +19,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := zohocrm.GetZohoDeskConnector(ctx)
+	conn := zoho.GetZohoDeskConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"accounts", "contacts", "agents"})
 	if err != nil {
