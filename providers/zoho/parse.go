@@ -9,6 +9,7 @@ import (
 
 /*
 	doc: https://www.zoho.com/crm/developer/docs/api/v6/get-records.html
+	The info object is not necessary required in zoho Desk
 	Response Sample:
 
    "data": [{...}, {...}],
@@ -29,12 +30,12 @@ import (
 
 func getNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		hasMoreRecords, err := jsonquery.New(node, "info").BoolRequired("more_records")
+		hasMoreRecords, err := jsonquery.New(node, "info").BoolOptional("more_records")
 		if err != nil {
 			return "", err
 		}
 
-		if hasMoreRecords {
+		if hasMoreRecords != nil && *hasMoreRecords {
 			pageToken, err := jsonquery.New(node, "info").StringOptional("next_page_token")
 			if err != nil {
 				return "", err
