@@ -9,6 +9,8 @@ import (
 )
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
+	obj := config.ObjectName
+
 	// Check if we're reading the next-page.
 	if len(config.NextPage) > 0 {
 		return urlbuilder.New(config.NextPage.String())
