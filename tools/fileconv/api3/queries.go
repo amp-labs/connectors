@@ -89,6 +89,10 @@ func (e Explorer[C]) ReadObjects(
 
 	pathItems := e.GetPathItems(pathMatcher, objectEndpoints)
 
+	if locator == nil {
+		locator = DefaultObjectLocator
+	}
+
 	for _, path := range pathItems {
 		schema, found, err := path.RetrieveSchemaOperation(operationName,
 			displayNameOverride, locator,
