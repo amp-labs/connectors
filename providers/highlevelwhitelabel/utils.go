@@ -230,3 +230,14 @@ var writeObjectsWithUnderscoreIdField = datautils.NewSet( //nolint:gochecknoglob
 	"store/shipping-carrier",
 	"store/store-setting",
 )
+
+var deleteObjectWithLocationIdQueryParam = datautils.NewSet( //nolint:gochecknoglobals
+	"associations/relations",
+	"custom-fields/folder",
+	"funnels/lookup/redirect",
+)
+
+var objectWithAltTypeAndIdBodyParam = datautils.NewSet( //nolint:gochecknoglobals
+	"invoices/estimate",
+	"invoices/estimate/template",
+)

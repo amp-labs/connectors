@@ -98,10 +98,20 @@ func supportedOperations() components.EndpointRegistryInput {
 		"calendars/groups",
 		"contacts",
 		"associations",
+		"associations/relations",
 		"custom-fields",
+		"custom-fields/folder",
 		"conversations",
+		"invoices",
+		"invoices/template",
+		"invoices/schedule",
+		"invoices/estimate",
+		"invoices/estimate/template",
+		"funnels/lookup/redirect",
 		"links",
 		"opportunities",
+		"products/collections",
+		"store/shipping-zone",
 	}
 
 	return components.EndpointRegistryInput{
