@@ -26,7 +26,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/rest/adAccounts"),
+					mockcond.Path("/rest/adAccounts"),
 					mockcond.Header(http.Header{
 						"LinkedIn-Version":          []string{"202504"},
 						"X-Restli-Protocol-Version": []string{"2.0.0"},
@@ -50,7 +50,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/rest/adAccounts/514674276"),
+					mockcond.Path("/rest/adAccounts/514674276"),
 					mockcond.Header(http.Header{
 						"LinkedIn-Version":          []string{"202504"},
 						"X-Restli-Protocol-Version": []string{"2.0.0"},
@@ -79,7 +79,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(common.Parameters{
+	connector, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: http.DefaultClient,
 	})
 	if err != nil {
