@@ -1,0 +1,30 @@
+query ApplicationConnection{
+  apps(
+     first: {{.First}}
+     {{if .After}}
+     after: {{.After}}
+     {{end}}
+  ){
+    nodes{
+      applicationScopes
+      author
+      beforeStartingContent
+      description
+      displayName
+      id
+      installationStepsContent
+      learnMoreUrl
+      logoUrl
+      manageAppUrl
+      marketplaceUrl
+      name
+      oauthUrl
+      redirectUrl
+    }
+    pageInfo{
+      endCursor
+      hasNextPage
+    }
+    totalCount
+  }
+}

@@ -1,0 +1,29 @@
+query JobberPaymentsCapitalLoan{
+  capitalLoans(
+     first: {{.First}}
+     {{if .After}}
+     after: {{.After}}
+     {{end}}
+  ){
+    nodes{
+      acceptedAdvanceAmount
+      acceptedFrom
+      createdAt
+      dismissedAt
+      expiresAfter
+      id
+      initialOffer
+      loanFeeAmount
+      loanId
+      offeredAdvanceAmount
+      refill
+      status
+      updatedAt
+    }
+    pageInfo{
+      endCursor
+      hasNextPage
+    }
+    totalCount
+  }
+}
