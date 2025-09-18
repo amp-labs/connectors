@@ -19,6 +19,7 @@ type metadataFetcher func(ctx context.Context, objectName string) (*common.Objec
 // doc: https://www.zoho.com/crm/developer/docs/api/v6/field-meta.html
 const (
 	restMetadataEndpoint = "settings/fields"
+	organizations        = "organizations"
 	users                = "users"
 	org                  = "org"
 )

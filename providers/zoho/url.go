@@ -6,30 +6,55 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/providers"
+)
+
+type (
+	// objectNameTransformer takes an object and transfoms it to a standard zoho provider api name.
+	objectNameTransformer func(string) string
+
+	// objectNameTransformer takes a list of field names and transforms them to the appropriate expected field names.
+	fieldTrasformer func([]string) string
 )
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
-	obj := config.ObjectName
+	switch c.moduleID { // nolint: exhaustive
+	case providers.ZohoDeskV2:
+		return c.buildModuleURL(config, deskAPIVersion, func(s string) string { return s },
+			func(flds []string) string { return strings.Join(flds, ",") })
+	default:
+		return c.buildModuleURL(config, crmAPIVersion, naming.CapitalizeFirstLetter, constructFieldNames)
+	}
+}
+
+func (c *Connector) buildModuleURL(params common.ReadParams, apiVersion string,
+	objTransfomer objectNameTransformer, fldTransformer fieldTrasformer,
+) (*urlbuilder.URL, error) {
+	obj := params.ObjectName
 
 	// Check if we're reading the next-page.
-	if len(config.NextPage) > 0 {
-		return urlbuilder.New(config.NextPage.String())
+	if len(params.NextPage) > 0 {
+		return urlbuilder.New(params.NextPage.String())
 	}
 
-	// objects like user, org, org/currencies, __features,
-	// uses lowecased object-names
-	if config.ObjectName != users && config.ObjectName != org {
+	// objects like users, org, org/currencies, __features,
+	// uses lowecased object-names.
+	if params.ObjectName != users && params.ObjectName != org {
 		// Object names in ZohoCRM API are case sensitive.
 		// Capitalizing the first character of object names to form correct URL.
-		obj = naming.CapitalizeFirstLetterEveryWord(config.ObjectName)
+		obj = objTransfomer(params.ObjectName)
 	}
 
-	url, err := c.getAPIURL(crmAPIVersion, obj)
+	url, err := c.getAPIURL(apiVersion, obj)
 	if err != nil {
 		return nil, err
 	}
 
-	fields := constructFieldNames(config.Fields.List())
+	if c.moduleID == providers.ZohoDeskV2 && params.ObjectName != "organizations" {
+		url.WithQueryParam("orgId", c.orgID)
+	}
+
+	fields := fldTransformer(params.Fields.List())
 	url.WithQueryParam("fields", fields)
 
 	return url, nil
