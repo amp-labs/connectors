@@ -11,7 +11,7 @@ import (
 // readFlows handles the special case for reading flows which requires flowOwnerEmail query param.
 // It fetches all users first, then iterates through their emails to fetch flows for each user.
 // Some users may not have engage license or may not be added to flows, so we handle errors gracefully.
-func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) { // nolint:cyclop,lll
 	users, err := c.fetchAllUsers(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch users: %w", err)
@@ -41,14 +41,25 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 			continue
 		}
 
-		allFlows = append(allFlows, flows...)
+		// Add flows only if it's not already added
+		for _, flow := range flows {
+			flowID, ok := flow.Raw["id"].(string)
+			if !ok || flowID == "" {
+				continue
+			}
+
+			if !c.isFlowAlreadyAdded(allFlows, flowID) {
+				allFlows = append(allFlows, flow)
+			}
+		}
 	}
 
 	return &common.ReadResult{
 		Rows:     int64(len(allFlows)),
 		Data:     allFlows,
-		NextPage: "", // Flows reading doesn't support pagination in this implementation.
-		Done:     true,
+		NextPage: "", // Pagination is not supported because flows are aggregated
+		// from multiple users into a single result set, making traditional pagination complex
+		Done: true,
 	}, nil
 }
 
@@ -107,4 +118,15 @@ func (c *Connector) fetchFlowsForUser(ctx context.Context, userEmail string, con
 	}
 
 	return result.Data, nil
+}
+
+// isFlowAlreadyAdded checks if a flow with the given ID already exists in the slice.
+func (c *Connector) isFlowAlreadyAdded(flows []common.ReadResultRow, flowID string) bool {
+	for _, flow := range flows {
+		if existingFlowID, ok := flow.Raw["id"].(string); ok && existingFlowID == flowID {
+			return true
+		}
+	}
+
+	return false
 }
