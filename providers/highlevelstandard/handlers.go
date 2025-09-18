@@ -306,7 +306,36 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 		return nil, err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
+	var bodyParam []byte
+
+	// Some endpoints requires locationId in the query param.
+	// refer https://highlevel.stoplight.io/docs/integrations/96bc73da716e8-delete-relation.
+	if deleteObjectWithLocationIdQueryParam.Has(params.ObjectName) {
+		url.WithQueryParam("locationId", c.locationId)
+	}
+
+	// Some endpoints requires altId and altType in the query param.
+	// refer https://highlevel.stoplight.io/docs/integrations/af9fb9b428e74-delete-invoice.
+	if objectWithAltTypeAndIdQueryParam.Has(params.ObjectName) {
+		url.WithQueryParam("altId", c.locationId)
+		url.WithQueryParam("altType", "location")
+	}
+
+	// Some objects requires altId and altType in the body param.
+	// refer https://highlevel.stoplight.io/docs/integrations/3c4f7a7d1d4d9-delete-estimate-template.
+	if objectWithAltTypeAndIdBodyParam.Has(params.ObjectName) {
+		param := map[string]string{
+			"altId":   c.locationId,
+			"altType": "location",
+		}
+
+		bodyParam, err = json.Marshal(param)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), bytes.NewReader(bodyParam))
 	if err != nil {
 		return nil, err
 	}

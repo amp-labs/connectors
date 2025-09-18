@@ -43,12 +43,12 @@ func supportedOperations() components.EndpointRegistryInput {
 		"store/shipping-zone",
 		"store/shipping-carrier",
 		"store/store-setting",
-		"snapshots",
 		"surveys",
 		"users",
 		"workflows",
 		"locations/search",
 		"custom-menus",
+		"marketplace/billing/charges",
 	}
 
 	writeSupport := []string{
@@ -86,6 +86,8 @@ func supportedOperations() components.EndpointRegistryInput {
 		"products",
 		"products/collections",
 		"store/shipping-zone",
+		"store/shipping-carrier",
+		"store/store-setting",
 	}
 
 	deleteSupport := []string{
@@ -105,11 +107,10 @@ func supportedOperations() components.EndpointRegistryInput {
 		"invoices/schedule",
 		"invoices/estimate",
 		"invoices/estimate/template",
-		"links",
 		"funnels/lookup/redirect",
+		"links",
 		"opportunities",
-		"payments/coupon",
-		"products",
+		"products/collections",
 		"store/shipping-zone",
 	}
 
