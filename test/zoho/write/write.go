@@ -9,9 +9,10 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zoho"
 	"github.com/amp-labs/connectors/test/utils"
-	testConn "github.com/amp-labs/connectors/test/zoho"
+	connTest "github.com/amp-labs/connectors/test/zoho"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := testConn.GetZohoConnector(ctx)
+	conn := connTest.GetZohoConnector(ctx, providers.ZohoCRM, nil)
 
 	if err := createDeals(ctx, conn); err != nil {
 		slog.Error(err.Error())

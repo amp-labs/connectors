@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zoho"
@@ -11,30 +12,14 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func GetZohoConnector(ctx context.Context) *zoho.Connector {
+func GetZohoConnector(ctx context.Context, module common.ModuleID, metadata map[string]string) *zoho.Connector {
 	filePath := credscanning.LoadPath(providers.Zoho)
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := zoho.NewConnector(
 		zoho.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-	)
-	if err != nil {
-		utils.Fail("error creating connector", "error", err)
-	}
-
-	return conn
-}
-
-func GetZohoDeskConnector(ctx context.Context) *zoho.Connector {
-	filePath := credscanning.LoadPath(providers.Zoho)
-	reader := utils.MustCreateProvCredJSON(filePath, true)
-
-	conn, err := zoho.NewConnector(
-		zoho.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		zoho.WithModule(providers.ZohoDeskV2),
-		zoho.WithMetadata(map[string]string{
-			"orgId": "899917812",
-		}),
+		zoho.WithModule(module),
+		zoho.WithMetadata(metadata),
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
