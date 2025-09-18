@@ -14,7 +14,7 @@ import (
 
 func GetConnector(ctx context.Context) *linkedin.Connector {
 	filePath := credscanning.LoadPath(providers.LinkedIn)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),
@@ -25,7 +25,7 @@ func GetConnector(ctx context.Context) *linkedin.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := linkedin.NewConnector(common.Parameters{
+	conn, err := linkedin.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {
