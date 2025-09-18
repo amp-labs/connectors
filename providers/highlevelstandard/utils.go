@@ -146,7 +146,7 @@ func makeNextRecord(offset int, objName string) common.NextPageFunc {
 }
 
 var writeObjectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
-	"custom-menus":                    "custom-menu",
+	"custom-menus":                    "customMenu",
 	"users":                           "",
 	"businesses":                      "business",
 	"calendars":                       "calendar",

@@ -1,0 +1,15 @@
+mutation CycleCreate($input: CycleCreateInput!) {
+  cycleCreate(input: $input) {
+    success
+    cycle {
+      updatedAt
+      progress
+      number
+      name
+      id
+      description
+      createdAt
+      completedAt
+    }
+  }
+}

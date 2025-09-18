@@ -1,0 +1,14 @@
+mutation AttachmentCreate($input: AttachmentCreateInput!) {
+  attachmentCreate(input: $input) {
+    success
+    attachment {
+      id
+      title
+      subtitle
+      sourceType
+      url
+      updatedAt
+      createdAt
+    }
+  }
+}
