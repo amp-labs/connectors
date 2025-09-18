@@ -85,7 +85,7 @@ import (
 	"github.com/amp-labs/connectors/providers/xero"
 	"github.com/amp-labs/connectors/providers/zendeskchat"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
-	"github.com/amp-labs/connectors/providers/zohocrm"
+	"github.com/amp-labs/connectors/providers/zoho"
 	"github.com/amp-labs/connectors/providers/zoom"
 )
 
@@ -343,9 +343,9 @@ func newPipedriveConnector(
 
 func newZohoConnector(
 	params common.ConnectorParams,
-) (*zohocrm.Connector, error) {
-	return zohocrm.NewConnector(
-		zohocrm.WithAuthenticatedClient(params.AuthenticatedClient),
+) (*zoho.Connector, error) {
+	return zoho.NewConnector(
+		zoho.WithAuthenticatedClient(params.AuthenticatedClient),
 	)
 }
 

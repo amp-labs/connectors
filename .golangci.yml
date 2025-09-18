@@ -26,6 +26,8 @@ linters:
     # There are many legitimate cases for preallocating the length of a slice, so this is not helpful.
     - makezero
     - tenv
+    # Disabled because it enforces strict struct tag formatting that may conflict with provider-specific requirements
+    - tagliatelle
 linters-settings:
   # See https://golangci-lint.run/usage/linters#revive
   revive:
