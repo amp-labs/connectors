@@ -10,7 +10,6 @@ import (
 	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
-	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/sellsy/internal/metadata"
@@ -36,8 +35,6 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
 	}
-
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
 
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
@@ -100,4 +97,8 @@ func (c *Connector) getWriteURL(objectName string, recordID string) (*urlbuilder
 	objectPath, _ = strings.CutSuffix(objectPath, "/search")
 
 	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectPath, recordID)
+}
+
+func (c *Connector) getCustomFieldsURL() (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.ModuleInfo().BaseURL, apiVersion, "/custom-fields")
 }
