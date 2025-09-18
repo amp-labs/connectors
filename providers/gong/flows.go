@@ -37,6 +37,7 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 		flows, err := c.fetchFlowsForUser(ctx, userEmail, config)
 		if err != nil {
 			// Some users may not have engage license or may not be added to flows
+			// we ignore these errors and continue
 			continue
 		}
 
@@ -69,7 +70,7 @@ func (c *Connector) fetchAllUsers(ctx context.Context) ([]common.ReadResultRow, 
 		common.ExtractRecordsFromPath(responseFieldName),
 		getNextRecordsURL,
 		common.GetMarshaledData,
-		nil, // Get all fields for users
+		nil,
 	)
 	if err != nil {
 		return nil, err
