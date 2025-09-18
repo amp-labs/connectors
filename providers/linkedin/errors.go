@@ -1,6 +1,7 @@
 package linkedin
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/amp-labs/connectors/common/interpreter"
@@ -14,6 +15,8 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 		},
 	}...,
 )
+
+var ErrMetadataNotFound = errors.New("metadata not found")
 
 type ResponseError struct {
 	Code    int    `json:"code"`

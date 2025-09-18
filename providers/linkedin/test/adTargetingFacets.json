@@ -1,0 +1,30 @@
+{
+    "paging": {
+        "start": 0,
+        "count": 10,
+        "links": []
+    },
+    "elements": [
+        {
+            "entityTypes": [
+                "COMPANY"
+            ],
+            "facetName": "followedCompanies",
+            "adTargetingFacetUrn": "urn:li:adTargetingFacet:followedCompanies",
+            "availableEntityFinders": [
+                "TYPEAHEAD",
+                "SIMILAR_ENTITIES"
+            ]
+        },
+        {
+            "entityTypes": [
+                "FIRMOGRAPHIC"
+            ],
+            "facetName": "revenue",
+            "adTargetingFacetUrn": "urn:li:adTargetingFacet:revenue",
+            "availableEntityFinders": [
+                "AD_TARGETING_FACET"
+            ]
+        }
+    ]
+}
