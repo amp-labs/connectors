@@ -35,7 +35,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						mockcond.Header(http.Header{
 							"LinkedIn-Version":          []string{"202504"},
 							"X-Restli-Protocol-Version": []string{"2.0.0"},
-						})},
+						}),
+					},
 					Then: mockserver.Response(http.StatusOK, adTargetingFacetsResponse),
 				}, {
 					If: mockcond.And{
@@ -43,7 +44,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						mockcond.Header(http.Header{
 							"LinkedIn-Version":          []string{"202504"},
 							"X-Restli-Protocol-Version": []string{"2.0.0"},
-						})},
+						}),
+					},
 					Then: mockserver.Response(http.StatusOK, dmpEngagementSourceTypesResponse),
 				}},
 			}.Server(),
