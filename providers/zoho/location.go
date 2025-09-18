@@ -56,7 +56,7 @@ func GetDomainsForLocation(location string) (*LocationDomains, error) {
 			TokenDomain: "accounts.zohocloud.ca",
 		}, nil
 	default:
-		return nil, fmt.Errorf("%w %q; must be one of US, EU, IN, AU, CN, JP, CA",
+		return nil, fmt.Errorf("%w %q; must be one of: us, eu, in, au, cn, jp, ca (case-insensitive)",
 			ErrInvalidLocation, location)
 	}
 }
