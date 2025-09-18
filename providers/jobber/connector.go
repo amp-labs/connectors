@@ -71,6 +71,9 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
+			ErrorHandler: interpreter.ErrorHandler{
+				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+			}.Handle,
 		},
 	)
 
@@ -81,6 +84,9 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.DeleteHandlers{
 			BuildRequest:  connector.buildDeleteRequest,
 			ParseResponse: connector.parseDeleteResponse,
+			ErrorHandler: interpreter.ErrorHandler{
+				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+			}.Handle,
 		},
 	)
 
