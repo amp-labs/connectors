@@ -70,6 +70,46 @@ type readFilterUpdate struct {
 // createReadOperation such that READ operation is either:
 // * POST with a payload for /search based URLs.
 // * GET without a payload for the rest of URLs.
+//
+// List of endpoints that support search. The list is subject to change. It comes from `schemas.json` which
+// can be updated in future as API evolves.
+/*
+ Example:
+		/accounting-codes/search
+		/activities/search
+		/items/barcodes/search
+		/calendar-events/search
+		/comments/search
+		/companies/search
+		/contacts/search
+		/credit-notes/search
+		/activities/crm/search
+		/custom-activities/search
+		/custom-fields/search
+		/deposit-invoices/search
+		/documents/models/search
+		/individuals/search
+		/invoices/search
+		/items/search
+		/mandates/search
+		/payments/methods/search
+		/notifications/search
+		/opportunities/search
+		/orders/search
+		/subscriptions/payment-installments/search
+		/payments/search
+		/phone-calls/search
+		/opportunities/pipelines/search
+		/proposals/models/search
+		/ocr/pur-invoice/search
+		/opportunities/sources/search
+		/staffs/search
+		/opportunities/steps/search
+		/subscriptions/search
+		/tasks/search
+		/taxes/search
+		/webhooks/search
+*/
 func createReadOperation(
 	url *urlbuilder.URL, params common.ReadParams,
 ) (method string, payload []byte, err error) {
