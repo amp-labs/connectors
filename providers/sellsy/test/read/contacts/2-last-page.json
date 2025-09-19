@@ -1,0 +1,59 @@
+{
+  "data": [
+    {
+      "id": 5,
+      "civility": "mr",
+      "first_name": "Michel",
+      "last_name": "Durand",
+      "email": "michel@sellsy-enchante.fr",
+      "website": null,
+      "phone_number": null,
+      "mobile_number": "+33612345678",
+      "fax_number": null,
+      "position": "Dirigeant",
+      "avatar": null,
+      "note": "",
+      "birth_date": null,
+      "invoicing_address_id": null,
+      "delivery_address_id": null,
+      "is_archived": false,
+      "created": "2025-08-22T21:37:04+02:00",
+      "updated": "2025-08-22T21:37:04+02:00",
+      "social": {
+        "twitter": null,
+        "facebook": null,
+        "linkedin": null,
+        "viadeo": null
+      },
+      "sync": {
+        "mailchimp": true,
+        "mailjet": true,
+        "simplemail": true
+      },
+      "owner": {
+        "id": 602301,
+        "type": "staff"
+      },
+      "marketing_campaigns_subscriptions": [
+        "email",
+        "sms",
+        "phone",
+        "postal_mail",
+        "custom"
+      ],
+      "rgpd_consent": {
+        "email": true,
+        "sms": true,
+        "phone": true,
+        "postal_mail": true,
+        "custom": true
+      }
+    }
+  ],
+  "pagination": {
+    "limit": 100,
+    "count": 30,
+    "total": 32,
+    "offset": "WyIzNCJd"
+  }
+}
