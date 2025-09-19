@@ -25,10 +25,12 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "contacts",
-		Fields:     connectors.Fields("first_name", "last_name"),
+		Fields: connectors.Fields(
+			"first_name", "last_name",
+			"hobbies", "age", "fruits"),
 		// Since:      time.Now().Add(-1 * time.Minute * 12),
 		// Until:      time.Now().Add(-1 * time.Minute * 9),
-		NextPage: "https://api.sellsy.com/v2/contacts/search?limit=36&offset=WyIzOCJd",
+		// NextPage: "https://api.sellsy.com/v2/contacts/search?limit=36&offset=WyIzOCJd",
 	})
 	if err != nil {
 		utils.Fail("error reading from connector", "error", err)
