@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils"
 	connTest "github.com/amp-labs/connectors/test/zoho"
 )
@@ -21,7 +22,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetZohoConnector(ctx)
+	conn := connTest.GetZohoConnector(ctx, providers.ZohoCRM, nil)
 
 	res, err := conn.Read(ctx, connectors.ReadParams{
 		ObjectName: "contacts",

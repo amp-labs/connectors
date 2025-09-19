@@ -10,6 +10,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zoho"
 	"github.com/amp-labs/connectors/test/utils"
 	connTest "github.com/amp-labs/connectors/test/zoho"
@@ -22,7 +23,7 @@ func main() {
 
 	utils.SetupLogging()
 
-	conn := connTest.GetZohoConnector(ctx)
+	conn := connTest.GetZohoConnector(ctx, providers.ZohoCRM, nil)
 	dur := time.Minute * 2
 
 	uniqueRef := uuid.New().String()
