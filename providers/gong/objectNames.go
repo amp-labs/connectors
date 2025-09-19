@@ -8,6 +8,8 @@ import (
 const (
 	objectNameCalls      = "calls"
 	objectNameTranscript = "transcripts"
+	objectNameFlows      = "flows"
+	objectNameUsers      = "users"
 )
 
 // Supported object names can be found under schemas.json.
