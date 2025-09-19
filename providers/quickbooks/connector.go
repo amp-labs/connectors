@@ -18,6 +18,7 @@ type Connector struct {
 
 	// Require authenticated client
 	common.RequireAuthenticatedClient
+	common.RequireMetadata
 
 	// Supported operations
 	components.SchemaProvider
@@ -26,8 +27,14 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	// Create base connector with provider info
-	return components.Initialize(providers.QuickBooks, params, constructor)
+	conn, err := components.Initialize(providers.QuickBooks, params, constructor)
+	if err != nil {
+		return nil, err
+	}
+
+	conn.realmID = params.Metadata["realmID"]
+
+	return conn, nil
 }
 
 func constructor(base *components.Connector) (*Connector, error) {

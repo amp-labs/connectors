@@ -11,8 +11,6 @@ import (
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	c.realmID = "9341455309256114" // QuickBooks Company ID, should be set dynamically
-
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, c.realmID, "query")
 	if err != nil {
 		return nil, err

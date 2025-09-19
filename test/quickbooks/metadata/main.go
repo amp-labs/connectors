@@ -12,7 +12,7 @@ func main() {
 	ctx := context.Background()
 	connector := quickbooks.GetQuickBooksConnector(ctx)
 
-	m, err := connector.ListObjectMetadata(ctx, []string{"account"})
+	m, err := connector.ListObjectMetadata(ctx, []string{"account", "budget"})
 	if err != nil {
 		utils.Fail(err.Error())
 	}
