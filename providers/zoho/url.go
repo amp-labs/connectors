@@ -14,7 +14,7 @@ type (
 	objectNameTransformer func(string) string
 
 	// objectNameTransformer takes a list of field names and transforms them to the appropriate expected field names.
-	fieldTrasformer func([]string) string
+	fieldsTrasformer func([]string) string
 )
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
@@ -28,7 +28,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 }
 
 func (c *Connector) buildModuleURL(params common.ReadParams, apiVersion string,
-	objTransfomer objectNameTransformer, fldTransformer fieldTrasformer,
+	objTransfomer objectNameTransformer, fldTransformer fieldsTrasformer,
 ) (*urlbuilder.URL, error) {
 	obj := params.ObjectName
 

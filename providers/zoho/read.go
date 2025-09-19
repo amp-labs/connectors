@@ -42,6 +42,7 @@ func (c *Connector) read(ctx context.Context, config common.ReadParams,
 
 	// There is a special case for most of the objects in zoho Desk
 	// The API responds with status code is 204 with an empty response.
+	// where there are no records to fetch.
 	if res.Code == http.StatusNoContent {
 		return &common.ReadResult{
 			Rows: 0,
