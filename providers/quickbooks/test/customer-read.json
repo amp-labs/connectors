@@ -1,0 +1,19 @@
+{
+  "QueryResponse": {
+    "Customer": [
+      {
+        "domain": "QBO", 
+        "FamilyName": "Lauterbach", 
+        "DisplayName": "Amy's Bird Sanctuary", 
+        "PreferredDeliveryMethod": "Print", 
+        "GivenName": "Amy", 
+        "FullyQualifiedName": "Amy's Bird Sanctuary", 
+        "BillWithParent": false, 
+        "Job": false
+      }
+    ], 
+    "startPosition": 1, 
+    "maxResults": 6
+  }, 
+  "time": "2015-07-23T11:02:25.149-07:00"
+}
