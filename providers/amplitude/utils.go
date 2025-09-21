@@ -25,7 +25,6 @@ func inferValueTypeFromData(value any) common.ValueType {
 }
 
 func (c *Connector) constructURL(objectName string) (*urlbuilder.URL, error) {
-
 	path := fmt.Sprintf("api/%s/%s", apiV2, objectName)
 
 	if objectName == EventsObject {
