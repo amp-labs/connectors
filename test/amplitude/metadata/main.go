@@ -14,7 +14,7 @@ func main() {
 
 	conn := amplitude.GetAmplitudeConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"annotations"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"annotations", "taxonomy/event", "events"})
 	if err != nil {
 		log.Fatal(err)
 	}

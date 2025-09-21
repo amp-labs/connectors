@@ -27,12 +27,6 @@ var objectResponseField = datautils.NewDefaultMap(datautils.Map[string, string]{
 	return "data"
 })
 
-var apiVersionMap = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
-	EventsObject: apiV3,
-}, func(key string) string {
-	return apiV2
-})
-
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
 		AnnotationsObject,
