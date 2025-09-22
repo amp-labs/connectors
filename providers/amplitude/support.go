@@ -10,40 +10,40 @@ import (
 )
 
 const (
-	AnnotationsObject           = "annotations"
-	CohortsObject               = "cohorts"
-	EventsObject                = "events"
-	LookupTableObject           = "lookup_table"
-	TaxonomyCategoryObject      = "taxonomy/category"
-	TaxonomyEventObject         = "taxonomy/event"
-	TaxonomyEventPropertyObject = "taxonomy/event-property"
-	TaxonomyUserPropertyObject  = "taxonomy/user-property"
-	TaxonomyGroupPropertyObject = "taxonomy/group-property"
+	objectNameAnnotations           = "annotations"
+	objectNameCohorts               = "cohorts"
+	objectNameEvents                = "events"
+	objectNameLookupTable           = "lookup_table"
+	objectNameTaxonomyCategory      = "taxonomy/category"
+	objectNameTaxonomyEvent         = "taxonomy/event"
+	objectNameTaxonomyEventProperty = "taxonomy/event-property"
+	objectNameTaxonomyUserProperty  = "taxonomy/user-property"
+	objectNameTaxonomyGroupProperty = "taxonomy/group-property"
 )
 
 var objectAPIVersion = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
-	CohortsObject: apiV3,
+	objectNameCohorts: apiV3,
 }, func(key string) string {
 	return apiV2
 })
 
 var objectResponseField = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
-	CohortsObject: CohortsObject,
+	objectNameCohorts: objectNameCohorts,
 }, func(key string) string {
 	return "data"
 })
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
-		AnnotationsObject,
-		CohortsObject,
-		EventsObject,
-		LookupTableObject,
-		TaxonomyCategoryObject,
-		TaxonomyEventObject,
-		TaxonomyEventPropertyObject,
-		TaxonomyUserPropertyObject,
-		TaxonomyGroupPropertyObject,
+		objectNameAnnotations,
+		objectNameCohorts,
+		objectNameEvents,
+		objectNameLookupTable,
+		objectNameTaxonomyCategory,
+		objectNameTaxonomyEvent,
+		objectNameTaxonomyEventProperty,
+		objectNameTaxonomyUserProperty,
+		objectNameTaxonomyGroupProperty,
 	}
 
 	return components.EndpointRegistryInput{
