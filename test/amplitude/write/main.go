@@ -10,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	cc "github.com/amp-labs/connectors/providers/amplitude"
 	"github.com/amp-labs/connectors/test/amplitude"
+	"github.com/brianvoe/gofakeit/v6"
 )
 
 func main() {
@@ -107,7 +108,7 @@ func testCreatingRelease(ctx context.Context, conn *cc.Connector) (string, error
 	params := common.WriteParams{
 		ObjectName: "release",
 		RecordData: map[string]any{
-			"version":       "2.2",
+			"version":       gofakeit.AppVersion(),
 			"release_start": "2025-12-01 00:00:00",
 			"title":         "Version 2. Release",
 		},

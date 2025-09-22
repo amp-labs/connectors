@@ -223,9 +223,11 @@ func (c *Connector) parseWriteResponse(
 	}
 
 	if dataNode == nil {
-		// If the "data" field does not exist, use the root body as the data node.
+		// If object specific response key is not found, use the entire body
 		dataNode = body
 	}
+
+	recordID, _ := jsonquery.New(dataNode).StrWithDefault("id", "")
 
 	respMap, err := jsonquery.Convertor.ObjectToMap(dataNode)
 	if err != nil {
@@ -234,7 +236,7 @@ func (c *Connector) parseWriteResponse(
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: "",
+		RecordId: recordID,
 		Errors:   nil,
 		Data:     respMap,
 	}, nil
