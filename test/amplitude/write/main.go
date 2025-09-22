@@ -23,7 +23,17 @@ func run() error {
 
 	conn := amplitude.GetAmplitudeConnector(ctx)
 
-	_, err := testCreatingApps(ctx, conn)
+	_, err := testCreatingAnnotations(ctx, conn)
+	if err != nil {
+		return err
+	}
+
+	_, err = testCreatingRelease(ctx, conn)
+	if err != nil {
+		return err
+	}
+
+	_, err = testCreatingAttribution(ctx, conn)
 	if err != nil {
 		return err
 	}
@@ -31,23 +41,79 @@ func run() error {
 	return nil
 }
 
-func testCreatingApps(ctx context.Context, conn *cc.Connector) (string, error) {
+func testCreatingAttribution(ctx context.Context, conn *cc.Connector) (string, error) {
 	params := common.WriteParams{
-		ObjectName: "apps",
+		ObjectName: "attribution",
 		RecordData: map[string]any{
-			"name":         "Nightly Data Loads",
-			"namespace":    "nightly-data",
-			"type":         "CUSTOM",
-			"entity":       "Sync",
-			"entityPlural": "Syncs",
-			"icon":         "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"currentColor\" class=\"bi bi-bar-chart-fill\" viewBox=\"0 0 16 16\">\n  <path d=\"M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z\"/>\n</svg>",
-			"metadata": map[string]any{
-				"foo": "bar",
+			"event_type": "[YOUR COMPANY] Install",
+			"idfa":       "AEBE52E7-03EE-455A-B3C4-E57283966239",
+			"user_properties": map[string]any{
+				"[YOUR COMPANY] media source": "facebook",
+				"[YOUR COMPANY] campaign":     "refer-a-friend",
 			},
+			"platform": "ios",
 		},
 	}
 
-	slog.Info("Creating an app...")
+	slog.Info("Creating an attribution...")
+
+	res, err := conn.Write(ctx, params)
+	if err != nil {
+		return "", err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return "", fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return res.RecordId, nil
+}
+
+func testCreatingAnnotations(ctx context.Context, conn *cc.Connector) (string, error) {
+	params := common.WriteParams{
+		ObjectName: "annotations",
+		RecordData: map[string]any{
+			"app_id": "679680",
+			"date":   "2025-09-16",
+			"label":  "Version 2.4 Release",
+		},
+	}
+
+	slog.Info("Creating an annotation...")
+
+	res, err := conn.Write(ctx, params)
+	if err != nil {
+		return "", err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return "", fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return res.RecordId, nil
+}
+
+func testCreatingRelease(ctx context.Context, conn *cc.Connector) (string, error) {
+	params := common.WriteParams{
+		ObjectName: "release",
+		RecordData: map[string]any{
+			"version":       "2.2",
+			"release_start": "2025-12-01 00:00:00",
+			"title":         "Version 2. Release",
+		},
+	}
+
+	slog.Info("Creating a release...")
 
 	res, err := conn.Write(ctx, params)
 	if err != nil {

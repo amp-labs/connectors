@@ -3,12 +3,11 @@ package amplitude
 import (
 	"bytes"
 	"context"
-	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -17,8 +16,9 @@ import (
 )
 
 const (
-	apiV2 = "2"
-	apiV3 = "3"
+	apiV2       = "2"
+	apiV3       = "3"
+	api2BaseURL = "https://api2.amplitude.com" // Base URL for Amplitude's HTTP API v2
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -120,11 +120,19 @@ func (c *Connector) parseReadResponse(
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) { //nolint:lll
+	if api2SupportedObjects.Has(params.ObjectName) {
+		return createRequestForApi2(ctx, c.HTTPClient().Client, params)
+	}
+
 	method := http.MethodPost
 
 	url, err := c.constructURL(params.ObjectName)
 	if err != nil {
 		return nil, err
+	}
+
+	if supportedParamsPayloadObjectNames.Has(params.ObjectName) {
+		return createRequestForParamsPayload(ctx, url, params)
 	}
 
 	if len(params.RecordId) > 0 {
@@ -141,6 +149,58 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }
 
+func createRequestForApi2(ctx context.Context, client common.AuthenticatedHTTPClient, params common.WriteParams,
+) (*http.Request, error) {
+	apiKey, err := extractAPIKey(client, ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	eventJSON, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal event data: %w", err)
+	}
+
+	payloadKey := payloadKeyMapping.Get(params.ObjectName)
+
+	form := make(url.Values)
+	form.Add("api_key", apiKey)             // Use the extracted API key
+	form.Add(payloadKey, string(eventJSON)) // Add as JSON string
+
+	url, err := urlbuilder.New(api2BaseURL, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewBufferString(form.Encode()))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	return req, nil
+}
+
+func createRequestForParamsPayload(ctx context.Context, url *urlbuilder.URL, params common.WriteParams,
+) (*http.Request, error) {
+	recordMap, ok := params.RecordData.(map[string]interface{})
+	if !ok {
+		return nil, errors.New("params.RecordData is not a map[string]interface{}") //nolint: err113
+	}
+
+	for key, value := range recordMap {
+		strValue, ok := value.(string)
+		if !ok {
+			return nil, fmt.Errorf("annotation value for key %s is not a string", key) //nolint: err113
+		}
+
+		url.WithQueryParam(key, strValue)
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), nil)
+}
+
 func (c *Connector) parseWriteResponse(
 	ctx context.Context,
 	params common.WriteParams,
@@ -155,7 +215,19 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	data, err := jsonquery.Convertor.ObjectToMap(body)
+	responseKey := writeObjectResponseField.Get(params.ObjectName)
+
+	dataNode, err := jsonquery.New(body).ObjectOptional(responseKey)
+	if err != nil {
+		return nil, err
+	}
+
+	if dataNode == nil {
+		// If the "data" field does not exist, use the root body as the data node.
+		dataNode = body
+	}
+
+	respMap, err := jsonquery.Convertor.ObjectToMap(dataNode)
 	if err != nil {
 		return nil, err
 	}
@@ -164,70 +236,6 @@ func (c *Connector) parseWriteResponse(
 		Success:  true,
 		RecordId: "",
 		Errors:   nil,
-		Data:     data,
+		Data:     respMap,
 	}, nil
-}
-
-func (c *Connector) handleAttributionObject(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	baseURL := "https://api2.amplitude.com/attribution"
-
-	apiKey, err := c.extractAPIKey(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	eventJSON, err := json.Marshal(params.RecordData)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal event data: %w", err)
-	}
-
-	form := make(url.Values)             // Creates an empty url.Values map
-	form.Add("api_key", apiKey)          // Use the extracted API key
-	form.Add("event", string(eventJSON)) // Add as JSON string
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, baseURL, bytes.NewBufferString(form.Encode()))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	return req, nil
-}
-
-// Helper to extract API key (username) from the auth client
-func (c *Connector) extractAPIKey(ctx context.Context) (string, error) {
-	// Use a safe dummy endpoint (e.g., Amplitude's health check or base URL)
-	req, err := http.NewRequestWithContext(ctx, "GET", "https://api.amplitude.com/health", nil) // Adjust URL if needed
-	if err != nil {
-		return "", err
-	}
-
-	resp, err := c.HTTPClient().Client.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	authHeader := resp.Request.Header.Get("Authorization")
-	if authHeader == "" {
-		return "", fmt.Errorf("no Authorization header found")
-	}
-
-	// Decode Basic auth: "Basic <base64(user:pass)>"
-	parts := strings.Split(authHeader, " ")
-	if len(parts) != 2 || parts[0] != "Basic" {
-		return "", fmt.Errorf("invalid Basic auth header")
-	}
-
-	decoded, err := base64.StdEncoding.DecodeString(parts[1])
-	if err != nil {
-		return "", err
-	}
-
-	creds := strings.Split(string(decoded), ":")
-	if len(creds) != 2 {
-		return "", fmt.Errorf("invalid credentials format")
-	}
-
-	return creds[0], nil // Return username (API key)
 }
