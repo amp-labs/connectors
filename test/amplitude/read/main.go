@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/amplitude"
 	amplitudetest "github.com/amp-labs/connectors/test/amplitude"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -18,25 +18,53 @@ func main() {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
-	// Set up slog logging.
 	utils.SetupLogging()
 
 	conn := amplitudetest.GetAmplitudeConnector(ctx)
 
-	readAndLog(ctx, conn, amplitude.AnnotationsObject)
-	readAndLog(ctx, conn, amplitude.CohortsObject)
-
-	slog.Info("Read operation completed successfully.")
-}
-
-func readAndLog(ctx context.Context, conn *amplitude.Connector, objectName string) {
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: objectName,
+		ObjectName: "events",
+		Fields:     connectors.Fields("id", "autohidden", "display"),
 	})
 	if err != nil {
-		utils.Fail("error reading from Amplitude", "object", objectName, "error", err)
+		utils.Fail("error reading from amplitude", "error", err)
 	}
 
-	slog.Info("Reading " + objectName + "..")
+	slog.Info("Reading events..")
 	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "annotations",
+		Fields:     connectors.Fields("id", "data", "label"),
+	})
+	if err != nil {
+		utils.Fail("error reading from amplitude", "error", err)
+	}
+
+	slog.Info("Reading annotations..")
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "taxonomy/category",
+		Fields:     connectors.Fields("id"),
+	})
+	if err != nil {
+		utils.Fail("error reading from amplitude", "error", err)
+	}
+
+	slog.Info("Reading taxonomy/category..")
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "taxonomy/user-property",
+		Fields:     connectors.Fields("id"),
+	})
+	if err != nil {
+		utils.Fail("error reading from amplitude", "error", err)
+	}
+
+	slog.Info("Reading taxonomy/user-property..")
+	utils.DumpJSON(res, os.Stdout)
+
+	slog.Info("Read operation completed successfully.")
 }

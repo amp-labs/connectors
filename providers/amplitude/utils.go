@@ -25,10 +25,12 @@ func inferValueTypeFromData(value any) common.ValueType {
 }
 
 func (c *Connector) constructURL(objectName string) (*urlbuilder.URL, error) {
-	path := fmt.Sprintf("api/%s/%s", apiV2, objectName)
+	apiVersion := objectAPIVersion.Get(objectName)
+
+	path := fmt.Sprintf("api/%s/%s", apiVersion, objectName)
 
 	if objectName == EventsObject {
-		path = fmt.Sprintf("api/%s/%s/list", apiV2, objectName)
+		path = fmt.Sprintf("api/%s/%s/list", apiVersion, objectName)
 	}
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)

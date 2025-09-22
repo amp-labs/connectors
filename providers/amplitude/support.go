@@ -21,6 +21,12 @@ const (
 	TaxonomyGroupPropertyObject = "taxonomy/group-property"
 )
 
+var objectAPIVersion = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
+	CohortsObject: apiV3,
+}, func(key string) string {
+	return apiV2
+})
+
 var objectResponseField = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
 	CohortsObject: CohortsObject,
 }, func(key string) string {
@@ -32,6 +38,12 @@ func supportedOperations() components.EndpointRegistryInput {
 		AnnotationsObject,
 		CohortsObject,
 		EventsObject,
+		LookupTableObject,
+		TaxonomyCategoryObject,
+		TaxonomyEventObject,
+		TaxonomyEventPropertyObject,
+		TaxonomyUserPropertyObject,
+		TaxonomyGroupPropertyObject,
 	}
 
 	return components.EndpointRegistryInput{

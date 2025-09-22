@@ -12,6 +12,7 @@ import (
 
 const (
 	apiV2 = "2"
+	apiV3 = "3"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
