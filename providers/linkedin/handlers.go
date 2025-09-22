@@ -31,6 +31,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	default:
 		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", objectName)
 	}
+
 	if err != nil {
 		return nil, err
 	}
