@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -85,9 +86,36 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "rest", params.ObjectName)
+	if len(params.NextPage) != 0 {
+		// Next page.
+		url, err := urlbuilder.New(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+
+		return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	}
+
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	switch {
+	case ObjectWithAccountId.Has(params.ObjectName):
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", "adAccounts", c.AdAccountId, params.ObjectName)
+	default:
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", params.ObjectName)
+	}
+
 	if err != nil {
 		return nil, err
+	}
+
+	if ObjectsWithSearchQueryParam.Has(params.ObjectName) {
+		url.WithQueryParam("q", "search")
+
+		url.WithQueryParam("pageSize", strconv.Itoa(pageSize))
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -110,7 +138,7 @@ func (c *Connector) parseReadResponse(
 	return common.ParseResult(
 		response,
 		common.ExtractRecordsFromPath("elements"),
-		makeNextRecord(),
+		makeNextRecord(request.URL),
 		common.GetMarshaledData,
 		params.Fields,
 	)

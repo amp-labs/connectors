@@ -17,6 +17,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	adTargetingFacetsResponse := testutils.DataFromFile(t, "adTargetingFacets.json")
 	dmpEngagementSourceTypesResponse := testutils.DataFromFile(t, "dmpEngagementSourceTypes.json")
+	adAccountsResponse := testutils.DataFromFile(t, "adAccounts.json")
 
 	tests := []testroutines.Read{
 		{
@@ -129,6 +130,64 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Paginated list of AdAccounts",
+			Input: common.ReadParams{ObjectName: "adAccounts", Fields: connectors.Fields("")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/rest/adAccounts"),
+					mockcond.Header(http.Header{
+						"LinkedIn-Version":          []string{"202504"},
+						"X-Restli-Protocol-Version": []string{"2.0.0"},
+					}),
+				},
+				Then: mockserver.Response(http.StatusOK, adAccountsResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{},
+						Raw: map[string]any{
+							"test":                         true,
+							"notifiedOnCreativeRejection":  true,
+							"notifiedOnNewFeaturesEnabled": false,
+							"notifiedOnEndOfCampaign":      true,
+							"servingStatuses": []any{
+								"RUNNABLE",
+							},
+							"notifiedOnCampaignOptimization": true,
+							"type":                           "BUSINESS",
+							"version": map[string]any{
+								"versionTag": "4",
+							},
+							"reference":                  "urn:li:organization:2414183",
+							"notifiedOnCreativeApproval": true,
+							"changeAuditStamps": map[string]any{
+								"created": map[string]any{
+									"actor": "urn:li:unknown:0",
+									"time":  float64(1747321902940),
+								},
+								"lastModified": map[string]any{
+									"actor": "urn:li:unknown:0",
+									"time":  float64(1753858819473),
+								},
+							},
+							"name":     "This is a new account name.",
+							"currency": "USD",
+							"id":       float64(514674276),
+							"status":   "ACTIVE",
+						},
+					},
+				},
+				NextPage: testroutines.URLTestServer +
+					"/rest/adAccounts?q=search&pageSize=100&pageToken=DgFM1V9r6aUuA4M6V0uGFxY9ASDBvzxZod6VsdWmjiQ",
+				Done: false,
 			},
 			ExpectedErrs: nil,
 		},

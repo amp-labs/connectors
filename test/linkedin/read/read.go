@@ -31,6 +31,11 @@ func MainFn() int {
 		return 1
 	}
 
+	err = testRead(context.Background(), conn, "adAccounts", []string{""})
+	if err != nil {
+		return 1
+	}
+
 	return 0
 }
 
