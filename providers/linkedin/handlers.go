@@ -5,12 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 const LinkedInVersion = "202504"
@@ -125,24 +123,12 @@ func (c *Connector) parseWriteResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.WriteResult, error) {
-	body, ok := response.Body()
-	if !ok {
-		return &common.WriteResult{ // nolint:nilerr
-			Success: true,
-		}, nil
-	}
-
-	RecordId := strings.TrimPrefix(request.Header.Get("Location"), params.ObjectName+"/")
-
-	resp, err := jsonquery.Convertor.ObjectToMap(body)
-	if err != nil {
-		return nil, err
-	}
+	RecordId := response.Headers.Get("X-Restli-Id")
 
 	return &common.WriteResult{
 		Success:  true,
 		RecordId: RecordId,
 		Errors:   nil,
-		Data:     resp,
+		Data:     nil,
 	}, nil
 }
