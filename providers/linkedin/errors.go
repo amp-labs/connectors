@@ -16,9 +16,9 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 )
 
 type ResponseError struct {
-	Code    int    `json:"code"`
+	Code    int    `json:"code,omitempty"`
 	Message string `json:"message"`
-	Status  string `json:"status"`
+	Status  int    `json:"status"`
 }
 
 func (r ResponseError) CombineErr(base error) error {
