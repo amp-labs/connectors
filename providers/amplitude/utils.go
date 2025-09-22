@@ -29,7 +29,7 @@ func (c *Connector) constructURL(objectName string) (*urlbuilder.URL, error) {
 
 	path := fmt.Sprintf("api/%s/%s", apiVersion, objectName)
 
-	if objectName == EventsObject {
+	if objectName == objectNameEvents {
 		path = fmt.Sprintf("api/%s/%s/list", apiVersion, objectName)
 	}
 
