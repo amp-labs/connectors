@@ -1,13 +1,19 @@
 package amplitude
 
 import (
+	"bytes"
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 const (
@@ -111,4 +117,117 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) { //nolint:lll
+	method := http.MethodPost
+
+	url, err := c.constructURL(params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(params.RecordId) > 0 {
+		url.AddPath(params.RecordId)
+
+		method = http.MethodPut
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: "",
+		Errors:   nil,
+		Data:     data,
+	}, nil
+}
+
+func (c *Connector) handleAttributionObject(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	baseURL := "https://api2.amplitude.com/attribution"
+
+	apiKey, err := c.extractAPIKey(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	eventJSON, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal event data: %w", err)
+	}
+
+	form := make(url.Values)             // Creates an empty url.Values map
+	form.Add("api_key", apiKey)          // Use the extracted API key
+	form.Add("event", string(eventJSON)) // Add as JSON string
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, baseURL, bytes.NewBufferString(form.Encode()))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	return req, nil
+}
+
+// Helper to extract API key (username) from the auth client
+func (c *Connector) extractAPIKey(ctx context.Context) (string, error) {
+	// Use a safe dummy endpoint (e.g., Amplitude's health check or base URL)
+	req, err := http.NewRequestWithContext(ctx, "GET", "https://api.amplitude.com/health", nil) // Adjust URL if needed
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := c.HTTPClient().Client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	authHeader := resp.Request.Header.Get("Authorization")
+	if authHeader == "" {
+		return "", fmt.Errorf("no Authorization header found")
+	}
+
+	// Decode Basic auth: "Basic <base64(user:pass)>"
+	parts := strings.Split(authHeader, " ")
+	if len(parts) != 2 || parts[0] != "Basic" {
+		return "", fmt.Errorf("invalid Basic auth header")
+	}
+
+	decoded, err := base64.StdEncoding.DecodeString(parts[1])
+	if err != nil {
+		return "", err
+	}
+
+	creds := strings.Split(string(decoded), ":")
+	if len(creds) != 2 {
+		return "", fmt.Errorf("invalid credentials format")
+	}
+
+	return creds[0], nil // Return username (API key)
 }
