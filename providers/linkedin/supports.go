@@ -38,6 +38,18 @@ func supportedOperations() components.EndpointRegistryInput {
 		"creatives",
 	}
 
+	supportDelete := []string{
+		"adAccounts",
+		"adCampaignGroups",
+		"adTargetTemplates",
+		"creatives",
+		"adLiftTests",
+		"thirdPartyTrackingTags",
+		"events",
+		"posts",
+		"dmpSegments",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
@@ -47,6 +59,10 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(supportWrite, ",")),
 				Support:  components.WriteSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(supportDelete, ",")),
+				Support:  components.DeleteSupport,
 			},
 		},
 	}

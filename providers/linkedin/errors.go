@@ -19,7 +19,7 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 var ErrMetadataNotFound = errors.New("metadata not found")
 
 type ResponseError struct {
-	Code    int    `json:"code,omitempty"`
+	Code    any    `json:"code,omitempty"`
 	Message string `json:"message"`
 	Status  int    `json:"status"`
 }
