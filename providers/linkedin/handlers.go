@@ -197,7 +197,8 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 
 	switch {
 	case ObjectWithAccountId.Has(params.ObjectName):
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", "adAccounts", c.AdAccountId, params.ObjectName, params.RecordId)
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", "adAccounts",
+			c.AdAccountId, params.ObjectName, params.RecordId)
 	default:
 		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", params.ObjectName, params.RecordId)
 	}
