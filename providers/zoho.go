@@ -63,7 +63,7 @@ func init() {
 		DefaultModule: ZohoCRM,
 		Modules: &Modules{
 			ZohoCRM: {
-				BaseURL:     "https://www.zohoapis.com",
+				BaseURL:     "https://{{.zoho_api_domain}}",
 				DisplayName: "Zoho CRM",
 				Support: Support{
 					Read:      true,
@@ -72,7 +72,8 @@ func init() {
 				},
 			},
 			ZohoDeskV2: {
-				BaseURL:     "https://desk.zoho.com",
+				// E.g. www.desk.zoho.com, www.desk.zoho.eu, www.desk.zoho.in, etc.
+				BaseURL:     "https://{{.zoho_desk_domain}}",
 				DisplayName: "Zoho Desk",
 				Support: Support{
 					Read:      false,

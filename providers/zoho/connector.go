@@ -55,6 +55,12 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		},
 		catalogreplacer.CustomCatalogVariable{
 			Plan: catalogreplacer.SubstitutionPlan{
+				From: "zoho_desk_domain",
+				To:   domains.DeskDomain,
+			},
+		},
+		catalogreplacer.CustomCatalogVariable{
+			Plan: catalogreplacer.SubstitutionPlan{
 				From: "zoho_token_domain",
 				To:   domains.TokenDomain,
 			},
@@ -67,9 +73,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	conn.providerInfo = providerInfo
 
 	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
-
 	conn.setBaseURL(conn.moduleInfo.BaseURL)
-
 	conn.orgID = params.Metadata.Map["orgId"]
 
 	return conn, nil
