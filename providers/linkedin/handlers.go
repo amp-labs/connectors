@@ -20,9 +20,23 @@ type responseObject struct {
 }
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "rest", objectName)
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	switch {
+	case ObjectWithAccountId.Has(objectName):
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", "adAccounts", c.AdAccountId, objectName)
+	default:
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", objectName)
+	}
 	if err != nil {
 		return nil, err
+	}
+
+	if ObjectsWithSearchQueryParam.Has(objectName) {
+		url.WithQueryParam("q", "search")
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
