@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -62,7 +61,7 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	RecordId := strings.TrimPrefix(request.Header.Get("Location"), params.ObjectName+"/")
+	RecordId := request.Header.Get("x-restli-id")
 
 	resp, err := jsonquery.Convertor.ObjectToMap(body)
 	if err != nil {
