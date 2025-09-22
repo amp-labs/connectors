@@ -12,9 +12,15 @@ import (
 	"golang.org/x/oauth2"
 )
 
+var fieldAdAccountId = credscanning.Field{ //nolint:gochecknoglobals
+	Name:      "AdAccountId",
+	PathJSON:  "metadata.AdAccountId",
+	SuffixENV: "AD_ACCOUNT_ID",
+}
+
 func GetConnector(ctx context.Context) *linkedin.Connector {
 	filePath := credscanning.LoadPath(providers.LinkedIn)
-	reader := utils.MustCreateProvCredJSON(filePath, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true, fieldAdAccountId)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),
@@ -27,6 +33,9 @@ func GetConnector(ctx context.Context) *linkedin.Connector {
 
 	conn, err := linkedin.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
+		Metadata: map[string]string{
+			"AdAccountId": reader.Get(fieldAdAccountId),
+		},
 	})
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

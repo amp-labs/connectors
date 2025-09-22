@@ -24,11 +24,20 @@ type Connector struct {
 	components.SchemaProvider
 	components.Reader
 	components.Writer
+
+	AdAccountId string
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
-	return components.Initialize(providers.LinkedIn, params, constructor)
+	conn, err := components.Initialize(providers.LinkedIn, params, constructor)
+	if err != nil {
+		return nil, err
+	}
+
+	conn.AdAccountId = params.Metadata["AdAccountId"]
+
+	return conn, nil
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
