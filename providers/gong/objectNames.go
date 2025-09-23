@@ -9,7 +9,6 @@ const (
 	objectNameCalls              = "calls"
 	objectNameTranscript         = "transcripts"
 	objectNameMeetings           = "meetings"
-	objectNamePermissionProfiles = "permission-profile"
 	objectNameDigitalInteraction = "digital-interaction"
 )
 
@@ -19,7 +18,6 @@ var supportedObjectsByRead = metadata.Schemas.ObjectNames() //nolint:gochecknogl
 var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameCalls,
 	objectNameMeetings,
-	objectNamePermissionProfiles,
 	objectNameDigitalInteraction,
 )
 
