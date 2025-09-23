@@ -22,9 +22,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetZohoConnector(ctx, providers.ZohoDeskV2, map[string]string{
-		"orgId": "899917812",
-	})
+	conn := connTest.GetZohoConnector(ctx, providers.ZohoDesk)
 
 	res, err := conn.Read(ctx, connectors.ReadParams{
 		ObjectName: "contacts",

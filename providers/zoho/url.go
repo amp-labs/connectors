@@ -19,7 +19,7 @@ type (
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
 	switch c.moduleID { // nolint: exhaustive
-	case providers.ZohoDeskV2:
+	case providers.ZohoDesk:
 		return c.buildModuleURL(config, deskAPIVersion, func(s string) string { return s },
 			func(flds []string) string { return strings.Join(flds, ",") })
 	default:
@@ -48,10 +48,6 @@ func (c *Connector) buildModuleURL(params common.ReadParams, apiVersion string,
 	url, err := c.getAPIURL(apiVersion, obj)
 	if err != nil {
 		return nil, err
-	}
-
-	if c.moduleID == providers.ZohoDeskV2 && params.ObjectName != "organizations" {
-		url.WithQueryParam("orgId", c.orgID)
 	}
 
 	fields := fldTransformer(params.Fields.List())

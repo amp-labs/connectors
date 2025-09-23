@@ -13,7 +13,7 @@ import (
 // ref: https://www.zoho.com/crm/developer/docs/api/v6/get-records.html
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	switch c.moduleID { //nolint:exhaustive
-	case providers.ZohoDeskV2:
+	case providers.ZohoDesk:
 		return c.read(ctx, config, nil)
 
 	default:
