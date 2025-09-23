@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"slices"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
@@ -55,10 +56,8 @@ func usesSearching(objectName string) bool {
 
 func in(a string, b ...[]string) bool {
 	for _, sl := range b {
-		for _, v := range sl {
-			if v == a {
-				return true
-			}
+		if slices.Contains(sl, a) {
+			return true
 		}
 	}
 
