@@ -45,6 +45,7 @@ func init() {
 				{
 					Name:        "AdAccountId",
 					DisplayName: "Ad Account ID",
+					DocsURL:     "https://www.linkedin.com/help/linkedin/answer/a424270/find-linkedin-ads-account-details",
 				},
 			},
 		},
