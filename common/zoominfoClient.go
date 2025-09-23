@@ -18,7 +18,7 @@ func NewZoominfoHTTPClient( //nolint:ireturn
 	user, pass string,
 	opts ...HeaderAuthClientOption,
 ) (AuthenticatedHTTPClient, error) {
-	token, err := ZoominfoAuth(user, pass)
+	token, err := ZoominfoAuth(ctx, user, pass)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func NewZoominfoHTTPClient( //nolint:ireturn
 	}))...)
 }
 
-func ZoominfoAuth(username, password string) (string, error) {
+func ZoominfoAuth(ctx context.Context, username, password string) (string, error) {
 	// Request body
 	reqBody := map[string]string{
 		"username": username,
@@ -43,18 +43,17 @@ func ZoominfoAuth(username, password string) (string, error) {
 
 	client := &http.Client{}
 
-	req, err := http.NewRequestWithContext(
-		context.Background(),
-		"POST",
-		"https://api.zoominfo.com/authenticate",
-		bytes.NewReader(jsonData),
-	)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://api.zoominfo.com/authenticate", bytes.NewReader(jsonData)) // nolint:111
 	if err != nil {
 		return "", err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 	response, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer response.Body.Close()
 
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
