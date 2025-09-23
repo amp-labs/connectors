@@ -49,10 +49,10 @@ func ZoominfoAuth(username, password string) (string, error) {
 		"application/json",
 		bytes.NewReader(jsonData),
 	)
-	defer response.Body.Close()
 	if err != nil {
 		return "", err
 	}
+	defer response.Body.Close()
 
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
