@@ -43,16 +43,18 @@ func ZoominfoAuth(username, password string) (string, error) {
 
 	client := &http.Client{}
 
-	// Send request
-	response, err := client.Post(
+	req, err := http.NewRequestWithContext(
+		context.Background(),
+		"POST",
 		"https://api.zoominfo.com/authenticate",
-		"application/json",
 		bytes.NewReader(jsonData),
 	)
 	if err != nil {
 		return "", err
 	}
-	defer response.Body.Close()
+
+	req.Header.Set("Content-Type", "application/json")
+	response, err := client.Do(req)
 
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
