@@ -3,9 +3,9 @@ package providers
 import "github.com/amp-labs/connectors/common"
 
 const (
-	Zoho       Provider        = "zoho"
-	ZohoCRM    common.ModuleID = "zohocrm"
-	ZohoDeskV2 common.ModuleID = "zohodesk"
+	Zoho     Provider        = "zoho"
+	ZohoCRM  common.ModuleID = "crm"
+	ZohoDesk common.ModuleID = "desk"
 )
 
 // nolint: funlen
@@ -71,7 +71,7 @@ func init() {
 					Write:     true,
 				},
 			},
-			ZohoDeskV2: {
+			ZohoDesk: {
 				// E.g. www.desk.zoho.com, www.desk.zoho.eu, www.desk.zoho.in, etc.
 				BaseURL:     "https://{{.zoho_desk_domain}}",
 				DisplayName: "Zoho Desk",
@@ -79,18 +79,6 @@ func init() {
 					Read:      false,
 					Subscribe: false,
 					Write:     false,
-				},
-			},
-		},
-		Metadata: &ProviderMetadata{
-			Input: []MetadataItemInput{
-				{
-					Name:        "orgId",
-					DisplayName: "Organization ID",
-					DocsURL:     "https://help.zoho.com/portal/en/community/topic/getting-organisation-id-in-zoho-desk",
-					ModuleDependencies: &ModuleDependencies{
-						ZohoDeskV2: ModuleDependency{},
-					},
 				},
 			},
 		},

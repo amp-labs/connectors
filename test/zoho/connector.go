@@ -12,14 +12,13 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func GetZohoConnector(ctx context.Context, module common.ModuleID, metadata map[string]string) *zoho.Connector {
+func GetZohoConnector(ctx context.Context, module common.ModuleID) *zoho.Connector {
 	filePath := credscanning.LoadPath(providers.Zoho)
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := zoho.NewConnector(
 		zoho.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
 		zoho.WithModule(module),
-		zoho.WithMetadata(metadata),
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

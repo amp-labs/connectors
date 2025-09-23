@@ -20,8 +20,6 @@ type Connector struct {
 	moduleInfo   *providers.ModuleInfo
 	providerInfo *providers.ProviderInfo
 	moduleID     common.ModuleID
-
-	orgID string
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -71,10 +69,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	conn.providerInfo = providerInfo
-
 	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
 	conn.setBaseURL(conn.moduleInfo.BaseURL)
-	conn.orgID = params.Metadata.Map["orgId"]
 
 	return conn, nil
 }

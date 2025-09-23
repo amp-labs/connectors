@@ -22,7 +22,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetZohoConnector(ctx, providers.ZohoCRM, nil)
+	conn := connTest.GetZohoConnector(ctx, providers.ZohoCRM)
 
 	res, err := conn.Read(ctx, connectors.ReadParams{
 		ObjectName: "contacts",

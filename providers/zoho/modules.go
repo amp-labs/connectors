@@ -14,8 +14,8 @@ var supportedModules = common.Modules{ //nolint: gochecknoglobals
 		ID:    providers.ZohoCRM,
 		Label: "zoho CRM",
 	},
-	providers.ZohoDeskV2: common.Module{
-		ID:    providers.ZohoDeskV2,
+	providers.ZohoDesk: common.Module{
+		ID:    providers.ZohoDesk,
 		Label: "zoho Desk",
 	},
 }

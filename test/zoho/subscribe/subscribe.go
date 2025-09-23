@@ -23,7 +23,7 @@ func main() {
 
 	utils.SetupLogging()
 
-	conn := connTest.GetZohoConnector(ctx, providers.ZohoCRM, nil)
+	conn := connTest.GetZohoConnector(ctx, providers.ZohoCRM)
 	dur := time.Minute * 2
 
 	uniqueRef := uuid.New().String()
