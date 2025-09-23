@@ -10,7 +10,7 @@ import (
 
 // NewZoominfoHTTPClient returns a new http client, with automatic Basic authentication.
 // Specifically this means that the client will automatically add the Basic auth header
-// to every request. The username and password are provided as arguments. Additonally
+// to every request. The username and password are provided as arguments. Additionally
 // we must call the authenitcate API to get the JWT Token.
 // refer: https://api-docs.zoominfo.com/#477888fc-8308-4645-81ca-ca7a6d7ba3d1.
 func NewZoominfoHTTPClient( //nolint:ireturn
@@ -49,6 +49,7 @@ func ZoominfoAuth(username, password string) (string, error) {
 		"application/json",
 		bytes.NewReader(jsonData),
 	)
+	defer response.Body.Close()
 	if err != nil {
 		return "", err
 	}
