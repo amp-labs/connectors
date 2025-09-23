@@ -11,6 +11,7 @@ import (
 // readFlows handles the special case for reading flows which requires flowOwnerEmail query param.
 // It fetches all users first, then iterates through their emails to fetch flows for each user.
 // Some users may not have engage license or may not be added to flows, so we handle errors gracefully.
+// ref: https://gong.app.gong.io/settings/api/documentation#get-/v2/flows
 func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) { // nolint:cyclop,lll
 	users, err := c.fetchAllUsers(ctx)
 	if err != nil {
@@ -26,8 +27,6 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 		}, nil
 	}
 
-	allFlows := make([]common.ReadResultRow, 0)
-
 	for _, user := range users {
 		userEmail, ok := user.Raw["emailAddress"].(string)
 		if !ok || userEmail == "" {
@@ -35,31 +34,26 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 		}
 
 		flows, err := c.fetchFlowsForUser(ctx, userEmail, config)
-		if err != nil {
+		if err != nil || len(flows) == 0 {
 			// Some users may not have engage license or may not be added to flows
 			// we ignore these errors and continue
 			continue
 		}
 
-		// Add flows only if it's not already added
-		for _, flow := range flows {
-			flowID, ok := flow.Raw["id"].(string)
-			if !ok || flowID == "" {
-				continue
-			}
-
-			if !c.isFlowAlreadyAdded(allFlows, flowID) {
-				allFlows = append(allFlows, flow)
-			}
-		}
+		// Return as soon as we find flows for a user
+		return &common.ReadResult{
+			Rows:     int64(len(flows)),
+			Data:     flows,
+			NextPage: "",
+			Done:     true,
+		}, nil
 	}
 
 	return &common.ReadResult{
-		Rows:     int64(len(allFlows)),
-		Data:     allFlows,
-		NextPage: "", // Pagination is not supported because flows are aggregated
-		// from multiple users into a single result set, making traditional pagination complex
-		Done: true,
+		Rows:     0,
+		Data:     nil,
+		NextPage: "",
+		Done:     true,
 	}, nil
 }
 
@@ -118,15 +112,4 @@ func (c *Connector) fetchFlowsForUser(ctx context.Context, userEmail string, con
 	}
 
 	return result.Data, nil
-}
-
-// isFlowAlreadyAdded checks if a flow with the given ID already exists in the slice.
-func (c *Connector) isFlowAlreadyAdded(flows []common.ReadResultRow, flowID string) bool {
-	for _, flow := range flows {
-		if existingFlowID, ok := flow.Raw["id"].(string); ok && existingFlowID == flowID {
-			return true
-		}
-	}
-
-	return false
 }
