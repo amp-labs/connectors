@@ -43,7 +43,12 @@ func ZoominfoAuth(ctx context.Context, username, password string) (string, error
 
 	client := &http.Client{}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://api.zoominfo.com/authenticate", bytes.NewReader(jsonData)) //nolint:111
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		"https://api.zoominfo.com/authenticate",
+		bytes.NewReader(jsonData),
+	)
 	if err != nil {
 		return "", err
 	}
