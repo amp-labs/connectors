@@ -11,7 +11,7 @@ Note:
 - For updating the objects, it return a 204 No Content HTTP status code instead of response body.
 
 ---------------------------------------------------------------------
-| Object                  | Resource                | Method         |
+| Object                  | Resource                | Method        |
 | adTargetingFacets       | adTargetingFacets       | read          |
 | dmpEngagementSourceTypes| dmpEngagementSourceTypes| read          |
 | adCampaignGroups        | adCampaignGroups        | read, write   |
