@@ -3,6 +3,7 @@ package asana
 import (
 	"context"
 	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -14,7 +15,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportedObjectsByRead[c.Module.ID].Has(config.ObjectName) {
+	if !supportedObjectsByRead.Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -46,6 +47,10 @@ func (c *Connector) buildURL(config common.ReadParams) (*urlbuilder.URL, error) 
 	if err != nil {
 		return nil, err
 	}
+
+	fieldsStr := strings.Join(config.Fields.List(), ",")
+
+	url.WithQueryParam("opt_fields", fieldsStr)
 
 	if supportLimitAndOffset.Has(config.ObjectName) {
 		url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
