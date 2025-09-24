@@ -7,6 +7,8 @@ const (
 )
 
 const (
+	// ModuleGoogleAds is the module used for listing Ad campaigns and groups.
+	ModuleGoogleAds common.ModuleID = "ads"
 	// ModuleGoogleCalendar is the module used for listing user calendars.
 	ModuleGoogleCalendar common.ModuleID = "calendar"
 	// ModuleGoogleContacts is the module used for listing contacts from People API.
@@ -32,6 +34,15 @@ func init() {
 		},
 		DefaultModule: ModuleGoogleCalendar,
 		Modules: &Modules{
+			ModuleGoogleAds: {
+				BaseURL:     "https://googleads.googleapis.com",
+				DisplayName: "Google Ads",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
 			ModuleGoogleCalendar: {
 				BaseURL:     "https://www.googleapis.com/calendar",
 				DisplayName: "Google Calendar",
