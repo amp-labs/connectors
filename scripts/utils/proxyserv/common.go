@@ -8,9 +8,11 @@ import (
 	"os"
 	"strings"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
 )
@@ -76,8 +78,36 @@ func getProviderConfig(provider string, catalogVariables []catalogreplacer.Catal
 	return config
 }
 
-func getBaseURL(providerInfo *providers.ProviderInfo) *url.URL {
-	target, err := url.Parse(providerInfo.BaseURL)
+// getBaseURL will use module URL if module is specified in the registry.
+// Otherwise, it will fall back internally to ProviderInfo.BaseURL.
+func (f Factory) getBaseURL() *url.URL {
+	// Determine what module proxy should use.
+	moduleID, err := f.Registry.GetString(credscanning.Fields.Module.Name)
+	if err != nil {
+		moduleID = string(common.ModuleRoot)
+	}
+
+	// Convert catalog variables into the registry of metadata.
+	metadata := make(map[string]string)
+
+	for _, variable := range f.CatalogVariables {
+		plan := variable.GetSubstitutionPlan()
+		metadata[plan.From] = plan.To
+	}
+
+	// Workspace is supplied separately from the metadata registry.
+	workspace := metadata["workspace"]
+
+	providerContext, err := components.NewProviderContext(f.Provider, common.ModuleID(moduleID), workspace, metadata)
+	if err != nil {
+		panic(err)
+	}
+
+	baseURL := providerContext.ModuleInfo().BaseURL
+
+	slog.Info("Directing calls to", "url", baseURL)
+
+	target, err := url.Parse(baseURL)
 	if err != nil {
 		panic(err)
 	}
