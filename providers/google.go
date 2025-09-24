@@ -7,6 +7,8 @@ const (
 )
 
 const (
+	// ModuleGoogleAds is the module used for listing Ad campaigns and groups.
+	ModuleGoogleAds common.ModuleID = "ads"
 	// ModuleGoogleCalendar is the module used for listing user calendars.
 	// https://developers.google.com/workspace/calendar/api/v3/reference
 	ModuleGoogleCalendar common.ModuleID = "calendar"
@@ -37,6 +39,15 @@ func init() {
 		},
 		DefaultModule: ModuleGoogleCalendar,
 		Modules: &Modules{
+			ModuleGoogleAds: {
+				BaseURL:     "https://googleads.googleapis.com",
+				DisplayName: "Google Ads",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
 			ModuleGoogleCalendar: {
 				BaseURL:     "https://www.googleapis.com/calendar",
 				DisplayName: "Google Calendar",
@@ -86,6 +97,37 @@ func init() {
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					// Google Ads authorization requires Developer Token.
+					Name:        "developerToken",
+					DisplayName: "Developer Token",
+					DocsURL:     "https://developers.google.com/google-ads/api/rest/auth#developer_token",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleGoogleAds: ModuleDependency{},
+					},
+				},
+				{
+					// Google Ads API calls are done by a manager of customers.
+					Name:        "loginCustomerId",
+					DisplayName: "Login Customer Id (Google Ads Manager Id)",
+					DocsURL:     "https://developers.google.com/google-ads/api/rest/auth#login_customer_id",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleGoogleAds: ModuleDependency{},
+					},
+				},
+				{
+					// Google Ads API call must have a customer as a context to query their Campaigns, Ads.
+					Name:        "customerId",
+					DisplayName: "Customer Id",
+					DocsURL:     "https://developers.google.com/google-ads/api/rest/auth#login_customer_id",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleGoogleAds: ModuleDependency{},
+					},
+				},
+			},
 		},
 	})
 }
