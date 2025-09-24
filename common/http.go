@@ -112,8 +112,9 @@ type ResponseHandler func(rsp *http.Response) (*http.Response, error)
 
 // HTTPClient is an HTTP client that handles OAuth access token refreshes.
 type HTTPClient struct {
-	// Base is one of the URLs used by connector.
 	// Deprecated. HTTPClient should accept URLs to call, but never manage them.
+	// Connector may have more than one URL, therefore this field is not sufficient.
+	// Base is one of the URLs used by connector.
 	Base            string                  // optional base URL. If not set, then all URLs must be absolute.
 	Client          AuthenticatedHTTPClient // underlying HTTP client. Required.
 	ErrorHandler    ErrorHandler            // optional error handler. If not set, then the default error handler is used.
