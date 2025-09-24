@@ -25,7 +25,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 
 	rsp, err := c.Client.Get(ctx, url.String())
-
 	if err != nil {
 		return nil, err
 	}

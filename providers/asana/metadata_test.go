@@ -46,14 +46,16 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					{
 						If:   mockcond.Path("/api/1.0/tags"),
 						Then: mockserver.Response(200, responseTags),
-					}, {
+					},
+					{
 						If:   mockcond.Path("/api/1.0/tags/12225"),
 						Then: mockserver.Response(200, responseSingleTag),
 					},
 					{
 						If:   mockcond.Path("/api/1.0/users"),
 						Then: mockserver.Response(200, responseUsers),
-					}, {
+					},
+					{
 						If:   mockcond.Path("/api/1.0/users/1245"),
 						Then: mockserver.Response(200, responseSingleUser),
 					},

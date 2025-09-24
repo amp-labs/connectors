@@ -50,10 +50,7 @@ var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameWebhooks,
 )
 
+// users, projects and tags requires workspace id for pagination.
 var supportLimitAndOffset = datautils.NewSet( //nolint:gochecknoglobals
-	objectNameWorkspaces,
-	objectNameUsers,
-	objectNameProjects,
-	objectNameTags,
 	objectNameWorkspaces,
 )

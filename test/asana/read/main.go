@@ -45,4 +45,15 @@ func main() {
 	slog.Info("Reading users..")
 	utils.DumpJSON(res, os.Stdout)
 
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "projects",
+		Fields:     connectors.Fields("gid", "name", "created_at", "custom_field_settings"),
+	})
+	if err != nil {
+		utils.Fail("error reading from Asana", "error", err)
+	}
+
+	slog.Info("Reading projects..")
+	utils.DumpJSON(res, os.Stdout)
+
 }
