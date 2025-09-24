@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -82,13 +84,67 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	return &objectMetadata, nil
 }
 
-func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	if len(params.NextPage) != 0 {
+		// Next page.
+		url, err := urlbuilder.New(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+
+		return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	}
+
 	var (
 		url *urlbuilder.URL
 		err error
 	)
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", params.ObjectName)
+	switch {
+	case ObjectWithAccountId.Has(params.ObjectName):
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", "adAccounts", c.AdAccountId, params.ObjectName)
+	default:
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", params.ObjectName)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	if ObjectsWithSearchQueryParam.Has(params.ObjectName) {
+		url.WithQueryParam("q", "search")
+
+		url.WithQueryParam("pageSize", strconv.Itoa(pageSize))
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("LinkedIn-Version", LinkedInVersion) // nolint:canonicalheader
+	req.Header.Add("X-Restli-Protocol-Version", "2.0.0")
+
+	return req, nil
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath("elements"),
+		makeNextRecord(request.URL),
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "rest", params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -130,5 +186,50 @@ func (c *Connector) parseWriteResponse(
 		RecordId: RecordId,
 		Errors:   nil,
 		Data:     nil,
+	}, nil
+}
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	switch {
+	case ObjectWithAccountId.Has(params.ObjectName):
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", "adAccounts",
+			c.AdAccountId, params.ObjectName, params.RecordId)
+	default:
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", params.ObjectName, params.RecordId)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("LinkedIn-Version", LinkedInVersion) // nolint:canonicalheader
+	req.Header.Add("X-Restli-Protocol-Version", "2.0.0")
+
+	return req, nil
+}
+
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context,
+	params common.DeleteParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	if resp.Code != http.StatusNoContent {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, resp.Code)
+	}
+
+	// A successful delete returns 200 OK
+	return &common.DeleteResult{
+		Success: true,
 	}, nil
 }
