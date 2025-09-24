@@ -31,7 +31,7 @@ func (c *Connector) ListObjectMetadata(
 
 		recordId, err := c.fetchSingleRecord(ctx, url.String())
 		if err != nil {
-			log.Println("Error fetching single record for object:", objectName, "error:", err)
+			log.Println("Error fetching record for object:", objectName, "error:", err)
 			data.AppendError(objectName, err)
 
 			continue

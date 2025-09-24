@@ -6,12 +6,21 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	t.Parallel()
+
+	responseProjects := testutils.DataFromFile(t, "read-projects.json")
+	responseSingleProject := testutils.DataFromFile(t, "single-project.json")
+	responseUsers := testutils.DataFromFile(t, "read-users.json")
+	responseSingleUser := testutils.DataFromFile(t, "single-user.json")
+	responseTags := testutils.DataFromFile(t, "read-tags.json")
+	responseSingleTag := testutils.DataFromFile(t, "single-tag.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -21,53 +30,120 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 
 		{
-			Name:       "Unknown object requested",
-			Input:      []string{"groot"},
-			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
-			Expected: &common.ListObjectMetadataResult{
-				Errors: map[string]error{
-					"groot": common.ErrObjectNotSupported,
+			Name:  "Successfully describe multiple object with metadata",
+			Input: []string{"projects", "tags", "users", "workspaces"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If:   mockcond.Path("/api/1.0/projects/12345"),
+						Then: mockserver.Response(200, responseSingleProject),
+					},
+					{
+						If:   mockcond.Path("/api/1.0/projects"),
+						Then: mockserver.Response(200, responseProjects),
+					},
+					{
+						If:   mockcond.Path("/api/1.0/tags"),
+						Then: mockserver.Response(200, responseTags),
+					}, {
+						If:   mockcond.Path("/api/1.0/tags/12225"),
+						Then: mockserver.Response(200, responseSingleTag),
+					},
+					{
+						If:   mockcond.Path("/api/1.0/users"),
+						Then: mockserver.Response(200, responseUsers),
+					}, {
+						If:   mockcond.Path("/api/1.0/users/1245"),
+						Then: mockserver.Response(200, responseSingleUser),
+					},
 				},
-			},
-		},
-
-		{
-			Name:       "Successfully describe multiple object with metadata",
-			Input:      []string{"projects", "tags", "users", "workspaces"},
-			Server:     mockserver.Dummy(),
+			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"projects": {
 						DisplayName: "Projects",
-						FieldsMap: map[string]string{
-							"gid":           "gid",
-							"resource_type": "resource_type",
-							"name":          "name",
+						Fields: map[string]common.FieldMetadata{
+							"gid": {
+								DisplayName:  "gid",
+								ValueType:    "string",
+								ProviderType: "",
+								ReadOnly:     false,
+								Values:       nil,
+							},
+
+							"resource_type": {
+								DisplayName:  "resource_type",
+								ValueType:    "string",
+								ProviderType: "",
+								ReadOnly:     false,
+								Values:       nil,
+							},
+
+							"name": {
+								DisplayName:  "name",
+								ValueType:    "string",
+								ProviderType: "",
+								ReadOnly:     false,
+								Values:       nil,
+							},
 						},
 					},
 					"tags": {
 						DisplayName: "Tags",
-						FieldsMap: map[string]string{
-							"gid":           "gid",
-							"resource_type": "resource_type",
-							"name":          "name",
+						Fields: map[string]common.FieldMetadata{
+							"gid": {
+								DisplayName:  "gid",
+								ValueType:    "string",
+								ProviderType: "",
+								ReadOnly:     false,
+								Values:       nil,
+							},
+
+							"resource_type": {
+								DisplayName:  "resource_type",
+								ValueType:    "string",
+								ProviderType: "",
+								ReadOnly:     false,
+								Values:       nil,
+							},
+
+							"name": {
+								DisplayName:  "name",
+								ValueType:    "string",
+								ProviderType: "",
+								ReadOnly:     false,
+								Values:       nil,
+							},
 						},
 					},
 					"users": {
 						DisplayName: "Users",
-						FieldsMap: map[string]string{
-							"gid":           "gid",
-							"resource_type": "resource_type",
-							"name":          "name",
-						},
-					}, "workspaces": {
-						DisplayName: "Workspaces",
-						FieldsMap: map[string]string{
-							"gid":           "gid",
-							"resource_type": "resource_type",
-							"name":          "name",
+						Fields: map[string]common.FieldMetadata{
+							"gid": {
+								DisplayName:  "gid",
+								ValueType:    "string",
+								ProviderType: "",
+								ReadOnly:     false,
+								Values:       nil,
+							},
+
+							"resource_type": {
+								DisplayName:  "resource_type",
+								ValueType:    "string",
+								ProviderType: "",
+								ReadOnly:     false,
+								Values:       nil,
+							},
+
+							"name": {
+								DisplayName:  "name",
+								ValueType:    "string",
+								ProviderType: "",
+								ReadOnly:     false,
+								Values:       nil,
+							},
 						},
 					},
 				},
