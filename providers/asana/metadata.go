@@ -21,6 +21,7 @@ func (c *Connector) ListObjectMetadata(
 		url, err := c.getAPIURL(objectName)
 		if err != nil {
 			data.AppendError(objectName, err)
+
 			continue
 		}
 
@@ -32,19 +33,18 @@ func (c *Connector) ListObjectMetadata(
 		if err != nil {
 			log.Println("Error fetching single record for object:", objectName, "error:", err)
 			data.AppendError(objectName, err)
+
 			continue
 		}
-
-		log.Println("Fetched record ID:", recordId, "for object:", objectName)
 
 		metadata, err := c.fetchObjectMetadata(ctx, objectName, recordId)
 		if err != nil {
 			data.AppendError(objectName, err)
+
 			continue
 		}
 
 		data.Result[objectName] = *metadata
-
 	}
 
 	return data, nil
@@ -65,7 +65,7 @@ func (c *Connector) fetchSingleRecord(ctx context.Context, url string) (string, 
 		return "", common.ErrMissingExpectedValues
 	}
 
-	records, ok := (*res)["data"].([]any)
+	records, ok := (*res)["data"].([]any) //nolint:varnamelen
 	if !ok {
 		return "", common.ErrMissingExpectedValues
 	}
@@ -79,7 +79,7 @@ func (c *Connector) fetchSingleRecord(ctx context.Context, url string) (string, 
 		return "", common.ErrMissingExpectedValues
 	}
 
-	// We just need record to fetch the object metadata.
+	// We just need record id to fetch the object metadata.
 	recordId, ok := firstRecord["gid"].(string)
 	if !ok {
 		return "", common.ErrMissingExpectedValues
@@ -91,7 +91,6 @@ func (c *Connector) fetchSingleRecord(ctx context.Context, url string) (string, 
 func (c *Connector) fetchObjectMetadata(
 	ctx context.Context, objectName, recordId string,
 ) (*common.ObjectMetadata, error) {
-
 	objectMetadata := common.ObjectMetadata{
 		Fields:      make(map[string]common.FieldMetadata),
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
