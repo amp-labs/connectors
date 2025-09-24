@@ -19,6 +19,7 @@ type Connector struct {
 	*components.URLs
 	common.RequireAuthenticatedClient
 
+	Ads      *contacts.Adapter
 	Calendar *calendar.Adapter
 	Contacts *contacts.Adapter
 }
@@ -57,6 +58,10 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 }
 
 func (c Connector) setUnitTestBaseURL(url string) {
+	if c.Ads != nil {
+		c.Ads.SetUnitTestBaseURL(url)
+	}
+
 	if c.Calendar != nil {
 		c.Calendar.SetUnitTestBaseURL(url)
 	}
@@ -69,6 +74,10 @@ func (c Connector) setUnitTestBaseURL(url string) {
 func (c Connector) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
 ) (*connectors.ListObjectMetadataResult, error) {
+	if c.Ads != nil {
+		return c.Ads.ListObjectMetadata(ctx, objectNames)
+	}
+
 	if c.Calendar != nil {
 		return c.Calendar.ListObjectMetadata(ctx, objectNames)
 	}
