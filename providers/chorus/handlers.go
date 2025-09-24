@@ -3,6 +3,8 @@ package chorus
 import (
 	"context"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -75,4 +77,56 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if PaginationObject.Has(params.ObjectName) {
+		url.WithQueryParam("page[size]", strconv.Itoa(PageSize))
+
+		if params.NextPage != "" {
+			url.WithQueryParam("page[number]", params.NextPage.String())
+		}
+	}
+
+	if IncrementalObjectQueryParam.Has(params.ObjectName) {
+		startDate := params.Since.Format(time.RFC3339)
+
+		endDate := params.Until.Format(time.RFC3339)
+
+		url.WithQueryParam(IncrementalObjectQueryParam.Get(params.ObjectName), startDate+":"+endDate)
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	var (
+		nextPage int
+		err      error
+	)
+
+	if params.NextPage != "" {
+		nextPage, err = strconv.Atoi(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath("data"),
+		makeNextRecord(nextPage),
+		DataMarshall(response),
+		params.Fields,
+	)
 }
