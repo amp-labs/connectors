@@ -159,6 +159,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	if err != nil {
 		return nil, err
 	}
+
 	if params.RecordId != "" {
 		url.AddPath(params.RecordId)
 	}
