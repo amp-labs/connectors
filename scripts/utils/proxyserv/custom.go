@@ -18,7 +18,7 @@ func (f Factory) CreateProxyCustom(ctx context.Context) *Proxy {
 	fields := getCustomFields(providerInfo)
 	secrets := getCustomSecrets(f.Registry, fields)
 	httpClient := setupCustomHTTPClient(ctx, providerInfo, secrets, f.Debug, f.Substitutions)
-	baseURL := getBaseURL(providerInfo)
+	baseURL := f.getBaseURL()
 
 	return newProxy(baseURL, httpClient)
 }

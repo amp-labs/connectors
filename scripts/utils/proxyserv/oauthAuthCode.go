@@ -16,7 +16,7 @@ func (f Factory) CreateProxyOAuth2AuthCode(ctx context.Context) *Proxy {
 	providerInfo := getProviderConfig(f.Provider, f.CatalogVariables)
 	cfg := configureOAuthAuthCode(params.ID, params.Secret, params.Scopes, providerInfo)
 	httpClient := setupOAuth2AuthCodeHTTPClient(ctx, providerInfo, cfg, tokens, f.Debug, f.Substitutions)
-	baseURL := getBaseURL(providerInfo)
+	baseURL := f.getBaseURL()
 
 	return newProxy(baseURL, httpClient)
 }
