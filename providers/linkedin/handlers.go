@@ -144,11 +144,21 @@ func (c *Connector) parseReadResponse(
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "rest", params.ObjectName)
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	switch {
+	case ObjectWithAccountId.Has(params.ObjectName):
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", "adAccounts", c.AdAccountId, params.ObjectName)
+	default:
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", params.ObjectName)
+	}
+
 	if err != nil {
 		return nil, err
 	}
-
 	if params.RecordId != "" {
 		url.AddPath(params.RecordId)
 	}
