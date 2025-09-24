@@ -84,5 +84,36 @@ func init() {
 			Subscribe: false,
 			Write:     true,
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					// Google Ads authorization requires Developer Token.
+					Name:        "developerToken",
+					DisplayName: "Developer Token",
+					DocsURL:     "https://developers.google.com/google-ads/api/rest/auth#developer_token",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleGoogleAds: ModuleDependency{},
+					},
+				},
+				{
+					// Google Ads API calls are done by a manager of customers.
+					Name:        "loginCustomerId",
+					DisplayName: "Login Customer Id (Google Ads Manager Id)",
+					DocsURL:     "https://developers.google.com/google-ads/api/rest/auth#login_customer_id",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleGoogleAds: ModuleDependency{},
+					},
+				},
+				{
+					// Google Ads API call must have a customer as a context to query their Campaigns, Ads.
+					Name:        "customerId",
+					DisplayName: "Customer Id",
+					DocsURL:     "https://developers.google.com/google-ads/api/rest/auth#login_customer_id",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleGoogleAds: ModuleDependency{},
+					},
+				},
+			},
+		},
 	})
 }
