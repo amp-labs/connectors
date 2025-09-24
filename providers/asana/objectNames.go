@@ -2,7 +2,6 @@ package asana
 
 import (
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/providers/asana/metadata"
 )
 
 // Some of the objects (allocations, goals, memberships, portfolios, tasks)
@@ -28,7 +27,12 @@ const (
 )
 
 // Supported object names can be found under schemas.json.
-var supportedObjectsByRead = metadata.Schemas.ObjectNames() //nolint:gochecknoglobals
+var supportedObjectsByRead = datautils.NewSet( //nolint:gochecknoglobals
+	objectNameProjects,
+	objectNameTags,
+	objectNameUsers,
+	objectNameWorkspaces,
+)
 
 var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameAccessRequests,
@@ -46,10 +50,7 @@ var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameWebhooks,
 )
 
+// users, projects and tags requires workspace id for pagination.
 var supportLimitAndOffset = datautils.NewSet( //nolint:gochecknoglobals
-	objectNameWorkspaces,
-	objectNameUsers,
-	objectNameProjects,
-	objectNameTags,
 	objectNameWorkspaces,
 )
