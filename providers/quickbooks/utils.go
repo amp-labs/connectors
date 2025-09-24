@@ -2,7 +2,6 @@ package quickbooks
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -60,8 +59,6 @@ func buildQuery(params common.ReadParams) string {
 	}
 
 	query += paginationQuery
-
-	log.Printf("Constructed query: %s", query)
 
 	return query
 }

@@ -55,6 +55,11 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, fmt.Errorf("couldn't convert the data response field QueryResponse to a map: %w", common.ErrMissingExpectedValues) // nolint:lll
 	}
 
+	if objectName == "creditCardPayment" {
+		// response key of creditCardPayment is CreditCardPaymentTxn
+		objectName = "CreditCardPaymentTxn"
+	}
+
 	records, ok := QueryResponse[naming.CapitalizeFirstLetter(objectName)].([]any) // nolint:varnamelen
 
 	if !ok {

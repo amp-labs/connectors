@@ -26,11 +26,11 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "account",
-		Fields:     connectors.Fields("Name", "domain", "Classification"),
-		Since:      time.Now().Add(-400 * time.Hour),
+		Fields:     connectors.Fields("Id"),
+		Since:      time.Now().Add(-600 * time.Hour),
 	})
 	if err != nil {
-		utils.Fail("error reading from Xero", "error", err)
+		utils.Fail("error reading from QuickBooks", "error", err)
 	}
 
 	slog.Info("Reading accounts..")

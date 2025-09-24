@@ -11,9 +11,21 @@ import (
 
 func getRecords(objectName string) common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		rcds, err := jsonquery.New(node, "QueryResponse").ArrayOptional(naming.CapitalizeFirstLetter(objectName))
-		if err != nil {
+		queryResponse, err := jsonquery.New(node).ObjectRequired("QueryResponse")
+
+		if err != nil || queryResponse == nil {
 			return nil, err
+		}
+
+		if objectName == "creditCardPayment" {
+			// response key of creditCardPayment is CreditCardPaymentTxn
+			objectName = "CreditCardPaymentTxn"
+		}
+
+		rcds, err := jsonquery.New(queryResponse).ArrayRequired(naming.CapitalizeFirstLetter(objectName))
+		if err != nil || rcds == nil {
+			// some endpoints return an empty object instead of an empty array when there are no records
+			return []map[string]any{}, nil //nolint:nilerr
 		}
 
 		return jsonquery.Convertor.ArrayToMap(rcds)
@@ -22,12 +34,17 @@ func getRecords(objectName string) common.RecordsFunc {
 
 func nextRecordsURL() common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		startPosition, err := jsonquery.New(node, "QueryResponse").IntegerRequired("startPosition")
-		if err != nil {
+		queryRes, err := jsonquery.New(node).ObjectRequired("QueryResponse")
+		if err != nil || queryRes == nil {
 			return "", err
 		}
 
-		currentPageSize, err := jsonquery.New(node, "QueryResponse").IntegerRequired("maxResults")
+		startPosition, err := jsonquery.New(queryRes).IntegerOptional("startPosition")
+		if err != nil || startPosition == nil {
+			return "", err
+		}
+
+		currentPageSize, err := jsonquery.New(queryRes).IntegerRequired("maxResults")
 		if err != nil {
 			return "", err
 		}
@@ -41,7 +58,7 @@ func nextRecordsURL() common.NextPageFunc {
 			return "", nil
 		}
 
-		nextStartPosition := startPosition + pageSizeInt64
+		nextStartPosition := *startPosition + pageSizeInt64
 
 		return strconv.Itoa(int(nextStartPosition)), nil
 	}
