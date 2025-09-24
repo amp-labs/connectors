@@ -26,7 +26,7 @@ func main() {
 
 	res, err := conn.Read(ctx, connectors.ReadParams{
 		ObjectName: "contacts",
-		Since:      time.Now().Add(-3000 * time.Hour),
+		Since:      time.Now().Add(-2 * time.Hour),
 		Fields:     connectors.Fields("id", "firstName", "lastName", "isAnonymous"),
 	})
 	if err != nil {
@@ -50,7 +50,7 @@ func main() {
 
 	res, err = conn.Read(ctx, connectors.ReadParams{
 		ObjectName: "calls",
-		Since:      time.Now().Add(-3000 * time.Hour),
+		Since:      time.Now().Add(-1 * time.Hour),
 		Fields:     connectors.Fields("id"),
 	})
 	if err != nil {
@@ -58,5 +58,17 @@ func main() {
 	}
 
 	fmt.Println("Reading... Calls")
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, connectors.ReadParams{
+		ObjectName: "articles",
+		Since:      time.Now().Add(-1 * time.Hour),
+		Fields:     connectors.Fields("id"),
+	})
+	if err != nil {
+		utils.Fail("error reading from connector", "error", err)
+	}
+
+	fmt.Println("Reading... Articles")
 	utils.DumpJSON(res, os.Stdout)
 }

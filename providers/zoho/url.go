@@ -2,6 +2,7 @@ package zoho
 
 import (
 	"strings"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -9,26 +10,37 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
+const (
+	timeRangeLayout = "2006-01-02T15:04:05.000Z"
+	articlesObject  = "articles"
+)
+
 type (
 	// objectNameTransformer takes an object and transfoms it to a standard zoho provider api name.
 	objectNameTransformer func(string) string
 
-	// objectNameTransformer takes a list of field names and transforms them to the appropriate expected field names.
-	fieldsTrasformer func([]string) string
+	// fieldsTransformer takes a list of field names and transforms them to the appropriate expected field names.
+	fieldsTransformer func([]string) string
+)
+
+var (
+	identityFn  = func(s string) string { return s }                            //nolint: gochecknoglobals
+	fieldJoiner = func(flds []string) string { return strings.Join(flds, ",") } //nolint: gochecknoglobals
 )
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
 	switch c.moduleID { // nolint: exhaustive
 	case providers.ZohoDesk:
-		return c.buildModuleURL(config, deskAPIVersion, func(s string) string { return s },
-			func(flds []string) string { return strings.Join(flds, ",") })
+		// Desk uses lowercase field names with comma separation
+		return c.buildModuleURL(config, deskAPIVersion, identityFn, fieldJoiner)
 	default:
+		// CRM uses capitalized field names with custom formatting
 		return c.buildModuleURL(config, crmAPIVersion, naming.CapitalizeFirstLetter, constructFieldNames)
 	}
 }
 
 func (c *Connector) buildModuleURL(params common.ReadParams, apiVersion string,
-	objTransfomer objectNameTransformer, fldTransformer fieldsTrasformer,
+	objTransfomer objectNameTransformer, fldTransformer fieldsTransformer,
 ) (*urlbuilder.URL, error) {
 	obj := params.ObjectName
 
@@ -50,10 +62,41 @@ func (c *Connector) buildModuleURL(params common.ReadParams, apiVersion string,
 		return nil, err
 	}
 
+	c.constructURLIncrementalReqDesk(url, params)
+
 	fields := fldTransformer(params.Fields.List())
-	url.WithQueryParam("fields", fields)
+	if params.ObjectName != articlesObject {
+		url.WithQueryParam("fields", fields)
+	}
 
 	return url, nil
+}
+
+func (c *Connector) constructURLIncrementalReqDesk(url *urlbuilder.URL, params common.ReadParams) { //nolint:cyclop
+	if c.moduleID == providers.ZohoDesk { //nolint:nestif
+		if !params.Since.IsZero() {
+			// If we're doing incrementalRead,
+			// we need to explicitly Require the timestampKey fields in the response.
+			if objectsSortableByCreatedTime.Has(params.ObjectName) && !params.Fields.Has(createdTimeKey) {
+				params.Fields.Add([]string{createdTimeKey})
+			}
+
+			if objectsSortablebyModifiedTime.Has(params.ObjectName) && !params.Fields.Has(modifiedTimeKey) {
+				params.Fields.Add([]string{modifiedTimeKey})
+			}
+
+			switch {
+			case endpointsWithModifiedAfterParam.Has(params.ObjectName):
+				url.WithQueryParam("modifiedAfter", params.Since.Format(time.RFC3339))
+			case objectsSortableByCreatedTime.Has(params.ObjectName):
+				url.WithQueryParam("sortBy", "-createdTime")
+			case objectsSortablebyModifiedTime.Has(params.ObjectName):
+				url.WithQueryParam("sortBy", "-modifiedTime")
+			}
+		}
+
+		url.WithQueryParam("limit", deskLimit)
+	}
 }
 
 // Zoho field names typically start with a capital letter.

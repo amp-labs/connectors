@@ -2,11 +2,12 @@ package zoho
 
 import (
 	"context"
-	"net/http"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/spyzhov/ajson"
 )
 
 // Read retrieves data based on the provided common.ReadParams configuration parameters.
@@ -40,15 +41,32 @@ func (c *Connector) read(ctx context.Context, config common.ReadParams,
 		return nil, err
 	}
 
-	// There is a special case for most of the objects in zoho Desk
-	// The API responds with status code is 204 with an empty response.
-	// where there are no records to fetch.
-	if res.Code == http.StatusNoContent {
+	node, hasData := res.Body()
+	if !hasData {
+		// There is a special case for most of the objects in zoho Desk
+		// The API responds with an empty response body.
+		// indicating there are no records to fetch.
 		return &common.ReadResult{
 			Rows: 0,
 			Data: []common.ReadResultRow{},
 			Done: true,
 		}, nil
+	}
+
+	if c.moduleID == providers.ZohoDesk {
+		switch {
+		case objectsSortableByCreatedTime.Has(config.ObjectName):
+			return manualIncrementalSync(node, dataKey, config, createdTimeKey, timeRangeLayout, getNextRecordsURLDesk(url))
+		case objectsSortablebyModifiedTime.Has(config.ObjectName):
+			return manualIncrementalSync(node, dataKey, config, modifiedTimeKey, timeRangeLayout, getNextRecordsURLDesk(url))
+		default:
+			return common.ParseResult(res,
+				common.ExtractRecordsFromPath(dataKey),
+				getNextRecordsURLDesk(url),
+				common.GetMarshaledData,
+				config.Fields,
+			)
+		}
 	}
 
 	return common.ParseResult(res,
@@ -72,4 +90,35 @@ func constructHeaders(config common.ReadParams) []common.Header {
 	}
 
 	return []common.Header{}
+}
+
+// Manual incremental synchronization implementation for Apollo
+//
+// Apollo lacks native incremental sync support. This function iterates through records
+// and returns those created or updated after the specified timestamp.
+func manualIncrementalSync(node *ajson.Node, recordsKey string, config common.ReadParams, //nolint:cyclop
+	timestampKey string, timestampFormat string, nextPageFunc common.NextPageFunc,
+) (*common.ReadResult, error) {
+	records, nextPage, err := readhelper.FilterSortedRecords(node, recordsKey,
+		config.Since, timestampKey, timestampFormat, nextPageFunc)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := common.GetMarshaledData(records, config.Fields.List())
+	if err != nil {
+		return nil, err
+	}
+
+	var done bool
+	if nextPage == "" {
+		done = true
+	}
+
+	return &common.ReadResult{
+		Rows:     int64(len(records)),
+		Data:     rows,
+		NextPage: common.NextPageToken(nextPage),
+		Done:     done,
+	}, nil
 }
