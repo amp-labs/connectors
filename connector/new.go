@@ -79,6 +79,7 @@ import (
 	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/seismic"
+	"github.com/amp-labs/connectors/providers/sellsy"
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/stripe"
@@ -174,6 +175,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Salesforce:              wrapper(newSalesforceConnector),
 	providers.Salesloft:               wrapper(newSalesloftConnector),
 	providers.Seismic:                 wrapper(newSeismicConnector),
+	providers.Sellsy:                  wrapper(newSellsyConnector),
 	providers.ServiceNow:              wrapper(newServiceNowConnector),
 	providers.Smartlead:               wrapper(newSmartleadConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
@@ -546,6 +548,12 @@ func newFreshdeskConnector(
 		freshdesk.WithAuthenticatedClient(params.AuthenticatedClient),
 		freshdesk.WithWorkspace(params.Workspace),
 	)
+}
+
+func newSellsyConnector(
+	params common.ConnectorParams,
+) (*sellsy.Connector, error) {
+	return sellsy.NewConnector(params)
 }
 
 func newServiceNowConnector(

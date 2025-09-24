@@ -7,19 +7,15 @@ Below is an exhaustive list of objects & methods supported on the objects
 Note: 
 - In this connector, there is no GetAll endpoint; it only has search endpoints.
 - This connector supports write operation for some other objects. 
-- For creating the objects, it return a 201 Created HTTP status code and return shared ID in the x-restli-id response header instead of response body.
+- For creating the objects, it return a 201 Created HTTP status code and return shared ID in the X-Restli-Id response header instead of response body.
 - For updating the objects, it return a 204 No Content HTTP status code instead of response body.
-
-linkedIn API Environment: rest
-
-LinkedIn API version: v2
 
 ---------------------------------------------------------------------
 | Object                  | Resource                | Method        |
 | adTargetingFacets       | adTargetingFacets       | read          |
 | dmpEngagementSourceTypes| dmpEngagementSourceTypes| read          |
-| adCampaignGroups        | adCampaignGroups        | read          |
-| adCampaigns             | adCampaigns             | read          |
+| adCampaignGroups        | adCampaignGroups        | read, write   |
+| adCampaigns             | adCampaigns             | read, write   |
 | adAccounts              | adAccounts              | read, write   |
 | adTargetTemplates       | adTargetTemplates       | write         |
 | adPublisherRestrictions | adPublisherRestrictions | write         |
