@@ -17,6 +17,7 @@ import (
 // Only one adapter can be non-nil and will be delegated to on reading/writing operations.
 type Connector struct {
 	*components.Connector
+	*components.URLs
 	common.RequireAuthenticatedClient
 
 	Calendar *calendar.Adapter
@@ -33,6 +34,8 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	connector.URLs = components.NewURLs(connector.Connector)
 
 	if connector.Module() == providers.ModuleGoogleCalendar {
 		adapter, err := calendar.NewAdapter(params)
