@@ -43,11 +43,13 @@ var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameTags,
 	objectNameTasks,
 	objectNameTeams,
-	objectNameUsers,
 	objectNameWebhooks,
-	objectNameWorkspaces,
 )
 
 var supportLimitAndOffset = datautils.NewSet( //nolint:gochecknoglobals
+	objectNameWorkspaces,
+	objectNameUsers,
+	objectNameProjects,
+	objectNameTags,
 	objectNameWorkspaces,
 )
