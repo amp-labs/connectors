@@ -1,0 +1,4474 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "billable": {
+          "displayName": "Project Metric Billables",
+          "path": "/projects/metrics/billable.json",
+          "responseKey": "data",
+          "fields": {
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "value": {
+              "displayName": "Value",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "categories": {
+          "displayName": "Categories",
+          "path": "/projects/teamwork/categories.json",
+          "responseKey": "projectCategories",
+          "fields": {
+            "color": {
+              "displayName": "Color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "count": {
+              "displayName": "Count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parent": {
+              "displayName": "Parent",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "parentId": {
+              "displayName": "Parent Id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "comments": {
+          "displayName": "Comments",
+          "path": "/comments.json",
+          "responseKey": "comments",
+          "fields": {
+            "body": {
+              "displayName": "Body",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "commentLink": {
+              "displayName": "Comment Link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contentType": {
+              "displayName": "Content Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dateDeleted": {
+              "displayName": "Date Deleted",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dateLastEdited": {
+              "displayName": "Date Last Edited",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deletedBy": {
+              "displayName": "Deleted By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "deletedByUserId": {
+              "displayName": "Deleted By User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "fileCount": {
+              "displayName": "File Count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "fileIds": {
+              "displayName": "File Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "files": {
+              "displayName": "Files",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "htmlBody": {
+              "displayName": "Html Body",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "installation": {
+              "displayName": "Installation",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "installationId": {
+              "displayName": "Installation Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isPrivate": {
+              "displayName": "Is Private",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "lastEditedBy": {
+              "displayName": "Last Edited By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "lastEditedByUserId": {
+              "displayName": "Last Edited By User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "lockdownID": {
+              "displayName": "Lockdown Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "meta": {
+              "displayName": "Meta",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "object": {
+              "displayName": "Object",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "objectId": {
+              "displayName": "Object Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "objectType": {
+              "displayName": "Object Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "peopleNotifiedCount": {
+              "displayName": "People Notified Count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "postedBy": {
+              "displayName": "Posted By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "postedByUserId": {
+              "displayName": "Posted By User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "postedDateTime": {
+              "displayName": "Posted Date Time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "project": {
+              "displayName": "Project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectId": {
+              "displayName": "Project Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "reactions": {
+              "displayName": "Reactions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "reactionsCount": {
+              "displayName": "Reactions Count",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "companies": {
+          "displayName": "Companies",
+          "path": "/companies.json",
+          "responseKey": "companies",
+          "fields": {
+            "accounts": {
+              "displayName": "Accounts",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "addressOne": {
+              "displayName": "Address One",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "addressTwo": {
+              "displayName": "Address Two",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "budgetDistribution": {
+              "displayName": "Budget Distribution",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "canSeePrivate": {
+              "displayName": "Can See Private",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "cid": {
+              "displayName": "Cid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "city": {
+              "displayName": "City",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "clientManagedBy": {
+              "displayName": "Client Managed By",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "clients": {
+              "displayName": "Clients",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "collaborators": {
+              "displayName": "Collaborators",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "companyDomains": {
+              "displayName": "Company Domains",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "companyNameUrl": {
+              "displayName": "Company Name Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "companyUpdate": {
+              "displayName": "Company Update",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "contacts": {
+              "displayName": "Contacts",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "countryCode": {
+              "displayName": "Country Code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "currency": {
+              "displayName": "Currency",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "emailOne": {
+              "displayName": "Email One",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emailThree": {
+              "displayName": "Email Three",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emailTwo": {
+              "displayName": "Email Two",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fax": {
+              "displayName": "Fax",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "financialBudgetSummary": {
+              "displayName": "Financial Budget Summary",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "industry": {
+              "displayName": "Industry",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "industryId": {
+              "displayName": "Industry Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isOwner": {
+              "displayName": "Is Owner",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "logoUrl": {
+              "displayName": "Logo Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone": {
+              "displayName": "Phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "privateNotes": {
+              "displayName": "Private Notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "privateNotesText": {
+              "displayName": "Private Notes Text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "profileText": {
+              "displayName": "Profile Text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "profitability": {
+              "displayName": "Profitability",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "state": {
+              "displayName": "State",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "stats": {
+              "displayName": "Stats",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "timeBudgetSummary": {
+              "displayName": "Time Budget Summary",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "website": {
+              "displayName": "Website",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "zip": {
+              "displayName": "Zip",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "customfields": {
+          "displayName": "Custom Fields",
+          "path": "/customfields.json",
+          "responseKey": "customfields",
+          "fields": {
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "Created By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "createdByUserId": {
+              "displayName": "Created By User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "currencyCode": {
+              "displayName": "Currency Code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deletedAt": {
+              "displayName": "Deleted At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedBy": {
+              "displayName": "Deleted By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "deletedByUserId": {
+              "displayName": "Deleted By User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "entity": {
+              "displayName": "Entity",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "formula": {
+              "displayName": "Formula",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "groupId": {
+              "displayName": "Group Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isPrivate": {
+              "displayName": "Is Private",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "options": {
+              "displayName": "Options",
+              "valueType": "other"
+            },
+            "project": {
+              "displayName": "Project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectId": {
+              "displayName": "Project Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "required": {
+              "displayName": "Required",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "unitId": {
+              "displayName": "Unit Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedBy": {
+              "displayName": "Updated By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updatedByUserId": {
+              "displayName": "Updated By User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "visibilities": {
+              "displayName": "Visibilities",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "dashboards": {
+          "displayName": "User Dashboards",
+          "path": "/dashboards.json",
+          "responseKey": "dashboards",
+          "fields": {
+            "color": {
+              "displayName": "Color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dashboardPanelIds": {
+              "displayName": "Dashboard Panel Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "dashboardPanels": {
+              "displayName": "Dashboard Panels",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "dashboardSettingIds": {
+              "displayName": "Dashboard Setting Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "dashboardSettings": {
+              "displayName": "Dashboard Settings",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deletedAt": {
+              "displayName": "Deleted At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayOrder": {
+              "displayName": "Display Order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isDefault": {
+              "displayName": "Is Default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "project": {
+              "displayName": "Project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectId": {
+              "displayName": "Project Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "title": {
+              "displayName": "Title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "User",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "userId": {
+              "displayName": "User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "deadlines": {
+          "displayName": "Milestone Metric Deadlines",
+          "path": "/milestones/metrics/deadlines.json",
+          "responseKey": "data",
+          "fields": {
+            "date": {
+              "displayName": "Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "value": {
+              "displayName": "Value",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "features": {
+          "displayName": "Features",
+          "path": "/features.json",
+          "responseKey": "features",
+          "fields": {
+            "endAt": {
+              "displayName": "End At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isBeta": {
+              "displayName": "Is Beta",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "key": {
+              "displayName": "Key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "scope": {
+              "displayName": "Scope",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "source": {
+              "displayName": "Source",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "startAt": {
+              "displayName": "Start At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "value": {
+              "displayName": "Value",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "forms": {
+          "displayName": "Forms",
+          "path": "/forms.json",
+          "responseKey": "forms",
+          "fields": {
+            "allowTeamworkBranding": {
+              "displayName": "Allow Teamwork Branding",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "backgroundColor": {
+              "displayName": "Background Color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "confirmationMessage": {
+              "displayName": "Confirmation Message",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "content": {
+              "displayName": "Content",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createFormTask": {
+              "displayName": "Create Form Task",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "Created By",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "deletedAt": {
+              "displayName": "Deleted At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedBy": {
+              "displayName": "Deleted By",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "destinationObject": {
+              "displayName": "Destination Object",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "hostObject": {
+              "displayName": "Host Object",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "installation": {
+              "displayName": "Installation",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "isShared": {
+              "displayName": "Is Shared",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "notifyTaskAssignees": {
+              "displayName": "Notify Task Assignees",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "primaryColor": {
+              "displayName": "Primary Color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "promptAdditionalSubmissions": {
+              "displayName": "Prompt Additional Submissions",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "redirectUrl": {
+              "displayName": "Redirect Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "responseEmailFieldId": {
+              "displayName": "Response Email Field Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "showProgressBar": {
+              "displayName": "Show Progress Bar",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "state": {
+              "displayName": "State",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "submitButtonText": {
+              "displayName": "Submit Button Text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "taskTitleFieldId": {
+              "displayName": "Task Title Field Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "token": {
+              "displayName": "Token",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "totalSubmissions": {
+              "displayName": "Total Submissions",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedBy": {
+              "displayName": "Updated By",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "healths": {
+          "displayName": "Project Metric Healths",
+          "path": "/projects/metrics/healths.json",
+          "responseKey": "data",
+          "fields": {
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "value": {
+              "displayName": "Value",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "jobroles": {
+          "displayName": "Job Roles",
+          "path": "/jobroles.json",
+          "responseKey": "jobRoles",
+          "fields": {
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdByUser": {
+              "displayName": "Created By User",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "deletedAt": {
+              "displayName": "Deleted At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedByUser": {
+              "displayName": "Deleted By User",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isActive": {
+              "displayName": "Is Active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primaryUsers": {
+              "displayName": "Primary Users",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedByUser": {
+              "displayName": "Updated By User",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "users": {
+              "displayName": "Users",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "latestactivity": {
+          "displayName": "Activities",
+          "path": "/latestactivity.json",
+          "responseKey": "activities",
+          "fields": {
+            "activityType": {
+              "displayName": "Activity Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company": {
+              "displayName": "Company",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "companyId": {
+              "displayName": "Company Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "dateTime": {
+              "displayName": "Date Time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dueDate": {
+              "displayName": "Due Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "extraDescription": {
+              "displayName": "Extra Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "forUser": {
+              "displayName": "For User",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "forUserId": {
+              "displayName": "For User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "forUserName": {
+              "displayName": "For User Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isPrivate": {
+              "displayName": "Is Private",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "item": {
+              "displayName": "Item",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "itemId": {
+              "displayName": "Item Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "itemLink": {
+              "displayName": "Item Link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "latestActivityType": {
+              "displayName": "Latest Activity Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "link": {
+              "displayName": "Link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lockdown": {
+              "displayName": "Lockdown",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "lockdownId": {
+              "displayName": "Lockdown Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "project": {
+              "displayName": "Project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectId": {
+              "displayName": "Project Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "publicInfo": {
+              "displayName": "Public Info",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "User",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "userId": {
+              "displayName": "User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "me/timers": {
+          "displayName": "Timers",
+          "path": "/me/timers.json",
+          "responseKey": "timers",
+          "fields": {
+            "billable": {
+              "displayName": "Billable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deletedAt": {
+              "displayName": "Deleted At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "duration": {
+              "displayName": "Duration",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "intervals": {
+              "displayName": "Intervals",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "lastStartedAt": {
+              "displayName": "Last Started At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "project": {
+              "displayName": "Project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectId": {
+              "displayName": "Project Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "running": {
+              "displayName": "Running",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "serverTime": {
+              "displayName": "Server Time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "task": {
+              "displayName": "Task",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "taskId": {
+              "displayName": "Task Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "timeLogId": {
+              "displayName": "Time Log Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "timelog": {
+              "displayName": "Timelog",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "timerLastIntervalEnd": {
+              "displayName": "Timer Last Interval End",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "User",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "userId": {
+              "displayName": "User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "messages": {
+          "displayName": "Messages",
+          "path": "/messages.json",
+          "responseKey": "messages",
+          "fields": {
+            "attachments": {
+              "displayName": "Attachments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "author": {
+              "displayName": "Author",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "body": {
+              "displayName": "Body",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "lastReply": {
+              "displayName": "Last Reply",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "lockdown": {
+              "displayName": "Lockdown",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "message": {
+              "displayName": "Message",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "meta": {
+              "displayName": "Meta",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "peopleNotifiedCount": {
+              "displayName": "People Notified Count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "project": {
+              "displayName": "Project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectId": {
+              "displayName": "Project Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "replyId": {
+              "displayName": "Reply Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "replyStatus": {
+              "displayName": "Reply Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "title": {
+              "displayName": "Title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "milestones": {
+          "displayName": "Milestones",
+          "path": "/milestones.json",
+          "responseKey": "milestones",
+          "fields": {
+            "canComplete": {
+              "displayName": "Can Complete",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "canEdit": {
+              "displayName": "Can Edit",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "changeFollowerIds": {
+              "displayName": "Change Follower Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "changeFollowers": {
+              "displayName": "Change Followers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "commentFollowerIds": {
+              "displayName": "Comment Follower Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "commentFollowers": {
+              "displayName": "Comment Followers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "commentsCount": {
+              "displayName": "Comments Count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "completed": {
+              "displayName": "Completed",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "completedBy": {
+              "displayName": "Completed By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "completedOn": {
+              "displayName": "Completed On",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completerId": {
+              "displayName": "Completer Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "createdBy": {
+              "displayName": "Created By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "createdOn": {
+              "displayName": "Created On",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "creatorUserId": {
+              "displayName": "Creator User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "deadline": {
+              "displayName": "Deadline",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedOn": {
+              "displayName": "Deleted On",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "descriptionHTML": {
+              "displayName": "Description Html",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isDeleted": {
+              "displayName": "Is Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "lastChangedOn": {
+              "displayName": "Last Changed On",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "latestUpdates": {
+              "displayName": "Latest Updates",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "lockdown": {
+              "displayName": "Lockdown",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "lockdownId": {
+              "displayName": "Lockdown Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "numCommentsRead": {
+              "displayName": "Num Comments Read",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "originalDueDate": {
+              "displayName": "Original Due Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "percentageComplete": {
+              "displayName": "Percentage Complete",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "percentageTasksCompleted": {
+              "displayName": "Percentage Tasks Completed",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "private": {
+              "displayName": "Private",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "project": {
+              "displayName": "Project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectId": {
+              "displayName": "Project Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "reminder": {
+              "displayName": "Reminder",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "responsibleParties": {
+              "displayName": "Responsible Parties",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "responsiblePartyIds": {
+              "displayName": "Responsible Party Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tagIds": {
+              "displayName": "Tag Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tasklistIds": {
+              "displayName": "Tasklist Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tasklists": {
+              "displayName": "Tasklists",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "updatedBy": {
+              "displayName": "Updated By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "userFollowingChanges": {
+              "displayName": "User Following Changes",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "userFollowingComments": {
+              "displayName": "User Following Comments",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "userFollowingComplete": {
+              "displayName": "User Following Complete",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "notebooks": {
+          "displayName": "Notebooks",
+          "path": "/notebooks.json",
+          "responseKey": "notebooks",
+          "fields": {
+            "category": {
+              "displayName": "Category",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "categoryId": {
+              "displayName": "Category Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "changeFollowers": {
+              "displayName": "Change Followers",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "commentFollowers": {
+              "displayName": "Comment Followers",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "commentsCount": {
+              "displayName": "Comments Count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "contentHTML": {
+              "displayName": "Content Html",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contents": {
+              "displayName": "Contents",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "Created By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "createdByUserID": {
+              "displayName": "Created By User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "dateCreated": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dateDeleted": {
+              "displayName": "Date Deleted",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dateUpdated": {
+              "displayName": "Date Updated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deletedAt": {
+              "displayName": "Deleted At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedBy": {
+              "displayName": "Deleted By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "deletedByUserID": {
+              "displayName": "Deleted By User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isFullWidth": {
+              "displayName": "Is Full Width",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isPrivate": {
+              "displayName": "Is Private",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "latestVersionNo": {
+              "displayName": "Latest Version No",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "lockdown": {
+              "displayName": "Lockdown",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "lockdownId": {
+              "displayName": "Lockdown Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "locked": {
+              "displayName": "Locked",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "lockedAt": {
+              "displayName": "Locked At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lockedBy": {
+              "displayName": "Locked By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notebookVersion": {
+              "displayName": "Notebook Version",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "notebookVersionCreatedDateTime": {
+              "displayName": "Notebook Version Created Date Time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notebookVersionID": {
+              "displayName": "Notebook Version Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "notebookVersionUpdatedDateTime": {
+              "displayName": "Notebook Version Updated Date Time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "privacy": {
+              "displayName": "Privacy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "project": {
+              "displayName": "Project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectId": {
+              "displayName": "Project Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "readCommentsCount": {
+              "displayName": "Read Comments Count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "secureContent": {
+              "displayName": "Secure Content",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "tagIds": {
+              "displayName": "Tag Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedBy": {
+              "displayName": "Updated By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updatedByUserID": {
+              "displayName": "Updated By User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "userFollowingChanges": {
+              "displayName": "User Following Changes",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "userFollowingComments": {
+              "displayName": "User Following Comments",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "versionCount": {
+              "displayName": "Version Count",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "owners": {
+          "displayName": "Project Metric Owners",
+          "path": "/projects/metrics/owners.json",
+          "responseKey": "data",
+          "fields": {
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "value": {
+              "displayName": "Value",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "people": {
+          "displayName": "Multi",
+          "path": "/people.json",
+          "responseKey": "people",
+          "fields": {
+            "avatarUrl": {
+              "displayName": "Avatar Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "canAccessPortfolio": {
+              "displayName": "Can Access Portfolio",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "canAddProjects": {
+              "displayName": "Can Add Projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "canManagePortfolio": {
+              "displayName": "Can Manage Portfolio",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "company": {
+              "displayName": "Company",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "companyId": {
+              "displayName": "Company Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "companyRoleId": {
+              "displayName": "Company Role Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "Created By",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "firstName": {
+              "displayName": "First Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isAdmin": {
+              "displayName": "Is Admin",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isClientUser": {
+              "displayName": "Is Client User",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isPlaceholderResource": {
+              "displayName": "Is Placeholder Resource",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isServiceAccount": {
+              "displayName": "Is Service Account",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "jobRoles": {
+              "displayName": "Job Roles",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "lastLogin": {
+              "displayName": "Last Login",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastName": {
+              "displayName": "Last Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lengthOfDay": {
+              "displayName": "Length Of Day",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "meta": {
+              "displayName": "Meta",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "skills": {
+              "displayName": "Skills",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "teams": {
+              "displayName": "Teams",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "timezone": {
+              "displayName": "Timezone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "Title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedBy": {
+              "displayName": "Updated By",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "userCost": {
+              "displayName": "User Cost",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "userRate": {
+              "displayName": "User Rate",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "userRates": {
+              "displayName": "User Rates",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "workingHour": {
+              "displayName": "Working Hour",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "workingHoursId": {
+              "displayName": "Working Hours Id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "performance": {
+          "displayName": "People Metric Performances",
+          "path": "/people/metrics/performance.json",
+          "responseKey": "data",
+          "fields": {
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "value": {
+              "displayName": "Value",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "planners": {
+          "displayName": "Workload Planners",
+          "path": "/workload/planners.json",
+          "responseKey": "planners",
+          "fields": {
+            "capacities": {
+              "displayName": "Capacities",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "user": {
+              "displayName": "User",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "userId": {
+              "displayName": "User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "projectcategories": {
+          "displayName": "Categories",
+          "path": "/projectcategories.json",
+          "responseKey": "projectCategories",
+          "fields": {
+            "color": {
+              "displayName": "Color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "count": {
+              "displayName": "Count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parent": {
+              "displayName": "Parent",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "parentId": {
+              "displayName": "Parent Id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "projects": {
+          "displayName": "Projects",
+          "path": "/projects.json",
+          "responseKey": "projects",
+          "fields": {
+            "activePages": {
+              "displayName": "Active Pages",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "allowNotifyAnyone": {
+              "displayName": "Allow Notify Anyone",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "announcement": {
+              "displayName": "Announcement",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category": {
+              "displayName": "Category",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "categoryId": {
+              "displayName": "Category Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "company": {
+              "displayName": "Company",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "companyId": {
+              "displayName": "Company Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "completedAt": {
+              "displayName": "Completed At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completedBy": {
+              "displayName": "Completed By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "Created By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "customFieldValueIds": {
+              "displayName": "Custom Field Value Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "customFieldValues": {
+              "displayName": "Custom Field Values",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "customfieldValues": {
+              "displayName": "Customfield Values",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "defaultPrivacy": {
+              "displayName": "Default Privacy",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "directFileUploadsEnabled": {
+              "displayName": "Direct File Uploads Enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "endAt": {
+              "displayName": "End At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "endDate": {
+              "displayName": "End Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "financialBudget": {
+              "displayName": "Financial Budget",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "financialBudgetId": {
+              "displayName": "Financial Budget Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "harvestTimersEnabled": {
+              "displayName": "Harvest Timers Enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "integrations": {
+              "displayName": "Integrations",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "isBillable": {
+              "displayName": "Is Billable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isOnBoardingProject": {
+              "displayName": "Is On Boarding Project",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isProjectAdmin": {
+              "displayName": "Is Project Admin",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isSampleProject": {
+              "displayName": "Is Sample Project",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isStarred": {
+              "displayName": "Is Starred",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "lastWorkedOn": {
+              "displayName": "Last Worked On",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "latestActivity": {
+              "displayName": "Latest Activity",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "logo": {
+              "displayName": "Logo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "logoColor": {
+              "displayName": "Logo Color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "logoIcon": {
+              "displayName": "Logo Icon",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "minMaxAvailableDates": {
+              "displayName": "Min Max Available Dates",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notifyCommentIncludeCreator": {
+              "displayName": "Notify Comment Include Creator",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "notifyEveryone": {
+              "displayName": "Notify Everyone",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "notifyTaskAssignee": {
+              "displayName": "Notify Task Assignee",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "overviewStartPage": {
+              "displayName": "Overview Start Page",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ownedBy": {
+              "displayName": "Owned By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ownerId": {
+              "displayName": "Owner Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "portfolioCards": {
+              "displayName": "Portfolio Cards",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "privacyEnabled": {
+              "displayName": "Privacy Enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "projectOwner": {
+              "displayName": "Project Owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectOwnerId": {
+              "displayName": "Project Owner Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "replyByEmailEnabled": {
+              "displayName": "Reply By Email Enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "showAnnouncement": {
+              "displayName": "Show Announcement",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "skipWeekends": {
+              "displayName": "Skip Weekends",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "startAt": {
+              "displayName": "Start At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "startDate": {
+              "displayName": "Start Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "startPage": {
+              "displayName": "Start Page",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subStatus": {
+              "displayName": "Sub Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tagIds": {
+              "displayName": "Tag Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tasksStartPage": {
+              "displayName": "Tasks Start Page",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "timeBudget": {
+              "displayName": "Time Budget",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "timeBudgetId": {
+              "displayName": "Time Budget Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "timelogRequiresTask": {
+              "displayName": "Timelog Requires Task",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "update": {
+              "displayName": "Update",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updateId": {
+              "displayName": "Update Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedBy": {
+              "displayName": "Updated By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "users": {
+              "displayName": "Users",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "workflows": {
+              "displayName": "Workflows",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "quotes": {
+          "displayName": "Quotes",
+          "path": "/quotes",
+          "responseKey": "quotes",
+          "fields": {
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "Created By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "currency": {
+              "displayName": "Currency",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "deletedAt": {
+              "displayName": "Deleted At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedBy": {
+              "displayName": "Deleted By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "fixedAmountDiscount": {
+              "displayName": "Fixed Amount Discount",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "fromCompany": {
+              "displayName": "From Company",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "installationId": {
+              "displayName": "Installation Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isFixedPricing": {
+              "displayName": "Is Fixed Pricing",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "issueDate": {
+              "displayName": "Issue Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lineItems": {
+              "displayName": "Line Items",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "notes": {
+              "displayName": "Notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "percentageDiscount": {
+              "displayName": "Percentage Discount",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "project": {
+              "displayName": "Project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "quoteNumber": {
+              "displayName": "Quote Number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subTotal": {
+              "displayName": "Sub Total",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "subTotalWithDiscount": {
+              "displayName": "Sub Total With Discount",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "subTotalWithTax": {
+              "displayName": "Sub Total With Tax",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "taxInclusive": {
+              "displayName": "Tax Inclusive",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "taxes": {
+              "displayName": "Taxes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "toCompany": {
+              "displayName": "To Company",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedBy": {
+              "displayName": "Updated By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "validUntilDate": {
+              "displayName": "Valid Until Date",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "risks": {
+          "displayName": "Risks",
+          "path": "/risks.json",
+          "responseKey": "risks",
+          "fields": {
+            "canEdit": {
+              "displayName": "Can Edit",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "Created By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "createdByUserId": {
+              "displayName": "Created By User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "createdOn": {
+              "displayName": "Created On",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "impact": {
+              "displayName": "Impact",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "impactCost": {
+              "displayName": "Impact Cost",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "impactPerformance": {
+              "displayName": "Impact Performance",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "impactSchedule": {
+              "displayName": "Impact Schedule",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "impactValue": {
+              "displayName": "Impact Value",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "lastChangedByUserId": {
+              "displayName": "Last Changed By User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "lastChangedOn": {
+              "displayName": "Last Changed On",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mitigationPlan": {
+              "displayName": "Mitigation Plan",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "probability": {
+              "displayName": "Probability",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "probabilityValue": {
+              "displayName": "Probability Value",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "project": {
+              "displayName": "Project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectId": {
+              "displayName": "Project Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "result": {
+              "displayName": "Result",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "source": {
+              "displayName": "Source",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedBy": {
+              "displayName": "Updated By",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "samples": {
+          "displayName": "Sample Projects",
+          "path": "/projects/teamwork/samples.json",
+          "responseKey": "projects",
+          "fields": {
+            "categoryId": {
+              "displayName": "Category Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "code": {
+              "displayName": "Code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "content": {
+              "displayName": "Content",
+              "valueType": "other"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "icon": {
+              "displayName": "Icon",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "imagePreview": {
+              "displayName": "Image Preview",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "skills": {
+          "displayName": "Skills",
+          "path": "/skills.json",
+          "responseKey": "skills",
+          "fields": {
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdByUser": {
+              "displayName": "Created By User",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "deletedAt": {
+              "displayName": "Deleted At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedByUser": {
+              "displayName": "Deleted By User",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedByUser": {
+              "displayName": "Updated By User",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "users": {
+              "displayName": "Users",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "starred": {
+          "displayName": "Projects",
+          "path": "/projects/starred.json",
+          "responseKey": "projects",
+          "fields": {
+            "activePages": {
+              "displayName": "Active Pages",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "allowNotifyAnyone": {
+              "displayName": "Allow Notify Anyone",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "announcement": {
+              "displayName": "Announcement",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category": {
+              "displayName": "Category",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "categoryId": {
+              "displayName": "Category Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "company": {
+              "displayName": "Company",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "companyId": {
+              "displayName": "Company Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "completedAt": {
+              "displayName": "Completed At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completedBy": {
+              "displayName": "Completed By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "Created By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "customFieldValueIds": {
+              "displayName": "Custom Field Value Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "customFieldValues": {
+              "displayName": "Custom Field Values",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "customfieldValues": {
+              "displayName": "Customfield Values",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "defaultPrivacy": {
+              "displayName": "Default Privacy",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "directFileUploadsEnabled": {
+              "displayName": "Direct File Uploads Enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "endAt": {
+              "displayName": "End At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "endDate": {
+              "displayName": "End Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "financialBudget": {
+              "displayName": "Financial Budget",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "financialBudgetId": {
+              "displayName": "Financial Budget Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "harvestTimersEnabled": {
+              "displayName": "Harvest Timers Enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "integrations": {
+              "displayName": "Integrations",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "isBillable": {
+              "displayName": "Is Billable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isOnBoardingProject": {
+              "displayName": "Is On Boarding Project",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isProjectAdmin": {
+              "displayName": "Is Project Admin",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isSampleProject": {
+              "displayName": "Is Sample Project",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isStarred": {
+              "displayName": "Is Starred",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "lastWorkedOn": {
+              "displayName": "Last Worked On",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "latestActivity": {
+              "displayName": "Latest Activity",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "logo": {
+              "displayName": "Logo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "logoColor": {
+              "displayName": "Logo Color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "logoIcon": {
+              "displayName": "Logo Icon",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "minMaxAvailableDates": {
+              "displayName": "Min Max Available Dates",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notifyCommentIncludeCreator": {
+              "displayName": "Notify Comment Include Creator",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "notifyEveryone": {
+              "displayName": "Notify Everyone",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "notifyTaskAssignee": {
+              "displayName": "Notify Task Assignee",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "overviewStartPage": {
+              "displayName": "Overview Start Page",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ownedBy": {
+              "displayName": "Owned By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ownerId": {
+              "displayName": "Owner Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "portfolioCards": {
+              "displayName": "Portfolio Cards",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "privacyEnabled": {
+              "displayName": "Privacy Enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "projectOwner": {
+              "displayName": "Project Owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectOwnerId": {
+              "displayName": "Project Owner Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "replyByEmailEnabled": {
+              "displayName": "Reply By Email Enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "showAnnouncement": {
+              "displayName": "Show Announcement",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "skipWeekends": {
+              "displayName": "Skip Weekends",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "startAt": {
+              "displayName": "Start At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "startDate": {
+              "displayName": "Start Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "startPage": {
+              "displayName": "Start Page",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subStatus": {
+              "displayName": "Sub Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tagIds": {
+              "displayName": "Tag Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tasksStartPage": {
+              "displayName": "Tasks Start Page",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "timeBudget": {
+              "displayName": "Time Budget",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "timeBudgetId": {
+              "displayName": "Time Budget Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "timelogRequiresTask": {
+              "displayName": "Timelog Requires Task",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "update": {
+              "displayName": "Update",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updateId": {
+              "displayName": "Update Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedBy": {
+              "displayName": "Updated By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "users": {
+              "displayName": "Users",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "workflows": {
+              "displayName": "Workflows",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "stats": {
+          "displayName": "Importers",
+          "path": "/importer/stats.json",
+          "responseKey": "importers",
+          "fields": {
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "running": {
+              "displayName": "Running",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "statuses": {
+          "displayName": "Timeline",
+          "path": "/statuses.json",
+          "responseKey": "statuses",
+          "fields": {
+            "dateLastUpdated": {
+              "displayName": "Date Last Updated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dateTime": {
+              "displayName": "Date Time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "emoji": {
+              "displayName": "Emoji",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ipAddress": {
+              "displayName": "Ip Address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "text": {
+              "displayName": "Text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "User",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "userId": {
+              "displayName": "User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags.json",
+          "responseKey": "tags",
+          "fields": {
+            "color": {
+              "displayName": "Color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "count": {
+              "displayName": "Count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "project": {
+              "displayName": "Project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectId": {
+              "displayName": "Project Id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "tasklists": {
+          "displayName": "Tasklists",
+          "path": "/tasklists",
+          "responseKey": "tasklists",
+          "fields": {
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "defaultTask": {
+              "displayName": "Default Task",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "defaultTaskId": {
+              "displayName": "Default Task Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayOrder": {
+              "displayName": "Display Order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "icon": {
+              "displayName": "Icon",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isBillable": {
+              "displayName": "Is Billable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isPinned": {
+              "displayName": "Is Pinned",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isPrivate": {
+              "displayName": "Is Private",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "lockdownId": {
+              "displayName": "Lockdown Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "milestone": {
+              "displayName": "Milestone",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "milestoneId": {
+              "displayName": "Milestone Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "project": {
+              "displayName": "Project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectId": {
+              "displayName": "Project Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tasklistBudget": {
+              "displayName": "Tasklist Budget",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "tasks": {
+          "displayName": "Tasks",
+          "path": "/tasks.json",
+          "responseKey": "tasks",
+          "fields": {
+            "accumulatedEstimatedMinutes": {
+              "displayName": "Accumulated Estimated Minutes",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "assigneeCompanies": {
+              "displayName": "Assignee Companies",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "assigneeCompanyIds": {
+              "displayName": "Assignee Company Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "assigneeTeamIds": {
+              "displayName": "Assignee Team Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "assigneeTeams": {
+              "displayName": "Assignee Teams",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "assigneeUserIds": {
+              "displayName": "Assignee User Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "assigneeUsers": {
+              "displayName": "Assignee Users",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "assignees": {
+              "displayName": "Assignees",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "attachments": {
+              "displayName": "Attachments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "capacities": {
+              "displayName": "Capacities",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "card": {
+              "displayName": "Card",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "changeFollowers": {
+              "displayName": "Change Followers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "column": {
+              "displayName": "Column",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "commentFollowers": {
+              "displayName": "Comment Followers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "completeFollowers": {
+              "displayName": "Complete Followers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "completedAt": {
+              "displayName": "Completed At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completedBy": {
+              "displayName": "Completed By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "completedOn": {
+              "displayName": "Completed On",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "Created By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "createdByUserId": {
+              "displayName": "Created By User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "crmDealIds": {
+              "displayName": "Crm Deal Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "dateUpdated": {
+              "displayName": "Date Updated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "decimalDisplayOrder": {
+              "displayName": "Decimal Display Order",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "deletedAt": {
+              "displayName": "Deleted At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedBy": {
+              "displayName": "Deleted By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "dependencyIds": {
+              "displayName": "Dependency Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "descriptionContentType": {
+              "displayName": "Description Content Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayOrder": {
+              "displayName": "Display Order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "dueDate": {
+              "displayName": "Due Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dueDateOffset": {
+              "displayName": "Due Date Offset",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "estimateMinutes": {
+              "displayName": "Estimate Minutes",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "hasDeskTickets": {
+              "displayName": "Has Desk Tickets",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "hasReminders": {
+              "displayName": "Has Reminders",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isArchived": {
+              "displayName": "Is Archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isBlocked": {
+              "displayName": "Is Blocked",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isPrivate": {
+              "displayName": "Is Private",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "latestUpdates": {
+              "displayName": "Latest Updates",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "lockdown": {
+              "displayName": "Lockdown",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "meta": {
+              "displayName": "Meta",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notify": {
+              "displayName": "Notify",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "originalDueDate": {
+              "displayName": "Original Due Date",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "outOfSequence": {
+              "displayName": "Out Of Sequence",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "parentTask": {
+              "displayName": "Parent Task",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "parentTaskId": {
+              "displayName": "Parent Task Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "predecessorIds": {
+              "displayName": "Predecessor Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "predecessors": {
+              "displayName": "Predecessors",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "priority": {
+              "displayName": "Priority",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "progress": {
+              "displayName": "Progress",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "proofs": {
+              "displayName": "Proofs",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "sequence": {
+              "displayName": "Sequence",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sequenceDueDate": {
+              "displayName": "Sequence Due Date",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sequenceId": {
+              "displayName": "Sequence Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "sequenceRootTask": {
+              "displayName": "Sequence Root Task",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "sequenceStartDate": {
+              "displayName": "Sequence Start Date",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "startDate": {
+              "displayName": "Start Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "startDateOffset": {
+              "displayName": "Start Date Offset",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subTaskIds": {
+              "displayName": "Sub Task Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tagIds": {
+              "displayName": "Tag Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tasklist": {
+              "displayName": "Tasklist",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "tasklistId": {
+              "displayName": "Tasklist Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "templateRoleName": {
+              "displayName": "Template Role Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "timer": {
+              "displayName": "Timer",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedBy": {
+              "displayName": "Updated By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "userPermissions": {
+              "displayName": "User Permissions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "workflowStages": {
+              "displayName": "Workflow Stages",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "templates": {
+          "displayName": "Projects",
+          "path": "/projects/templates.json",
+          "responseKey": "projects",
+          "fields": {
+            "activePages": {
+              "displayName": "Active Pages",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "allowNotifyAnyone": {
+              "displayName": "Allow Notify Anyone",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "announcement": {
+              "displayName": "Announcement",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category": {
+              "displayName": "Category",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "categoryId": {
+              "displayName": "Category Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "company": {
+              "displayName": "Company",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "companyId": {
+              "displayName": "Company Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "completedAt": {
+              "displayName": "Completed At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completedBy": {
+              "displayName": "Completed By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "Created By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "customFieldValueIds": {
+              "displayName": "Custom Field Value Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "customFieldValues": {
+              "displayName": "Custom Field Values",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "customfieldValues": {
+              "displayName": "Customfield Values",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "defaultPrivacy": {
+              "displayName": "Default Privacy",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "directFileUploadsEnabled": {
+              "displayName": "Direct File Uploads Enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "endAt": {
+              "displayName": "End At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "endDate": {
+              "displayName": "End Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "financialBudget": {
+              "displayName": "Financial Budget",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "financialBudgetId": {
+              "displayName": "Financial Budget Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "harvestTimersEnabled": {
+              "displayName": "Harvest Timers Enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "integrations": {
+              "displayName": "Integrations",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "isBillable": {
+              "displayName": "Is Billable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isOnBoardingProject": {
+              "displayName": "Is On Boarding Project",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isProjectAdmin": {
+              "displayName": "Is Project Admin",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isSampleProject": {
+              "displayName": "Is Sample Project",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isStarred": {
+              "displayName": "Is Starred",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "lastWorkedOn": {
+              "displayName": "Last Worked On",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "latestActivity": {
+              "displayName": "Latest Activity",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "logo": {
+              "displayName": "Logo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "logoColor": {
+              "displayName": "Logo Color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "logoIcon": {
+              "displayName": "Logo Icon",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "minMaxAvailableDates": {
+              "displayName": "Min Max Available Dates",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notifyCommentIncludeCreator": {
+              "displayName": "Notify Comment Include Creator",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "notifyEveryone": {
+              "displayName": "Notify Everyone",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "notifyTaskAssignee": {
+              "displayName": "Notify Task Assignee",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "overviewStartPage": {
+              "displayName": "Overview Start Page",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ownedBy": {
+              "displayName": "Owned By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ownerId": {
+              "displayName": "Owner Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "portfolioCards": {
+              "displayName": "Portfolio Cards",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "privacyEnabled": {
+              "displayName": "Privacy Enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "projectOwner": {
+              "displayName": "Project Owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectOwnerId": {
+              "displayName": "Project Owner Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "replyByEmailEnabled": {
+              "displayName": "Reply By Email Enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "showAnnouncement": {
+              "displayName": "Show Announcement",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "skipWeekends": {
+              "displayName": "Skip Weekends",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "startAt": {
+              "displayName": "Start At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "startDate": {
+              "displayName": "Start Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "startPage": {
+              "displayName": "Start Page",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subStatus": {
+              "displayName": "Sub Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tagIds": {
+              "displayName": "Tag Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tasksStartPage": {
+              "displayName": "Tasks Start Page",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "timeBudget": {
+              "displayName": "Time Budget",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "timeBudgetId": {
+              "displayName": "Time Budget Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "timelogRequiresTask": {
+              "displayName": "Timelog Requires Task",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "update": {
+              "displayName": "Update",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updateId": {
+              "displayName": "Update Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedBy": {
+              "displayName": "Updated By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "users": {
+              "displayName": "Users",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "workflows": {
+              "displayName": "Workflows",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "time": {
+          "displayName": "Timelogs",
+          "path": "/time.json",
+          "responseKey": "timelogs",
+          "fields": {
+            "assignedTeamIds": {
+              "displayName": "Assigned Team Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "billable": {
+              "displayName": "Billable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "billableInfo": {
+              "displayName": "Billable Info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "costInfo": {
+              "displayName": "Cost Info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dateCreated": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dateDeleted": {
+              "displayName": "Date Deleted",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dateEdited": {
+              "displayName": "Date Edited",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deletedAt": {
+              "displayName": "Deleted At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedBy": {
+              "displayName": "Deleted By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "deletedByUserId": {
+              "displayName": "Deleted By User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deskTicketId": {
+              "displayName": "Desk Ticket Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "editedByUserId": {
+              "displayName": "Edited By User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "hasStartTime": {
+              "displayName": "Has Start Time",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isBillable": {
+              "displayName": "Is Billable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "loggedBy": {
+              "displayName": "Logged By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "loggedByUserId": {
+              "displayName": "Logged By User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "minutes": {
+              "displayName": "Minutes",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "project": {
+              "displayName": "Project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectBillingInvoice": {
+              "displayName": "Project Billing Invoice",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectBillingInvoiceId": {
+              "displayName": "Project Billing Invoice Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "projectId": {
+              "displayName": "Project Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "tagIds": {
+              "displayName": "Tag Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "task": {
+              "displayName": "Task",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "taskId": {
+              "displayName": "Task Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "taskIdPreMove": {
+              "displayName": "Task Id Pre Move",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "taskPreMove": {
+              "displayName": "Task Pre Move",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "timeLogged": {
+              "displayName": "Time Logged",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedBy": {
+              "displayName": "Updated By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "user": {
+              "displayName": "User",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "userId": {
+              "displayName": "User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "timeline": {
+          "displayName": "Timeline",
+          "path": "/statuses/timeline.json",
+          "responseKey": "statuses",
+          "fields": {
+            "dateLastUpdated": {
+              "displayName": "Date Last Updated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dateTime": {
+              "displayName": "Date Time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "emoji": {
+              "displayName": "Emoji",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ipAddress": {
+              "displayName": "Ip Address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "text": {
+              "displayName": "Text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "User",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "userId": {
+              "displayName": "User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "timers": {
+          "displayName": "Timers",
+          "path": "/timers.json",
+          "responseKey": "timers",
+          "fields": {
+            "billable": {
+              "displayName": "Billable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deletedAt": {
+              "displayName": "Deleted At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "duration": {
+              "displayName": "Duration",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "intervals": {
+              "displayName": "Intervals",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "lastStartedAt": {
+              "displayName": "Last Started At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "project": {
+              "displayName": "Project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectId": {
+              "displayName": "Project Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "running": {
+              "displayName": "Running",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "serverTime": {
+              "displayName": "Server Time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "task": {
+              "displayName": "Task",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "taskId": {
+              "displayName": "Task Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "timeLogId": {
+              "displayName": "Time Log Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "timelog": {
+              "displayName": "Timelog",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "timerLastIntervalEnd": {
+              "displayName": "Timer Last Interval End",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "User",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "userId": {
+              "displayName": "User Id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "timesheets": {
+          "displayName": "My Timesheets",
+          "path": "/timesheets.json",
+          "responseKey": "timesheets",
+          "fields": {
+            "customRow": {
+              "displayName": "Custom Row",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "dates": {
+              "displayName": "Dates",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "entity": {
+              "displayName": "Entity",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "isCustomRow": {
+              "displayName": "Is Custom Row",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "total": {
+              "displayName": "Total",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "updates": {
+          "displayName": "Project Updates",
+          "path": "/projects/updates.json",
+          "responseKey": "projectUpdates",
+          "fields": {
+            "color": {
+              "displayName": "Color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "Created By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deletedAt": {
+              "displayName": "Deleted At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedBy": {
+              "displayName": "Deleted By",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "health": {
+              "displayName": "Health",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "healthLabel": {
+              "displayName": "Health Label",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isActive": {
+              "displayName": "Is Active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "likeFromUserIDs": {
+              "displayName": "Like From User I Ds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "likeFromUsers": {
+              "displayName": "Like From Users",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "project": {
+              "displayName": "Project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projectId": {
+              "displayName": "Project Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "reactions": {
+              "displayName": "Reactions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "text": {
+              "displayName": "Text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
