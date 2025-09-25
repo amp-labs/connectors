@@ -9,7 +9,7 @@ import (
 	"sync"
 )
 
-// zoomInfoClient implements AuthenticatedHTTPClient with JWT-based authentication
+// zoomInfoClient implements AuthenticatedHTTPClient with JWT-based authentication.
 type ZoomInfoClient struct {
 	username string // used to regenerate JWT
 	password string
@@ -18,7 +18,7 @@ type ZoomInfoClient struct {
 	client   *http.Client
 }
 
-// NewZoomInfoClient creates a new zoomInfoClient with initial JWT
+// NewZoomInfoClient creates a new zoomInfoClient with initial JWT.
 func NewZoomInfoClient(ctx context.Context, client *http.Client,
 	username, password string,
 ) (*ZoomInfoClient, error) {
@@ -36,7 +36,7 @@ func NewZoomInfoClient(ctx context.Context, client *http.Client,
 	}, nil
 }
 
-// Do executes an HTTP request, adding the JWT and retrying on 401 Unauthorized
+// Do executes an HTTP request, adding the JWT and retrying on 401 Unauthorized.
 func (c *ZoomInfoClient) Do(req *http.Request) (*http.Response, error) {
 	// Clone request to avoid modifying the original
 	req = req.Clone(req.Context())
@@ -55,7 +55,7 @@ func (c *ZoomInfoClient) Do(req *http.Request) (*http.Response, error) {
 		resp.Body.Close() // Close the response body
 
 		// Regenerate JWT
-		newJWT, err := ZoominfoAuth(req.Context(), c.client, c.username, c.password)
+		newJWT, err := ZoominfoAuth(req.Context(), c.client, c.username, c.password) //nolint:contextcheck
 		if err != nil {
 			return nil, err
 		}
@@ -66,7 +66,7 @@ func (c *ZoomInfoClient) Do(req *http.Request) (*http.Response, error) {
 		c.mu.Unlock()
 
 		// Retry request with new JWT
-		req = req.Clone(req.Context())
+		req = req.Clone(req.Context()) //nolint:contextcheck
 
 		req.Header.Set("Authorization", "Bearer "+newJWT)
 
