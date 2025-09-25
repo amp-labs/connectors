@@ -20,7 +20,14 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Accept", "application/vnd.api+json")
+
+	return req, nil
 }
 
 func (c *Connector) parseSingleObjectMetadataResponse(
