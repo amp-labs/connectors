@@ -92,9 +92,9 @@ func constructHeaders(config common.ReadParams) []common.Header {
 	return []common.Header{}
 }
 
-// Manual incremental synchronization implementation for Apollo
+// Manual incremental synchronization implementation for Zoho Desk
 //
-// Apollo lacks native incremental sync support. This function iterates through records
+// Zoho Desk lacks native incremental sync support. This function iterates through records
 // and returns those created or updated after the specified timestamp.
 func manualIncrementalSync(node *ajson.Node, recordsKey string, config common.ReadParams, //nolint:cyclop
 	timestampKey string, timestampFormat string, nextPageFunc common.NextPageFunc,

@@ -107,7 +107,7 @@ func testCreatingAccounts(ctx context.Context) error {
 	params := common.WriteParams{
 		ObjectName: "accounts",
 		RecordData: map[string]any{
-			"name":         "Googlettt",
+			"name":         "Google",
 			"domain":       "google.com",
 			"phone_number": "1-866-246-6453",
 			"raw_address":  "1600 Amphitheatre Parkway",
