@@ -112,7 +112,14 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		url.WithQueryParam(IncrementalObjectQueryParam.Get(params.ObjectName), startDate+":"+endDate)
 	}
 
-	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Accept", "application/vnd.api+json")
+
+	return req, nil
 }
 
 func (c *Connector) parseReadResponse(
