@@ -39,7 +39,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrEmptyJSONHTTPResponse
 	}
 
-	res, err := jsonquery.New(body).ArrayOptional("data")
+	res, err := jsonquery.New(body).ArrayRequired("data")
 	if err != nil {
 		return nil, err
 	}
@@ -47,6 +47,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	record, err := jsonquery.Convertor.ArrayToMap(res)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(record) == 0 {
+		return nil, common.ErrMissingExpectedValues
 	}
 
 	// helper to create FieldMetadata
