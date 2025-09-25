@@ -36,5 +36,29 @@ func main() {
 	slog.Info("Reading accounts..")
 	utils.DumpJSON(res, os.Stdout)
 
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "item",
+		Fields:     connectors.Fields("Level", "domain", "Name"),
+		Since:      time.Now().Add(-600 * time.Hour),
+	})
+	if err != nil {
+		utils.Fail("error reading from QuickBooks", "error", err)
+	}
+
+	slog.Info("Reading item..")
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "term",
+		Fields:     connectors.Fields("name"),
+		Since:      time.Now().Add(-600 * time.Hour),
+	})
+	if err != nil {
+		utils.Fail("error reading from QuickBooks", "error", err)
+	}
+
+	slog.Info("Reading term..")
+	utils.DumpJSON(res, os.Stdout)
+
 	slog.Info("Read operation completed successfully.")
 }
