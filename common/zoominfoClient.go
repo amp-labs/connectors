@@ -6,30 +6,84 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"sync"
 )
 
-// NewZoominfoHTTPClient returns a new http client, with automatic Basic authentication.
-// Specifically this means that the client will automatically add the Basic auth header
-// to every request. The username and password are provided as arguments. Additionally
-// we must call the authenitcate API to get the JWT Token.
-// refer: https://api-docs.zoominfo.com/#477888fc-8308-4645-81ca-ca7a6d7ba3d1.
-func NewZoominfoHTTPClient( //nolint:ireturn
-	ctx context.Context,
-	user, pass string,
-	opts ...HeaderAuthClientOption,
-) (AuthenticatedHTTPClient, error) {
-	token, err := ZoominfoAuth(ctx, user, pass)
+// zoomInfoClient implements AuthenticatedHTTPClient with JWT-based authentication
+type ZoomInfoClient struct {
+	username string // used to regenerate JWT
+	password string
+	jwt      string // current JWT used to make API calls
+	mu       sync.RWMutex
+	client   *http.Client
+}
+
+// NewZoomInfoClient creates a new zoomInfoClient with initial JWT
+func NewZoomInfoClient(ctx context.Context, client *http.Client,
+	username, password string,
+) (*ZoomInfoClient, error) {
+	// Generate initial JWT
+	jwt, err := ZoominfoAuth(ctx, client, username, password)
 	if err != nil {
 		return nil, err
 	}
 
-	return NewHeaderAuthHTTPClient(ctx, append(opts, WithHeaders(Header{
-		Key:   "Authorization",
-		Value: "Bearer " + token,
-	}))...)
+	return &ZoomInfoClient{
+		username: username,
+		password: password,
+		jwt:      jwt,
+		client:   client,
+	}, nil
 }
 
-func ZoominfoAuth(ctx context.Context, username, password string) (string, error) {
+// Do executes an HTTP request, adding the JWT and retrying on 401 Unauthorized
+func (c *ZoomInfoClient) Do(req *http.Request) (*http.Response, error) {
+	// Clone request to avoid modifying the original
+	req = req.Clone(req.Context())
+
+	c.mu.RLock()
+	req.Header.Set("Authorization", "Bearer "+c.jwt)
+	c.mu.RUnlock()
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check for 401 Unauthorized
+	if resp.StatusCode == http.StatusUnauthorized {
+		resp.Body.Close() // Close the response body
+
+		// Regenerate JWT
+		newJWT, err := ZoominfoAuth(req.Context(), c.client, c.username, c.password)
+		if err != nil {
+			return nil, err
+		}
+
+		// Update JWT
+		c.mu.Lock()
+		c.jwt = newJWT
+		c.mu.Unlock()
+
+		// Retry request with new JWT
+		req = req.Clone(req.Context())
+
+		req.Header.Set("Authorization", "Bearer "+newJWT)
+
+		resp, err = c.client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return resp, nil
+}
+
+func (c *ZoomInfoClient) CloseIdleConnections() {
+	c.client.CloseIdleConnections()
+}
+
+func ZoominfoAuth(ctx context.Context, client *http.Client, username, password string) (string, error) {
 	// Request body
 	reqBody := map[string]string{
 		"username": username,
@@ -40,8 +94,6 @@ func ZoominfoAuth(ctx context.Context, username, password string) (string, error
 	if err != nil {
 		return "", err
 	}
-
-	client := &http.Client{}
 
 	req, err := http.NewRequestWithContext(
 		ctx,
