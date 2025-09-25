@@ -22,9 +22,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetZohoConnector(ctx, providers.ZohoDeskV2, map[string]string{
-		"orgId": "899917812",
-	})
+	conn := connTest.GetZohoConnector(ctx, providers.ZohoDesk)
 
 	if err := writeBusinessHours(ctx, conn); err != nil {
 		fmt.Println("Error: ", err)
