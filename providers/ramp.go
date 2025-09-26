@@ -1,9 +1,11 @@
 package providers
 
-const Ramp Provider = "ramp"
-const RampDemo Provider = "rampDemo"
+const (
+	Ramp     Provider = "ramp"
+	RampDemo Provider = "rampDemo"
+)
 
-func init() {
+func init() { //nolint:funlen
 	SetInfo(Ramp, ProviderInfo{
 		DisplayName: "Ramp",
 		AuthType:    Oauth2,
