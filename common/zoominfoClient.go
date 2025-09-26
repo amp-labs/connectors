@@ -23,7 +23,7 @@ func NewZoomInfoClient(ctx context.Context, client *http.Client,
 	username, password string,
 ) (*ZoomInfoClient, error) {
 	// Generate initial JWT
-	jwt, err := ZoominfoAuth(ctx, client, username, password)
+	jwt, err := zoominfoAuth(ctx, client, username, password)
 	if err != nil {
 		return nil, err
 	}
@@ -50,40 +50,41 @@ func (c *ZoomInfoClient) Do(req *http.Request) (*http.Response, error) {
 		return nil, err
 	}
 
-	// Check for 401 Unauthorized
-	if resp.StatusCode == http.StatusUnauthorized {
-		resp.Body.Close() // Close the response body
-
-		// Regenerate JWT
-		newJWT, err := ZoominfoAuth(req.Context(), c.client, c.username, c.password) //nolint:contextcheck
-		if err != nil {
-			return nil, err
-		}
-
-		// Update JWT
-		c.mu.Lock()
-		c.jwt = newJWT
-		c.mu.Unlock()
-
-		// Retry request with new JWT
-		req = req.Clone(req.Context()) //nolint:contextcheck
-
-		req.Header.Set("Authorization", "Bearer "+newJWT)
-
-		resp, err = c.client.Do(req)
-		if err != nil {
-			return nil, err
-		}
+	// If not unauthorized, just return immediately
+	if resp.StatusCode != http.StatusUnauthorized {
+		return resp, nil
 	}
 
-	return resp, nil
+	resp.Body.Close() // Close the response body
+
+	// Regenerate JWT
+	newJWT, err := zoominfoAuth(req.Context(), c.client, c.username, c.password) //nolint:contextcheck
+	if err != nil {
+		return nil, err
+	}
+
+	// Update JWT
+	c.mu.Lock()
+	c.jwt = newJWT
+	c.mu.Unlock()
+
+	// Retry request with new JWT
+	req = req.Clone(req.Context()) //nolint:contextcheck
+
+	req.Header.Set("Authorization", "Bearer "+newJWT)
+
+	return c.client.Do(req)
 }
 
 func (c *ZoomInfoClient) CloseIdleConnections() {
 	c.client.CloseIdleConnections()
 }
 
-func ZoominfoAuth(ctx context.Context, client *http.Client, username, password string) (string, error) {
+// In the ZoomInfo connector, there are two types of authentication: PKI and username/password.
+// We use the second type, which is similar to basic authentication (using username and password).
+// However, in addition, we must call the authenticate API to generate a JWT token.
+// Authenticate API link: https://api-docs.zoominfo.com/#477888fc-8308-4645-81ca-ca7a6d7ba3d1.
+func zoominfoAuth(ctx context.Context, client *http.Client, username, password string) (string, error) {
 	// Request body
 	reqBody := map[string]string{
 		"username": username,
