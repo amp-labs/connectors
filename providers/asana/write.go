@@ -2,6 +2,7 @@ package asana
 
 import (
 	"context"
+	"errors"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -34,7 +35,17 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		url.AddPath(config.RecordId)
 	}
 
-	res, err := write(ctx, url.String(), config.RecordData)
+	payload, ok := config.RecordData.(map[string]any)
+	if !ok {
+		return nil, errors.New("invalid record data") //nolint:goerr113
+	}
+
+	// Asana API expects the payload to be wrapped in a "data" object.
+	// https://developers.asana.com/docs/create-a-task
+	// https://developers.asana.com/docs/update-a-task
+	payload = map[string]any{"data": payload}
+
+	res, err := write(ctx, url.String(), payload)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +57,6 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		}, nil
 	}
 
-	// write response with payload
 	return constructWriteResult(body)
 }
 
