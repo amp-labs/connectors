@@ -51,16 +51,14 @@ func testWriteProjects(ctx context.Context, conn *cc.Connector) error {
 	params := common.WriteParams{
 		ObjectName: "projects",
 		RecordData: map[string]any{
-			"data": map[string]any{
-				"name":         "Stuff to buy",
-				"archived":     false,
-				"color":        "light-green",
-				"default_view": "calendar",
-				"due_date":     "2019-09-15",
-				"due_on":       "2019-09-15",
-				"team":         "1209100536982881",
-				"workspace":    "1206661566061885",
-			},
+			"name":         "Stuff to buy",
+			"archived":     false,
+			"color":        "light-green",
+			"default_view": "calendar",
+			"due_date":     "2019-09-15",
+			"due_on":       "2019-09-15",
+			"team":         "1209100536982881",
+			"workspace":    "1206661566061885",
 		},
 	}
 
@@ -85,11 +83,9 @@ func testWriteCustomFields(ctx context.Context, conn *cc.Connector) error {
 	params := common.WriteParams{
 		ObjectName: "custom_fields",
 		RecordData: map[string]any{
-			"data": map[string]any{
-				"name":             gofakeit.BeerName(),
-				"workspace":        "1206661566061885",
-				"resource_subtype": "text",
-			},
+			"name":             gofakeit.BeerName(),
+			"workspace":        "1206661566061885",
+			"resource_subtype": "text",
 		},
 	}
 	result, err := conn.Write(ctx, params)
@@ -110,10 +106,8 @@ func testWritePortfolios(ctx context.Context, conn *cc.Connector) error {
 	params := common.WriteParams{
 		ObjectName: "portfolios",
 		RecordData: map[string]any{
-			"data": map[string]any{
-				"name":      "Test Portfolio",
-				"workspace": "1206661566061885",
-			},
+			"name":      "Test Portfolio",
+			"workspace": "1206661566061885",
 		},
 	}
 	result, err := conn.Write(ctx, params)
@@ -134,10 +128,8 @@ func testWriteTasks(ctx context.Context, conn *cc.Connector) error {
 	params := common.WriteParams{
 		ObjectName: "tasks",
 		RecordData: map[string]any{
-			"data": map[string]any{
-				"name":      "Test Task",
-				"workspace": "1206661566061885",
-			},
+			"name":      "Test Task",
+			"workspace": "1206661566061885",
 		},
 	}
 	result, err := conn.Write(ctx, params)
@@ -156,9 +148,7 @@ func testWriteTasks(ctx context.Context, conn *cc.Connector) error {
 		ObjectName: "tasks",
 		RecordId:   result.RecordId,
 		RecordData: map[string]any{
-			"data": map[string]any{
-				"name": "Updated Test Task",
-			},
+			"name": "Updated Test Task",
 		},
 	}
 	updateResult, err := conn.Write(ctx, updateParams)
@@ -180,10 +170,8 @@ func testWriteTeams(ctx context.Context, conn *cc.Connector) error {
 	params := common.WriteParams{
 		ObjectName: "teams",
 		RecordData: map[string]any{
-			"data": map[string]any{
-				"name":         gofakeit.Company(),
-				"organization": "1206661566061885",
-			},
+			"name":         gofakeit.Company(),
+			"organization": "1206661566061885",
 		},
 	}
 	result, err := conn.Write(ctx, params)
