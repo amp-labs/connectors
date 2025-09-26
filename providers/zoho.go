@@ -1,7 +1,18 @@
 package providers
 
-const Zoho Provider = "zoho"
+import "github.com/amp-labs/connectors/common"
 
+const (
+	Zoho Provider = "zoho"
+)
+
+const (
+	ModuleZoho           common.ModuleID = "zoho"
+	ModuleZohoProjects   common.ModuleID = "projects"
+	ModuleZohoBugTracker common.ModuleID = "bugtracker"
+)
+
+//nolint:funlen
 func init() {
 	// Zoho configuration
 	SetInfo(Zoho, ProviderInfo{
@@ -29,6 +40,37 @@ func init() {
 			TokenMetadataFields: TokenMetadataFields{
 				WorkspaceRefField: "api_domain",
 				ScopesField:       "scope",
+			},
+		},
+		DefaultModule: ModuleZoho,
+		Modules: &Modules{
+			ModuleZoho: {
+				BaseURL:     "https://www.zohoapis.com",
+				DisplayName: "Zoho",
+				Support: Support{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
+			ModuleZohoProjects: {
+				BaseURL:     "https://projectsapi.zoho.com",
+				DisplayName: "Zoho Projects",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
+
+			ModuleZohoBugTracker: {
+				BaseURL:     "https://bugtracker.zoho.com",
+				DisplayName: "Zoho BugTracker",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
 			},
 		},
 		Support: Support{
