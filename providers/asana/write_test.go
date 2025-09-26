@@ -72,7 +72,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Update objects as PUT",
-			Input: common.WriteParams{ObjectName: "projects", RecordId: "15", RecordData: map[string]any{"name": "Stuff to buy"}},
+			Input: common.WriteParams{ObjectName: "projects", RecordId: "15", RecordData: map[string]any{"name": "Stuff to buy"}}, //nolint:lll
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPUT(),
