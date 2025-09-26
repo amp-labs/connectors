@@ -21,20 +21,20 @@ type ResponseError struct {
 }
 
 type Error struct {
-	Code   string `json:"code"`
-	Detail string `json:"detail"`
-	Id     string `json:"id"`
-	Source Source `json:"source"`
-	Status string `json:"status"`
-	Title  string `json:"title"`
+	Code   string `json:"code,omitempty"`
+	Detail string `json:"detail,omitempty"`
+	Id     string `json:"id,omitempty"`
+	Source Source `json:"source,omitempty"`
+	Status string `json:"status,omitempty"`
+	Title  string `json:"title,omitempty"`
 }
 
 type Source struct {
-	Cookie    string `json:"Cookie"`
-	Header    string `json:"header"`
-	Parameter string `json:"parameter"`
-	Path      string `json:"path"`
-	Pointer   string `json:"pointer"`
+	Cookie    string `json:"cookie,omitempty"`
+	Header    string `json:"header,omitempty"`
+	Parameter string `json:"parameter,omitempty"`
+	Path      string `json:"path,omitempty"`
+	Pointer   string `json:"pointer,omitempty"`
 }
 
 func (r ResponseError) CombineErr(base error) error {
