@@ -30,7 +30,7 @@ type Error struct {
 }
 
 type Source struct {
-	Cookie    string `json:"Cookie,omitempty"`
+	Cookie    string `json:"cookie,omitempty"`
 	Header    string `json:"header,omitempty"`
 	Parameter string `json:"parameter,omitempty"`
 	Path      string `json:"path,omitempty"`
