@@ -3,13 +3,16 @@ package asana
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/tools/debug"
 	"github.com/spyzhov/ajson"
 )
 
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+	fmt.Println("WriteParams", debug.PrettyFormatStringJSON(config))
 	err := config.ValidateParams()
 	if err != nil {
 		return nil, err
