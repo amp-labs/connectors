@@ -35,7 +35,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		url.AddPath(config.RecordId)
 	}
 
-	payload, ok := config.RecordData.(map[string]any)
+	payload, ok := config.RecordData.(map[string]any) //nolint:varnamelen
 	if !ok {
 		return nil, errors.New("invalid record data") //nolint:goerr113
 	}
