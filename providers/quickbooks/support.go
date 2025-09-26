@@ -49,11 +49,25 @@ func supportedOperations() components.EndpointRegistryInput {
 		"vendorCredit",
 	}
 
+	writeSupport := []string{
+		"account",
+		"attachable",
+		"bill",
+		"billPayment",
+		"budget",
+		"class",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
