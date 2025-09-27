@@ -75,6 +75,9 @@ var (
 	// ErrNotFound is returned when we get a 404 response from the provider.
 	ErrNotFound = errors.New("not found")
 
+	// ErrCursorGone is returned when a cursor used for pagination is no longer valid.
+	ErrCursorGone = errors.New("pagination cursor gone or expired")
+
 	// ErrMissingExpectedValues is returned when response data doesn't have values expected for processing.
 	ErrMissingExpectedValues = errors.New("response data is missing expected values")
 
