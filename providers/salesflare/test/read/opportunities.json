@@ -1,0 +1,72 @@
+[
+  {
+    "id": 2044584,
+    "owner": {
+      "id": 276596246,
+      "picture": "https://lib.salesflare.com/avatars/avatar_tile_i_80.png",
+      "name": "Integration User",
+      "email": "test@withampersand.com",
+      "disabled": false
+    },
+    "account": {
+      "id": 13397916,
+      "picture": "https://lib.salesflare.com/avatars/salesflare_logo.png",
+      "name": "Salesflare",
+      "hotness": 0
+    },
+    "stage": {
+      "id": 488710,
+      "name": "Won",
+      "color": "153,204,0",
+      "fixed_stage": 1,
+      "order": 5,
+      "probability": 100
+    },
+    "lost_reason": null,
+    "assignee": {
+      "id": 276596246,
+      "picture": "https://lib.salesflare.com/avatars/avatar_tile_i_80.png",
+      "name": "Integration User",
+      "email": "test@withampersand.com"
+    },
+    "name": "Using Salesflare",
+    "value": 10000,
+    "calculated_value": 10000,
+    "frequency": null,
+    "units": 1,
+    "contract_start_date": null,
+    "contract_end_date": null,
+    "recurring_price_per_unit": null,
+    "currency": {
+      "id": 1,
+      "iso": "USD",
+      "html": "&#36;"
+    },
+    "close_date": "2024-05-22",
+    "done": false,
+    "creator": 276596246,
+    "last_modified_by": 276596246,
+    "modification_date": "2024-05-22T21:45:22.000Z",
+    "creation_date": "2024-05-22T21:45:22.000Z",
+    "pipeline": {
+      "id": 76845,
+      "name": "Default"
+    },
+    "last_interaction": {
+      "type": "email",
+      "description": "Ways to Generate More Leads 🎯",
+      "date": "2024-07-16T17:04:24.000Z",
+      "person": {
+        "id": 276596247,
+        "picture": "https://img.fullcontact.com/static/4f1b88f3157b06672a9784482b5ae4bb_4efb5855bb8df7dabb64269175e0b1a8f19ff391f93a829f0956bddfb6dd09f7",
+        "name": "Jeroen Corthout"
+      }
+    },
+    "last_stage_change_date": "2024-05-22T21:45:22.265Z",
+    "tags": [],
+    "custom": null,
+    "can_edit": true,
+    "probability": 100,
+    "start_date": "2024-05-22"
+  }
+]
