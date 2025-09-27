@@ -57,8 +57,6 @@ func (c *Connector) buildModuleURL(params common.ReadParams, apiVersion string,
 
 	c.constructIncrementalParams(url, params)
 
-	c.constructIncrementalParams(url, params)
-
 	fields := c.prepareFields(params, fldTransformer)
 	if params.ObjectName != articlesObject {
 		url.WithQueryParam("fields", fields)
