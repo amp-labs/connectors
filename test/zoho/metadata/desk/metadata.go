@@ -20,9 +20,9 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := zoho.GetZohoConnector(ctx, providers.ZohoCRM)
+	conn := zoho.GetZohoConnector(ctx, providers.ZohoDesk)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"leads", "deals", "contacts", "users"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"accounts", "contacts", "agents"})
 	if err != nil {
 		utils.Fail("error listing metadata for Zoho", "error", err)
 	}

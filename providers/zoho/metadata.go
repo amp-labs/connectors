@@ -7,7 +7,13 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/providers"
 )
+
+type metadataFetcher func(ctx context.Context, objectName string) (*common.ObjectMetadata, error)
+
+// =============================================================================
+// ZohoCRM Metadata Types
 
 // restMetadataEndpoint is the resource for retrieving metadata details.
 // doc: https://www.zoho.com/crm/developer/docs/api/v6/field-meta.html
@@ -41,13 +47,41 @@ type fieldValues struct {
 	ActualValue  string `json:"actual_value"`
 }
 
+// ==============================================================================
+// ZohoDesk Metadata Types
+
+const deskMetadataEndpoint = "organizationFields"
+
+type deskField struct {
+	Name          string       `json:"apiName"`
+	DisplayLabel  string       `json:"displayLabel"`
+	Type          string       `json:"type"`
+	AllowedValues []deskValues `json:"allowedValues,omitempty"`
+	// The rest metadata details
+}
+
+type deskMetadataFields struct {
+	Data []deskField `json:"data"`
+}
+
+type deskValues struct {
+	Value string `json:"value,omitempty"`
+}
+
+// ==============================================================================
+
 func (c *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
 	var (
-		wg sync.WaitGroup //nolint: varnamelen
-		mu sync.Mutex     //nolint: varnamelen
+		wg sync.WaitGroup                  //nolint: varnamelen
+		mu sync.Mutex                      //nolint: varnamelen
+		mf metadataFetcher = c.crmMetadata //nolint: varnamelen
 	)
+
+	if c.moduleID == providers.ZohoDesk {
+		mf = c.deskMetadata
+	}
 
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
@@ -62,7 +96,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 	for _, object := range objectNames {
 		go func(object string) {
-			metadata, err := c.getMetadata(ctx, object)
+			metadata, err := mf(ctx, object)
 			if err != nil {
 				mu.Lock()
 				objectMetadata.Errors[object] = err
@@ -86,8 +120,11 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 	return &objectMetadata, nil
 }
 
-func (c *Connector) fetchFieldMetadata(ctx context.Context, capObj string) (*common.JSONHTTPResponse, error) {
-	url, err := c.getAPIURL(restMetadataEndpoint)
+// =============================================================================
+// ZohoCRM fetching metadata fields and related details functions
+
+func (c *Connector) fetchCRMFieldResponse(ctx context.Context, capObj string) (*common.JSONHTTPResponse, error) {
+	url, err := c.getAPIURL(crmAPIVersion, restMetadataEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -99,18 +136,18 @@ func (c *Connector) fetchFieldMetadata(ctx context.Context, capObj string) (*com
 	return c.Client.Get(ctx, url.String())
 }
 
-func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
+func (c *Connector) crmMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
 	capObj := objectName
 	if objectName != users {
 		capObj = naming.CapitalizeFirstLetterEveryWord(objectName)
 	}
 
-	resp, err := c.fetchFieldMetadata(ctx, capObj)
+	resp, err := c.fetchCRMFieldResponse(ctx, capObj)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching metadata: %w", err)
 	}
 
-	metadata, err := parseMetadataResponse(resp, capObj)
+	metadata, err := parseCRMMetadataResponse(resp, capObj)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +155,7 @@ func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common
 	return metadata, nil
 }
 
-func parseMetadataResponse(resp *common.JSONHTTPResponse, objectName string) (*common.ObjectMetadata, error) {
+func parseCRMMetadataResponse(resp *common.JSONHTTPResponse, objectName string) (*common.ObjectMetadata, error) {
 	response, err := common.UnmarshalJSON[metadataFieldsV2](resp)
 	if err != nil {
 		return nil, err
@@ -143,7 +180,7 @@ func parseMetadataResponse(resp *common.JSONHTTPResponse, objectName string) (*c
 
 		mdt := common.FieldMetadata{
 			DisplayName:  fld.DisplayName,
-			ValueType:    nativeType(fld.Type),
+			ValueType:    nativeCRMType(fld.Type),
 			ProviderType: fld.Type,
 			ReadOnly:     fld.ReadOnly,
 			Values:       fieldValues,
@@ -155,7 +192,7 @@ func parseMetadataResponse(resp *common.JSONHTTPResponse, objectName string) (*c
 	return metadata, nil
 }
 
-func nativeType(typ string) common.ValueType {
+func nativeCRMType(typ string) common.ValueType {
 	switch typ {
 	case "text", "textarea", "email", "phone", "website":
 		return common.ValueTypeString
@@ -170,6 +207,91 @@ func nativeType(typ string) common.ValueType {
 	case "picklist":
 		return common.ValueTypeSingleSelect
 	case "multiselectpicklist":
+		return common.ValueTypeMultiSelect
+	default:
+		return common.ValueTypeOther
+	}
+}
+
+// =============================================================================
+// Zoho Desk fetching metadata and related details functions.
+
+func (c *Connector) fetchDeskFieldsResponse(ctx context.Context, objectName string) (*common.JSONHTTPResponse, error) {
+	url, err := c.getAPIURL(deskAPIVersion, deskMetadataEndpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("module", objectName)
+
+	return c.Client.Get(ctx, url.String())
+}
+
+func (c *Connector) deskMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
+	resp, err := c.fetchDeskFieldsResponse(ctx, objectName)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching metadata: %w", err)
+	}
+
+	metadata, err := parseDeskMetadataResponse(resp, objectName)
+	if err != nil {
+		return nil, err
+	}
+
+	return metadata, nil
+}
+
+func parseDeskMetadataResponse(resp *common.JSONHTTPResponse, objectName string) (*common.ObjectMetadata, error) {
+	response, err := common.UnmarshalJSON[deskMetadataFields](resp)
+	if err != nil {
+		return nil, err
+	}
+
+	metadata := &common.ObjectMetadata{
+		DisplayName: objectName,
+		Fields:      make(common.FieldsMetadata),
+		FieldsMap:   make(map[string]string),
+	}
+
+	// Ranging on the fields Slice, to construct the metadata fields.
+	for _, fld := range response.Data {
+		var fieldValues []common.FieldValue
+
+		for _, opt := range fld.AllowedValues {
+			fieldValues = append(fieldValues, common.FieldValue{
+				Value:        opt.Value,
+				DisplayValue: opt.Value,
+			})
+		}
+
+		mdt := common.FieldMetadata{
+			DisplayName:  fld.DisplayLabel,
+			ValueType:    nativeDeskType(fld.Type),
+			ProviderType: fld.Type,
+			Values:       fieldValues,
+		}
+
+		metadata.AddFieldMetadata(fld.Name, mdt)
+	}
+
+	return metadata, nil
+}
+
+func nativeDeskType(typ string) common.ValueType {
+	switch typ {
+	case "Text", "Email", "Phone", "Textarea", "URL", "LargeText":
+		return common.ValueTypeString
+	case "Date":
+		return common.ValueTypeDate
+	case "DateTime":
+		return common.ValueTypeDateTime
+	case "Boolean":
+		return common.ValueTypeBoolean
+	case "Number":
+		return common.ValueTypeInt
+	case "Picklist":
+		return common.ValueTypeSingleSelect
+	case "Multiselect":
 		return common.ValueTypeMultiSelect
 	default:
 		return common.ValueTypeOther

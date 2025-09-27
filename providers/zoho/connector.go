@@ -8,11 +8,18 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const apiVersion = "crm/v6"
+const (
+	crmAPIVersion  = "crm/v6"
+	deskAPIVersion = "api/v1"
+)
 
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
+
+	moduleInfo   *providers.ModuleInfo
+	providerInfo *providers.ProviderInfo
+	moduleID     common.ModuleID
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -28,6 +35,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 				ResponseHandler: responseHandler,
 			},
 		},
+		moduleID: params.Module.Selection.ID,
 	}
 
 	// Use US region domains as default for testing
@@ -45,6 +53,12 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		},
 		catalogreplacer.CustomCatalogVariable{
 			Plan: catalogreplacer.SubstitutionPlan{
+				From: "zoho_desk_domain",
+				To:   domains.DeskDomain,
+			},
+		},
+		catalogreplacer.CustomCatalogVariable{
+			Plan: catalogreplacer.SubstitutionPlan{
 				From: "zoho_token_domain",
 				To:   domains.TokenDomain,
 			},
@@ -54,7 +68,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	conn.setBaseURL(providerInfo.BaseURL)
+	conn.providerInfo = providerInfo
+	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
+	conn.setBaseURL(conn.moduleInfo.BaseURL)
 
 	return conn, nil
 }
@@ -69,7 +85,7 @@ func (c *Connector) Provider() providers.Provider {
 	return providers.Zoho
 }
 
-func (c *Connector) getAPIURL(suffix string) (*urlbuilder.URL, error) {
+func (c *Connector) getAPIURL(apiVersion string, suffix string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, apiVersion, suffix)
 }
 

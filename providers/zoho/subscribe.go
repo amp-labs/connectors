@@ -383,7 +383,7 @@ func (c *Connector) getModuleMetadata(
 }
 
 func (c *Connector) getfieldsMetadata(ctx context.Context, moduleName string) (*metadataFields, error) {
-	resp, err := c.fetchFieldMetadata(ctx, moduleName)
+	resp, err := c.fetchCRMFieldResponse(ctx, moduleName)
 	if err != nil {
 		return nil, fmt.Errorf("error getting metadata for module '%s': %w", moduleName, err)
 	}
