@@ -48,7 +48,7 @@ const dataKey = "data"
 //
 // nolint: funlen, cyclop
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
-	ctx = logging.With(ctx, "connector", "zoho CRM")
+	ctx = logging.With(ctx, "connector", "zoho CRM", "module", c.moduleID)
 
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
