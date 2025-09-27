@@ -33,11 +33,7 @@ func GetZohoDeskConnector(ctx context.Context) *zoho.Connector {
 
 	conn, err := zoho.NewConnector(
 		zoho.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		zoho.WithModule(providers.ZohoDeskV2),
-		zoho.WithMetadata(map[string]string{
-			"orgId": "899917812",
-		}),
-	)
+		zoho.WithModule(providers.ZohoDesk))
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
 	}
