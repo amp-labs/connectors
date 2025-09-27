@@ -1,0 +1,63 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "scheduled_events": {
+          "displayName": "Scheduled Events",
+          "path": "/scheduled_events",
+          "responseKey": "collection",
+          "fields": {
+            "uri": "uri",
+            "name": "name",
+            "meeting_notes_plain": "meeting_notes_plain",
+            "meeting_notes_html": "meeting_notes_html",
+            "status": "status",
+            "start_time": "start_time",
+            "end_time": "end_time",
+            "event_type": "event_type",
+            "location_type": "location_type",
+            "location_location": "location_location",
+            "location_additional_info": "location_additional_info",
+            "invitees_counter_total": "invitees_counter_total",
+            "invitees_counter_active": "invitees_counter_active",
+            "invitees_counter_limit": "invitees_counter_limit",
+            "created_at": "created_at",
+            "updated_at": "updated_at",
+            "event_memberships": {
+              "displayName": "Event Memberships",
+              "type": "array",
+              "items": {
+                "fields": {
+                  "user": "user",
+                  "user_email": "user_email",
+                  "user_name": "user_name",
+                  "buffered_start_time": "buffered_start_time",
+                  "buffered_end_time": "buffered_end_time"
+                }
+              }
+            },
+            "event_guests": {
+              "displayName": "Event Guests",
+              "type": "array",
+              "items": {
+                "fields": {
+                  "email": "email",
+                  "created_at": "created_at",
+                  "updated_at": "updated_at"
+                }
+              }
+            },
+            "cancellation_canceled_by": "cancellation_canceled_by",
+            "cancellation_reason": "cancellation_reason",
+            "cancellation_canceler_type": "cancellation_canceler_type",
+            "cancellation_created_at": "cancellation_created_at",
+            "calendar_event_kind": "calendar_event_kind",
+            "calendar_event_external_id": "calendar_event_external_id"
+          }
+        }
+      }
+    }
+  }
+}
