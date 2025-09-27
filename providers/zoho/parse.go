@@ -1,6 +1,8 @@
 package zoho
 
 import (
+	"strconv"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -9,6 +11,7 @@ import (
 
 /*
 	doc: https://www.zoho.com/crm/developer/docs/api/v6/get-records.html
+	The info object is not necessary required in zoho Desk
 	Response Sample:
 
    "data": [{...}, {...}],
@@ -29,12 +32,12 @@ import (
 
 func getNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		hasMoreRecords, err := jsonquery.New(node, "info").BoolRequired("more_records")
+		hasMoreRecords, err := jsonquery.New(node, "info").BoolOptional("more_records")
 		if err != nil {
 			return "", err
 		}
 
-		if hasMoreRecords {
+		if hasMoreRecords != nil && *hasMoreRecords {
 			pageToken, err := jsonquery.New(node, "info").StringOptional("next_page_token")
 			if err != nil {
 				return "", err
@@ -49,10 +52,45 @@ func getNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 	}
 }
 
+func getNextRecordsURLDesk(url *urlbuilder.URL) common.NextPageFunc {
+	return func(n *ajson.Node) (string, error) {
+		rcds, err := jsonquery.New(n).ArrayRequired(dataKey)
+		if err != nil {
+			return "", err
+		}
+
+		from, exist := url.GetFirstQueryParam("from")
+		if !exist {
+			// indicates we're in the first API Call response.
+			// if we have the maximum records, we might have more records
+			if len(rcds) == deskLimitInt {
+				url.WithQueryParam("from", strconv.Itoa(deskLimitInt+1))
+
+				return url.String(), nil
+			}
+
+			return "", nil
+		}
+
+		fromInt, err := strconv.Atoi(from)
+		if err != nil {
+			return "", err
+		}
+
+		if len(rcds) == deskLimitInt {
+			url.WithQueryParam("from", strconv.Itoa(fromInt+1))
+
+			return url.String(), nil
+		}
+
+		return "", nil
+	}
+}
+
 func extractRecordsFromPath(objectName string) common.RecordsFunc {
 	if objectName == users {
 		return common.ExtractRecordsFromPath(users)
 	}
 
-	return common.ExtractRecordsFromPath("data")
+	return common.ExtractRecordsFromPath(dataKey)
 }
