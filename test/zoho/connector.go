@@ -27,20 +27,6 @@ func GetZohoConnector(ctx context.Context, module common.ModuleID) *zoho.Connect
 	return conn
 }
 
-func GetZohoDeskConnector(ctx context.Context) *zoho.Connector {
-	filePath := credscanning.LoadPath(providers.Zoho)
-	reader := utils.MustCreateProvCredJSON(filePath, true)
-
-	conn, err := zoho.NewConnector(
-		zoho.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		zoho.WithModule(providers.ZohoDesk))
-	if err != nil {
-		utils.Fail("error creating connector", "error", err)
-	}
-
-	return conn
-}
-
 func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 	cfg := oauth2.Config{
 		ClientID:     reader.Get(credscanning.Fields.ClientId),
