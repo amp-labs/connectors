@@ -56,9 +56,9 @@ func (c *Connector) read(ctx context.Context, config common.ReadParams,
 	if c.moduleID == providers.ZohoDesk {
 		switch {
 		case objectsSortableByCreatedTime.Has(config.ObjectName):
-			return manualIncrementalSync(node, dataKey, config, createdTimeKey, timeRangeLayout, getNextRecordsURLDesk(url))
+			return manualIncrementalSync(node, dataKey, config, createdTimeKey, timeLayout, getNextRecordsURLDesk(url))
 		case objectsSortablebyModifiedTime.Has(config.ObjectName):
-			return manualIncrementalSync(node, dataKey, config, modifiedTimeKey, timeRangeLayout, getNextRecordsURLDesk(url))
+			return manualIncrementalSync(node, dataKey, config, modifiedTimeKey, timeLayout, getNextRecordsURLDesk(url))
 		default:
 			return common.ParseResult(res,
 				common.ExtractRecordsFromPath(dataKey),

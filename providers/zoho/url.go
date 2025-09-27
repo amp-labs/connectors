@@ -7,12 +7,13 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers"
 )
 
 const (
-	timeRangeLayout = "2006-01-02T15:04:05.000Z"
-	articlesObject  = "articles"
+	timeLayout     = "2006-01-02T15:04:05.000Z"
+	articlesObject = "articles"
 )
 
 type (
@@ -40,31 +41,23 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 }
 
 func (c *Connector) buildModuleURL(params common.ReadParams, apiVersion string,
-	objTransfomer objectNameTransformer, fldTransformer fieldsTransformer,
+	objTransformer objectNameTransformer, fldTransformer fieldsTransformer,
 ) (*urlbuilder.URL, error) {
-	obj := params.ObjectName
-
 	// Check if we're reading the next-page.
 	if len(params.NextPage) > 0 {
 		return urlbuilder.New(params.NextPage.String())
 	}
 
-	// objects like users, org, org/currencies, __features,
-	// uses lowecased object-names.
-	if params.ObjectName != users && params.ObjectName != org {
-		// Object names in ZohoCRM API are case sensitive.
-		// Capitalizing the first character of object names to form correct URL.
-		obj = objTransfomer(params.ObjectName)
-	}
+	objectName := c.transformedObjectName(params, objTransformer)
 
-	url, err := c.getAPIURL(apiVersion, obj)
+	url, err := c.getAPIURL(apiVersion, objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	c.constructURLIncrementalReqDesk(url, params)
+	c.constructIncrementalParams(url, params)
 
-	fields := fldTransformer(params.Fields.List())
+	fields := c.prepareFields(params, fldTransformer)
 	if params.ObjectName != articlesObject {
 		url.WithQueryParam("fields", fields)
 	}
@@ -72,30 +65,55 @@ func (c *Connector) buildModuleURL(params common.ReadParams, apiVersion string,
 	return url, nil
 }
 
-func (c *Connector) constructURLIncrementalReqDesk(url *urlbuilder.URL, params common.ReadParams) { //nolint:cyclop
-	if c.moduleID == providers.ZohoDesk { //nolint:nestif
-		if !params.Since.IsZero() {
-			// If we're doing incrementalRead,
-			// we need to explicitly Require the timestampKey fields in the response.
-			if objectsSortableByCreatedTime.Has(params.ObjectName) && !params.Fields.Has(createdTimeKey) {
-				params.Fields.Add([]string{createdTimeKey})
-			}
+func (c *Connector) transformedObjectName(params common.ReadParams, transformer objectNameTransformer) string {
+	if params.ObjectName != users && params.ObjectName != org {
+		return transformer(params.ObjectName)
+	}
 
-			if objectsSortablebyModifiedTime.Has(params.ObjectName) && !params.Fields.Has(modifiedTimeKey) {
-				params.Fields.Add([]string{modifiedTimeKey})
-			}
+	return params.ObjectName
+}
 
-			switch {
-			case endpointsWithModifiedAfterParam.Has(params.ObjectName):
-				url.WithQueryParam("modifiedAfter", params.Since.Format(time.RFC3339))
-			case objectsSortableByCreatedTime.Has(params.ObjectName):
-				url.WithQueryParam("sortBy", "-createdTime")
-			case objectsSortablebyModifiedTime.Has(params.ObjectName):
-				url.WithQueryParam("sortBy", "-modifiedTime")
-			}
-		}
+func (c *Connector) prepareFields(params common.ReadParams, fieldTransformer fieldsTransformer) string {
+	fieldSet := datautils.NewStringSet(params.Fields.List()...)
 
-		url.WithQueryParam("limit", deskLimit)
+	if c.moduleID == providers.ZohoDesk {
+		c.ensureTimestampFields(fieldSet, params.ObjectName)
+	}
+
+	return fieldTransformer(fieldSet.List())
+}
+
+func (c *Connector) ensureTimestampFields(fieldSet datautils.StringSet, objectName string) {
+	if objectsSortableByCreatedTime.Has(objectName) && !fieldSet.Has(createdTimeKey) {
+		fieldSet.Add([]string{createdTimeKey})
+	}
+
+	if objectsSortablebyModifiedTime.Has(objectName) && !fieldSet.Has(modifiedTimeKey) {
+		fieldSet.Add([]string{modifiedTimeKey})
+	}
+}
+
+func (c *Connector) constructIncrementalParams(url *urlbuilder.URL, params common.ReadParams) {
+	if c.moduleID != providers.ZohoDesk {
+		return
+	}
+
+	c.applySinceParam(url, params)
+	url.WithQueryParam("limit", deskLimit)
+}
+
+func (c *Connector) applySinceParam(url *urlbuilder.URL, params common.ReadParams) {
+	if params.Since.IsZero() {
+		return
+	}
+
+	switch {
+	case endpointsWithModifiedAfterParam.Has(params.ObjectName):
+		url.WithQueryParam("modifiedAfter", params.Since.Format(time.RFC3339))
+	case objectsSortableByCreatedTime.Has(params.ObjectName):
+		url.WithQueryParam("sortBy", "-createdTime")
+	case objectsSortablebyModifiedTime.Has(params.ObjectName):
+		url.WithQueryParam("sortBy", "-modifiedTime")
 	}
 }
 
