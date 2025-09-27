@@ -10,6 +10,8 @@ const (
 	objectNameTranscript         = "transcripts"
 	objectNameMeetings           = "meetings"
 	objectNameDigitalInteraction = "digital-interaction"
+	objectNameFlows              = "flows"
+	objectNameUsers              = "users"
 )
 
 // Supported object names can be found under schemas.json.

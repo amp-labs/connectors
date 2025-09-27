@@ -28,9 +28,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     false,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -46,7 +46,7 @@ func init() {
 		Metadata: &ProviderMetadata{
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
-					Name: "Xero-Tenant-Id",
+					Name: "tenantId",
 				},
 			},
 		},

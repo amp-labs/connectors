@@ -124,7 +124,6 @@ func main() {
 func createCalls(ctx context.Context, conn *gong.Connector, payload *CallsPayload) *common.WriteResult {
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: objectName,
-		RecordId:   "",
 		RecordData: payload,
 	})
 	if err != nil {
@@ -149,7 +148,6 @@ func createUniqueID() string {
 func createMeetings(ctx context.Context, conn *gong.Connector, payload *MeetingsPayload) *common.WriteResult {
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "meetings",
-		RecordId:   "",
 		RecordData: payload,
 	})
 	if err != nil {
@@ -166,7 +164,6 @@ func createMeetings(ctx context.Context, conn *gong.Connector, payload *Meetings
 func createDigitalInteraction(ctx context.Context, conn *gong.Connector, payload any) *common.WriteResult {
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "digital-interaction",
-		RecordId:   "",
 		RecordData: payload,
 	})
 	if err != nil {
