@@ -55,7 +55,7 @@ func (c *Connector) buildModuleURL(params common.ReadParams, apiVersion string,
 		return nil, err
 	}
 
-	c.constructURLIncrementalReqDesk(url, params)
+	c.constructIncrementalParams(url, params)
 
 	c.constructIncrementalParams(url, params)
 
