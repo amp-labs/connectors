@@ -1,0 +1,372 @@
+{
+  "modules": {
+    "mail": {
+      "id": "mail",
+      "path": "",
+      "objects": {
+        "delegates": {
+          "displayName": "Delegates",
+          "path": "/users/{userId}/settings/delegates",
+          "responseKey": "delegates",
+          "fields": {
+            "delegateEmail": {
+              "displayName": "Delegate Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "verificationStatus": {
+              "displayName": "Verification Status",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "drafts": {
+          "displayName": "Drafts",
+          "path": "/users/{userId}/drafts",
+          "responseKey": "drafts",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "message": {
+              "displayName": "Message",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "filters": {
+          "displayName": "Filters",
+          "path": "/users/{userId}/settings/filters",
+          "responseKey": "filter",
+          "fields": {
+            "action": {
+              "displayName": "Action",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "criteria": {
+              "displayName": "Criteria",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "forwardingAddresses": {
+          "displayName": "Forwarding Addresses",
+          "path": "/users/{userId}/settings/forwardingAddresses",
+          "responseKey": "forwardingAddresses",
+          "fields": {
+            "forwardingEmail": {
+              "displayName": "Forwarding Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "verificationStatus": {
+              "displayName": "Verification Status",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "history": {
+          "displayName": "History",
+          "path": "/users/{userId}/history",
+          "responseKey": "history",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "labelsAdded": {
+              "displayName": "Labels Added",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "labelsRemoved": {
+              "displayName": "Labels Removed",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "messages": {
+              "displayName": "Messages",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "messagesAdded": {
+              "displayName": "Messages Added",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "messagesDeleted": {
+              "displayName": "Messages Deleted",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "identities": {
+          "displayName": "Identities",
+          "path": "/users/{userId}/settings/cse/identities",
+          "responseKey": "cseIdentities",
+          "fields": {
+            "emailAddress": {
+              "displayName": "Email Address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primaryKeyPairId": {
+              "displayName": "Primary Key Pair Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "signAndEncryptKeyPairs": {
+              "displayName": "Sign And Encrypt Key Pairs",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "keypairs": {
+          "displayName": "Keypairs",
+          "path": "/users/{userId}/settings/cse/keypairs",
+          "responseKey": "cseKeyPairs",
+          "fields": {
+            "disableTime": {
+              "displayName": "Disable Time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "enablementState": {
+              "displayName": "Enablement State",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "keyPairId": {
+              "displayName": "Key Pair Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pem": {
+              "displayName": "Pem",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pkcs7": {
+              "displayName": "Pkcs 7",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "privateKeyMetadata": {
+              "displayName": "Private Key Metadata",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "subjectEmailAddresses": {
+              "displayName": "Subject Email Addresses",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "labels": {
+          "displayName": "Labels",
+          "path": "/users/{userId}/labels",
+          "responseKey": "labels",
+          "fields": {
+            "color": {
+              "displayName": "Color",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "labelListVisibility": {
+              "displayName": "Label List Visibility",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "messageListVisibility": {
+              "displayName": "Message List Visibility",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "messagesTotal": {
+              "displayName": "Messages Total",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "messagesUnread": {
+              "displayName": "Messages Unread",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "threadsTotal": {
+              "displayName": "Threads Total",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "threadsUnread": {
+              "displayName": "Threads Unread",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "messages": {
+          "displayName": "Messages",
+          "path": "/users/{userId}/messages",
+          "responseKey": "messages",
+          "fields": {
+            "historyId": {
+              "displayName": "History Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "internalDate": {
+              "displayName": "Internal Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "labelIds": {
+              "displayName": "Label Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "payload": {
+              "displayName": "Payload",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "raw": {
+              "displayName": "Raw",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sizeEstimate": {
+              "displayName": "Size Estimate",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "snippet": {
+              "displayName": "Snippet",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "threadId": {
+              "displayName": "Thread Id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "sendAs": {
+          "displayName": "Send As",
+          "path": "/users/{userId}/settings/sendAs",
+          "responseKey": "sendAs",
+          "fields": {
+            "displayName": {
+              "displayName": "Display Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isDefault": {
+              "displayName": "Is Default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isPrimary": {
+              "displayName": "Is Primary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "replyToAddress": {
+              "displayName": "Reply To Address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sendAsEmail": {
+              "displayName": "Send As Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "signature": {
+              "displayName": "Signature",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "smtpMsa": {
+              "displayName": "Smtp Msa",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "treatAsAlias": {
+              "displayName": "Treat As Alias",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "verificationStatus": {
+              "displayName": "Verification Status",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "threads": {
+          "displayName": "Threads",
+          "path": "/users/{userId}/threads",
+          "responseKey": "threads",
+          "fields": {
+            "historyId": {
+              "displayName": "History Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "messages": {
+              "displayName": "Messages",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "snippet": {
+              "displayName": "Snippet",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
