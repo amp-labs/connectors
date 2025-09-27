@@ -24,7 +24,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		obj = naming.CapitalizeFirstLetterEveryWord(config.ObjectName)
 	}
 
-	url, err := c.getAPIURL(obj)
+	url, err := c.getAPIURL(crmAPIVersion, obj)
 	if err != nil {
 		return nil, err
 	}
