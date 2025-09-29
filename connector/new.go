@@ -350,6 +350,7 @@ func newZohoConnector(
 ) (*zoho.Connector, error) {
 	return zoho.NewConnector(
 		zoho.WithAuthenticatedClient(params.AuthenticatedClient),
+		zoho.WithModule(params.Module),
 	)
 }
 
