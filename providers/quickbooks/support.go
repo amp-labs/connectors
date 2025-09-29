@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 )
 
+//nolint:funlen
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
 		"account",
@@ -17,7 +18,7 @@ func supportedOperations() components.EndpointRegistryInput {
 		"budget",
 		"class",
 		"companyCurrency",
-		"CreditMemo",
+		"creditMemo",
 		"creditCardPayment",
 		"customer",
 		"customerType",
@@ -56,6 +57,36 @@ func supportedOperations() components.EndpointRegistryInput {
 		"billPayment",
 		"budget",
 		"class",
+		"companyCurrency",
+		"creditMemo",
+		"creditCardPayment",
+		"customer",
+		"department",
+		"deposit",
+		"employee",
+		"estimate",
+		"inventoryadjustment",
+		"invoice",
+		"item",
+		"journalEntry",
+		"payment",
+		"journalCode",
+		"journalEntry",
+		"payment",
+		"paymentMethod",
+		"purchase",
+		"purchaseOrder",
+		"recurringTransaction",
+		"refundReceipt",
+		"reimburseCharge",
+		"salesReceipt",
+		"taxservice/taxcode",
+		"taxAgency",
+		"term",
+		"timeActivity",
+		"transfer",
+		"vendor",
+		"vendorCredit",
 	}
 
 	return components.EndpointRegistryInput{
