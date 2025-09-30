@@ -1,8 +1,16 @@
 package loxo
 
 import (
+	"strconv"
+
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
+
+const defaultPageSize = 1
 
 var objectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 	"activity_types":                 "",
@@ -71,3 +79,52 @@ var objectWithPrefixValue = datautils.NewSet( //nolint:gochecknoglobals
 	"scorecard_templates",
 	"scorecard_visibility_types ",
 )
+
+var paginationObjects = datautils.NewSet( //nolint:gochecknoglobals
+	"form_templates",
+	"forms",
+	"people",
+	"people/emails",
+	"people_phones",
+	"person_events",
+	"scorescards",
+	"sms",
+	"countries",
+	"jobs",
+	"scorecard_templates",
+)
+
+var objectWithPageParam = datautils.NewSet( //nolint:gochecknoglobals
+	"countries",
+	"jobs",
+)
+
+func makeNextRecordsURL(reqLink *urlbuilder.URL, objName string) common.NextPageFunc {
+	return func(node *ajson.Node) (string, error) {
+		if !paginationObjects.Has(objName) {
+			return "", nil
+		}
+
+		if objectWithPageParam.Has(objName) {
+			current_page, err := jsonquery.New(node).IntegerRequired("current_page")
+			if err != nil {
+				return "", err
+			}
+
+			nextPage := current_page + 1
+
+			reqLink.WithQueryParam("page", strconv.Itoa(int(nextPage)))
+
+			return reqLink.String(), nil
+		}
+
+		nextPage, err := jsonquery.New(node).StringOptional("scroll_id")
+		if err != nil || nextPage == nil {
+			return "", err
+		}
+
+		reqLink.WithQueryParam("scroll_id", *nextPage)
+
+		return reqLink.String(), nil
+	}
+}
