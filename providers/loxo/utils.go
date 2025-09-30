@@ -10,7 +10,7 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-const defaultPageSize = 1
+const defaultPageSize = 100
 
 var objectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 	"activity_types":                 "",
