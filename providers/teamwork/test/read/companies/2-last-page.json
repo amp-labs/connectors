@@ -1,0 +1,12 @@
+{
+  "companies": [],
+  "meta": {
+    "page": {
+      "pageOffset": 1,
+      "pageSize": 2,
+      "count": 2,
+      "hasMore": false
+    }
+  },
+  "included": {}
+}
