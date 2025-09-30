@@ -106,12 +106,12 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL, objName string) common.NextPage
 		}
 
 		if objectWithPageParam.Has(objName) {
-			current_page, err := jsonquery.New(node).IntegerRequired("current_page")
+			currentPage, err := jsonquery.New(node).IntegerRequired("current_page")
 			if err != nil {
 				return "", err
 			}
 
-			nextPage := current_page + 1
+			nextPage := currentPage + 1
 
 			reqLink.WithQueryParam("page", strconv.Itoa(int(nextPage)))
 
