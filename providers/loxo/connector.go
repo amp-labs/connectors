@@ -45,7 +45,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
 			ParseResponse: connector.parseSingleObjectMetadataResponse,
 			ErrorHandler: interpreter.ErrorHandler{
-				HTML: &interpreter.DirectFaultyResponder{Callback: connector.interpretHTMLError},
+				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 			}.Handle,
 		},
 	)
