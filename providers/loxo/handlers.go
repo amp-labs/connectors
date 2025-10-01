@@ -100,7 +100,14 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		url.WithQueryParam("per_page", strconv.Itoa(defaultPageSize))
 	}
 
-	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("accept", "application/json")
+
+	return req, nil
 }
 
 func (c *Connector) parseReadResponse(
