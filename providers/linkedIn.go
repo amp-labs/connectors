@@ -43,7 +43,7 @@ func init() {
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name:        "AdAccountId",
+					Name:        "adAccountId",
 					DisplayName: "Ad Account ID",
 					DocsURL:     "https://www.linkedin.com/help/linkedin/answer/a424270/find-linkedin-ads-account-details",
 				},
