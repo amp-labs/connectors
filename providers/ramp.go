@@ -14,7 +14,7 @@ func init() { //nolint:funlen
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.ramp.com/v1/authorize",
 			TokenURL:                  "https://api.ramp.com/developer/v1/token",
-			ExplicitScopesRequired:    false,
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
@@ -49,7 +49,7 @@ func init() { //nolint:funlen
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://demo.ramp.com/v1/authorize",
 			TokenURL:                  "https://demo-api.ramp.com/developer/v1/token",
-			ExplicitScopesRequired:    false,
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
