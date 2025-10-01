@@ -17,6 +17,8 @@ var (
 	requiresUserURIQueryParam = datautils.NewSet("user_busy_times", //nolint: gochecknoglobals
 		"user_availability_schedules",
 		"locations", "scheduled_events")
+
+	EndpointWithUpdatedAtParam = datautils.NewSet("event_types") //nolint: gochecknoglobals
 )
 
 func supportedOperations() components.EndpointRegistryInput {

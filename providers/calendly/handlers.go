@@ -6,30 +6,24 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/spyzhov/ajson"
 )
 
-/*
-Objects supporting since query params:
-- activity_log_entries - min_occurred_at, max_occurred_at - not necessary.
-- user_busy_times - start_time, end_time - both are required
-- outgoing_communications - min_created_at,max_created_at - not required
-- scheduled_events - min_start_time, max_start_time - not required
+/* The Calendly API provides event time filtering but not created/updated time filtering for most resources.
+   To enable incremental reads, we can implement client-side filtering after full retrieval,
+   comparing records against the 'since' timestamp. Currently not supported yet.
 */
 
 const (
 	organization = "organization"
 	user         = "user"
-
-	activityLogEntries     = "activity_log_entries"
-	userBusyTimes          = "user_busy_times"
-	outgoingCommunications = "outgoing_communications"
-	scheduledEvents        = "scheduled_events"
+	updatedAt    = "updated_at"
+	countQuery   = "count"
+	PageSize     = "100"
 )
 
-// when reading the objects "scheduled_events" and "user_busy_times" with since and until params provided
-// This connector uses event start timestamps rather than create/update timestamps because they are calendar items,
-// unlike other objects.
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	url, err := c.buildReadURL(params)
 	if err != nil {
@@ -50,6 +44,9 @@ func (c *Connector) buildReadURL(params common.ReadParams) (string, error) { // 
 		return "", err
 	}
 
+	// Retrieve 100 records per API call.
+	urlBuilder.WithQueryParam(countQuery, PageSize)
+
 	if requiresOrgURIQueryParam.Has(params.ObjectName) {
 		urlBuilder.WithQueryParam(organization, c.orgURI)
 	}
@@ -58,30 +55,8 @@ func (c *Connector) buildReadURL(params common.ReadParams) (string, error) { // 
 		urlBuilder.WithQueryParam(user, c.userURI)
 	}
 
-	if !params.Since.IsZero() {
-		switch params.ObjectName {
-		case activityLogEntries:
-			urlBuilder.WithQueryParam("min_occurred_at", params.Since.Format(time.RFC3339))
-		case userBusyTimes:
-			urlBuilder.WithQueryParam("start_time", params.Since.Format(time.RFC3339))
-		case outgoingCommunications:
-			urlBuilder.WithQueryParam("min_created_at", params.Since.Format(time.RFC3339))
-		case scheduledEvents:
-			urlBuilder.WithQueryParam("min_start_time", params.Since.Format(time.RFC3339))
-		}
-	}
-
-	if !params.Until.IsZero() {
-		switch params.ObjectName {
-		case activityLogEntries:
-			urlBuilder.WithQueryParam("max_occurred_at", params.Until.Format(time.RFC3339))
-		case userBusyTimes:
-			urlBuilder.WithQueryParam("end_time", params.Until.Format(time.RFC3339))
-		case outgoingCommunications:
-			urlBuilder.WithQueryParam("max_created_at", params.Until.Format(time.RFC3339))
-		case scheduledEvents:
-			urlBuilder.WithQueryParam("max_start_time", params.Until.Format(time.RFC3339))
-		}
+	if (!params.Since.IsZero()) && EndpointWithUpdatedAtParam.Has(params.ObjectName) {
+		urlBuilder.WithQueryParam("sort", "updated_at:asc")
 	}
 
 	url = urlBuilder.String()
@@ -99,6 +74,23 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	node, hasData := response.Body()
+	if !hasData {
+		// this should never occur as the API responds with a cotents
+		// having body regardless of status code.
+		return &common.ReadResult{
+			Rows: 0,
+			Data: []common.ReadResultRow{},
+			Done: true,
+		}, nil
+	}
+
+	if !params.Since.IsZero() {
+		if EndpointWithUpdatedAtParam.Has(params.ObjectName) {
+			return manualIncrementalSync(node, dataKey, params, updatedAt, time.RFC3339, nextRecordsURL)
+		}
+	}
+
 	return common.ParseResult(
 		response,
 		common.ExtractRecordsFromPath(dataKey),
@@ -106,4 +98,35 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+// Manual incremental synchronization implementation for Calendly
+//
+// Calendly lacks native incremental sync support. This function iterates through records
+// and returns those created or updated after the specified timestamp.
+func manualIncrementalSync(node *ajson.Node, recordsKey string, config common.ReadParams, //nolint:cyclop
+	timestampKey string, timestampFormat string, nextPageFunc common.NextPageFunc,
+) (*common.ReadResult, error) {
+	records, nextPage, err := readhelper.FilterSortedRecords(node, recordsKey,
+		config.Since, timestampKey, timestampFormat, nextPageFunc)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := common.GetMarshaledData(records, config.Fields.List())
+	if err != nil {
+		return nil, err
+	}
+
+	var done bool
+	if nextPage == "" {
+		done = true
+	}
+
+	return &common.ReadResult{
+		Rows:     int64(len(records)),
+		Data:     rows,
+		NextPage: common.NextPageToken(nextPage),
+		Done:     done,
+	}, nil
 }
