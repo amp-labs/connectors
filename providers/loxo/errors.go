@@ -1,29 +1,26 @@
 package loxo
 
 import (
-	"bytes"
 	"fmt"
-	"net/http"
 
-	"github.com/PuerkitoBio/goquery"
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
-func (c *Connector) interpretHTMLError(res *http.Response, body []byte) error {
-	base := interpreter.DefaultStatusCodeMappingToErr(res, body)
+var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
+	[]interpreter.FormatTemplate{
+		{
+			MustKeys: nil,
+			Template: func() interpreter.ErrorDescriptor { return &ResponseError{} },
+		},
+	}...,
+)
 
-	document, err := goquery.NewDocumentFromReader(bytes.NewReader(body))
-	if err != nil {
-		// ignore HTML that cannot be understood
-		return base
-	}
+type ResponseError struct {
+	Status int    `json:"status"`
+	Error  string `json:"error"`
+}
 
-	// Message is located under the <pre></pre> tag
-	message := document.Find("head > title").Text()
-
-	if message == "" {
-		return base // nothing meaningful found, return base error
-	}
-
-	return fmt.Errorf("%w: %v", base, message)
+func (r ResponseError) CombineErr(base error) error {
+	// Error field is the safest to return, though not very useful.
+	return fmt.Errorf("%w: %v", base, r.Error)
 }
