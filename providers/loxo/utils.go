@@ -99,6 +99,11 @@ var objectWithPageParam = datautils.NewSet( //nolint:gochecknoglobals
 	"jobs",
 )
 
+var writeObjectWithNoNodePath = datautils.NewSet( //nolint:gochecknoglobals
+	"placements",
+	"forms",
+)
+
 func makeNextRecordsURL(reqLink *urlbuilder.URL, objName string) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		if !paginationObjects.Has(objName) {

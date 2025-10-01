@@ -68,11 +68,43 @@ func supportedOperations() components.EndpointRegistryInput { // nolint:funlen
 		"workflows",
 	}
 
+	writeSupport := []string{
+		"companies",
+		"deals",
+		"forms",
+		"jobs",
+		"people",
+		"person_events",
+		"placements",
+		"scorecards",
+		"scorecard_templates",
+		"sms",
+		"source_types",
+	}
+
+	deleteSupport := []string{
+		"forms",
+		"jobs",
+		"person_events",
+		"placements",
+		"scorecards",
+		"scorecard_templates",
+		"source_types",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(deleteSupport, ",")),
+				Support:  components.DeleteSupport,
 			},
 		},
 	}
