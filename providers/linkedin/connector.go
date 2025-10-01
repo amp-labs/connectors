@@ -37,7 +37,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		return nil, err
 	}
 
-	conn.AdAccountId = params.Metadata["AdAccountId"]
+	conn.AdAccountId = params.Metadata["adAccountId"]
 
 	return conn, nil
 }
