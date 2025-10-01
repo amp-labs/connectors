@@ -22,7 +22,6 @@ func main() {
 	defer utils.Close(conn)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{"users", "groups"})
-
 	if err != nil {
 		utils.Fail("error listing metadata for zoom", "error", err)
 	}
