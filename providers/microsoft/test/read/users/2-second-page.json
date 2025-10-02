@@ -1,0 +1,18 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users",
+  "value": [
+    {
+      "businessPhones": [],
+      "displayName": "Melissa Darrow",
+      "givenName": "Melissa",
+      "jobTitle": "Marketing Director",
+      "mail": null,
+      "mobilePhone": "+1 206 555 0110",
+      "officeLocation": "131/1105",
+      "preferredLanguage": "en-US",
+      "surname": "Darrow",
+      "userPrincipalName": "MelissaD@integrationuserwithampersan.onmicrosoft.com",
+      "id": "b228b14c-6c5e-4ad2-9f95-c961ad65d808"
+    }
+  ]
+}

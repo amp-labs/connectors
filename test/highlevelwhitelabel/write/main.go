@@ -122,29 +122,6 @@ func testProductsCollections(ctx context.Context) error {
 		return err
 	}
 
-	slog.Info("Updating products collections")
-
-	updateParams := common.WriteParams{
-		ObjectName: "products/collections",
-		RecordData: map[string]any{
-			"altId":   "iV1BEzddaWWLqU2kXhcN",
-			"altType": "location",
-			"name":    "Products-seller",
-		},
-		RecordId: writeRes.RecordId,
-	}
-
-	updateRes, err := Write(ctx, conn, updateParams)
-	if err != nil {
-		fmt.Println("ERR: ", err)
-
-		return err
-	}
-
-	if err := constructResponse(updateRes); err != nil {
-		return err
-	}
-
 	return nil
 }
 

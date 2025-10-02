@@ -124,14 +124,15 @@ func (c *Connector) parseReadResponse(
 func makeNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 	// Alter current request URL to progress with the next page token.
 	return func(node *ajson.Node) (string, error) {
-		// This response structure relates to `events` object.
-		nextToken, err := jsonquery.New(node, "meta").StrWithDefault("next", "")
+		// This response structure relates to `events,notes` objects.
+		metaObject, err := jsonquery.New(node).ObjectOptional("meta")
 		if err != nil {
 			return "", err
 		}
 
-		if nextToken != "" {
-			return nextToken, nil
+		if metaObject != nil && metaObject.HasKey("next") {
+			// Events, notes objects use this format where `meta` holds `next` page token.
+			return jsonquery.New(metaObject).StrWithDefault("next", "")
 		}
 
 		page, exists := url.GetFirstQueryParam("page[page]")

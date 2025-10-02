@@ -61,7 +61,10 @@ import (
 	"github.com/amp-labs/connectors/providers/klaviyo"
 	"github.com/amp-labs/connectors/providers/lemlist"
 	"github.com/amp-labs/connectors/providers/lever"
+	"github.com/amp-labs/connectors/providers/linear"
+	"github.com/amp-labs/connectors/providers/linkedin"
 	"github.com/amp-labs/connectors/providers/marketo"
+	"github.com/amp-labs/connectors/providers/microsoft"
 	"github.com/amp-labs/connectors/providers/mixmax"
 	"github.com/amp-labs/connectors/providers/monday"
 	"github.com/amp-labs/connectors/providers/netsuite"
@@ -72,9 +75,11 @@ import (
 	"github.com/amp-labs/connectors/providers/pipeliner"
 	"github.com/amp-labs/connectors/providers/podium"
 	"github.com/amp-labs/connectors/providers/pylon"
+	"github.com/amp-labs/connectors/providers/sageintacct"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/seismic"
+	"github.com/amp-labs/connectors/providers/sellsy"
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/stripe"
@@ -82,7 +87,7 @@ import (
 	"github.com/amp-labs/connectors/providers/xero"
 	"github.com/amp-labs/connectors/providers/zendeskchat"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
-	"github.com/amp-labs/connectors/providers/zohocrm"
+	"github.com/amp-labs/connectors/providers/zoho"
 	"github.com/amp-labs/connectors/providers/zoom"
 )
 
@@ -152,7 +157,10 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Klaviyo:                 wrapper(newKlaviyoConnector),
 	providers.Lemlist:                 wrapper(newLemlistConnector),
 	providers.Lever:                   wrapper(newLeverConnector),
+	providers.Linear:                  wrapper(newLinearConnector),
+	providers.LinkedIn:                wrapper(newLinkedInConnector),
 	providers.Marketo:                 wrapper(newMarketoConnector),
+	providers.Microsoft:               wrapper(newMicrosoftConnector),
 	providers.Mixmax:                  wrapper(newMixmaxConnector),
 	providers.Monday:                  wrapper(newMondayConnector),
 	providers.Netsuite:                wrapper(newNetsuiteConnector),
@@ -163,10 +171,12 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Pipeliner:               wrapper(newPipelinerConnector),
 	providers.Podium:                  wrapper(newPodiumConnector),
 	providers.Pylon:                   wrapper(newPylonConnector),
+	providers.SageIntacct:             wrapper(newSageIntacctConnector),
 	providers.Salesforce:              wrapper(newSalesforceConnector),
 	providers.Salesloft:               wrapper(newSalesloftConnector),
-	providers.ServiceNow:              wrapper(newServiceNowConnector),
 	providers.Seismic:                 wrapper(newSeismicConnector),
+	providers.Sellsy:                  wrapper(newSellsyConnector),
+	providers.ServiceNow:              wrapper(newServiceNowConnector),
 	providers.Smartlead:               wrapper(newSmartleadConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
@@ -289,6 +299,12 @@ func newMarketoConnector(
 	)
 }
 
+func newMicrosoftConnector(
+	params common.ConnectorParams,
+) (*microsoft.Connector, error) {
+	return microsoft.NewConnector(params)
+}
+
 func newInstantlyConnector(
 	params common.ConnectorParams,
 ) (*instantly.Connector, error) {
@@ -331,9 +347,10 @@ func newPipedriveConnector(
 
 func newZohoConnector(
 	params common.ConnectorParams,
-) (*zohocrm.Connector, error) {
-	return zohocrm.NewConnector(
-		zohocrm.WithAuthenticatedClient(params.AuthenticatedClient),
+) (*zoho.Connector, error) {
+	return zoho.NewConnector(
+		zoho.WithAuthenticatedClient(params.AuthenticatedClient),
+		zoho.WithModule(params.Module),
 	)
 }
 
@@ -534,6 +551,12 @@ func newFreshdeskConnector(
 	)
 }
 
+func newSellsyConnector(
+	params common.ConnectorParams,
+) (*sellsy.Connector, error) {
+	return sellsy.NewConnector(params)
+}
+
 func newServiceNowConnector(
 	params common.ConnectorParams,
 ) (*servicenow.Connector, error) {
@@ -714,4 +737,22 @@ func newHighLevelWhiteLabelConnector(
 	params common.ConnectorParams,
 ) (*highlevelwhitelabel.Connector, error) {
 	return highlevelwhitelabel.NewConnector(params)
+}
+
+func newSageIntacctConnector(
+	params common.ConnectorParams,
+) (*sageintacct.Connector, error) {
+	return sageintacct.NewConnector(params)
+}
+
+func newLinearConnector(
+	params common.ConnectorParams,
+) (*linear.Connector, error) {
+	return linear.NewConnector(params)
+}
+
+func newLinkedInConnector(
+	params common.ConnectorParams,
+) (*linkedin.Connector, error) {
+	return linkedin.NewConnector(params)
 }

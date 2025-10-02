@@ -17,6 +17,11 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
+	// Handle flows specially since it requires dynamic flowOwnerEmail query param
+	if config.ObjectName == objectNameFlows {
+		return c.readFlows(ctx, config)
+	}
+
 	url, err := c.getReadURL(config.ObjectName)
 	if err != nil {
 		return nil, err

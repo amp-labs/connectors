@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -92,8 +91,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	if objectNameWithListResource.Has(params.ObjectName) {
 		url.AddPath("list")
 	}
-
-	url.WithQueryParam("limit", strconv.Itoa(defaultPageSize))
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
