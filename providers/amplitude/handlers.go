@@ -184,9 +184,9 @@ func createRequestForApi2(ctx context.Context, params common.WriteParams,
 
 func createRequestForParamsPayload(ctx context.Context, url *urlbuilder.URL, params common.WriteParams,
 ) (*http.Request, error) {
-	recordMap, ok := params.RecordData.(map[string]interface{})
+	recordMap, ok := params.RecordData.(map[string]any)
 	if !ok {
-		return nil, errors.New("params.RecordData is not a map[string]interface{}") //nolint: err113
+		return nil, errors.New("params.RecordData is not a map[string]any") //nolint: err113
 	}
 
 	for key, value := range recordMap {

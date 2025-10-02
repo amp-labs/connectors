@@ -22,6 +22,8 @@ func main() {
 func run() error {
 	ctx := context.Background()
 
+	ctx = common.WithAuthToken(ctx, amplitude.GetAmplitudeAPIkey())
+
 	conn := amplitude.GetAmplitudeConnector(ctx)
 
 	_, err := testCreatingAnnotations(ctx, conn)
