@@ -122,8 +122,8 @@ func (e Explorer[C]) ReadObjects(
 // GetPathItems returns path items where object name is a single word.
 func (e Explorer[C]) GetPathItems(
 	pathMatcher PathMatcher, endpointResources map[string]string,
-) []*PathItem[C] {
-	items := datautils.Map[string, *PathItem[C]]{} // URL path to item
+) []PathItem[C] {
+	items := datautils.Map[string, PathItem[C]]{} // URL path to item
 	namedPaths := datautils.NamedLists[string]{}
 
 	for path, pathObj := range e.schema.GetPaths() {
@@ -141,7 +141,7 @@ func (e Explorer[C]) GetPathItems(
 			objectName = parts[len(parts)-1]
 		}
 
-		items[path] = &PathItem[C]{
+		items[path] = PathItem[C]{
 			objectName: objectName,
 			urlPath:    path,
 			delegate:   pathObj,
@@ -159,7 +159,7 @@ func (e Explorer[C]) GetPathItems(
 		}
 	}
 
-	result := datautils.Map[string, *PathItem[C]]{} // object name to item
+	result := datautils.Map[string, PathItem[C]]{} // object name to item
 
 	duplicatesMapping := e.duplicatesResolver(collisions)
 	for _, object := range items {

@@ -1,7 +1,14 @@
 package providers
 
-const Zoho Provider = "zoho"
+import "github.com/amp-labs/connectors/common"
 
+const (
+	Zoho     Provider        = "zoho"
+	ZohoCRM  common.ModuleID = "crm"
+	ZohoDesk common.ModuleID = "desk"
+)
+
+// nolint: funlen
 func init() {
 	// Zoho configuration
 	SetInfo(Zoho, ProviderInfo{
@@ -51,6 +58,28 @@ func init() {
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722471890/media/zoho_1722471890.svg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722471890/media/zoho_1722471890.svg",
+			},
+		},
+		DefaultModule: ZohoCRM,
+		Modules: &Modules{
+			ZohoCRM: {
+				BaseURL:     "https://{{.zoho_api_domain}}",
+				DisplayName: "Zoho CRM",
+				Support: Support{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
+			ZohoDesk: {
+				// E.g. www.desk.zoho.com, www.desk.zoho.eu, www.desk.zoho.in, etc.
+				BaseURL:     "https://{{.zoho_desk_domain}}",
+				DisplayName: "Zoho Desk",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
 			},
 		},
 	})

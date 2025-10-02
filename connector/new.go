@@ -62,6 +62,7 @@ import (
 	"github.com/amp-labs/connectors/providers/lemlist"
 	"github.com/amp-labs/connectors/providers/lever"
 	"github.com/amp-labs/connectors/providers/linear"
+	"github.com/amp-labs/connectors/providers/linkedin"
 	"github.com/amp-labs/connectors/providers/marketo"
 	"github.com/amp-labs/connectors/providers/microsoft"
 	"github.com/amp-labs/connectors/providers/mixmax"
@@ -75,6 +76,7 @@ import (
 	"github.com/amp-labs/connectors/providers/podium"
 	"github.com/amp-labs/connectors/providers/pylon"
 	"github.com/amp-labs/connectors/providers/sageintacct"
+	"github.com/amp-labs/connectors/providers/salesflare"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/seismic"
@@ -157,6 +159,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Lemlist:                 wrapper(newLemlistConnector),
 	providers.Lever:                   wrapper(newLeverConnector),
 	providers.Linear:                  wrapper(newLinearConnector),
+	providers.LinkedIn:                wrapper(newLinkedInConnector),
 	providers.Marketo:                 wrapper(newMarketoConnector),
 	providers.Microsoft:               wrapper(newMicrosoftConnector),
 	providers.Mixmax:                  wrapper(newMixmaxConnector),
@@ -170,6 +173,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Podium:                  wrapper(newPodiumConnector),
 	providers.Pylon:                   wrapper(newPylonConnector),
 	providers.SageIntacct:             wrapper(newSageIntacctConnector),
+	providers.Salesflare:              wrapper(newSalesflareConnector),
 	providers.Salesforce:              wrapper(newSalesforceConnector),
 	providers.Salesloft:               wrapper(newSalesloftConnector),
 	providers.Seismic:                 wrapper(newSeismicConnector),
@@ -193,6 +197,10 @@ func wrapper[T connectors.Connector](input inputConstructorFunc[T]) outputConstr
 	return func(p common.ConnectorParams) (connectors.Connector, error) {
 		return input(p)
 	}
+}
+
+func newSalesflareConnector(params common.ConnectorParams) (*salesflare.Connector, error) {
+	return salesflare.NewConnector(params)
 }
 
 func newSalesforceConnector(params common.ConnectorParams) (*salesforce.Connector, error) {
@@ -348,6 +356,7 @@ func newZohoConnector(
 ) (*zoho.Connector, error) {
 	return zoho.NewConnector(
 		zoho.WithAuthenticatedClient(params.AuthenticatedClient),
+		zoho.WithModule(params.Module),
 	)
 }
 
@@ -746,4 +755,10 @@ func newLinearConnector(
 	params common.ConnectorParams,
 ) (*linear.Connector, error) {
 	return linear.NewConnector(params)
+}
+
+func newLinkedInConnector(
+	params common.ConnectorParams,
+) (*linkedin.Connector, error) {
+	return linkedin.NewConnector(params)
 }

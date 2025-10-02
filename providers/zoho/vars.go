@@ -3,6 +3,8 @@ package zoho
 import (
 	"errors"
 	"time"
+
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 const (
@@ -10,6 +12,10 @@ const (
 	OperationEdit   = "edit"
 	OperationDelete = "delete"
 	OperationAll    = "all"
+	deskLimit       = "50"
+	deskLimitInt    = 50
+	createdTimeKey  = "createdTime"
+	modifiedTimeKey = "modifiedTime"
 
 	maxWatchFields = 10
 
@@ -52,3 +58,11 @@ var uniqueFields = map[string]string{ // nolint:gochecknoglobals
 	"caller_id":                "Caller_ID",
 	"scheduled_in_crm":         "Scheduled_In_CRM",
 }
+
+var (
+	endpointsWithModifiedAfterParam = datautils.NewSet("im/sessions", "im/cannedMessages")      //nolint: gochecknoglobals
+	objectsSortableByCreatedTime    = datautils.NewStringSet("contacts", "tickets", "accounts", //nolint: gochecknoglobals
+		"tasks", "calls", "events", "ticketTags")
+	objectsSortablebyModifiedTime = datautils.NewStringSet( //nolint: gochecknoglobals
+		"articles", "communityTopics", "contracts", "groups", "labels", "users", "products")
+)

@@ -18,7 +18,7 @@ var (
 	// Even though OpenAPI docs and official documentation say that some query parameters are required
 	// in practice you still can make an API call without any specified.
 	// Must include "calls" object.
-	queryParamFilterExceptions = datautils.NewSet("calls") // nolint:gochecknoglobals
+	queryParamFilterExceptions = datautils.NewSet("calls", "flows") // nolint:gochecknoglobals
 
 	ignoreEndpoints = []string{ // nolint:gochecknoglobals
 		"/v2/settings/scorecards",
@@ -46,8 +46,6 @@ var (
 		"/v2/coaching",
 		// Requires query parameters: logType, fromDateTime, toDateTime, cursor.
 		"/v2/logs",
-		// Requires query parameters: flowOwnerEmail.
-		"/v2/flows",
 	}
 
 	postReadAllowedEndPoints = []string{ // nolint:gochecknoglobals
