@@ -76,6 +76,7 @@ import (
 	"github.com/amp-labs/connectors/providers/podium"
 	"github.com/amp-labs/connectors/providers/pylon"
 	"github.com/amp-labs/connectors/providers/sageintacct"
+	"github.com/amp-labs/connectors/providers/salesflare"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/seismic"
@@ -172,6 +173,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Podium:                  wrapper(newPodiumConnector),
 	providers.Pylon:                   wrapper(newPylonConnector),
 	providers.SageIntacct:             wrapper(newSageIntacctConnector),
+	providers.Salesflare:              wrapper(newSalesflareConnector),
 	providers.Salesforce:              wrapper(newSalesforceConnector),
 	providers.Salesloft:               wrapper(newSalesloftConnector),
 	providers.Seismic:                 wrapper(newSeismicConnector),
@@ -195,6 +197,10 @@ func wrapper[T connectors.Connector](input inputConstructorFunc[T]) outputConstr
 	return func(p common.ConnectorParams) (connectors.Connector, error) {
 		return input(p)
 	}
+}
+
+func newSalesflareConnector(params common.ConnectorParams) (*salesflare.Connector, error) {
+	return salesflare.NewConnector(params)
 }
 
 func newSalesforceConnector(params common.ConnectorParams) (*salesforce.Connector, error) {
