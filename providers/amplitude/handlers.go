@@ -121,7 +121,7 @@ func (c *Connector) parseReadResponse(
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) { //nolint:lll
 	if api2SupportedObjects.Has(params.ObjectName) {
-		return createRequestForApi2(ctx, c.HTTPClient().Client, params)
+		return createRequestForApi2(ctx, params)
 	}
 
 	method := http.MethodPost
@@ -149,11 +149,11 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }
 
-func createRequestForApi2(ctx context.Context, client common.AuthenticatedHTTPClient, params common.WriteParams,
+func createRequestForApi2(ctx context.Context, params common.WriteParams,
 ) (*http.Request, error) {
-	apiKey, err := extractAPIKey(client, ctx)
-	if err != nil {
-		return nil, err
+	token, exist := common.GetAuthToken(ctx)
+	if !exist {
+		return nil, common.ErrMissingAccessToken
 	}
 
 	eventJSON, err := json.Marshal(params.RecordData)
@@ -164,7 +164,7 @@ func createRequestForApi2(ctx context.Context, client common.AuthenticatedHTTPCl
 	payloadKey := payloadKeyMapping.Get(params.ObjectName)
 
 	form := make(url.Values)
-	form.Add("api_key", apiKey)             // Use the extracted API key
+	form.Add("api_key", token.String())
 	form.Add(payloadKey, string(eventJSON)) // Add as JSON string
 
 	url, err := urlbuilder.New(api2BaseURL, params.ObjectName)
