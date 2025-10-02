@@ -1,0 +1,21 @@
+{
+    "Purchase": {
+        "SyncToken": "0",
+        "domain": "QBO",
+        "Credit": false,
+        "TotalAmt": 10.0,
+        "PaymentType": "CreditCard",
+        "TxnDate": "2015-07-27",
+        "sparse": false,
+        "AccountRef": {
+            "name": "Visa",
+            "value": "42"
+        },
+        "Id": "247",
+        "MetaData": {
+            "CreateTime": "2015-07-27T10:27:01-07:00",
+            "LastUpdatedTime": "2015-07-27T10:27:01-07:00"
+        }
+    },
+    "time": "2015-07-27T10:27:01.593-07:00"
+}
