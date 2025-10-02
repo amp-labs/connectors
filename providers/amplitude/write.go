@@ -24,14 +24,12 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 		return nil, err
 	}
 
-	// Make the HTTP request using the raw HTTPClient.Do method
 	resp, err := c.HTTPClient().Client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	// Read the response body
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body: %w", err)
