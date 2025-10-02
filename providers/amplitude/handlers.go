@@ -12,7 +12,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 const (
@@ -199,45 +198,4 @@ func createRequestForParamsPayload(ctx context.Context, url *urlbuilder.URL, par
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), nil)
-}
-
-func (c *Connector) parseWriteResponse(
-	ctx context.Context,
-	params common.WriteParams,
-	request *http.Request,
-	response *common.JSONHTTPResponse,
-) (*common.WriteResult, error) {
-	body, ok := response.Body()
-
-	if !ok {
-		return &common.WriteResult{
-			Success: true,
-		}, nil
-	}
-
-	responseKey := writeObjectResponseField.Get(params.ObjectName)
-
-	dataNode, err := jsonquery.New(body).ObjectOptional(responseKey)
-	if err != nil {
-		return nil, err
-	}
-
-	if dataNode == nil {
-		// If object specific response key is not found, use the entire body
-		dataNode = body
-	}
-
-	recordID, _ := jsonquery.New(dataNode).StrWithDefault("id", "")
-
-	respMap, err := jsonquery.Convertor.ObjectToMap(dataNode)
-	if err != nil {
-		return nil, err
-	}
-
-	return &common.WriteResult{
-		Success:  true,
-		RecordId: recordID,
-		Errors:   nil,
-		Data:     respMap,
-	}, nil
 }
