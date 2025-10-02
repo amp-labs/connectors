@@ -6,7 +6,9 @@ import (
 	"maps"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/gong/metadata"
+	"github.com/spyzhov/ajson"
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -55,9 +57,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	if config.ObjectName == objectNameCalls {
 		return common.ParseResult(res,
-			common.ExtractRecordsFromPath(responseFieldName),
+			getRecords(responseFieldName),
 			getNextRecordsURL,
-			flattenCallsMetaData,
+			common.MakeMarshaledDataFunc(flattenMetaData),
 			config.Fields,
 		)
 	}
@@ -70,17 +72,31 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 }
 
-func flattenCallsMetaData(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
-	for i := range records {
-		metaData, ok := records[i]["metaData"].(map[string]any)
-		if !ok {
-			// metaData doesn't exist or isn't a map, skip this record
-			continue
-		}
-
-		delete(records[i], "metaData")
-		maps.Copy(records[i], metaData)
+// flattenMetaData transforms a single call record node by flattening metaData fields.
+// This only affects the Fields output, Raw will maintain the original nested structure.
+func flattenMetaData(node *ajson.Node) (map[string]any, error) {
+	record, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil {
+		return nil, err
 	}
 
-	return common.GetMarshaledData(records, fields)
+	metaDataNode, err := jsonquery.New(node).ObjectOptional("metaData")
+	if err != nil {
+		return nil, err
+	}
+
+	// if metaData is not present, return the record as is
+	if metaDataNode == nil {
+		return record, nil
+	}
+
+	metaData, err := jsonquery.Convertor.ObjectToMap(metaDataNode)
+	if err != nil {
+		return nil, err
+	}
+
+	delete(record, "metaData")
+	maps.Copy(record, metaData)
+
+	return record, nil
 }

@@ -25,7 +25,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "calls",
-		Fields:     connectors.Fields("id"),
+		Fields:     connectors.Fields("id", "context", "parties"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Gong", "error", err)

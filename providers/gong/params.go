@@ -77,6 +77,7 @@ func buildReadBody(config common.ReadParams) map[string]any {
 	body := map[string]any{
 		"filter": filter,
 	}
+
 	if len(config.NextPage) != 0 {
 		body["cursor"] = config.NextPage.String()
 	}
