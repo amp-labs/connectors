@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/aha"
+	"github.com/amp-labs/connectors/providers/amplitude"
 	"github.com/amp-labs/connectors/providers/apollo"
 	"github.com/amp-labs/connectors/providers/asana"
 	"github.com/amp-labs/connectors/providers/ashby"
@@ -107,6 +108,7 @@ func New(provider providers.Provider, params common.ConnectorParams) (connectors
 var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nolint:gochecknoglobals
 	providers.AWS:                     wrapper(newAWSConnector),
 	providers.Aha:                     wrapper(newAhaConnector),
+	providers.Amplitude:               wrapper(newAmplitudeConnector),
 	providers.Apollo:                  wrapper(newApolloConnector),
 	providers.Asana:                   wrapper(newAsanaConnector),
 	providers.Ashby:                   wrapper(newAshbyConnector),
@@ -768,4 +770,10 @@ func newLinkedInConnector(
 func newBitBucketConnector(params common.ConnectorParams,
 ) (*bitbucket.Connector, error) {
 	return bitbucket.NewConnector(params)
+}
+
+func newAmplitudeConnector(
+	params common.ConnectorParams,
+) (*amplitude.Connector, error) {
+	return amplitude.NewConnector(params)
 }
