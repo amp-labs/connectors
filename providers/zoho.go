@@ -3,9 +3,11 @@ package providers
 import "github.com/amp-labs/connectors/common"
 
 const (
-	Zoho     Provider        = "zoho"
-	ZohoCRM  common.ModuleID = "crm"
-	ZohoDesk common.ModuleID = "desk"
+	Zoho           Provider        = "zoho"
+	ZohoCRM        common.ModuleID = "crm"
+	ZohoDesk       common.ModuleID = "desk"
+	ZohoProjects   common.ModuleID = "projects"
+	ZohoBugTracker common.ModuleID = "bugtracker"
 )
 
 // nolint: funlen
@@ -75,6 +77,24 @@ func init() {
 				// E.g. www.desk.zoho.com, www.desk.zoho.eu, www.desk.zoho.in, etc.
 				BaseURL:     "https://{{.zoho_desk_domain}}",
 				DisplayName: "Zoho Desk",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
+			ZohoProjects: {
+				BaseURL:     "https://projectsapi.zoho.com",
+				DisplayName: "Zoho Projects",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
+			ZohoBugTracker: {
+				BaseURL:     "https://bugtracker.zoho.com",
+				DisplayName: "Zoho BugTracker",
 				Support: Support{
 					Read:      false,
 					Subscribe: false,
