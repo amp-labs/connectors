@@ -26,5 +26,6 @@ func run() error {
 
 	// Print the results
 	utils.DumpJSON(m, os.Stdout)
+
 	return nil
 }

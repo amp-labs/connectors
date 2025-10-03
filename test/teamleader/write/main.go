@@ -58,6 +58,7 @@ func testCreatingContacts(ctx context.Context, conn *cc.Connector) (string, erro
 	}
 
 	slog.Info("Creating contact...")
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return "", err
@@ -88,6 +89,7 @@ func testUpdateContact(ctx context.Context, conn *cc.Connector, contactID string
 	}
 
 	slog.Info("Updating contact...")
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return err
@@ -120,6 +122,7 @@ func testCreateDeals(ctx context.Context, conn *cc.Connector, customerId string)
 	}
 
 	slog.Info("Creating deal...")
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return err
@@ -145,6 +148,7 @@ func testCreateDealPipelines(ctx context.Context, conn *cc.Connector) error {
 	}
 
 	slog.Info("Creating deal pipeline...")
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return err

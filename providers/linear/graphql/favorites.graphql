@@ -1,0 +1,27 @@
+query Favorites($first: Int, $after: String) {
+  favorites(first: $first, after: $after) {
+    nodes {
+      id
+      createdAt
+      updatedAt
+      archivedAt
+      type
+      folderName
+      projectTab
+      predefinedViewType
+      initiativeTab
+      sortOrder
+      url
+      title
+      detail
+      color
+      icon
+    }
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
+  }
+}

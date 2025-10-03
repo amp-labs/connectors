@@ -27,9 +27,8 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "events",
 		Fields:     connectors.Fields("id", "subject", "mode"),
-		Since:      time.Date(2025, 07, 0, 0, 0, 0, 0, time.UTC),
+		Since:      time.Date(2025, 0o7, 0, 0, 0, 0, 0, time.UTC),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from flatfile", "error", err)
 	}
@@ -41,7 +40,6 @@ func main() {
 		ObjectName: "users",
 		Fields:     connectors.Fields("id", "name", "email"),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from flatfile", "error", err)
 	}
@@ -53,10 +51,10 @@ func main() {
 		ObjectName: "apps",
 		Fields:     connectors.Fields("id", "name", "type"),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from flatfile", "error", err)
 	}
+
 	slog.Info("Reading apps..")
 	utils.DumpJSON(res, os.Stdout)
 
@@ -64,10 +62,10 @@ func main() {
 		ObjectName: "environments",
 		Fields:     connectors.Fields("id", "accountId", "name"),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from flatfile", "error", err)
 	}
+
 	slog.Info("Reading environments..")
 	utils.DumpJSON(res, os.Stdout)
 

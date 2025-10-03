@@ -1,7 +1,6 @@
 package salesforce
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -215,6 +214,6 @@ type (
 func (c bulkWriteTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
-	output, err := conn.BulkWrite(context.Background(), c.Input)
+	output, err := conn.BulkWrite(t.Context(), c.Input)
 	bulkWriteTestCaseType(c).Validate(t, err, output)
 }

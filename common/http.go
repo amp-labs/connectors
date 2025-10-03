@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"net/textproto"
 	"net/url"
-	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common/logging"
@@ -283,6 +282,13 @@ func (h *HTTPClient) httpGet(ctx context.Context, //nolint:dupl
 	}
 
 	rsp, body, err := h.sendRequest(req)
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "GET", correlationId, url, body)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "GET", correlationId, url)
+	}
+
 	if err != nil {
 		logging.Logger(ctx).Error("HTTP request failed",
 			"method", "GET", "url", url,
@@ -291,20 +297,14 @@ func (h *HTTPClient) httpGet(ctx context.Context, //nolint:dupl
 		return nil, nil, err
 	}
 
-	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "GET", correlationId, url, body)
-	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "GET", correlationId, url)
-	}
-
 	return rsp, body, nil
 }
 
 // httpPost makes a POST request to the given URL and returns the response & response body.
 func (h *HTTPClient) httpPost(ctx context.Context, url string, //nolint:dupl
-	headers []Header, body []byte,
+	headers []Header, requestBody []byte,
 ) (*http.Response, []byte, error) {
-	req, err := makePostRequest(ctx, url, headers, body)
+	req, err := makePostRequest(ctx, url, headers, requestBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -312,12 +312,23 @@ func (h *HTTPClient) httpPost(ctx context.Context, url string, //nolint:dupl
 	correlationId := uuid.Must(uuid.NewRandom()).String()
 
 	if logging.IsVerboseLogging(ctx) {
-		logRequestWithBody(logging.VerboseLogger(ctx), req, "POST", correlationId, url, body)
+		// body is nil because makePostRequest sometimes returns an altered body reader
+		// so we rely on req and not body for logging purposes. If we use body, it will
+		// not just log the wrong thing, it will swap the body out, which will lead to
+		// unexpected behavior in the request.
+		logRequestWithBody(logging.VerboseLogger(ctx), req, "POST", correlationId, url, nil)
 	} else {
 		logRequestWithoutBody(logging.Logger(ctx), req, "POST", correlationId, url)
 	}
 
-	rsp, body, err := h.sendRequest(req)
+	rsp, responseBody, err := h.sendRequest(req)
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "POST", correlationId, url, responseBody)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "POST", correlationId, url)
+	}
+
 	if err != nil {
 		logging.Logger(ctx).Error("HTTP request failed",
 			"method", "POST", "url", url,
@@ -326,13 +337,7 @@ func (h *HTTPClient) httpPost(ctx context.Context, url string, //nolint:dupl
 		return nil, nil, err
 	}
 
-	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "POST", correlationId, url, body)
-	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "POST", correlationId, url)
-	}
-
-	return rsp, body, nil
+	return rsp, responseBody, nil
 }
 
 // httpPatch makes a PATCH request to the given URL and returns the response & response body.
@@ -364,18 +369,19 @@ func (h *HTTPClient) httpPatch(ctx context.Context, //nolint:dupl
 	}
 
 	rsp, rspBody, err := h.sendRequest(req)
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PATCH", correlationId, url, rspBody)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "PATCH", correlationId, url)
+	}
+
 	if err != nil {
 		logging.Logger(ctx).Error("HTTP request failed",
 			"method", "PATCH", "url", url,
 			"correlationId", correlationId, "error", err)
 
 		return nil, nil, err
-	}
-
-	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PATCH", correlationId, url, rspBody)
-	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "PATCH", correlationId, url)
 	}
 
 	return rsp, rspBody, nil
@@ -410,18 +416,19 @@ func (h *HTTPClient) httpPut(ctx context.Context, //nolint:dupl
 	}
 
 	rsp, rspBody, err := h.sendRequest(req)
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PUT", correlationId, url, rspBody)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "PUT", correlationId, url)
+	}
+
 	if err != nil {
 		logging.Logger(ctx).Error("HTTP request failed",
 			"method", "PUT", "url", url,
 			"correlationId", correlationId, "error", err)
 
 		return nil, nil, err
-	}
-
-	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PUT", correlationId, url, rspBody)
-	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "PUT", correlationId, url)
 	}
 
 	return rsp, rspBody, nil
@@ -445,18 +452,19 @@ func (h *HTTPClient) httpDelete(ctx context.Context, //nolint:dupl
 	}
 
 	rsp, rspBody, err := h.sendRequest(req)
+
+	if logging.IsVerboseLogging(ctx) {
+		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "DELETE", correlationId, url, rspBody)
+	} else {
+		logResponseWithoutBody(logging.Logger(ctx), rsp, "DELETE", correlationId, url)
+	}
+
 	if err != nil {
 		logging.Logger(ctx).Error("HTTP request failed",
 			"method", "DELETE", "url", url,
 			"correlationId", correlationId, "error", err)
 
 		return nil, nil, err
-	}
-
-	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "DELETE", correlationId, url, rspBody)
-	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "DELETE", correlationId, url)
 	}
 
 	return rsp, rspBody, nil
@@ -474,7 +482,7 @@ func MakeGetRequest(ctx context.Context, url string, headers []Header) (*http.Re
 
 // makePostRequest creates request that will post bytes of data. If no content type defaults to JSON.
 func makePostRequest(ctx context.Context, resourceURL string, headers Headers, data []byte) (*http.Request, error) {
-	reader, contentLength, err := bodyReader(headers, data)
+	reader, _, err := bodyReader(headers, data)
 	if err != nil {
 		return nil, err
 	}
@@ -483,12 +491,6 @@ func makePostRequest(ctx context.Context, resourceURL string, headers Headers, d
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
-
-	req.ContentLength = contentLength
-	headers = append(headers, Header{
-		Key:   "Content-Length",
-		Value: strconv.FormatInt(contentLength, 10),
-	})
 
 	return AddJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
@@ -514,11 +516,12 @@ func bodyReader(headers Headers, data []byte) (io.Reader, int64, error) {
 		}
 
 		encodedPayload := payloadValues.Encode()
+		encodedBytes := []byte(encodedPayload)
 
-		return strings.NewReader(encodedPayload), int64(len(encodedPayload)), nil
+		return bytes.NewReader(encodedBytes), int64(len(encodedBytes)), nil
 	}
 
-	return bytes.NewBuffer(data), int64(len(data)), nil
+	return bytes.NewReader(data), int64(len(data)), nil
 }
 
 // makePatchRequest creates a PATCH request with the given headers and body, and adds the
@@ -529,12 +532,10 @@ func makePatchRequest(ctx context.Context, url string, headers []Header, body an
 		return nil, fmt.Errorf("request body is not valid JSON, body is %v:\n%w", body, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewBuffer(jBody))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewReader(jBody))
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
-
-	req.ContentLength = int64(len(jBody))
 
 	return AddJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
@@ -547,12 +548,10 @@ func makePutRequest(ctx context.Context, url string, headers []Header, body any)
 		return nil, fmt.Errorf("request body is not valid JSON, body is %v:\n%w", body, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewBuffer(jBody))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewReader(jBody))
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
-
-	req.ContentLength = int64(len(jBody))
 
 	return AddJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
@@ -601,10 +600,10 @@ func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, err
 	// Check the response status code
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		if h.ErrorHandler != nil {
-			return nil, nil, h.ErrorHandler(res, body)
+			return res, body, h.ErrorHandler(res, body)
 		}
 
-		return nil, nil, InterpretError(res, body)
+		return res, body, InterpretError(res, body)
 	}
 
 	return res, body, nil

@@ -1,0 +1,12 @@
+mutation IssueCreate($input: IssueCreateInput!) {
+  issueCreate(input: $input) {
+    success
+    issue {
+      title
+      id
+      number
+      trashed
+      url
+    }
+  }
+}
