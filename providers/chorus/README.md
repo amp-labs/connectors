@@ -3,6 +3,7 @@
 
 ## Supported Objects 
 Below is an exhaustive list of objects & methods supported on the objects
+Refer API docs link https://api-docs.chorus.ai
 
 Chorus API version: v1
 ----------------------------------------------------

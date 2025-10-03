@@ -69,6 +69,24 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		}
 	}
 
+	// Attributes represent the object fields in the response. All actual data is embedded under the "attributes" field.
+	// Sample response:
+	// {
+	//   "data": [
+	//     {
+	//       "attributes": {
+	//         "filter_name": "string",
+	//         "filter_type": "string",
+	//         "field_type": "string",
+	//         "filter_values": null
+	//       },
+	//       "type": "engagement_filter",
+	//       "id": "123"
+	//     }
+	//   ]
+	// }
+	// Refer to the API response documentation at:
+	// https://api-docs.chorus.ai/#f8b34d44-df36-47eb-a42e-a112aa0ec474.
 	for field, value := range record[0] {
 		if field == "attributes" {
 			if subfields, ok := value.(map[string]any); ok {
