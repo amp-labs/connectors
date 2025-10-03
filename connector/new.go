@@ -15,6 +15,7 @@ import (
 	"github.com/amp-labs/connectors/providers/attio"
 	"github.com/amp-labs/connectors/providers/avoma"
 	"github.com/amp-labs/connectors/providers/aws"
+	"github.com/amp-labs/connectors/providers/bitbucket"
 	"github.com/amp-labs/connectors/providers/blackbaud"
 	"github.com/amp-labs/connectors/providers/blueshift"
 	"github.com/amp-labs/connectors/providers/braze"
@@ -112,6 +113,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Atlassian:               wrapper(newAtlassianConnector),
 	providers.Attio:                   wrapper(newAttioConnector),
 	providers.Avoma:                   wrapper(newAvomaConnector),
+	providers.Bitbucket:               wrapper(newBitBucketConnector),
 	providers.Blackbaud:               wrapper(newBlackbaudConnector),
 	providers.Blueshift:               wrapper(newBlueshiftConnector),
 	providers.Braze:                   wrapper(newBrazeConnector),
@@ -761,4 +763,9 @@ func newLinkedInConnector(
 	params common.ConnectorParams,
 ) (*linkedin.Connector, error) {
 	return linkedin.NewConnector(params)
+}
+
+func newBitBucketConnector(params common.ConnectorParams,
+) (*bitbucket.Connector, error) {
+	return bitbucket.NewConnector(params)
 }
