@@ -42,15 +42,16 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 	contentType := resp.Header.Get("Content-Type")
 	isJSON := strings.Contains(contentType, "application/json")
 
+	// Try to parse as JSON if it's JSON content type or no content type specified
 	if isJSON || len(contentType) == 0 {
 		if result, err := c.tryParseAsJSON(params, bodyBytes); err == nil {
 			return result, nil
 		}
+	}
 
-		if isJSON {
-			// If Content-Type is JSON but parsing failed, return an error
-			return nil, common.ErrFailedToUnmarshalBody
-		}
+	// If Content-Type is explicitly JSON but parsing failed, return an error
+	if isJSON {
+		return nil, common.ErrFailedToUnmarshalBody
 	}
 
 	// Handle non-JSON success (for Attribution object)

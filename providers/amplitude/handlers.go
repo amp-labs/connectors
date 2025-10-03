@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -183,9 +182,9 @@ func createRequestForApi2(ctx context.Context, params common.WriteParams,
 
 func createRequestForParamsPayload(ctx context.Context, url *urlbuilder.URL, params common.WriteParams,
 ) (*http.Request, error) {
-	recordMap, ok := params.RecordData.(map[string]any)
-	if !ok {
-		return nil, errors.New("params.RecordData is not a map[string]any") //nolint: err113
+	recordMap, err := common.RecordDataToMap(params.RecordData)
+	if err != nil {
+		return nil, err
 	}
 
 	for key, value := range recordMap {
