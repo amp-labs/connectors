@@ -3,7 +3,6 @@ package gong
 import (
 	"context"
 	"errors"
-	"maps"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -59,7 +58,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return common.ParseResult(res,
 			getRecords(responseFieldName),
 			getNextRecordsURL,
-			common.MakeMarshaledDataFunc(flattenMetaData),
+			common.MakeMarshaledDataFunc(extractMetaDataFields),
 			config.Fields,
 		)
 	}
@@ -72,14 +71,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 }
 
-// flattenMetaData transforms a single call record node by flattening metaData fields.
-// This only affects the Fields output, Raw will maintain the original nested structure.
-func flattenMetaData(node *ajson.Node) (map[string]any, error) {
-	record, err := jsonquery.Convertor.ObjectToMap(node)
-	if err != nil {
-		return nil, err
-	}
-
+// extractMetaDataFields extracts only the metaData fields for ReadResultRow.Fields.
+// ReadResultRow.Raw will contain the full response including context and parties.
+func extractMetaDataFields(node *ajson.Node) (map[string]any, error) {
 	metaDataNode, err := jsonquery.New(node).ObjectOptional("metaData")
 	if err != nil {
 		return nil, err
@@ -87,16 +81,8 @@ func flattenMetaData(node *ajson.Node) (map[string]any, error) {
 
 	// if metaData is not present, return the record as is
 	if metaDataNode == nil {
-		return record, nil
+		return map[string]any{}, nil
 	}
 
-	metaData, err := jsonquery.Convertor.ObjectToMap(metaDataNode)
-	if err != nil {
-		return nil, err
-	}
-
-	delete(record, "metaData")
-	maps.Copy(record, metaData)
-
-	return record, nil
+	return jsonquery.Convertor.ObjectToMap(metaDataNode)
 }

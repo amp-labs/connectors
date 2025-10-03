@@ -57,7 +57,6 @@ var (
 	}
 )
 
-// nolint:funlen
 func main() {
 	explorer, err := openapi.FileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
@@ -96,16 +95,6 @@ func main() {
 				"objectName", object.ObjectName,
 				"error", object.Problem,
 			)
-		}
-
-		if object.ObjectName == "calls" {
-			object.URLPath = "/v2/calls/extensive"
-
-			schemas.Add("", object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
-				staticschema.FieldMetadataMapV1{
-					"context": "context",
-					"parties": "parties",
-				}, nil, object.Custom)
 		}
 
 		for _, field := range object.Fields {

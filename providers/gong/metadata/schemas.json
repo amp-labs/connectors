@@ -6,12 +6,11 @@
       "objects": {
         "calls": {
           "displayName": "Calls",
-          "path": "/calls/extensive",
+          "path": "/calls",
           "responseKey": "calls",
           "fields": {
             "calendarEventId": "calendarEventId",
             "clientUniqueId": "clientUniqueId",
-            "context": "context",
             "customData": "customData",
             "direction": "direction",
             "duration": "duration",
@@ -20,7 +19,6 @@
             "language": "language",
             "media": "media",
             "meetingUrl": "meetingUrl",
-            "parties": "parties",
             "primaryUserId": "primaryUserId",
             "purpose": "purpose",
             "scheduled": "scheduled",
