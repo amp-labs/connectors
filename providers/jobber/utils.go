@@ -4,6 +4,11 @@ import "github.com/amp-labs/connectors/internal/datautils"
 
 const apiVersion = "2025-01-20"
 
+// Jobber API Documentation: https://developer.getjobber.com/docs
+// This link provides an overview of Jobber API objects.
+// The full list of queries and mutations can be retrieved after logging in.
+// To explore them, go to "Manage Apps", click "Actions" for the respective app,
+// and then click "Test in GraphiQL".
 var objectNameMapping = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 	"appAlerts":                 "AppAlert",
 	"apps":                      "Application",
