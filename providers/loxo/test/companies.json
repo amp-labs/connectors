@@ -1,0 +1,17 @@
+{
+    "scroll_id": "5B313735363133353831343636312C313135383637325D",
+    "total_count": 1,
+    "facets": {
+        "global_status_aggs": []
+    },
+    "companies": [
+        {
+            "id": 1158672,
+            "name": "Ampersand",
+            "url": "http://withampersand.com",
+            "job_count": 1,
+            "owned_by_name": "Ampersand Developer",
+            "owned_by_id": 1832617
+        }
+    ]
+}
