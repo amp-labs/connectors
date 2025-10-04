@@ -126,6 +126,9 @@ var (
 	// It should be used to explicitly catch cases that would otherwise lead to panics (e.g., nil pointer dereference).
 	// This typically indicates a broken assumption or inconsistency in the implementation logic.
 	ErrImplementation = errors.New("code took invalid execution path")
+
+	// ErrProxyNotApplicable indicates that a proxy cannot be used in the given context.
+	ErrProxyNotApplicable = errors.New("proxy is not applicable in this context")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
