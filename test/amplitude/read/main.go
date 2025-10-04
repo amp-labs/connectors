@@ -20,6 +20,8 @@ func main() {
 
 	utils.SetupLogging()
 
+	ctx = common.WithAuthToken(ctx, amplitudetest.GetAmplitudeAPIkey())
+
 	conn := amplitudetest.GetAmplitudeConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{

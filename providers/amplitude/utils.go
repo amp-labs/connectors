@@ -1,8 +1,6 @@
 package amplitude
 
 import (
-	"fmt"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
@@ -27,16 +25,9 @@ func inferValueTypeFromData(value any) common.ValueType {
 func (c *Connector) constructURL(objectName string) (*urlbuilder.URL, error) {
 	apiVersion := objectAPIVersion.Get(objectName)
 
-	path := fmt.Sprintf("api/%s/%s", apiVersion, objectName)
-
 	if objectName == objectNameEvents {
-		path = fmt.Sprintf("api/%s/%s/list", apiVersion, objectName)
+		objectName += "/list"
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
-	if err != nil {
-		return nil, err
-	}
-
-	return url, nil
+	return urlbuilder.New(c.ProviderInfo().BaseURL, "api", apiVersion, objectName)
 }

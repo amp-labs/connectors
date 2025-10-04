@@ -11,8 +11,7 @@ import (
 )
 
 func GetAmplitudeConnector(ctx context.Context) *amplitude.Connector {
-	filePath := credscanning.LoadPath(providers.Amplitude)
-	reader := utils.MustCreateProvCredJSON(filePath, false)
+	reader := getAmplitudeJSONReader()
 
 	client, err := common.NewBasicAuthHTTPClient(ctx,
 		reader.Get(credscanning.Fields.Username),
@@ -30,4 +29,17 @@ func GetAmplitudeConnector(ctx context.Context) *amplitude.Connector {
 	}
 
 	return conn
+}
+
+func GetAmplitudeAPIkey() common.AuthToken {
+	reader := getAmplitudeJSONReader()
+
+	return common.AuthToken(reader.Get(credscanning.Fields.Username))
+}
+
+func getAmplitudeJSONReader() *credscanning.ProviderCredentials {
+	filePath := credscanning.LoadPath(providers.Amplitude)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
+
+	return reader
 }
