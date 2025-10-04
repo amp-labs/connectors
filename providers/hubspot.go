@@ -10,7 +10,7 @@ const Hubspot Provider = "hubspot"
 
 const (
 	// ModuleHubspotCRM is the module used for accessing standard CRM objects.
-	ModuleHubspotCRM common.ModuleID = "CRM"
+	ModuleHubspotCRM common.ModuleID = "crm"
 )
 
 func init() { //nolint:funlen
