@@ -25,13 +25,13 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:         "Write object and its ID must be included",
-			Input:        common.DeleteParams{ObjectName: "quotes"},
+			Input:        common.DeleteParams{ObjectName: "Quotes"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordID},
 		},
 		{
 			Name:  "Successful delete",
-			Input: common.DeleteParams{ObjectName: "quotes", RecordId: "019097b8-a5f4-ca93-62c5-5a25c58afa63"},
+			Input: common.DeleteParams{ObjectName: "Quotes", RecordId: "019097b8-a5f4-ca93-62c5-5a25c58afa63"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodDELETE(),
