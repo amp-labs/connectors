@@ -79,7 +79,7 @@ func extractMetaDataFields(node *ajson.Node) (map[string]any, error) {
 		return nil, err
 	}
 
-	// if metaData is not present, return the record as is
+	// if metaData is not present, return an empty record
 	if metaDataNode == nil {
 		return map[string]any{}, nil
 	}
