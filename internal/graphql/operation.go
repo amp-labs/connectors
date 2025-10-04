@@ -16,8 +16,8 @@ import (
 // by adding the required fields as needed based on the GraphQL schema or API design.
 type PaginationParameter struct {
 	Limit, Skip, Offset, First, Last, Page, PageSize int
-	Before, After, HasNextPage, HasPreviousPage      bool
-	StartCursor, EndCursor                           string
+	HasNextPage, HasPreviousPage                     bool
+	StartCursor, EndCursor, Before, After            string
 }
 
 // Operation loads and renders a GraphQL query or mutation from a template file.

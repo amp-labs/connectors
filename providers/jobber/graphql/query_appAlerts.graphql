@@ -1,0 +1,34 @@
+query AppAlertConnection{
+  appAlerts(
+     first: {{.First}}
+     {{if .After}}
+     after: {{.After}}
+     {{end}}
+  ){
+    nodes{
+      app{
+        applicationScopes
+        author
+        beforeStartingContent
+        description
+        displayName
+        id
+        installationStepsContent
+        learnMoreUrl
+        logoUrl
+        manageAppUrl
+        marketplaceUrl
+        name
+        oauthUrl
+        redirectUrl
+      }
+      count
+      updatedAt
+    }
+    pageInfo{
+      endCursor
+      hasNextPage
+    }
+    totalCount
+  }
+}
