@@ -25,6 +25,7 @@ var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
 
 var postReadObjects = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameTranscript,
+	objectNameCalls,
 )
 
 var ObjectNameToResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
