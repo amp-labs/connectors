@@ -55,6 +55,11 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, fmt.Errorf("couldn't convert the data response field QueryResponse to a map: %w", common.ErrMissingExpectedValues) // nolint:lll
 	}
 
+	if objectName == "creditCardPayment" {
+		// response key of creditCardPayment is CreditCardPaymentTxn
+		objectName = "CreditCardPaymentTxn"
+	}
+
 	records, ok := QueryResponse[naming.CapitalizeFirstLetter(objectName)].([]any) // nolint:varnamelen
 
 	if !ok {
@@ -81,4 +86,39 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, c.realmID, "query")
+	if err != nil {
+		return nil, err
+	}
+
+	query := buildQuery(params)
+
+	url.WithQueryParam("query", query)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Accept", "application/json")
+
+	return req, nil
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		getRecords(params.ObjectName),
+		nextRecordsURL(),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
