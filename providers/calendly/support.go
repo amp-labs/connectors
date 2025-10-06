@@ -22,15 +22,19 @@ var (
 )
 
 func supportedOperations() components.EndpointRegistryInput {
-	readSupport := []string{
-		"*",
-	}
+	readSupport := []string{"*"}
+
+	writeSupport := []string{"*"}
 
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
