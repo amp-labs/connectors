@@ -1,4 +1,4 @@
-package facebook
+package meta
 
 import (
 	"net/http"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -13,7 +14,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
+func TestFacebookListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	usersResponse := testutils.DataFromFile(t, "users.json")
@@ -48,29 +49,53 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Result: map[string]common.ObjectMetadata{
 					"users": {
 						DisplayName: "Users",
-						Fields:      map[string]common.FieldMetadata{},
-						FieldsMap: map[string]string{
-							"id":    "id",
-							"name":  "name",
-							"tasks": "tasks",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName: "id",
+								ValueType:   "other",
+							},
+							"name": {
+								DisplayName: "name",
+								ValueType:   "other",
+							},
+							"tasks": {
+								DisplayName: "tasks",
+								ValueType:   "other",
+							},
 						},
+						FieldsMap: nil,
 					},
 					"adimages": {
 						DisplayName: "Adimages",
-						Fields:      map[string]common.FieldMetadata{},
-						FieldsMap: map[string]string{
-							"id":   "id",
-							"hash": "hash",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName: "id",
+								ValueType:   "other",
+							},
+							"hash": {
+								DisplayName: "hash",
+								ValueType:   "other",
+							},
 						},
+						FieldsMap: nil,
 					},
 					"system_users": {
 						DisplayName: "System_users",
-						Fields:      map[string]common.FieldMetadata{},
-						FieldsMap: map[string]string{
-							"id":   "id",
-							"name": "name",
-							"role": "role",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName: "id",
+								ValueType:   "other",
+							},
+							"name": {
+								DisplayName: "name",
+								ValueType:   "other",
+							},
+							"role": {
+								DisplayName: "role",
+								ValueType:   "other",
+							},
 						},
+						FieldsMap: nil,
 					},
 				},
 				Errors: nil,
@@ -84,26 +109,33 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestFacebookConnector(tt.Server.URL)
 			})
 		})
 	}
 }
 
-func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(common.ConnectorParams{
-		AuthenticatedClient: mockutils.NewClient(),
-		Metadata: map[string]string{
-			"adAccountId": "1214321106978726",
-			"businessId":  "1190021932394709",
+func constructTestFacebookConnector(serverURL string) (*Connector, error) {
+	return constructTestConnector(serverURL, providers.ModuleFacebook)
+}
+
+func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connector, error) {
+	connector, err := NewConnector(
+		common.ConnectorParams{
+			Module:              moduleID,
+			AuthenticatedClient: mockutils.NewClient(),
+			Metadata: map[string]string{
+				"adAccountId": "1214321106978726",
+				"businessId":  "1190021932394709",
+			},
 		},
-	})
+	)
 	if err != nil {
 		return nil, err
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
+	connector.setUnitTestBaseURL(mockutils.ReplaceURLOrigin(connector.ModuleInfo().BaseURL, serverURL))
 
 	return connector, nil
 }

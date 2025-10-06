@@ -6,7 +6,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-func (c *Connector) constructURL(objName string) string {
+func (c *Adapter) constructURL(objName string) string {
 	if EndpointWithAdAccountIdInURLPath.Has(objName) {
 		return fmt.Sprintf("act_%s/%s", c.adAccountId, objName)
 	}

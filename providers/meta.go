@@ -1,7 +1,10 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const (
-	Meta Provider = "meta"
+	Meta           Provider        = "meta"
+	ModuleFacebook common.ModuleID = "facebook"
 )
 
 func init() {
@@ -27,6 +30,18 @@ func init() {
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+		DefaultModule: ModuleFacebook,
+		Modules: &Modules{
+			ModuleFacebook: {
+				BaseURL:     "https://graph.facebook.com",
+				DisplayName: "Facebook",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

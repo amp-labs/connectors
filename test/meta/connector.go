@@ -1,4 +1,4 @@
-package facebook
+package meta
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/facebook"
+	"github.com/amp-labs/connectors/providers/meta"
 	"github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )
@@ -25,8 +25,12 @@ var (
 	}
 )
 
-func GetConnector(ctx context.Context) *facebook.Connector {
-	filePath := credscanning.LoadPath(providers.Facebook)
+func GetFacebookConnector(ctx context.Context) *meta.Connector {
+	return GetConnector(ctx, providers.ModuleFacebook)
+}
+
+func GetConnector(ctx context.Context, moduleID common.ModuleID) *meta.Connector {
+	filePath := credscanning.LoadPath(providers.Meta)
 	reader := utils.MustCreateProvCredJSON(filePath, true, fieldAdAccountId, fieldBusinessId)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
@@ -38,8 +42,9 @@ func GetConnector(ctx context.Context) *facebook.Connector {
 		utils.Fail("error creating connector", "error", err)
 	}
 
-	conn, err := facebook.NewConnector(common.ConnectorParams{
+	conn, err := meta.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
+		Module:              moduleID,
 		Metadata: map[string]string{
 			"adAccountId": reader.Get(fieldAdAccountId),
 			"businessId":  reader.Get(fieldBusinessId),

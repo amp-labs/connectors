@@ -15,7 +15,7 @@ type ResponseData struct {
 	Data []map[string]any `json:"data"`
 }
 
-func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
+func (c *Adapter) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	urlPath := c.constructURL(objectName)
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, urlPath)
@@ -34,14 +34,14 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	return request, nil
 }
 
-func (c *Connector) parseSingleObjectMetadataResponse(
+func (c *Adapter) parseSingleObjectMetadataResponse(
 	ctx context.Context,
 	objectName string,
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
 	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
+		Fields:      make(map[string]common.FieldMetadata),
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
 
@@ -55,7 +55,13 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	for field := range resp.Data[0] {
-		objectMetadata.FieldsMap[field] = field
+		objectMetadata.Fields[field] = common.FieldMetadata{
+			DisplayName:  field,
+			ValueType:    common.ValueTypeOther,
+			ProviderType: "",
+			ReadOnly:     false,
+			Values:       nil,
+		}
 	}
 
 	return &objectMetadata, nil

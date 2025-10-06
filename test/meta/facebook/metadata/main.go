@@ -4,28 +4,23 @@ import (
 	"context"
 	"os"
 
-	"github.com/amp-labs/connectors/test/facebook"
+	meta "github.com/amp-labs/connectors/test/meta"
+
 	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
 	ctx := context.Background()
-	connector := facebook.GetConnector(ctx)
 
-	m, err := connector.ListObjectMetadata(ctx, []string{
-		"customaudiences",
-		"saved_audiences",
+	conn := meta.GetFacebookConnector(ctx)
+
+	m, err := conn.ListObjectMetadata(ctx, []string{
 		"users",
-		"account_controls",
 		"advertisable_applications",
 		"minimum_budgets",
 		"targetingbrowse",
-		"adimages",
 		"customaudiencestos",
-		"adrules_library",
-		"adspixels",
 		"business_users",
-		"system_users",
 	})
 	if err != nil {
 		utils.Fail(err.Error())

@@ -10,12 +10,10 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-type Connector struct {
+type Adapter struct {
 	// Basic connector
 	*components.Connector
 
-	// Require authenticated client
-	common.RequireAuthenticatedClient
 	common.RequireMetadata
 	// Supported operations
 	components.SchemaProvider
@@ -29,9 +27,9 @@ const (
 	metadataKeyBusinessID  = "businessId"
 )
 
-func NewConnector(params common.ConnectorParams) (*Connector, error) {
+func NewAdapter(params common.ConnectorParams) (*Adapter, error) {
 	// Create base connector with provider info
-	conn, err := components.Initialize(providers.Facebook, params, constructor)
+	conn, err := components.Initialize(providers.Meta, params, constructor)
 	if err != nil {
 		return nil, err
 	}
@@ -42,18 +40,18 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return conn, nil
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
-	connector := &Connector{Connector: base}
+func constructor(base *components.Connector) (*Adapter, error) {
+	adapter := &Adapter{Connector: base}
 
 	// Set the metadata provider for the connector
-	connector.SchemaProvider = schema.NewObjectSchemaProvider(
-		connector.HTTPClient().Client,
+	adapter.SchemaProvider = schema.NewObjectSchemaProvider(
+		adapter.HTTPClient().Client,
 		schema.FetchModeParallel,
 		operations.SingleObjectMetadataHandlers{
-			BuildRequest:  connector.buildSingleObjectMetadataRequest,
-			ParseResponse: connector.parseSingleObjectMetadataResponse,
+			BuildRequest:  adapter.buildSingleObjectMetadataRequest,
+			ParseResponse: adapter.parseSingleObjectMetadataResponse,
 		},
 	)
 
-	return connector, nil
+	return adapter, nil
 }
