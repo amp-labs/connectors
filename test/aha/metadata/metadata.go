@@ -15,7 +15,6 @@ func main() {
 	conn := aha.GetAhaConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"audits", "idea_organizations", "me/assigned"})
-
 	if err != nil {
 		log.Fatal(err)
 	}

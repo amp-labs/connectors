@@ -107,7 +107,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				// Pacific time to UTC is achieved by adding 8 hours
-				If:   mockcond.QueryParam("fromDateTime", "2024-09-19T12:30:45Z"),
+				If:   mockcond.Body(`{"filter":{"fromDateTime":"2024-09-19T12:30:45Z"},"contentSelector":{"context":"Extended","exposedFields":{"parties":true}}}`),
 				Then: mockserver.Response(http.StatusOK, fakeServerResp),
 			}.Server(),
 			Comparator:   testroutines.ComparatorPagination,
@@ -117,9 +117,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Successful read with 2 entries without cursor/next page",
 			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, fakeServerResp),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/calls/extensive"),
+				Then:  mockserver.Response(http.StatusOK, fakeServerResp),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 2,
@@ -128,22 +129,26 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"id": "52947912500572621",
 					},
 					Raw: map[string]any{
-						"id":             "52947912500572621",
-						"clientUniqueId": "ce93bb26-de69-41e3-8a7f-43ea3714b9e8",
-						"customData":     "R1201",
-						"url":            "https://us-49467.app.gong.io/call?id=52947912500572621",
-						"workspaceId":    "1007648505208900737",
+						"metaData": map[string]any{
+							"id":             "52947912500572621",
+							"clientUniqueId": "ce93bb26-de69-41e3-8a7f-43ea3714b9e8",
+							"customData":     "R1201",
+							"url":            "https://us-49467.app.gong.io/call?id=52947912500572621",
+							"workspaceId":    "1007648505208900737",
+						},
 					},
 				}, {
 					Fields: map[string]any{
 						"id": "137982752092261989",
 					},
 					Raw: map[string]any{
-						"id":             "137982752092261989",
-						"clientUniqueId": "f77501df-0c70-4c38-b565-a3a09fee14fb",
-						"customData":     "R1201",
-						"url":            "https://us-49467.app.gong.io/call?id=137982752092261989",
-						"workspaceId":    "1007648505208900737",
+						"metaData": map[string]any{
+							"id":             "137982752092261989",
+							"clientUniqueId": "f77501df-0c70-4c38-b565-a3a09fee14fb",
+							"customData":     "R1201",
+							"url":            "https://us-49467.app.gong.io/call?id=137982752092261989",
+							"workspaceId":    "1007648505208900737",
+						},
 					},
 				}},
 				Done: true,
@@ -154,9 +159,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Successful read with 2 entries and cursor for next page",
 			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, fakeServerResp2),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/calls/extensive"),
+				Then:  mockserver.Response(http.StatusOK, fakeServerResp2),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 2,
@@ -165,22 +171,26 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"id": "52947912500572621",
 					},
 					Raw: map[string]any{
-						"id":             "52947912500572621",
-						"clientUniqueId": "ce93bb26-de69-41e3-8a7f-43ea3714b9e8",
-						"customData":     "R1201",
-						"url":            "https://us-49467.app.gong.io/call?id=52947912500572621",
-						"workspaceId":    "1007648505208900737",
+						"metaData": map[string]any{
+							"id":             "52947912500572621",
+							"clientUniqueId": "ce93bb26-de69-41e3-8a7f-43ea3714b9e8",
+							"customData":     "R1201",
+							"url":            "https://us-49467.app.gong.io/call?id=52947912500572621",
+							"workspaceId":    "1007648505208900737",
+						},
 					},
 				}, {
 					Fields: map[string]any{
 						"id": "137982752092261989",
 					},
 					Raw: map[string]any{
-						"id":             "137982752092261989",
-						"clientUniqueId": "f77501df-0c70-4c38-b565-a3a09fee14fb",
-						"customData":     "R1201",
-						"url":            "https://us-49467.app.gong.io/call?id=137982752092261989",
-						"workspaceId":    "1007648505208900737",
+						"metaData": map[string]any{
+							"id":             "137982752092261989",
+							"clientUniqueId": "f77501df-0c70-4c38-b565-a3a09fee14fb",
+							"customData":     "R1201",
+							"url":            "https://us-49467.app.gong.io/call?id=137982752092261989",
+							"workspaceId":    "1007648505208900737",
+						},
 					},
 				}},
 				// This is a non-sensitive JWT for pagination (does not grant access).
@@ -204,9 +214,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Successful read transcripts using POST",
 			Input: common.ReadParams{ObjectName: "transcripts", Fields: connectors.Fields("callid")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseTranscripts),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/calls/transcript"),
+				Then:  mockserver.Response(http.StatusOK, responseTranscripts),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{

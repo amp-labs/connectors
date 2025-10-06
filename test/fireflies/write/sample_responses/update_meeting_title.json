@@ -1,0 +1,8 @@
+{
+ "success": true,
+ "data": {
+  "updateMeetingTitle": {
+   "title": "Daily Standup"
+  }
+ }
+}

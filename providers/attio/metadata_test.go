@@ -38,34 +38,35 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: []string{"lists", "workspace_members", "notes", "tasks", "companies", "users"},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/v2/lists"),
-					Then: mockserver.Response(http.StatusOK, listResponse),
-				}, {
-					If:   mockcond.Path("/v2/workspace_members"),
-					Then: mockserver.Response(http.StatusOK, workspacemembersResponse),
-				}, {
-					If:   mockcond.Path("/v2/notes"),
-					Then: mockserver.Response(http.StatusOK, notesResponse),
-				}, {
-					If:   mockcond.Path("/v2/tasks"),
-					Then: mockserver.Response(http.StatusOK, tasksResponse),
-				}, {
-					If:   mockcond.Path("/v2/objects/companies/attributes"),
-					Then: mockserver.Response(http.StatusOK, companiesResponse),
-				}, {
-					If:   mockcond.Path("/v2/objects/companies"),
-					Then: mockserver.Response(http.StatusOK, companiesObjectResponse),
-				}, {
-					If:   mockcond.Path("/v2/objects/users/attributes"),
-					Then: mockserver.Response(http.StatusOK, usersResponse),
-				}, {
-					If:   mockcond.Path("/v2/objects/users"),
-					Then: mockserver.Response(http.StatusOK, usersObjectResponse),
-				}, {
-					If:   mockcond.Path("/v2/objects/ffbca575-69c4-4080-bf98-91d79aeea4b1/attributes/89c07285-4d31-4fa7-9cbf-779c5f4debf1/options"),
-					Then: mockserver.Response(http.StatusOK, optionsResponse),
-				},
+				Cases: []mockserver.Case{
+					{
+						If:   mockcond.Path("/v2/lists"),
+						Then: mockserver.Response(http.StatusOK, listResponse),
+					}, {
+						If:   mockcond.Path("/v2/workspace_members"),
+						Then: mockserver.Response(http.StatusOK, workspacemembersResponse),
+					}, {
+						If:   mockcond.Path("/v2/notes"),
+						Then: mockserver.Response(http.StatusOK, notesResponse),
+					}, {
+						If:   mockcond.Path("/v2/tasks"),
+						Then: mockserver.Response(http.StatusOK, tasksResponse),
+					}, {
+						If:   mockcond.Path("/v2/objects/companies/attributes"),
+						Then: mockserver.Response(http.StatusOK, companiesResponse),
+					}, {
+						If:   mockcond.Path("/v2/objects/companies"),
+						Then: mockserver.Response(http.StatusOK, companiesObjectResponse),
+					}, {
+						If:   mockcond.Path("/v2/objects/users/attributes"),
+						Then: mockserver.Response(http.StatusOK, usersResponse),
+					}, {
+						If:   mockcond.Path("/v2/objects/users"),
+						Then: mockserver.Response(http.StatusOK, usersObjectResponse),
+					}, {
+						If:   mockcond.Path("/v2/objects/ffbca575-69c4-4080-bf98-91d79aeea4b1/attributes/89c07285-4d31-4fa7-9cbf-779c5f4debf1/options"),
+						Then: mockserver.Response(http.StatusOK, optionsResponse),
+					},
 				},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -299,7 +300,6 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),
 	)
-
 	if err != nil {
 		return nil, err
 	}
