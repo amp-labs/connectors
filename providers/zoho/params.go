@@ -16,6 +16,9 @@ type Option = func(params *parameters)
 type parameters struct {
 	paramsbuilder.Client
 	paramsbuilder.Module
+
+	location string
+	domains  *LocationDomains
 }
 
 func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
@@ -52,5 +55,17 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 func WithModule(module common.ModuleID) Option {
 	return func(params *parameters) {
 		params.WithModule(module, supportedModules, providers.ZohoCRM)
+	}
+}
+
+func WithLocation(location string) Option {
+	return func(params *parameters) {
+		params.location = location
+	}
+}
+
+func WithDomains(domains *LocationDomains) Option {
+	return func(params *parameters) {
+		params.domains = domains
 	}
 }
