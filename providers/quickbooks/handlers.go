@@ -1,13 +1,17 @@
 package quickbooks
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -55,7 +59,9 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, fmt.Errorf("couldn't convert the data response field QueryResponse to a map: %w", common.ErrMissingExpectedValues) // nolint:lll
 	}
 
-	records, ok := QueryResponse[naming.CapitalizeFirstLetter(objectName)].([]any) // nolint:varnamelen
+	responseKey := objectNameToResponseField.Get(objectName)
+
+	records, ok := QueryResponse[naming.CapitalizeFirstLetter(responseKey)].([]any) // nolint:varnamelen
 
 	if !ok {
 		return nil, fmt.Errorf("couldn't convert the data response field data to an array: %w", common.ErrMissingExpectedValues) // nolint:lll
@@ -81,4 +87,96 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, c.realmID, "query")
+	if err != nil {
+		return nil, err
+	}
+
+	query := buildQuery(params)
+
+	url.WithQueryParam("query", query)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Accept", "application/json")
+
+	return req, nil
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		getRecords(params.ObjectName),
+		nextRecordsURL(),
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, c.realmID, strings.ToLower(params.ObjectName))
+	if err != nil {
+		return nil, err
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Accept", "application/json")
+
+	return req, nil
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	dataNode, err := jsonquery.New(body).ObjectOptional(naming.CapitalizeFirstLetter(params.ObjectName))
+	if err != nil {
+		return nil, err
+	}
+
+	recordID, err := jsonquery.New(dataNode).StrWithDefault("Id", "")
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := jsonquery.Convertor.ObjectToMap(dataNode)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     resp,
+	}, nil
 }
