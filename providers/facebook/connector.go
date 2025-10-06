@@ -22,7 +22,6 @@ type Connector struct {
 	// Supported operations
 	components.SchemaProvider
 	components.Reader
-	components.Writer
 
 	adAccountId string
 	businessId  string
