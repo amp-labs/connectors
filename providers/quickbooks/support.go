@@ -19,7 +19,7 @@ var objectNameToResponseField = datautils.NewDefaultMap(map[string]string{ //nol
 
 //nolint:funlen
 func supportedOperations() components.EndpointRegistryInput {
-
+	//nolint:lll,gofumpt
 	readSupport := []string{
 		//https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account#query-an-account
 		"account",
