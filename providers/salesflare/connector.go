@@ -1,10 +1,9 @@
-package linkedin
+package salesflare
 
 import (
-	_ "embed"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
@@ -12,95 +11,92 @@ import (
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/salesflare/internal/metadata"
 )
 
 type Connector struct {
-	// Basic connector
 	*components.Connector
 
-	// Require authenticated client
 	common.RequireAuthenticatedClient
 
-	// Supported operations
 	components.SchemaProvider
 	components.Reader
 	components.Writer
 	components.Deleter
-
-	AdAccountId string
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	// Create base connector with provider info
-	conn, err := components.Initialize(providers.LinkedIn, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	conn.AdAccountId = params.Metadata["adAccountId"]
-
-	return conn, nil
+	return components.Initialize(providers.Salesflare, params, constructor)
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
-	connector := &Connector{Connector: base}
+	connector := &Connector{
+		Connector: base,
+	}
 
-	// Set the metadata provider for the connector
-	connector.SchemaProvider = schema.NewObjectSchemaProvider(
-		connector.HTTPClient().Client,
-		schema.FetchModeParallel,
+	fallbackSchema := schema.NewObjectSchemaProvider(
+		base.HTTPClient().Client,
+		schema.FetchModeSerial,
 		operations.SingleObjectMetadataHandlers{
-			BuildRequest:  connector.buildSingleObjectMetadataRequest,
-			ParseResponse: connector.parseSingleObjectMetadataResponse,
-			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-			}.Handle,
+			BuildRequest:  connector.buildSingleHandlerRequest,
+			ParseResponse: connector.parseSingleHandlerResponse,
+			ErrorHandler:  common.InterpretError,
 		},
 	)
 
-	registry, err := components.NewEndpointRegistry(supportedOperations())
-	if err != nil {
-		return nil, err
-	}
+	connector.SchemaProvider = schema.NewCompositeSchemaProvider(
+		schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas),
+		fallbackSchema,
+	)
+
+	errorHandler := interpreter.ErrorHandler{
+		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+	}.Handle
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
-		registry,
+		components.NewEmptyEndpointRegistry(),
 		connector.ProviderContext.Module(),
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
-			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-			}.Handle,
+			ErrorHandler:  errorHandler,
 		},
 	)
 
 	connector.Writer = writer.NewHTTPWriter(
 		connector.HTTPClient().Client,
-		registry,
+		components.NewEmptyEndpointRegistry(),
 		connector.ProviderContext.Module(),
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
-			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-			}.Handle,
+			ErrorHandler:  errorHandler,
 		},
 	)
 
 	connector.Deleter = deleter.NewHTTPDeleter(
 		connector.HTTPClient().Client,
-		registry,
+		components.NewEmptyEndpointRegistry(),
 		connector.ProviderContext.Module(),
 		operations.DeleteHandlers{
 			BuildRequest:  connector.buildDeleteRequest,
 			ParseResponse: connector.parseDeleteResponse,
-			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-			}.Handle,
+			ErrorHandler:  errorHandler,
 		},
 	)
 
 	return connector, nil
+}
+
+func (c Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
+}
+
+func (c Connector) getWriteURL(objectName string, identifier string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.ProviderInfo().BaseURL, objectName, identifier)
+}
+
+func (c Connector) getDeleteURL(objectName string, identifier string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.ProviderInfo().BaseURL, objectName, identifier)
 }

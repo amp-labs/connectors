@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/aha"
+	"github.com/amp-labs/connectors/providers/amplitude"
 	"github.com/amp-labs/connectors/providers/apollo"
 	"github.com/amp-labs/connectors/providers/asana"
 	"github.com/amp-labs/connectors/providers/ashby"
@@ -15,6 +16,7 @@ import (
 	"github.com/amp-labs/connectors/providers/attio"
 	"github.com/amp-labs/connectors/providers/avoma"
 	"github.com/amp-labs/connectors/providers/aws"
+	"github.com/amp-labs/connectors/providers/bitbucket"
 	"github.com/amp-labs/connectors/providers/blackbaud"
 	"github.com/amp-labs/connectors/providers/blueshift"
 	"github.com/amp-labs/connectors/providers/braze"
@@ -76,6 +78,7 @@ import (
 	"github.com/amp-labs/connectors/providers/podium"
 	"github.com/amp-labs/connectors/providers/pylon"
 	"github.com/amp-labs/connectors/providers/sageintacct"
+	"github.com/amp-labs/connectors/providers/salesflare"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/seismic"
@@ -105,12 +108,14 @@ func New(provider providers.Provider, params common.ConnectorParams) (connectors
 var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nolint:gochecknoglobals
 	providers.AWS:                     wrapper(newAWSConnector),
 	providers.Aha:                     wrapper(newAhaConnector),
+	providers.Amplitude:               wrapper(newAmplitudeConnector),
 	providers.Apollo:                  wrapper(newApolloConnector),
 	providers.Asana:                   wrapper(newAsanaConnector),
 	providers.Ashby:                   wrapper(newAshbyConnector),
 	providers.Atlassian:               wrapper(newAtlassianConnector),
 	providers.Attio:                   wrapper(newAttioConnector),
 	providers.Avoma:                   wrapper(newAvomaConnector),
+	providers.Bitbucket:               wrapper(newBitBucketConnector),
 	providers.Blackbaud:               wrapper(newBlackbaudConnector),
 	providers.Blueshift:               wrapper(newBlueshiftConnector),
 	providers.Braze:                   wrapper(newBrazeConnector),
@@ -172,6 +177,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Podium:                  wrapper(newPodiumConnector),
 	providers.Pylon:                   wrapper(newPylonConnector),
 	providers.SageIntacct:             wrapper(newSageIntacctConnector),
+	providers.Salesflare:              wrapper(newSalesflareConnector),
 	providers.Salesforce:              wrapper(newSalesforceConnector),
 	providers.Salesloft:               wrapper(newSalesloftConnector),
 	providers.Seismic:                 wrapper(newSeismicConnector),
@@ -195,6 +201,10 @@ func wrapper[T connectors.Connector](input inputConstructorFunc[T]) outputConstr
 	return func(p common.ConnectorParams) (connectors.Connector, error) {
 		return input(p)
 	}
+}
+
+func newSalesflareConnector(params common.ConnectorParams) (*salesflare.Connector, error) {
+	return salesflare.NewConnector(params)
 }
 
 func newSalesforceConnector(params common.ConnectorParams) (*salesforce.Connector, error) {
@@ -350,6 +360,7 @@ func newZohoConnector(
 ) (*zoho.Connector, error) {
 	return zoho.NewConnector(
 		zoho.WithAuthenticatedClient(params.AuthenticatedClient),
+		zoho.WithModule(params.Module),
 	)
 }
 
@@ -754,4 +765,15 @@ func newLinkedInConnector(
 	params common.ConnectorParams,
 ) (*linkedin.Connector, error) {
 	return linkedin.NewConnector(params)
+}
+
+func newBitBucketConnector(params common.ConnectorParams,
+) (*bitbucket.Connector, error) {
+	return bitbucket.NewConnector(params)
+}
+
+func newAmplitudeConnector(
+	params common.ConnectorParams,
+) (*amplitude.Connector, error) {
+	return amplitude.NewConnector(params)
 }

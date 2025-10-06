@@ -1,0 +1,17 @@
+{
+  "statusCode": 400,
+  "error": "Bad Request",
+  "message": "\"value\" must contain at least one of [name, email, prefix, firstname, middle, lastname, suffix]",
+  "validation": {
+    "source": "payload",
+    "errors": [
+      {
+        "path": "",
+        "message": "\"value\" must contain at least one of [name, email, prefix, firstname, middle, lastname, suffix]",
+        "type": "object",
+        "constraint": "missing",
+        "label": "value"
+      }
+    ]
+  }
+}
