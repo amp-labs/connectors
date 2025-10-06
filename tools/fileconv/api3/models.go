@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strconv"
 
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/getkin/kin-openapi/openapi3"
 )
@@ -186,9 +188,13 @@ func extractPropertiesArrayType(schema *openapi3.Schema) []Array {
 	definitions := []openapi3.Schemas{
 		schema.Properties,
 	}
-	for _, allOf := range schema.AllOf {
-		// Item schema will likely be inside composite schema
-		definitions = append(definitions, allOf.Value.Properties)
+
+	compositeSchemas := datautils.MergeSlices(schema.AllOf, schema.OneOf, schema.AnyOf)
+	// Item schema will likely be inside composite schema
+	for _, comp := range compositeSchemas {
+		if comp != nil && comp.Value != nil {
+			definitions = append(definitions, comp.Value.Properties)
+		}
 	}
 
 	arrays := make([]Array, 0)
@@ -361,15 +367,30 @@ func extractEnumOptions(objectName string, propertySchema *openapi3.SchemaRef) [
 
 	if propertySchema.Value != nil && propertySchema.Value.Enum != nil {
 		for _, value := range propertySchema.Value.Enum {
-			if option, ok := value.(string); ok {
+			if option, ok := mapEnumToString(objectName, value); ok {
 				enumOptions = append(enumOptions, option)
-			} else {
-				slog.Warn("Enum option is not a string", "objectName", objectName)
 			}
 		}
 	}
 
 	return enumOptions
+}
+
+func mapEnumToString(objectName string, value any) (string, bool) {
+	if value == nil {
+		return "null", true
+	}
+
+	switch option := value.(type) {
+	case string:
+		return option, true
+	case float64:
+		return strconv.FormatFloat(option, 'f', -1, 64), true
+	default:
+		slog.Warn("Enum option is not a string", "objectName", objectName)
+	}
+
+	return "", false
 }
 
 type definitionSchemaType int

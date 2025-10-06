@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
+	"os"
 
 	"github.com/amp-labs/connectors/test/asana"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
@@ -15,12 +16,9 @@ func main() {
 
 	// nolint
 	m, err := conn.ListObjectMetadata(ctx, []string{"projects", "tags", "users", "workspaces"})
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Print the results
-	fmt.Println("Results: ", m.Result)
-	fmt.Println("Errors: ", m.Errors)
+	utils.DumpJSON(m, os.Stdout)
 }

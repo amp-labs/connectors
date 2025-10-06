@@ -2,7 +2,6 @@
 package salesforce
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -71,7 +70,7 @@ func TestBulkRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				State:           "UploadComplete",
 				ConcurrencyMode: "Parallel",
 				ContentType:     "CSV",
-				ApiVersion:      59.0,
+				ApiVersion:      60.0,
 				LineEnding:      "LF",
 				ColumnDelimiter: "COMMA",
 			},
@@ -99,6 +98,6 @@ type (
 func (c bulkReadTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
-	output, err := conn.BulkRead(context.Background(), c.Input)
+	output, err := conn.BulkRead(t.Context(), c.Input)
 	bulkReadTestCaseType(c).Validate(t, err, output)
 }

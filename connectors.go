@@ -77,6 +77,14 @@ type ObjectMetadataConnector interface {
 	ListObjectMetadata(ctx context.Context, objectNames []string) (*ListObjectMetadataResult, error)
 }
 
+// UpsertMetadataConnector is an interface that extends the Connector interface with
+// the ability to create/update custom objects and fields in the SaaS instance.
+type UpsertMetadataConnector interface {
+	Connector
+
+	UpsertMetadata(ctx context.Context, params *common.UpsertMetadataParams) (*common.UpsertMetadataResult, error)
+}
+
 // AuthMetadataConnector is an interface that extends the Connector interface with
 // the ability to retrieve metadata information about authentication.
 type AuthMetadataConnector interface {
@@ -101,7 +109,14 @@ type WebhookVerifierConnector interface {
 	BatchRecordReaderConnector
 
 	// VerifyWebhookMessage verifies the signature of a webhook message.
-	VerifyWebhookMessage(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error)
+	VerifyWebhookMessage(
+		ctx context.Context,
+		// request is the raw webhook request from the provider.
+		request *common.WebhookRequest,
+		// params is the verification parameters unique to the user.
+		// It is used to verify the signature of the webhook message.
+		params *common.VerificationParams,
+	) (bool, error)
 }
 
 type RegisterSubscribeConnector interface {

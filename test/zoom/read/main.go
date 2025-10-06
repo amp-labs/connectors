@@ -27,7 +27,6 @@ func main() {
 		ObjectName: objectName,
 		Fields:     connectors.Fields("id", "email", "display_name", "first_name", "last_name"),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from Zoom", "error", err)
 	}

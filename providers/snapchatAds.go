@@ -37,5 +37,13 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+		PostAuthInfoNeeded: true,
+		Metadata: &ProviderMetadata{
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "organizationId",
+				},
+			},
+		},
 	})
 }

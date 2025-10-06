@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -24,7 +25,11 @@ var (
 	errUnexpectedFieldNameType   = errors.New("unexpected field name type")
 )
 
-func (*Connector) VerifyWebhookMessage(context.Context, *common.WebhookVerificationParameters) (bool, error) {
+func (*Connector) VerifyWebhookMessage(
+	_ context.Context,
+	_ *common.WebhookRequest,
+	_ *common.VerificationParams,
+) (bool, error) {
 	return true, nil
 }
 
@@ -36,6 +41,10 @@ var _ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 // Structure reference:
 // https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_event_fields_header.htm.
 type CollapsedSubscriptionEvent map[string]any
+
+func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
+	return maps.Clone(e), nil
+}
 
 // ToRecordList splits bundled event into per record event.
 // Every property is duplicated across SubscriptionEvent. RecordIds is spread as RecordId.
@@ -117,6 +126,10 @@ func (s SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 	default:
 		return common.SubscriptionEventTypeOther, nil
 	}
+}
+
+func (s SubscriptionEvent) RawMap() (map[string]any, error) {
+	return maps.Clone(s), nil
 }
 
 func (s SubscriptionEvent) RawEventName() (string, error) {

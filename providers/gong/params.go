@@ -70,11 +70,25 @@ func buildReadBody(config common.ReadParams) map[string]any {
 		filter["fromDateTime"] = datautils.Time.FormatRFC3339inUTC(config.Since)
 	}
 
+	if !config.Until.IsZero() {
+		filter["toDateTime"] = datautils.Time.FormatRFC3339inUTC(config.Until)
+	}
+
 	body := map[string]any{
 		"filter": filter,
 	}
+
 	if len(config.NextPage) != 0 {
 		body["cursor"] = config.NextPage.String()
+	}
+
+	if config.ObjectName == objectNameCalls {
+		body["contentSelector"] = map[string]any{
+			"context": "Extended",
+			"exposedFields": map[string]any{
+				"parties": true,
+			},
+		}
 	}
 
 	return body

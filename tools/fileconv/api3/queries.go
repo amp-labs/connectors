@@ -38,7 +38,12 @@ func (e Explorer[C]) ReadObjectsGet(
 	displayNameOverride map[string]string,
 	locator ObjectArrayLocator,
 ) (metadatadef.Schemas[C], error) {
-	return e.ReadObjects("GET", pathMatcher, objectEndpoints, displayNameOverride, locator)
+	return e.ReadObjects("GET", AndPathMatcher{
+		pathMatcher,
+		// There should be no curly brackets no IDs, no nested resources.
+		// Read objects are those that have constant string path.
+		IDPathIgnorer{},
+	}, objectEndpoints, displayNameOverride, locator)
 }
 
 // ReadObjectsPost is the same as ReadObjectsGet but retrieves schemas for endpoints that perform reading via POST.
@@ -49,7 +54,12 @@ func (e Explorer[C]) ReadObjectsPost(
 	displayNameOverride map[string]string,
 	locator ObjectArrayLocator,
 ) (metadatadef.Schemas[C], error) {
-	return e.ReadObjects("POST", pathMatcher, objectEndpoints, displayNameOverride, locator)
+	return e.ReadObjects("POST", AndPathMatcher{
+		pathMatcher,
+		// There should be no curly brackets no IDs, no nested resources.
+		// Read objects are those that have constant string path.
+		IDPathIgnorer{},
+	}, objectEndpoints, displayNameOverride, locator)
 }
 
 // ReadObjects will explore OpenAPI file returning list of Schemas.
@@ -77,12 +87,11 @@ func (e Explorer[C]) ReadObjects(
 ) (metadatadef.Schemas[C], error) {
 	schemas := make(metadatadef.Schemas[C], 0)
 
-	pathItems := e.GetPathItems(AndPathMatcher{
-		pathMatcher,
-		// There should be no curly brackets no IDs, no nested resources.
-		// Read objects are those that have constant string path.
-		IDPathIgnorer{},
-	}, objectEndpoints)
+	pathItems := e.GetPathItems(pathMatcher, objectEndpoints)
+
+	if locator == nil {
+		locator = DefaultObjectLocator
+	}
 
 	for _, path := range pathItems {
 		schema, found, err := path.RetrieveSchemaOperation(operationName,
@@ -113,8 +122,8 @@ func (e Explorer[C]) ReadObjects(
 // GetPathItems returns path items where object name is a single word.
 func (e Explorer[C]) GetPathItems(
 	pathMatcher PathMatcher, endpointResources map[string]string,
-) []*PathItem[C] {
-	items := datautils.Map[string, *PathItem[C]]{} // URL path to item
+) []PathItem[C] {
+	items := datautils.Map[string, PathItem[C]]{} // URL path to item
 	namedPaths := datautils.NamedLists[string]{}
 
 	for path, pathObj := range e.schema.GetPaths() {
@@ -132,7 +141,7 @@ func (e Explorer[C]) GetPathItems(
 			objectName = parts[len(parts)-1]
 		}
 
-		items[path] = &PathItem[C]{
+		items[path] = PathItem[C]{
 			objectName: objectName,
 			urlPath:    path,
 			delegate:   pathObj,
@@ -150,7 +159,7 @@ func (e Explorer[C]) GetPathItems(
 		}
 	}
 
-	result := datautils.Map[string, *PathItem[C]]{} // object name to item
+	result := datautils.Map[string, PathItem[C]]{} // object name to item
 
 	duplicatesMapping := e.duplicatesResolver(collisions)
 	for _, object := range items {

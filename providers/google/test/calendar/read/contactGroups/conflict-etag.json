@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": 409,
+    "message": "Contact group etag is outdated. Clear the cache and get the latest contact group to set the etag.",
+    "status": "ABORTED"
+  }
+}
