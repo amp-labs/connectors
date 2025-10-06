@@ -32,9 +32,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -44,6 +44,14 @@ func init() {
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722478129/media/copper_1722478128.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722478080/media/copper_1722478079.svg",
+			},
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "userEmail",
+					DisplayName: "User Emails",
+				},
 			},
 		},
 	})

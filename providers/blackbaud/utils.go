@@ -6,8 +6,6 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-const defaultPageSize = 1
-
 var objectNameWithSearchResource = datautils.NewSet( //nolint:gochecknoglobals
 	"crm-adnmg/sites",
 	"crm-adnmg/businessprocessparameterset",

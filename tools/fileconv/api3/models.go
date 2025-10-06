@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
@@ -366,15 +367,30 @@ func extractEnumOptions(objectName string, propertySchema *openapi3.SchemaRef) [
 
 	if propertySchema.Value != nil && propertySchema.Value.Enum != nil {
 		for _, value := range propertySchema.Value.Enum {
-			if option, ok := value.(string); ok {
+			if option, ok := mapEnumToString(objectName, value); ok {
 				enumOptions = append(enumOptions, option)
-			} else {
-				slog.Warn("Enum option is not a string", "objectName", objectName)
 			}
 		}
 	}
 
 	return enumOptions
+}
+
+func mapEnumToString(objectName string, value any) (string, bool) {
+	if value == nil {
+		return "null", true
+	}
+
+	switch option := value.(type) {
+	case string:
+		return option, true
+	case float64:
+		return strconv.FormatFloat(option, 'f', -1, 64), true
+	default:
+		slog.Warn("Enum option is not a string", "objectName", objectName)
+	}
+
+	return "", false
 }
 
 type definitionSchemaType int

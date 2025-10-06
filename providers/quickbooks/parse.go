@@ -17,12 +17,9 @@ func getRecords(objectName string) common.RecordsFunc {
 			return nil, err
 		}
 
-		if objectName == "creditCardPayment" {
-			// response key of creditCardPayment is CreditCardPaymentTxn
-			objectName = "CreditCardPaymentTxn"
-		}
+		responseKey := objectNameToResponseField.Get(objectName)
 
-		rcds, err := jsonquery.New(queryResponse).ArrayRequired(naming.CapitalizeFirstLetter(objectName))
+		rcds, err := jsonquery.New(queryResponse).ArrayRequired(naming.CapitalizeFirstLetter(responseKey))
 		if err != nil || rcds == nil {
 			// some endpoints return an empty object instead of an empty array when there are no records
 			return []map[string]any{}, nil //nolint:nilerr

@@ -34,6 +34,7 @@ var objectsWithLocationIdInParam = datautils.NewSet( //nolint:gochecknoglobals
 	"surveys",
 	"users",
 	"workflows",
+	"objects",
 )
 
 var paginationObjects = datautils.NewSet( //nolint:gochecknoglobals
@@ -47,7 +48,7 @@ var paginationObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"blogs/categories",
 	"funnels/lookup/redirect/list",
 	"funnels/funnel/list",
-	"payment/orders",
+	"payments/orders",
 	"payments/transactions",
 	"payments/subscriptions",
 	"payments/coupon/list",
@@ -58,6 +59,11 @@ var paginationObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"store/shipping-zone",
 	"locations/search",
 	"custom-menus",
+	"surveys",
+	"proposals/document",
+	"proposals/templates",
+	"marketplace/billing/charges",
+	"forms",
 )
 
 var objectWithAltTypeAndIdQueryParam = datautils.NewSet( //nolint:gochecknoglobals
@@ -85,6 +91,7 @@ var objectWithSkipQueryParam = datautils.NewSet( //nolint:gochecknoglobals
 	"proposals/templates",
 	"surveys",
 	"invoices",
+	"marketplace/billing/charges",
 )
 
 // Ref for nodePath https://highlevel.stoplight.io/docs/integrations/a8db8afcbe0a3-get-businesses-by-location.
@@ -108,7 +115,7 @@ var objectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochec
 	"funnels/lookup/redirect/list": "data",
 	"funnels/funnel/list":          "funnels",
 	"opportunities/pipelines":      "pipelines",
-	"payment/orders":               "data",
+	"payments/orders":              "data",
 	"payments/transactions":        "data",
 	"payments/subscriptions":       "data",
 	"payments/coupon/list":         "data",
@@ -121,12 +128,13 @@ var objectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochec
 	"store/shipping-zone":          "data",
 	"store/shipping-carrier":       "data",
 	"store/store-setting":          "data",
-	"snapshots":                    "snapshots",
 	"surveys":                      "surveys",
 	"users":                        "users ",
 	"workflows":                    "workflows",
 	"locations/search":             "locations",
 	"custom-menus":                 "customMenus",
+	"marketplace/billing/charges":  "charges",
+	"objects":                      "objects",
 }, func(objectName string) string {
 	return "id"
 },
@@ -146,7 +154,7 @@ func makeNextRecord(offset int, objName string) common.NextPageFunc {
 }
 
 var writeObjectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
-	"custom-menus":                    "custom-menu",
+	"custom-menus":                    "customMenu",
 	"users":                           "",
 	"businesses":                      "business",
 	"calendars":                       "calendar",
@@ -168,7 +176,7 @@ var writeObjectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:g
 	"invoices":                        "",
 	"invoices/template":               "",
 	"invoices/schedule":               "",
-	"invoices/text2pay":               "",
+	"invoices/text2pay":               "invoice",
 	"invoices/estimate":               "",
 	"invoices/estimate/template":      "",
 	"links":                           "link",
@@ -180,6 +188,8 @@ var writeObjectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:g
 	"products":                        "",
 	"products/collections":            "data",
 	"store/shipping-zone":             "data",
+	"store/shipping-carrier":          "data",
+	"store/store-setting":             "data",
 }, func(objectName string) string {
 	return "id"
 })
@@ -217,4 +227,17 @@ var writeObjectsWithUnderscoreIdField = datautils.NewSet( //nolint:gochecknoglob
 	"products",
 	"products/collections",
 	"store/shipping-zone",
+	"store/shipping-carrier",
+	"store/store-setting",
+)
+
+var deleteObjectWithLocationIdQueryParam = datautils.NewSet( //nolint:gochecknoglobals
+	"associations/relations",
+	"custom-fields/folder",
+	"funnels/lookup/redirect",
+)
+
+var objectWithAltTypeAndIdBodyParam = datautils.NewSet( //nolint:gochecknoglobals
+	"invoices/estimate",
+	"invoices/estimate/template",
 )
