@@ -6,6 +6,15 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/datautils"
+)
+
+var objectNameToResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+	"creditCardPayment": "CreditCardPaymentTxn",
+},
+	func(objectName string) string {
+		return objectName
+	},
 )
 
 func supportedOperations() components.EndpointRegistryInput {
