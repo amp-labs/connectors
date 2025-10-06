@@ -365,17 +365,17 @@ func newZohoConnector(
 
 	if params.Metadata != nil {
 		apiDomain, ok := params.Metadata["zoho_api_domain"]
-		if ok {
+		if ok && apiDomain != "" {
 			domains.ApiDomain = apiDomain
 		}
 
 		deskDomain, ok := params.Metadata["zoho_desk_domain"]
-		if ok {
+		if ok && deskDomain != "" {
 			domains.DeskDomain = deskDomain
 		}
 
 		tokenDomain, ok := params.Metadata["zoho_token_domain"]
-		if ok {
+		if ok && tokenDomain != "" {
 			domains.TokenDomain = tokenDomain
 		}
 	}
