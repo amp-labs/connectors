@@ -1,0 +1,26 @@
+mutation TaxGroupCreate($inpput: TaxGroupCreateInput!) {
+    taxGroupCreate(input : $input) {
+        taxGroup {
+          components{
+          	default
+          	description
+          	id
+          	label
+          	name
+          	qboTaxType
+          	tax  
+          }
+          default
+          description
+          id
+          label
+          name
+					qboTaxType
+          tax  	
+        }
+        userErrors {
+          message
+          path
+        }
+    }
+}
