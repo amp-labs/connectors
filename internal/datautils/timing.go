@@ -1,7 +1,6 @@
 package datautils
 
 import (
-	"strconv"
 	"time"
 )
 
@@ -26,9 +25,4 @@ func (timing) FormatRFC3339inUTCWithMilliseconds(input time.Time) string {
 	utcTime := input.UTC()
 
 	return utcTime.Format("2006-01-02T15:04:05.000Z")
-}
-
-// Unix returns the string representing the number of seconds elapsed since January 1, 1970.
-func (timing) Unix(input time.Time) string {
-	return strconv.FormatInt(input.Unix(), 10)
 }

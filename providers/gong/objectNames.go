@@ -6,12 +6,8 @@ import (
 )
 
 const (
-	objectNameCalls              = "calls"
-	objectNameTranscript         = "transcripts"
-	objectNameMeetings           = "meetings"
-	objectNameDigitalInteraction = "digital-interaction"
-	objectNameFlows              = "flows"
-	objectNameUsers              = "users"
+	objectNameCalls      = "calls"
+	objectNameTranscript = "transcripts"
 )
 
 // Supported object names can be found under schemas.json.
@@ -19,13 +15,10 @@ var supportedObjectsByRead = metadata.Schemas.ObjectNames() //nolint:gochecknogl
 
 var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameCalls,
-	objectNameMeetings,
-	objectNameDigitalInteraction,
 )
 
 var postReadObjects = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameTranscript,
-	objectNameCalls,
 )
 
 var ObjectNameToResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
@@ -33,15 +26,5 @@ var ObjectNameToResponseField = datautils.NewDefaultMap(map[string]string{ //nol
 },
 	func(objectName string) (fieldName string) {
 		return objectName
-	},
-)
-
-var objectNameToWriteResultIDField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
-	objectNameCalls:              "callId",
-	objectNameMeetings:           "meetingId",
-	objectNameDigitalInteraction: "requestId",
-},
-	func(objectName string) (fieldName string) {
-		return "id"
 	},
 )

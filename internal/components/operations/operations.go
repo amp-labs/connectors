@@ -78,8 +78,6 @@ func (op *HTTPOperation[RequestType, ResponseType]) ExecuteRequest(
 				return response, err
 			}
 		}
-
-		return response, common.InterpretError(resp, body)
 	}
 
 	jsonResp, err := common.ParseJSONResponse(resp, body)

@@ -38,7 +38,7 @@ func main() {
 	res, err = conn.Read(ctx, common.ReadParams{
 		ObjectName: "calls",
 		Fields:     connectors.Fields("id", "title", "type", "status"),
-		Since:      time.Date(2025, 0o6, 20, 0, 0, 0, 0, time.UTC),
+		Since:      time.Date(2025, 06, 20, 0, 0, 0, 0, time.UTC),
 	})
 	if err != nil {
 		utils.Fail("error reading from Clari Copilot", "error", err)

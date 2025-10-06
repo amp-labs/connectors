@@ -211,6 +211,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),
 	)
+
 	if err != nil {
 		return nil, err
 	}

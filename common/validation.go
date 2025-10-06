@@ -6,10 +6,6 @@ var (
 	// ErrMissingObjects is returned when no objects are provided in the request.
 	ErrMissingObjects = errors.New("no objects provided")
 
-	// ErrEmptyObject is returned when empty string is used as an object name.
-	// Some APIs, connectors could be strict about it.
-	ErrEmptyObject = errors.New("object name is empty")
-
 	// ErrMissingRecordID is returned when resource id is missing in the request.
 	ErrMissingRecordID = errors.New("no object ID provided")
 

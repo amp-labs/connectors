@@ -9,7 +9,6 @@ import (
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/stripe/metadata"
 	"github.com/amp-labs/connectors/providers/stripe/openapi"
-	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
@@ -30,8 +29,8 @@ var (
 		"/v1/linked_accounts",
 	}
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
-		"financial_connections/accounts": "Financial Connection Accounts",
-		"terminal/configurations":        "Terminal Configurations",
+		"accounts_financial_connections": "Financial Connection Accounts",
+		"configurations_terminal":        "Terminal Configurations",
 		"history":                        "Balance History Transactions",
 		"invoices":                       "Invoices",
 		"locations":                      "Terminal Locations",
@@ -40,7 +39,7 @@ var (
 		"refunds":                        "API Method Refunds",
 		"report_runs":                    "Financial Report Runs",
 		"report_types":                   "Financial Report Types",
-		"checkout/sessions":              "Payment Checkout Sessions",
+		"sessions_checkout":              "Payment Checkout Sessions",
 		"setup_intents":                  "Payment Setup Intents",
 		"subscriptions":                  "Subscriptions",
 		"suppliers":                      "Climate Suppliers",
@@ -50,6 +49,43 @@ var (
 		"verification_reports":           "Verification Reports",
 		"verification_sessions":          "Verification Sessions",
 		"webhook_endpoints":              "Webhook Endpoints",
+	}
+	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
+		// Accounts
+		"/v1/accounts":                       "accounts",
+		"/v1/financial_connections/accounts": "accounts_financial_connections",
+		// Authorizations
+		"/v1/issuing/authorizations":              "authorizations",
+		"/v1/test_helpers/issuing/authorizations": "authorizations_test",
+		// Configurations
+		"/v1/billing_portal/configurations": "configurations",
+		"/v1/terminal/configurations":       "configurations_terminal",
+		// Disputes
+		"/v1/disputes":         "disputes",
+		"/v1/issuing/disputes": "disputes_issuing",
+		// Lines
+		"/v1/credit_notes/preview/lines": "lines_preview_credit_notes",
+		"/v1/invoices/upcoming/lines":    "lines_upcoming_invoices",
+		// Products
+		"/v1/climate/products": "products_climate",
+		"/v1/products":         "products",
+		// Received debits
+		"/v1/test_helpers/treasury/received_debits": "received_debits_test",
+		"/v1/treasury/received_debits":              "received_debits",
+		// Received credits
+		"/v1/test_helpers/treasury/received_credits": "received_credits_test",
+		"/v1/treasury/received_credits":              "received_credits",
+		// Sessions
+		"/v1/billing_portal/sessions":        "sessions_billing_portal",
+		"/v1/checkout/sessions":              "sessions_checkout",
+		"/v1/financial_connections/sessions": "sessions_financial_connections",
+		// Tokens
+		"/v1/issuing/tokens": "tokens_issuing",
+		"/v1/tokens":         "tokens",
+		// Transactions
+		"/v1/financial_connections/transactions": "transactions_financial_connections",
+		"/v1/issuing/transactions":               "transactions_issuing",
+		"/v1/treasury/transactions":              "transactions_treasury",
 	}
 )
 
@@ -66,40 +102,36 @@ func main() {
 			api3.OnlyOptionalQueryParameters,
 		),
 		api3.WithArrayItemAutoSelection(),
-		api3.WithDuplicatesResolver(api3.SingleItemDuplicatesResolver(func(endpoint string) string {
-			return endpoint
-		})),
 	)
 	goutils.MustBeNil(err)
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
-		nil, displayNameOverride,
+		objectEndpoints, displayNameOverride,
 		arrayLocator,
 	)
 	goutils.MustBeNil(err)
 
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
+	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
 	registry := datautils.NamedLists[string]{}
 
 	for _, object := range objects {
-		urlPath, _ := strings.CutPrefix(object.URLPath, "/v1/")
-		objectName := urlPath
-
 		if object.Problem != nil {
 			slog.Error("schema not extracted",
-				"objectName", objectName,
+				"objectName", object.ObjectName,
 				"error", object.Problem,
 			)
 		}
 
 		for _, field := range object.Fields {
-			schemas.Add("", objectName, object.DisplayName, urlPath, object.ResponseKey,
-				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
+			schemas.Add("", object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
+				staticschema.FieldMetadataMapV1{
+					field.Name: field.Name,
+				}, nil, object.Custom)
 		}
 
 		for _, queryParam := range object.QueryParams {
-			registry.Add(queryParam, objectName)
+			registry.Add(queryParam, object.ObjectName)
 		}
 	}
 

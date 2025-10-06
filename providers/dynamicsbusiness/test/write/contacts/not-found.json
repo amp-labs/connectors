@@ -1,6 +1,0 @@
-{
-  "error": {
-    "code": "BadRequest_ResourceNotFound",
-    "message": "Resource not found for the segment 'contact'.  CorrelationId:  64c04b4f-edf8-4fda-836a-df76af0b519d."
-  }
-}

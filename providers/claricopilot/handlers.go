@@ -85,8 +85,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	for field := range firstRecord {
-		// TODO fix deprecated
-		objectMetadata.FieldsMap[field] = field // nolint:staticcheck
+		objectMetadata.FieldsMap[field] = field
 	}
 
 	return &objectMetadata, nil

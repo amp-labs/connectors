@@ -37,11 +37,11 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	}
 
 	// write response was with payload
-	return constructWriteResult(body, config.ObjectName)
+	return constructWriteResult(body)
 }
 
-func constructWriteResult(body *ajson.Node, objectName string) (*common.WriteResult, error) {
-	recordID, err := jsonquery.New(body).StringRequired(objectNameToWriteResultIDField.Get(objectName))
+func constructWriteResult(body *ajson.Node) (*common.WriteResult, error) {
+	recordID, err := jsonquery.New(body).StringRequired("callId")
 	if err != nil {
 		return nil, err
 	}

@@ -8,8 +8,8 @@
   "state": "Open",
   "concurrencyMode": "Parallel",
   "contentType": "CSV",
-  "apiVersion": 60.0,
-  "contentUrl": "services/data/v60.0/jobs/ingest/750ak000009BkrxAAC/batches",
+  "apiVersion": 59.0,
+  "contentUrl": "services/data/v59.0/jobs/ingest/750ak000009BkrxAAC/batches",
   "lineEnding": "LF",
   "columnDelimiter": "COMMA"
 }

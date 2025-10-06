@@ -1,11 +1,15 @@
 package atlassian
 
 import (
+	"context"
+	"errors"
 	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -102,5 +106,23 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
+	}
+}
+
+func TestListObjectMetadataWithoutMetadata(t *testing.T) {
+	t.Parallel()
+
+	connector, err := NewConnector(
+		WithAuthenticatedClient(mockutils.NewClient()),
+		WithWorkspace("test-workspace"),
+		WithModule(providers.ModuleAtlassianJira),
+	)
+	if err != nil {
+		t.Fatal("failed to create connector")
+	}
+
+	_, err = connector.ListObjectMetadata(context.Background(), nil)
+	if !errors.Is(err, ErrMissingCloudId) {
+		t.Fatalf("expected ListObjectMetadata method to complain about missing cloud id")
 	}
 }

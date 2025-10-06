@@ -1,7 +1,0 @@
-{
-  "error": {
-    "code": 400,
-    "message": "readMask is required. Please specify one or more valid paths. Valid paths are documented at https://developers.google.com/people/api/rest/v1/people/get.",
-    "status": "INVALID_ARGUMENT"
-  }
-}

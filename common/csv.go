@@ -6,9 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-
-	"github.com/amp-labs/connectors/common/logging"
-	"github.com/google/uuid"
 )
 
 /*
@@ -42,40 +39,17 @@ func (j *JSONHTTPClient) httpPutCSV(ctx context.Context, url string,
 		return nil, nil, err
 	}
 
-	correlationId := uuid.Must(uuid.NewRandom()).String()
-
-	if logging.IsVerboseLogging(ctx) {
-		logRequestWithBody(logging.VerboseLogger(ctx), req, "PUT", correlationId, url, body)
-	} else {
-		logRequestWithoutBody(logging.Logger(ctx), req, "PUT", correlationId, url)
-	}
-
-	rsp, body, err := j.HTTPClient.sendRequest(req)
-
-	if logging.IsVerboseLogging(ctx) {
-		logResponseWithBody(logging.VerboseLogger(ctx), rsp, "PUT", correlationId, url, body)
-	} else {
-		logResponseWithoutBody(logging.Logger(ctx), rsp, "PUT", correlationId, url)
-	}
-
-	if err != nil {
-		logging.Logger(ctx).Error("HTTP request failed",
-			"method", "PUT", "url", url,
-			"correlationId", correlationId, "error", err)
-
-		return nil, nil, err
-	}
-
-	return rsp, body, nil
+	return j.HTTPClient.sendRequest(req)
 }
 
 func makeTextCSVPutRequest(ctx context.Context, url string, headers []Header, body []byte) (*http.Request, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewReader(body))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
 	headers = append(headers, Header{Key: "Content-Type", Value: "text/csv"})
+	req.ContentLength = int64(len(body))
 
 	return addHeaders(req, headers), nil
 }

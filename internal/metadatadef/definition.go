@@ -34,7 +34,6 @@ type Field struct {
 
 type Fields = datautils.Map[string, Field]
 
-// Combine merges schemas such that the "other" takes precedence when ObjectName matches.
 func (s Schemas[C]) Combine(others Schemas[C]) Schemas[C] {
 	registry := datautils.Map[string, ExtendedSchema[C]]{}
 	for _, schema := range append(s, others...) {

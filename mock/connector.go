@@ -62,14 +62,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) { //nolint:fun
 		) ([]common.ReadResultRow, error) {
 			return nil, fmt.Errorf("%w: %s", ErrNotImplemented, "getRecordsByIds")
 		}),
-		WithVerifyWebhookMessage(
-			func(
-				ctx context.Context,
-				request *common.WebhookRequest,
-				params *common.VerificationParams,
-			) (bool, error) {
-				return false, fmt.Errorf("%w: %s", ErrNotImplemented, "verifyWebhookMessage")
-			}),
+		WithVerifyWebhookMessage(func(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error) {
+			return false, fmt.Errorf("%w: %s", ErrNotImplemented, "verifyWebhookMessage")
+		}),
 		WithRegister(func(
 			ctx context.Context,
 			params common.SubscriptionRegistrationParams,
@@ -194,10 +189,9 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 
 func (c *Connector) VerifyWebhookMessage(
 	ctx context.Context,
-	request *common.WebhookRequest,
-	params *common.VerificationParams,
+	params *common.WebhookVerificationParameters,
 ) (bool, error) {
-	return c.params.verifyWebhookMessage(ctx, request, params)
+	return c.params.verifyWebhookMessage(ctx, params)
 }
 
 func (c *Connector) Register(

@@ -27,35 +27,20 @@ type CRUDTestSuite struct {
 	// WaitBeforeSearch adds a delay after CREATE/UPDATE if the provider needs time to reflect changes. Optional.
 	WaitBeforeSearch time.Duration
 
-	// SearchBy specifies a unique property used to locate the newly created record.
-	// If set, the test searches the read response for a matching record and extracts its ID.
-	// If not set, the record ID from the create response is used instead.
+	// SearchBy specifies a unique property used to locate the record in the list. Required.
+	// This lookup is performed once, and the record ID is saved and reused throughout the test scenario.
 	SearchBy Property
 
 	// RecordIdentifierKey is the field name representing the record ID.
 	RecordIdentifierKey string
 
-	// PreprocessUpdatePayload optionally adjusts the update payload based on
-	// data returned by the create operation.
-	PreprocessUpdatePayload func(createResult *common.WriteResult, updatePayload any)
-
-	// UpdatedFields maps field names to their expected values after an update.
-	// For simple flat fields, use this. For complex or nested structures,
-	// prefer ValidateUpdatedFields.
+	// UpdatedFields maps field names to expected values for verifying that the update took effect.
 	UpdatedFields map[string]string
-
-	// ValidateUpdatedFields optionally verifies that updates took effect correctly.
-	// Use this when UpdatedFields is insufficient — for example, when validating nested arrays or objects.
-	ValidateUpdatedFields func(record map[string]any)
 }
 
 type Property struct {
 	Key   string
 	Value string
-}
-
-func (p Property) isZero() bool {
-	return p.Key == "" && p.Value == ""
 }
 
 // ValidateCreateUpdateDelete is a comprehensive test scenario utilizing Read/Write/Delete connector operations.
@@ -70,43 +55,26 @@ func ValidateCreateUpdateDelete[CP, UP any](ctx context.Context, conn ConnectorC
 	createPayload CP, updatePayload UP, suite CRUDTestSuite,
 ) {
 	fmt.Println("> TEST Create/Update/Delete", objectName)
-
-	// CREATE
 	fmt.Println("Creating", objectName)
-	createResult := createObject(ctx, conn, objectName, &createPayload)
+	createObject(ctx, conn, objectName, &createPayload)
 
 	if suite.WaitBeforeSearch != 0 {
 		fmt.Println("... waiting")
 		time.Sleep(suite.WaitBeforeSearch)
 	}
 
-	// READ
 	fmt.Println("Reading", objectName)
+
 	res := readObjects(ctx, conn, objectName, suite.ReadFields)
 
-	// SEARCH
 	fmt.Println("Finding recently created", objectName)
 
-	objectID := createResult.RecordId
-
-	if !suite.SearchBy.isZero() {
-		search := suite.SearchBy
-		object := searchObject(res, search.Key, search.Value)
-		objectID = getRecordIdentifierValue(object, suite.RecordIdentifierKey)
-	}
+	search := suite.SearchBy
+	object := searchObject(res, search.Key, search.Value)
+	objectID := getRecordIdentifierValue(object, suite.RecordIdentifierKey)
 
 	fmt.Println("Object record identifier is", objectID)
 
-	// PREPROCESS UPDATE PAYLOAD
-	preprocessPayloadFunc := suite.PreprocessUpdatePayload
-	if preprocessPayloadFunc == nil {
-		// By default, update payload doesn't depend on data from create response.
-		preprocessPayloadFunc = func(*common.WriteResult, any) {}
-	}
-
-	preprocessPayloadFunc(createResult, &updatePayload)
-
-	// UPDATE
 	fmt.Println("Updating some object properties")
 	updateObject(ctx, conn, objectName, objectID, &updatePayload)
 	fmt.Println("Validate object has changed accordingly")
@@ -116,25 +84,15 @@ func ValidateCreateUpdateDelete[CP, UP any](ctx context.Context, conn ConnectorC
 		time.Sleep(suite.WaitBeforeSearch)
 	}
 
-	// VALIDATE UPDATE
-	validateUpdatedFieldsFunc := suite.ValidateUpdatedFields
-	if validateUpdatedFieldsFunc == nil {
-		// By default, compare each field to string counterpart.
-		// Complicated responses with nested objects or arrays require custom func.
-		validateUpdatedFieldsFunc = func(record map[string]any) {
-			for k, v := range suite.UpdatedFields {
-				if !mockutils.DoesObjectCorrespondToString(record[k], v) {
-					utils.Fail("error updated properties do not match", k, v, record[k])
-				}
-			}
+	res = readObjects(ctx, conn, objectName, suite.ReadFields)
+
+	object = searchObject(res, suite.RecordIdentifierKey, objectID)
+	for k, v := range suite.UpdatedFields {
+		if !mockutils.DoesObjectCorrespondToString(object[k], v) {
+			utils.Fail("error updated properties do not match", k, v, object[k])
 		}
 	}
 
-	res = readObjects(ctx, conn, objectName, suite.ReadFields)
-	object := searchObject(res, suite.RecordIdentifierKey, objectID)
-	validateUpdatedFieldsFunc(object)
-
-	// DELETE
 	fmt.Println("Removing this", objectName)
 	removeObject(ctx, conn, objectName, objectID)
 	fmt.Println("> Successful test completion")
@@ -157,7 +115,7 @@ func getRecordIdentifierValue(object map[string]any, key string) string {
 	}
 }
 
-func createObject[CP any](ctx context.Context, conn ConnectorCRUD, objectName string, payload *CP) *common.WriteResult {
+func createObject[CP any](ctx context.Context, conn ConnectorCRUD, objectName string, payload *CP) {
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: objectName,
 		RecordId:   "",
@@ -170,8 +128,6 @@ func createObject[CP any](ctx context.Context, conn ConnectorCRUD, objectName st
 	if !res.Success {
 		utils.Fail("failed to create an object")
 	}
-
-	return res
 }
 
 func readObjects(ctx context.Context, conn ConnectorCRUD, objectName string, fields datautils.StringSet) *common.ReadResult {

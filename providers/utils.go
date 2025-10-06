@@ -159,22 +159,22 @@ func (c CustomCatalog) ReadInfo(provider Provider, vars ...catalogreplacer.Catal
 func (i *ProviderInfo) SubstituteWith(vars catalogreplacer.CatalogVariables) error {
 	// Take care of default metadata values.
 	if i.Metadata != nil {
-		for _, metadataInput := range i.Metadata.Input {
-			if metadataInput.DefaultValue != "" {
+		for _, metadatInput := range i.Metadata.Input {
+			if metadatInput.DefaultValue != "" {
 				vars.AddDefaults(catalogreplacer.CustomCatalogVariable{Plan: catalogreplacer.SubstitutionPlan{
-					From: metadataInput.Name,
-					To:   metadataInput.DefaultValue,
+					From: metadatInput.Name,
+					To:   metadatInput.DefaultValue,
 				}})
 			}
 		}
 
 		// To prevent OAuthConnect from erroring out due to missing PostAuthentication variables,
-		// we add a default value of "" for each PostAuthentication variable.
+		// we add a default value of " " for each PostAuthentication variable.
 		// Since no Connection exists yet, there won't be any PostAuthentication variables.
 		for _, postAuthVar := range i.Metadata.PostAuthentication {
 			vars.AddDefaults(catalogreplacer.CustomCatalogVariable{Plan: catalogreplacer.SubstitutionPlan{
 				From: postAuthVar.Name,
-				To:   "",
+				To:   " ",
 			}})
 		}
 	}

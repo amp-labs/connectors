@@ -18,7 +18,7 @@ You can create your own custom conditions by implementing the `mockcond.Conditio
 
 Match a specific URL path suffix:
 ```go
-If:   mockcond.Path("/v2/tasks"),
+If:   mockcond.PathSuffix("/v2/tasks"),
 ```
 
 Ensure the request method is POST:
@@ -65,7 +65,7 @@ If: mockcond.And{
 Match a specific URL path suffix for either GET or POST methods: 
 ```go
 If: mockcond.And{
-    mockcond.Path("/api/resource"),
+    mockcond.PathSuffix("/api/resource"),
     mockcond.Or{
         mockcond.MethodGET(),
         mockcond.MethodPOST(),

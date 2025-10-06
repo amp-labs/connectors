@@ -75,9 +75,6 @@ var (
 	// ErrNotFound is returned when we get a 404 response from the provider.
 	ErrNotFound = errors.New("not found")
 
-	// ErrCursorGone is returned when a cursor used for pagination is no longer valid.
-	ErrCursorGone = errors.New("pagination cursor gone or expired")
-
 	// ErrMissingExpectedValues is returned when response data doesn't have values expected for processing.
 	ErrMissingExpectedValues = errors.New("response data is missing expected values")
 
@@ -265,8 +262,7 @@ type Association struct {
 	// ObjectID is the ID of the associated object.
 	ObjectId string `json:"objectId"`
 	// AssociationType is the type of association.
-	AssociationType string         `json:"associationType,omitempty"`
-	Raw             map[string]any `json:"raw,omitempty"`
+	AssociationType string `json:"associationType,omitempty"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.
@@ -371,12 +367,11 @@ type ObjectMetadata struct {
 	DisplayName string
 
 	// Fields is a map of field names to FieldMetadata.
-	// Some legacy connectors do not populate this, but only populates FieldsMap.
 	Fields FieldsMetadata
 
-	// Deprecated: for new connectors, please only populate and read `ObjectMetadata.Fields`.
 	// FieldsMap is a map of field names to field display names.
-	// TODO: Remove this field once all connectors populate Fields.
+	// Deprecated: this map includes only display names.
+	// Refer to Fields for extended description of field properties.
 	FieldsMap map[string]string
 }
 
@@ -459,7 +454,6 @@ type SubscriptionEvent interface {
 	Workspace() (string, error)
 	RecordId() (string, error)
 	EventTimeStampNano() (int64, error)
-	RawMap() (map[string]any, error)
 }
 
 type SubscriptionUpdateEvent interface {
@@ -473,20 +467,15 @@ type SubscriptionUpdateEvent interface {
 // from a collapsed event for webhook parsing and processing.
 type CollapsedSubscriptionEvent interface {
 	SubscriptionEventList() ([]SubscriptionEvent, error)
-	RawMap() (map[string]any, error)
 }
 
-// WebhookRequest is a struct that contains the request parameters for a webhook.
-type WebhookRequest struct {
-	Headers http.Header
-	Body    []byte
-	URL     string
-	Method  string
-}
-
-// VerificationParams is a struct that contains the parameters specific to the provider.
-type VerificationParams struct {
-	Param any
+// WebhookVerificationParameters is a struct that contains the parameters required to verify a webhook.
+type WebhookVerificationParameters struct {
+	Headers      http.Header
+	Body         []byte
+	URL          string
+	ClientSecret string
+	Method       string
 }
 
 func inferDeprecatedFieldsMap(fields FieldsMetadata) map[string]string {

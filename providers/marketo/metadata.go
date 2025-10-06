@@ -98,8 +98,7 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse, objectName string)
 
 	// Using the first result data to generate the metadata.
 	for k := range response.Result[0] {
-		// TODO fix deprecated
-		data.FieldsMap[k] = k // nolint:staticcheck
+		data.FieldsMap[k] = k
 	}
 
 	return &data, nil
@@ -158,8 +157,7 @@ func parseDescribeResponse(results any) (*common.ObjectMetadata, error) {
 			return nil, ErrFailedConvertFields
 		}
 
-		// TODO fix deprecated
-		data.FieldsMap[fld] = fld // nolint:staticcheck
+		data.FieldsMap[fld] = fld
 	}
 
 	return &data, nil

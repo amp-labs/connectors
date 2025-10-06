@@ -12,7 +12,7 @@ import (
 // API Reference:
 // https://developer.atlassian.com/cloud/jira/platform/rest/v2/api-group-issue-fields/#api-rest-api-2-field-get
 func (c *Connector) ListObjectMetadata(ctx context.Context, _ []string) (*common.ListObjectMetadataResult, error) {
-	url, err := c.getModuleURL("field")
+	url, err := c.getJiraRestApiURL("field")
 	if err != nil {
 		return nil, err
 	}

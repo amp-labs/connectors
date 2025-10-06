@@ -9,7 +9,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
-	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -85,10 +84,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Successful read with chosen fields",
 			Input: common.ReadParams{ObjectName: "contact", Fields: connectors.Fields("fullname", "fax")},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/api/data/v9.2/contact"),
-				Then:  mockserver.Response(http.StatusOK, responseContactsGet),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseContactsGet),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 2,

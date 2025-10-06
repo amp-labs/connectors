@@ -1,9 +1,5 @@
 package atlassian
 
-import (
-	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
-)
-
 const cloudIdKey = "cloudId"
 
 // AuthMetadataVars is a complete list of authentication metadata associated with connector.
@@ -23,12 +19,5 @@ func NewAuthMetadataVars(dictionary map[string]string) *AuthMetadataVars {
 func (v AuthMetadataVars) AsMap() *map[string]string {
 	return &map[string]string{
 		cloudIdKey: v.CloudId,
-	}
-}
-
-func (v AuthMetadataVars) GetSubstitutionPlan() catalogreplacer.SubstitutionPlan {
-	return catalogreplacer.SubstitutionPlan{
-		From: "cloudId",
-		To:   v.CloudId,
 	}
 }

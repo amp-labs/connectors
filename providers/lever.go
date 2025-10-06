@@ -31,9 +31,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      true,
+			Read:      false,
 			Subscribe: false,
-			Write:     true,
+			Write:     false,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -71,9 +71,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      true,
+			Read:      false,
 			Subscribe: false,
-			Write:     true,
+			Write:     false,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

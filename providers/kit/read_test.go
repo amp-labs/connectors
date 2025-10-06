@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -53,23 +52,21 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all custom fields",
 			Input: common.ReadParams{ObjectName: "custom_fields", Fields: connectors.Fields("")},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v4/custom_fields"),
-				Then:  mockserver.Response(http.StatusOK, responseCustomFields),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseCustomFields),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
-				Data: []common.ReadResultRow{
-					{
-						Fields: map[string]any{},
-						Raw: map[string]any{
-							"id":    float64(1),
-							"name":  "ck_field_1_last_name",
-							"key":   "last_name",
-							"label": "Last name",
-						},
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{},
+					Raw: map[string]any{
+						"id":    float64(1),
+						"name":  "ck_field_1_last_name",
+						"key":   "last_name",
+						"label": "Last name",
 					},
+				},
 				},
 				Done: true,
 			},
@@ -78,24 +75,22 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read next page of custom fields object",
 			Input: common.ReadParams{ObjectName: "custom_fields", Fields: connectors.Fields("id")},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v4/custom_fields"),
-				Then:  mockserver.Response(http.StatusOK, responseNextPageCustomFields),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseNextPageCustomFields),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
-				Data: []common.ReadResultRow{
-					{
-						Fields: map[string]any{"id": float64(2)},
-						Raw: map[string]any{
-							"id":    float64(2),
-							"name":  "ck_field_2_first_name",
-							"key":   "first_name",
-							"label": "First name",
-						},
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"id": float64(2)},
+					Raw: map[string]any{
+						"id":    float64(2),
+						"name":  "ck_field_2_first_name",
+						"key":   "first_name",
+						"label": "First name",
 					},
+				},
 				},
 				NextPage: testroutines.URLTestServer + "/v4/custom_fields?after=WzFd&per_page=500",
 				Done:     false,
@@ -105,22 +100,20 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all tags",
 			Input: common.ReadParams{ObjectName: "tags", Fields: connectors.Fields("")},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v4/tags"),
-				Then:  mockserver.Response(http.StatusOK, responseTags),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseTags),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
-				Data: []common.ReadResultRow{
-					{
-						Fields: map[string]any{},
-						Raw: map[string]any{
-							"id":         float64(5),
-							"name":       "Tag B",
-							"created_at": "2023-02-17T11:43:55Z",
-						},
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{},
+					Raw: map[string]any{
+						"id":         float64(5),
+						"name":       "Tag B",
+						"created_at": "2023-02-17T11:43:55Z",
 					},
+				},
 				},
 				Done: true,
 			},
@@ -129,10 +122,9 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read tags empty page",
 			Input: common.ReadParams{ObjectName: "tags", Fields: connectors.Fields("")},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v4/tags"),
-				Then:  mockserver.Response(http.StatusOK, responseEmptyPageTags),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseEmptyPageTags),
 			}.Server(),
 			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, NextPage: "", Done: true},
 			ExpectedErrs: nil,
@@ -140,23 +132,21 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all email templates",
 			Input: common.ReadParams{ObjectName: "email_templates", Fields: connectors.Fields("")},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v4/email_templates"),
-				Then:  mockserver.Response(http.StatusOK, responseEmailTemplates),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseEmailTemplates),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
-				Data: []common.ReadResultRow{
-					{
-						Fields: map[string]any{},
-						Raw: map[string]any{
-							"id":         float64(9),
-							"name":       "Custom HTML Template",
-							"is_default": false,
-							"category":   "HTML",
-						},
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{},
+					Raw: map[string]any{
+						"id":         float64(9),
+						"name":       "Custom HTML Template",
+						"is_default": false,
+						"category":   "HTML",
 					},
+				},
 				},
 				Done: true,
 			},

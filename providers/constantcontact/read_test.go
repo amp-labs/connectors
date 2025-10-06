@@ -101,15 +101,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("first_name", "last_name"),
 			},
-			Server: mockserver.Switch{
-				Setup: mockserver.ContentJSON(),
-				Cases: mockserver.Cases{{
-					If:   mockcond.Path("/v3/contacts"),
-					Then: mockserver.Response(http.StatusOK, responseContactsLastPage),
-				}, {
-					If:   mockcond.Path("/v3/contact_custom_fields"),
-					Then: mockserver.Response(http.StatusNoContent),
-				}},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseContactsLastPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{

@@ -13,7 +13,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	url, err := c.getURL(config.ObjectName)
+	url, err := c.getWriteURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -21,11 +21,20 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	var write common.WriteMethod
 
 	if len(config.RecordId) == 0 {
-		write = c.Client.Post
+		if supportedObjectsByCreate[c.Module.ID].Has(config.ObjectName) {
+			write = c.Client.Post
+		}
 	} else {
-		write = c.Client.Post
+		if supportedObjectsByUpdate[c.Module.ID].Has(config.ObjectName) {
+			write = c.Client.Post
 
-		url.AddPath(config.RecordId)
+			url.AddPath(config.RecordId)
+		}
+	}
+
+	if write == nil {
+		// No supported REST operation was found for current object.
+		return nil, common.ErrOperationNotSupportedForObject
 	}
 
 	res, err := write(ctx, url.String(), config.RecordData, common.HeaderFormURLEncoded)

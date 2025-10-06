@@ -77,8 +77,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	for fld := range firstRecord {
-		// TODO fix deprecated
-		objectMetadata.FieldsMap[fld] = fld // nolint:staticcheck
+		objectMetadata.FieldsMap[fld] = fld
 	}
 
 	return &objectMetadata, nil

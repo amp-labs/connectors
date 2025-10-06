@@ -17,15 +17,3 @@ func HeaderLink(resp *common.JSONHTTPResponse, relationshipName string) string {
 
 	return lh.ParseHeader(link)[relationshipName]["href"]
 }
-
-func Status2xx(code int) bool {
-	return 200 <= code && code < 300
-}
-
-func Status4xx(code int) bool {
-	return 400 <= code && code < 500
-}
-
-func Status5xx(code int) bool {
-	return 500 <= code && code < 600
-}

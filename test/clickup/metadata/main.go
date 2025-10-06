@@ -16,6 +16,7 @@ func main() {
 
 	// nolint
 	m, err := conn.ListObjectMetadata(ctx, []string{"team"})
+
 	if err != nil {
 		log.Fatal(err)
 	}

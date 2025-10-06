@@ -71,7 +71,7 @@ func testCreatingTriggers(ctx context.Context, conn *zc.Connector) error {
 	params := common.WriteParams{
 		ObjectName: "triggers",
 		RecordData: map[string]any{
-			"name":        "Test Trigger ABC",
+			"name":        "Test Trigger Z",
 			"enabled":     1,
 			"description": "Visitor requested chat",
 		},

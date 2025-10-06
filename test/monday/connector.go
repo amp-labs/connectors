@@ -15,6 +15,7 @@ func GetMondayConnector(ctx context.Context) *monday.Connector {
 	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, "Authorization", reader.Get(credscanning.Fields.ApiKey))
+
 	if err != nil {
 		utils.Fail("error creating client", "error", err)
 	}

@@ -5,8 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"strconv"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -113,39 +111,8 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
-	recordId := parseRecordId(data)
-
 	return &common.WriteResult{
-		Success:  true,
-		Data:     data,
-		RecordId: recordId,
+		Success: true,
+		Data:    data,
 	}, nil
-}
-
-func parseRecordId(data map[string]any) string {
-	v := getID(data)
-	if v == nil {
-		return ""
-	}
-
-	switch v := v.(type) {
-	case string:
-		return v
-	case float64:
-		return strconv.Itoa(int(v))
-	case int:
-		return strconv.Itoa(v)
-	default:
-		return ""
-	}
-}
-
-func getID(data map[string]any) any {
-	for key, value := range data {
-		if strings.EqualFold(key, "id") {
-			return value
-		}
-	}
-
-	return nil
 }

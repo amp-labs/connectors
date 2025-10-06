@@ -1,7 +1,0 @@
-{
-  "error": {
-    "code": 400,
-    "message": "Invalid groupFields mask path: \"formatted_name\".",
-    "status": "INVALID_ARGUMENT"
-  }
-}

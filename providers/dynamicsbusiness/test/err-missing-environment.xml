@@ -1,4 +1,0 @@
-<error xmlns="http://docs.oasis-open.org/odata/ns/metadata">
-    <code>NoEnvironment</code>
-    <message>Environment does not exist.</message>
-</error>

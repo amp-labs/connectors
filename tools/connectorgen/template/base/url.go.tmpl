@@ -1,0 +1,20 @@
+package {{ .Package }}
+
+import "github.com/amp-labs/connectors/common/urlbuilder"
+
+var queryEncodingExceptions = map[string]string{ //nolint:gochecknoglobals
+	// TODO this connector may allow some symbols that usually will be encoded inside query params
+	// You can add these exceptions here. Here is an example of usually unsafe chars:
+	// https://developers.google.com/maps/url-encoding#common-characters-that-need-encoding
+}
+
+func constructURL(base string) (*urlbuilder.URL, error) {
+	link, err := urlbuilder.New(base)
+	if err != nil {
+		return nil, err
+	}
+
+	link.AddEncodingExceptions(queryEncodingExceptions)
+
+	return link, nil
+}

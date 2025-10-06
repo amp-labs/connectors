@@ -6,17 +6,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       - uses: actions/setup-go@v4
         with:
           go-version: "1.23.3"
           cache: false
-          
-      - name: Generate go code
-        run: go generate ./...
-
-      - name: Lint Go code
-        uses: golangci/golangci-lint-action@v6
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        continue-on-error: false
         with:
-          skip-cache: true
-          version: v1.64.3
+          version: "v1.62.0"
+      - name: Install gci
+        run: "go install github.com/daixiang0/gci@latest"
+      - name: List files with wrong format
+        run: "gci list . | sed 's/^/BadFormat: /'"
+      - name: Formatting check gci
+        run: "[ $(gci list . | wc -c) -eq 0 ] && exit 0 || exit 1"

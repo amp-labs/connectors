@@ -26,7 +26,7 @@ func main() {
 
 	conn := drift.GetConnector(ctx)
 
-	if err := testRead(ctx, conn, "users", []string{"id", "name", "email"}); err != nil {
+	if err := testRead(ctx, conn, "users/list", []string{"id", "name", "email"}); err != nil {
 		slog.Error(err.Error())
 	}
 

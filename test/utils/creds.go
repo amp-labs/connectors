@@ -117,6 +117,7 @@ func NewCustomAuthClient(
 			Values: vals,
 		},
 	})
+
 	if err != nil {
 		Fail("error creating custom auth client", "error", err)
 	}

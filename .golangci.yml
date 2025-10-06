@@ -1,9 +1,7 @@
 run:
-  timeout: 10m
+  timeout: 5m
 output:
-  formats:
-    - format: colored-line-number
-      path: stdout
+  formats: colored-line-number
 linters:
   enable-all: true
   disable:
@@ -23,11 +21,8 @@ linters:
     - nolintlint
     # Named returns are helpful if there are multiple return values of the same type, and acts as self-documentation of the function.
     - nonamedreturns
-    # There are many legitimate cases for preallocating the length of a slice, so this is not helpful.
-    - makezero
-    - tenv
-    # Disabled because it enforces strict struct tag formatting that may conflict with provider-specific requirements
-    - tagliatelle
+    # No longer relevant in newer versions of Go
+    - exportloopref
 linters-settings:
   # See https://golangci-lint.run/usage/linters#revive
   revive:

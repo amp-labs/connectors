@@ -68,15 +68,6 @@ func (convertor) ObjectToMap(node *ajson.Node) (map[string]any, error) {
 	return result, nil
 }
 
-func (convertor) NodeFromMap(mapping map[string]any) (*ajson.Node, error) {
-	data, err := json.Marshal(mapping)
-	if err != nil {
-		return nil, err
-	}
-
-	return ajson.Unmarshal(data)
-}
-
 func ParseNode[T any](node *ajson.Node) (*T, error) {
 	var template T
 

@@ -33,6 +33,7 @@ func main() {
 	slog.Info("> TEST Creating Idea Users")
 
 	recordId, err := createIdeaUsers(ctx, conn)
+
 	if err != nil {
 		slog.Error(err.Error())
 	}

@@ -2,40 +2,21 @@ package outreach
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 )
 
 type Data struct {
-	Data []dataItem `json:"data"`
+	Data []DataItem `json:"data"`
 }
 
-type includedObjects struct {
-	Included []dataItem `json:"included,omitempty"`
-}
-
-type dataItem struct {
+type DataItem struct {
 	Type          string         `json:"type"`
 	ID            int            `json:"id"`
 	Relationships map[string]any `json:"relationships"`
 	Attributes    map[string]any `json:"attributes"`
 	Links         map[string]any `json:"links"`
-}
-
-func (item dataItem) ToMapStringAny() (map[string]any, error) {
-	jsonBytes, err := json.Marshal(item)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal DataItem: %w", err)
-	}
-
-	var result map[string]any
-	if err := json.Unmarshal(jsonBytes, &result); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal to map: %w", err)
-	}
-
-	return result, nil
 }
 
 func (c *Connector) ListObjectMetadata(ctx context.Context,
@@ -88,21 +69,19 @@ func metadataMapper(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, erro
 		FieldsMap: make(map[string]string),
 	}
 
-	if response == nil || len(response.Data) == 0 {
+	if len(response.Data) == 0 {
 		return nil, fmt.Errorf("%w: could not find a record to sample fields from", common.ErrMissingExpectedValues)
 	}
 
 	attributes := response.Data[0].Attributes
 	for k := range attributes {
-		// TODO fix deprecated
-		metadata.FieldsMap[k] = k // nolint:staticcheck
+		metadata.FieldsMap[k] = k
 	}
 
 	// Append id in the metadata response. Only adds it, if available.
 	// 0 is not a valid id in outreach types. Id are read-only and starts at 1.
 	if response.Data[0].ID != 0 {
-		// TODO fix deprecated
-		metadata.FieldsMap[idKey] = idKey // nolint:staticcheck
+		metadata.FieldsMap[idKey] = idKey
 	}
 
 	return metadata, nil

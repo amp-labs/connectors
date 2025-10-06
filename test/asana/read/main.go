@@ -25,29 +25,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "workspaces",
-		Fields:     connectors.Fields("gid", "name", "email_domains"),
-	})
-	if err != nil {
-		utils.Fail("error reading from Asana", "error", err)
-	}
-
-	slog.Info("Reading workspaces..")
-	utils.DumpJSON(res, os.Stdout)
-
-	res, err = conn.Read(ctx, common.ReadParams{
-		ObjectName: "users",
-		Fields:     connectors.Fields("gid", "name", "email", "custom_fields"),
-	})
-	if err != nil {
-		utils.Fail("error reading from Asana", "error", err)
-	}
-
-	slog.Info("Reading users..")
-	utils.DumpJSON(res, os.Stdout)
-
-	res, err = conn.Read(ctx, common.ReadParams{
-		ObjectName: "projects",
-		Fields:     connectors.Fields("gid", "name", "created_at", "custom_field_settings"),
+		Fields:     connectors.Fields("gid"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Asana", "error", err)
@@ -55,5 +33,4 @@ func main() {
 
 	slog.Info("Reading projects..")
 	utils.DumpJSON(res, os.Stdout)
-
 }

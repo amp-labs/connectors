@@ -7,7 +7,7 @@ func init() {
 	SetInfo(Fireflies, ProviderInfo{
 		DisplayName: "Fireflies",
 		AuthType:    ApiKey,
-		BaseURL:     "https://api.fireflies.ai",
+		BaseURL:     "https://api.fireflies.ai/graphql",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: "header",
 			Header: &ApiKeyOptsHeader{
@@ -34,9 +34,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      true,
+			Read:      false,
 			Subscribe: false,
-			Write:     true,
+			Write:     false,
 		},
 	})
 }

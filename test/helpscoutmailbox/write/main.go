@@ -52,15 +52,12 @@ func createConversations(ctx context.Context, conn *hm.Connector) error {
 			"status":    "active",
 			"createdAt": "2012-10-10T12:00:00Z",
 			"threads": []map[string]any{
-				{
-					"type": "customer",
+				{"type": "customer",
 					"customer": map[string]any{
 						"email": "bear@acme.com",
 					},
-					"text": "Hello, Help Scout. How are you?",
-				},
-			},
-		},
+					"text": "Hello, Help Scout. How are you?"},
+			}},
 	}
 
 	result, err := conn.Write(ctx, config)

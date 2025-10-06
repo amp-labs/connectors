@@ -1,7 +1,6 @@
 package api3
 
 import (
-	"log/slog"
 	"strings"
 
 	"github.com/amp-labs/connectors/common/naming"
@@ -25,14 +24,6 @@ func IdenticalObjectLocator(objectName, fieldName string) bool {
 // Ex: requesting contacts or leads or users will return payload with {"data":[...]}.
 func DataObjectLocator(objectName, fieldName string) bool {
 	return fieldName == "data"
-}
-
-// DefaultObjectLocator always returns false and logs the unresolved mapping.
-// It should be replaced with a custom locator when ambiguity must be resolved.
-func DefaultObjectLocator(objectName, fieldName string) bool {
-	slog.Error("don't know which field holds an array for an object", "object", objectName, "fieldName", fieldName)
-
-	return false
 }
 
 // CustomMappingObjectCheck builds ObjectArrayLocator using mapping,
@@ -67,11 +58,6 @@ func CapitalizeFirstLetterEveryWord(displayName string) string {
 // CamelCaseToSpaceSeparated converts camel case into lower case space separated string.
 func CamelCaseToSpaceSeparated(displayName string) string {
 	return strcase.ToDelimited(displayName, ' ')
-}
-
-// SlashesToSpaceSeparated replaces URL slashes with spaces.
-func SlashesToSpaceSeparated(displayName string) string {
-	return strings.ReplaceAll(displayName, "/", " ")
 }
 
 // Pluralize will apply pluralization to the display name.

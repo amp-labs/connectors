@@ -28,9 +28,9 @@ func main() {
 		Fields:     connectors.Fields("email", "name"),
 	})
 	if err != nil {
-		utils.Fail("error reading from provider", "error", err)
+		utils.Fail("error reading from Stripe", "error", err)
 	}
 
-	slog.Info("Reading...")
+	slog.Info("Reading customers..")
 	utils.DumpJSON(res, os.Stdout)
 }

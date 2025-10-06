@@ -1,10 +1,6 @@
 package dynamicsbusiness
 
-import (
-	"fmt"
-
-	"github.com/amp-labs/connectors/common/urlbuilder"
-)
+import "github.com/amp-labs/connectors/common/urlbuilder"
 
 // Microsoft uses special symbology when making queries.
 var queryEncodingExceptions = map[string]string{ //nolint:gochecknoglobals
@@ -28,15 +24,4 @@ func (c *Connector) getMetadataURL() (*urlbuilder.URL, error) {
 	return constructURL(c.ProviderInfo().BaseURL,
 		"v2.0", c.tenantID, c.environmentName,
 		"/api/v2.0/entityDefinitions")
-}
-
-// nolint:lll
-// Every endpoint belongs to the company REST API resource.
-// Therefore, supported objects exist only within the scope of the company.
-// https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/api-reference/v2.0/endpoints-apis-for-dynamics#section
-func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
-	return constructURL(c.ProviderInfo().BaseURL,
-		"v2.0", c.tenantID, c.environmentName,
-		fmt.Sprintf("/api/v2.0/companies(%v)", c.companyID),
-		objectName)
 }

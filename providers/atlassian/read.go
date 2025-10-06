@@ -39,7 +39,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 }
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
-	url, err := c.getModuleURL("search")
+	url, err := c.getJiraRestApiURL("search")
 	if err != nil {
 		return nil, err
 	}

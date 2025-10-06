@@ -109,8 +109,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	// Process each field from the introspection result
 	for _, field := range metadataResp.Data.Type.Fields {
-		// TODO fix deprecated
-		objectMetadata.FieldsMap[field.Name] = field.Name // nolint:staticcheck
+		objectMetadata.FieldsMap[field.Name] = field.Name
 	}
 
 	return &objectMetadata, nil

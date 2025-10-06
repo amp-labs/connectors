@@ -53,8 +53,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	// Using the first result data to generate the metadata.
 	for k := range res.Result[0] {
-		// TODO fix deprecated
-		objectMetadata.FieldsMap[k] = k // nolint:staticcheck
+		objectMetadata.FieldsMap[k] = k
 	}
 
 	return &objectMetadata, nil

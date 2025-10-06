@@ -55,12 +55,6 @@ func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 		return nil, err
 	}
 
-	// use extensive calls endpoint for more detailed call records
-	// reference: https://gong.app.gong.io/settings/api/documentation#post-/v2/calls/extensive
-	if objectName == objectNameCalls {
-		path += "/extensive"
-	}
-
 	return urlbuilder.New(c.BaseURL, path)
 }
 

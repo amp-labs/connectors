@@ -57,19 +57,3 @@ func TestTimingFormatRFC3339inUTC(t *testing.T) {
 		})
 	}
 }
-
-func TestUnix(t *testing.T) {
-	t.Parallel()
-
-	const hour = 60 * 60
-
-	utc8 := Time.Unix(
-		time.Date(2025, 9, 1, 12, 0, 0, 0, time.FixedZone("UTC-8", -8*hour)),
-	)
-	utc0 := Time.Unix(
-		time.Date(2025, 9, 1, 20, 0, 0, 0, time.FixedZone("UTC-0", 0)),
-	)
-
-	testutils.CheckOutput(t, "Same UNIX time in different time zones", utc0, utc8)
-	testutils.CheckOutput(t, "UNIX time matches expectation", utc0, "1756756800")
-}

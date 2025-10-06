@@ -16,7 +16,7 @@ func init() {
 				Name:        "Authorization",
 				ValuePrefix: "Bearer ",
 			},
-			DocsURL: "https://help.avoma.com/api-integration-for-avoma",
+			DocsURL: "https://dev694.avoma.com/#section/Introduction/Authorization",
 		}, Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -25,9 +25,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      true,
+			Read:      false,
 			Subscribe: false,
-			Write:     true,
+			Write:     false,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

@@ -98,7 +98,7 @@ func testUpdateContacts(ctx context.Context, conn *dr.Connector) error {
 
 func testCreatingNewConversation(ctx context.Context, conn *dr.Connector) error {
 	params := common.WriteParams{
-		ObjectName: "conversations",
+		ObjectName: "conversations/new",
 		RecordData: map[string]any{
 			"email": "josephkarage@email.com",
 			"message": map[string]any{

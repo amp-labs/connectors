@@ -40,9 +40,9 @@ func init() { // nolint:funlen
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      true,
+			Read:      false,
 			Subscribe: false,
-			Write:     true,
+			Write:     false,
 		},
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{

@@ -15,6 +15,7 @@ func main() {
 
 	// nolint
 	m, err := conn.ListObjectMetadata(ctx, []string{"broadcasts", "custom_fields", "forms", "subscribers", "tags", "email_templates", "purchases", "segments", "sequences", "webhooks"})
+
 	if err != nil {
 		log.Fatal(err)
 	}

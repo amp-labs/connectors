@@ -269,7 +269,6 @@ func testCompanies(ctx context.Context) error {
 
 	return nil
 }
-
 func Write(ctx context.Context, conn *ap.Connector, payload common.WriteParams) (*common.WriteResult, error) {
 	res, err := conn.Write(ctx, payload)
 	if err != nil {

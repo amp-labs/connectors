@@ -26,9 +26,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      true,
+			Read:      false,
 			Subscribe: false,
-			Write:     true,
+			Write:     false,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -38,15 +38,6 @@ func init() {
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722481059/media/linkedIn_1722481058.svg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722481017/media/linkedIn_1722481016.svg",
-			},
-		},
-		Metadata: &ProviderMetadata{
-			Input: []MetadataItemInput{
-				{
-					Name:        "adAccountId",
-					DisplayName: "Ad Account ID",
-					DocsURL:     "https://www.linkedin.com/help/linkedin/answer/a424270/find-linkedin-ads-account-details",
-				},
 			},
 		},
 	})

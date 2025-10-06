@@ -99,10 +99,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Triggers is the last page",
 			Input: common.ReadParams{ObjectName: "triggers", Fields: connectors.Fields("id")},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/api/v2/triggers"),
-				Then:  mockserver.Response(http.StatusOK, responseTriggersLastPage),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseTriggersLastPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{

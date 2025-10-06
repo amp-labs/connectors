@@ -96,11 +96,7 @@ func WithGetRecordsByIds(getRecordsByIds func( //nolint:revive
 
 // WithVerifyWebhookMessage sets the verifyWebhookMessage function for the connector.
 func WithVerifyWebhookMessage(
-	verifyWebhookMessage func(
-		ctx context.Context,
-		request *common.WebhookRequest,
-		params *common.VerificationParams,
-	) (bool, error),
+	verifyWebhookMessage func(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error),
 ) Option {
 	return func(params *parameters) {
 		params.verifyWebhookMessage = verifyWebhookMessage
@@ -209,11 +205,7 @@ type parameters struct {
 		associations []string,
 	) ([]common.ReadResultRow, error)
 
-	verifyWebhookMessage func(
-		ctx context.Context,
-		request *common.WebhookRequest,
-		params *common.VerificationParams,
-	) (bool, error)
+	verifyWebhookMessage func(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error)
 
 	register func(
 		ctx context.Context,

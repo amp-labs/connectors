@@ -1,28 +1,18 @@
 package providers
 
-const GitLab Provider = "gitlab"
+const GitLab Provider = "gitLab"
 
 func init() {
 	SetInfo(GitLab, ProviderInfo{
 		DisplayName: "GitLab",
-		AuthType:    Custom,
+		AuthType:    Oauth2,
 		BaseURL:     "https://gitlab.com",
-		CustomOpts: &CustomAuthOpts{
-			// https://docs.gitlab.com/api/rest/authentication/#personalprojectgroup-access-tokens
-			Headers: []CustomAuthHeader{
-				{
-					Name:          "PRIVATE-TOKEN",
-					ValueTemplate: "{{ .token }}",
-				},
-			},
-			Inputs: []CustomAuthInput{
-				{
-					Name:        "token",
-					DisplayName: "Access Token",
-					Prompt:      "This can be a personal, project, or group access token.",
-					DocsURL:     "https://gitlab.com/-/user_settings/personal_access_tokens",
-				},
-			},
+		Oauth2Opts: &Oauth2Opts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://gitlab.com/oauth/authorize",
+			TokenURL:                  "https://gitlab.com/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -42,9 +32,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      true,
+			Read:      false,
 			Subscribe: false,
-			Write:     true,
+			Write:     false,
 		},
 	})
 }

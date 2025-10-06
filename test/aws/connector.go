@@ -58,6 +58,7 @@ func GetAWSConnector(ctx context.Context, module common.ModuleID) *aws.Connector
 		reader.Get(credscanning.Fields.Password),
 		awsRegion,
 	)
+
 	if err != nil {
 		testUtils.Fail(err.Error())
 	}

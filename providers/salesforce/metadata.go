@@ -9,13 +9,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-func (c *Connector) UpsertMetadata(
-	ctx context.Context, params *common.UpsertMetadataParams,
-) (*common.UpsertMetadataResult, error) {
-	// Delegated.
-	return c.customAdapter.UpsertMetadata(ctx, params)
-}
-
 // ListObjectMetadata returns object metadata for each object name provided.
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context,

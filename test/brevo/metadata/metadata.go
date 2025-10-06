@@ -15,6 +15,7 @@ func main() {
 	conn := brevo.GetBrevoConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"attributes/deals", "blockedContacts", "children", "companies/attributes", "emailCampaigns"})
+
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -15,7 +15,9 @@ var errMissingValue = errors.New("missing value for query parameter")
 // getURL is a helper to return the full URL considering the base URL & module.
 // TODO: replace queryArgs with urlbuilder.New().WithQueryParam().
 func (c *Connector) getURL(arg string, queryArgs ...string) (string, error) {
-	urlBase := c.moduleInfo.BaseURL + "/" + path.Join(ModuleCRMVersion, arg)
+	modulePath := supportedModules[c.moduleID].Path()
+
+	urlBase := c.BaseURL + "/" + path.Join(modulePath, arg)
 
 	if len(queryArgs) > 0 {
 		vals := url.Values{}
@@ -36,6 +38,11 @@ func (c *Connector) getURL(arg string, queryArgs ...string) (string, error) {
 	}
 
 	return urlBase, nil
+}
+
+func (c *Connector) getRawURL() string {
+	// This URL is module independent.
+	return c.BaseURL
 }
 
 func (c *Connector) getCRMObjectsReadURL(config common.ReadParams) (string, error) {

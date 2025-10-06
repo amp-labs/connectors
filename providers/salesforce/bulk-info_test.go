@@ -1,6 +1,7 @@
 package salesforce
 
 import (
+	"context"
 	"net/http"
 	"reflect"
 	"testing"
@@ -32,7 +33,7 @@ func TestJobInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: "750ak000009Bq9OAAS",
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/services/data/v60.0/jobs/ingest/750ak000009Bq9OAAS"),
+				If:    mockcond.Path("/services/data/v59.0/jobs/ingest/750ak000009Bq9OAAS"),
 				Then:  mockserver.Response(http.StatusOK, responseJobInProgress),
 			}.Server(),
 			Comparator: testConciseJobInfoComparator,
@@ -69,7 +70,7 @@ func TestGetBulkQueryInfo(t *testing.T) { // nolint:dupl
 			Input: "750ak000009AVi5AAG",
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/services/data/v60.0/jobs/query/750ak000009AVi5AAG"),
+				If:    mockcond.Path("/services/data/v59.0/jobs/query/750ak000009AVi5AAG"),
 				Then:  mockserver.Response(http.StatusOK, responseAccount),
 			}.Server(),
 			Comparator: testConciseJobInfoComparator,
@@ -110,10 +111,10 @@ func TestJobResults(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/services/data/v60.0/jobs/ingest/750ak000009Dl5bAAC"),
+					If:   mockcond.Path("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC"),
 					Then: mockserver.Response(http.StatusOK, responseJobPartialFailure),
 				}, {
-					If:   mockcond.Path("/services/data/v60.0/jobs/ingest/750ak000009Dl5bAAC/failedResults"),
+					If:   mockcond.Path("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC/failedResults"),
 					Then: mockserver.Response(http.StatusOK, responseJobPartialFailureDescribed),
 				}},
 			}.Server(),
@@ -196,7 +197,7 @@ func TestGetSuccessfulJobResults(t *testing.T) { // nolint:dupl
 			Input: "750ak000009Dl5bAAC",
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/services/data/v60.0/jobs/ingest/750ak000009Dl5bAAC/successfulResults"),
+				If:    mockcond.Path("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC/successfulResults"),
 				Then:  mockserver.Response(http.StatusOK, []byte{}),
 			}.Server(),
 			Comparator:   statusCodeComparator,
@@ -227,7 +228,7 @@ func TestGetBulkQueryResults(t *testing.T) { // nolint:dupl
 			Input: "750ak000009Dl5bAAC",
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/services/data/v60.0/jobs/query/750ak000009Dl5bAAC/results"),
+				If:    mockcond.Path("/services/data/v59.0/jobs/query/750ak000009Dl5bAAC/results"),
 				Then:  mockserver.Response(http.StatusOK, []byte{}),
 			}.Server(),
 			Comparator:   statusCodeComparator,
@@ -279,21 +280,21 @@ type (
 func (c bulkJobInfoTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
-	output, err := conn.GetJobInfo(t.Context(), c.Input)
+	output, err := conn.GetJobInfo(context.Background(), c.Input)
 	testCaseTypeJobInfo(c).Validate(t, err, output)
 }
 
 func (c bulkJobInfoQueryTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
-	output, err := conn.GetBulkQueryInfo(t.Context(), c.Input)
+	output, err := conn.GetBulkQueryInfo(context.Background(), c.Input)
 	testCaseTypeJobInfo(c).Validate(t, err, output)
 }
 
 func (c bulkJobResultTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
-	output, err := conn.GetJobResults(t.Context(), c.Input)
+	output, err := conn.GetJobResults(context.Background(), c.Input)
 	testCaseTypeJobResults(c).Validate(t, err, output)
 }
 
@@ -302,7 +303,7 @@ func (c bulkGetSuccessfulJobResultsTestCase) Run(t *testing.T, builder testrouti
 	t.Helper()
 	conn := builder.Build(t, c.Name)
 
-	output, err := conn.GetSuccessfulJobResults(t.Context(), c.Input) // nosemgrep: trailofbits.go.invalid-usage-of-modified-variable.invalid-usage-of-modified-variable, nolint: lll
+	output, err := conn.GetSuccessfulJobResults(context.Background(), c.Input) // nosemgrep: trailofbits.go.invalid-usage-of-modified-variable.invalid-usage-of-modified-variable, nolint: lll
 	if err != nil {
 		_ = output.Body.Close()
 	}
@@ -315,7 +316,7 @@ func (c bulkGetBulkQueryResultsTestCase) Run(t *testing.T, builder testroutines.
 	t.Helper()
 	conn := builder.Build(t, c.Name)
 
-	output, err := conn.GetBulkQueryResults(t.Context(), c.Input) // nosemgrep: trailofbits.go.invalid-usage-of-modified-variable.invalid-usage-of-modified-variable
+	output, err := conn.GetBulkQueryResults(context.Background(), c.Input) // nosemgrep: trailofbits.go.invalid-usage-of-modified-variable.invalid-usage-of-modified-variable
 	if err != nil {
 		_ = output.Body.Close()
 	}

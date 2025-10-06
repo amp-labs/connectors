@@ -6,6 +6,7 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
@@ -13,19 +14,13 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/graphql"
-	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 //go:embed graphql/*.graphql
-var queryFiles embed.FS
-
-const (
-	apiGraphQLSuffix = "/graphql"
-)
+var queryFS embed.FS
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL + apiGraphQLSuffix)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
@@ -129,7 +124,7 @@ func getFieldValueType(field string) common.ValueType {
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL + apiGraphQLSuffix)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
 	if err != nil {
 		return nil, err
 	}
@@ -137,6 +132,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	var (
 		skip  = 0
 		limit int
+		query string
 	)
 
 	if params.NextPage != "" {
@@ -149,14 +145,15 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	limit = defaultPageSize
 
-	pagination := graphql.PaginationParameter{
-		Limit: limit,
-		Skip:  skip,
-	}
-
-	query, err := graphql.Operation(queryFiles, "query", params.ObjectName, pagination)
-	if err != nil {
-		return nil, err
+	switch params.ObjectName {
+	case transcriptsObjectName:
+		query = getQuery(limit, skip, "graphql/transcripts.graphql", "transcriptsQuery")
+	case bitesObjectName:
+		query = getQuery(limit, skip, "graphql/bites.graphql", "bitesQuery")
+	case usersObjectName:
+		query = getQuery(0, 0, "graphql/users.graphql", "usersQuery")
+	default:
+		return nil, common.ErrObjectNotSupported
 	}
 
 	requestBody := map[string]string{
@@ -174,6 +171,33 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	return req, nil
+}
+
+func getQuery(limit, skip int, filePath, queryName string) string {
+	queryBytes, err := queryFS.ReadFile(filePath)
+	if err != nil {
+		return ""
+	}
+
+	tmpl, err := template.New(queryName).Parse(string(queryBytes))
+	if err != nil {
+		return ""
+	}
+
+	var (
+		pageInfo PageInfo
+		queryBuf bytes.Buffer
+	)
+
+	pageInfo.Limit = limit
+	pageInfo.Skip = skip
+
+	err = tmpl.Execute(&queryBuf, pageInfo)
+	if err != nil {
+		return ""
+	}
+
+	return queryBuf.String()
 }
 
 func (c *Connector) parseReadResponse(
@@ -221,121 +245,4 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
-}
-
-// nolint:gocognit,cyclop,funlen
-func (c *Connector) buildWriteRequest(
-	ctx context.Context, params common.WriteParams,
-) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL + apiGraphQLSuffix)
-	if err != nil {
-		return nil, fmt.Errorf("failed to build URL: %w", err)
-	}
-
-	mutation, err := graphql.Operation(queryFiles, "mutation", params.ObjectName, params.RecordData)
-	if err != nil {
-		return nil, err
-	}
-
-	requestBody := map[string]string{
-		"query": mutation,
-	}
-
-	jsonBody, err := json.Marshal(requestBody)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-
-	return req, nil
-}
-
-func (c *Connector) parseWriteResponse(
-	ctx context.Context,
-	params common.WriteParams,
-	request *http.Request,
-	resp *common.JSONHTTPResponse,
-) (*common.WriteResult, error) {
-	node, ok := resp.Body()
-	if !ok {
-		return &common.WriteResult{Success: true}, nil
-	}
-
-	objectResponse, err := jsonquery.New(node).ObjectRequired("data")
-	if err != nil {
-		return nil, err
-	}
-
-	var recordID string
-
-	if params.ObjectName == "bite" {
-		recordID, err = jsonquery.New(objectResponse, "bite").StrWithDefault("id", "")
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	response, err := jsonquery.Convertor.ObjectToMap(objectResponse)
-	if err != nil {
-		return nil, err
-	}
-
-	return &common.WriteResult{
-		Success:  true,
-		RecordId: recordID,
-		Data:     response,
-	}, nil
-}
-
-func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL + apiGraphQLSuffix)
-	if err != nil {
-		return nil, err
-	}
-
-	// Generate the mutation string by injecting the record ID.
-	// Assumes the template uses a key "record_Id" that maps to params.RecordId
-	mutation, err := graphql.Operation(queryFiles, "mutation", params.ObjectName,
-		map[string]string{"record_Id": params.RecordId})
-	if err != nil {
-		return nil, err
-	}
-
-	requestBody := map[string]string{
-		"query": mutation,
-	}
-
-	jsonBody, err := json.Marshal(requestBody)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-func (c *Connector) parseDeleteResponse(
-	ctx context.Context,
-	params common.DeleteParams,
-	request *http.Request,
-	resp *common.JSONHTTPResponse,
-) (*common.DeleteResult, error) {
-	if resp.Code != http.StatusOK {
-		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, resp.Code)
-	}
-
-	// A successful delete returns 200 OK
-	return &common.DeleteResult{
-		Success: true,
-	}, nil
 }

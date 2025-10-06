@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -27,32 +26,24 @@ func main() {
 
 	conn := gitlab.GetConnector(ctx)
 
-	if err := testRead(ctx, conn, "templates/gitignores", []string{"key", "name"}, time.Now().Add(-10*time.Hour)); err != nil {
+	if err := testRead(ctx, conn, "templates/gitignores", []string{"key", "name"}); err != nil {
 		slog.Error(err.Error())
 	}
 
-	if err := testRead(ctx, conn, "namespaces", []string{"id", "name", "full_path"}, time.Now().Add(-10*time.Hour)); err != nil {
+	if err := testRead(ctx, conn, "namespaces", []string{"id", "name", "full_path"}); err != nil {
 		slog.Error(err.Error())
 	}
 
-	if err := testRead(ctx, conn, "snippets", []string{"title", "file_name", "id"}, time.Now().Add(-10*time.Hour)); err != nil {
-		slog.Error(err.Error())
-	}
-
-	if err := testRead(ctx, conn, "merge_requests", []string{"description", "state", "title", "author"}, time.Now().Add(-10*time.Hour)); err != nil {
-		slog.Error(err.Error())
-	}
-
-	if err := testRead(ctx, conn, "projects", []string{"description", "name", "visibility", "path"}, time.Now().Add(-10*time.Hour)); err != nil {
+	if err := testRead(ctx, conn, "snippets", []string{"title", "file_name", "id"}); err != nil {
 		slog.Error(err.Error())
 	}
 }
 
-func testRead(ctx context.Context, conn *gl.Connector, objectName string, fields []string, since time.Time) error {
+func testRead(ctx context.Context, conn *gl.Connector, objectName string, fields []string) error {
 	params := common.ReadParams{
 		ObjectName: objectName,
 		Fields:     connectors.Fields(fields...),
-		Since:      since,
+		// NextPage:   "2",
 	}
 
 	res, err := conn.Read(ctx, params)

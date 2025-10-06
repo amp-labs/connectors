@@ -3,9 +3,9 @@ package salesforce
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/logging"
 	"github.com/spyzhov/ajson"
 )
 
@@ -19,11 +19,11 @@ const (
 )
 
 type SFAPIResponseBody struct {
-	Id       string `json:"id"`
-	Success  bool   `json:"success"`
-	Errors   []any  `json:"errors"`
-	Infos    []any  `json:"infos"`
-	Warnings []any  `json:"warnings"`
+	Id       string        `json:"id"`
+	Success  bool          `json:"success"`
+	Errors   []interface{} `json:"errors"`
+	Infos    []interface{} `json:"infos"`
+	Warnings []interface{} `json:"warnings"`
 }
 
 // nolint:tagliatelle
@@ -296,15 +296,11 @@ func (c *Connector) postToSFAPI(ctx context.Context, body any, path string, enti
 		return nil, err
 	}
 
-	if res == nil {
-		return nil, common.ErrEmptyJSONHTTPResponse
-	}
-
 	if len(res.Warnings) > 0 {
-		logging.Logger(ctx).Warn(entity, "warnings", res.Warnings)
+		slog.Warn(entity, "warnings", res.Warnings)
 	}
 
-	return res, nil
+	return res, err
 }
 
 func (c *Connector) deleteToSFAPI(ctx context.Context, path string, entity string) (*common.JSONHTTPResponse, error) {

@@ -40,7 +40,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Create projects as POST",
-			Input: common.WriteParams{ObjectName: "projects", RecordData: map[string]any{"name": "Stuff to buy"}},
+			Input: common.WriteParams{ObjectName: "projects", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPOST(),
@@ -72,7 +72,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Update objects as PUT",
-			Input: common.WriteParams{ObjectName: "projects", RecordId: "15", RecordData: map[string]any{"name": "Stuff to buy"}}, //nolint:lll
+			Input: common.WriteParams{ObjectName: "projects", RecordId: "15", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPUT(),

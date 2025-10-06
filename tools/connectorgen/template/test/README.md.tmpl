@@ -1,0 +1,21 @@
+# Running instructions
+
+## Step 1: prepare "{{ .Provider | kebab }}-creds.json" file
+
+Create a file called "{{ .Provider | kebab }}-creds.json" in the root of the project with the following contents
+
+    e.g. {
+        "CLIENT_ID": "<client id goes here>",
+        "CLIENT_SECRET": "<client secret goes here>",
+        "ACCESS_TOKEN": "<access token goes here>",
+        "REFRESH_TOKEN": "<refresh token goes here>"
+    }
+
+or export to an environment variable {{ .Provider | snake | upper }}_CRED_FILE by following command
+
+$> export {{ .Provider | snake | upper }}_CRED_FILE=./{{ .Provider | kebab }}-creds.json # or the path to your {{ .Provider | kebab }}-creds.json file
+
+
+## Step 2: run the following command
+
+    $> go run test/{{ .Package }}/read/main.go

@@ -8,7 +8,6 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -62,10 +61,9 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				ObjectName: "campaign",
 				Fields:     connectors.Fields("createdAt", "id", "name"),
 			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/rest/v1/campaign.json"),
-				Then:  mockserver.Response(http.StatusOK, campaignsResponse),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, campaignsResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
@@ -95,18 +93,9 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				ObjectName: "leads",
 				Fields:     connectors.Fields("email", "id"),
 			},
-			Server: mockserver.Switch{
-				Setup: mockserver.ContentJSON(),
-				Cases: mockserver.Cases{{
-					If:   mockcond.Path("/rest/v1/activities/pagingtoken.json"),
-					Then: mockserver.ResponseString(http.StatusOK, `{}`),
-				}, {
-					If:   mockcond.Path("/rest/v1/activities.json"),
-					Then: mockserver.Response(http.StatusOK, leadsResponse),
-				}, {
-					If:   mockcond.Path("/rest/v1/leads.json"),
-					Then: mockserver.Response(http.StatusOK, leadsResponse),
-				}},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, leadsResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,

@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -16,14 +14,10 @@ import (
 )
 
 const (
-	perPageQuery      = "per_page"
-	pageQuery         = "page"
-	ownedQuery        = "owned"
-	membershipQuery   = "membership"
-	updatedAfterQuery = "updated_after"
-	metadataPageSize  = "1"
-	pageSize          = "100"
-	projects          = "projects"
+	perPageQuery     = "per_page"
+	pageQuery        = "page"
+	metadataPageSize = "1"
+	pageSize         = "100"
 )
 
 func (c *Connector) buildSingleHandlerRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -83,52 +77,30 @@ func (c *Connector) parseSingleHandlerResponse(
 	}
 
 	for fld := range firstRecord {
-		// TODO fix deprecated
-		objectMetadata.FieldsMap[fld] = fld // nolint:staticcheck
+		objectMetadata.FieldsMap[fld] = fld
 	}
 
 	return &objectMetadata, nil
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := c.constructReadURL(params)
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
+
+	url.WithQueryParam(perPageQuery, pageSize)
 
 	if params.NextPage != "" {
 		url.WithQueryParam(pageQuery, params.NextPage.String())
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
-}
-
-func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
-	if err != nil {
-		return nil, err
-	}
-
-	if params.ObjectName == projects {
-		// sets owned=true&membership=true so that we are fetching the user's projects
-		// instead of all public projects on GitLab
-		url.WithQueryParam(ownedQuery, "true")
-		url.WithQueryParam(membershipQuery, "true")
-	}
-
-	if !params.Since.IsZero() {
-		url.WithQueryParam(updatedAfterQuery, params.Since.Format(time.RFC3339))
-
-		if params.ObjectName == projects {
-			// This is required for reading Projects, if since is provided.
-			// ref: https://docs.gitlab.com/api/projects/#list-projects
-			url.WithQueryParam("order_by", "updated_at")
-		}
-	}
-
-	url.WithQueryParam(perPageQuery, pageSize)
-
-	return url, nil
 }
 
 func (c *Connector) parseReadResponse(
@@ -168,19 +140,6 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }
 
-func parseRecordId(data map[string]any) string {
-	switch v := data["id"].(type) {
-	case string:
-		return v
-	case float64:
-		return strconv.Itoa(int(v))
-	case int:
-		return strconv.Itoa(v)
-	}
-
-	return ""
-}
-
 func (c *Connector) parseWriteResponse(
 	ctx context.Context,
 	params common.WriteParams,
@@ -204,11 +163,8 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
-	recordId := parseRecordId(data)
-
 	return &common.WriteResult{
-		Success:  true,
-		Data:     data,
-		RecordId: recordId,
+		Success: true,
+		Data:    data,
 	}, nil
 }

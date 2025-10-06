@@ -9,6 +9,8 @@ const (
 	objectNameNotes            = "notes"
 )
 
+// supportWriteObjects represents the APIs listed under the Attio API section in the docs
+// (this does not cover the entire Attio API). Reference: https://developers.attio.com/reference.
 var supportWriteObjects = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameLists,
 	objectNameTasks,
@@ -20,6 +22,8 @@ var supportLimitAndOffset = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameNotes,
 )
 
+// supportAttioApi represents the APIs listed under the Attio API section in the docs
+// (this does not cover the entire Attio API). Reference: https://developers.attio.com/reference.
 var supportAttioApi = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameLists,
 	objectNameWorkspacemembers,

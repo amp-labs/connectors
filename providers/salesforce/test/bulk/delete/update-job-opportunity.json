@@ -8,5 +8,5 @@
   "state": "UploadComplete",
   "concurrencyMode": "Parallel",
   "contentType": "CSV",
-  "apiVersion": 60.0
+  "apiVersion": 59.0
 }

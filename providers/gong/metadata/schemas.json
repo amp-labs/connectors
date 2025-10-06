@@ -31,20 +31,6 @@
             "workspaceId": "workspaceId"
           }
         },
-        "flows": {
-          "displayName": "Flows",
-          "path": "/flows",
-          "responseKey": "flows",
-          "fields": {
-            "creationDate": "creationDate",
-            "exclusive": "exclusive",
-            "folderId": "folderId",
-            "folderName": "folderName",
-            "id": "id",
-            "name": "name",
-            "visibility": "visibility"
-          }
-        },
         "transcripts": {
           "displayName": "Transcripts",
           "path": "/calls/transcript",

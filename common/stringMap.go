@@ -6,7 +6,6 @@ import (
 	"maps"
 	"reflect"
 	"slices"
-	"strings"
 )
 
 var (
@@ -16,10 +15,6 @@ var (
 )
 
 type StringMap map[string]any
-
-func ToStringMap(m map[string]any) StringMap {
-	return StringMap(m)
-}
 
 func (m StringMap) Keys() []string {
 	return slices.AppendSeq(make([]string, 0, len(m)), maps.Keys(m))
@@ -37,16 +32,6 @@ func (m StringMap) Values() []any {
 
 func (m StringMap) Len() int {
 	return len(m)
-}
-
-func (m StringMap) GetCaseInsensitive(key string) (any, bool) {
-	for k, v := range m {
-		if strings.EqualFold(k, key) {
-			return v, true
-		}
-	}
-
-	return nil, false
 }
 
 func (m StringMap) Get(key string) (any, error) {
@@ -113,7 +98,7 @@ func (m StringMap) GetString(key string) (string, error) {
 		return "", err
 	}
 
-	return AssertType[string](val)
+	return assertType[string](val)
 }
 
 func (m StringMap) GetBool(key string) (bool, error) {
@@ -122,7 +107,7 @@ func (m StringMap) GetBool(key string) (bool, error) {
 		return false, err
 	}
 
-	return AssertType[bool](val)
+	return assertType[bool](val)
 }
 
 // GetInt extracts an integer from the map.
@@ -178,4 +163,14 @@ func (m StringMap) GetNumber(key string) (float64, error) {
 	default:
 		return 0, fmt.Errorf("%w: expected a number, but received %T", errFieldTypeMismatch, val)
 	}
+}
+
+//nolint:ireturn
+func assertType[T any](val any) (T, error) {
+	of, ok := val.(T)
+	if !ok {
+		return of, fmt.Errorf("%w: expected type %T, but received %T", errFieldTypeMismatch, of, val)
+	}
+
+	return of, nil
 }

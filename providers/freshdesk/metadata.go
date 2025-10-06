@@ -64,8 +64,7 @@ func buildMetadataFields(object string, response *common.JSONHTTPResponse, res *
 	}
 
 	for fld := range (*data)[0] {
-		// TODO fix deprecated
-		objectMetadata.FieldsMap[fld] = fld // nolint:staticcheck
+		objectMetadata.FieldsMap[fld] = fld
 	}
 
 	res.Result[object] = objectMetadata

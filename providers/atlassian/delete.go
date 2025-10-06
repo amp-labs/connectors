@@ -12,7 +12,7 @@ func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*co
 		return nil, err
 	}
 
-	url, err := c.getModuleURL("issue")
+	url, err := c.getJiraRestApiURL("issue")
 	if err != nil {
 		return nil, err
 	}

@@ -10,7 +10,10 @@ import (
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	baseURL := c.getModuleURL()
+	baseURL, err := c.getModuleURL()
+	if err != nil {
+		return nil, err
+	}
 
 	switch {
 	case identitystore.Registry.Has(params.ObjectName):
@@ -23,7 +26,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	baseURL := c.getModuleURL()
+	baseURL, err := c.getModuleURL()
+	if err != nil {
+		return nil, err
+	}
 
 	switch {
 	case identitystore.Registry.Has(params.ObjectName):
@@ -36,7 +42,10 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 }
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	baseURL := c.getModuleURL()
+	baseURL, err := c.getModuleURL()
+	if err != nil {
+		return nil, err
+	}
 
 	switch {
 	case identitystore.Registry.Has(params.ObjectName):

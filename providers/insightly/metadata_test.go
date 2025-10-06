@@ -1,24 +1,17 @@
 package insightly
 
 import (
-	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
-	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
-	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
-
-	responseContacts := testutils.DataFromFile(t, "read/contacts/custom-fields.json")
-	responseFruitObject := testutils.DataFromFile(t, "read/custom-objects/fruit.json")
-	responseFruitFields := testutils.DataFromFile(t, "read/fruits-custom-object/custom-fields.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -39,13 +32,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			},
 		},
 		{
-			Name:  "Successfully return metadata for Teams",
-			Input: []string{"Teams"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v3.1/CustomFields/Teams"),
-				Then:  mockserver.ResponseString(http.StatusOK, `[]`),
-			}.Server(),
+			Name:       "Successfully return metadata for an object",
+			Input:      []string{"Teams"},
+			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
@@ -66,163 +55,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "TEAM_NAME",
 								ValueType:    "string",
 								ProviderType: "string",
-							},
-						},
-					},
-				},
-				Errors: nil,
-			},
-		},
-		{
-			Name:  "Successfully return metadata for Contacts with custom fields",
-			Input: []string{"Contacts"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v3.1/CustomFields/Contacts"),
-				Then:  mockserver.Response(http.StatusOK, responseContacts),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
-			Expected: &common.ListObjectMetadataResult{
-				Result: map[string]common.ObjectMetadata{
-					"Contacts": {
-						DisplayName: "Contacts",
-						Fields: map[string]common.FieldMetadata{
-							// Metadata from schema.json."butterflies": mockutils.ExpectedSubsetErrors{
-							"FIRST_NAME": {
-								DisplayName:  "FIRST_NAME",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-							// Custom fields.
-							"Hobby__c": {
-								DisplayName:  "Hobby",
-								ValueType:    "string",
-								ProviderType: "TEXT",
-							},
-							"Interests__c": {
-								DisplayName:  "Interests",
-								ValueType:    "multiSelect",
-								ProviderType: "MULTISELECT",
-								Values: common.FieldValues{{
-									Value:        "3",
-									DisplayValue: "Art",
-								}, {
-									Value:        "6",
-									DisplayValue: "Food",
-								}, {
-									Value:        "5",
-									DisplayValue: "Music",
-								}, {
-									Value:        "2",
-									DisplayValue: "Sports",
-								}, {
-									Value:        "1",
-									DisplayValue: "Technology",
-								}, {
-									Value:        "4",
-									DisplayValue: "Travel",
-								}},
-							},
-							"Newsletter_Subscription__c": {
-								DisplayName:  "Newsletter Subscription",
-								ValueType:    "other",
-								ProviderType: "BIT",
-							},
-							"Preferred_Contact_Method__c": {
-								DisplayName:  "Preferred Contact Method",
-								ValueType:    "singleSelect",
-								ProviderType: "DROPDOWN",
-								Values: common.FieldValues{{
-									Value:        "1",
-									DisplayValue: "Email",
-								}, {
-									Value:        "2",
-									DisplayValue: "Phone",
-								}, {
-									Value:        "3",
-									DisplayValue: "SMS",
-								}, {
-									Value:        "4",
-									DisplayValue: "WhatsApp",
-								}},
-							},
-							"Date1__c": {
-								DisplayName:  "Date1",
-								ValueType:    "date",
-								ProviderType: "DATE",
-							},
-							"Date2__c": {
-								DisplayName:  "Date2",
-								ValueType:    "datetime",
-								ProviderType: "DATETIME",
-							},
-							"MultiText1__c": {
-								DisplayName:  "MultiText1",
-								ValueType:    "string",
-								ProviderType: "MULTILINETEXT",
-							},
-							"Number1__c": {
-								DisplayName:  "Number1",
-								ValueType:    "float",
-								ProviderType: "NUMERIC",
-							},
-							"Percent1__c": {
-								DisplayName:  "Percent1",
-								ValueType:    "float",
-								ProviderType: "PERCENT",
-							},
-							"AutoNumber1__c": {
-								DisplayName:  "AutoNumber1",
-								ValueType:    "other",
-								ProviderType: "AUTONUMBER",
-								ReadOnly:     true,
-							},
-						},
-					},
-				},
-				Errors: nil,
-			},
-		},
-		{
-			Name:  "Successfully return metadata for custom object Fruits with custom fields",
-			Input: []string{"Fruit__c"},
-			Server: mockserver.Switch{
-				Setup: mockserver.ContentJSON(),
-				Cases: mockserver.Cases{{
-					If:   mockcond.Path("/v3.1/CustomObjects/Fruit__c"),
-					Then: mockserver.Response(http.StatusOK, responseFruitObject),
-				}, {
-					If:   mockcond.Path("/v3.1/CustomFields/Fruit__c"),
-					Then: mockserver.Response(http.StatusOK, responseFruitFields),
-				}},
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
-			Expected: &common.ListObjectMetadataResult{
-				Result: map[string]common.ObjectMetadata{
-					"Fruit__c": {
-						DisplayName: "Fruits",
-						Fields: map[string]common.FieldMetadata{
-							// Properties which are always common across all custom object types.
-							"RECORD_NAME": {
-								DisplayName:  "RECORD_NAME",
-								ValueType:    common.ValueTypeString,
-								ProviderType: "string",
-							},
-							"CUSTOMFIELDS": {
-								DisplayName:  "CUSTOMFIELDS",
-								ValueType:    common.ValueTypeOther,
-								ProviderType: "array",
-							},
-							// Custom fields.
-							"Weight__c": {
-								DisplayName:  "Weight",
-								ValueType:    common.ValueTypeFloat,
-								ProviderType: "NUMERIC",
-							},
-							"Color__c": {
-								DisplayName:  "Color",
-								ValueType:    common.ValueTypeString,
-								ProviderType: "TEXT",
 							},
 						},
 					},

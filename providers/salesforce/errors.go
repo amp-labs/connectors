@@ -55,8 +55,6 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error { 
 			fallthrough
 		case "INVALID_FIELD":
 			return createError(common.ErrBadRequest, sfErr, res)
-		case "INVALID_QUERY_LOCATOR":
-			return createError(common.ErrCursorGone, sfErr, res)
 		default:
 			continue
 		}

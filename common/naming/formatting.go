@@ -20,13 +20,3 @@ func CapitalizeFirstLetterEveryWord(text string) string {
 
 	return text
 }
-
-func CapitalizeFirstLetter(text string) string {
-	if len(text) == 0 {
-		return text
-	}
-
-	caser := cases.Title(language.English)
-
-	return caser.String(text[:1]) + text[1:]
-}
