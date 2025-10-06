@@ -192,14 +192,16 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
+	graphqlQueryName := params.ObjectName
+
 	if params.RecordId != "" {
-		params.ObjectName += "Edit"
+		graphqlQueryName += "Edit"
 	} else {
-		params.ObjectName += "Create"
+		graphqlQueryName += "Create"
 	}
 
 	// Build GraphQL mutation with input
-	mutation, err := graphql.Operation(queryFiles, "mutation", params.ObjectName, nil)
+	mutation, err := graphql.Operation(queryFiles, "mutation", graphqlQueryName, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -247,15 +249,15 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	originalObjName := params.ObjectName
+	graphqlQueryName := params.ObjectName
 
 	if params.RecordId != "" {
-		params.ObjectName += "Edit"
+		graphqlQueryName += "Edit"
 	} else {
-		params.ObjectName += "Create"
+		graphqlQueryName += "Create"
 	}
 
-	objectResponse, err := jsonquery.New(body, "data", originalObjName).ObjectOptional(params.ObjectName)
+	objectResponse, err := jsonquery.New(body, "data", graphqlQueryName).ObjectOptional(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -284,11 +286,13 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 		return nil, err
 	}
 
-	params.ObjectName += "Delete"
+	graphqlQueryName := params.ObjectName
+
+	graphqlQueryName += "Delete"
 
 	// Generate the mutation string by injecting the record ID.
 	// Assumes the template uses a key "record_Id" that maps to params.RecordId
-	mutation, err := graphql.Operation(queryFiles, "mutation", params.ObjectName, nil)
+	mutation, err := graphql.Operation(queryFiles, "mutation", graphqlQueryName, nil)
 	if err != nil {
 		return nil, err
 	}
