@@ -57,11 +57,3 @@ func (c Connector) ListObjectMetadata(
 
 	return nil, common.ErrNotImplemented
 }
-
-func (c Connector) Read(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error) {
-	if c.Facebook != nil {
-		return c.Facebook.Read(ctx, params)
-	}
-
-	return nil, common.ErrNotImplemented
-}

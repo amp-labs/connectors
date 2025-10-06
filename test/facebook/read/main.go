@@ -8,8 +8,8 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	ap "github.com/amp-labs/connectors/providers/meta"
-	meta "github.com/amp-labs/connectors/test/meta"
+	ap "github.com/amp-labs/connectors/providers/facebook"
+	"github.com/amp-labs/connectors/test/facebook"
 )
 
 func main() {
@@ -17,7 +17,7 @@ func main() {
 }
 
 func MainFn() int {
-	conn := meta.GetFacebookConnector(context.Background())
+	conn := facebook.GetConnector(context.Background())
 
 	err := testRead(context.Background(), conn, "saved_audiences", []string{""})
 	if err != nil {

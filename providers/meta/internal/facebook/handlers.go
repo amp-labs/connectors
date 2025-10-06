@@ -68,7 +68,7 @@ func (c *Adapter) parseSingleObjectMetadataResponse(
 	return &objectMetadata, nil
 }
 
-func (c *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if len(params.NextPage) != 0 {
 		// Next page.
 		url, err := urlbuilder.New(params.NextPage.String())
@@ -98,7 +98,7 @@ func (c *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 	return request, nil
 }
 
-func (c *Adapter) parseReadResponse(
+func (c *Connector) parseReadResponse(
 	ctx context.Context,
 	params common.ReadParams,
 	request *http.Request,
