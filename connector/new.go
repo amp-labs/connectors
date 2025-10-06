@@ -364,18 +364,18 @@ func newZohoConnector(
 	}
 
 	if params.Metadata != nil {
-		apiDomain, ok := params.Metadata["zoho_api_domain"]
-		if ok && apiDomain != "" {
+		apiDomain, found := params.Metadata["zoho_api_domain"]
+		if found && apiDomain != "" {
 			domains.ApiDomain = apiDomain
 		}
 
-		deskDomain, ok := params.Metadata["zoho_desk_domain"]
-		if ok && deskDomain != "" {
+		deskDomain, found := params.Metadata["zoho_desk_domain"]
+		if found && deskDomain != "" {
 			domains.DeskDomain = deskDomain
 		}
 
-		tokenDomain, ok := params.Metadata["zoho_token_domain"]
-		if ok && tokenDomain != "" {
+		tokenDomain, found := params.Metadata["zoho_token_domain"]
+		if found && tokenDomain != "" {
 			domains.TokenDomain = tokenDomain
 		}
 	}
