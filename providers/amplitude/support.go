@@ -19,6 +19,17 @@ const (
 	objectNameTaxonomyEventProperty = "taxonomy/event-property"
 	objectNameTaxonomyUserProperty  = "taxonomy/user-property"
 	objectNameTaxonomyGroupProperty = "taxonomy/group-property"
+	objectNameAttribution           = "attribution"
+	objectNameRelease               = "release"
+)
+
+var api2SupportedObjects = datautils.NewSet( //nolint:gochecknoglobals
+	objectNameAttribution,
+)
+
+var supportedParamsPayloadObjectNames = datautils.NewSet( //nolint:gochecknoglobals
+	objectNameAnnotations,
+	objectNameRelease,
 )
 
 var objectAPIVersion = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
@@ -31,6 +42,18 @@ var objectResponseField = datautils.NewDefaultMap(datautils.Map[string, string]{
 	objectNameCohorts: objectNameCohorts,
 }, func(key string) string {
 	return "data"
+})
+
+var writeObjectResponseField = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
+	objectNameAnnotations: "annotation",
+}, func(objectname string) string {
+	return objectname
+})
+
+var payloadKeyMapping = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
+	objectNameAttribution: "event",
+}, func(key string) string {
+	return ""
 })
 
 func supportedOperations() components.EndpointRegistryInput {
@@ -46,11 +69,21 @@ func supportedOperations() components.EndpointRegistryInput {
 		objectNameTaxonomyGroupProperty,
 	}
 
+	writeSupport := []string{
+		objectNameAttribution,
+		objectNameAnnotations,
+		objectNameRelease,
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}

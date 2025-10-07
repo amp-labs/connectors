@@ -358,9 +358,32 @@ func newPipedriveConnector(
 func newZohoConnector(
 	params common.ConnectorParams,
 ) (*zoho.Connector, error) {
+	domains, err := zoho.GetDomainsForLocation("us")
+	if err != nil {
+		return nil, err
+	}
+
+	if params.Metadata != nil {
+		apiDomain, found := params.Metadata["zoho_api_domain"]
+		if found && apiDomain != "" {
+			domains.ApiDomain = apiDomain
+		}
+
+		deskDomain, found := params.Metadata["zoho_desk_domain"]
+		if found && deskDomain != "" {
+			domains.DeskDomain = deskDomain
+		}
+
+		tokenDomain, found := params.Metadata["zoho_token_domain"]
+		if found && tokenDomain != "" {
+			domains.TokenDomain = tokenDomain
+		}
+	}
+
 	return zoho.NewConnector(
 		zoho.WithAuthenticatedClient(params.AuthenticatedClient),
 		zoho.WithModule(params.Module),
+		zoho.WithDomains(domains),
 	)
 }
 
