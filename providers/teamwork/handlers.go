@@ -1,11 +1,15 @@
 package teamwork
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -94,4 +98,111 @@ func makeNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 
 		return url.String(), nil
 	}
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	url, err := c.getWriteURL(params.ObjectName, params.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	method := http.MethodPost
+	if len(params.RecordId) != 0 {
+		method = http.MethodPatch
+	}
+
+	recordData, err := common.RecordDataToMap(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	// Payload is nested under the key matching object name in singular case.
+	payloadName := writeObjectName(params.ObjectName)
+	payload := map[string]any{
+		payloadName: recordData,
+	}
+
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal record data: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	return req, nil
+}
+
+func (c *Connector) parseWriteResponse(ctx context.Context, params common.WriteParams,
+	request *http.Request, response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		// it is unlikely to have no payload
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	writeResponseFieldName := writeObjectName(params.ObjectName)
+
+	nested, err := jsonquery.New(body).ObjectRequired(writeResponseFieldName)
+	if err != nil {
+		return nil, err
+	}
+
+	recordID, err := jsonquery.New(nested).TextWithDefault("id", params.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(nested)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     data,
+	}, nil
+}
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	url, err := c.getWriteURL(params.ObjectName, params.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	return req, nil
+}
+
+func (c *Connector) parseDeleteResponse(ctx context.Context, params common.DeleteParams,
+	request *http.Request, response *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	if response.Code != http.StatusOK && response.Code != http.StatusNoContent {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, response.Code)
+	}
+
+	// Response body is not used.
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
+}
+
+// writeObjectName is used by payload and response.
+// This field is object name in singular case.
+func writeObjectName(objectName string) string {
+	readResponseFieldName := metadata.Schemas.LookupArrayFieldName(common.ModuleRoot, objectName)
+	writeResponseFieldName := naming.NewSingularString(readResponseFieldName).String()
+
+	return writeResponseFieldName
 }
