@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	crmAPIVersion  = "crm/v6"
-	deskAPIVersion = "api/v1"
+	crmAPIVersion   = "crm/v6"
+	deskAPIVersion  = "api/v1"
+	defaultLocation = "us"
 )
 
 type Connector struct {
@@ -25,6 +26,7 @@ type Connector struct {
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	params, err := paramsbuilder.Apply(parameters{}, opts,
 		WithModule(providers.ZohoCRM), // The module is resolved on behalf of the user if the option is missing.
+		WithLocation(defaultLocation), // Use US region as default for testing
 	)
 	if err != nil {
 		return nil, err
@@ -40,10 +42,15 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		moduleID: params.Module.Selection.ID,
 	}
 
-	// Use US region domains as default for testing
-	domains, err := GetDomainsForLocation("us")
-	if err != nil {
-		return nil, err
+	var domains *LocationDomains
+
+	if params.domains == nil {
+		domains, err = GetDomainsForLocation(params.location)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		domains = params.domains
 	}
 
 	providerInfo, err := providers.ReadInfo(conn.Provider(),
