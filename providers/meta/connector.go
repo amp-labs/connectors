@@ -65,3 +65,11 @@ func (c Connector) Read(ctx context.Context, params connectors.ReadParams) (*con
 
 	return nil, common.ErrNotImplemented
 }
+
+func (c Connector) Write(ctx context.Context, params connectors.WriteParams) (*connectors.WriteResult, error) {
+	if c.Facebook != nil {
+		return c.Facebook.Write(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
