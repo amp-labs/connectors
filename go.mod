@@ -24,7 +24,7 @@ require (
 	github.com/spyzhov/ajson v0.9.6
 	github.com/stretchr/testify v1.11.1
 	gitlab.com/c0b/go-ordered-json v0.0.0-20201030195603-febf46534d5a
-	golang.org/x/net v0.44.0
+	golang.org/x/net v0.45.0
 	golang.org/x/oauth2 v0.31.0
 	golang.org/x/text v0.29.0
 )
