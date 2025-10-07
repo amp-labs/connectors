@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -20,6 +21,7 @@ type Adapter struct {
 	// Supported operations
 	components.SchemaProvider
 	components.Reader
+	components.Writer
 
 	adAccountId string
 	businessId  string
@@ -68,6 +70,19 @@ func constructor(base *components.Connector) (*Adapter, error) {
 		operations.ReadHandlers{
 			BuildRequest:  adapter.buildReadRequest,
 			ParseResponse: adapter.parseReadResponse,
+			ErrorHandler: interpreter.ErrorHandler{
+				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+			}.Handle,
+		},
+	)
+
+	adapter.Writer = writer.NewHTTPWriter(
+		adapter.HTTPClient().Client,
+		registry,
+		adapter.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  adapter.buildWriteRequest,
+			ParseResponse: adapter.parseWriteResponse,
 			ErrorHandler: interpreter.ErrorHandler{
 				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 			}.Handle,
