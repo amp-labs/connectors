@@ -22,6 +22,7 @@ import (
 	"github.com/amp-labs/connectors/providers/braze"
 	"github.com/amp-labs/connectors/providers/breakcold"
 	"github.com/amp-labs/connectors/providers/brevo"
+	"github.com/amp-labs/connectors/providers/calendly"
 	"github.com/amp-labs/connectors/providers/campaignmonitor"
 	"github.com/amp-labs/connectors/providers/capsule"
 	"github.com/amp-labs/connectors/providers/chilipiper"
@@ -123,6 +124,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Brevo:                   wrapper(newBrevoConnector),
 	providers.CampaignMonitor:         wrapper(newCampaignMonitorConnector),
 	providers.Capsule:                 wrapper(newCapsuleConnector),
+	providers.Calendly:                wrapper(newCalendlyConnector),
 	providers.ChiliPiper:              wrapper(newChiliPiperConnector),
 	providers.ClariCopilot:            wrapper(newClariCopilotConnector),
 	providers.ClickUp:                 wrapper(newClickUpConnector),
@@ -799,4 +801,9 @@ func newAmplitudeConnector(
 	params common.ConnectorParams,
 ) (*amplitude.Connector, error) {
 	return amplitude.NewConnector(params)
+}
+
+func newCalendlyConnector(params common.ConnectorParams,
+) (*calendly.Connector, error) {
+	return calendly.NewConnector(params)
 }
