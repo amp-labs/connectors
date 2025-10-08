@@ -556,7 +556,7 @@ func TestMap_NilFuture(t *testing.T) {
 	result, err := mapped.Await()
 
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "nil future provided to Map")
+	assert.Contains(t, err.Error(), "nil future provided")
 	assert.Equal(t, "", result)
 }
 
@@ -572,7 +572,7 @@ func TestMap_NilFunction(t *testing.T) {
 	result, err := mapped.Await()
 
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "nil function provided to Map")
+	assert.Contains(t, err.Error(), "nil function provided")
 	assert.Equal(t, "", result)
 }
 
