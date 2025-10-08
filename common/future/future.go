@@ -41,7 +41,7 @@ import (
 
 var (
 	// ErrNilFuture is returned when a nil future is provided to a function.
-	ErrNilFuture = errors.New("nil future provided to Map")
+	ErrNilFuture = errors.New("nil future provided")
 	// ErrNilFunction is returned when a nil function is provided to a function.
 	ErrNilFunction = errors.New("nil function provided")
 )
