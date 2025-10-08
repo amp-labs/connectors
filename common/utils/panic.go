@@ -22,10 +22,13 @@ func GetPanicRecoveryError(err any, stack []byte) error {
 		if stack != nil {
 			return fmt.Errorf("%w: %w\nstack trace:\n%s", ErrPanicRecovery, errErr, string(stack))
 		}
+
 		return fmt.Errorf("%w: %w", ErrPanicRecovery, errErr)
 	}
+
 	if stack != nil {
 		return fmt.Errorf("%w: %v\nstack trace:\n%s", ErrPanicRecovery, err, string(stack))
 	}
+
 	return fmt.Errorf("%w: %v", ErrPanicRecovery, err)
 }
