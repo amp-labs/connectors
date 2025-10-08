@@ -43,7 +43,7 @@ var (
 	// ErrNilFuture is returned when a nil future is provided to a function.
 	ErrNilFuture = errors.New("nil future provided to Map")
 	// ErrNilFunction is returned when a nil function is provided to a function.
-	ErrNilFunction = errors.New("nil function provided to Map")
+	ErrNilFunction = errors.New("nil function provided")
 )
 
 // Future represents the read-only side of an asynchronous computation.
