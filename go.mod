@@ -27,6 +27,7 @@ require (
 	golang.org/x/net v0.46.0
 	golang.org/x/oauth2 v0.32.0
 	golang.org/x/text v0.30.0
+	go.uber.org/atomic v1.11.0
 )
 
 require (
