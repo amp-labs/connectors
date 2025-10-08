@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/simultaneously"
 	"github.com/amp-labs/connectors/internal/components/operations"
 )
 
@@ -72,6 +73,7 @@ type objectMetadataError struct {
 	Error      error
 }
 
+// nolint:funlen // refactoring would not improve readability
 func (p *ObjectSchemaProvider) fetchParallel(
 	ctx context.Context,
 	objects []string,
@@ -79,11 +81,12 @@ func (p *ObjectSchemaProvider) fetchParallel(
 	metadataChannel := make(chan *objectMetadataResult, len(objects))
 	errChannel := make(chan *objectMetadataError, len(objects))
 
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
+	callbacks := make([]func(ctx context.Context) error, 0, len(objects))
 
 	for _, objectName := range objects {
-		go func(object string) {
+		object := objectName // capture loop variable
+
+		callbacks = append(callbacks, func(ctx context.Context) error {
 			objectMetadata, err := p.operation.ExecuteRequest(ctx, object)
 			if err != nil {
 				errChannel <- &objectMetadataError{
@@ -91,7 +94,7 @@ func (p *ObjectSchemaProvider) fetchParallel(
 					Error:      err,
 				}
 
-				return
+				return nil //nolint:nilerr // intentionally collecting errors in channel, not failing fast
 			}
 
 			if objectMetadata == nil {
@@ -100,7 +103,7 @@ func (p *ObjectSchemaProvider) fetchParallel(
 					Error:      fmt.Errorf("%w: %s", ErrNoMetadata, object),
 				}
 
-				return
+				return nil //nolint:nilerr // intentionally collecting errors in channel, not failing fast
 			}
 
 			// Send object metadata to metadataChannel
@@ -108,22 +111,39 @@ func (p *ObjectSchemaProvider) fetchParallel(
 				ObjectName: object,
 				Response:   *objectMetadata,
 			}
-		}(objectName)
+
+			return nil
+		})
 	}
+
+	// This will block until all callbacks are done. Note that since the
+	// channels are buffered, the above code won't block on sending to them
+	// even if we're not receiving yet.
+	if err := simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
+		close(metadataChannel)
+		close(errChannel)
+
+		return nil, err
+	}
+
+	// Since all callbacks are done, we can close the channels.
+	// This ensures that the following range loops will terminate.
+	close(metadataChannel)
+	close(errChannel)
 
 	result := &common.ListObjectMetadataResult{
 		Result: make(map[string]common.ObjectMetadata),
 		Errors: make(map[string]error),
 	}
 
-	for range objects {
-		select {
-		// Add object metadata to result
-		case objectMetadataResult := <-metadataChannel:
-			result.Result[objectMetadataResult.ObjectName] = objectMetadataResult.Response
-		case objectMetadataError := <-errChannel:
-			result.Errors[objectMetadataError.ObjectName] = objectMetadataError.Error
-		}
+	// Collect results from channels
+	for objectMetadataResult := range metadataChannel {
+		result.Result[objectMetadataResult.ObjectName] = objectMetadataResult.Response
+	}
+
+	// Collect errors from channels
+	for objectMetadataError := range errChannel {
+		result.Errors[objectMetadataError.ObjectName] = objectMetadataError.Error
 	}
 
 	return result, nil

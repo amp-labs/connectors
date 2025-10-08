@@ -18,6 +18,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/amp-labs/connectors/common/future"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
@@ -189,11 +190,11 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 		os.Exit(1)
 	}
 
-	go func() {
+	future.Go(func() (struct{}, error) {
 		time.Sleep(WaitBeforeExitSeconds * time.Second)
-
 		os.Exit(0)
-	}()
+		return struct{}{}, nil
+	})
 }
 
 // Run executes the OAuth flow to get a token.
@@ -228,10 +229,12 @@ func (a *OAuthApp) Run() error {
 
 		http.Handle("/", a)
 
-		go func() {
+		future.Go(func() (struct{}, error) {
 			time.Sleep(1 * time.Second)
 			openBrowser(fmt.Sprintf("%s://localhost:%d", a.Proto, a.Port))
-		}()
+
+			return struct{}{}, nil
+		})
 
 		server := &http.Server{
 			Addr:              fmt.Sprintf("0.0.0.0:%d", a.Port),
