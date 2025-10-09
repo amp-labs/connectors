@@ -30,7 +30,6 @@ func main() {
 		ObjectName: "workspaces",
 		Fields:     datautils.NewStringSet("type", "uuid", "name", "slug"),
 	})
-
 	if err != nil {
 		slog.Error(err.Error())
 	}
