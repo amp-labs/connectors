@@ -3,7 +3,7 @@ package testutils
 import (
 	"context"
 
-	"github.com/amp-labs/connectors/common/simultaneously"
+	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/tools/fileconv"
 )
 

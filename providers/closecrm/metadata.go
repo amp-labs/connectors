@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/simultaneously"
+	"github.com/amp-labs/connectors/internal/simultaneously"
 )
 
 /*

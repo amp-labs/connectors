@@ -14,7 +14,7 @@ func init() {
 
 // Settings for the nogoroutine linter.
 type Settings struct {
-	// ExcludePaths are file path patterns to exclude from checking (e.g., "common/future", "common/simultaneously")
+	// ExcludePaths are file path patterns to exclude from checking (e.g., "internal/future", "internal/simultaneously")
 	ExcludePaths []string `json:"exclude-paths"`
 }
 

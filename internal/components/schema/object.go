@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/simultaneously"
+	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/internal/components/operations"
 )
 

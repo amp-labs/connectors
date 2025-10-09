@@ -51,8 +51,8 @@ linters-settings:
       description: "Detects bare 'go' keyword usage - use future.Go() or simultaneously.Do() instead"
       settings:
         exclude-paths:
-          - "common/future"
-          - "common/simultaneously"
+          - "internal/future"
+          - "internal/simultaneously"
 
 issues:
   exclude-dirs:

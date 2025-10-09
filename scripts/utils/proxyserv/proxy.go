@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/future"
+	"github.com/amp-labs/connectors/internal/future"
 )
 
 type Proxy struct {
