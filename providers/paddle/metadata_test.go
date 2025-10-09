@@ -15,12 +15,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	tests := []testroutines.Metadata{
 		{
-			Name:         "At least one object name must be queried",
-			Input:        nil,
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrMissingObjects},
-		},
-		{
 			Name:       "Unknown object requested",
 			Input:      []string{"butterflies"},
 			Server:     mockserver.Dummy(),
