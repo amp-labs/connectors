@@ -10,12 +10,15 @@ import (
 	"github.com/amp-labs/connectors/common/contexts"
 )
 
+// Job is a function that performs a unit of work and returns an error if it fails.
+type Job func(ctx context.Context) error
+
 // ErrPanicRecovered is the base error for panic recovery.
 var ErrPanicRecovered = errors.New("panic recovered")
 
 // Do runs the given functions in parallel and returns the first error encountered.
 // See SimultaneouslyCtx for more information.
-func Do(maxConcurrent int, f ...func(ctx context.Context) error) error {
+func Do(maxConcurrent int, f ...Job) error {
 	return DoCtx(context.Background(), maxConcurrent, f...)
 }
 
@@ -29,7 +32,7 @@ func Do(maxConcurrent int, f ...func(ctx context.Context) error) error {
 //
 // Panics that occur within the callback functions are automatically recovered and converted to errors.
 // This prevents a single panicking function from crashing the entire process.
-func DoCtx(ctx context.Context, maxConcurrent int, callback ...func(ctx context.Context) error) error {
+func DoCtx(ctx context.Context, maxConcurrent int, callback ...Job) error {
 	ctx, cancel := context.WithCancel(ctx)
 
 	var cancelOnce sync.Once
@@ -86,7 +89,7 @@ func (e *executor) cleanup() {
 }
 
 // launchAll starts all callback functions in separate goroutines.
-func (e *executor) launchAll(ctx context.Context, callbacks []func(context.Context) error) {
+func (e *executor) launchAll(ctx context.Context, callbacks []Job) {
 	for _, fn := range callbacks {
 		e.waitGroup.Add(1)
 		go e.run(ctx, fn)
@@ -94,7 +97,7 @@ func (e *executor) launchAll(ctx context.Context, callbacks []func(context.Conte
 }
 
 // run executes a single callback function with semaphore control and panic recovery.
-func (e *executor) run(ctx context.Context, fn func(context.Context) error) {
+func (e *executor) run(ctx context.Context, fn Job) {
 	<-e.sem // take one out (will block if empty)
 
 	defer func() {
