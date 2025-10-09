@@ -2,6 +2,7 @@ package providers
 
 const GreenhouseJobBoard Provider = "greenhouseJobBoard"
 
+//nolint:lll
 func init() {
 	// GreenHouseJobBoard Configuration
 	SetInfo(GreenhouseJobBoard, ProviderInfo{
