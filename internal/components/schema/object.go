@@ -81,7 +81,7 @@ func (p *ObjectSchemaProvider) fetchParallel(
 	metadataChannel := make(chan *objectMetadataResult, len(objects))
 	errChannel := make(chan *objectMetadataError, len(objects))
 
-	callbacks := make([]func(ctx context.Context) error, 0, len(objects))
+	callbacks := make([]simultaneously.Job, 0, len(objects))
 
 	for _, objectName := range objects {
 		object := objectName // capture loop variable

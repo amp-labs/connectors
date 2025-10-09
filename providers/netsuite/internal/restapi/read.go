@@ -137,7 +137,7 @@ func (a *Adapter) fetchRecords(ctx context.Context, recordsToFetch []string) ([]
 
 	resultChan := make(chan result, len(recordsToFetch))
 
-	callbacks := make([]func(ctx context.Context) error, 0, len(recordsToFetch))
+	callbacks := make([]simultaneously.Job, 0, len(recordsToFetch))
 
 	for idx, recordURL := range recordsToFetch {
 		index := idx     // capture loop variable

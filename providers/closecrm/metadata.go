@@ -44,7 +44,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 	}
 
 	// Tasks to be executed simultaneously.
-	callbacks := make([]func(ctx context.Context) error, 0, len(objectNames))
+	callbacks := make([]simultaneously.Job, 0, len(objectNames))
 
 	for _, object := range objectNames {
 		obj := object // capture loop variable

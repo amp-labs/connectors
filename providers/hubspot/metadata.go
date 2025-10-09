@@ -49,7 +49,7 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	callbacks := make([]func(ctx context.Context) error, 0, len(objectNames))
+	callbacks := make([]simultaneously.Job, 0, len(objectNames))
 
 	for _, objectName := range objectNames {
 		obj := objectName // capture loop variable

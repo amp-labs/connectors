@@ -198,7 +198,7 @@ func (c *Connector) putOrPostSubscribe(
 	var mutex sync.Mutex
 
 	// iterate over all objects and events to build the payload
-	callbacks := make([]func(ctx context.Context) error, 0, len(params.SubscriptionEvents))
+	callbacks := make([]simultaneously.Job, 0, len(params.SubscriptionEvents))
 
 	for obj, evt := range params.SubscriptionEvents {
 		objName := obj // capture loop variable

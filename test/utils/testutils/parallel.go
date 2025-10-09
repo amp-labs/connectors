@@ -22,7 +22,7 @@ type ParallelRunners[C any] []ParallelRunner[C]
 func (r ParallelRunners[C]) Run(ctx context.Context, conn C) []string {
 	logs := make([]string, len(r))
 
-	callbacks := make([]func(ctx context.Context) error, 0, len(r))
+	callbacks := make([]simultaneously.Job, 0, len(r))
 
 	for i, test := range r {
 		idx := i    // capture loop variable
