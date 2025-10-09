@@ -2,7 +2,6 @@ package main
 
 import (
 	"log/slog"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -28,16 +27,6 @@ func main() {
 			api3.CamelCaseToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,
 		),
-		api3.WithArrayItemAutoSelection(),
-		api3.WithDuplicatesResolver(api3.SingleItemDuplicatesResolver(func(endpoint string) string {
-			// Objects that support incremental read end with "Search" uri part.
-			// Remove the verb to get objectName as a noun.
-			objectName, _ := strings.CutPrefix(endpoint, "/")
-			objectName, _ = strings.CutSuffix(objectName, "/Search")
-
-			return objectName
-		})),
-		api3.WithParameterFilterGetMethod(api3.OnlyOptionalQueryParameters),
 	)
 	goutils.MustBeNil(err)
 
@@ -75,6 +64,3 @@ func main() {
 
 	slog.Info("Completed.")
 }
-
-//discount-groups
-//client-tokens

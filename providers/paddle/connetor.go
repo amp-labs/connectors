@@ -5,7 +5,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/scripts/openapi/dixa/metadata"
+	"github.com/amp-labs/connectors/providers/paddle/metadata"
 )
 
 type Connector struct {
@@ -21,7 +21,7 @@ type Connector struct {
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
-	return components.Initialize(providers.Fathom, params, constructor)
+	return components.Initialize(providers.Paddle, params, constructor)
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
