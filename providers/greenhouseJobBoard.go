@@ -32,7 +32,7 @@ func init() {
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760017955/media/developers.greenhouse.io_1760017960.jpg",
-				LogoURL: " https://res.cloudinary.com/dycvts6vp/image/upload/v1760017999/media/developers.greenhouse.io_1760018005.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760020366/media/developers.greenhouse.io_1760020371.svg",
 			},
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760017955/media/developers.greenhouse.io_1760017960.jpg",
