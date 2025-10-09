@@ -27,7 +27,7 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "issues",
 		Fields:     connectors.Fields("id", "title"),
-		Since:      time.Date(2025, 06, 23, 0, 0, 0, 0, time.UTC),
+		Since:      time.Date(2025, 0o6, 23, 0, 0, 0, 0, time.UTC),
 	})
 	if err != nil {
 		utils.Fail("error reading from Linear", "error", err)
@@ -46,5 +46,4 @@ func main() {
 
 	slog.Info("Reading project statuses..")
 	utils.DumpJSON(res, os.Stdout)
-
 }
