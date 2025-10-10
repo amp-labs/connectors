@@ -27,7 +27,6 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "customers",
 		Fields:     connectors.Fields("id", "name", "email", "status"),
-		Since:      time.Now().Add(-2 * time.Minute), // 30 minutes ago
 	})
 	if err != nil {
 		utils.Fail("error reading customers from Paddle", "error", err)
