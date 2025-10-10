@@ -146,8 +146,10 @@ func (u *URL) queryValuesToString() string {
 	// Append unencoded params
 	if len(u.unencodeParams) > 0 {
 		var unencodedParts []string
+
 		for _, k := range slices.Sorted(maps.Keys(u.unencodeParams)) {
 			vs := u.unencodeParams[k]
+
 			for _, val := range vs {
 				unencodedParts = append(unencodedParts, k+"="+val) // no encoding
 			}

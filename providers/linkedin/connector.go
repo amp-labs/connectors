@@ -57,6 +57,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return conn, nil
 }
 
+//nolint:funlen
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
@@ -75,7 +76,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	)
 
 	// The following method is specific to the 'adAnalytics' object. The values are referenced from the link below.
-	// https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads-reporting/ads-reporting?view=li-lms-2025-09&tabs=curl#metrics-available.
+	// https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads-reporting/ads-reporting?view=li-lms-2025-09&tabs=curl#metrics-available. //nolint:111
 	connector.SchemaProvider = schema.NewCompositeSchemaProvider(
 		schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas),
 		fallbackSchema,

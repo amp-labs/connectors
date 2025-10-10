@@ -89,7 +89,7 @@ func handleNormalPagination(node *ajson.Node) (string, error) {
 		if nextPage != 0 {
 			start, err := jsonquery.New(paging).IntegerWithDefault("start	", 0)
 			if err != nil {
-				return "", nil
+				return "", err
 			}
 
 			return strconv.Itoa(int(start) + int(nextPage)), nil
@@ -99,6 +99,7 @@ func handleNormalPagination(node *ajson.Node) (string, error) {
 	return "", nil
 }
 
+//nolint:cyclop
 func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
 	var (
 		url *urlbuilder.URL
@@ -125,7 +126,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
 
 			url.WithQueryParam("count", strconv.Itoa(countSize))
 
-			accountsValue := fmt.Sprintf("urn%%3Ali%%3AsponsoredAccount%%3A%s", c.AdAccountId)
+			accountsValue := fmt.Sprintf("urn%%3Ali%%3AsponsoredAccount%%3A%s", c.AdAccountId) //nolint:perfsprint
 
 			url.WithUnencodedQueryParam("account", accountsValue)
 		case "adAnalytics":
@@ -134,7 +135,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
 			url.WithQueryParam("timeGranularity", "DAILY")
 
 			// Encode only the "urn" inside List(), leave parentheses literal
-			accountsValue := fmt.Sprintf("List(urn%%3Ali%%3AsponsoredAccount%%3A%s)", c.AdAccountId)
+			accountsValue := fmt.Sprintf("List(urn%%3Ali%%3AsponsoredAccount%%3A%s)", c.AdAccountId) //nolint:perfsprint
 
 			url.WithUnencodedQueryParam("accounts", accountsValue)
 
@@ -143,11 +144,14 @@ func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
 			if !params.Since.IsZero() {
 				startDate := fmt.Sprintf("start:(year:%d,month:%d,day:%d)",
 					params.Since.Year(), int(params.Since.Month()), params.Since.Day())
+
 				endDate := ""
+
 				if !params.Until.IsZero() {
 					endDate = fmt.Sprintf(",end:(year:%d,month:%d,day:%d)",
 						params.Until.Year(), int(params.Until.Month()), params.Until.Day())
 				}
+
 				dateRange = fmt.Sprintf("(%s%s)", startDate, endDate)
 			}
 

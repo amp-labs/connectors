@@ -438,9 +438,8 @@ func TestWithUnencodedQueryParam(t *testing.T) { // nolint:funlen
 			input: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en",
 			modifier: func(u *URL) {
 				u.WithUnencodedQueryParamList("videoId", []string{"%3A45565451%3A", "%3A987568%3A"})
-
 			},
-			expected: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en&videoId=%3A45565451%3A&videoId=%3A987568%3A",
+			expected: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en&videoId=%3A45565451%3A&videoId=%3A987568%3A", //nolint:111
 		},
 		{
 			name:  "Replace query parameter",
