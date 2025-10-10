@@ -12,5 +12,10 @@ var (
 	//go:embed specs.yaml
 	apiFile []byte
 
+	//go:embed v2.yaml
+	apiFilev2 []byte
+
 	FileManager = api3.NewOpenapiFileManager[any](apiFile) // nolint:gochecknoglobals
+
+	FileManagerV2 = api3.NewOpenapiFileManager[any](apiFilev2) // nolint:gochecknoglobals
 )

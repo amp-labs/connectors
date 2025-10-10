@@ -6,13 +6,21 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/pipedrive/metadata"
 )
 
 const (
-	enum  = "enum"
-	set   = "set"
-	notes = "notes"
+	enum          = "enum"
+	set           = "set"
+	notes         = "notes"
+	activities    = "activities"
+	deals         = "deals"
+	products      = "products"
+	organizations = "organizations"
+	persons       = "persons"
+	pipelines     = "pipelines"
+	stages        = "stages"
 )
 
 type metadataFields struct {
@@ -34,7 +42,7 @@ type options struct {
 	ID    any    `json:"id,omitempty"` // this can be an int,bool,string
 	Label string `json:"label,omitempty"`
 	Color string `json:"color,omitempty"`
-	AltId string `json:"alt_id,omitempty"` //nolint:tagliatelle
+	AltId string `json:"alt_id,omitempty"`
 }
 
 // ListObjectMetadata returns metadata for an object by sampling an object from Pipedrive's API.
@@ -72,7 +80,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			continue
 		}
 
-		data, err := parseMetadata(res, c.Module.ID, obj)
+		data, err := c.parseMetadata(res, c.moduleID, obj)
 		if err != nil {
 			objMetadata.Errors[obj] = err
 		}
@@ -85,7 +93,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 // metadataMapper constructs the metadata fields to a new map and returns it.
 // Returns an error if it faces any in unmarshalling the response.
-func parseMetadata(
+func (c *Connector) parseMetadata( // nolint: gocognit,gocyclo,cyclop,funlen
 	resp *common.JSONHTTPResponse, moduleID common.ModuleID, obj string,
 ) (*common.ObjectMetadata, error) {
 	mdt := &common.ObjectMetadata{
@@ -96,12 +104,21 @@ func parseMetadata(
 
 	var err error
 
-	if !metadataDiscoveryEndpoints.Has(obj) {
-		// we currently use static schema all objects, excepts for those having
-		// discovery metadata endpoints.
-		mdt, err = metadata.Schemas.SelectOne(moduleID, obj)
-		if err != nil {
-			return nil, err
+	if !metadataDiscoveryEndpoints.Has(obj) { //nolint: nestif
+		if c.moduleID == providers.PipedriveV2 {
+			// we currently use static schema all objects, excepts for those having
+			// discovery metadata endpoints.
+			mdt, err = metadata.SchemasV2.SelectOne(moduleID, obj)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			// we currently use static schema all objects, excepts for those having
+			// discovery metadata endpoints.
+			mdt, err = metadata.Schemas.SelectOne(moduleID, obj)
+			if err != nil {
+				return nil, err
+			}
 		}
 	} else {
 		response, err := common.UnmarshalJSON[metadataFields](resp)
@@ -129,6 +146,106 @@ func parseMetadata(
 		// If there is no data, we use only the static schema file.
 		if len(response.Data) == 0 {
 			return mdt, nil
+		}
+
+		if c.moduleID == providers.PipedriveV2 {
+			// For now we need to manually add & remove the v1 fields incase the user is using v2 APIs.
+			switch obj {
+			case activities:
+				for _, fld := range activityRemovedFields.List() {
+					mdt.RemoveFieldMetadata(fld)
+				}
+
+				for prvFld, newFld := range activityRenamedFields {
+					mdt.Fields[newFld] = mdt.Fields[prvFld]
+					mdt.RemoveFieldMetadata(prvFld)
+				}
+
+			case deals:
+				for _, fld := range dealRemovedFields.List() {
+					mdt.RemoveFieldMetadata(fld)
+				}
+
+				for prvFld, newFld := range dealRenamedFields {
+					mdt.Fields[newFld] = mdt.Fields[prvFld]
+					mdt.RemoveFieldMetadata(prvFld)
+				}
+
+				for fld, typ := range dealAddedFields {
+					mdt.AddFieldMetadata(fld, common.FieldMetadata{
+						DisplayName: fld,
+						ValueType:   typ,
+					})
+				}
+
+			case persons:
+				for _, fld := range personRemovedFields.List() {
+					mdt.RemoveFieldMetadata(fld)
+				}
+
+				for prvFld, newFld := range personRenamedFields {
+					mdt.Fields[newFld] = mdt.Fields[prvFld]
+					mdt.RemoveFieldMetadata(prvFld)
+				}
+
+				for fld, typ := range personAddedFields {
+					mdt.AddFieldMetadata(fld, common.FieldMetadata{
+						DisplayName: fld,
+						ValueType:   typ,
+					})
+				}
+			case stages:
+				for _, fld := range stageRemovedFields.List() {
+					mdt.RemoveFieldMetadata(fld)
+				}
+
+				for prvFld, newFld := range stageRenamedFields {
+					mdt.Fields[newFld] = mdt.Fields[prvFld]
+					mdt.RemoveFieldMetadata(prvFld)
+				}
+			case pipelines:
+				for _, fld := range pipelineRemovedFields.List() {
+					mdt.RemoveFieldMetadata(fld)
+				}
+
+				for prvFld, newFld := range pipelineRenamedFields {
+					mdt.Fields[newFld] = mdt.Fields[prvFld]
+					mdt.RemoveFieldMetadata(prvFld)
+				}
+			case organizations:
+				for _, fld := range organizationRemovedFields.List() {
+					mdt.RemoveFieldMetadata(fld)
+				}
+
+				for prvFld, newFld := range organizationRenamedFields {
+					mdt.Fields[newFld] = mdt.Fields[prvFld]
+					mdt.RemoveFieldMetadata(prvFld)
+				}
+
+				for fld, typ := range organizationAddedFields {
+					mdt.AddFieldMetadata(fld, common.FieldMetadata{
+						DisplayName: fld,
+						ValueType:   typ,
+					})
+				}
+
+			case products:
+				for _, fld := range productRemovedFields.List() {
+					mdt.RemoveFieldMetadata(fld)
+				}
+
+				for prvFld, newFld := range productRenamedFields {
+					mdt.Fields[newFld] = mdt.Fields[prvFld]
+					mdt.RemoveFieldMetadata(prvFld)
+				}
+
+				for fld, typ := range productAddedFields {
+					mdt.AddFieldMetadata(fld, common.FieldMetadata{
+						DisplayName: fld,
+						ValueType:   typ,
+					})
+				}
+			}
 		}
 	}
 

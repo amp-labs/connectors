@@ -1,6 +1,12 @@
 package providers
 
-const Pipedrive Provider = "pipedrive"
+import "github.com/amp-labs/connectors/common"
+
+const (
+	Pipedrive   Provider        = "pipedrive"
+	PipedriveV1 common.ModuleID = "v1"
+	PipedriveV2 common.ModuleID = "v2"
+)
 
 func init() {
 	// Pipedrive Configuration
@@ -26,6 +32,27 @@ func init() {
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+		},
+		DefaultModule: PipedriveV1,
+		Modules: &Modules{
+			PipedriveV1: {
+				BaseURL:     "https://api.pipedrive.com",
+				DisplayName: "Pipedrive v1",
+				Support: Support{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
+			PipedriveV2: {
+				BaseURL:     "https://api.pipedrive.com",
+				DisplayName: "Pipedrive v2",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

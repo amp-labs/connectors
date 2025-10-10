@@ -15,15 +15,16 @@ const (
 
 // Connector represents the Pipedrive Connector.
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
-	Module  common.Module
+	BaseURL  string
+	Client   *common.JSONHTTPClient
+	moduleID common.ModuleID
 }
 
 // NewConnector constructs the Pipedrive Connector and returns it, Fails
 // if any of the required fields are not instantiated.
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+	params, err := paramsbuilder.Apply(parameters{}, opts,
+		WithModule(providers.PipedriveV1))
 	if err != nil {
 		return nil, err
 	}
@@ -32,6 +33,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: params.Client.Caller,
 		},
+		moduleID: params.Module.Selection.ID,
 	}
 
 	providerInfo, err := providers.ReadInfo(conn.Provider())
@@ -74,7 +76,7 @@ func (c *Connector) constructMetadataURL(obj string) (*urlbuilder.URL, error) {
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
+	path, err := metadata.Schemas.LookupURLPath(c.moduleID, objectName)
 	if err != nil {
 		return nil, err
 	}
