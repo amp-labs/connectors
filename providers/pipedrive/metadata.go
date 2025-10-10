@@ -85,7 +85,9 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			objMetadata.Errors[obj] = err
 		}
 
-		objMetadata.Result[obj] = *data
+		if data != nil {
+			objMetadata.Result[obj] = *data
+		}
 	}
 
 	return &objMetadata, nil
