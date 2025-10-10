@@ -1,0 +1,27 @@
+{
+  "data": {
+    "id": "dsc_01hv6scyf7qdnzcdq01t2y8dx4",
+    "status": "active",
+    "description": "All orders (10% off)",
+    "enabled_for_checkout": true,
+    "code": "BF10OFF",
+    "type": "percentage",
+    "mode": "standard",
+    "amount": "10",
+    "currency_code": null,
+    "recur": true,
+    "maximum_recurring_intervals": 3,
+    "usage_limit": null,
+    "restrict_to": null,
+    "expires_at": "2024-12-03T00:00:00Z",
+    "times_used": 0,
+    "discount_group_id": "dsg_01js2gqehzccfkywgx1jk2mtsp",
+    "custom_data": null,
+    "import_meta": null,
+    "created_at": "2024-11-28T14:36:14.695Z",
+    "updated_at": "2024-11-28T14:36:14.695Z"
+  },
+  "meta": {
+    "request_id": "1681f87f-9c36-4557-a1da-bbb622afa0cc"
+  }
+}

@@ -18,11 +18,30 @@ var supportIncrementalRead = datautils.NewStringSet(
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := metadata.Schemas.ObjectNames().GetList(common.ModuleRoot)
 
+	writeSupport := []string{
+		"products",
+		"prices",
+		"discounts",
+		"discount-groups",
+		"customers",
+		"transactions",
+		"adjustments",
+		"client-tokens",
+		"reports",
+		"notification-settings",
+		"simulations",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
