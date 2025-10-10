@@ -35,7 +35,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		return nil, err
 	}
 
-	conn.SubscriptionKey = params.Metadata["BbApiSubscriptionKey"]
+	conn.SubscriptionKey = params.Metadata["bbApiSubscriptionKey"]
 
 	return conn, nil
 }
