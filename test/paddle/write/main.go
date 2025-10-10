@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -35,7 +34,6 @@ func run() error {
 
 	customerID, err := testCreatingCustomer(ctx, conn)
 	if err != nil {
-		log.Println("Customer created with ID:", customerID)
 		return err
 	}
 
@@ -76,7 +74,6 @@ func testCreatingCustomer(ctx context.Context, conn *cc.Connector) (string, erro
 }
 
 func testUpdatingCustomer(ctx context.Context, conn *cc.Connector, customerID string) error {
-
 	params := common.WriteParams{
 		ObjectName: "customers",
 		RecordId:   customerID,
