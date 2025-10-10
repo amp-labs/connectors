@@ -94,7 +94,7 @@ func makeSOQL(config common.ReadParams) *soqlBuilder {
 		soql.Where(config.Filter)
 	}
 
-	if config.PageSize != 0 {
+	if config.PageSize > 0 {
 		soql.Limit(config.PageSize)
 	} else {
 		soql.Limit(defaultSOQLPageSize)
