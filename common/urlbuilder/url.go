@@ -2,7 +2,9 @@ package urlbuilder
 
 import (
 	"errors"
+	"maps"
 	"net/url"
+	"slices"
 	"strings"
 
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -17,6 +19,7 @@ var ErrInvalidURL = errors.New("URL format is incorrect")
 type URL struct {
 	delegate           *url.URL
 	queryParams        url.Values
+	unencodeParams     map[string][]string
 	encodingExceptions map[string]string
 }
 
@@ -35,6 +38,7 @@ func New(base string, path ...string) (*URL, error) {
 	u := &URL{
 		delegate:           delegate,
 		queryParams:        values,
+		unencodeParams:     make(map[string][]string),
 		encodingExceptions: make(map[string]string),
 	}
 	u.AddPath(path...)
@@ -53,6 +57,7 @@ func FromRawURL(rawURL *url.URL) (*URL, error) {
 	return &URL{
 		delegate:           rawURL,
 		queryParams:        values,
+		unencodeParams:     make(map[string][]string),
 		encodingExceptions: make(map[string]string),
 	}, nil
 }
@@ -63,6 +68,14 @@ func (u *URL) WithQueryParamList(name string, values []string) {
 
 func (u *URL) WithQueryParam(name, value string) {
 	u.queryParams[name] = []string{value}
+}
+
+func (u *URL) WithUnencodedQueryParam(name, value string) {
+	u.unencodeParams[name] = []string{value}
+}
+
+func (u *URL) WithUnencodedQueryParamList(name string, values []string) {
+	u.unencodeParams[name] = values
 }
 
 func (u *URL) GetFirstQueryParam(name string) (string, bool) {
@@ -128,6 +141,23 @@ func (u *URL) queryValuesToString() string {
 	// some special symbols are allowed
 	for before, after := range u.encodingExceptions {
 		result = strings.ReplaceAll(result, before, after)
+	}
+
+	// Append unencoded params
+	if len(u.unencodeParams) > 0 {
+		var unencodedParts []string
+		for _, k := range slices.Sorted(maps.Keys(u.unencodeParams)) {
+			vs := u.unencodeParams[k]
+			for _, val := range vs {
+				unencodedParts = append(unencodedParts, k+"="+val) // no encoding
+			}
+		}
+
+		if result != "" {
+			result += "&" + strings.Join(unencodedParts, "&")
+		} else {
+			result = strings.Join(unencodedParts, "&")
+		}
 	}
 
 	return result

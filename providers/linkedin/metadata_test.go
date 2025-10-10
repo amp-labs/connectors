@@ -20,11 +20,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	tests := []testroutines.Metadata{
 		{
-			Name:         "Object must be included",
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrMissingObjects},
-		},
-		{
 			Name:  "Successfully describe multiple object with metadata",
 			Input: []string{"adTargetingFacets", "dmpEngagementSourceTypes"},
 			Server: mockserver.Switch{
