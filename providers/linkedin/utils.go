@@ -99,7 +99,7 @@ func handleNormalPagination(node *ajson.Node) (string, error) {
 	return "", nil
 }
 
-//nolint:cyclop
+//nolint:cyclop,funlen
 func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
 	var (
 		url *urlbuilder.URL
@@ -141,6 +141,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
 
 			// Handle dateRange manually
 			var dateRange string
+
 			if !params.Since.IsZero() {
 				startDate := fmt.Sprintf("start:(year:%d,month:%d,day:%d)",
 					params.Since.Year(), int(params.Since.Month()), params.Since.Day())

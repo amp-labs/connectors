@@ -75,8 +75,8 @@ func constructor(base *components.Connector) (*Connector, error) {
 		},
 	)
 
-	// The following method is specific to the 'adAnalytics' object. The values are referenced from the link below.
-	// https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads-reporting/ads-reporting?view=li-lms-2025-09&tabs=curl#metrics-available. //nolint:111
+	// The following method is specific to the 'adAnalytics' object.
+	// See readme file for more info.
 	connector.SchemaProvider = schema.NewCompositeSchemaProvider(
 		schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas),
 		fallbackSchema,
