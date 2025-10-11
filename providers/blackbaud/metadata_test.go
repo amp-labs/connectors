@@ -147,7 +147,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: mockutils.NewClient(),
 		Metadata: map[string]string{
-			"Bb-Api-Subscription-Key": "d747f7eca52d495998eef6e4bc923147",
+			"bbApiSubscriptionKey": "d747f7eca52d495998eef6e4bc923147",
 		},
 	})
 	if err != nil {
