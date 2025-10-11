@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/future"
 )
 
 type Proxy struct {
@@ -72,11 +73,13 @@ func listen(ctx context.Context, port int) error {
 		ReadHeaderTimeout: 5 * time.Second, // nolint:mnd
 	}
 
-	go func() {
+	future.GoContext(ctx, func(ctx context.Context) (struct{}, error) {
 		<-ctx.Done()
 
 		_ = server.Shutdown(context.Background()) // nolint:contextcheck
-	}()
+
+		return struct{}{}, nil
+	})
 
 	if err := server.Serve(listener); err != nil {
 		if errors.Is(err, http.ErrServerClosed) {

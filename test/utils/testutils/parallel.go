@@ -2,8 +2,8 @@ package testutils
 
 import (
 	"context"
-	"sync"
 
+	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/tools/fileconv"
 )
 
@@ -22,26 +22,31 @@ type ParallelRunners[C any] []ParallelRunner[C]
 func (r ParallelRunners[C]) Run(ctx context.Context, conn C) []string {
 	logs := make([]string, len(r))
 
-	var wg sync.WaitGroup
+	callbacks := make([]simultaneously.Job, 0, len(r))
+
 	for i, test := range r {
-		wg.Add(1)
+		idx := i    // capture loop variable
+		tst := test // capture loop variable
 
 		locator := fileconv.NewLevelFileLocator(fileconv.LevelParent)
-		filePath := locator.AbsPathTo(test.FilePath)
+		filePath := locator.AbsPathTo(tst.FilePath)
 
-		go func(test ParallelRunner[C], idx int) {
-			defer wg.Done()
-
-			logText, err := test.Function(ctx, conn, filePath)
+		callbacks = append(callbacks, func(ctx context.Context) error {
+			logText, err := tst.Function(ctx, conn, filePath)
 			if err != nil {
 				logText = err.Error()
 			}
 
-			logs[idx] = formatLog(test.TestTitle, logText)
-		}(test, i)
+			logs[idx] = formatLog(tst.TestTitle, logText)
+
+			return nil
+		})
 	}
 
-	wg.Wait()
+	if err := simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
+		// Log error but continue - we want to collect all test results
+		logs = append(logs, formatLog("Error", err.Error()))
+	}
 
 	return logs
 }

@@ -6,18 +6,25 @@
 # Therefore, if any files need formatting, they will be printed, and the final exit code will be
 # successful only if no such files exist.
 .PHONY: lint
-lint:
-	golangci-lint run -c .golangci.yml && (gci list . | sed 's/^/BadFormat: /'; [ $$(gci list . | wc -c) -eq 0 ])
+lint: custom-gcl
+	./custom-gcl run -c .golangci.yml && (gci list . | sed 's/^/BadFormat: /'; [ $$(gci list . | wc -c) -eq 0 ])
+
+# Build custom golangci-lint binary with nogoroutine linter plugin
+custom-gcl:
+	@if [ ! -f custom-gcl ]; then \
+		echo "Building custom golangci-lint binary with nogoroutine linter..."; \
+		golangci-lint custom; \
+	fi
 
 # Run a few autoformatters and print out unfixable errors
 # PRE-REQUISITES: install linters, see https://ampersand.slab.com/posts/engineering-onboarding-guide-environment-set-up-9v73t3l8#huik9-install-linters
 # If you're curious, run `golangci-lint help linters` to see which linters have auto-fix enabled by golangci-lint.
 # For ones that do not have auto-fix enabled by golangci-lint (e.g. wsl and gci), we add the fix commands manually to this list.
 .PHONY: fix
-fix:
+fix: custom-gcl
 	wsl --allow-cuddle-declarations --fix ./... && \
 		gci write . && \
-		golangci-lint run -c .golangci.yml --fix
+		./custom-gcl run -c .golangci.yml --fix
 
 .PHONY: fix/sort
 fix/sort:

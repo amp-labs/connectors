@@ -7,9 +7,11 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/providers"
 )
 
+//nolint:unused // used in ListObjectMetadata
 type metadataFetcher func(ctx context.Context, objectName string) (*common.ObjectMetadata, error)
 
 // =============================================================================
@@ -75,7 +77,6 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
 	var (
-		wg sync.WaitGroup                  //nolint: varnamelen
 		mu sync.Mutex                      //nolint: varnamelen
 		mf metadataFetcher = c.crmMetadata //nolint: varnamelen
 	)
@@ -93,30 +94,32 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		Errors: make(map[string]error, len(objectNames)),
 	}
 
-	wg.Add(len(objectNames))
+	callbacks := make([]simultaneously.Job, 0, len(objectNames))
 
 	for _, object := range objectNames {
-		go func(object string) {
-			metadata, err := mf(ctx, object)
+		obj := object // capture loop variable
+
+		callbacks = append(callbacks, func(ctx context.Context) error {
+			metadata, err := mf(ctx, obj)
 			if err != nil {
 				mu.Lock()
-				objectMetadata.Errors[object] = err
+				objectMetadata.Errors[obj] = err
 				mu.Unlock()
-				wg.Done()
 
-				return
+				return nil //nolint:nilerr // intentionally collecting errors in map, not failing fast
 			}
 
 			mu.Lock()
 			objectMetadata.Result[object] = *metadata
 			mu.Unlock()
 
-			wg.Done()
-		}(object)
+			return nil
+		})
 	}
 
-	// Wait for all goroutines to finish their calls.
-	wg.Wait()
+	if err := simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
+		return nil, err
+	}
 
 	return &objectMetadata, nil
 }
