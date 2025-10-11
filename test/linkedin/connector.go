@@ -13,8 +13,8 @@ import (
 )
 
 var fieldAdAccountId = credscanning.Field{ //nolint:gochecknoglobals
-	Name:      "AdAccountId",
-	PathJSON:  "metadata.AdAccountId",
+	Name:      "adAccountId",
+	PathJSON:  "metadata.adAccountId",
 	SuffixENV: "AD_ACCOUNT_ID",
 }
 
@@ -34,7 +34,7 @@ func GetConnector(ctx context.Context) *linkedin.Connector {
 	conn, err := linkedin.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 		Metadata: map[string]string{
-			"AdAccountId": reader.Get(fieldAdAccountId),
+			"adAccountId": reader.Get(fieldAdAccountId),
 		},
 	})
 	if err != nil {
