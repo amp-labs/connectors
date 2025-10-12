@@ -24,7 +24,7 @@ import (
 // Note: The Chili Piper Edge API uses consistent naming conventions across all endpoints,
 // eliminating the need for normalization. Both objects and fields should be used exactly
 // as they appear in the API documentation.
-func (c *Connector) NormalizeEntityName(
+func (conn *Connector) NormalizeEntityName(
 	ctx context.Context, entity connectors.Entity, input string,
 ) (normalized string, err error) {
 	// Chili Piper API uses consistent naming - no normalization required
