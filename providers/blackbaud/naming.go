@@ -62,13 +62,10 @@ func normalizeObjectName(input string) string {
 		objectName = input
 	}
 
-	// Convert to plural form using the naming package
+	// Convert to plural form and lowercase
 	plural := naming.NewPluralString(objectName).String()
 
-	// Blackbaud uses lowercase
-	normalizedObject := strings.ToLower(plural)
-
-	return prefix + normalizedObject
+	return prefix + strings.ToLower(plural)
 }
 
 // normalizeFieldName converts field names to lowercase.

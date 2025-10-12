@@ -39,52 +39,21 @@ func (c *Connector) NormalizeEntityName(
 // Special case: "template" is singular in the API.
 func normalizeObjectName(input string) string {
 	// Convert to snake_case first (handles camelCase and PascalCase)
-	snakeCase := toSnakeCase(input)
+	snakeCase := naming.ToSnakeCase(input)
 
 	// Check for the special singular case
 	if strings.EqualFold(snakeCase, "template") {
 		return "template"
 	}
 
-	// For all other objects, convert to plural
+	// For all other objects, convert to plural and lowercase
 	plural := naming.NewPluralString(snakeCase).String()
 
-	return strings.ToLower(plural)
+	return naming.ToLowerCase(plural)
 }
 
 // normalizeFieldName converts field names to lowercase snake_case.
 // Avoma field names use snake_case: external_id, start_at, is_voicemail, etc.
 func normalizeFieldName(input string) string {
-	return toSnakeCase(input)
-}
-
-const (
-	// bufferSize is the extra capacity for underscores when converting to snake_case.
-	bufferSize = 5
-)
-
-// toSnakeCase converts a string to snake_case.
-// Handles both camelCase and PascalCase inputs.
-func toSnakeCase(input string) string {
-	if input == "" {
-		return input
-	}
-
-	var result strings.Builder
-
-	result.Grow(len(input) + bufferSize) // Pre-allocate with some buffer for underscores
-
-	for i, r := range input {
-		// If uppercase and not at the start, add underscore before it
-		if i > 0 && r >= 'A' && r <= 'Z' {
-			// Don't add underscore if previous char was already underscore
-			if input[i-1] != '_' {
-				result.WriteRune('_')
-			}
-		}
-
-		result.WriteRune(r)
-	}
-
-	return strings.ToLower(result.String())
+	return naming.ToSnakeCase(input)
 }

@@ -56,82 +56,14 @@ func normalizeObjectName(input string) string {
 
 // normalizeSimpleObjectName handles normalization for a single object name (no slashes).
 func normalizeSimpleObjectName(input string) string {
-	// Convert to plural form using the naming package
+	// Convert to plural form and snake_case
 	plural := naming.NewPluralString(input).String()
 
-	// Convert to lowercase with underscores (snake_case)
-	return toSnakeCase(plural)
+	return naming.ToSnakeCase(plural)
 }
 
 // normalizeFieldName converts field names to lowercase with underscores (snake_case).
 // Aha field names are case-insensitive but the API returns them in snake_case.
 func normalizeFieldName(input string) string {
-	return toSnakeCase(input)
-}
-
-// toSnakeCase converts a string to snake_case.
-// Handles PascalCase, camelCase, and existing snake_case inputs.
-//
-//nolint:cyclop // Snake case conversion requires multiple conditions
-func toSnakeCase(s string) string {
-	// Simple cases: return early
-	lower := strings.ToLower(s)
-	if s == "" || s == lower {
-		return lower
-	}
-
-	var result strings.Builder
-
-	runes := []rune(s)
-
-	for idx, char := range runes {
-		// Add underscore before uppercase letters (except first character)
-		if idx > 0 && isUpper(char) && shouldAddUnderscore(runes, idx) {
-			result.WriteRune('_')
-		}
-
-		result.WriteRune(toLower(char))
-	}
-
-	return result.String()
-}
-
-// shouldAddUnderscore determines if an underscore should be added before the current character.
-func shouldAddUnderscore(runes []rune, idx int) bool {
-	// Don't add if previous char is already underscore
-	if runes[idx-1] == '_' {
-		return false
-	}
-
-	// Add if previous char is lowercase (transition from lower to upper)
-	if isLower(runes[idx-1]) {
-		return true
-	}
-
-	// For uppercase sequences, add underscore before the last uppercase
-	// if it's followed by lowercase (e.g., "HTTPResponse" -> "http_response")
-	if idx+1 < len(runes) && isLower(runes[idx+1]) {
-		return true
-	}
-
-	return false
-}
-
-// isUpper checks if a rune is an uppercase letter.
-func isUpper(r rune) bool {
-	return r >= 'A' && r <= 'Z'
-}
-
-// isLower checks if a rune is a lowercase letter.
-func isLower(r rune) bool {
-	return r >= 'a' && r <= 'z'
-}
-
-// toLower converts a rune to lowercase.
-func toLower(r rune) rune {
-	if isUpper(r) {
-		return r + ('a' - 'A')
-	}
-
-	return r
+	return naming.ToSnakeCase(input)
 }

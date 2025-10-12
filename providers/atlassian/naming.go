@@ -2,7 +2,6 @@ package atlassian
 
 import (
 	"context"
-	"strings"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common/naming"
@@ -41,15 +40,15 @@ func (c *Connector) NormalizeEntityName(
 // normalizeObjectName converts object names to lowercase singular.
 // Jira uses lowercase singular object names (e.g., "issue").
 func normalizeObjectName(input string) string {
-	// Convert to singular form using the naming package
+	// Convert to singular form and lowercase
 	singular := naming.NewSingularString(input).String()
-	// Jira uses lowercase
-	return strings.ToLower(singular)
+
+	return naming.ToLowerCase(singular)
 }
 
 // normalizeFieldName converts field names to lowercase.
 // Jira field names are case-insensitive but the API returns them in lowercase.
 // Custom fields follow the pattern customfield_XXXXX.
 func normalizeFieldName(input string) string {
-	return strings.ToLower(input)
+	return naming.ToLowerCase(input)
 }

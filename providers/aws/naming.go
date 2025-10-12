@@ -2,7 +2,6 @@ package aws
 
 import (
 	"context"
-	"strings"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common/naming"
@@ -39,54 +38,14 @@ func (c *Connector) NormalizeEntityName(
 // normalizeObjectName converts object names to PascalCase plural.
 // AWS objects are plural and use PascalCase: Users, Groups, Applications, etc.
 func normalizeObjectName(input string) string {
-	// Convert to plural form using the naming package
+	// Convert to plural form and PascalCase
 	plural := naming.NewPluralString(input).String()
-	// AWS uses PascalCase
-	return toPascalCase(plural)
+
+	return naming.ToPascalCase(plural)
 }
 
 // normalizeFieldName converts field names to PascalCase.
 // AWS field names use PascalCase: UserId, DisplayName, ApplicationArn, etc.
 func normalizeFieldName(input string) string {
-	return toPascalCase(input)
-}
-
-// toPascalCase converts a string to PascalCase.
-// Examples: "user_id" -> "UserId", "displayName" -> "DisplayName", "email" -> "Email".
-func toPascalCase(input string) string {
-	if input == "" {
-		return input
-	}
-
-	// Handle snake_case: split by underscore
-	if strings.Contains(input, "_") {
-		parts := strings.Split(input, "_")
-		for i, part := range parts {
-			parts[i] = capitalizeFirst(part)
-		}
-
-		return strings.Join(parts, "")
-	}
-
-	// Handle kebab-case: split by hyphen
-	if strings.Contains(input, "-") {
-		parts := strings.Split(input, "-")
-		for i, part := range parts {
-			parts[i] = capitalizeFirst(part)
-		}
-
-		return strings.Join(parts, "")
-	}
-
-	// For camelCase or other formats, just capitalize the first letter
-	return capitalizeFirst(input)
-}
-
-// capitalizeFirst capitalizes the first letter of a string.
-func capitalizeFirst(input string) string {
-	if input == "" {
-		return input
-	}
-
-	return strings.ToUpper(input[:1]) + input[1:]
+	return naming.ToPascalCase(input)
 }

@@ -2,7 +2,6 @@ package hubspot
 
 import (
 	"context"
-	"strings"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common/naming"
@@ -35,14 +34,14 @@ func (c *Connector) NormalizeEntityName(
 // normalizeObjectName converts object names to lowercase plural.
 // HubSpot's standard objects are always plural: contacts, companies, deals, tickets.
 func normalizeObjectName(input string) string {
-	// Convert to plural form using the naming package
+	// Convert to plural form and lowercase
 	plural := naming.NewPluralString(input).String()
-	// HubSpot uses lowercase
-	return strings.ToLower(plural)
+
+	return naming.ToLowerCase(plural)
 }
 
 // normalizeFieldName converts field names to lowercase.
 // HubSpot field names are case-insensitive but the API returns them in lowercase.
 func normalizeFieldName(input string) string {
-	return strings.ToLower(input)
+	return naming.ToLowerCase(input)
 }

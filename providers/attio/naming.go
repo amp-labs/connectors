@@ -2,7 +2,6 @@ package attio
 
 import (
 	"context"
-	"strings"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common/naming"
@@ -47,38 +46,13 @@ func (c *Connector) NormalizeEntityName(
 func normalizeObjectName(input string) string {
 	// Convert to plural form using the naming package
 	plural := naming.NewPluralString(input).String()
-	// Convert to snake_case and lowercase
-	return toSnakeCase(strings.ToLower(plural))
+	// Convert to snake_case (handles all case conversions)
+	return naming.ToSnakeCase(plural)
 }
 
 // normalizeFieldName converts field names to lowercase snake_case.
 // Attio field names are always lowercase with underscores.
 func normalizeFieldName(input string) string {
-	// Convert to snake_case and lowercase
-	return toSnakeCase(strings.ToLower(input))
-}
-
-// toSnakeCase converts a string to snake_case by inserting underscores
-// before uppercase letters (after converting to lowercase).
-// This handles cases like "EmailAddress" -> "email_address" and
-// "WorkspaceMember" -> "workspace_member".
-func toSnakeCase(input string) string {
-	if input == "" {
-		return input
-	}
-
-	// If already snake_case (no spaces, already lowercase with underscores), return as-is
-	if !strings.Contains(input, " ") && strings.ToLower(input) == input {
-		return input
-	}
-
-	// Replace spaces with underscores
-	result := strings.ReplaceAll(input, " ", "_")
-
-	// Remove any consecutive underscores
-	for strings.Contains(result, "__") {
-		result = strings.ReplaceAll(result, "__", "_")
-	}
-
-	return result
+	// Convert to snake_case (handles all case conversions)
+	return naming.ToSnakeCase(input)
 }

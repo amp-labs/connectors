@@ -2,7 +2,6 @@ package salesforce
 
 import (
 	"context"
-	"strings"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common/naming"
@@ -40,31 +39,36 @@ func (c *Connector) NormalizeEntityName(
 // Custom objects end with __c and the base name should be capitalized.
 func normalizeObjectName(input string) string {
 	// Check if it's a custom object
-	if strings.HasSuffix(input, "__c") {
+	if hasCustomSuffix(input) {
 		// Extract base name without __c suffix
-		base := strings.TrimSuffix(input, "__c")
+		base := trimCustomSuffix(input)
 		// Capitalize first letter and append __c
-		return capitalizeFirst(base) + "__c"
+		return naming.CapitalizeFirstOnly(base) + "__c"
 	}
 
-	// For standard objects, use singular form and capitalize
+	// For standard objects, use singular form and capitalize first letter
 	singular := naming.NewSingularString(input).String()
 
-	return capitalizeFirst(singular)
+	return naming.CapitalizeFirstOnly(singular)
 }
 
 // normalizeFieldName converts field names to lowercase.
 // Salesforce's internal metadata representation uses lowercase field names.
 // Custom fields end with __c and should preserve that suffix.
 func normalizeFieldName(input string) string {
-	return strings.ToLower(input)
+	return naming.ToLowerCase(input)
 }
 
-// capitalizeFirst capitalizes the first letter of a string.
-func capitalizeFirst(s string) string {
-	if s == "" {
-		return s
+// hasCustomSuffix checks if the input has the Salesforce custom field suffix __c.
+func hasCustomSuffix(input string) bool {
+	return len(input) > 3 && input[len(input)-3:] == "__c"
+}
+
+// trimCustomSuffix removes the __c suffix from custom objects/fields.
+func trimCustomSuffix(input string) string {
+	if hasCustomSuffix(input) {
+		return input[:len(input)-3]
 	}
 
-	return strings.ToUpper(s[:1]) + s[1:]
+	return input
 }

@@ -2,7 +2,6 @@ package apollo
 
 import (
 	"context"
-	"strings"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common/naming"
@@ -45,56 +44,14 @@ func normalizeObjectName(input string) string {
 	// (e.g., "sequences" -> "emailer_campaigns", "deals" -> "opportunities")
 	input = constructSupportedObjectName(input)
 
-	// Convert to plural form using the naming package
+	// Convert to plural form and snake_case
 	plural := naming.NewPluralString(input).String()
 
-	// Convert to snake_case lowercase
-	snakeCase := toSnakeCase(plural)
-
-	return strings.ToLower(snakeCase)
+	return naming.ToSnakeCase(plural)
 }
 
 // normalizeFieldName converts field names to lowercase snake_case.
 // Apollo field names use snake_case: first_name, last_name, created_at, account_stage_id.
 func normalizeFieldName(input string) string {
-	snakeCase := toSnakeCase(input)
-
-	return strings.ToLower(snakeCase)
-}
-
-// toSnakeCase converts a string to snake_case.
-// Handles transitions from lowercase to uppercase (e.g., "userId" -> "user_id").
-// If the input already contains underscores, it's returned as-is.
-//
-//nolint:cyclop,mnd,nestif,varnamelen // Snake case conversion requires checking character patterns
-func toSnakeCase(input string) string {
-	if input == "" {
-		return input
-	}
-
-	// If already in snake_case (contains underscore), return as-is
-	if strings.Contains(input, "_") {
-		return input
-	}
-
-	var result strings.Builder
-
-	result.Grow(len(input) + 5) // Preallocate with buffer for underscores
-
-	for idx, char := range input {
-		// If this is an uppercase letter
-		if char >= 'A' && char <= 'Z' {
-			// Add underscore before uppercase if not the first character and previous was lowercase/digit
-			if idx > 0 {
-				prevChar := rune(input[idx-1])
-				if (prevChar >= 'a' && prevChar <= 'z') || (prevChar >= '0' && prevChar <= '9') {
-					result.WriteRune('_')
-				}
-			}
-		}
-
-		result.WriteRune(char)
-	}
-
-	return result.String()
+	return naming.ToSnakeCase(input)
 }

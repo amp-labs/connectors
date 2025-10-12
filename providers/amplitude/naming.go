@@ -72,48 +72,6 @@ func normalizeObjectName(input string) string {
 // normalizeFieldName converts field names to lowercase snake_case.
 // Amplitude field names use snake_case convention (user_id, event_type, etc.)
 func normalizeFieldName(input string) string {
-	// Handle empty input
-	if input == "" {
-		return input
-	}
-
-	// If already in snake_case (contains underscores), just lowercase it
-	if strings.Contains(input, "_") {
-		return strings.ToLower(input)
-	}
-
-	// Convert camelCase or PascalCase to snake_case
-	// This handles cases like "UserId" -> "user_id", "EventType" -> "event_type"
-	return toSnakeCase(input)
-}
-
-// toSnakeCase converts a camelCase or PascalCase string to snake_case.
-// Examples: "UserId" -> "user_id", "EventType" -> "event_type", "SessionID" -> "session_id".
-func toSnakeCase(input string) string {
-	if input == "" {
-		return input
-	}
-
-	const extraCapacity = 5
-
-	var result strings.Builder
-
-	result.Grow(len(input) + extraCapacity) // Allocate extra space for potential underscores
-
-	for idx, char := range input {
-		// If this is an uppercase letter and not the first character
-		if idx > 0 && char >= 'A' && char <= 'Z' {
-			// Add underscore before uppercase letter
-			// Special handling: don't add underscore if previous char was also uppercase
-			// (handles acronyms like "ID" -> "id" instead of "i_d")
-			prevChar := rune(input[idx-1])
-			if prevChar < 'A' || prevChar > 'Z' {
-				result.WriteRune('_')
-			}
-		}
-
-		result.WriteRune(char)
-	}
-
-	return strings.ToLower(result.String())
+	// Convert to snake_case (handles all case conversions)
+	return naming.ToSnakeCase(input)
 }
