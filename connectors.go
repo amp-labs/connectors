@@ -99,7 +99,7 @@ type BatchRecordReaderConnector interface {
 	GetRecordsByIds(
 		ctx context.Context,
 		objectName string,
-	//nolint:revive
+		//nolint:revive
 		recordIds []string,
 		fields []string,
 		associations []string) ([]common.ReadResultRow, error)
@@ -111,10 +111,10 @@ type WebhookVerifierConnector interface {
 	// VerifyWebhookMessage verifies the signature of a webhook message.
 	VerifyWebhookMessage(
 		ctx context.Context,
-	// request is the raw webhook request from the provider.
+		// request is the raw webhook request from the provider.
 		request *common.WebhookRequest,
-	// params is the verification parameters unique to the user.
-	// It is used to verify the signature of the webhook message.
+		// params is the verification parameters unique to the user.
+		// It is used to verify the signature of the webhook message.
 		params *common.VerificationParams,
 	) (bool, error)
 }
