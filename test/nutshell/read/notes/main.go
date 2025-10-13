@@ -26,7 +26,7 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "notes",
 		Fields:     connectors.Fields("body"),
-		//NextPage:   "https://app.nutshell.com/rest/notes?page[limit]=1&page[page]=2",
+		// NextPage:   "https://app.nutshell.com/rest/notes?page[limit]=1&page[page]=2",
 	})
 	if err != nil {
 		utils.Fail("error reading from connector", "error", err)

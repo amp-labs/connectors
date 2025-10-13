@@ -2,6 +2,7 @@ package salesforce
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -40,6 +41,12 @@ func (s *soqlBuilder) SelectFields(fields []string) *soqlBuilder {
 
 func (s *soqlBuilder) From(from string) *soqlBuilder {
 	s.from = from
+
+	return s
+}
+
+func (s *soqlBuilder) Limit(l int) *soqlBuilder {
+	s.limit = strconv.Itoa(l)
 
 	return s
 }
