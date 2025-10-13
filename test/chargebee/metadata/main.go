@@ -14,7 +14,7 @@ func main() {
 
 	conn := chargebee.GetChargebeeConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"subscriptions", "events"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"subscriptions", "events", "items"})
 	if err != nil {
 		log.Fatal(err)
 	}

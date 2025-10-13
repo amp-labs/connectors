@@ -13,7 +13,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
+func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	responseCustomers := testutils.DataFromFile(t, "customers.json")

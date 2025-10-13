@@ -40,6 +40,6 @@ var objectResponseField = datautils.NewDefaultMap(datautils.Map[string, string]{
 	return objectName
 })
 
-var objectNameWithListSuffix = datautils.NewSet[string]( //nolint:gochecknoglobals
+var objectNameWithListSuffix = datautils.NewSet( //nolint:gochecknoglobals
 	"currencies",
 )

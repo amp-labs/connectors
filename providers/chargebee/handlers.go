@@ -15,9 +15,8 @@ const (
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-
 	if objectNameWithListSuffix.Has(objectName) {
-		objectName = objectName + "/list"
+		objectName += "/list"
 	}
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName)
