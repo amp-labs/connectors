@@ -73,6 +73,7 @@ import (
 	"github.com/amp-labs/connectors/providers/netsuite"
 	"github.com/amp-labs/connectors/providers/nutshell"
 	"github.com/amp-labs/connectors/providers/outreach"
+	"github.com/amp-labs/connectors/providers/paddle"
 	"github.com/amp-labs/connectors/providers/pinterest"
 	"github.com/amp-labs/connectors/providers/pipedrive"
 	"github.com/amp-labs/connectors/providers/pipeliner"
@@ -173,6 +174,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Netsuite:                wrapper(newNetsuiteConnector),
 	providers.Nutshell:                wrapper(newNutshellConnector),
 	providers.Outreach:                wrapper(newOutreachConnector),
+	providers.Paddle:                  wrapper(newPaddleConnector),
 	providers.Pinterest:               wrapper(newPinterestConnector),
 	providers.Pipedrive:               wrapper(newPipedriveConnector),
 	providers.Pipeliner:               wrapper(newPipelinerConnector),
@@ -806,4 +808,9 @@ func newAmplitudeConnector(
 func newCalendlyConnector(params common.ConnectorParams,
 ) (*calendly.Connector, error) {
 	return calendly.NewConnector(params)
+}
+
+func newPaddleConnector(params common.ConnectorParams,
+) (*paddle.Connector, error) {
+	return paddle.NewConnector(params)
 }
