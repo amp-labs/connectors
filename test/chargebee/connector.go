@@ -7,7 +7,6 @@ import (
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/chargebee"
-	"github.com/amp-labs/connectors/test/utils"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 )
 
@@ -17,12 +16,8 @@ func GetChargebeeConnector(ctx context.Context) *chargebee.Connector {
 
 	client, err := common.NewBasicAuthHTTPClient(ctx, reader.Get(credscanning.Fields.Username), reader.Get(credscanning.Fields.Password))
 	if err != nil {
-		utils.Fail(err.Error())
+		testUtils.Fail(err.Error())
 	}
-	if err != nil {
-		testUtils.Fail("error creating Chargebee connector", "error", err)
-	}
-
 	conn, err := chargebee.NewConnector(
 		common.ConnectorParams{
 			AuthenticatedClient: client,
@@ -30,7 +25,7 @@ func GetChargebeeConnector(ctx context.Context) *chargebee.Connector {
 		},
 	)
 	if err != nil {
-		utils.Fail("error creating asana connector", "error", err)
+		testUtils.Fail("error creating asana connector", "error", err)
 	}
 
 	return conn
