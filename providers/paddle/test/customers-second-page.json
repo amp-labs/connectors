@@ -1,0 +1,25 @@
+{
+  "data": [
+    {
+      "id": "ctm_01h844q4mznqpgqgm6evgw1w63",
+      "status": "active",
+      "custom_data": null,
+      "name": "Jamie Price",
+      "email": "jamie@example.com",
+      "marketing_consent": false,
+      "locale": "en",
+      "created_at": "2023-08-18T10:58:05.087Z",
+      "updated_at": "2024-04-11T15:55:02.727195Z",
+      "import_meta": null
+    }
+  ],
+  "meta": {
+    "request_id": "bb093d50-ddb5-401a-a5ba-034b187b396e",
+    "pagination": {
+      "per_page": 50,
+      "next": "",
+      "has_more": false,
+      "estimated_total": 4
+    }
+  }
+}

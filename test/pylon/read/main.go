@@ -27,7 +27,6 @@ func main() {
 		ObjectName: "accounts",
 		Fields:     connectors.Fields("id", "channels", "name"),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from pylon", "error", err)
 	}
@@ -39,7 +38,6 @@ func main() {
 		ObjectName: "contacts",
 		Fields:     connectors.Fields("id", "email", "avatar_url"),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from pylon", "error", err)
 	}
@@ -51,7 +49,6 @@ func main() {
 		ObjectName: "issues",
 		Fields:     connectors.Fields("id", "created_at", "body_html"),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from pylon", "error", err)
 	}

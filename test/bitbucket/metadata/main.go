@@ -15,7 +15,6 @@ func main() {
 	conn := bitbucket.GetConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"workspaces", "repositories"})
-
 	if err != nil {
 		log.Fatal(err)
 	}

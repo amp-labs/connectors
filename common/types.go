@@ -172,6 +172,9 @@ type ReadParams struct {
 	//	* Capsule: Embeds objects in response.
 	//		Reference: https://developer.capsulecrm.com/v2/overview/reading-from-the-api
 	AssociatedObjects []string // optional
+
+	// PageSize specifies the # of records to request when making a read request.
+	PageSize int // optional
 }
 
 // WriteParams defines how we are writing data to a SaaS API.

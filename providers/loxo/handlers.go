@@ -19,7 +19,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		objectName = "scorecards/" + objectName
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.AgencySlug, objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		params.ObjectName = "scorecards/" + params.ObjectName
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.AgencySlug, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

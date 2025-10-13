@@ -20,12 +20,15 @@ type Connector struct {
 
 	// Require authenticated client
 	common.RequireAuthenticatedClient
+	common.RequireMetadata
 
 	// Supported operations
 	components.SchemaProvider
 	components.Reader
 	components.Writer
 	components.Deleter
+
+	AgencySlug string
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -34,6 +37,8 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	conn.AgencySlug = params.Metadata["agencySlug"]
 
 	return conn, nil
 }
