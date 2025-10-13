@@ -30,7 +30,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.ReadParams{ObjectName: "people", Fields: connectors.Fields("")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/people"),
+				If:    mockcond.Path("/integration-user-loxo-withampersand-com/people"),
 				Then:  mockserver.Response(http.StatusOK, peopleResponse),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
@@ -66,7 +66,8 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				NextPage: testroutines.URLTestServer +
-					"/people?per_page=100&scroll_id=5B313735363231393831313237352C302E302C313338383639335D",
+					"/integration-user-loxo-withampersand-com/people?" +
+					"per_page=100&scroll_id=5B313735363231393831313237352C302E302C313338383639335D",
 				Done: false,
 			},
 			ExpectedErrs: nil,
@@ -76,7 +77,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.ReadParams{ObjectName: "currencies", Fields: connectors.Fields("")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/currencies"),
+				If:    mockcond.Path("/integration-user-loxo-withampersand-com/currencies"),
 				Then:  mockserver.Response(http.StatusOK, currenciesResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
@@ -104,7 +105,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.ReadParams{ObjectName: "countries", Fields: connectors.Fields("")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/countries"),
+				If:    mockcond.Path("/integration-user-loxo-withampersand-com/countries"),
 				Then:  mockserver.Response(http.StatusOK, countriesResponse),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
@@ -121,8 +122,9 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/countries?per_page=100&page=101",
-				Done:     false,
+				NextPage: testroutines.URLTestServer + "/integration-user-loxo-withampersand-com/countries?" +
+					"per_page=100&page=101",
+				Done: false,
 			},
 			ExpectedErrs: nil,
 		},

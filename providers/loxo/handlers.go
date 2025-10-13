@@ -91,7 +91,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		params.ObjectName = "scorecards/" + params.ObjectName
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.AgencySlug, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
