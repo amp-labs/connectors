@@ -1,7 +1,6 @@
 package pipedrive
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -42,8 +41,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Then:  mockserver.Response(http.StatusNotFound, unsupportedResponse),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrRetryable,
-				errors.New(string(unsupportedResponse)), // nolint:err113
+				common.ErrObjectNotSupported,
 			},
 		},
 		{
