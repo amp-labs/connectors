@@ -26,10 +26,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/companies"),
+					If:   mockcond.Path("/integration-user-loxo-withampersand-com/companies"),
 					Then: mockserver.Response(http.StatusOK, companiesResponse),
 				}, {
-					If:   mockcond.Path("/currencies"),
+					If:   mockcond.Path("/integration-user-loxo-withampersand-com/currencies"),
 					Then: mockserver.Response(http.StatusOK, currenciesResponse),
 				}},
 			}.Server(),
@@ -121,9 +121,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: mockutils.NewClient(),
+		Workspace:           "pod4.app.loxo.co",
 		Metadata: map[string]string{
-			"domain":      "pod4.app.loxo.co",
-			"agency_slug": "integration-user-loxo-withampersand-com",
+			"agencySlug": "integration-user-loxo-withampersand-com",
 		},
 	})
 	if err != nil {

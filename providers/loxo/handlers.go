@@ -15,7 +15,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		objectName = "scorecards/" + objectName
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.AgencySlug, objectName)
 	if err != nil {
 		return nil, err
 	}

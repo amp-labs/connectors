@@ -10,29 +10,29 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-var fieldDomain = credscanning.Field{ //nolint:gochecknoglobals
-	Name:      "domain",
-	PathJSON:  "substitutions.domain",
-	SuffixENV: "DOMAIN",
+var fieldWorkspace = credscanning.Field{ //nolint:gochecknoglobals
+	Name:      "workspace",
+	PathJSON:  "substitutions.workspace",
+	SuffixENV: "WORKSPACE",
 }
 
 var fieldAgencySlug = credscanning.Field{ //nolint:gochecknoglobals
-	Name:      "agency_slug",
-	PathJSON:  "substitutions.agency_slug",
+	Name:      "agencySlug",
+	PathJSON:  "metadata.agencySlug",
 	SuffixENV: "AGENCY_SLUG",
 }
 
 func GetLoxoConnector(ctx context.Context) *loxo.Connector {
 	filePath := credscanning.LoadPath(providers.Loxo)
-	reader := utils.MustCreateProvCredJSON(filePath, false, fieldDomain, fieldAgencySlug)
+	reader := utils.MustCreateProvCredJSON(filePath, false, fieldWorkspace, fieldAgencySlug)
 
 	client := utils.NewAPIKeyClient(ctx, reader, providers.Loxo)
 
 	conn, err := loxo.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
+		Workspace:           reader.Get(fieldWorkspace),
 		Metadata: map[string]string{
-			"domain":      reader.Get(fieldDomain),
-			"agency_slug": reader.Get(fieldAgencySlug),
+			"agencySlug": reader.Get(fieldAgencySlug),
 		},
 	})
 	if err != nil {
