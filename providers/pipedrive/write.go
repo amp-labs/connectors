@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 )
 
 type writeResponse struct {
@@ -16,21 +17,33 @@ type writeResponse struct {
 // Write creates or updates records in a pipedriver account.
 // https://developers.pipedrive.com/docs/api/v1
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+	var write common.WriteMethod
+
+	apiVersion := apiV1
+	if c.moduleID == providers.PipedriveV2 {
+		apiVersion = apiV2
+	}
+
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
 	}
 
-	var write common.WriteMethod
-
-	url, err := c.getAPIURL(config.ObjectName, apiV1)
+	url, err := c.getAPIURL(config.ObjectName, apiVersion)
 	if err != nil {
 		return nil, err
+	}
+
+	if !v2SupportedObjects.Has(config.ObjectName) {
+		return nil, common.ErrObjectNotSupported
 	}
 
 	if len(config.RecordId) != 0 {
 		url.AddPath(config.RecordId)
 
 		write = c.Client.Put
+		if c.moduleID == providers.PipedriveV2 {
+			write = c.Client.Patch
+		}
 	} else {
 		write = c.Client.Post
 	}
