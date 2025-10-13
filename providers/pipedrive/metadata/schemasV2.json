@@ -1,8 +1,8 @@
 {
   "modules": {
     "v2": {
-      "id": "v2",
-      "path": "",
+      "id": "api",
+      "path": "v2",
       "objects": {
         "activities": {
           "displayName": "Activities",

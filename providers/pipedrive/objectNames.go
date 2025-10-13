@@ -237,3 +237,20 @@ var organizationAddedFields = map[string]common.ValueType{ // nolint: gochecknog
 var productAddedFields = map[string]common.ValueType{ // nolint: gochecknoglobals
 	"custom_fields": common.ValueTypeOther, // consolidated custom fields
 }
+
+var v2SupportedObjects = datautils.NewSet( //nolint: gochecknoglobals
+	"activities",
+	"products",
+	"organizations",
+	"deals",
+	"persons",
+	"pipelines",
+	"stages",
+)
+
+var v2SupportingUpdateSince = datautils.NewSet( //nolint: gochecknoglobals
+	"activities",
+	"organizations",
+	"deals",
+	"persons",
+)
