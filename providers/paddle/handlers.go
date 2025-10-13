@@ -69,7 +69,14 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+	req, err := http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
 }
 
 func (c *Connector) parseWriteResponse(
