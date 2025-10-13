@@ -66,7 +66,15 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	objectResponseKey := objectResponseField.Get(objectName)
 
-	// Get the actual object data (e.g., "customer", "subscription", etc.)
+	// Example response structure
+	// 	{
+	//     "list": [
+	//         {
+	//             "customer": {...}
+	//         },
+	//     ]
+	// }
+
 	var objectData map[string]any
 	if objectRecord, exists := firstRecord[objectResponseKey]; exists {
 		objectData, ok = objectRecord.(map[string]any)
