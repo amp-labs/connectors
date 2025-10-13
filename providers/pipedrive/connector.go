@@ -5,12 +5,12 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/pipedrive/metadata"
 )
 
 const (
-	apiVersion string = "v1"    // nolint:gochecknoglobals
-	limitQuery string = "limit" // nolint:gochecknoglobals
+	apiV1      string = "v1"     // nolint:gochecknoglobals
+	apiV2      string = "api/v2" // nolint:gochecknoglobals
+	limitQuery string = "limit"  // nolint:gochecknoglobals
 )
 
 // Connector represents the Pipedrive Connector.
@@ -63,8 +63,8 @@ func (c *Connector) setBaseURL(newURL string) {
 
 // getAPIURL constructs a specific object's resource URL in the format
 // `{{baseURL}}/{{version}}/{{objectName}}`.
-func (c *Connector) getAPIURL(arg string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, arg)
+func (c *Connector) getAPIURL(objectName, apiVersion string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.BaseURL, apiVersion, objectName)
 }
 
 func (c *Connector) constructMetadataURL(obj string) (*urlbuilder.URL, error) {
@@ -72,14 +72,19 @@ func (c *Connector) constructMetadataURL(obj string) (*urlbuilder.URL, error) {
 		obj = metadataDiscoveryEndpoints.Get(obj)
 	}
 
-	return c.getAPIURL(obj)
+	return c.getAPIURL(obj, apiV1)
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.moduleID, objectName)
-	if err != nil {
-		return nil, err
+	apiVersion := apiV1
+
+	if c.moduleID == providers.PipedriveV2 {
+		if !v2SupportedObjects.Has(objectName) {
+			return nil, common.ErrObjectNotSupported
+		}
+
+		apiVersion = apiV2
 	}
 
-	return c.getAPIURL(path)
+	return c.getAPIURL(objectName, apiVersion)
 }

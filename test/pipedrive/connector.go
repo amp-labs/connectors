@@ -17,7 +17,7 @@ func GetPipedriveConnector(ctx context.Context) *pipedrive.Connector {
 
 	conn, err := pipedrive.NewConnector(
 		pipedrive.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		pipedrive.WithModule(providers.PipedriveV1),
+		pipedrive.WithModule(providers.PipedriveV2),
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
