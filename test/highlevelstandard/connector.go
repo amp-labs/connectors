@@ -12,13 +12,11 @@ import (
 	"golang.org/x/oauth2"
 )
 
-var (
-	fieldLocationId = credscanning.Field{
-		Name:      "locationId",
-		PathJSON:  "metadata.locationId",
-		SuffixENV: "LOCATION_ID",
-	}
-)
+var fieldLocationId = credscanning.Field{
+	Name:      "locationId",
+	PathJSON:  "metadata.locationId",
+	SuffixENV: "LOCATION_ID",
+}
 
 func GetHighLevelStandardConnector(ctx context.Context) *highlevelstandard.Connector {
 	filePath := credscanning.LoadPath(providers.HighLevelStandard)

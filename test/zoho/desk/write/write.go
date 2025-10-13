@@ -38,7 +38,6 @@ func main() {
 		fmt.Println("Error: ", err)
 		os.Exit(-1)
 	}
-
 }
 
 func writeBusinessHours(ctx context.Context, conn *zoho.Connector) error {
@@ -68,7 +67,8 @@ func writeBusinessHours(ctx context.Context, conn *zoho.Connector) error {
 					"startTime": "10:00",
 					"endTime":   "16:00",
 					"day":       "FRIDAY",
-				}},
+				},
+			},
 			"type":   "SPECIFIC",
 			"status": "ACTIVE",
 		},

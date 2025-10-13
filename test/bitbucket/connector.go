@@ -26,7 +26,6 @@ func GetConnector(ctx context.Context) *bitbucket.Connector {
 	}
 
 	client, err := common.NewOAuthHTTPClient(ctx, options...)
-
 	if err != nil {
 		utils.Fail(err.Error())
 	}

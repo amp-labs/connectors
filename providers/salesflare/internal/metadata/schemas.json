@@ -1,0 +1,674 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "currencies": {
+          "displayName": "Currencies",
+          "path": "/currencies",
+          "responseKey": "",
+          "fields": {
+            "html": {
+              "displayName": "Html",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "iso": {
+              "displayName": "Iso",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "email": {
+          "displayName": "Email",
+          "path": "/datasources/email",
+          "responseKey": "",
+          "fields": {
+            "add_signature_to_campaign": {
+              "displayName": "Add Signature To Campaign",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "add_signature_to_replies": {
+              "displayName": "Add Signature To Replies",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "aliases": {
+              "displayName": "Aliases",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email_signature": {
+              "displayName": "Email Signature",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "host": {
+              "displayName": "Host",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "max_emails_day": {
+              "displayName": "Max Emails Day",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "max_emails_hour": {
+              "displayName": "Max Emails Hour",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "port": {
+              "displayName": "Port",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "primary": {
+              "displayName": "Primary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "smtp_host": {
+              "displayName": "Smtp Host",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "smtp_port": {
+              "displayName": "Smtp Port",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "store_sent_emails": {
+              "displayName": "Store Sent Emails",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "sync_status": {
+              "displayName": "Sync Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "team": {
+              "displayName": "Team",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "User",
+              "valueType": "other",
+              "providerType": "number"
+            }
+          }
+        },
+        "me/contacts": {
+          "displayName": "Me Contacts",
+          "path": "/me/contacts",
+          "responseKey": "",
+          "fields": {
+            "account": {
+              "displayName": "Account",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "addresses": {
+              "displayName": "Addresses",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "archived": {
+              "displayName": "Archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "birth_date": {
+              "displayName": "Birth Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "bounced": {
+              "displayName": "Bounced",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "bounced_date": {
+              "displayName": "Bounced Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "can_edit": {
+              "displayName": "Can Edit",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "connection_strength": {
+              "displayName": "Connection Strength",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "creation_date": {
+              "displayName": "Creation Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom": {
+              "displayName": "Custom",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "domain": {
+              "displayName": "Domain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fax_number": {
+              "displayName": "Fax Number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "files": {
+              "displayName": "Files",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "firstname": {
+              "displayName": "Firstname",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "home_phone_number": {
+              "displayName": "Home Phone Number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "last_email_date": {
+              "displayName": "Last Email Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_meeting_date": {
+              "displayName": "Last Meeting Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastname": {
+              "displayName": "Lastname",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "middle": {
+              "displayName": "Middle",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mobile_phone_number": {
+              "displayName": "Mobile Phone Number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "modification_date": {
+              "displayName": "Modification Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "not_viewed": {
+              "displayName": "Not Viewed",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "opt-out": {
+              "displayName": "Opt Out",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "opt-out_campaign": {
+              "displayName": "Opt Out Campaign",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "opt-out_date": {
+              "displayName": "Opt Out Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "organisation": {
+              "displayName": "Organisation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "Owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "phone_number": {
+              "displayName": "Phone Number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone_numbers": {
+              "displayName": "Phone Numbers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "picture": {
+              "displayName": "Picture",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "positions": {
+              "displayName": "Positions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "prefix": {
+              "displayName": "Prefix",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "role": {
+              "displayName": "Role",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "social_profiles": {
+              "displayName": "Social Profiles",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "suffix": {
+              "displayName": "Suffix",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "mergefields": {
+          "displayName": "Mergefields",
+          "path": "/campaigns/mergefields",
+          "responseKey": "",
+          "fields": {
+            "api_field": {
+              "displayName": "Api Field",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_type": {
+              "displayName": "Custom Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "display_name": {
+              "displayName": "Display Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "entity_type": {
+              "displayName": "Entity Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_custom": {
+              "displayName": "Is Custom",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "pipelines": {
+          "displayName": "Pipelines",
+          "path": "/pipelines",
+          "responseKey": "",
+          "fields": {
+            "archived": {
+              "displayName": "Archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "creation_date": {
+              "displayName": "Creation Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "currency": {
+              "displayName": "Currency",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "default_pipeline": {
+              "displayName": "Default Pipeline",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "expected_customer_lifetime_months": {
+              "displayName": "Expected Customer Lifetime Months",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "follows_default_team_currency": {
+              "displayName": "Follows Default Team Currency",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "groups": {
+              "displayName": "Groups",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "modification_date": {
+              "displayName": "Modification Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "order": {
+              "displayName": "Order",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "recurring": {
+              "displayName": "Recurring",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "stages": {
+              "displayName": "Stages",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "standard_price_per_unit_annually": {
+              "displayName": "Standard Price Per Unit Annually",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "standard_price_per_unit_daily": {
+              "displayName": "Standard Price Per Unit Daily",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "standard_price_per_unit_monthly": {
+              "displayName": "Standard Price Per Unit Monthly",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "standard_price_per_unit_weekly": {
+              "displayName": "Standard Price Per Unit Weekly",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "team": {
+              "displayName": "Team",
+              "valueType": "other",
+              "providerType": "number"
+            }
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags",
+          "responseKey": "",
+          "fields": {
+            "account_count": {
+              "displayName": "Account Count",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "automated": {
+              "displayName": "Automated",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "creation_date": {
+              "displayName": "Creation Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "modification_date": {
+              "displayName": "Modification Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "opportunity_count": {
+              "displayName": "Opportunity Count",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "person_count": {
+              "displayName": "Person Count",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "team": {
+              "displayName": "Team",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "total_count": {
+              "displayName": "Total Count",
+              "valueType": "other",
+              "providerType": "number"
+            }
+          }
+        },
+        "workflows": {
+          "displayName": "Workflows",
+          "path": "/workflows",
+          "responseKey": "",
+          "fields": {
+            "analytics": {
+              "displayName": "Analytics",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "archived": {
+              "displayName": "Archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "can_edit": {
+              "displayName": "Can Edit",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "continuous": {
+              "displayName": "Continuous",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_by": {
+              "displayName": "Created By",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "creation_date": {
+              "displayName": "Creation Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "creator_name": {
+              "displayName": "Creator Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "exit_after_days": {
+              "displayName": "Exit After Days",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "filter": {
+              "displayName": "Filter",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "goal": {
+              "displayName": "Goal",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "individual_record_filter": {
+              "displayName": "Individual Record Filter",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "last_modified_by": {
+              "displayName": "Last Modified By",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "modification_date": {
+              "displayName": "Modification Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "multi_step_before_pro_release": {
+              "displayName": "Multi Step Before Pro Release",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "record_type": {
+              "displayName": "Record Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "schedule_date": {
+              "displayName": "Schedule Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "schedule_days": {
+              "displayName": "Schedule Days",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "schedule_time_end": {
+              "displayName": "Schedule Time End",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "schedule_time_start": {
+              "displayName": "Schedule Time Start",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "scheduled_before_pro_release": {
+              "displayName": "Scheduled Before Pro Release",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status_message": {
+              "displayName": "Status Message",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "step_amount": {
+              "displayName": "Step Amount",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "steps": {
+              "displayName": "Steps",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "team": {
+              "displayName": "Team",
+              "valueType": "other",
+              "providerType": "number"
+            }
+          }
+        }
+      }
+    }
+  }
+}
