@@ -44,7 +44,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/forms/4985924"),
+					mockcond.Path("/integration-user-loxo-withampersand-com/forms/4985924"),
 					mockcond.MethodDELETE(),
 				},
 				Then: mockserver.Response(http.StatusOK),

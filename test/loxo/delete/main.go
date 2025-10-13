@@ -19,12 +19,12 @@ func main() {
 func MainFn() int {
 	ctx := context.Background()
 
-	// err := testPersonEvents(ctx)
-	// if err != nil {
-	// 	return 1
-	// }
+	err := testPersonEvents(ctx)
+	if err != nil {
+		return 1
+	}
 
-	err := testSourceTypes(ctx)
+	err = testSourceTypes(ctx)
 	if err != nil {
 		return 1
 	}
@@ -39,7 +39,7 @@ func testPersonEvents(ctx context.Context) error {
 
 	deleteParams := common.DeleteParams{
 		ObjectName: "person_events",
-		RecordId:   "4985902",
+		RecordId:   "4985924",
 	}
 
 	res, err := Delete(ctx, conn, deleteParams)

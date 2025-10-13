@@ -30,7 +30,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/companies"),
+					mockcond.Path("/integration-user-loxo-withampersand-com/companies"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, companiesFieldResponse),
@@ -54,7 +54,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/people"),
+					mockcond.Path("/integration-user-loxo-withampersand-com/people"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, peopleResponse),
@@ -97,7 +97,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/people/1659529"),
+					mockcond.Path("/integration-user-loxo-withampersand-com/people/1659529"),
 					mockcond.MethodPUT(),
 				},
 				Then: mockserver.Response(http.StatusOK, peopleResponse),

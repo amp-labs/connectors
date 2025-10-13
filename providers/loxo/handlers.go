@@ -138,7 +138,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		params.ObjectName = "scorecards/" + params.ObjectName
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.AgencySlug, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -232,7 +232,7 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 		params.ObjectName = "scorecards/" + params.ObjectName
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName, params.RecordId)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.AgencySlug, params.ObjectName, params.RecordId)
 	if err != nil {
 		return nil, err
 	}
