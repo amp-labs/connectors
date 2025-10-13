@@ -8,6 +8,16 @@ func init() {
 		DisplayName: "Insightly",
 		AuthType:    Basic,
 		BaseURL:     "https://api.insightly.com",
+		// Insightly expects the API key in the username field 
+		// and the password field to be left blank.
+		// See https://api.insightly.com/v3.1/Help#!
+		BasicOpts: &BasicAuthOpts{
+			ApiKeyAsBasic: true,
+			ApiKeyAsBasicOpts: &ApiKeyAsBasicOpts{
+				FieldUsed: UsernameField,
+			},
+			DocsURL: "https://support.insight.ly/en-US/Knowledge/article/2775#API%20Key%20and%20URL",
+		},
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
