@@ -8,6 +8,8 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
+const defaultSOQLPageSize = 2000
+
 // Read reads data from Salesforce. By default, it will read all rows (backfill). However, if Since is set,
 // it will read only rows that have been updated since the specified time.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -92,5 +94,13 @@ func makeSOQL(config common.ReadParams) *soqlBuilder {
 		soql.Where(config.Filter)
 	}
 
+	if config.PageSize > 0 {
+		soql.Limit(config.PageSize)
+	}
+
 	return soql
+}
+
+func (c *Connector) DefaultPageSize() int {
+	return defaultSOQLPageSize
 }
