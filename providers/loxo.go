@@ -8,7 +8,7 @@ func init() {
 	SetInfo(Loxo, ProviderInfo{
 		DisplayName: "Loxo",
 		AuthType:    ApiKey,
-		BaseURL:     "https://{{.domain}}/api/{{.agency_slug}}",
+		BaseURL:     "https://{{.workspace}}/api",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
@@ -41,11 +41,11 @@ func init() {
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name:        "domain",
+					Name:        "workspace",
 					DisplayName: "Full Domain",
 				},
 				{
-					Name:        "agency_slug",
+					Name:        "agencySlug",
 					DisplayName: "Agency Slug",
 				},
 			},

@@ -24,7 +24,6 @@ func main() {
 			"crm-revmg/payments",
 			"crm-volmg/jobs",
 		})
-
 	if err != nil {
 		log.Fatal(err)
 	}
