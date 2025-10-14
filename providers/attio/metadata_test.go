@@ -208,7 +208,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 							"domains": {
 								DisplayName:  "domains",
-								ValueType:    "multiSelect",
+								ValueType:    "other",
 								ProviderType: "domain",
 								ReadOnly:     false,
 								Values:       nil,
