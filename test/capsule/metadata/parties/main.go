@@ -11,8 +11,6 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-var objectName = "parties"
-
 func main() {
 	// Handle Ctrl-C gracefully.
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -24,7 +22,7 @@ func main() {
 	conn := connTest.GetCapsuleConnector(ctx)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		objectName,
+		"parties",
 	})
 	if err != nil {
 		utils.Fail("error listing metadata", "error", err)

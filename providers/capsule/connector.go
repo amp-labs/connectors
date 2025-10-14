@@ -9,10 +9,8 @@ import (
 	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
-	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/capsule/metadata"
 )
 
 type Connector struct {
@@ -23,7 +21,6 @@ type Connector struct {
 	common.RequireAuthenticatedClient
 
 	// Supported operations
-	components.SchemaProvider
 	components.Reader
 	components.Writer
 	components.Deleter
@@ -47,8 +44,6 @@ func constructor(base *components.Connector) (*Connector, error) {
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
 	}.Handle
-
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
