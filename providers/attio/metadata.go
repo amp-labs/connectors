@@ -172,7 +172,7 @@ func (c *Connector) parseStandardOrCustomMetadata(
 
 		var defaultValues []common.FieldValue
 
-		if value.Type == "select" || value.Type == "record-reference" || value.Type == "domain" {
+		if value.Type == "select" {
 			defaultValues, err = c.getDefaultValues(ctx, value)
 			if err != nil {
 				return nil, err
@@ -242,7 +242,7 @@ func getFieldValueType(field string, ismultiselect bool) common.ValueType {
 		return common.ValueTypeInt
 	case "text":
 		return common.ValueTypeString
-	case "select", "record-reference", "domain":
+	case "select":
 		if ismultiselect {
 			return common.ValueTypeMultiSelect
 		}
@@ -259,10 +259,6 @@ func getFieldValueType(field string, ismultiselect bool) common.ValueType {
 }
 
 func (c *Connector) getDefaultValues(ctx context.Context, o Data) (fields []common.FieldValue, err error) {
-	if !o.IsDefaultValueEnabled {
-		return nil, nil
-	}
-
 	url, err := c.getOptionsURL(o.ID.ObjectID, o.ID.AttributeID)
 	if err != nil {
 		return nil, err
