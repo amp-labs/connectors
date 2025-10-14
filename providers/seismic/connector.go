@@ -53,7 +53,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	}
 
 	switch connector.Module() { //nolint: exhaustive
-	case providers.ModuleReporting:
+	case providers.ModuleReporting, common.ModuleRoot:
 		// Set the metadata provider for the connector
 		connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)
 
