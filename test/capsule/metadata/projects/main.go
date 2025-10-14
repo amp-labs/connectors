@@ -2,14 +2,13 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/datautils"
 	connTest "github.com/amp-labs/connectors/test/capsule"
 	"github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
 func main() {
@@ -22,8 +21,13 @@ func main() {
 
 	conn := connTest.GetCapsuleConnector(ctx)
 
-	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
-		ObjectName: "parties",
-		Fields:     datautils.NewSet("firstName", "name"),
+	metadata, err := conn.ListObjectMetadata(ctx, []string{
+		"projects",
 	})
+	if err != nil {
+		utils.Fail("error listing metadata", "error", err)
+	}
+
+	fmt.Println("Metadata...")
+	utils.DumpJSON(metadata, os.Stdout)
 }
