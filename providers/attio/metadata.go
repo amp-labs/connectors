@@ -1,11 +1,13 @@
 package attio
 
 import (
+	"bytes"
 	"context"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 // This struct is used for when the response data having slice of data.
@@ -31,6 +33,11 @@ type Data struct {
 	IsMultiselect         bool      `json:"is_multiselect"`           //nolint:tagliatelle
 	IsDefaultValueEnabled bool      `json:"is_default_value_enabled"` //nolint:tagliatelle
 	CreatedAt             time.Time `json:"created_at"`               //nolint:tagliatelle
+	Config                struct {
+		RecordReference struct {
+			AllowedObjectIds []string `json:"allowed_object_ids"` //nolint:tagliatelle
+		} `json:"record_reference"`
+	} `json:"config"`
 }
 
 type objectResponse struct {
@@ -179,6 +186,13 @@ func (c *Connector) parseStandardOrCustomMetadata(
 			}
 		}
 
+		if value.Type == "record-reference" || value.Type == "domain" {
+			defaultValues, err = c.getDefaultValuesForOtherType(ctx, value)
+			if err != nil {
+				return nil, err
+			}
+		}
+
 		metadata[apiSlug] = common.FieldMetadata{
 			DisplayName:  apiSlug,
 			ValueType:    getFieldValueType(value.Type, value.IsMultiselect),
@@ -242,7 +256,7 @@ func getFieldValueType(field string, ismultiselect bool) common.ValueType {
 		return common.ValueTypeInt
 	case "text":
 		return common.ValueTypeString
-	case "select":
+	case "select", "record-reference", "domain":
 		if ismultiselect {
 			return common.ValueTypeMultiSelect
 		}
@@ -282,4 +296,54 @@ func (c *Connector) getDefaultValues(ctx context.Context, o Data) (fields []comm
 	}
 
 	return
+}
+
+func (c *Connector) getDefaultValuesForOtherType(ctx context.Context, o Data) (fields []common.FieldValue, err error) {
+	objectsIds := o.Config.RecordReference.AllowedObjectIds
+
+	for _, v := range objectsIds {
+		url, err := c.getObjectReadURL(v)
+		if err != nil {
+			return nil, err
+		}
+
+		rsp, err := c.Client.Post(ctx, url.String(), bytes.NewReader([]byte(nil)))
+		if err != nil {
+			return nil, err
+		}
+
+		body, ok := rsp.Body()
+		if !ok {
+			return nil, common.ErrEmptyJSONHTTPResponse
+		}
+
+		values, err := jsonquery.New(body).ArrayRequired("data")
+		if err != nil {
+			return nil, err
+		}
+
+		if len(values) == 0 {
+			return nil, nil
+		}
+
+		defaultValues := []string{}
+
+		for _, v := range values {
+			recordID, err := jsonquery.New(v, "id").StringRequired("record_id")
+			if err != nil {
+				return nil, err
+			}
+
+			defaultValues = append(defaultValues, recordID)
+		}
+
+		for _, name := range defaultValues {
+			fields = append(fields, common.FieldValue{
+				Value:        name,
+				DisplayValue: name,
+			})
+		}
+	}
+
+	return fields, nil
 }
