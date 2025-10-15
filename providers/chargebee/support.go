@@ -41,6 +41,20 @@ var objectResponseField = datautils.NewDefaultMap(datautils.Map[string, string]{
 	"usages":                      "usage",
 	"gifts":                       "gift",
 	"business_entities/transfers": "business_entity_transfer",
+	"recorded_purchases":          "recorded_purchase",
+	"payment_schedule_schemes":    "payment_schedule_scheme",
+	"offer_fulfillments":          "offer_fulfillment",
+	"portal_sessions":             "portal_session",
+	"payment_sources/create_using_temp_token":            "payment_source",
+	"payment_sources/create_using_permanent_token":       "payment_source",
+	"payment_sources/create_using_token":                 "payment_source",
+	"payment_sources/create_using_payment_intent":        "payment_source",
+	"payment_sources/create_card":                        "payment_source",
+	"payment_sources/create_bank_account":                "payment_source",
+	"payment_sources/create_voucher_payment_source":      "payment_source",
+	"payment_intents":                                    "payment_intent",
+	"virtual_bank_accounts/create_using_permanent_token": "virtual_bank_account",
+	"payment_vouchers":                                   "payment_voucher",
 }, func(objectName string) string {
 	return objectName
 })
@@ -48,6 +62,17 @@ var objectResponseField = datautils.NewDefaultMap(datautils.Map[string, string]{
 var objectNameWithListSuffix = datautils.NewSet( //nolint:gochecknoglobals
 	"currencies",
 )
+
+var objectNameWrite = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
+	"invoices":            "invoices/create_for_charge_items_and_charges",
+	"promotional_credits": "promotional_credits/add",
+	"quotes":              "quotes/create_for_charge_items_and_charges",
+	"estimates":           "estimates/create_subscription_for_items",
+	"coupons":             "coupons/create_for_items",
+	"transactions":        "transactions/create_authorization",
+}, func(objectName string) string {
+	return objectName
+})
 
 //
 //nolint:gochecknoglobals
@@ -68,7 +93,7 @@ var supportIncrementalRead = datautils.NewStringSet(
 	"virtual_bank_accounts",
 )
 
-func supportedOperations() components.EndpointRegistryInput {
+func supportedOperations() components.EndpointRegistryInput { //nolint:funlen
 	readSupport := []string{
 		"attached_items",
 		"business_entities/transfers",
@@ -103,11 +128,57 @@ func supportedOperations() components.EndpointRegistryInput {
 		"webhook_endpoints",
 	}
 
+	writeSupport := []string{
+		"customers",
+		"recorded_purchases",
+		"invoices",
+		"credit_notes",
+		"promotional_credits",
+		"unbilled_charges",
+		"payment_schedule_schemes",
+		"quotes",
+		"estimates",
+		"orders",
+		"item_families",
+		"items",
+		"item_prices",
+		"coupons",
+		"coupon_sets",
+		"offer_fulfillments",
+		"offer_events",
+		"features",
+		"hosted_pages/pre_cancel",
+		"hosted_pages/view_voucher",
+		"hosted_pages/checkout_new_for_items",
+		"portal_sessions",
+		"pricing_page_sessions/create_for_existing_subscription",
+		"pricing_page_sessions/create_for_new_subscription",
+		"payment_sources/create_using_temp_token",
+		"payment_sources/create_using_permanent_token",
+		"payment_sources/create_using_token",
+		"payment_sources/create_using_payment_intent",
+		"payment_sources/create_card",
+		"payment_sources/create_bank_account",
+		"payment_sources/create_voucher_payment_source",
+		"payment_intents",
+		"virtual_bank_accounts/create_using_permanent_token",
+		"virtual_bank_accounts",
+		"transactions",
+		"payment_vouchers",
+		"currencies",
+		"webhook_endpoints",
+		"comments",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}

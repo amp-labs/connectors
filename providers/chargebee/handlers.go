@@ -4,11 +4,14 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	neturl "net/url"
 	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 const (
@@ -146,4 +149,80 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	fullObjectName := objectNameWrite.Get(params.ObjectName)
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, fullObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		url.AddPath(params.RecordId)
+	}
+
+	// Convert RecordData to form values
+	formData := make(neturl.Values)
+
+	if recordMap, ok := params.RecordData.(map[string]any); ok {
+		for key, value := range recordMap {
+			if str, ok := value.(string); ok {
+				formData.Set(key, str)
+			} else if value != nil {
+				formData.Set(key, fmt.Sprintf("%v", value))
+			}
+		}
+	}
+
+	body := strings.NewReader(formData.Encode())
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	return req, nil
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	objectResponseKey := objectResponseField.Get(params.ObjectName)
+
+	objectData, err := jsonquery.New(body).ObjectRequired(objectResponseKey)
+	if err != nil || objectData == nil {
+		// If the expected object key is not found, use the entire body as the object data
+		objectData = body
+	}
+
+	recordID, err := jsonquery.New(objectData).StrWithDefault("id", "")
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := jsonquery.Convertor.ObjectToMap(objectData)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		RecordId: recordID,
+		Errors:   nil,
+		Success:  true,
+		Data:     resp,
+	}, nil
 }
