@@ -35,7 +35,7 @@ type Data struct {
 	CreatedAt             time.Time `json:"created_at"`               //nolint:tagliatelle
 	Config                struct {
 		RecordReference struct {
-			AllowedObjectIds []string `json:"allowed_object_ids"` //nolint:tagliatelle
+			AllowedObjectIDs []string `json:"allowed_object_ids"` //nolint:tagliatelle
 		} `json:"record_reference"`
 	} `json:"config"`
 }
@@ -299,9 +299,9 @@ func (c *Connector) getDefaultValues(ctx context.Context, o Data) (fields []comm
 }
 
 func (c *Connector) getDefaultValuesForOtherType(ctx context.Context, o Data) (fields []common.FieldValue, err error) {
-	objectsIds := o.Config.RecordReference.AllowedObjectIds
+	objectsIDs := o.Config.RecordReference.AllowedObjectIDs
 
-	for _, v := range objectsIds {
+	for _, v := range objectsIDs {
 		url, err := c.getObjectReadURL(v)
 		if err != nil {
 			return nil, err
