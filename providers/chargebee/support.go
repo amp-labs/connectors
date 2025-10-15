@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
+// Api docs: https://apidocs.chargebee.com/docs/api/
 var objectResponseField = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
 	"subscriptions":               "subscription",
 	"customers":                   "customer",
