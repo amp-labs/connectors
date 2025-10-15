@@ -33,7 +33,7 @@ func extractRecords(objectName string) common.RecordsFunc {
 				continue
 			}
 
-			// If no nested objects, use recored itself
+			// If no nested objects, use record itself
 			recordMap, err := jsonquery.Convertor.ObjectToMap(record)
 			if err != nil {
 				return nil, err
