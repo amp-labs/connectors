@@ -19,7 +19,7 @@ var ErrInvalidURL = errors.New("URL format is incorrect")
 type URL struct {
 	delegate           *url.URL
 	queryParams        url.Values
-	unencodeParams     map[string][]string
+	unEncodePrams      map[string]bool
 	encodingExceptions map[string]string
 }
 
@@ -38,7 +38,7 @@ func New(base string, path ...string) (*URL, error) {
 	u := &URL{
 		delegate:           delegate,
 		queryParams:        values,
-		unencodeParams:     make(map[string][]string),
+		unEncodePrams:      make(map[string]bool),
 		encodingExceptions: make(map[string]string),
 	}
 	u.AddPath(path...)
@@ -57,7 +57,7 @@ func FromRawURL(rawURL *url.URL) (*URL, error) {
 	return &URL{
 		delegate:           rawURL,
 		queryParams:        values,
-		unencodeParams:     make(map[string][]string),
+		unEncodePrams:      make(map[string]bool),
 		encodingExceptions: make(map[string]string),
 	}, nil
 }
@@ -70,12 +70,18 @@ func (u *URL) WithQueryParam(name, value string) {
 	u.queryParams[name] = []string{value}
 }
 
+// WithUnencodedQueryParam adds a single unencoded query param
 func (u *URL) WithUnencodedQueryParam(name, value string) {
-	u.unencodeParams[name] = []string{value}
+	u.queryParams[name] = []string{value}
+
+	u.unEncodePrams[name] = true
 }
 
+// WithUnencodedQueryParamList adds multiple unencoded query params
 func (u *URL) WithUnencodedQueryParamList(name string, values []string) {
-	u.unencodeParams[name] = values
+	u.queryParams[name] = values
+
+	u.unEncodePrams[name] = true
 }
 
 func (u *URL) GetFirstQueryParam(name string) (string, bool) {
@@ -129,37 +135,51 @@ func (u *URL) String() string {
 	return u.delegate.String()
 }
 
-// URL may have special encoding rules.
-// Those can be set via AddEncodingExceptions.
+// queryValuesToString builds the query string from u.queryParams.
+//
+// It applies URL encoding for all keys and values except those explicitly
+// marked as unencoded in u.unEncodePrams. After building the full query,
+// it applies any encodingExceptions to relax specific encodings.
 func (u *URL) queryValuesToString() string {
-	result := u.queryParams.Encode()
-	if len(result) == 0 {
+	if len(u.queryParams) == 0 {
 		return ""
 	}
 
-	// We are not fully happy with strict encoding provided by url library
-	// some special symbols are allowed
-	for before, after := range u.encodingExceptions {
-		result = strings.ReplaceAll(result, before, after)
+	var buf strings.Builder
+
+	for _, k := range slices.Sorted(maps.Keys(u.queryParams)) {
+		vs := u.queryParams[k]
+
+		keyStr := k
+
+		if _, ok := u.unEncodePrams[k]; !ok {
+			keyStr = url.QueryEscape(k)
+		}
+
+		// Encode each value (or leave raw) and append as key=value
+		for _, v := range vs {
+			if buf.Len() > 0 {
+				buf.WriteByte('&')
+			}
+
+			valStr := v
+
+			// Encode only if not marked unencoded
+			if _, ok := u.unEncodePrams[k]; !ok {
+				valStr = url.QueryEscape(v)
+			}
+
+			buf.WriteString(keyStr)
+			buf.WriteByte('=')
+			buf.WriteString(valStr)
+		}
 	}
 
-	// Append unencoded params
-	if len(u.unencodeParams) > 0 {
-		var unencodedParts []string
+	result := buf.String()
 
-		for _, k := range slices.Sorted(maps.Keys(u.unencodeParams)) {
-			vs := u.unencodeParams[k]
-
-			for _, val := range vs {
-				unencodedParts = append(unencodedParts, k+"="+val) // no encoding
-			}
-		}
-
-		if result != "" {
-			result += "&" + strings.Join(unencodedParts, "&")
-		} else {
-			result = strings.Join(unencodedParts, "&")
-		}
+	// Apply encoding exceptions if needed
+	for before, after := range u.encodingExceptions {
+		result = strings.ReplaceAll(result, before, after)
 	}
 
 	return result
