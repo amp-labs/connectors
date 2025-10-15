@@ -70,14 +70,14 @@ func (u *URL) WithQueryParam(name, value string) {
 	u.queryParams[name] = []string{value}
 }
 
-// WithUnencodedQueryParam adds a single unencoded query param
+// WithUnencodedQueryParam adds a single unencoded query param.
 func (u *URL) WithUnencodedQueryParam(name, value string) {
 	u.queryParams[name] = []string{value}
 
 	u.unEncodePrams[name] = true
 }
 
-// WithUnencodedQueryParamList adds multiple unencoded query params
+// WithUnencodedQueryParamList adds multiple unencoded query params.
 func (u *URL) WithUnencodedQueryParamList(name string, values []string) {
 	u.queryParams[name] = values
 
@@ -147,7 +147,7 @@ func (u *URL) queryValuesToString() string {
 
 	var buf strings.Builder
 
-	for _, k := range slices.Sorted(maps.Keys(u.queryParams)) {
+	for _, k := range slices.Sorted(maps.Keys(u.queryParams)) { //nolint:varnamelen
 		vs := u.queryParams[k]
 
 		keyStr := k
