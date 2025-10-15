@@ -25,7 +25,7 @@ func GetChargebeeConnector(ctx context.Context) *chargebee.Connector {
 		},
 	)
 	if err != nil {
-		testUtils.Fail("error creating asana connector", "error", err)
+		testUtils.Fail("error creating Chargebee connector", "error", err)
 	}
 
 	return conn
