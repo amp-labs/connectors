@@ -1,0 +1,24 @@
+mutation ProductsAndServicesCreate($input: ProductsAndServicesInput!) {
+    productsAndServicesCreate(input : $input) {
+        productOrService {
+        	bookableType #enum
+          category
+          defaultUnitCost
+          description
+          durationMinutes
+          id
+          internalUnitCost
+          markup
+          name
+          onlineBookingSortOrder
+          onlineBookingsEnabled
+          quantityRange{
+            maxQuantity
+            minQuantity
+            quantityEnabled
+          }
+          taxable
+          visible
+        }
+    }
+}
