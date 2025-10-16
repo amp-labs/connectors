@@ -277,16 +277,24 @@ func (f *Future[T]) AwaitContext(ctx context.Context) (T, error) { //nolint:iret
 		return f.Await()
 	}
 
+	// Fast path: check if already completed to avoid blocking on context
+	select {
+	case <-f.resultReady:
+		// Future already completed - return result immediately
+		return f.result.Get()
+	default:
+	}
+
 	// Race the context cancellation against future completion
 	select {
+	case <-f.resultReady:
+		// Future completed before context cancellation
+		return f.result.Get()
 	case <-ctx.Done():
 		// Context was canceled/timed out before completion
 		var zero T
 
 		return zero, ctx.Err()
-	case <-f.resultReady:
-		// Future completed before context cancellation
-		return f.result.Get()
 	}
 }
 

@@ -75,8 +75,8 @@ func newExecutor(maxConcurrent int, cancelOnce *sync.Once, cancel context.Cancel
 		cancelOnce: cancelOnce,
 		cancel:     cancel,
 		sem:        sem,
-		errorChan:  make(chan error),
-		doneChan:   make(chan struct{}),
+		errorChan:  make(chan error, maxConcurrent),
+		doneChan:   make(chan struct{}, maxConcurrent),
 	}
 }
 
