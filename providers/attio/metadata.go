@@ -187,7 +187,7 @@ func (c *Connector) parseStandardOrCustomMetadata(
 		}
 
 		if value.Type == "record-reference" || value.Type == "domain" {
-			defaultValues, err = c.getDefaultValuesForOtherType(ctx, value)
+			defaultValues, err = c.getOptionValuesForRecordReferenceType(ctx, value)
 			if err != nil {
 				return nil, err
 			}
@@ -298,8 +298,12 @@ func (c *Connector) getDefaultValues(ctx context.Context, o Data) (fields []comm
 	return
 }
 
-func (c *Connector) getDefaultValuesForOtherType(ctx context.Context, o Data) (fields []common.FieldValue, err error) {
-	objectsIDs := o.Config.RecordReference.AllowedObjectIDs
+// getOptionValuesForRecordReferenceType retrieves the default option values for a record-reference (relationship) attribute type.
+// For such attributes, the available options are usually linked to standard objects like People, Companies, Deals, Users, or Workspace.
+// The function fetches each object ID listed in Config.RecordReference.AllowedObjectIDs and retrieves its corresponding record_id
+// to populate the field values with both Value and DisplayValue.
+func (c *Connector) getOptionValuesForRecordReferenceType(ctx context.Context, data Data) (fields []common.FieldValue, err error) {
+	objectsIDs := data.Config.RecordReference.AllowedObjectIDs
 
 	for _, v := range objectsIDs {
 		url, err := c.getObjectReadURL(v)
@@ -337,10 +341,10 @@ func (c *Connector) getDefaultValuesForOtherType(ctx context.Context, o Data) (f
 			defaultValues = append(defaultValues, recordID)
 		}
 
-		for _, name := range defaultValues {
+		for _, identifier := range defaultValues {
 			fields = append(fields, common.FieldValue{
-				Value:        name,
-				DisplayValue: name,
+				Value:        identifier,
+				DisplayValue: identifier,
 			})
 		}
 	}
