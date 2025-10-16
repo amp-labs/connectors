@@ -30,7 +30,13 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	if len(config.RecordId) != 0 {
 		url.AddPath(config.RecordId)
 
-		write = c.Client.Put
+		switch config.ObjectName {
+		case "leads", "leadLabels":
+			write = c.Client.Patch
+
+		default:
+			write = c.Client.Put
+		}
 	} else {
 		write = c.Client.Post
 	}
