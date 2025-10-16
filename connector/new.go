@@ -60,6 +60,7 @@ import (
 	"github.com/amp-labs/connectors/providers/instantlyai"
 	"github.com/amp-labs/connectors/providers/intercom"
 	"github.com/amp-labs/connectors/providers/iterable"
+	"github.com/amp-labs/connectors/providers/jobber"
 	"github.com/amp-labs/connectors/providers/keap"
 	"github.com/amp-labs/connectors/providers/kit"
 	"github.com/amp-labs/connectors/providers/klaviyo"
@@ -162,6 +163,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.InstantlyAI:             wrapper(newInstantlyAIConnector),
 	providers.Intercom:                wrapper(newIntercomConnector),
 	providers.Iterable:                wrapper(newIterableConnector),
+	providers.Jobber:                  wrapper(newJobberConnector),
 	providers.Keap:                    wrapper(newKeapConnector),
 	providers.Kit:                     wrapper(newKitConnector),
 	providers.Klaviyo:                 wrapper(newKlaviyoConnector),
@@ -815,6 +817,11 @@ func newCalendlyConnector(params common.ConnectorParams,
 func newPaddleConnector(params common.ConnectorParams,
 ) (*paddle.Connector, error) {
 	return paddle.NewConnector(params)
+}
+
+func newJobberConnector(params common.ConnectorParams,
+) (*jobber.Connector, error) {
+	return jobber.NewConnector(params)
 }
 
 func newChorusConnector(params common.ConnectorParams,
