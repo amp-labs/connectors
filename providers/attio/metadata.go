@@ -298,11 +298,16 @@ func (c *Connector) getDefaultValues(ctx context.Context, o Data) (fields []comm
 	return
 }
 
-// getOptionValuesForRecordReferenceType retrieves the default option values for a record-reference (relationship) attribute type.
-// For such attributes, the available options are usually linked to standard objects like People, Companies, Deals, Users, or Workspace.
-// The function fetches each object ID listed in Config.RecordReference.AllowedObjectIDs and retrieves its corresponding record_id
-// to populate the field values with both Value and DisplayValue.
-func (c *Connector) getOptionValuesForRecordReferenceType(ctx context.Context, data Data) (fields []common.FieldValue, err error) {
+// getOptionValuesForRecordReferenceType retrieves the default option values for a
+// record-reference (relationship) attribute type.
+// For such attributes, the available options are usually linked to standard objects like
+// People, Companies, Deals, Users, or Workspace.
+// The function fetches each object ID listed in Config.RecordReference.AllowedObjectIDs and retrieves
+// its corresponding record_id to populate the field values with both Value and DisplayValue.
+func (c *Connector) getOptionValuesForRecordReferenceType(
+	ctx context.Context,
+	data Data,
+) (fields []common.FieldValue, err error) {
 	objectsIDs := data.Config.RecordReference.AllowedObjectIDs
 
 	for _, v := range objectsIDs {
