@@ -19,7 +19,7 @@ var ErrInvalidURL = errors.New("URL format is incorrect")
 type URL struct {
 	delegate           *url.URL
 	queryParams        url.Values
-	unEncodePrams      map[string]bool
+	unEncodeParams     map[string]struct{}
 	encodingExceptions map[string]string
 }
 
@@ -38,7 +38,7 @@ func New(base string, path ...string) (*URL, error) {
 	u := &URL{
 		delegate:           delegate,
 		queryParams:        values,
-		unEncodePrams:      make(map[string]bool),
+		unEncodeParams:     make(map[string]struct{}),
 		encodingExceptions: make(map[string]string),
 	}
 	u.AddPath(path...)
@@ -57,31 +57,35 @@ func FromRawURL(rawURL *url.URL) (*URL, error) {
 	return &URL{
 		delegate:           rawURL,
 		queryParams:        values,
-		unEncodePrams:      make(map[string]bool),
+		unEncodeParams:     make(map[string]struct{}),
 		encodingExceptions: make(map[string]string),
 	}, nil
 }
 
 func (u *URL) WithQueryParamList(name string, values []string) {
 	u.queryParams[name] = values
+
+	delete(u.unEncodeParams, name)
 }
 
 func (u *URL) WithQueryParam(name, value string) {
 	u.queryParams[name] = []string{value}
+
+	delete(u.unEncodeParams, name)
 }
 
 // WithUnencodedQueryParam adds a single unencoded query param.
 func (u *URL) WithUnencodedQueryParam(name, value string) {
 	u.queryParams[name] = []string{value}
 
-	u.unEncodePrams[name] = true
+	u.unEncodeParams[name] = struct{}{}
 }
 
 // WithUnencodedQueryParamList adds multiple unencoded query params.
 func (u *URL) WithUnencodedQueryParamList(name string, values []string) {
 	u.queryParams[name] = values
 
-	u.unEncodePrams[name] = true
+	u.unEncodeParams[name] = struct{}{}
 }
 
 func (u *URL) GetFirstQueryParam(name string) (string, bool) {
@@ -95,6 +99,8 @@ func (u *URL) GetFirstQueryParam(name string) (string, bool) {
 
 func (u *URL) RemoveQueryParam(name string) {
 	delete(u.queryParams, name)
+
+	delete(u.unEncodeParams, name)
 }
 
 func (u *URL) AddEncodingExceptions(exceptions map[string]string) {
@@ -152,7 +158,7 @@ func (u *URL) queryValuesToString() string {
 
 		keyStr := k
 
-		if _, ok := u.unEncodePrams[k]; !ok {
+		if _, ok := u.unEncodeParams[k]; !ok {
 			keyStr = url.QueryEscape(k)
 		}
 
@@ -165,7 +171,7 @@ func (u *URL) queryValuesToString() string {
 			valStr := v
 
 			// Encode only if not marked unencoded
-			if _, ok := u.unEncodePrams[k]; !ok {
+			if _, ok := u.unEncodeParams[k]; !ok {
 				valStr = url.QueryEscape(v)
 			}
 
