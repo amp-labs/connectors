@@ -66,6 +66,63 @@ See the [examples directory](https://github.com/amp-labs/connectors/tree/main/ex
 | **Anthropic** | [example](https://github.com/amp-labs/connectors/tree/main/examples/auth_connectors/antrhopic)  | | API Key               |
 | **Blueshift** | [example](https://github.com/amp-labs/connectors/tree/main/examples/auth_connectors/blueshift) | | Basic Auth            |
 
+# Concurrency Safety
+
+This codebase uses the `future` and `simultaneously` packages to provide safe concurrency primitives. **Do NOT use the bare `go` keyword** - always use these primitives instead.
+
+## Using the `future` package
+
+For launching async operations that return a result:
+
+```go
+// Instead of: go func() { ... }()
+// Use future.Go for simple async operations:
+result := future.Go(func() (User, error) {
+    return fetchUser(id)
+})
+user, err := result.Await()
+
+// With context support:
+result := future.GoContext(ctx, func(ctx context.Context) (User, error) {
+    return fetchUserWithContext(ctx, id)
+})
+user, err := result.AwaitContext(ctx)
+```
+
+## Using the `simultaneously` package
+
+For running multiple operations in parallel with controlled concurrency:
+
+```go
+// Instead of launching multiple goroutines with: go func() { ... }()
+// Use simultaneously.Do to run functions in parallel:
+err := simultaneously.Do(maxConcurrent,
+    func(ctx context.Context) error { return processItem1(ctx) },
+    func(ctx context.Context) error { return processItem2(ctx) },
+    func(ctx context.Context) error { return processItem3(ctx) },
+)
+
+// With context:
+err := simultaneously.DoCtx(ctx, maxConcurrent, callbacks...)
+```
+
+**Why?** These primitives automatically handle panic recovery and prevent unbounded goroutine spawning, protecting against production outages.
+
+## Linter Enforcement
+
+This restriction is enforced via a custom `nogoroutine` linter built into the project's golangci-lint configuration.
+
+To use the linter:
+```bash
+# Build the custom golangci-lint binary (includes the nogoroutine linter)
+golangci-lint custom
+
+# Run linting (using the custom binary)
+./custom-gcl run
+```
+
+The linter automatically excludes the `future` and `simultaneously` packages themselves, which need to use the `go` keyword internally.
+
 # Contributors
 
 Thankful to the OSS community for making Ampersand better every day.
