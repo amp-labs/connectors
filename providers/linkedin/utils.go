@@ -87,7 +87,7 @@ func handleNormalPagination(node *ajson.Node) (string, error) {
 		}
 
 		if nextPage != 0 {
-			start, err := jsonquery.New(paging).IntegerWithDefault("start	", 0)
+			start, err := jsonquery.New(paging).IntegerWithDefault("start", 0)
 			if err != nil {
 				return "", err
 			}
