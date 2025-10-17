@@ -35,12 +35,12 @@ func init() { // nolint:funlen
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722480320/media/klaviyo_1722480318.svg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722480320/media/klaviyo_1722480318.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710249/media/adyen.com_1760710247.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710249/media/adyen.com_1760710247.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722480368/media/klaviyo_1722480367.svg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722480352/media/klaviyo_1722480351.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710278/media/adyen.com_1760710278.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710278/media/adyen.com_1760710278.svg",
 			},
 		},
 		Metadata: &ProviderMetadata{
@@ -82,12 +82,12 @@ func init() { // nolint:funlen
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722480320/media/klaviyo_1722480318.svg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722480320/media/klaviyo_1722480318.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710249/media/adyen.com_1760710247.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710249/media/adyen.com_1760710247.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722480368/media/klaviyo_1722480367.svg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722480352/media/klaviyo_1722480351.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710278/media/adyen.com_1760710278.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710278/media/adyen.com_1760710278.svg",
 			},
 		},
 		Metadata: &ProviderMetadata{
