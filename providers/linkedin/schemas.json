@@ -1,0 +1,537 @@
+{
+    "modules": {
+        "root": {
+            "id": "root",
+            "path": "rest",
+            "objects": {
+                "adAnalytics": {
+                    "displayName": "Adanalytics",
+                    "path": "rest/adAnalytics",
+                    "responseKey": "",
+                    "fields": {
+                        "actionClicks": {
+                            "displayName": "ActionClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "adUnitClicks": {
+                            "displayName": "AdUnitClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "approximateMemberReach": {
+                            "displayName": "ApproximateMemberReach",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "averageDwellTime": {
+                            "displayName": "AverageDwellTime",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "audiencePenetration": {
+                            "displayName": "AudiencePenetration",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "cardClicks": {
+                            "displayName": "CardClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "cardImpressions": {
+                            "displayName": "CardImpressions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "clicks": {
+                            "displayName": "Clicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "commentLikes": {
+                            "displayName": "CommentLikes",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "comments": {
+                            "displayName": "Comments",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "companyPageClicks": {
+                            "displayName": "CompanyPageClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "conversionValueInLocalCurrency": {
+                            "displayName": "ConversionValueInLocalCurrency",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "costInLocalCurrency": {
+                            "displayName": "CostInLocalCurrency",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "costInUsd": {
+                            "displayName": "CostInUsd",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "costPerQualifiedLead": {
+                            "displayName": "CostPerQualifiedLead",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "dateRange": {
+                            "displayName": "DateRange",
+                            "valueType": "date",
+                            "providerType": "date"
+                        },
+                        "documentCompletions": {
+                            "displayName": "DocumentCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "documentFirstQuartileCompletions": {
+                            "displayName": "DocumentFirstQuartileCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "documentMidpointCompletions": {
+                            "displayName": "DocumentMidpointCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "documentThirdQuartileCompletions": {
+                            "displayName": "DocumentThirdQuartileCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "downloadClicks": {
+                            "displayName": "DownloadClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "externalWebsiteConversions": {
+                            "displayName": "ExternalWebsiteConversions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "externalWebsitePostClickConversions": {
+                            "displayName": "ExternalWebsitePostClickConversions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "externalWebsitePostViewConversions": {
+                            "displayName": "ExternalWebsitePostViewConversions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "follows": {
+                            "displayName": "Follows",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "fullScreenPlays": {
+                            "displayName": "FullScreenPlays",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "headlineClicks": {
+                            "displayName": "HeadlineClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "headlineImpressions": {
+                            "displayName": "HeadlineImpressions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "impressions": {
+                            "displayName": "Impressions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "jobApplications": {
+                            "displayName": "JobApplications",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "jobApplyClicks": {
+                            "displayName": "JobApplyClicks",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "landingPageClicks": {
+                            "displayName": "LandingPageClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "leadGenerationMailContactInfoShares": {
+                            "displayName": "LeadGenerationMailContactInfoShares",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "leadGenerationMailInterestedClicks": {
+                            "displayName": "LeadGenerationMailInterestedClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "likes": {
+                            "displayName": "Likes",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "oneClickLeadFormOpens": {
+                            "displayName": "OneClickLeadFormOpens",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "oneClickLeads": {
+                            "displayName": "oneClickLeads",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "opens": {
+                            "displayName": "Opens",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "otherEngagements": {
+                            "displayName": "OtherEngagements",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "pivotValues": {
+                            "displayName": "PivotValues",
+                            "valueType": "other",
+                            "providerType": "other"
+                        },
+                        "postClickJobApplications": {
+                            "displayName": "PostClickJobApplications",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "postClickJobApplyClicks": {
+                            "displayName": "PostClickJobApplyClicks",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "postClickRegistrations": {
+                            "displayName": "PostClickRegistrations",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "postViewJobApplications": {
+                            "displayName": "PostViewJobApplications",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "postViewJobApplyClicks": {
+                            "displayName": "PostViewJobApplyClicks",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "postViewRegistrations": {
+                            "displayName": "PostViewRegistrations",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "qualifiedLeads": {
+                            "displayName": "QualifiedLeads",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "reactions": {
+                            "displayName": "Reactions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "registrations": {
+                            "displayName": "Registrations",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "revenueAttributionMetrics": {
+                            "displayName": "RevenueAttributionMetrics",
+                            "valueType": "other",
+                            "providerType": "other"
+                        },
+                        "sends": {
+                            "displayName": "Sends",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "shares": {
+                            "displayName": "Shares",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "subscriptionClicks": {
+                            "displayName": "SubscriptionClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "talentLeads": {
+                            "displayName": "TalentLeads",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "textUrlClicks": {
+                            "displayName": "TextUrlClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "totalEngagements": {
+                            "displayName": "TotalEngagements",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "validWorkEmailLeads": {
+                            "displayName": "ValidWorkEmailLeads",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "videoCompletions": {
+                            "displayName": "VideoCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "videoFirstQuartileCompletions": {
+                            "displayName": "VideoFirstQuartileCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "videoMidpointCompletions": {
+                            "displayName": "VideoMidpointCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "videoStarts": {
+                            "displayName": "VideoStarts",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "videoThirdQuartileCompletions": {
+                            "displayName": "VideoThirdQuartileCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "videoViews": {
+                            "displayName": "videoViews",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralCardClicks": {
+                            "displayName": "ViralCardClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralCardImpressions": {
+                            "displayName": "ViralCardImpressions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralClicks": {
+                            "displayName": "ViralClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralCommentLikes": {
+                            "displayName": "ViralCommentLikes",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralComments": {
+                            "displayName": "ViralComments",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralCompanyPageClicks": {
+                            "displayName": "ViralCompanyPageClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralDocumentCompletions": {
+                            "displayName": "ViralDocumentCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralDocumentFirstQuartileCompletions": {
+                            "displayName": "ViralDocumentFirstQuartileCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralDocumentMidpointCompletions": {
+                            "displayName": "ViralDocumentMidpointCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralDocumentThirdQuartileCompletions": {
+                            "displayName": "ViralDocumentThirdQuartileCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralDownloadClicks": {
+                            "displayName": "ViralDownloadClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralExternalWebsiteConversions": {
+                            "displayName": "ViralExternalWebsiteConversions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralExternalWebsitePostClickConversions": {
+                            "displayName": "ViralExternalWebsitePostClickConversions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralExternalWebsitePostViewConversions": {
+                            "displayName": "ViralExternalWebsitePostViewConversions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralFollows": {
+                            "displayName": "ViralFollows",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralFullScreenPlays": {
+                            "displayName": "ViralFullScreenPlays",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralImpressions": {
+                            "displayName": "ViralImpressions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralJobApplications": {
+                            "displayName": "ViralJobApplications",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "viralJobApplyClicks": {
+                            "displayName": "ViralJobApplyClicks",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "viralLandingPageClicks": {
+                            "displayName": "ViralLandingPageClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralLikes": {
+                            "displayName": "ViralLikes",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralOneClickLeadFormOpens": {
+                            "displayName": "ViralOneClickLeadFormOpens",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralOneClickLeads": {
+                            "displayName": "ViralOneClickLeads",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralOtherEngagements": {
+                            "displayName": "ViralOtherEngagements",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralPostClickJobApplications": {
+                            "displayName": "ViralPostClickJobApplications",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "viralPostClickJobApplyClicks": {
+                            "displayName": "ViralPostClickJobApplyClicks",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "viralPostClickRegistrations": {
+                            "displayName": "ViralPostClickRegistrations",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "viralPostViewJobApplications": {
+                            "displayName": "ViralPostViewJobApplications",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "viralPostViewJobApplyClicks": {
+                            "displayName": "ViralPostViewJobApplyClicks",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "viralPostViewRegistrations": {
+                            "displayName": "ViralPostViewRegistrations",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "viralReactions": {
+                            "displayName": "ViralReactions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralRegistrations": {
+                            "displayName": "ViralRegistrations",
+                            "valueType": "float",
+                            "providerType": "float"
+                        },
+                        "viralShares": {
+                            "displayName": "ViralShares",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralSubscriptionClicks": {
+                            "displayName": "ViralSubscriptionClicks",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralTotalEngagements": {
+                            "displayName": "ViralTotalEngagements",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralVideoCompletions": {
+                            "displayName": "ViralVideoCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralVideoFirstQuartileCompletions": {
+                            "displayName": "ViralVideoFirstQuartileCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralVideoMidpointCompletions": {
+                            "displayName": "ViralVideoMidpointCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralVideoStarts": {
+                            "displayName": "ViralVideoStarts",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralVideoThirdQuartileCompletions": {
+                            "displayName": "ViralVideoThirdQuartileCompletions",
+                            "valueType": "int",
+                            "providerType": "int"
+                        },
+                        "viralVideoViews": {
+                            "displayName": "ViralVideoViews",
+                            "valueType": "int",
+                            "providerType": "int"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
