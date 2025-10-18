@@ -22,7 +22,7 @@ type Party struct {
 	ID int `json:"id"`
 }
 
-const partyID = 273316942 // 254633973
+const partyID = 277242033
 
 func main() {
 	// Handle Ctrl-C gracefully.

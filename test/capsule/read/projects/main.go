@@ -23,7 +23,7 @@ func main() {
 	conn := connTest.GetCapsuleConnector(ctx)
 
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
-		ObjectName: "parties",
-		Fields:     datautils.NewSet("firstName", "name"),
+		ObjectName: "projects",
+		Fields:     datautils.NewSet("id", "name", "Interests"),
 	})
 }

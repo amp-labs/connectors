@@ -1,0 +1,47 @@
+{
+  "kases": [
+    {
+      "id": 5588202,
+      "owner": {
+        "id": 694320,
+        "deleted": false,
+        "username": "MaiaHilton",
+        "pictureURL": "https://facehub.appspot.com/default/person?text=BD&size=100&colour=1703099704",
+        "name": "Maia Hilton"
+      },
+      "team": null,
+      "party": {
+        "id": 277242033,
+        "type": "person",
+        "firstName": "Maia",
+        "lastName": "Hilton",
+        "pictureURL": "https://facehub.appspot.com/default/person?text=BD&size=100&colour=1703099704"
+      },
+      "status": "OPEN",
+      "opportunity": null,
+      "stage": {
+        "name": "Planning",
+        "id": 271006
+      },
+      "createdAt": "2025-10-14T00:11:23Z",
+      "updatedAt": "2025-10-14T00:26:22Z",
+      "description": "Designing shopping cart website",
+      "name": "Research",
+      "closedOn": null,
+      "lastContactedAt": null,
+      "expectedCloseOn": "2015-12-09",
+      "startOn": null,
+      "fields": [
+        {
+          "id": 9785121,
+          "definition": {
+            "id": 926886,
+            "name": "Interests"
+          },
+          "value": "Skiing",
+          "tagId": 168298
+        }
+      ]
+    }
+  ]
+}
