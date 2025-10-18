@@ -13,8 +13,6 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-var objectName = "Contacts" // nolint: gochecknoglobals
-
 func main() {
 	// Handle Ctrl-C gracefully.
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -26,7 +24,7 @@ func main() {
 	conn := connTest.GetPipelinerConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: objectName,
+		ObjectName: "Contacts",
 		Fields:     connectors.Fields("id", "formatted_name", "account_position"),
 	})
 	if err != nil {
