@@ -21,7 +21,7 @@ func run() error {
 
 	conn := servicenow.GetServiceNowConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"now/table/incident", "now/contact", "now/consumer"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"incident", "contact", "consumer"})
 	if err != nil {
 		return err
 	}
