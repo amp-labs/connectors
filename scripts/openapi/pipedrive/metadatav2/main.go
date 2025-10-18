@@ -73,7 +73,7 @@ var displayName = map[string]string{ // nolint:gochecknoglobals
 }
 
 func main() {
-	explorer, err := openapi.FileManagerV2.GetExplorer()
+	explorer, err := openapi.FileManager.GetExplorer()
 	if err != nil {
 		log.Fatalln(err)
 	}
