@@ -1,0 +1,17 @@
+{
+  "data": [
+    {
+      "id": 3,
+      "name": "📞 Relance téléphonique",
+      "color": "FAE60C",
+      "is_active": true,
+      "rank": 0
+    }
+  ],
+  "pagination": {
+    "limit": 1,
+    "count": 1,
+    "total": 9,
+    "offset": "WyIwIiwiMyJd"
+  }
+}
