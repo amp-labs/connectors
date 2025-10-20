@@ -2,8 +2,10 @@ package providers
 
 import "github.com/amp-labs/connectors/common"
 
-const PayPal Provider = "payPal"
-const PayPalSandBox Provider = "payPalSandBox"
+const (
+	PayPal        Provider = "payPal"
+	PayPalSandBox Provider = "payPalSandBox"
+)
 
 // nolint:funlen
 func init() {
