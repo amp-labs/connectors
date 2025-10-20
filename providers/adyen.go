@@ -35,11 +35,11 @@ func init() { // nolint:funlen
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710249/media/adyen.com_1760710247.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760952588/media/adyen.com_1760952587.jpg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710249/media/adyen.com_1760710247.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710278/media/adyen.com_1760710278.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760952588/media/adyen.com_1760952587.jpg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710278/media/adyen.com_1760710278.svg",
 			},
 		},
@@ -82,11 +82,11 @@ func init() { // nolint:funlen
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710249/media/adyen.com_1760710247.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760952588/media/adyen.com_1760952587.jpg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710249/media/adyen.com_1760710247.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710278/media/adyen.com_1760710278.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760952588/media/adyen.com_1760952587.jpg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760710278/media/adyen.com_1760710278.svg",
 			},
 		},
