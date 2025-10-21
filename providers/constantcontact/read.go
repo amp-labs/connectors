@@ -10,8 +10,6 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-var ErrResolvingCustomFields = errors.New("cannot resolve custom fields")
-
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
@@ -96,17 +94,21 @@ func (c *Connector) requestCustomFields(
 	// Only contacts resource supports custom fields.
 	url, err := c.getURL("contact_custom_fields")
 	if err != nil {
-		return nil, errors.Join(ErrResolvingCustomFields, err)
+		return nil, errors.Join(common.ErrResolvingCustomFields, err)
 	}
 
 	res, err := c.Client.Get(ctx, url.String())
 	if err != nil {
-		return nil, errors.Join(ErrResolvingCustomFields, err)
+		return nil, errors.Join(common.ErrResolvingCustomFields, err)
 	}
 
 	fieldsResponse, err := common.UnmarshalJSON[modelCustomFieldsResponse](res)
 	if err != nil {
-		return nil, errors.Join(ErrResolvingCustomFields, err)
+		return nil, errors.Join(common.ErrResolvingCustomFields, err)
+	}
+
+	if fieldsResponse == nil {
+		return nil, errors.Join(common.ErrResolvingCustomFields, common.ErrEmptyJSONHTTPResponse)
 	}
 
 	fields := make(map[string]modelCustomField)
