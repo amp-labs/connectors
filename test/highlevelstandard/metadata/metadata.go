@@ -15,7 +15,6 @@ func main() {
 	conn := highlevelstandard.GetHighLevelStandardConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"businesses", "calendars", "calendars/groups"})
-
 	if err != nil {
 		log.Fatal(err)
 	}

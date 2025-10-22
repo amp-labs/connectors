@@ -88,6 +88,7 @@ func buildReadBody(config common.ReadParams) map[string]any {
 			"exposedFields": map[string]any{
 				"parties": true,
 			},
+			"media": true,
 		}
 	}
 
