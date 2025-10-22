@@ -22,7 +22,7 @@ func MainFn() int {
 
 	conn := linkedin.GetConnector(ctx)
 
-	err := testRead(context.Background(), conn, "adTargetingFacets", []string{""}, time.Time{}, time.Time{})
+	err := testRead(context.Background(), conn, "adTargetingFacets", []string{"facetName", "entityTypes"}, time.Time{}, time.Time{})
 	if err != nil {
 		return 1
 	}
@@ -32,7 +32,7 @@ func MainFn() int {
 		return 1
 	}
 
-	err = testRead(context.Background(), conn, "adAccounts", []string{""}, time.Time{}, time.Time{})
+	err = testRead(context.Background(), conn, "adAccounts", []string{"id", "name"}, time.Time{}, time.Time{})
 	if err != nil {
 		return 1
 	}
@@ -42,7 +42,7 @@ func MainFn() int {
 		return 1
 	}
 
-	err = testRead(context.Background(), conn, "dmpSegments", []string{""}, time.Time{}, time.Time{})
+	err = testRead(context.Background(), conn, "dmpSegments", []string{"name", "account"}, time.Time{}, time.Time{})
 	if err != nil {
 		return 1
 	}

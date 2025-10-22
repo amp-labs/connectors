@@ -5,42 +5,42 @@
             "path": "rest",
             "objects": {
                 "adAnalytics": {
-                    "displayName": "Adanalytics",
+                    "displayName": "Ad Analytics",
                     "path": "rest/adAnalytics",
                     "responseKey": "",
                     "fields": {
                         "actionClicks": {
-                            "displayName": "ActionClicks",
+                            "displayName": "Action Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "adUnitClicks": {
-                            "displayName": "AdUnitClicks",
+                            "displayName": "Ad Unit Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "approximateMemberReach": {
-                            "displayName": "ApproximateMemberReach",
+                            "displayName": "Approximate Member Reach",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "averageDwellTime": {
-                            "displayName": "AverageDwellTime",
+                            "displayName": "Average Dwell Time",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "audiencePenetration": {
-                            "displayName": "AudiencePenetration",
+                            "displayName": "Audience Penetration",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "cardClicks": {
-                            "displayName": "CardClicks",
+                            "displayName": "Card Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "cardImpressions": {
-                            "displayName": "CardImpressions",
+                            "displayName": "Card Impressions",
                             "valueType": "int",
                             "providerType": "int"
                         },
@@ -50,7 +50,7 @@
                             "providerType": "int"
                         },
                         "commentLikes": {
-                            "displayName": "CommentLikes",
+                            "displayName": "Comment Likes",
                             "valueType": "int",
                             "providerType": "int"
                         },
@@ -60,72 +60,72 @@
                             "providerType": "int"
                         },
                         "companyPageClicks": {
-                            "displayName": "CompanyPageClicks",
+                            "displayName": "Company Page Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "conversionValueInLocalCurrency": {
-                            "displayName": "ConversionValueInLocalCurrency",
+                            "displayName": "Conversion Value In Local Currency",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "costInLocalCurrency": {
-                            "displayName": "CostInLocalCurrency",
+                            "displayName": "Cost In Local Currency",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "costInUsd": {
-                            "displayName": "CostInUsd",
+                            "displayName": "Cost In Usd",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "costPerQualifiedLead": {
-                            "displayName": "CostPerQualifiedLead",
+                            "displayName": "Cost Per Qualified Lead",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "dateRange": {
-                            "displayName": "DateRange",
+                            "displayName": "Date Range",
                             "valueType": "date",
                             "providerType": "date"
                         },
                         "documentCompletions": {
-                            "displayName": "DocumentCompletions",
+                            "displayName": "Document Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "documentFirstQuartileCompletions": {
-                            "displayName": "DocumentFirstQuartileCompletions",
+                            "displayName": "Document First Quartile Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "documentMidpointCompletions": {
-                            "displayName": "DocumentMidpointCompletions",
+                            "displayName": "Document Midpoint Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "documentThirdQuartileCompletions": {
-                            "displayName": "DocumentThirdQuartileCompletions",
+                            "displayName": "Document Third Quartile Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "downloadClicks": {
-                            "displayName": "DownloadClicks",
+                            "displayName": "Download Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "externalWebsiteConversions": {
-                            "displayName": "ExternalWebsiteConversions",
+                            "displayName": "External Website Conversions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "externalWebsitePostClickConversions": {
-                            "displayName": "ExternalWebsitePostClickConversions",
+                            "displayName": "External Website Post Click Conversions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "externalWebsitePostViewConversions": {
-                            "displayName": "ExternalWebsitePostViewConversions",
+                            "displayName": "External Website Post View Conversions",
                             "valueType": "int",
                             "providerType": "int"
                         },
@@ -135,17 +135,17 @@
                             "providerType": "int"
                         },
                         "fullScreenPlays": {
-                            "displayName": "FullScreenPlays",
+                            "displayName": "Full Screen Plays",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "headlineClicks": {
-                            "displayName": "HeadlineClicks",
+                            "displayName": "Headline Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "headlineImpressions": {
-                            "displayName": "HeadlineImpressions",
+                            "displayName": "Headline Impressions",
                             "valueType": "int",
                             "providerType": "int"
                         },
@@ -155,27 +155,27 @@
                             "providerType": "int"
                         },
                         "jobApplications": {
-                            "displayName": "JobApplications",
+                            "displayName": "Job Applications",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "jobApplyClicks": {
-                            "displayName": "JobApplyClicks",
+                            "displayName": "Job Apply Clicks",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "landingPageClicks": {
-                            "displayName": "LandingPageClicks",
+                            "displayName": "Landing Page Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "leadGenerationMailContactInfoShares": {
-                            "displayName": "LeadGenerationMailContactInfoShares",
+                            "displayName": "Lead Generation Mail Contact Info Shares",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "leadGenerationMailInterestedClicks": {
-                            "displayName": "LeadGenerationMailInterestedClicks",
+                            "displayName": "Lead Generation Mail Interested Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
@@ -185,12 +185,12 @@
                             "providerType": "int"
                         },
                         "oneClickLeadFormOpens": {
-                            "displayName": "OneClickLeadFormOpens",
+                            "displayName": "One Click Lead Form Opens",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "oneClickLeads": {
-                            "displayName": "oneClickLeads",
+                            "displayName": "one Click Leads",
                             "valueType": "int",
                             "providerType": "int"
                         },
@@ -200,47 +200,47 @@
                             "providerType": "int"
                         },
                         "otherEngagements": {
-                            "displayName": "OtherEngagements",
+                            "displayName": "Other Engagements",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "pivotValues": {
-                            "displayName": "PivotValues",
+                            "displayName": "Pivot Values",
                             "valueType": "other",
                             "providerType": "other"
                         },
                         "postClickJobApplications": {
-                            "displayName": "PostClickJobApplications",
+                            "displayName": "Post Click Job Applications",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "postClickJobApplyClicks": {
-                            "displayName": "PostClickJobApplyClicks",
+                            "displayName": "Post Click Job Apply Clicks",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "postClickRegistrations": {
-                            "displayName": "PostClickRegistrations",
+                            "displayName": "Post Click Registrations",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "postViewJobApplications": {
-                            "displayName": "PostViewJobApplications",
+                            "displayName": "Post View Job Applications",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "postViewJobApplyClicks": {
-                            "displayName": "PostViewJobApplyClicks",
+                            "displayName": "Post View Job Apply Clicks",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "postViewRegistrations": {
-                            "displayName": "PostViewRegistrations",
+                            "displayName": "Post View Registrations",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "qualifiedLeads": {
-                            "displayName": "QualifiedLeads",
+                            "displayName": "Qualified Leads",
                             "valueType": "int",
                             "providerType": "int"
                         },
@@ -255,7 +255,7 @@
                             "providerType": "float"
                         },
                         "revenueAttributionMetrics": {
-                            "displayName": "RevenueAttributionMetrics",
+                            "displayName": "Revenue Attribution Metrics",
                             "valueType": "other",
                             "providerType": "other"
                         },
@@ -270,262 +270,262 @@
                             "providerType": "int"
                         },
                         "subscriptionClicks": {
-                            "displayName": "SubscriptionClicks",
+                            "displayName": "Subscription Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "talentLeads": {
-                            "displayName": "TalentLeads",
+                            "displayName": "Talent Leads",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "textUrlClicks": {
-                            "displayName": "TextUrlClicks",
+                            "displayName": "Text Url Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "totalEngagements": {
-                            "displayName": "TotalEngagements",
+                            "displayName": "Total Engagements",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "validWorkEmailLeads": {
-                            "displayName": "ValidWorkEmailLeads",
+                            "displayName": "Valid Work Email Leads",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "videoCompletions": {
-                            "displayName": "VideoCompletions",
+                            "displayName": "Video Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "videoFirstQuartileCompletions": {
-                            "displayName": "VideoFirstQuartileCompletions",
+                            "displayName": "Video First Quartile Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "videoMidpointCompletions": {
-                            "displayName": "VideoMidpointCompletions",
+                            "displayName": "Video Midpoint Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "videoStarts": {
-                            "displayName": "VideoStarts",
+                            "displayName": "Video Starts",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "videoThirdQuartileCompletions": {
-                            "displayName": "VideoThirdQuartileCompletions",
+                            "displayName": "Video Third Quartile Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "videoViews": {
-                            "displayName": "videoViews",
+                            "displayName": "video Views",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralCardClicks": {
-                            "displayName": "ViralCardClicks",
+                            "displayName": "Viral Card Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralCardImpressions": {
-                            "displayName": "ViralCardImpressions",
+                            "displayName": "Viral Card Impressions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralClicks": {
-                            "displayName": "ViralClicks",
+                            "displayName": "Viral Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralCommentLikes": {
-                            "displayName": "ViralCommentLikes",
+                            "displayName": "Viral Comment Likes",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralComments": {
-                            "displayName": "ViralComments",
+                            "displayName": "Viral Comments",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralCompanyPageClicks": {
-                            "displayName": "ViralCompanyPageClicks",
+                            "displayName": "Viral Company Page Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralDocumentCompletions": {
-                            "displayName": "ViralDocumentCompletions",
+                            "displayName": "Viral Document Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralDocumentFirstQuartileCompletions": {
-                            "displayName": "ViralDocumentFirstQuartileCompletions",
+                            "displayName": "Viral Document First Quartile Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralDocumentMidpointCompletions": {
-                            "displayName": "ViralDocumentMidpointCompletions",
+                            "displayName": "Viral Document Midpoint Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralDocumentThirdQuartileCompletions": {
-                            "displayName": "ViralDocumentThirdQuartileCompletions",
+                            "displayName": "Viral Document Third Quartile Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralDownloadClicks": {
-                            "displayName": "ViralDownloadClicks",
+                            "displayName": "Viral Download Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralExternalWebsiteConversions": {
-                            "displayName": "ViralExternalWebsiteConversions",
+                            "displayName": "Viral External Website Conversions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralExternalWebsitePostClickConversions": {
-                            "displayName": "ViralExternalWebsitePostClickConversions",
+                            "displayName": "Viral External Website Post Click Conversions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralExternalWebsitePostViewConversions": {
-                            "displayName": "ViralExternalWebsitePostViewConversions",
+                            "displayName": "Viral External Website Post View Conversions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralFollows": {
-                            "displayName": "ViralFollows",
+                            "displayName": "Viral Follows",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralFullScreenPlays": {
-                            "displayName": "ViralFullScreenPlays",
+                            "displayName": "Viral Full Screen Plays",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralImpressions": {
-                            "displayName": "ViralImpressions",
+                            "displayName": "Viral Impressions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralJobApplications": {
-                            "displayName": "ViralJobApplications",
+                            "displayName": "Viral Job Applications",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "viralJobApplyClicks": {
-                            "displayName": "ViralJobApplyClicks",
+                            "displayName": "Viral Job Apply Clicks",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "viralLandingPageClicks": {
-                            "displayName": "ViralLandingPageClicks",
+                            "displayName": "Viral Landing Page Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralLikes": {
-                            "displayName": "ViralLikes",
+                            "displayName": "Viral Likes",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralOneClickLeadFormOpens": {
-                            "displayName": "ViralOneClickLeadFormOpens",
+                            "displayName": "Viral One Click Lead Form Opens",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralOneClickLeads": {
-                            "displayName": "ViralOneClickLeads",
+                            "displayName": "Viral One Click Leads",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralOtherEngagements": {
-                            "displayName": "ViralOtherEngagements",
+                            "displayName": "Viral Other Engagements",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralPostClickJobApplications": {
-                            "displayName": "ViralPostClickJobApplications",
+                            "displayName": "Viral Post Click Job Applications",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "viralPostClickJobApplyClicks": {
-                            "displayName": "ViralPostClickJobApplyClicks",
+                            "displayName": "Viral Post Click Job Apply Clicks",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "viralPostClickRegistrations": {
-                            "displayName": "ViralPostClickRegistrations",
+                            "displayName": "Viral Post Click Registrations",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "viralPostViewJobApplications": {
-                            "displayName": "ViralPostViewJobApplications",
+                            "displayName": "Viral Post View Job Applications",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "viralPostViewJobApplyClicks": {
-                            "displayName": "ViralPostViewJobApplyClicks",
+                            "displayName": "Viral Post View Job Apply Clicks",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "viralPostViewRegistrations": {
-                            "displayName": "ViralPostViewRegistrations",
+                            "displayName": "Viral Post View Registrations",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "viralReactions": {
-                            "displayName": "ViralReactions",
+                            "displayName": "Viral Reactions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralRegistrations": {
-                            "displayName": "ViralRegistrations",
+                            "displayName": "Viral Registrations",
                             "valueType": "float",
                             "providerType": "float"
                         },
                         "viralShares": {
-                            "displayName": "ViralShares",
+                            "displayName": "Viral Shares",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralSubscriptionClicks": {
-                            "displayName": "ViralSubscriptionClicks",
+                            "displayName": "Viral Subscription Clicks",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralTotalEngagements": {
-                            "displayName": "ViralTotalEngagements",
+                            "displayName": "Viral Total Engagements",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralVideoCompletions": {
-                            "displayName": "ViralVideoCompletions",
+                            "displayName": "Viral Video Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralVideoFirstQuartileCompletions": {
-                            "displayName": "ViralVideoFirstQuartileCompletions",
+                            "displayName": "Viral Video First Quartile Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralVideoMidpointCompletions": {
-                            "displayName": "ViralVideoMidpointCompletions",
+                            "displayName": "Viral Video Midpoint Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralVideoStarts": {
-                            "displayName": "ViralVideoStarts",
+                            "displayName": "Viral Video Starts",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralVideoThirdQuartileCompletions": {
-                            "displayName": "ViralVideoThirdQuartileCompletions",
+                            "displayName": "Viral Video Third Quartile Completions",
                             "valueType": "int",
                             "providerType": "int"
                         },
                         "viralVideoViews": {
-                            "displayName": "ViralVideoViews",
+                            "displayName": "Viral Video Views",
                             "valueType": "int",
                             "providerType": "int"
                         }

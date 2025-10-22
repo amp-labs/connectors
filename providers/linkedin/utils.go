@@ -29,12 +29,16 @@ var ObjectWithAccountId = datautils.NewSet( //nolint:gochecknoglobals
 	"adCampaigns",
 )
 
+// cursorPaginationObject holds the list of objects that use cursor-based pagination.
+// These endpoints require passing a cursor (like "nextPageToken") to fetch paginated results.
 var cursorPaginationObject = datautils.NewSet( //nolint:gochecknoglobals
 	"adAccounts",
 	"adCampaignGroups",
 	"adCampaigns",
 )
 
+// normalPaginationObject holds the list of objects that use offset-based (normal) pagination.
+// These endpoints use standard pagination parameters like "count" and "start".
 var normalPaginationObject = datautils.NewSet( //nolint:gochecknoglobals
 	"dmpSegments",
 )

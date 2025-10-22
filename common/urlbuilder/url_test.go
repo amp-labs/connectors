@@ -465,8 +465,9 @@ func TestWithUnencodedQueryParam(t *testing.T) { // nolint:funlen
 			input: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en&videoId=%3A45565451%3A",
 			modifier: func(u *URL) {
 				u.WithUnencodedQueryParam("videoId", "%3A55555555%3A")
+				u.WithQueryParam("videoId", "(69874521)")
 			},
-			expected: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en&videoId=%3A55555555%3A",
+			expected: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en&videoId=%2869874521%29",
 		},
 		{
 			name:  "Remove query parameter",
