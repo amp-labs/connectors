@@ -25,10 +25,10 @@ func supportedOperations() components.EndpointRegistryInput {
 		"prospect",
 		"prospectaccount",
 		"sequence",
-		"sequenceprospect",
 		"call",
 		"task",
 		"callanalysis",
+		"prospectmails",
 	}
 
 	return components.EndpointRegistryInput{

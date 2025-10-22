@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -93,7 +94,23 @@ func buildReadBody(params common.ReadParams) (*bytes.Reader, error) {
 	return bytes.NewReader(bodyJSON), nil
 }
 
-func nextRecordsURL(objectName string) common.NextPageFunc {
+func buildReadQueryParams(url *urlbuilder.URL, params common.ReadParams) {
+	if !params.Since.IsZero() {
+		url.WithQueryParam("fromdate", params.Since.Format(timeLayout))
+	}
+
+	if !params.Until.IsZero() {
+		url.WithQueryParam("todate", params.Until.Format(timeLayout))
+	}
+
+	if params.NextPage != "" {
+		url.WithQueryParam("pageindex", params.NextPage.String())
+	} else {
+		url.WithQueryParam("pageindex", "1")
+	}
+}
+
+func nextRecordsURL() common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		hasMore, err := jsonquery.New(node, "pagination").BoolRequired("hasmorerecords")
 		if err != nil || !hasMore {

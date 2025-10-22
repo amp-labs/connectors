@@ -68,14 +68,25 @@ func main() {
 	utils.DumpJSON(res, os.Stdout)
 
 	res, err = conn.Read(ctx, common.ReadParams{
-		ObjectName: "call",
-		Fields:     connectors.Fields("calldate", "firstname", "lastname"),
+		ObjectName: "task",
+		Fields:     connectors.Fields("taskid", "tasktype", "description"),
 	})
 	if err != nil {
 		utils.Fail("error reading from outplay", "error", err)
 	}
 
-	slog.Info("Reading call ..")
+	slog.Info("Reading tasks..")
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "callanalysis",
+		Fields:     connectors.Fields("title", "callsource", "createddate"),
+	})
+	if err != nil {
+		utils.Fail("error reading from outplay", "error", err)
+	}
+
+	slog.Info("Reading call analysis..")
 	utils.DumpJSON(res, os.Stdout)
 
 	slog.Info("Read operation completed successfully.")

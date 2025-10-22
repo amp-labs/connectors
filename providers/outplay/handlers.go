@@ -91,13 +91,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	if params.ObjectName == "prospectmails" || params.ObjectName == "callanalysis" {
-		// For GET endpoints, add query parameters for pagination
-		if params.NextPage != "" {
-			url.WithQueryParam("page", params.NextPage.String())
-		} else {
-			url.WithQueryParam("page", "1")
-		}
-
+		buildReadQueryParams(url, params)
 		return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	}
 
@@ -119,7 +113,7 @@ func (c *Connector) parseReadResponse(
 		return common.ParseResult(
 			response,
 			common.ExtractRecordsFromPath("data", "data"),
-			nextRecordsURL(params.ObjectName),
+			nextRecordsURL(),
 			common.GetMarshaledData,
 			params.Fields,
 		)
@@ -128,7 +122,7 @@ func (c *Connector) parseReadResponse(
 	return common.ParseResult(
 		response,
 		common.ExtractRecordsFromPath("data"),
-		nextRecordsURL(params.ObjectName),
+		nextRecordsURL(),
 		common.GetMarshaledData,
 		params.Fields,
 	)
