@@ -34,7 +34,13 @@ func (c *Connector) ListObjectMetadata(
 		}
 
 		// Attach fields to the object metadata.
-		objectMetadata := metadataResult.Result[objectName]
+		// Get a reference to the metadata in the map so changes are persisted.
+		objectMetadata, ok := metadataResult.Result[objectName]
+		if !ok {
+			// Object not found in result, skip it
+			continue
+		}
+
 		for _, field := range fields {
 			objectMetadata.AddFieldMetadata(field.Name, common.FieldMetadata{
 				DisplayName:  field.Name,
@@ -44,6 +50,9 @@ func (c *Connector) ListObjectMetadata(
 				Values:       field.getValues(),
 			})
 		}
+
+		// Write the modified metadata back to the map
+		metadataResult.Result[objectName] = objectMetadata
 	}
 
 	return metadataResult, nil
