@@ -39,6 +39,9 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
+	if params.Module == "" {
+		params.Module = providers.ModuleReporting
+	}
 	// Create base connector with provider info
 	return components.Initialize(providers.Seismic, params, constructor)
 }

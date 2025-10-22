@@ -26,6 +26,7 @@ import (
 	"github.com/amp-labs/connectors/providers/campaignmonitor"
 	"github.com/amp-labs/connectors/providers/capsule"
 	"github.com/amp-labs/connectors/providers/chilipiper"
+	"github.com/amp-labs/connectors/providers/chorus"
 	"github.com/amp-labs/connectors/providers/claricopilot"
 	"github.com/amp-labs/connectors/providers/clickup"
 	"github.com/amp-labs/connectors/providers/closecrm"
@@ -59,6 +60,7 @@ import (
 	"github.com/amp-labs/connectors/providers/instantlyai"
 	"github.com/amp-labs/connectors/providers/intercom"
 	"github.com/amp-labs/connectors/providers/iterable"
+	"github.com/amp-labs/connectors/providers/jobber"
 	"github.com/amp-labs/connectors/providers/keap"
 	"github.com/amp-labs/connectors/providers/kit"
 	"github.com/amp-labs/connectors/providers/klaviyo"
@@ -127,6 +129,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Capsule:                 wrapper(newCapsuleConnector),
 	providers.Calendly:                wrapper(newCalendlyConnector),
 	providers.ChiliPiper:              wrapper(newChiliPiperConnector),
+	providers.Chorus:                  wrapper(newChorusConnector),
 	providers.ClariCopilot:            wrapper(newClariCopilotConnector),
 	providers.ClickUp:                 wrapper(newClickUpConnector),
 	providers.Close:                   wrapper(newCloseConnector),
@@ -160,6 +163,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.InstantlyAI:             wrapper(newInstantlyAIConnector),
 	providers.Intercom:                wrapper(newIntercomConnector),
 	providers.Iterable:                wrapper(newIterableConnector),
+	providers.Jobber:                  wrapper(newJobberConnector),
 	providers.Keap:                    wrapper(newKeapConnector),
 	providers.Kit:                     wrapper(newKitConnector),
 	providers.Klaviyo:                 wrapper(newKlaviyoConnector),
@@ -813,4 +817,14 @@ func newCalendlyConnector(params common.ConnectorParams,
 func newPaddleConnector(params common.ConnectorParams,
 ) (*paddle.Connector, error) {
 	return paddle.NewConnector(params)
+}
+
+func newJobberConnector(params common.ConnectorParams,
+) (*jobber.Connector, error) {
+	return jobber.NewConnector(params)
+}
+
+func newChorusConnector(params common.ConnectorParams,
+) (*chorus.Connector, error) {
+	return chorus.NewConnector(params)
 }
