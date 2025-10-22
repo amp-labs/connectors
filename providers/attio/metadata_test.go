@@ -22,7 +22,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	workspacemembersResponse := testutils.DataFromFile(t, "workspace_members.json")
 	tasksResponse := testutils.DataFromFile(t, "tasks.json")
 	companiesResponse := testutils.DataFromFile(t, "companies.json")
-	optionsTeamAttributeeResponse := testutils.DataFromFile(t, "option_team_attribute.json")
+	optionsTeamAttributeResponse := testutils.DataFromFile(t, "option_team_attribute.json")
 	companiesObjectResponse := []byte(`{"data": {"plural_noun": "Companies"}}`)
 	usersResponse := testutils.DataFromFile(t, "users.json")
 	optionsResponse := testutils.DataFromFile(t, "options.json")
@@ -69,7 +69,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						Then: mockserver.Response(http.StatusOK, optionsResponse),
 					}, {
 						If:   mockcond.Path("/v2/objects/1a4b88cf-520e-4394-886b-941c07c78854/records/query"),
-						Then: mockserver.Response(http.StatusOK, optionsTeamAttributeeResponse),
+						Then: mockserver.Response(http.StatusOK, optionsTeamAttributeResponse),
 					},
 				},
 			}.Server(),

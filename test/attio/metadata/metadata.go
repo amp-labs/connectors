@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"os"
 
 	"github.com/amp-labs/connectors/test/attio"
 	"github.com/amp-labs/connectors/test/utils"
@@ -19,6 +19,5 @@ func main() {
 	}
 
 	// Print the results.
-	fmt.Println("Results: ", m.Result)
-	fmt.Println("Errors: ", m.Errors)
+	utils.DumpJSON(m, os.Stdout)
 }
