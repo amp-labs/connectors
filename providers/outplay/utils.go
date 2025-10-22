@@ -3,9 +3,12 @@ package outplay
 import (
 	"bytes"
 	"encoding/json"
+	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 func inferValueTypeFromData(value any) common.ValueType {
@@ -49,4 +52,59 @@ func buildMetadataBody(objectName string) (*bytes.Reader, error) {
 	bodyReader := bytes.NewReader(bodyJSON)
 
 	return bodyReader, nil
+}
+
+func buildReadBody(params common.ReadParams) (*bytes.Reader, error) {
+	body := map[string]any{}
+
+	if params.NextPage != "" {
+		pageIndex, err := strconv.Atoi(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+		body["pageindex"] = pageIndex
+	} else {
+		body["pageindex"] = 1
+	}
+
+	// call object requires date filters
+	if params.ObjectName == "call" {
+		// Default to last 30 days
+		startDate := time.Now().AddDate(0, 0, -30)
+		endDate := time.Now()
+
+		if !params.Since.IsZero() {
+			startDate = params.Since
+		}
+
+		if !params.Until.IsZero() {
+			endDate = params.Until
+		}
+
+		body["fromdate"] = startDate.Format(timeLayout)
+		body["todate"] = endDate.Format(timeLayout)
+	}
+
+	bodyJSON, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes.NewReader(bodyJSON), nil
+}
+
+func nextRecordsURL(objectName string) common.NextPageFunc {
+	return func(node *ajson.Node) (string, error) {
+		hasMore, err := jsonquery.New(node, "pagination").BoolRequired("hasmorerecords")
+		if err != nil || !hasMore {
+			return "", nil //nolint: nilerr
+		}
+
+		currentPage, err := jsonquery.New(node, "pagination").IntegerWithDefault("page", 1)
+		if err != nil {
+			return "", nil //nolint:nilerr
+		}
+
+		return strconv.Itoa(int(currentPage) + 1), nil
+	}
 }

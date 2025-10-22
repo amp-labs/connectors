@@ -81,3 +81,55 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	return &objectMetadata, nil
 }
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	apiPath := objectAPIPath.Get(params.ObjectName)
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "api", apiVersion, apiPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.ObjectName == "prospectmails" || params.ObjectName == "callanalysis" {
+		// For GET endpoints, add query parameters for pagination
+		if params.NextPage != "" {
+			url.WithQueryParam("page", params.NextPage.String())
+		} else {
+			url.WithQueryParam("page", "1")
+		}
+
+		return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	}
+
+	body, err := buildReadBody(params)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), body)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	if params.ObjectName == "callanalysis" {
+		return common.ParseResult(
+			response,
+			common.ExtractRecordsFromPath("data", "data"),
+			nextRecordsURL(params.ObjectName),
+			common.GetMarshaledData,
+			params.Fields,
+		)
+	}
+
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath("data"),
+		nextRecordsURL(params.ObjectName),
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}
