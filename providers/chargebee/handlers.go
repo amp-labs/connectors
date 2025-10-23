@@ -166,13 +166,16 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	// Convert RecordData to form values
 	formData := make(neturl.Values)
 
-	if recordMap, ok := params.RecordData.(map[string]any); ok {
-		for key, value := range recordMap {
-			if str, ok := value.(string); ok {
-				formData.Set(key, str)
-			} else if value != nil {
-				formData.Set(key, fmt.Sprintf("%v", value))
-			}
+	recordMap, ok := params.RecordData.(map[string]any)
+	if !ok || len(recordMap) == 0 {
+		return nil, common.ErrMissingRecordData
+	}
+
+	for key, value := range recordMap {
+		if str, ok := value.(string); ok {
+			formData.Set(key, str)
+		} else if value != nil {
+			formData.Set(key, fmt.Sprintf("%v", value))
 		}
 	}
 

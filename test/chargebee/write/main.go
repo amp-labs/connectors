@@ -45,9 +45,10 @@ func testCreatingCustomers(ctx context.Context, conn *cc.Connector) (string, err
 	params := common.WriteParams{
 		ObjectName: "customers",
 		RecordData: map[string]any{
-			"first_name": "John",
-			"last_name":  "Doe",
-			"email":      gofakeit.Email(),
+			"first_name":        "John",
+			"last_name":         "Doe",
+			"email":             gofakeit.Email(),
+			"cf_customer_hobby": gofakeit.Hobby(),
 		},
 	}
 
