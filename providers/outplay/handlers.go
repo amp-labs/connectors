@@ -90,6 +90,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
+	// prospectmails and callanalysis use GET method for read
 	if params.ObjectName == ObjectNameProspectMails || params.ObjectName == ObjectNameCallAnalysis {
 		buildReadQueryParams(url, params)
 
@@ -110,11 +111,14 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	// callanalysis has a different response structure
+	// data is nested inside another data field
+	// https://documenter.getpostman.com/view/16947449/TzsikPV1#c44371cf-0819-4eb9-805a-7fdde9b4f9dc
 	if params.ObjectName == ObjectNameCallAnalysis {
 		return common.ParseResult(
 			response,
 			common.ExtractRecordsFromPath("data", "data"),
-			nextRecordsURL(params.ObjectName),
+			nextRecordsURLForCallAnalysis(),
 			common.GetMarshaledData,
 			params.Fields,
 		)
@@ -123,7 +127,7 @@ func (c *Connector) parseReadResponse(
 	return common.ParseResult(
 		response,
 		common.ExtractRecordsFromPath("data"),
-		nextRecordsURL(params.ObjectName),
+		nextRecordsURL(),
 		common.GetMarshaledData,
 		params.Fields,
 	)

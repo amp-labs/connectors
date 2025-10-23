@@ -69,7 +69,8 @@ func buildReadBody(params common.ReadParams) (*bytes.Reader, error) {
 
 	// call object requires date filters
 	if params.ObjectName == ObjectNameCall {
-		// Default to last 30 days
+		// There is no limit on date range but it is mandatory to provide fromdate and todate
+		// we set default date range as last 30 days
 		startDate := time.Now().AddDate(0, 0, -30)
 		endDate := time.Now()
 
