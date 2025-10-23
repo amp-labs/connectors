@@ -53,6 +53,10 @@ var paginationObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"scorecard_templates",
 )
 
+// To get the next paginated result for the following two objects, use the `page` parameter.
+// Remaining objects use `scroll_id` for pagination.
+// See https://loxo.readme.io/reference/countriesindex for using the `page` parameter.
+// See https://loxo.readme.io/reference/formsindex for using the `scroll_id` parameter.
 var objectWithPageParam = datautils.NewSet( //nolint:gochecknoglobals
 	"countries",
 	"jobs",
