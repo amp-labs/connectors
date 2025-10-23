@@ -64,6 +64,10 @@ var objectNameWithListSuffix = datautils.NewSet( //nolint:gochecknoglobals
 	"currencies",
 )
 
+// objectNameWrite maps clean resource names to their corresponding API endpoints.
+// This is used only for resources that have action/verb-based endpoints but we want
+// to provide a cleaner, resource-based interface to users.
+// Example: "invoices" -> "invoices/create_for_charge_items_and_charges"
 var objectNameWrite = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
 	"invoices":            "invoices/create_for_charge_items_and_charges",
 	"promotional_credits": "promotional_credits/add",
@@ -129,6 +133,11 @@ func supportedOperations() components.EndpointRegistryInput { //nolint:funlen
 		"webhook_endpoints",
 	}
 
+	// writeSupport contains a mix of:
+	// 1. Mapped object names (e.g., "invoices" -> "invoices/create_for_charge_items_and_charges")
+	// 2. Raw API endpoint paths (e.g., "payment_sources/create_using_token")
+	// For objects with multiple endpoints, we use specific endpoint names to avoid confusion.
+	// For objects with single endpoints, we use clean names mapped via objectNameWrite.
 	writeSupport := []string{
 		"customers",
 		"recorded_purchases",
