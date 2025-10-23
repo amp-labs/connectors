@@ -58,7 +58,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 					`HTTP status 404: retryable error: {"status":404,"error":"Not Found"}`),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New(`HTTP status 404: retryable error: {"status":404,"error":"Not Found"}`),
+				errors.New(`HTTP status 404: retryable error: {"status":404,"error":"Not Found"}`), //nolint:err113
 			},
 		},
 	}
