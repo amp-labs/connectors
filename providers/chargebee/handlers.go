@@ -79,7 +79,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	if objectRecord, exists := firstRecord[objectResponseKey]; exists {
 		objectData, ok = objectRecord.(map[string]any)
 		if !ok {
-			return nil, fmt.Errorf("couldn't convert the %s object to a map: %w", objectName, common.ErrMissingExpectedValues)
+			return nil, fmt.Errorf("couldn't convert object %s to a map: %w", objectName, common.ErrMissingExpectedValues)
 		}
 	} else {
 		// If the object name key doesn't exist, use the record itself
