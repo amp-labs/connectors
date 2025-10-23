@@ -49,9 +49,8 @@ var objectNameWithListSuffix = datautils.NewSet( //nolint:gochecknoglobals
 	"currencies",
 )
 
-//
-//nolint:gochecknoglobals
-var supportIncrementalRead = datautils.NewStringSet(
+// ChargeBee's original object names that support incremental read.
+var supportIncrementalRead = datautils.NewStringSet( //nolint:gochecknoglobals
 	"coupons",
 	"credit_notes",
 	"customers",
@@ -69,6 +68,7 @@ var supportIncrementalRead = datautils.NewStringSet(
 )
 
 func supportedOperations() components.EndpointRegistryInput {
+	// ChargeBee objects that support read operation
 	readSupport := []string{
 		"attached_items",
 		"business_entities/transfers",
