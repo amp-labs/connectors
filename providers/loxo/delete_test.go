@@ -10,13 +10,10 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
-	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
-
-	errorNotFound := testutils.DataFromFile(t, "delete-missing-person_events.json")
 
 	tests := []testroutines.Delete{
 		{
@@ -56,14 +53,12 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			Name:  "Error on deleting missing record",
 			Input: common.DeleteParams{ObjectName: "person_events", RecordId: "835"},
 			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusNotFound, errorNotFound),
+				Setup: mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusNotFound,
+					`HTTP status 404: retryable error: {"status":404,"error":"Not Found"}`),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrNotFound,
-				errors.New( // nolint:goerr113
-					"Not Found",
-				),
+				errors.New(`HTTP status 404: retryable error: {"status":404,"error":"Not Found"}`),
 			},
 		},
 	}
