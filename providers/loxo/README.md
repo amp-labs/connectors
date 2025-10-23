@@ -38,9 +38,6 @@ Below is an exhaustive list of objects & methods supported on the objects
 | job_types                                 | job_types                                | read       |
 | jobs                                      | jobs                                     | read,write |
 | people                                    | people                                   | read,write |
-| people/emails                             | people/emails                            | read       |
-| person_phones                             | person_phones                            | read       |
-| people/update_by_email                    | people/update_by_email                   | read       |
 | person_events                             | person_events                            | read,write |
 | person_global_statuses                    | person_global_statuses                   | read       |
 | person_lists                              | person_lists                             | read       |
