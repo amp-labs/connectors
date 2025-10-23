@@ -4,7 +4,6 @@ import (
 	_ "embed"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
@@ -49,9 +48,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.SingleObjectMetadataHandlers{
 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
 			ParseResponse: connector.parseSingleObjectMetadataResponse,
-			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-			}.Handle,
+			ErrorHandler:  common.InterpretError,
 		},
 	)
 
