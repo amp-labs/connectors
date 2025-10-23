@@ -67,7 +67,7 @@ var objectNameWithListSuffix = datautils.NewSet( //nolint:gochecknoglobals
 // objectNameWrite maps clean resource names to their corresponding API endpoints.
 // This is used only for resources that have action/verb-based endpoints but we want
 // to provide a cleaner, resource-based interface to users.
-// Example: "invoices" -> "invoices/create_for_charge_items_and_charges"
+// Example: "invoices" -> "invoices/create_for_charge_items_and_charges".
 var objectNameWrite = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
 	"invoices":            "invoices/create_for_charge_items_and_charges",
 	"promotional_credits": "promotional_credits/add",
