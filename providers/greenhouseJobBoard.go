@@ -6,7 +6,7 @@ const GreenhouseJobBoard Provider = "greenhouseJobBoard"
 func init() {
 	// GreenHouseJobBoard Configuration
 	SetInfo(GreenhouseJobBoard, ProviderInfo{
-		DisplayName: "GreenhouseJobBoard",
+		DisplayName: "Greenhouse (Job board)",
 		AuthType:    ApiKey,
 		BaseURL:     "https://boards-api.greenhouse.io",
 		ApiKeyOpts: &ApiKeyOpts{
@@ -44,6 +44,7 @@ func init() {
 				{
 					Name:        "board_token",
 					DisplayName: "Board Token",
+					DocsURL:     "https://support.greenhouse.io/hc/en-us/articles/5888210160155-Find-your-job-board-URL",
 				},
 			},
 		},
