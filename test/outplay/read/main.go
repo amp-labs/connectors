@@ -67,16 +67,5 @@ func main() {
 	slog.Info("Reading tasks..")
 	utils.DumpJSON(res, os.Stdout)
 
-	res, err = conn.Read(ctx, common.ReadParams{
-		ObjectName: "task",
-		Fields:     connectors.Fields("taskid", "tasktype", "description"),
-	})
-	if err != nil {
-		utils.Fail("error reading from outplay", "error", err)
-	}
-
-	slog.Info("Reading tasks..")
-	utils.DumpJSON(res, os.Stdout)
-
 	slog.Info("Read operation completed successfully.")
 }
