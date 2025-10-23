@@ -8,8 +8,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/spyzhov/ajson"
 )
 
 func inferValueTypeFromData(value any) common.ValueType {
@@ -34,7 +32,7 @@ func buildMetadataBody(objectName string) (*bytes.Reader, error) {
 		"pageindex": 1,
 	}
 
-	if objectName == "call" {
+	if objectName == ObjectNameCall {
 		now := time.Now()
 
 		// Call object requires fromdate and todate parameters.
@@ -63,13 +61,14 @@ func buildReadBody(params common.ReadParams) (*bytes.Reader, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		body["pageindex"] = pageIndex
 	} else {
 		body["pageindex"] = 1
 	}
 
 	// call object requires date filters
-	if params.ObjectName == "call" {
+	if params.ObjectName == ObjectNameCall {
 		// Default to last 30 days
 		startDate := time.Now().AddDate(0, 0, -30)
 		endDate := time.Now()
@@ -107,21 +106,5 @@ func buildReadQueryParams(url *urlbuilder.URL, params common.ReadParams) {
 		url.WithQueryParam("pageindex", params.NextPage.String())
 	} else {
 		url.WithQueryParam("pageindex", "1")
-	}
-}
-
-func nextRecordsURL() common.NextPageFunc {
-	return func(node *ajson.Node) (string, error) {
-		hasMore, err := jsonquery.New(node, "pagination").BoolRequired("hasmorerecords")
-		if err != nil || !hasMore {
-			return "", nil //nolint: nilerr
-		}
-
-		currentPage, err := jsonquery.New(node, "pagination").IntegerWithDefault("page", 1)
-		if err != nil {
-			return "", nil //nolint:nilerr
-		}
-
-		return strconv.Itoa(int(currentPage) + 1), nil
 	}
 }

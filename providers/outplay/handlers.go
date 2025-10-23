@@ -23,7 +23,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, err
 	}
 
-	if objectName == "prospectmails" || objectName == "callanalysis" {
+	if objectName == ObjectNameProspectMails || objectName == ObjectNameCallAnalysis {
 		return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	}
 
@@ -90,8 +90,9 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	if params.ObjectName == "prospectmails" || params.ObjectName == "callanalysis" {
+	if params.ObjectName == ObjectNameProspectMails || params.ObjectName == ObjectNameCallAnalysis {
 		buildReadQueryParams(url, params)
+
 		return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	}
 
@@ -109,11 +110,11 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	if params.ObjectName == "callanalysis" {
+	if params.ObjectName == ObjectNameCallAnalysis {
 		return common.ParseResult(
 			response,
 			common.ExtractRecordsFromPath("data", "data"),
-			nextRecordsURL(),
+			nextRecordsURL(params.ObjectName),
 			common.GetMarshaledData,
 			params.Fields,
 		)
@@ -122,7 +123,7 @@ func (c *Connector) parseReadResponse(
 	return common.ParseResult(
 		response,
 		common.ExtractRecordsFromPath("data"),
-		nextRecordsURL(),
+		nextRecordsURL(params.ObjectName),
 		common.GetMarshaledData,
 		params.Fields,
 	)

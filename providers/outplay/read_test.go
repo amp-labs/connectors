@@ -13,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
+// nolint:funlen
 func TestRead(t *testing.T) {
 	t.Parallel()
 
@@ -49,7 +50,7 @@ func TestRead(t *testing.T) {
 					Fields: map[string]any{
 						"accountid":   float64(16448),
 						"name":        "padikal",
-						"description": "HCL Technologies Limited is an Indian multinational information technology service and consulting company headquartered in Noida, Uttar Pradesh.",
+						"description": "HCL Technologies Limited is an Indian multinational information technology service and consulting company headquartered in Noida, Uttar Pradesh.", // nolint: lll
 					},
 					Raw: map[string]any{
 						"stage": map[string]any{
@@ -64,7 +65,7 @@ func TestRead(t *testing.T) {
 						"accountid":     float64(16448),
 						"name":          "padikal",
 						"externalid":    "",
-						"description":   "HCL Technologies Limited is an Indian multinational information technology service and consulting company headquartered in Noida, Uttar Pradesh.",
+						"description":   "HCL Technologies Limited is an Indian multinational information technology service and consulting company headquartered in Noida, Uttar Pradesh.", // nolint: lll
 						"employeecount": float64(0),
 						"industrytype":  "springs3",
 						"linkedin":      "",
@@ -106,7 +107,7 @@ func TestRead(t *testing.T) {
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 10,
+				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
 						"callmetadataid": float64(2367),

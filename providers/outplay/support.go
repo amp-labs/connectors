@@ -9,26 +9,38 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
+//nolint:gochecknoglobals
+var (
+	ObjectNameProspect        = "prospect"
+	ObjectNameProspectAccount = "prospectaccount"
+	ObjectNameSequence        = "sequence"
+	ObjectNameCall            = "call"
+	ObjectNameTask            = "task"
+	ObjectNameCallAnalysis    = "callanalysis"
+	ObjectNameProspectMails   = "prospectmails"
+)
+
 var objectAPIPath = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
-	"prospect":        "prospect/search",
-	"prospectaccount": "prospectaccount/search",
-	"sequence":        "sequence/search",
-	"call":            "call/search",
-	"task":            "task/list",
-	"callanalysis":    "callanalysis/list",
+	ObjectNameProspect:        "prospect/search",
+	ObjectNameProspectAccount: "prospectaccount/search",
+	ObjectNameSequence:        "sequence/search",
+	ObjectNameCall:            "call/search",
+	ObjectNameTask:            "task/list",
+	ObjectNameCallAnalysis:    "callanalysis/list",
+	ObjectNameProspectMails:   "prospectmails/list",
 }, func(objectName string) string {
 	return objectName
 })
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
-		"prospect",
-		"prospectaccount",
-		"sequence",
-		"call",
-		"task",
-		"callanalysis",
-		"prospectmails",
+		ObjectNameProspect,
+		ObjectNameProspectAccount,
+		ObjectNameSequence,
+		ObjectNameCall,
+		ObjectNameTask,
+		ObjectNameCallAnalysis,
+		ObjectNameProspectMails,
 	}
 
 	return components.EndpointRegistryInput{
