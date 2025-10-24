@@ -35,13 +35,17 @@ func extractMetadataRecords(res map[string]any, objectName string) ([]any, error
 func nextRecordsURL() common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		hasMore, err := jsonquery.New(node, "pagination").BoolRequired("hasmorerecords")
-		if err != nil || !hasMore {
-			return "", nil //nolint: nilerr
+		if err != nil {
+			return "", err
+		}
+
+		if !hasMore {
+			return "", nil
 		}
 
 		currentPage, err := jsonquery.New(node, "pagination").IntegerWithDefault("page", 1)
 		if err != nil {
-			return "", nil //nolint:nilerr
+			return "", err
 		}
 
 		return strconv.Itoa(int(currentPage) + 1), nil
@@ -52,17 +56,21 @@ func nextRecordsURLForCallAnalysis() common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		paginationNode, err := jsonquery.New(node, "data").ObjectRequired("pagination")
 		if err != nil {
-			return "", nil //nolint:nilerr
+			return "", err
 		}
 
 		hasMore, err := jsonquery.New(paginationNode).BoolRequired("hasmorerecords")
-		if err != nil || !hasMore {
-			return "", nil //nolint: nilerr
+		if err != nil {
+			return "", err
+		}
+
+		if !hasMore {
+			return "", nil
 		}
 
 		currentPage, err := jsonquery.New(paginationNode).IntegerWithDefault("page", 1)
 		if err != nil {
-			return "", nil //nolint:nilerr
+			return "", err
 		}
 
 		return strconv.Itoa(int(currentPage) + 1), nil
