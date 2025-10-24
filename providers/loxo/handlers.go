@@ -93,7 +93,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		url.WithQueryParam("per_page", strconv.Itoa(defaultPageSize))
 	}
 
-	if incrementalReadobjects.Has(params.ObjectName) {
+	if incrementalReadObjects.Has(params.ObjectName) {
 		if !params.Since.IsZero() {
 			url.WithQueryParam("created_at_start", params.Since.Format(time.DateOnly))
 		}

@@ -59,7 +59,7 @@ var objectWithPageParam = datautils.NewSet( //nolint:gochecknoglobals
 	"jobs",
 )
 
-var incrementalReadobjects = datautils.NewSet( //nolint:gochecknoglobals
+var incrementalReadObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"email_tracking",
 	"person_events",
 	"sms",
