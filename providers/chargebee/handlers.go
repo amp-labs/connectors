@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -12,6 +13,7 @@ import (
 
 const (
 	apiVersion = "v2"
+	pageSize   = 100
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -79,7 +81,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	if objectRecord, exists := firstRecord[objectResponseKey]; exists {
 		objectData, ok = objectRecord.(map[string]any)
 		if !ok {
-			return nil, fmt.Errorf("couldn't convert object %s to a map: %w", objectName, common.ErrMissingExpectedValues)
+			return nil, fmt.Errorf("couldn't convert the %s object to a map: %w", objectName, common.ErrMissingExpectedValues)
 		}
 	} else {
 		// If the object name key doesn't exist, use the record itself
@@ -97,4 +99,51 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	objectName := params.ObjectName
+	if objectNameWithListSuffix.Has(objectName) {
+		objectName += "/list"
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.NextPage != "" {
+		url.WithQueryParam("offset", params.NextPage.String())
+	}
+
+	url.WithQueryParam("limit", strconv.FormatInt(int64(pageSize), 10))
+
+	if supportIncrementalRead.Has(params.ObjectName) {
+		if !params.Since.IsZero() {
+			url.WithQueryParam("updated_at[after]", strconv.Itoa(int(params.Since.Unix())))
+		}
+
+		if !params.Until.IsZero() {
+			url.WithQueryParam("updated_at[before]", strconv.Itoa(int(params.Until.Unix())))
+		}
+		// add sorting for faster response. recommended by Chargebee
+		url.WithQueryParam("sort_by[asc]", "updated_at")
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		extractRecords(params.ObjectName),
+		nextRecordsURL(),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
