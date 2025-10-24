@@ -44,7 +44,17 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(providers.Calendly, params, constructor)
+	conn, err := components.Initialize(providers.Calendly, params, constructor)
+	if err != nil {
+		return nil, err
+	}
+
+	authMetadata := NewAuthMetadataVars(params.Metadata)
+
+	conn.orgURI = authMetadata.OrganizationURI
+	conn.userURI = authMetadata.UserURI
+
+	return conn, nil
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
