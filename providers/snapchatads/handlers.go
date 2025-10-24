@@ -59,7 +59,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	// Extract and assert the inner map
 	innerData, ok := data[0][objKey].(map[string]any)
 	if !ok {
-		return nil, ErrObjNotFound
+		return nil, errObjNotFound
 	}
 
 	for field := range innerData {
