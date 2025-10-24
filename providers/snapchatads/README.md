@@ -6,31 +6,31 @@ Below is an exhaustive list of objects & methods supported on the objects
 
 SnapchatAds API version : v1
 
-Below objects having url like v1/{organization_id}/objectName
+Below some objects having url like v1/{organization_id}/objectName and some are direct objects.
 
--------------------------------------------------------------
-| Object                  | Resource               | Method |
-| ----------------------- | ---------------------- | ------ |
-| fundingsources          | fundingsources         | read   |
-| billingcenters          | billingcenters         | read   |
-| transactions            | transactions           | read   |
-| adaccounts              | adaccounts             | read   |
-| members                 | members                | read   |
-| roles                   | roles                  | read   |
-| age_group               | age_group              | read   |
-| gender                  | gender                 | read   |
-| languages               | languages              | read   |
-| advanced_demographics   | advanced_demographics  | read   |
-| connection_type         | connection_type        | read   |
-| os_type                 | os_type                | read   | 
-| carrier                 | carrier                | read   |
-| marketing_name          | marketing_name         | read   |
-| country                 | country                | read   |
-| dlxs                    | dlxs                   | read   |
-| dlxp                    | dlxp                   | read   |
-| nln                     | nln                    | read   |
-| categories_loi          | categories_loi         | read   |
--------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+| Object                                       | Resource                                      | Method |
+| ---------------------------------------------| ----------------------------------------------| ------ |
+| fundingsources                               | fundingsources                                | read   |
+| billingcenters                               | billingcenters                                | read   |
+| transactions                                 | transactions                                  | read   |
+| adaccounts                                   | adaccounts                                    | read   |
+| members                                      | members                                       | read   |
+| roles                                        | roles                                         | read   |
+| targeting/demographics/age_group             | targeting/demographics/age_group              | read   |
+| targeting/demographics/gender                | targeting/demographics/gender                 | read   |
+| targeting/demographics/languages             | targeting/demographics/languages              | read   |
+| targeting/demographics/advanced_demographics | targeting/demographics/advanced_demographics  | read   |
+| targeting/device/connection_type             | targeting/device/connection_type              | read   |
+| targeting/device/os_type                     | targeting/device/os_type                      | read   | 
+| targeting/device/carrier                     | targeting/device/carrier                      | read   |
+| targeting/device/marketing_name              | targeting/device/marketing_name               | read   |
+| targeting/geo/country                        | targeting/geo/country                         | read   |
+| targeting/interests/dlxs                     | targeting/interests/dlxs                      | read   |
+| targeting/interests/dlxp                     | targeting/interests/dlxp                      | read   |
+| targeting/interests/nln                      | targeting/interests/nln                       | read   |
+| targeting/location/categories_loi            | targeting/location/categories_loi             | read   |
+---------------------------------------------------------------------------------------------------------
  
 Notes:
 - The organization_id is retrieved using the postAuthentication method.

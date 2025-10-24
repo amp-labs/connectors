@@ -34,14 +34,8 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrEmptyJSONHTTPResponse
 	}
 
-	// Determine correct node path
-	nodePath := "targeting_dimensions"
-	if endpointsWithSharedId.Has(objectName) {
-		nodePath = objectName
-	}
-
 	// Extract array node
-	objectResponse, err := jsonquery.New(node).ArrayRequired(nodePath)
+	objectResponse, err := jsonquery.New(node).ArrayRequired(getObjectNodePath(objectName))
 	if err != nil {
 		return nil, err
 	}
