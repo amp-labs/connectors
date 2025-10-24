@@ -9,6 +9,14 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+type issueRequest struct {
+	Fields        []string `json:"fields"`
+	FieldsByKeys  bool     `json:"fieldsByKeys,omitempty"`
+	JQL           string   `json:"jql"`
+	MaxResults    int      `json:"maxResults"`
+	NextPageToken string   `json:"nextPageToken,omitempty"`
+}
+
 // Read only returns a list of Jira Issues.
 // You can provide the following values:
 // * ObjectName - ignored.
@@ -22,6 +30,47 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
+	}
+
+	if config.ObjectName == "issues" {
+		var minutes int64
+		var write = c.Client.Post
+
+		timeDuration := time.Since(time.Unix(0, 0).UTC())
+		minutes = int64(timeDuration.Minutes())
+
+		if !config.Since.IsZero() {
+			diff := time.Since(config.Since)
+			minutes = int64(diff.Minutes())
+		}
+
+		reqBody := issueRequest{
+			Fields:     config.Fields.List(),
+			JQL:        fmt.Sprintf(`updated > "-%vm"`, minutes),
+			MaxResults: 1,
+		}
+
+		if len(config.NextPage) > 0 {
+			reqBody.NextPageToken = config.NextPage.String()
+		}
+
+		resp, err := write(ctx, url.String(), reqBody)
+		if err != nil {
+			return nil, err
+		}
+
+		n, _ := resp.Body()
+		data := n.Source()
+
+		fmt.Println("Data: ", string(data))
+
+		return common.ParseResult(
+			resp,
+			getRecords,
+			getNextRecordIssues,
+			common.MakeMarshaledDataFunc(flattenRecord),
+			config.Fields,
+		)
 	}
 
 	rsp, err := c.Client.Get(ctx, url.String())
@@ -39,26 +88,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 }
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
-	url, err := c.getModuleURL("search")
+	url, err := c.getModuleURL("search/jql")
 	if err != nil {
 		return nil, err
-	}
-
-	if len(config.NextPage) != 0 {
-		url.WithQueryParam("startAt", config.NextPage.String())
-	}
-
-	if !config.Since.IsZero() {
-		// Read URL supports time scoping. common.ReadParams.Since is used to get relative time frame.
-		// Here is an API example on how to request issues that were updated in the last 30 minutes.
-		// search?jql=updated > "-30m"
-		// The reason we use minutes is that it is the most granular API permits.
-		diff := time.Since(config.Since)
-
-		minutes := int64(diff.Minutes())
-		if minutes > 0 {
-			url.WithQueryParam("jql", fmt.Sprintf(`updated > "-%vm"`, minutes))
-		}
 	}
 
 	return url, nil
