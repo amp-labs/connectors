@@ -33,7 +33,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	for _, entity := range data.Value {
 		if strings.EqualFold(entity.EntitySetName, objectName) {
-			object = &entity //nolint: exportloopref
+			object = &entity
 		}
 	}
 

@@ -12,8 +12,8 @@ import (
 )
 
 var fieldSubscriptionKey = credscanning.Field{ //nolint:gochecknoglobals
-	Name:      "BbApiSubscriptionKey",
-	PathJSON:  "metadata.BbApiSubscriptionKey",
+	Name:      "bbApiSubscriptionKey",
+	PathJSON:  "metadata.bbApiSubscriptionKey",
 	SuffixENV: "BB_API_SUBSCRIPTION_KEY",
 }
 
@@ -25,7 +25,7 @@ func GetBlackbaudConnector(ctx context.Context) *blackbaud.Connector {
 		common.ConnectorParams{
 			AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
 			Metadata: map[string]string{
-				"BbApiSubscriptionKey": reader.Get(fieldSubscriptionKey),
+				"bbApiSubscriptionKey": reader.Get(fieldSubscriptionKey),
 			},
 		},
 	)

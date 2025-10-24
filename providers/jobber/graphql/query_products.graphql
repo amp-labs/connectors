@@ -1,0 +1,34 @@
+query ProductOrServiceConnection{
+  products(
+     first: {{.First}}
+     {{if .After}}
+     after: {{.After}}
+     {{end}}
+  ){
+    nodes{
+      bookableType
+      category
+      defaultUnitCost
+      description
+      durationMinutes
+      id
+      internalUnitCost
+      markup
+      name
+      onlineBookingSortOrder
+      onlineBookingsEnabled
+      quantityRange{
+        maxQuantity
+        minQuantity
+        quantityEnabled
+      }
+      taxable
+      visible
+    }
+    pageInfo{
+      endCursor
+      hasNextPage
+    }
+    totalCount
+  }
+}
