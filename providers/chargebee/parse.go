@@ -19,7 +19,6 @@ func extractRecords(objectName string) common.RecordsFunc {
 		// Loop through each record in the response list to extract the actual object data.
 		// Chargebee API responses can have objects nested under a specific key (e.g., "subscription", "customer")
 		// https://apidocs.chargebee.com/docs/api/customers?lang=curl#list_customers
-		// or sometimes the record itself contains the object data directly.
 		for _, record := range records {
 			objectData, err := jsonquery.New(record).ObjectOptional(objectResponseKey)
 			if err == nil && objectData != nil {
