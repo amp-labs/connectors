@@ -4,11 +4,16 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
-const defaultPageSize = 1
+const defaultPageSize = 100
+
+var incrementalReadObject = datautils.NewSet( //nolint:gochecknoglobals
+	"transactions",
+)
 
 func (c *Connector) constructURL(objName string) (*urlbuilder.URL, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "organizations", c.organizationId, objName)

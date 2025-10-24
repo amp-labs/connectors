@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
@@ -72,6 +73,16 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	url.WithQueryParam("limit", strconv.Itoa(defaultPageSize))
+
+	if incrementalReadObject.Has(params.ObjectName) {
+		if !params.Since.IsZero() {
+			url.WithQueryParam("start_time", datautils.Time.FormatRFC3339inUTC(params.Since))
+		}
+
+		if !params.Until.IsZero() {
+			url.WithQueryParam("end_time", datautils.Time.FormatRFC3339inUTC(params.Until))
+		}
+	}
 
 	if len(params.NextPage) != 0 {
 		// Next page.
