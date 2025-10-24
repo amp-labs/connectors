@@ -7,6 +7,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -15,10 +16,6 @@ import (
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	if objectWithPrefixValue.Has(objectName) {
-		objectName = "scorecards/" + objectName
-	}
-
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.AgencySlug, objectName)
 	if err != nil {
 		return nil, err
@@ -90,10 +87,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	}
 
-	if objectWithPrefixValue.Has(params.ObjectName) {
-		params.ObjectName = "scorecards/" + params.ObjectName
-	}
-
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.AgencySlug, params.ObjectName)
 	if err != nil {
 		return nil, err
@@ -101,6 +94,16 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	if paginationObjects.Has(params.ObjectName) {
 		url.WithQueryParam("per_page", strconv.Itoa(defaultPageSize))
+	}
+
+	if incrementalReadObjects.Has(params.ObjectName) {
+		if !params.Since.IsZero() {
+			url.WithQueryParam("created_at_start", params.Since.Format(time.DateOnly))
+		}
+
+		if !params.Until.IsZero() {
+			url.WithQueryParam("created_at_end", params.Until.Format(time.DateOnly))
+		}
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -134,10 +137,6 @@ func (c *Connector) parseReadResponse(
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	if objectWithPrefixValue.Has(params.ObjectName) {
-		params.ObjectName = "scorecards/" + params.ObjectName
-	}
-
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.AgencySlug, params.ObjectName)
 	if err != nil {
 		return nil, err
@@ -228,10 +227,6 @@ func (c *Connector) parseWriteResponse(
 }
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	if objectWithPrefixValue.Has(params.ObjectName) {
-		params.ObjectName = "scorecards/" + params.ObjectName
-	}
-
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.AgencySlug, params.ObjectName, params.RecordId)
 	if err != nil {
 		return nil, err

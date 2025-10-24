@@ -12,45 +12,42 @@ import (
 
 const defaultPageSize = 100
 
+// The objectNodePath variable maps each object to its corresponding nodePath if present in the response.
+// If the response does not contain a nodePath, it returns an empty value, indicating that the object has no nodePath.
+// See Example by using the link https://github.com/amp-labs/connectors/pull/2126#discussion_r2454221609
 var objectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
-	"companies":      "companies",
-	"countries":      "countries",
-	"deals":          "deals",
-	"email_tracking": "tracking",
-	"form_templates": "form_templates",
-	"forms":          "forms",
-	"jobs":           "results",
-	"people":         "people",
-	"person_events":  "person_events",
-	"placements":     "placements",
-	"schedule_items": "schedule_items",
-	"scorecards":     "scorecards",
-	"sms":            "sms",
-	"source_types":   "source_types",
+	"companies":                      "companies",
+	"countries":                      "countries",
+	"deals":                          "deals",
+	"email_tracking":                 "tracking",
+	"form_templates":                 "form_templates",
+	"forms":                          "forms",
+	"jobs":                           "results",
+	"people":                         "people",
+	"person_events":                  "person_events",
+	"placements":                     "placements",
+	"schedule_items":                 "schedule_items",
+	"scorecards":                     "scorecards",
+	"sms":                            "sms",
+	"source_types":                   "source_types",
+	"scorecards/scorecard_templates": "scorecard_templates",
 }, func(objectName string) string {
 	return ""
 },
-)
-
-var objectWithPrefixValue = datautils.NewSet( //nolint:gochecknoglobals
-	"scorecard_recommendation_types",
-	"scorecard_types",
-	"scorecard_templates",
-	"scorecard_visibility_types ",
 )
 
 var paginationObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"form_templates",
 	"forms",
 	"people",
-	"people/emails",
-	"people_phones",
 	"person_events",
-	"scorescards",
+	"scorecards",
 	"sms",
 	"countries",
 	"jobs",
-	"scorecard_templates",
+	"scorecards/scorecard_templates",
+	"email_tracking",
+	"schedule_items",
 )
 
 // To get the next paginated result for the following two objects, use the `page` parameter.
@@ -65,6 +62,12 @@ var objectWithPageParam = datautils.NewSet( //nolint:gochecknoglobals
 var writeObjectWithNoNodePath = datautils.NewSet( //nolint:gochecknoglobals
 	"placements",
 	"forms",
+)
+
+var incrementalReadObjects = datautils.NewSet( //nolint:gochecknoglobals
+	"email_tracking",
+	"person_events",
+	"sms",
 )
 
 func makeNextRecordsURL(reqLink *urlbuilder.URL, objName string) common.NextPageFunc {
