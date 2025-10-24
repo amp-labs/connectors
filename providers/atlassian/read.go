@@ -9,6 +9,9 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+// issues API support upto 500 issues per API call.
+const pageSize = 200
+
 type issueRequest struct {
 	Fields        []string `json:"fields"`
 	FieldsByKeys  bool     `json:"fieldsByKeys,omitempty"`
@@ -27,14 +30,14 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	url, err := c.buildReadURL(config)
+	url, err := c.buildReadURL()
 	if err != nil {
 		return nil, err
 	}
 
 	if config.ObjectName == "issues" {
 		var minutes int64
-		var write = c.Client.Post
+		write := c.Client.Post
 
 		timeDuration := time.Since(time.Unix(0, 0).UTC())
 		minutes = int64(timeDuration.Minutes())
@@ -47,7 +50,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		reqBody := issueRequest{
 			Fields:     config.Fields.List(),
 			JQL:        fmt.Sprintf(`updated > "-%vm"`, minutes),
-			MaxResults: 1,
+			MaxResults: pageSize,
 		}
 
 		if len(config.NextPage) > 0 {
@@ -58,11 +61,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		if err != nil {
 			return nil, err
 		}
-
-		n, _ := resp.Body()
-		data := n.Source()
-
-		fmt.Println("Data: ", string(data))
 
 		return common.ParseResult(
 			resp,
@@ -87,7 +85,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 }
 
-func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
+func (c *Connector) buildReadURL() (*urlbuilder.URL, error) {
 	url, err := c.getModuleURL("search/jql")
 	if err != nil {
 		return nil, err
