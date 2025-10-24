@@ -1,0 +1,23 @@
+{
+    "definitions": [
+        {
+            "id": 926886,
+            "type": "list",
+            "description": null,
+            "important": false,
+            "displayOrder": 1,
+            "name": "Interests",
+            "tag": {
+                "id": 168298,
+                "name": "Hobby interests",
+                "dataTag": true
+            },
+            "captureRule": null,
+            "options": [
+                "Traveling",
+                "Food",
+                "Art"
+            ]
+        }
+    ]
+}
