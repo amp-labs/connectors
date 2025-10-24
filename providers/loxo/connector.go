@@ -6,6 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
+	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -20,6 +21,7 @@ type Connector struct {
 
 	// Supported operations
 	components.SchemaProvider
+	components.Reader
 
 	// The agency slug is the path segment of the Loxo API URL. We must specify this in all endpoints.
 	// To get the agency_slug, go to "Settings" > "General" under "Workspace". In the Agency Info section,
@@ -49,6 +51,22 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.SingleObjectMetadataHandlers{
 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
 			ParseResponse: connector.parseSingleObjectMetadataResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	registry, err := components.NewEndpointRegistry(supportedOperations())
+	if err != nil {
+		return nil, err
+	}
+
+	connector.Reader = reader.NewHTTPReader(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.ReadHandlers{
+			BuildRequest:  connector.buildReadRequest,
+			ParseResponse: connector.parseReadResponse,
 			ErrorHandler:  common.InterpretError,
 		},
 	)
