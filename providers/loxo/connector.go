@@ -21,6 +21,9 @@ type Connector struct {
 	// Supported operations
 	components.SchemaProvider
 
+	// The agency slug is the path segment of the Loxo API URL. We must specify this in all endpoints.
+	// To get the agency_slug, go to "Settings" > "General" under "Workspace". In the Agency Info section,
+	// look at the "Resume Forwarding Address" — the part before the @ symbol is the "agency_slug" value.
 	AgencySlug string
 }
 

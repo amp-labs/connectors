@@ -11,10 +11,6 @@ import (
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	if objectWithPrefixValue.Has(objectName) {
-		objectName = "scorecards/" + objectName
-	}
-
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.AgencySlug, objectName)
 	if err != nil {
 		return nil, err
