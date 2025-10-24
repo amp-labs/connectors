@@ -98,7 +98,8 @@ var supportIncrementalRead = datautils.NewStringSet(
 	"virtual_bank_accounts",
 )
 
-func supportedOperations() components.EndpointRegistryInput { //nolint:funlen
+func supportedOperations() components.EndpointRegistryInput {
+	// ChargeBee objects that support read operation
 	readSupport := []string{
 		"attached_items",
 		"business_entities/transfers",
