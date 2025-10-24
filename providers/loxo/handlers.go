@@ -154,7 +154,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	fields, ok := params.RecordData.(map[string]any)
 	if !ok {
-		return nil, fmt.Errorf("expected record data to be map[string]any but got %T", params.RecordData)
+		return nil, fmt.Errorf("expected record data to be map[string]any but got %T", params.RecordData) //nolint:err113
 	}
 
 	for key, value := range fields {
