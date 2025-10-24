@@ -9,6 +9,7 @@ import (
 )
 
 func supportedOperations() components.EndpointRegistryInput {
+	// readSupport lists all endpoints that can be fetched for the default organization.
 	readSupport := []string{
 		"fundingsources",
 		"billingcenters",
@@ -16,19 +17,19 @@ func supportedOperations() components.EndpointRegistryInput {
 		"adaccounts",
 		"members",
 		"roles",
-		"age_group",
-		"gender",
-		"languages",
-		"advanced_demographics",
-		"connection_type",
-		"os_type",
-		"carrier",
-		"marketing_name",
-		"country",
-		"dlxs",
-		"dlxp",
-		"nln",
-		"categories_loi",
+		"targeting/demographics/age_group",
+		"targeting/demographics/gender",
+		"targeting/demographics/languages",
+		"targeting/demographics/advanced_demographics",
+		"targeting/device/connection_type",
+		"targeting/device/os_type",
+		"targeting/device/carrier",
+		"targeting/device/marketing_name",
+		"targeting/geo/country",
+		"targeting/interests/dlxs",
+		"targeting/interests/dlxp",
+		"targeting/interests/nln",
+		"targeting/location/categories_loi",
 	}
 
 	writeSupport := []string{

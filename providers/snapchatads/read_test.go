@@ -121,7 +121,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				NextPage: "https://adsapi.snapchat.com/v1/organizations/5cf59a25-5063-40e1-826b-5ceaf369b207/billingcenters" +
-					"?cursor=QmlsbGluZ0NlbnRlcnMvMDAyMjkxYzYtODc4Yi00YzllLWI2OTAtNmMwZmNjYWIzZGNl&limit=1",
+					"?cursor=QmlsbGluZ0NlbnRlcnMvMDAyMjkxYzYtODc4Yi00YzllLWI2OTAtNmMwZmNjYWIzZGNl&limit=100",
 				Done: false,
 			},
 			ExpectedErrs: nil,
