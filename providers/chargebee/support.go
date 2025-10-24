@@ -1,6 +1,11 @@
 package chargebee
 
 import (
+	"fmt"
+	"strings"
+
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
@@ -43,3 +48,67 @@ var objectResponseField = datautils.NewDefaultMap(datautils.Map[string, string]{
 var objectNameWithListSuffix = datautils.NewSet( //nolint:gochecknoglobals
 	"currencies",
 )
+
+// ChargeBee's original object names that support incremental read.
+var supportIncrementalRead = datautils.NewStringSet( //nolint:gochecknoglobals
+	"coupons",
+	"credit_notes",
+	"customers",
+	"hosted_pages",
+	"invoices",
+	"item_prices",
+	"items",
+	"orders",
+	"payment_sources",
+	"quotes",
+	"subscriptions",
+	"transactions",
+	"usages",
+	"virtual_bank_accounts",
+)
+
+func supportedOperations() components.EndpointRegistryInput {
+	// ChargeBee objects that support read operation
+	readSupport := []string{
+		"attached_items",
+		"business_entities/transfers",
+		"comments",
+		"coupon_codes",
+		"coupon_sets",
+		"coupons",
+		"credit_notes",
+		"currencies",
+		"customers",
+		"entitlements",
+		"events",
+		"features",
+		"gifts",
+		"hosted_pages",
+		"invoices",
+		"item_families",
+		"item_prices",
+		"items",
+		"omnichannel_one_time_orders",
+		"omnichannel_subscriptions",
+		"orders",
+		"payment_sources",
+		"plans",
+		"promotional_credits",
+		"quotes",
+		"subscriptions",
+		"transactions",
+		"unbilled_charges",
+		"usages",
+		"virtual_bank_accounts",
+		"webhook_endpoints",
+	}
+
+	return components.EndpointRegistryInput{
+		common.ModuleRoot: {
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
+				Support:  components.ReadSupport,
+			},
+		},
+	}
+}
