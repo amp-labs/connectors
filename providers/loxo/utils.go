@@ -59,9 +59,22 @@ var objectWithPageParam = datautils.NewSet( //nolint:gochecknoglobals
 	"jobs",
 )
 
-var writeObjectWithNoNodePath = datautils.NewSet( //nolint:gochecknoglobals
-	"placements",
-	"forms",
+// The writeObjectNodePath variable maps each object to its corresponding nodePath.
+// If the response does not contain a nodePath, it returns an empty value,
+// indicating that the object has no nodePath.
+var writeObjectNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+	"companies":                      "company",
+	"deals":                          "deal",
+	"jobs":                           "job",
+	"people":                         "person",
+	"person_events":                  "person_event",
+	"scorecards":                     "scorecard",
+	"scorecards/scorecard_templates": "scorecard_template",
+	"sms":                            "sms",
+	"source_types":                   "source_type",
+}, func(objectName string) string {
+	return ""
+},
 )
 
 var incrementalReadObjects = datautils.NewSet( //nolint:gochecknoglobals

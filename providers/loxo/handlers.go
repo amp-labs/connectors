@@ -1,12 +1,12 @@
 package loxo
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"mime/multipart"
 	"net/http"
+	neturl "net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -150,34 +150,29 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		method = http.MethodPut
 	}
 
-	var requestBody bytes.Buffer
-
-	// For the Post endpoints, form-data is requires in the body param.
-	writer := multipart.NewWriter(&requestBody)
+	formData := make(neturl.Values)
 
 	fields, ok := params.RecordData.(map[string]any)
 	if !ok {
-		return nil, common.ErrFieldTypeUnknown
+		return nil, fmt.Errorf("expected record data to be map[string]any but got %T", params.RecordData)
 	}
 
-	// Add all fields from the map to the form
 	for key, value := range fields {
-		if err := writer.WriteField(key, fmt.Sprintf("%v", value)); err != nil {
-			return nil, err
+		if str, ok := value.(string); ok {
+			formData.Set(key, str)
+		} else if value != nil {
+			formData.Set(key, fmt.Sprintf("%v", value))
 		}
 	}
 
-	// Close writer to finalize the form-data
-	if err := writer.Close(); err != nil {
-		return nil, err
-	}
+	body := strings.NewReader(formData.Encode())
 
-	req, err := http.NewRequestWithContext(ctx, method, url.String(), &requestBody)
+	req, err := http.NewRequestWithContext(ctx, method, url.String(), body)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.Header.Set("Content-Type", "multipart/form-data")
 
 	req.Header.Set("Accept", "application/json")
 
@@ -197,13 +192,7 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	nodePath := naming.NewSingularString(params.ObjectName).String()
-
-	if writeObjectWithNoNodePath.Has(params.ObjectName) {
-		nodePath = ""
-	}
-
-	responseObj, err := jsonquery.New(body).ObjectRequired(nodePath)
+	responseObj, err := jsonquery.New(body).ObjectRequired(writeObjectNodePath.Get(params.ObjectName))
 	if err != nil {
 		return nil, err
 	}

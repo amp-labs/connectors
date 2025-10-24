@@ -75,7 +75,7 @@ func supportedOperations() components.EndpointRegistryInput { // nolint:funlen
 		"person_events",
 		"placements",
 		"scorecards",
-		"scorecard_templates",
+		"scorecards/scorecard_templates",
 		"sms",
 		"source_types",
 	}
@@ -86,7 +86,7 @@ func supportedOperations() components.EndpointRegistryInput { // nolint:funlen
 		"person_events",
 		"placements",
 		"scorecards",
-		"scorecard_templates",
+		"scorecards/scorecard_templates",
 		"source_types",
 	}
 
