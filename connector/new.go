@@ -25,6 +25,7 @@ import (
 	"github.com/amp-labs/connectors/providers/calendly"
 	"github.com/amp-labs/connectors/providers/campaignmonitor"
 	"github.com/amp-labs/connectors/providers/capsule"
+	"github.com/amp-labs/connectors/providers/chargebee"
 	"github.com/amp-labs/connectors/providers/chilipiper"
 	"github.com/amp-labs/connectors/providers/chorus"
 	"github.com/amp-labs/connectors/providers/claricopilot"
@@ -128,6 +129,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.CampaignMonitor:         wrapper(newCampaignMonitorConnector),
 	providers.Capsule:                 wrapper(newCapsuleConnector),
 	providers.Calendly:                wrapper(newCalendlyConnector),
+	providers.Chargebee:               wrapper(newChargebeeConnector),
 	providers.ChiliPiper:              wrapper(newChiliPiperConnector),
 	providers.Chorus:                  wrapper(newChorusConnector),
 	providers.ClariCopilot:            wrapper(newClariCopilotConnector),
@@ -824,4 +826,9 @@ func newJobberConnector(params common.ConnectorParams,
 func newChorusConnector(params common.ConnectorParams,
 ) (*chorus.Connector, error) {
 	return chorus.NewConnector(params)
+}
+
+func newChargebeeConnector(params common.ConnectorParams,
+) (*chargebee.Connector, error) {
+	return chargebee.NewConnector(params)
 }
