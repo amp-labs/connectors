@@ -9,8 +9,11 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-// issues API support upto 500 issues per API call.
-const pageSize = 200
+const (
+	// issues API support upto 500 issues per API call.
+	pageSize = 200
+	issues   = "issues"
+)
 
 type issueRequest struct {
 	Fields        []string `json:"fields"`
@@ -35,8 +38,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if config.ObjectName == "issues" {
+	if config.ObjectName == issues {
 		var minutes int64
+
 		write := c.Client.Post
 
 		timeDuration := time.Since(time.Unix(0, 0).UTC())
