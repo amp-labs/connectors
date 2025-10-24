@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -90,6 +91,16 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	if paginationObjects.Has(params.ObjectName) {
 		url.WithQueryParam("per_page", strconv.Itoa(defaultPageSize))
+	}
+
+	if incrementalReadobjects.Has(params.ObjectName) {
+		if !params.Since.IsZero() {
+			url.WithQueryParam("created_at_start", params.Since.Format(time.DateOnly))
+		}
+
+		if !params.Until.IsZero() {
+			url.WithQueryParam("created_at_end", params.Until.Format(time.DateOnly))
+		}
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
