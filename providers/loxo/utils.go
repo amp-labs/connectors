@@ -12,6 +12,9 @@ import (
 
 const defaultPageSize = 100
 
+// The objectNodePath variable maps each object to its corresponding nodePath if present in the response.
+// If the response does not contain a nodePath, it returns an empty value, indicating that the object has no nodePath.
+// See Example by using the link https://github.com/amp-labs/connectors/pull/2126#discussion_r2454221609
 var objectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 	"companies":      "companies",
 	"countries":      "countries",
@@ -30,13 +33,6 @@ var objectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochec
 }, func(objectName string) string {
 	return ""
 },
-)
-
-var objectWithPrefixValue = datautils.NewSet( //nolint:gochecknoglobals
-	"scorecard_recommendation_types",
-	"scorecard_types",
-	"scorecard_templates",
-	"scorecard_visibility_types ",
 )
 
 var paginationObjects = datautils.NewSet( //nolint:gochecknoglobals

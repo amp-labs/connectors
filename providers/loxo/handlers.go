@@ -12,10 +12,6 @@ import (
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	if objectWithPrefixValue.Has(objectName) {
-		objectName = "scorecards/" + objectName
-	}
-
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.AgencySlug, objectName)
 	if err != nil {
 		return nil, err
@@ -85,10 +81,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		}
 
 		return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
-	}
-
-	if objectWithPrefixValue.Has(params.ObjectName) {
-		params.ObjectName = "scorecards/" + params.ObjectName
 	}
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.AgencySlug, params.ObjectName)
