@@ -98,7 +98,7 @@ var supportIncrementalRead = datautils.NewStringSet(
 	"virtual_bank_accounts",
 )
 
-func supportedOperations() components.EndpointRegistryInput {
+func supportedOperations() components.EndpointRegistryInput { //nolint:funlen
 	// ChargeBee objects that support read operation
 	readSupport := []string{
 		"attached_items",
@@ -136,9 +136,7 @@ func supportedOperations() components.EndpointRegistryInput {
 
 	// writeSupport contains a mix of:
 	// 1. Mapped object names (e.g., "invoices" -> "invoices/create_for_charge_items_and_charges")
-	// 2. Raw API endpoint paths (e.g., "payment_sources/create_using_token")
-	// For objects with multiple endpoints, we use specific endpoint names to avoid confusion.
-	// For objects with single endpoints, we use clean names mapped via objectNameWrite.
+	// 2. Raw object names (e.g., "payment_schedule_schemes", "items")
 	writeSupport := []string{
 		"customers",
 		"recorded_purchases",
@@ -158,21 +156,8 @@ func supportedOperations() components.EndpointRegistryInput {
 		"offer_fulfillments",
 		"offer_events",
 		"features",
-		"hosted_pages/pre_cancel",
-		"hosted_pages/view_voucher",
-		"hosted_pages/checkout_new_for_items",
 		"portal_sessions",
-		"pricing_page_sessions/create_for_existing_subscription",
-		"pricing_page_sessions/create_for_new_subscription",
-		"payment_sources/create_using_temp_token",
-		"payment_sources/create_using_permanent_token",
-		"payment_sources/create_using_token",
-		"payment_sources/create_using_payment_intent",
-		"payment_sources/create_card",
-		"payment_sources/create_bank_account",
-		"payment_sources/create_voucher_payment_source",
 		"payment_intents",
-		"virtual_bank_accounts/create_using_permanent_token",
 		"virtual_bank_accounts",
 		"transactions",
 		"payment_vouchers",
