@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"os"
 
 	"github.com/amp-labs/connectors/test/attio"
 	"github.com/amp-labs/connectors/test/utils"
@@ -13,12 +13,11 @@ func main() {
 
 	conn := attio.GetAttioConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"lists", "workspace_members", "tasks", "notes", "companies"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"lists", "workspace_members", "tasks", "notes", "companies", "deals", "people", "users", "workspaces"})
 	if err != nil {
 		utils.Fail(err.Error())
 	}
 
 	// Print the results.
-	fmt.Println("Results: ", m.Result)
-	fmt.Println("Errors: ", m.Errors)
+	utils.DumpJSON(m, os.Stdout)
 }

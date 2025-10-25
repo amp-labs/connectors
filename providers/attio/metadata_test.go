@@ -22,6 +22,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	workspacemembersResponse := testutils.DataFromFile(t, "workspace_members.json")
 	tasksResponse := testutils.DataFromFile(t, "tasks.json")
 	companiesResponse := testutils.DataFromFile(t, "companies.json")
+	optionsTeamAttributeResponse := testutils.DataFromFile(t, "option_team_attribute.json")
 	companiesObjectResponse := []byte(`{"data": {"plural_noun": "Companies"}}`)
 	usersResponse := testutils.DataFromFile(t, "users.json")
 	optionsResponse := testutils.DataFromFile(t, "options.json")
@@ -66,6 +67,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					}, {
 						If:   mockcond.Path("/v2/objects/ffbca575-69c4-4080-bf98-91d79aeea4b1/attributes/89c07285-4d31-4fa7-9cbf-779c5f4debf1/options"),
 						Then: mockserver.Response(http.StatusOK, optionsResponse),
+					}, {
+						If:   mockcond.Path("/v2/objects/1a4b88cf-520e-4394-886b-941c07c78854/records/query"),
+						Then: mockserver.Response(http.StatusOK, optionsTeamAttributeResponse),
 					},
 				},
 			}.Server(),
@@ -219,6 +223,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ProviderType: "text",
 								ReadOnly:     false,
 								Values:       nil,
+							},
+							"team": {
+								DisplayName:  "team",
+								ValueType:    "multiSelect",
+								ProviderType: "record-reference",
+								ReadOnly:     false,
+								Values: common.FieldValues{
+									{
+										Value:        "d0be3734-3b4d-4094-9925-9dd906941197",
+										DisplayValue: "d0be3734-3b4d-4094-9925-9dd906941197",
+									},
+								},
 							},
 							"created_at": {
 								DisplayName:  "created_at",
