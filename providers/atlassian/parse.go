@@ -86,3 +86,28 @@ func getNextRecords(node *ajson.Node) (string, error) {
 
 	return strconv.FormatInt(nextStartIndex, 10), nil
 }
+
+// Next starting page index is calculated base on current index and array size.
+func getNextRecordIssues(node *ajson.Node) (string, error) {
+	q := jsonquery.New(node)
+
+	nextPageToken, err := q.StringOptional("nextPageToken")
+	if err != nil {
+		return "", err
+	}
+
+	isLast, err := q.BoolOptional("isLast")
+	if err != nil {
+		return "", err
+	}
+
+	if isLast != nil && *isLast {
+		return "", nil
+	}
+
+	if nextPageToken == nil {
+		return "", nil
+	}
+
+	return *nextPageToken, nil
+}

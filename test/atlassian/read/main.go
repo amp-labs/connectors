@@ -26,6 +26,7 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "issues",
 		Fields:     connectors.Fields("id", "summary", "status"),
+		// NextPage:   "EAIYwIjPuqEzIhZ1cGRhdGVkID4gIi0yOTM1NTQ2NW0i",
 		// Below is the example to get issues that were updated in the last 15 min.
 		// Since: time.Now().Add(-15 * time.Minute),
 	})
