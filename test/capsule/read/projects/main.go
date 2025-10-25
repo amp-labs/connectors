@@ -26,4 +26,9 @@ func main() {
 		ObjectName: "projects",
 		Fields:     datautils.NewSet("id", "name", "Interests"),
 	})
+
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "kases",
+		Fields:     datautils.NewSet("id", "name", "Interests"),
+	})
 }

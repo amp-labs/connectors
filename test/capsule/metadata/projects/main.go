@@ -22,7 +22,7 @@ func main() {
 	conn := connTest.GetCapsuleConnector(ctx)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		"projects",
+		"projects", "kases",
 	})
 	if err != nil {
 		utils.Fail("error listing metadata", "error", err)

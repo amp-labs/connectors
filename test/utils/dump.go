@@ -4,10 +4,28 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+
+	"github.com/amp-labs/connectors/common"
 )
 
 // DumpJSON dumps the given value as JSON to the given writer.
 func DumpJSON(v any, w io.Writer) {
+	if result, ok := v.(*common.ListObjectMetadataResult); ok {
+		// Nested errors must be explicitly converted to a string to be displayed.
+		errorsMap := map[string]string{}
+		for k, err := range result.Errors {
+			if err != nil {
+				errorsMap[k] = err.Error() // convert error to string
+			} else {
+				errorsMap[k] = ""
+			}
+		}
+		v = map[string]any{
+			"Result": result.Result,
+			"Errors": errorsMap,
+		}
+	}
+
 	encoder := json.NewEncoder(w)
 
 	// JSON may have URLs with special symbols which shouldn't be escaped. Ex: `&`.
