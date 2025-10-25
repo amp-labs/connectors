@@ -80,6 +80,7 @@ func testWriteProjects(ctx context.Context, conn *cc.Connector) error {
 
 func testWriteCustomFields(ctx context.Context, conn *cc.Connector) error {
 	slog.Info("Testing write for custom_fields")
+
 	params := common.WriteParams{
 		ObjectName: "custom_fields",
 		RecordData: map[string]any{
@@ -88,21 +89,26 @@ func testWriteCustomFields(ctx context.Context, conn *cc.Connector) error {
 			"resource_subtype": "text",
 		},
 	}
+
 	result, err := conn.Write(ctx, params)
 	if err != nil {
 		return fmt.Errorf("failed to write custom_fields: %w", err)
 	}
+
 	data, err := json.MarshalIndent(result, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal custom_fields result: %w", err)
 	}
+
 	os.Stdout.Write(data)
 	os.Stdout.WriteString("\n")
+
 	return nil
 }
 
 func testWritePortfolios(ctx context.Context, conn *cc.Connector) error {
 	slog.Info("Testing write for portfolios")
+
 	params := common.WriteParams{
 		ObjectName: "portfolios",
 		RecordData: map[string]any{
@@ -110,21 +116,26 @@ func testWritePortfolios(ctx context.Context, conn *cc.Connector) error {
 			"workspace": "1206661566061885",
 		},
 	}
+
 	result, err := conn.Write(ctx, params)
 	if err != nil {
 		return fmt.Errorf("failed to write portfolios: %w", err)
 	}
+
 	data, err := json.MarshalIndent(result, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal portfolios result: %w", err)
 	}
+
 	os.Stdout.Write(data)
 	os.Stdout.WriteString("\n")
+
 	return nil
 }
 
 func testWriteTasks(ctx context.Context, conn *cc.Connector) error {
 	slog.Info("Testing write for tasks")
+
 	params := common.WriteParams{
 		ObjectName: "tasks",
 		RecordData: map[string]any{
@@ -132,18 +143,22 @@ func testWriteTasks(ctx context.Context, conn *cc.Connector) error {
 			"workspace": "1206661566061885",
 		},
 	}
+
 	result, err := conn.Write(ctx, params)
 	if err != nil {
 		return fmt.Errorf("failed to write tasks: %w", err)
 	}
+
 	data, err := json.MarshalIndent(result, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal tasks result: %w", err)
 	}
+
 	os.Stdout.Write(data)
 	os.Stdout.WriteString("\n")
 
 	slog.Info("Testing update for tasks")
+
 	updateParams := common.WriteParams{
 		ObjectName: "tasks",
 		RecordId:   result.RecordId,
@@ -151,14 +166,17 @@ func testWriteTasks(ctx context.Context, conn *cc.Connector) error {
 			"name": "Updated Test Task",
 		},
 	}
+
 	updateResult, err := conn.Write(ctx, updateParams)
 	if err != nil {
 		return fmt.Errorf("failed to update tasks: %w", err)
 	}
+
 	updateData, err := json.MarshalIndent(updateResult, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal updated tasks result: %w", err)
 	}
+
 	os.Stdout.Write(updateData)
 	os.Stdout.WriteString("\n")
 
@@ -167,6 +185,7 @@ func testWriteTasks(ctx context.Context, conn *cc.Connector) error {
 
 func testWriteTeams(ctx context.Context, conn *cc.Connector) error {
 	slog.Info("Testing write for teams")
+
 	params := common.WriteParams{
 		ObjectName: "teams",
 		RecordData: map[string]any{
@@ -174,14 +193,17 @@ func testWriteTeams(ctx context.Context, conn *cc.Connector) error {
 			"organization": "1206661566061885",
 		},
 	}
+
 	result, err := conn.Write(ctx, params)
 	if err != nil {
 		return fmt.Errorf("failed to write teams: %w", err)
 	}
+
 	data, err := json.MarshalIndent(result, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal teams result: %w", err)
 	}
+
 	os.Stdout.Write(data)
 	os.Stdout.WriteString("\n")
 

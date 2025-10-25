@@ -12,6 +12,8 @@ import (
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
+const objectNameTemplate = "template"
+
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if params.NextPage != "" {
 		url, err := urlbuilder.New(params.NextPage.String())
@@ -75,7 +77,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		// The connector supports two endpoints for update the object one is template with PUT method
 		// another one is smart_categories with PATCH method.
 		switch params.ObjectName {
-		case "template":
+		case objectNameTemplate:
 			method = http.MethodPut
 		default:
 			method = http.MethodPatch
@@ -111,7 +113,7 @@ func (c *Connector) parseWriteResponse(
 	var searchValue string
 
 	switch params.ObjectName {
-	case "smart_categories", "template":
+	case "smart_categories", objectNameTemplate:
 		searchValue = "uuid"
 	case "calls":
 		searchValue = "external_id"

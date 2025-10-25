@@ -23,6 +23,7 @@ func MainFn() int {
 	if err != nil {
 		return 1
 	}
+
 	err = testAdAccounts(ctx)
 	if err != nil {
 		return 1
