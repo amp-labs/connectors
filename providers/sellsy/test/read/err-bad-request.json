@@ -1,0 +1,10 @@
+{
+  "error": {
+    "code": 400,
+    "message": "Le contenu de la requ\u00eate est invalide: le champ \u0027filters\u0027 est manquant.",
+    "details": {
+      "filters": "Ce champ est manquant"
+    },
+    "context": null
+  }
+}
