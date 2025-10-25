@@ -15,9 +15,11 @@ var ErrInvalidURL = errors.New("URL format is incorrect")
 // Its primary goal is to "Expose Query Manipulation".
 // Under the hood it uses url.URL library.
 type URL struct {
-	delegate           *url.URL
-	queryParams        url.Values
-	encodingExceptions map[string]string
+	delegate    *url.URL
+	queryParams url.Values
+	// unEncodeQueryParams stores query parameters that should not be URL-encoded.
+	unEncodeQueryParams url.Values
+	encodingExceptions  map[string]string
 }
 
 // New URL will be constructed given valid full url which may have query params.
@@ -33,9 +35,10 @@ func New(base string, path ...string) (*URL, error) {
 	}
 
 	u := &URL{
-		delegate:           delegate,
-		queryParams:        values,
-		encodingExceptions: make(map[string]string),
+		delegate:            delegate,
+		queryParams:         values,
+		unEncodeQueryParams: url.Values{},
+		encodingExceptions:  make(map[string]string),
 	}
 	u.AddPath(path...)
 
@@ -51,18 +54,37 @@ func FromRawURL(rawURL *url.URL) (*URL, error) {
 	}
 
 	return &URL{
-		delegate:           rawURL,
-		queryParams:        values,
-		encodingExceptions: make(map[string]string),
+		delegate:            rawURL,
+		queryParams:         values,
+		unEncodeQueryParams: url.Values{},
+		encodingExceptions:  make(map[string]string),
 	}, nil
 }
 
 func (u *URL) WithQueryParamList(name string, values []string) {
 	u.queryParams[name] = values
+
+	delete(u.unEncodeQueryParams, name)
 }
 
 func (u *URL) WithQueryParam(name, value string) {
 	u.queryParams[name] = []string{value}
+
+	delete(u.unEncodeQueryParams, name)
+}
+
+// WithUnencodedQueryParam adds a single unencoded query param.
+func (u *URL) WithUnencodedQueryParam(name, value string) {
+	u.unEncodeQueryParams[name] = []string{value}
+
+	delete(u.queryParams, name)
+}
+
+// WithUnencodedQueryParamList adds multiple unencoded query params.
+func (u *URL) WithUnencodedQueryParamList(name string, values []string) {
+	u.unEncodeQueryParams[name] = values
+
+	delete(u.queryParams, name)
 }
 
 func (u *URL) GetFirstQueryParam(name string) (string, bool) {
@@ -76,6 +98,8 @@ func (u *URL) GetFirstQueryParam(name string) (string, bool) {
 
 func (u *URL) RemoveQueryParam(name string) {
 	delete(u.queryParams, name)
+
+	delete(u.unEncodeQueryParams, name)
 }
 
 func (u *URL) AddEncodingExceptions(exceptions map[string]string) {
@@ -128,6 +152,25 @@ func (u *URL) queryValuesToString() string {
 	// some special symbols are allowed
 	for before, after := range u.encodingExceptions {
 		result = strings.ReplaceAll(result, before, after)
+	}
+
+	// Append unencoded params
+	if len(u.unEncodeQueryParams) > 0 {
+		var unencodedParts []string
+
+		for k := range u.unEncodeQueryParams {
+			vs := u.unEncodeQueryParams[k]
+
+			for _, val := range vs {
+				unencodedParts = append(unencodedParts, k+"="+val) // no encoding
+			}
+		}
+
+		if result != "" {
+			result += "&" + strings.Join(unencodedParts, "&")
+		} else {
+			result = strings.Join(unencodedParts, "&")
+		}
 	}
 
 	return result

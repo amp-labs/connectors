@@ -11,7 +11,21 @@ import (
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
+	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/tools/fileconv"
+	"github.com/amp-labs/connectors/tools/scrapper"
+)
+
+// nolint:gochecknoglobals
+var (
+	//go:embed schemas.json
+	schemaContent []byte
+
+	fileManager = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV2](
+		schemaContent, fileconv.NewSiblingFileLocator())
+
+	schemas = fileManager.MustLoadSchemas()
 )
 
 type Connector struct {
@@ -20,6 +34,7 @@ type Connector struct {
 
 	// Require authenticated client
 	common.RequireAuthenticatedClient
+	common.RequireMetadata
 
 	// Supported operations
 	components.SchemaProvider
@@ -42,11 +57,13 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return conn, nil
 }
 
+//nolint:funlen
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
-	// Set the metadata provider for the connector
-	connector.SchemaProvider = schema.NewObjectSchemaProvider(
+	// LinkedIn's OpenAPI files only cover the adAnalytics object.
+	// For other objects, we fall back to the sampling method to populate the fields.
+	fallbackSchema := schema.NewObjectSchemaProvider(
 		connector.HTTPClient().Client,
 		schema.FetchModeParallel,
 		operations.SingleObjectMetadataHandlers{
@@ -56,6 +73,13 @@ func constructor(base *components.Connector) (*Connector, error) {
 				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 			}.Handle,
 		},
+	)
+
+	// The following method is specific to the 'adAnalytics' object.
+	// See readme file for more info.
+	connector.SchemaProvider = schema.NewCompositeSchemaProvider(
+		schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas),
+		fallbackSchema,
 	)
 
 	registry, err := components.NewEndpointRegistry(supportedOperations())

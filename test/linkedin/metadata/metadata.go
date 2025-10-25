@@ -14,7 +14,7 @@ func main() {
 
 	conn := linkedin.GetConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"adTargetingFacets", "dmpEngagementSourceTypes"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"adTargetingFacets", "dmpEngagementSourceTypes", "dmpSegments", "adAnalytics"})
 	if err != nil {
 		log.Fatal(err)
 	}
