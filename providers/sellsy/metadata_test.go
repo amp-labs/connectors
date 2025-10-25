@@ -105,7 +105,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 									DisplayValue: "Strawberry",
 								}, {
 									Value:        "11",
-									DisplayValue: "Kivi",
+									DisplayValue: "Kiwi",
 								}},
 							},
 							"hobbies": {

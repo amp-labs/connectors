@@ -27,7 +27,7 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		// Incremental reading is supported. Response has "updated" field.
 		ObjectName: "contacts",
-		Fields:     connectors.Fields("first_name", "last_name", "updated",
+		Fields: connectors.Fields("first_name", "last_name", "updated",
 			// Custom fields:
 			"hobbies", "age", "fruits"),
 		// Since:      time.Now().Add(-1 * time.Minute * 12),
