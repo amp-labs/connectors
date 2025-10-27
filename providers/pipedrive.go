@@ -1,8 +1,14 @@
 package providers
 
-const Pipedrive Provider = "pipedrive"
+import "github.com/amp-labs/connectors/common"
 
-func init() {
+const (
+	Pipedrive       Provider        = "pipedrive"
+	PipedriveLegacy common.ModuleID = "legacy"
+	PipedriveCRM    common.ModuleID = "crm"
+)
+
+func init() { //nolint: funlen
 	// Pipedrive Configuration
 	SetInfo(Pipedrive, ProviderInfo{
 		DisplayName: "Pipedrive",
@@ -26,6 +32,39 @@ func init() {
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+		},
+		DefaultModule: PipedriveLegacy,
+		Modules: &Modules{
+			PipedriveLegacy: {
+				BaseURL:     "https://api.pipedrive.com",
+				DisplayName: "Pipedrive Legacy",
+				Support: Support{
+					BulkWrite: BulkWriteSupport{
+						Insert: false,
+						Update: false,
+						Upsert: false,
+						Delete: false,
+					},
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
+			PipedriveCRM: {
+				BaseURL:     "https://api.pipedrive.com",
+				DisplayName: "Pipedrive CRM",
+				Support: Support{
+					BulkWrite: BulkWriteSupport{
+						Insert: false,
+						Update: false,
+						Upsert: false,
+						Delete: false,
+					},
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

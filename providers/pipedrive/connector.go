@@ -5,12 +5,12 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/pipedrive/internal/crm"
 	"github.com/amp-labs/connectors/providers/pipedrive/metadata"
 )
 
 const (
-	apiVersion string = "v1"    // nolint:gochecknoglobals
-	limitQuery string = "limit" // nolint:gochecknoglobals
+	apiVersion string = "v1" // nolint:gochecknoglobals
 )
 
 // Connector represents the Pipedrive Connector.
@@ -18,12 +18,16 @@ type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
 	Module  common.Module
+
+	crmAdapter *crm.Adapter // embedded for v2 functionality
 }
 
 // NewConnector constructs the Pipedrive Connector and returns it, Fails
 // if any of the required fields are not instantiated.
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+	params, err := paramsbuilder.Apply(parameters{}, opts,
+		WithModule(providers.PipedriveLegacy),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -40,6 +44,15 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)
+
+	conn.Module = params.Selection
+
+	if conn.Module.ID == providers.PipedriveCRM {
+		conn.crmAdapter = &crm.Adapter{
+			Client:  conn.Client,
+			BaseURL: providerInfo.BaseURL,
+		}
+	}
 
 	return conn, nil
 }
@@ -67,7 +80,7 @@ func (c *Connector) getAPIURL(arg string) (*urlbuilder.URL, error) {
 
 func (c *Connector) constructMetadataURL(obj string) (*urlbuilder.URL, error) {
 	if metadataDiscoveryEndpoints.Has(obj) {
-		obj = metadataDiscoveryEndpoints.Get(obj)
+		obj = metadataDiscoveryEndpoints[obj]
 	}
 
 	return c.getAPIURL(obj)

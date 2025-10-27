@@ -38,9 +38,19 @@ type options struct {
 	AltId string `json:"alt_id,omitempty"` //nolint:tagliatelle
 }
 
+func (c *Connector) ListObjectMetadata(ctx context.Context,
+	objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.ListObjectMetadata(ctx, objectNames)
+	}
+
+	return c.listObjectMetadata(ctx, objectNames)
+}
+
 // ListObjectMetadata returns metadata for an object by sampling an object from Pipedrive's API.
 // If that fails, it generates object metadata by parsing Pipedrive's OpenAPI files.
-func (c *Connector) ListObjectMetadata(ctx context.Context,
+func (c *Connector) listObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
 	if len(objectNames) == 0 {
@@ -58,14 +68,6 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			return nil, err
 		}
 
-		// we only add this limit incase we're sampling fields from actual data.
-		if !metadataDiscoveryEndpoints.Has(obj) {
-			// Limiting the response data to 1 record.
-			// we only use 1 record for the metadata generation.
-			// no need to query several records.
-			url.WithQueryParam(limitQuery, "1")
-		}
-
 		res, err := c.Client.Get(ctx, url.String())
 		if err != nil {
 			objMetadata.Errors[obj] = err
@@ -78,7 +80,9 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			objMetadata.Errors[obj] = err
 		}
 
-		objMetadata.Result[obj] = *data
+		if data != nil {
+			objMetadata.Result[obj] = *data
+		}
 	}
 
 	return &objMetadata, nil
