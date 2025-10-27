@@ -35,21 +35,21 @@ func supportedOperations() components.EndpointRegistryInput {
 	}
 
 	writeSupport := []string{
-		"client",
-		"event",
-		"expense",
-		"job",
+		"clients",
+		"events",
+		"expenses",
+		"jobs",
 		"productsAndServices",
-		"quote",
-		"request",
-		"tax",
-		"taxGroup",
-		"vehicle",
+		"quotes",
+		"requests",
+		"taxes",
+		"taxGroups",
+		"vehicles",
 	}
 
 	deleteSupport := []string{
-		"expense",
-		"vehicle",
+		"expenses",
+		"vehicles",
 	}
 
 	return components.EndpointRegistryInput{

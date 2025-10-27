@@ -218,5 +218,9 @@ mutation JobEdit($id: EncodedId! $input: JobEditInput!) {
           }
           willClientBeAutomaticallyCharged
         }
+		userErrors {
+			message
+			path
+        }
     }
 }

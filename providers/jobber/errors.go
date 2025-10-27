@@ -1,10 +1,13 @@
 package jobber
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 // Implement error abstraction layers to streamline provider error handling.
@@ -40,4 +43,26 @@ func (r ResponseError) CombineErr(base error) error {
 	}
 
 	return fmt.Errorf("%w: %v", base, strings.Join(messages, ", "))
+}
+
+// This function uses to check wether the response(200 statuscode) contain error or not.
+func checkErrorInResponse(errorArr []*ajson.Node) error {
+	if len(errorArr) == 0 {
+		return nil
+	}
+
+	var errorMsg strings.Builder
+
+	for _, value := range errorArr {
+		errMsg, err := jsonquery.New(value).StrWithDefault("message", "")
+		if err != nil {
+			return err
+		}
+
+		if errMsg != "" {
+			errorMsg.WriteString(errMsg + "; ")
+		}
+	}
+
+	return errors.New(strings.TrimSuffix(errorMsg.String(), "; "))
 }

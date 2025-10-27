@@ -36,5 +36,9 @@ mutation ClientCreate($input: ClientCreateInput!){
           	title
           	updatedAt
         }
+		userErrors {
+			message
+			path
+        }
     }
 }
