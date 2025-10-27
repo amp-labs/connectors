@@ -21,7 +21,7 @@ func main() {
 
 	conn := pipedrive.GetPipedriveConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"activities", "callLogs", "currencies", "deals", "leadLabels"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"activities", "stages", "currencies", "deals", "leadLabels"})
 	if err != nil {
 		utils.Fail("error listing metadata for Pipedrive", "error", err)
 	}
