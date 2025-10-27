@@ -28,6 +28,7 @@ func (a *Adapter) Write(ctx context.Context, config common.WriteParams) (*common
 
 	if len(config.RecordId) != 0 {
 		url.AddPath(config.RecordId)
+
 		write = a.Client.Patch
 	} else {
 		write = a.Client.Post
