@@ -14,6 +14,7 @@ Read more: https://ampersand.slab.com/posts/deep-connectors-guide-6x4fhxne#ht0ds
 - [ ] Unit tests cover read/write/metadata logic (placed in /tests/<provider>)
 - [ ] Appropriate object names are used. Objects need to be resources, not actions (`jobs` and not `jobs.list`).
 - [ ] Modules are only being added because:
+  - [ ] They share the same authentication scheme
   - [ ] The same base URL cannot be used to make a proxy call to objects in all modules
   - [ ] Different base URLs (drive.google.com vs google.com)
   - [ ] Object name collisions (same object name exists in two or more modules)
