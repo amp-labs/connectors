@@ -8,6 +8,14 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.Read(ctx, params)
+	}
+
+	return c.readLegacy(ctx, params)
+}
+
 // Read retrieves data based on the provided read parameters.
 // https://developers.pipedrive.com/docs/api/v1
 func (a *Adapter) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
