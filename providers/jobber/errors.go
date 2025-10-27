@@ -64,5 +64,5 @@ func checkErrorInResponse(errorArr []*ajson.Node) error {
 		}
 	}
 
-	return errors.New(strings.TrimSuffix(errorMsg.String(), "; "))
+	return errors.New(strings.TrimSuffix(errorMsg.String(), "; ")) //nolint:err113
 }

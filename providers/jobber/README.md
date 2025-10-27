@@ -31,17 +31,17 @@ Below is an exhaustive list of objects & methods support  ed on the objects
 | users                     | users                       | read         |
 | vehicles                  | vehicles                    | read         |
 | vists                     | vists                       | read         |
-| client                    | clientCreate, clientEdit    | write        |
-| event                     | eventCreate                 | write        |
+| clients                   | clientCreate, clientEdit    | write        |
+| events                    | eventCreate                 | write        |
 |                           | expenseCreate               |              |
-| expense                   | expenseEdit                 | write        |
+| expenses                  | expenseEdit                 | write        |
 |                           | expenseDelete               |              |
-| job                       | jobCreate jobEdit           | write        |
+| jobs                      | jobCreate jobEdit           | write        |
 | productsAndServices       | productsAndServicesCreate   | write        |
 |                           | productAndServicesEdit      | write        |
-| quote                     | quoteCreate quoteEdit       | write        |
-| request                   | requestCreate requestEdit   | write        |
-| tax                       | taxCreate                   | write        |
-| taxGroup                  | taxGroupCreate              | write        |
-| vehicle                   | vehicleCreate vehicleDelete | write        |
+| quotes                    | quoteCreate quoteEdit       | write        |
+| requests                  | requestCreate requestEdit   | write        |
+| taxes                     | taxCreate                   | write        |
+| taxGroups                 | taxGroupCreate              | write        |
+| vehicles                  | vehicleCreate vehicleDelete | write        |
 |-------------------------------------------------------------------------
