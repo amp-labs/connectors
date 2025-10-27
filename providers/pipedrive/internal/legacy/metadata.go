@@ -39,6 +39,16 @@ type options struct {
 	AltId string `json:"alt_id,omitempty"` //nolint:tagliatelle
 }
 
+func (c *Connector) ListObjectMetadata(ctx context.Context,
+	objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.ListObjectMetadata(ctx, objectNames)
+	}
+
+	return c.listObjectMetadata(ctx, objectNames)
+}
+
 // ListObjectMetadata returns metadata for an object by sampling an object from Pipedrive's API.
 // If that fails, it generates object metadata by parsing Pipedrive's OpenAPI files.
 func (a *Adapter) ListObjectMetadata(ctx context.Context, objectNames []string,
