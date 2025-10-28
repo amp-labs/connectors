@@ -52,7 +52,6 @@ func (a *Adapter) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error
 
 	if !params.Until.IsZero() {
 		url.WithQueryParam("updated_until", params.Since.Format(time.RFC3339))
-
 	}
 
 	return url, nil
