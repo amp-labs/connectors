@@ -1,0 +1,19 @@
+{
+  "request_status": "SUCCESS",
+  "request_id": "5eaa9f3f00ff0e03450355dbc60001737e616473617069",
+  "roles": [
+    {
+      "sub_request_status": "SUCCESS",
+      "role": {
+        "id": "9a121178-73f0-4089-8f80-a60e5445e8ea",
+        "updated_at": "2020-04-28T13:44:37.586Z",
+        "created_at": "2020-04-28T13:44:37.586Z",
+        "container_kind": "Organizations",
+        "container_id": "8fdeefec-f502-4ca8-9a84-6411e0a51053",
+        "member_id": "d051973d-32b2-496b-b44a-345986bce17d",
+        "organization_id": "8fdeefec-f502-4ca8-9a84-6411e0a51053",
+        "type": "member"
+      }
+    }
+  ]
+}
