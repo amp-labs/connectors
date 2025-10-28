@@ -1,0 +1,28 @@
+https://people.googleapis.com/v1/contactGroups?groupFields=groupType%2Cname&pageSize=100
+{
+  "contactGroups": [
+    {
+      "resourceName": "contactGroups/starred",
+      "name": "starred",
+      "formattedName": "Starred"
+    },
+    {
+      "resourceName": "contactGroups/friends",
+      "name": "friends",
+      "formattedName": "Friends"
+    },
+    {
+      "resourceName": "contactGroups/family",
+      "name": "family",
+      "formattedName": "Family"
+    },
+    {
+      "resourceName": "contactGroups/coworkers",
+      "name": "coworkers",
+      "formattedName": "Coworkers"
+    }
+  ],
+  "totalItems": 8,
+  "nextPageToken": "CAQSDAjlzdO9BhDg2MTTAg",
+  "nextSyncToken": "ELzB2sGBzosD"
+}

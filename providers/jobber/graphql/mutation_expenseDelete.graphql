@@ -1,0 +1,7 @@
+mutation ExpenseDelete($id: EncodedId!) {
+    expenseDelete(expenseId : $id) {
+        deletedExpense{
+            id
+        }
+    }
+}

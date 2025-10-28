@@ -229,6 +229,8 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				DisplayName: "Capsule",
 				Support: Support{
 					Proxy: true,
+					Read:  true,
+					Write: true,
 				},
 			},
 		},
@@ -312,8 +314,8 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				DisplayName: "Capsule",
 				Support: Support{
 					Proxy: true,
-					Read:  false,
-					Write: false,
+					Read:  true,
+					Write: true,
 				},
 			},
 			// expectedErr: common.ErrMissingModule,
@@ -341,7 +343,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.hubapi.com/crm/v3",
+				BaseURL:     "https://api.hubapi.com/crm",
 				DisplayName: "HubSpot CRM",
 				Support: Support{
 					Read:  true,
@@ -390,28 +392,13 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 		},
 		{
-			name: "Atlassian Connect module",
-			input: inType{
-				provider: Atlassian,
-				moduleID: ModuleAtlassianJiraConnect,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api",
-				DisplayName: "Atlassian Connect",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
 			name: "Hubspot CRM module",
 			input: inType{
 				provider: Hubspot,
 				moduleID: ModuleHubspotCRM,
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.hubapi.com/crm/v3",
+				BaseURL:     "https://api.hubapi.com/crm",
 				DisplayName: "HubSpot CRM",
 				Support: Support{
 					Read:  true,
@@ -448,6 +435,8 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				DisplayName: "Capsule",
 				Support: Support{
 					Proxy: true,
+					Read:  true,
+					Write: true,
 				},
 			},
 		},

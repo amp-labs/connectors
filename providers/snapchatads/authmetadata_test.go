@@ -1,7 +1,6 @@
 package snapchatads
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -50,7 +49,7 @@ func TestGetPostAuthInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 
 			defer tt.server.Close()
 
-			ctx := context.Background()
+			ctx := t.Context()
 
 			connector, err := NewConnector(common.ConnectorParams{
 				AuthenticatedClient: mockutils.NewClient(),

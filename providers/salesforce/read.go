@@ -8,6 +8,8 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
+const defaultSOQLPageSize = 2000
+
 // Read reads data from Salesforce. By default, it will read all rows (backfill). However, if Since is set,
 // it will read only rows that have been updated since the specified time.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -33,7 +35,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		rsp,
 		getRecords,
 		getNextRecordsURL,
-		common.GetMarshaledData,
+		getSalesforceDataMarshaller(config.AssociatedObjects),
 		config.Fields,
 	)
 }
@@ -59,7 +61,19 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 
 // makeSOQL returns the SOQL query for the desired read operation.
 func makeSOQL(config common.ReadParams) *soqlBuilder {
-	soql := (&soqlBuilder{}).SelectFields(config.Fields.List()).From(config.ObjectName)
+	fields := config.Fields.List()
+
+	// If AssociatedObjects is set, then we need to add a subquery for each requested association.
+	// Source: https://www.infallibletechie.com/2023/04/parent-child-records-in-salesforce-soql-using-rest-api.html
+	if config.AssociatedObjects != nil {
+		for _, obj := range config.AssociatedObjects {
+			// Generates subqueries like: (SELECT FIELDS(STANDARD) FROM Account)
+			// Just standard fields for now, because salesforce errors out > 200 fields on an object.
+			fields = append(fields, "(SELECT FIELDS(STANDARD) FROM "+obj+")")
+		}
+	}
+
+	soql := (&soqlBuilder{}).SelectFields(fields).From(config.ObjectName)
 
 	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 	if !config.Since.IsZero() {
@@ -80,5 +94,13 @@ func makeSOQL(config common.ReadParams) *soqlBuilder {
 		soql.Where(config.Filter)
 	}
 
+	if config.PageSize > 0 {
+		soql.Limit(config.PageSize)
+	}
+
 	return soql
+}
+
+func (c *Connector) DefaultPageSize() int {
+	return defaultSOQLPageSize
 }

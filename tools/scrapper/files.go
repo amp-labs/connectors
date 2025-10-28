@@ -26,10 +26,21 @@ func NewExtendedMetadataFileManager[F staticschema.FieldMetadataMap, C any](
 	}
 }
 
+// NewMetadataFileManager allows reading and writing schema.json.
+// Use dedicated instances of NewReader or NewWriter.
+// Deprecated.
 func NewMetadataFileManager[F staticschema.FieldMetadataMap](
 	schemas []byte, locator fileconv.FileLocator,
 ) *MetadataFileManager[F, any] {
 	return NewExtendedMetadataFileManager[F, any](schemas, locator)
+}
+
+func NewReader[F staticschema.FieldMetadataMap](schemas []byte) *MetadataFileManager[F, any] {
+	return NewExtendedMetadataFileManager[F, any](schemas, nil)
+}
+
+func NewWriter[F staticschema.FieldMetadataMap](locator fileconv.FileLocator) *MetadataFileManager[F, any] {
+	return NewExtendedMetadataFileManager[F, any](nil, locator)
 }
 
 func (m MetadataFileManager[F, C]) SaveIndex(index *ModelURLRegistry) error {

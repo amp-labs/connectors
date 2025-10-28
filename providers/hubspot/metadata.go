@@ -10,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/providers/hubspot/metadata"
 )
 
@@ -21,6 +22,13 @@ type objectMetadataResult struct {
 type objectMetadataError struct {
 	ObjectName string
 	Error      error
+}
+
+func (c *Connector) UpsertMetadata(
+	ctx context.Context, params *common.UpsertMetadataParams,
+) (*common.UpsertMetadataResult, error) {
+	// Delegated.
+	return c.customAdapter.UpsertMetadata(ctx, params)
 }
 
 // ListObjectMetadata returns object metadata for each object name provided.
@@ -41,39 +49,58 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
+	callbacks := make([]simultaneously.Job, 0, len(objectNames))
+
 	for _, objectName := range objectNames {
-		go func(object string) {
-			objectMetadata, err := c.getObjectMetadata(ctx, object)
+		obj := objectName // capture loop variable
+
+		callbacks = append(callbacks, func(ctx context.Context) error {
+			objectMetadata, err := c.getObjectMetadata(ctx, obj)
 			if err != nil {
 				errChannel <- &objectMetadataError{
-					ObjectName: object,
+					ObjectName: obj,
 					Error:      err,
 				}
 
-				return
+				return nil //nolint:nilerr // intentionally collecting errors in channel, not failing fast
 			}
 
 			// Send object metadata to metadataChannel
 			metadataChannel <- &objectMetadataResult{
-				ObjectName: object,
+				ObjectName: obj,
 				Response:   *objectMetadata,
 			}
-		}(objectName)
+
+			return nil
+		})
 	}
+
+	// This will block until all callbacks are done. Note that since the
+	// channels are buffered, the above code won't block on sending to them
+	// even if we're not receiving yet.
+	if err := simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
+		close(metadataChannel)
+		close(errChannel)
+
+		return nil, err
+	}
+
+	// Since all callbacks are done, we can close the channels.
+	// This ensures that the following range loops will terminate.
+	close(metadataChannel)
+	close(errChannel)
 
 	// Collect metadata for each object
 	objectsMap := &common.ListObjectMetadataResult{}
 	objectsMap.Result = make(map[string]common.ObjectMetadata)
 	objectsMap.Errors = make(map[string]error)
 
-	for range objectNames {
-		select {
-		// Add object metadata to objectsMap
-		case objectMetadataResult := <-metadataChannel:
-			objectsMap.Result[objectMetadataResult.ObjectName] = objectMetadataResult.Response
-		case objectMetadataError := <-errChannel:
-			objectsMap.Errors[objectMetadataError.ObjectName] = objectMetadataError.Error
-		}
+	for object := range metadataChannel {
+		objectsMap.Result[object.ObjectName] = object.Response
+	}
+
+	for object := range errChannel {
+		objectsMap.Errors[object.ObjectName] = object.Error
 	}
 
 	return objectsMap, nil
@@ -336,7 +363,7 @@ func (c *Connector) fetchExternalMetadataEnumValues(
 	// For each external field that we support make an API call to fetch enumeration options.
 	// Store this values for each field within each object.
 	for _, discovery := range externalFields {
-		rsp, err := c.Client.Get(ctx, c.getRawURL()+discovery.EndpointPath)
+		rsp, err := c.Client.Get(ctx, c.providerInfo.BaseURL+discovery.EndpointPath)
 		if err != nil {
 			return nil, fmt.Errorf("error resolving external metadata values for HubSpot: %w", err)
 		}

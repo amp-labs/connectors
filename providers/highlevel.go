@@ -31,9 +31,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -43,6 +43,14 @@ func init() {
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1737624760/media/gohighlevel.com_1737624759.jpg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1737624627/media/gohighlevel.com_1737624627.png",
+			},
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "locationId",
+					DisplayName: "Location ID",
+				},
 			},
 		},
 	})
@@ -71,9 +79,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -83,6 +91,14 @@ func init() {
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1737624760/media/gohighlevel.com_1737624759.jpg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1737624627/media/gohighlevel.com_1737624627.png",
+			},
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "locationId",
+					DisplayName: "Location ID",
+				},
 			},
 		},
 	})

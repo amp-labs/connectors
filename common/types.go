@@ -75,6 +75,9 @@ var (
 	// ErrNotFound is returned when we get a 404 response from the provider.
 	ErrNotFound = errors.New("not found")
 
+	// ErrCursorGone is returned when a cursor used for pagination is no longer valid.
+	ErrCursorGone = errors.New("pagination cursor gone or expired")
+
 	// ErrMissingExpectedValues is returned when response data doesn't have values expected for processing.
 	ErrMissingExpectedValues = errors.New("response data is missing expected values")
 
@@ -169,6 +172,9 @@ type ReadParams struct {
 	//	* Capsule: Embeds objects in response.
 	//		Reference: https://developer.capsulecrm.com/v2/overview/reading-from-the-api
 	AssociatedObjects []string // optional
+
+	// PageSize specifies the # of records to request when making a read request.
+	PageSize int // optional
 }
 
 // WriteParams defines how we are writing data to a SaaS API.
@@ -262,7 +268,8 @@ type Association struct {
 	// ObjectID is the ID of the associated object.
 	ObjectId string `json:"objectId"`
 	// AssociationType is the type of association.
-	AssociationType string `json:"associationType,omitempty"`
+	AssociationType string         `json:"associationType,omitempty"`
+	Raw             map[string]any `json:"raw,omitempty"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.
@@ -367,11 +374,12 @@ type ObjectMetadata struct {
 	DisplayName string
 
 	// Fields is a map of field names to FieldMetadata.
+	// Some legacy connectors do not populate this, but only populates FieldsMap.
 	Fields FieldsMetadata
 
+	// Deprecated: for new connectors, please only populate and read `ObjectMetadata.Fields`.
 	// FieldsMap is a map of field names to field display names.
-	// Deprecated: this map includes only display names.
-	// Refer to Fields for extended description of field properties.
+	// TODO: Remove this field once all connectors populate Fields.
 	FieldsMap map[string]string
 }
 
@@ -454,6 +462,7 @@ type SubscriptionEvent interface {
 	Workspace() (string, error)
 	RecordId() (string, error)
 	EventTimeStampNano() (int64, error)
+	RawMap() (map[string]any, error)
 }
 
 type SubscriptionUpdateEvent interface {
@@ -467,6 +476,7 @@ type SubscriptionUpdateEvent interface {
 // from a collapsed event for webhook parsing and processing.
 type CollapsedSubscriptionEvent interface {
 	SubscriptionEventList() ([]SubscriptionEvent, error)
+	RawMap() (map[string]any, error)
 }
 
 // WebhookRequest is a struct that contains the request parameters for a webhook.

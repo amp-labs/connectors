@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -32,9 +33,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Since:      time.Date(2025, time.June, 1, 0, 0, 0, 0, time.UTC),
 				Until:      time.Date(2025, time.June, 3, 0, 0, 0, 0, time.UTC),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseMeetings),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v1/meetings"),
+				Then:  mockserver.Response(http.StatusOK, responseMeetings),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
@@ -67,9 +69,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all users",
 			Input: common.ReadParams{ObjectName: "users", Fields: connectors.Fields("")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseUsers),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v1/users"),
+				Then:  mockserver.Response(http.StatusOK, responseUsers),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,

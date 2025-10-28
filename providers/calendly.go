@@ -22,6 +22,7 @@ func init() {
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
+		PostAuthInfoNeeded: true,
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346654/media/calendly_1722346653.svg",
@@ -43,6 +44,16 @@ func init() {
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+		Metadata: &ProviderMetadata{
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "UserURI",
+				},
+				{
+					Name: "OrganizationURI",
+				},
+			},
 		},
 	})
 }
