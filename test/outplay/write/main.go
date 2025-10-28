@@ -24,7 +24,7 @@ func run() error {
 
 	conn := outplay.GetOutplayConnector(ctx)
 
-	err := testCreatingPropects(ctx, conn)
+	prospectId, err := testCreatingPropects(ctx, conn)
 	if err != nil {
 		return err
 	}
@@ -34,10 +34,15 @@ func run() error {
 		return err
 	}
 
+	err = testCreatingNotes(ctx, conn, prospectId)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func testCreatingPropects(ctx context.Context, conn *cc.Connector) error {
+func testCreatingPropects(ctx context.Context, conn *cc.Connector) (string, error) {
 	params := common.WriteParams{
 		ObjectName: "prospect",
 		RecordData: map[string]any{
@@ -51,19 +56,19 @@ func testCreatingPropects(ctx context.Context, conn *cc.Connector) error {
 
 	res, err := conn.Write(ctx, params)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	// Print the results
 	jsonStr, err := json.MarshalIndent(res, "", "  ")
 	if err != nil {
-		return fmt.Errorf("error marshalling JSON: %w", err)
+		return "", fmt.Errorf("error marshalling JSON: %w", err)
 	}
 
 	_, _ = os.Stdout.Write(jsonStr)
 	_, _ = os.Stdout.WriteString("\n")
 
-	return nil
+	return res.RecordId, nil
 }
 
 func testCreatingProspectAccounts(ctx context.Context, conn *cc.Connector) error {
@@ -93,4 +98,34 @@ func testCreatingProspectAccounts(ctx context.Context, conn *cc.Connector) error
 	_, _ = os.Stdout.WriteString("\n")
 
 	return nil
+}
+
+func testCreatingNotes(ctx context.Context, conn *cc.Connector, prospectId string) error {
+	{
+		params := common.WriteParams{
+			ObjectName: "note",
+			RecordData: map[string]any{
+				"prospectid": prospectId,
+				"note":       gofakeit.Sentence(10),
+			},
+		}
+
+		slog.Info("Creating notes...")
+
+		res, err := conn.Write(ctx, params)
+		if err != nil {
+			return err
+		}
+
+		// Print the results
+		jsonStr, err := json.MarshalIndent(res, "", "  ")
+		if err != nil {
+			return fmt.Errorf("error marshalling JSON: %w", err)
+		}
+
+		_, _ = os.Stdout.Write(jsonStr)
+		_, _ = os.Stdout.WriteString("\n")
+
+		return nil
+	}
 }

@@ -45,7 +45,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/api/v1/prospect/create"),
+					mockcond.Path("/api/v1/prospect"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, createProspectResponse),
@@ -85,13 +85,14 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/api/v1/prospectaccount/create"),
+					mockcond.Path("/api/v1/prospectaccount"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, createProspectAccountResponse),
 			}.Server(),
 			Expected: &common.WriteResult{
-				Success: true,
+				Success:  true,
+				RecordId: "17718",
 				Data: map[string]any{
 					"accountid":     float64(17718),
 					"name":          "audition",
@@ -126,7 +127,8 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Then: mockserver.Response(http.StatusOK, createNoteResponse),
 			}.Server(),
 			Expected: &common.WriteResult{
-				Success: true,
+				Success:  true,
+				RecordId: "106128",
 				Data: map[string]any{
 					"success": true,
 					"message": "Note saved successfully.",

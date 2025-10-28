@@ -34,13 +34,19 @@ var objectAPIPath = datautils.NewDefaultMap(datautils.Map[string, string]{ //nol
 })
 
 var writeObjectAPIPath = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
-	ObjectNameProspect:        "prospect/create",
-	ObjectNameProspectAccount: "prospectaccount/create",
-	ObjectNameSequence:        "sequence/create",
-	ObjectNameNote:            "note/create",
-	ObjectNameTask:            "task/create",
+	ObjectNameSequence: "sequence/create",
+	ObjectNameNote:     "note/create",
+	ObjectNameTask:     "task/create",
 }, func(objectName string) string {
-	return objectName + "/create"
+	return objectName
+})
+
+var writeObjectResponseIDField = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
+	ObjectNameProspectAccount: "accountid",
+	ObjectNameNote:            "noteId",
+}, func(objectName string) string {
+	// Default ID field pattern
+	return objectName + "id"
 })
 
 func supportedOperations() components.EndpointRegistryInput {

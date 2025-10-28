@@ -189,8 +189,7 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	// the record ID key is in the format: objectnameid, e.g., prospectid
-	recordIdKey := params.ObjectName + "id"
+	recordIdKey := writeObjectResponseIDField.Get(params.ObjectName)
 
 	recordID, err := jsonquery.New(body).IntegerOptional(recordIdKey)
 	if err != nil {
