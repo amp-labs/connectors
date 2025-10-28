@@ -12,7 +12,7 @@ Below is an exhaustive list of objects & methods supported on the objects
 | clientEmails              | clientEmails                | read         |
 | clientPhones              | clientPhones                | read         |
 | clients                   | clients                     | read         |
-| expenses                  | Expenses                    | read         |
+| expenses                  | expenses                    | read         |
 | invoices                  | invoices                    | read         |
 | jobs                      | jobs                        | read         |
 | paymentsRecords           | paymentsRecords             | read         |
