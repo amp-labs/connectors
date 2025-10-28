@@ -60,8 +60,12 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	return conn, nil
 }
 
-func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	return c.legacyAdapter.Read(ctx, config)
+func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.Read(ctx, params)
+	}
+
+	return c.legacyAdapter.Read(ctx, params)
 }
 
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
