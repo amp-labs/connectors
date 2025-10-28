@@ -19,7 +19,7 @@ func main() {
 func MainFn() int {
 	ctx := context.Background()
 
-	//Uses standard ids
+	// Uses standard ids
 	err := testWriteLeads(ctx)
 	if err != nil {
 		return 1

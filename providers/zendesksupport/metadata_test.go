@@ -1,7 +1,6 @@
 package zendesksupport
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -220,6 +219,6 @@ func BenchmarkListObjectMetadata(b *testing.B) {
 
 	// start of benchmark
 	for range b.N {
-		_, _ = connector.ListObjectMetadata(context.Background(), []string{"brands"})
+		_, _ = connector.ListObjectMetadata(b.Context(), []string{"brands"})
 	}
 }

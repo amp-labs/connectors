@@ -34,6 +34,7 @@ var Fields = struct { // nolint:gochecknoglobals
 	State  Field
 	Scopes Field
 	Secret Field
+	Token  Field
 }{
 	Provider: Field{
 		Name:      "provider",
@@ -109,6 +110,11 @@ var Fields = struct { // nolint:gochecknoglobals
 		Name:      "secret",
 		PathJSON:  "secret",
 		SuffixENV: "SECRET",
+	},
+	Token: Field{
+		Name:      "token",
+		PathJSON:  "token",
+		SuffixENV: "TOKEN",
 	},
 }
 

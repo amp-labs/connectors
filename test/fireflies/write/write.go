@@ -53,7 +53,7 @@ func testAddToLiveMeeting(ctx context.Context) error {
 	slog.Info("Add Live meeting")
 
 	writeParams := common.WriteParams{
-		ObjectName: "liveMeeting",
+		ObjectName: "liveMeetings",
 		RecordData: map[string]any{
 			"meeting_link": "https://meet.google.com/qdt-vccw-nzt",
 			// "title":            "demo",
@@ -91,7 +91,7 @@ func testCreateBite(ctx context.Context) error {
 	slog.Info("Creating the bite")
 
 	writeParams := common.WriteParams{
-		ObjectName: "bite",
+		ObjectName: "bites",
 		RecordData: map[string]any{
 			"transcriptId": "01JSXJ9T9DCS3PH46ACCRSCAX2",
 			"startTime":    float64(3),
@@ -151,7 +151,7 @@ func testUploadAudio(ctx context.Context) error {
 
 	slog.Info("Upload the audio file")
 
-	var attendees = []any{
+	attendees := []any{
 		map[string]string{
 			"displayName": "Fireflies Notetaker",
 			"email":       "notetaker@fireflies.ai",

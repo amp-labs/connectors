@@ -1,0 +1,19 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users",
+  "@odata.nextLink": "https://graph.microsoft.com/v1.0/users?$top=1&$skiptoken=RFNwdAIAAQAAACM6aW50ZWdyYXRpb24udXNlckB3aXRoYW1wZXJzYW5kLmNvbSlVc2VyXzEyMTUxZWE2LTZkODYtNGFmZC1hNjhkLTg4YWIzNGY1MTcwYbkAAAAAAAAAAAAA",
+  "value": [
+    {
+      "businessPhones": [],
+      "displayName": "Integration User",
+      "givenName": "Integration",
+      "jobTitle": null,
+      "mail": null,
+      "mobilePhone": null,
+      "officeLocation": null,
+      "preferredLanguage": "en",
+      "surname": "User",
+      "userPrincipalName": "integration.user_withampersand.com#EXT#@integrationuserwithampersan.onmicrosoft.com",
+      "id": "12151ea6-6d86-4afd-a68d-88ab34f5170a"
+    }
+  ]
+}

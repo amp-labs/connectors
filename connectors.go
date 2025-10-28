@@ -77,6 +77,14 @@ type ObjectMetadataConnector interface {
 	ListObjectMetadata(ctx context.Context, objectNames []string) (*ListObjectMetadataResult, error)
 }
 
+// UpsertMetadataConnector is an interface that extends the Connector interface with
+// the ability to create/update custom objects and fields in the SaaS instance.
+type UpsertMetadataConnector interface {
+	Connector
+
+	UpsertMetadata(ctx context.Context, params *common.UpsertMetadataParams) (*common.UpsertMetadataResult, error)
+}
+
 // AuthMetadataConnector is an interface that extends the Connector interface with
 // the ability to retrieve metadata information about authentication.
 type AuthMetadataConnector interface {
@@ -112,7 +120,7 @@ type WebhookVerifierConnector interface {
 }
 
 type RegisterSubscribeConnector interface {
-	// SubscribeConnector has below responsibilities:
+	// RegisterSubscribeConnector has below responsibilities:
 	// 1. Register a subscription with the provider.
 	// Registering a subscription is a one-time operation that is required
 	// by providers that hold some master registration of all subscriptions.
@@ -168,6 +176,15 @@ type SubscribeConnector interface {
 	EmptySubscriptionResult() *common.SubscriptionResult
 	// GetRecordsWithId is a helper function to get records by their IDs.
 	//nolint:revive
+}
+
+// ConfigurationConnector is a connector that has methods to expose connector
+// configuration values to a caller. This is an interface as opposed to a
+// ProviderInfo value because PageSize might change based on the provider license
+// or based on the endpoint, in which case we can modify DefaultPageSize() to accept
+// ReadParams as well.
+type ConfigurationConnector interface {
+	DefaultPageSize() int
 }
 
 // We re-export the following types so that they can be used by consumers of this library.

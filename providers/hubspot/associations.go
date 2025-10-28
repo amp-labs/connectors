@@ -84,11 +84,6 @@ func (c *Connector) fillAssociations(
 		}
 
 		if len(associations) == 0 {
-			logging.Logger(ctx).Info("no associations found",
-				"fromObject", fromObjName,
-				"toObject", associatedObject,
-				"ids", ids)
-
 			continue
 		}
 
@@ -115,13 +110,10 @@ func (c *Connector) getObjectAssociations( //nolint:cyclop
 	toObject string,
 ) (map[string][]common.Association, error) {
 	if len(fromIDs) == 0 {
-		logging.Logger(ctx).Warn("no IDs provided for associations",
-			"fromObject", fromObject, "toObject", toObject)
-
 		return map[string][]common.Association{}, nil
 	}
 
-	hsURL := c.BaseURL + "/" + fmt.Sprintf("crm/v4/associations/%s/%s/batch/read", fromObject, toObject)
+	hsURL := c.providerInfo.BaseURL + "/" + fmt.Sprintf("crm/v4/associations/%s/%s/batch/read", fromObject, toObject)
 
 	var inputs assocInputs
 

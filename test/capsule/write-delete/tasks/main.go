@@ -22,6 +22,8 @@ type Party struct {
 	ID int `json:"id"`
 }
 
+const partyID = 277242033
+
 func main() {
 	// Handle Ctrl-C gracefully.
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -38,12 +40,12 @@ func main() {
 	testscenario.ValidateCreateUpdateDelete(ctx, conn,
 		"tasks",
 		Payload{
-			Party:       Party{ID: 254633973},
+			Party:       Party{ID: partyID},
 			Description: description,
 			DueOn:       "2025-05-20",
 		},
 		Payload{
-			Party:       Party{ID: 254633973},
+			Party:       Party{ID: partyID},
 			Description: updatedDescription,
 			DueOn:       "2025-05-20",
 		},

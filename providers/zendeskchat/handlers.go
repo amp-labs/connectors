@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -17,6 +18,7 @@ const (
 	bans            = "bans"
 	account         = "account"
 	chats           = "chats"
+	id              = "id"
 	defaultPageSize = 1000
 )
 
@@ -46,7 +48,8 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	for fld := range firstRecord {
-		objectMetadata.FieldsMap[fld] = fld
+		// TODO fix deprecated
+		objectMetadata.FieldsMap[fld] = fld // nolint:staticcheck
 	}
 
 	return &objectMetadata, nil
@@ -178,6 +181,19 @@ func (c *Connector) buildWriteRequest(
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }
 
+func retrieveRecordId(data map[string]any) string {
+	switch v := data["id"].(type) {
+	case string:
+		return v
+	case float64:
+		return strconv.Itoa(int(v))
+	case int:
+		return strconv.Itoa(v)
+	}
+
+	return ""
+}
+
 func (c *Connector) parseWriteResponse(
 	ctx context.Context,
 	params common.WriteParams,
@@ -196,8 +212,11 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
+	recordId := retrieveRecordId(data)
+
 	return &common.WriteResult{
-		Success: true,
-		Data:    data,
+		Success:  true,
+		RecordId: recordId,
+		Data:     data,
 	}, nil
 }

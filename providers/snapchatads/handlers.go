@@ -37,7 +37,8 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrEmptyJSONHTTPResponse
 	}
 
-	objectResponse, err := jsonquery.New(node).ArrayRequired(objectName)
+	// Extract array node
+	objectResponse, err := jsonquery.New(node).ArrayRequired(getObjectNodePath(objectName))
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +52,11 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrEmptyJSONHTTPResponse
 	}
 
-	objKey := naming.NewSingularString(objectName).String()
+	// Determine key for inner map
+	objKey := objectName
+	if endpointsRequiringOrganizationMetadata.Has(objectName) {
+		objKey = naming.NewSingularString(objectName).String()
+	}
 
 	// Extract and assert the inner map
 	innerData, ok := data[0][objKey].(map[string]any)
@@ -60,7 +65,8 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	for field := range innerData {
-		objectMetadata.FieldsMap[field] = field
+		// TODO fix deprecated
+		objectMetadata.FieldsMap[field] = field // nolint:staticcheck
 	}
 
 	return &objectMetadata, nil

@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "count": 4,
+    "countFormatted": {
+      "formatted": "4",
+      "prefix": "",
+      "suffix": "",
+      "value": 4
+    },
+    "total": 4,
+    "totalFormatted": {
+      "formatted": "4",
+      "prefix": "",
+      "suffix": "",
+      "value": 4
+    },
+    "facets": {
+      "accountType": {
+        "1-accountTypes": 4,
+        "2-accountTypes": 0,
+        "3-accountTypes": 0,
+        "4-accountTypes": 0,
+        "5-accountTypes": 0
+      }
+    },
+    "instanceId": "379104",
+    "siteId": "6smEpVK1"
+  },
+  "links": {},
+  "accounts": []
+}
