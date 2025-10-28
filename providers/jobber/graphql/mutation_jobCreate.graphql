@@ -1,5 +1,5 @@
 mutation JobCreate($input: JobCreateAttributes!) {
-    jobcreate(input : $input) {
+    jobCreate(input : $input) {
         job {
         	allowReviewRequest
           arrivalWindow{
@@ -214,6 +214,10 @@ mutation JobCreate($input: JobCreateAttributes!) {
             unscheduledCount
           }
           willClientBeAutomaticallyCharged
+        }
+	    userErrors {
+			message
+			path
         }
     }
 }

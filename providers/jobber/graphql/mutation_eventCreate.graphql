@@ -16,5 +16,9 @@ mutation EventCreate($input: EventCreateInput!) {
           teamReminderOffset
           title
         }
+        userErrors {
+          message
+          path
+        }
     }
 }

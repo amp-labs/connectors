@@ -81,5 +81,9 @@ mutation QuoteEdit($id: EncodedId! $input: QuoteEditAttributes!){
       transitionedAt
       updatedAt      
     }
+    userErrors {
+			message
+			path
+    }
   }
 }
