@@ -43,26 +43,60 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Result: map[string]common.ObjectMetadata{
 					"members": {
 						DisplayName: "Members",
-						Fields:      nil,
-						FieldsMap: map[string]string{
-							"id":                "id",
-							"email":             "email",
-							"organization_id":   "organization_id",
-							"display_name":      "display_name",
-							"snapchat_username": "snapchat_username",
-							"member_status":     "member_status",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName: "id",
+								ValueType:   "other",
+							},
+							"email": {
+								DisplayName: "email",
+								ValueType:   "other",
+							},
+							"organization_id": {
+								DisplayName: "organization_id",
+								ValueType:   "other",
+							},
+							"display_name": {
+								DisplayName: "display_name",
+								ValueType:   "other",
+							},
+							"snapchat_username": {
+								DisplayName: "snapchat_username",
+								ValueType:   "other",
+							},
+							"member_status": {
+								DisplayName: "member_status",
+								ValueType:   "other",
+							},
 						},
 					},
 					"roles": {
 						DisplayName: "Roles",
-						Fields:      nil,
-						FieldsMap: map[string]string{
-							"id":              "id",
-							"container_kind":  "container_kind",
-							"container_id":    "container_id",
-							"member_id":       "member_id",
-							"organization_id": "organization_id",
-							"type":            "type",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName: "id",
+								ValueType:   "other",
+							},
+							"container_kind": {
+								DisplayName: "container_kind",
+								ValueType:   "other",
+							},
+							"container_id": {
+								DisplayName: "container_id",
+								ValueType:   "other",
+							},
+							"member_id": {
+								DisplayName: "member_id",
+								ValueType:   "other",
+							},
+							"organization_id": {
+								DisplayName: "organization_id",
+								ValueType:   "other",
+							},
+							"type": {
+								DisplayName: "type",
+								ValueType:   "other",
+							},
 						},
 					},
 				},
