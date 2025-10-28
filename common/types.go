@@ -389,7 +389,6 @@ func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldM
 	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
 }
 
-// Todo: remove this when pipedrive V2 discovery endpoints are released.
 func (m *ObjectMetadata) RemoveFieldMetadata(fieldName string) {
 	delete(m.Fields, fieldName)
 	delete(m.FieldsMap, fieldName)

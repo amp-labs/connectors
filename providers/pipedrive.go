@@ -3,9 +3,9 @@ package providers
 import "github.com/amp-labs/connectors/common"
 
 const (
-	Pipedrive       Provider        = "pipedrive"
-	PipedriveLegacy common.ModuleID = "legacy"
-	PipedriveCRM    common.ModuleID = "crm"
+	Pipedrive             Provider        = "pipedrive"
+	ModulePipedriveLegacy common.ModuleID = "legacy"
+	ModulePipedriveCRM    common.ModuleID = "crm"
 )
 
 func init() { //nolint: funlen
@@ -33,11 +33,11 @@ func init() { //nolint: funlen
 			Subscribe: false,
 			Write:     true,
 		},
-		DefaultModule: PipedriveLegacy,
+		DefaultModule: ModulePipedriveLegacy,
 		Modules: &Modules{
-			PipedriveLegacy: {
+			ModulePipedriveLegacy: {
 				BaseURL:     "https://api.pipedrive.com",
-				DisplayName: "Pipedrive Legacy",
+				DisplayName: "Pipedrive (Legacy)",
 				Support: Support{
 					BulkWrite: BulkWriteSupport{
 						Insert: false,
@@ -50,7 +50,7 @@ func init() { //nolint: funlen
 					Write:     true,
 				},
 			},
-			PipedriveCRM: {
+			ModulePipedriveCRM: {
 				BaseURL:     "https://api.pipedrive.com",
 				DisplayName: "Pipedrive CRM",
 				Support: Support{

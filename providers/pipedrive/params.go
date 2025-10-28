@@ -51,15 +51,15 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 
 func WithModule(module common.ModuleID) Option {
 	return func(params *parameters) {
-		params.WithModule(module, supportedModules, providers.PipedriveLegacy)
+		params.WithModule(module, supportedModules, providers.ModulePipedriveLegacy)
 	}
 }
 
 var supportedModules = common.Modules{ // nolint:gochecknoglobals
-	providers.PipedriveLegacy: common.Module{
-		ID: providers.PipedriveLegacy,
+	providers.ModulePipedriveLegacy: common.Module{
+		ID: providers.ModulePipedriveLegacy,
 	},
-	providers.PipedriveCRM: common.Module{
-		ID: providers.PipedriveCRM,
+	providers.ModulePipedriveCRM: common.Module{
+		ID: providers.ModulePipedriveCRM,
 	},
 }
