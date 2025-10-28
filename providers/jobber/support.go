@@ -16,7 +16,7 @@ func supportedOperations() components.EndpointRegistryInput {
 		"clientEmails",
 		"clientPhones",
 		"clients",
-		"Expenses",
+		"expenses",
 		"invoices",
 		"jobs",
 		"payoutRecords",
