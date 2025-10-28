@@ -5,8 +5,8 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-// The endpoints shared id(organization Id) in the url path.
-var endpointsWithSharedId = datautils.NewSet( //nolint:gochecknoglobals
+// Endpoints that require an organization ID (provided via metadata) as shared ID in the URL path.
+var endpointsRequiringOrganizationMetadata = datautils.NewSet( //nolint:gochecknoglobals
 	"fundingsources",
 	"billingcenters",
 	"transactions",
@@ -16,7 +16,7 @@ var endpointsWithSharedId = datautils.NewSet( //nolint:gochecknoglobals
 )
 
 func (c *Connector) constructURL(objName string) (*urlbuilder.URL, error) {
-	if endpointsWithSharedId.Has(objName) {
+	if endpointsRequiringOrganizationMetadata.Has(objName) {
 		// If it needs shared ID, build URL with organizationId in the path.
 		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "organizations", c.organizationId, objName)
 	}
@@ -30,7 +30,7 @@ func getObjectNodePath(objName string) string {
 	// For all direct objects, the node path have "targeting_dimensions".
 	nodePath := "targeting_dimensions"
 
-	if endpointsWithSharedId.Has(objName) {
+	if endpointsRequiringOrganizationMetadata.Has(objName) {
 		nodePath = objName
 	}
 

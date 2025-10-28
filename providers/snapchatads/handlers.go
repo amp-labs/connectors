@@ -51,7 +51,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	// Determine key for inner map
 	objKey := objectName
-	if endpointsWithSharedId.Has(objectName) {
+	if endpointsRequiringOrganizationMetadata.Has(objectName) {
 		objKey = naming.NewSingularString(objectName).String()
 	}
 

@@ -6,7 +6,14 @@ Below is an exhaustive list of objects & methods supported on the objects
 
 SnapchatAds API version : v1
 
-Below some objects having url like v1/{organization_id}/objectName and some are direct objects.
+Some of the objects need to be read with an "organization_id" which we accept as metadata in this connector.
+These are highlighted below as
+- `fundingsources`
+- `billingcenters`
+- `transactions`
+- `adaccounts`
+- `members`
+- `roles`
 
 ---------------------------------------------------------------------------------------------------------
 | Object                                       | Resource                                      | Method |
