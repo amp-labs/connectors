@@ -3,7 +3,6 @@ package crm
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/providers"
 )
 
 const (
@@ -26,12 +25,12 @@ type Adapter struct {
 }
 
 func NewAdapter(
-	client *common.JSONHTTPClient, info *providers.ModuleInfo, metadata map[string]string,
-) (*Adapter, error) {
+	client *common.JSONHTTPClient, baseURL string,
+) *Adapter {
 	return &Adapter{
 		Client:  client,
-		BaseURL: info.BaseURL,
-	}, nil
+		BaseURL: baseURL,
+	}
 }
 
 func (a *Adapter) getAPIURL(apiVersion, object string) (*urlbuilder.URL, error) {

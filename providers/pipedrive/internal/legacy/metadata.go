@@ -1,4 +1,4 @@
-package pipedrive
+package legacy
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/pipedrive/metadata"
 )
 
@@ -38,20 +39,9 @@ type options struct {
 	AltId string `json:"alt_id,omitempty"` //nolint:tagliatelle
 }
 
-func (c *Connector) ListObjectMetadata(ctx context.Context,
-	objectNames []string,
-) (*common.ListObjectMetadataResult, error) {
-	if c.crmAdapter != nil {
-		return c.crmAdapter.ListObjectMetadata(ctx, objectNames)
-	}
-
-	return c.listObjectMetadata(ctx, objectNames)
-}
-
 // ListObjectMetadata returns metadata for an object by sampling an object from Pipedrive's API.
 // If that fails, it generates object metadata by parsing Pipedrive's OpenAPI files.
-func (c *Connector) listObjectMetadata(ctx context.Context,
-	objectNames []string,
+func (a *Adapter) ListObjectMetadata(ctx context.Context, objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
@@ -63,19 +53,19 @@ func (c *Connector) listObjectMetadata(ctx context.Context,
 	}
 
 	for _, obj := range objectNames {
-		url, err := c.constructMetadataURL(obj)
+		url, err := a.constructMetadataURL(obj)
 		if err != nil {
 			return nil, err
 		}
 
-		res, err := c.Client.Get(ctx, url.String())
+		res, err := a.Client.Get(ctx, url.String())
 		if err != nil {
 			objMetadata.Errors[obj] = err
 
 			continue
 		}
 
-		data, err := parseMetadata(res, c.Module.ID, obj)
+		data, err := parseMetadata(res, obj)
 		if err != nil {
 			objMetadata.Errors[obj] = err
 		}
@@ -91,7 +81,7 @@ func (c *Connector) listObjectMetadata(ctx context.Context,
 // metadataMapper constructs the metadata fields to a new map and returns it.
 // Returns an error if it faces any in unmarshalling the response.
 func parseMetadata(
-	resp *common.JSONHTTPResponse, moduleID common.ModuleID, obj string,
+	resp *common.JSONHTTPResponse, obj string,
 ) (*common.ObjectMetadata, error) {
 	mdt := &common.ObjectMetadata{
 		DisplayName: naming.CapitalizeFirstLetter(obj),
@@ -104,7 +94,7 @@ func parseMetadata(
 	if !metadataDiscoveryEndpoints.Has(obj) {
 		// we currently use static schema all objects, excepts for those having
 		// discovery metadata endpoints.
-		mdt, err = metadata.Schemas.SelectOne(moduleID, obj)
+		mdt, err = metadata.Schemas.SelectOne(providers.ModulePipedriveLegacy, obj)
 		if err != nil {
 			return nil, err
 		}

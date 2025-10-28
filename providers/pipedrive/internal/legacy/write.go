@@ -1,4 +1,4 @@
-package pipedrive
+package legacy
 
 import (
 	"context"
@@ -15,14 +15,14 @@ type writeResponse struct {
 
 // Write creates or updates records in a pipedriver account.
 // https://developers.pipedrive.com/docs/api/v1
-func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+func (a *Adapter) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
 	}
 
 	var write common.WriteMethod
 
-	url, err := c.getAPIURL(config.ObjectName)
+	url, err := a.getAPIURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -32,13 +32,13 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 		switch config.ObjectName {
 		case "leads", "leadLabels":
-			write = c.Client.Patch
+			write = a.Client.Patch
 
 		default:
-			write = c.Client.Put
+			write = a.Client.Put
 		}
 	} else {
-		write = c.Client.Post
+		write = a.Client.Post
 	}
 
 	resp, err := write(ctx, url.String(), config.RecordData)
