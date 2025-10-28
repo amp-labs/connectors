@@ -91,6 +91,7 @@ import (
 	"github.com/amp-labs/connectors/providers/sellsy"
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/smartlead"
+	"github.com/amp-labs/connectors/providers/snapchatads"
 	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/xero"
@@ -196,6 +197,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Sellsy:                  wrapper(newSellsyConnector),
 	providers.ServiceNow:              wrapper(newServiceNowConnector),
 	providers.Smartlead:               wrapper(newSmartleadConnector),
+	providers.SnapchatAds:             wrapper(newSnapchatAdsConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
 	providers.Xero:                    wrapper(newXeroConnector),
@@ -838,4 +840,9 @@ func newChargebeeConnector(params common.ConnectorParams,
 func newLoxoConnector(params common.ConnectorParams,
 ) (*loxo.Connector, error) {
 	return loxo.NewConnector(params)
+}
+
+func newSnapchatAdsConnector(params common.ConnectorParams,
+) (*snapchatads.Connector, error) {
+	return snapchatads.NewConnector(params)
 }
