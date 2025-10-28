@@ -1,4 +1,4 @@
-package pipedrive
+package legacy
 
 import "github.com/amp-labs/connectors/internal/datautils"
 

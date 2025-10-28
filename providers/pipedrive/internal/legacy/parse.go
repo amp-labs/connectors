@@ -1,4 +1,4 @@
-package pipedrive
+package legacy
 
 import (
 	"strconv"
