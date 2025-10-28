@@ -18,6 +18,7 @@ var (
 	ObjectNameTask            = "task"
 	ObjectNameCallAnalysis    = "callanalysis"
 	ObjectNameProspectMails   = "prospectmails"
+	ObjectNameNote            = "note"
 )
 
 var objectAPIPath = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
@@ -28,6 +29,13 @@ var objectAPIPath = datautils.NewDefaultMap(datautils.Map[string, string]{ //nol
 	ObjectNameTask:            "task/list",
 	ObjectNameCallAnalysis:    "callanalysis/list",
 	ObjectNameProspectMails:   "prospectmails/list",
+}, func(objectName string) string {
+	return objectName
+})
+
+var writeObjectAPIPath = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
+	ObjectNameSequence: "sequence/create",
+	ObjectNameNote:     "note/create",
 }, func(objectName string) string {
 	return objectName
 })
@@ -43,11 +51,23 @@ func supportedOperations() components.EndpointRegistryInput {
 		ObjectNameProspectMails,
 	}
 
+	writeSupport := []string{
+		ObjectNameProspect,
+		ObjectNameProspectAccount,
+		ObjectNameSequence,
+		ObjectNameNote,
+		ObjectNameTask,
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
