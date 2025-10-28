@@ -29,6 +29,11 @@ func MainFn() int {
 		return 1
 	}
 
+	err = testProductAndServices(ctx)
+	if err != nil {
+		return 1
+	}
+
 	return 0
 }
 
@@ -38,7 +43,7 @@ func testClient(ctx context.Context) error {
 	slog.Info("Creating the client")
 
 	writeParams := common.WriteParams{
-		ObjectName: "client",
+		ObjectName: "clients",
 		RecordData: map[string]any{
 			"title":       "MR",
 			"firstName":   "Deepak",
@@ -62,7 +67,7 @@ func testClient(ctx context.Context) error {
 	slog.Info("Updating the client")
 
 	updateParams := common.WriteParams{
-		ObjectName: "client",
+		ObjectName: "clients",
 		RecordData: map[string]any{
 			"isCompany": true,
 			"emailsToAdd": map[string]any{
@@ -94,7 +99,7 @@ func testExpense(ctx context.Context) error {
 	slog.Info("Creating the expense")
 
 	writeParams := common.WriteParams{
-		ObjectName: "expense",
+		ObjectName: "expenses",
 		RecordData: map[string]any{
 			"title":       "Today expense",
 			"date":        "2025-09-12T10:45:30Z",
@@ -118,9 +123,58 @@ func testExpense(ctx context.Context) error {
 	slog.Info("Updating the expense")
 
 	updateParams := common.WriteParams{
-		ObjectName: "expense",
+		ObjectName: "expenses",
 		RecordData: map[string]any{
 			"total": 1000.00,
+		},
+		RecordId: writeRes.RecordId,
+	}
+
+	updateRes, err := Write(ctx, conn, updateParams)
+	if err != nil {
+		fmt.Println("ERR: ", err)
+
+		return err
+	}
+
+	if err := constructResponse(updateRes); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func testProductAndServices(ctx context.Context) error {
+	conn := jobber.GetJobberConnector(ctx)
+
+	slog.Info("Creating the products and services")
+
+	writeParams := common.WriteParams{
+		ObjectName: "productsAndServices",
+		RecordData: map[string]any{
+			"name":            "Mobile",
+			"defaultUnitCost": 50000.00,
+		},
+		RecordId: "",
+	}
+
+	writeRes, err := Write(ctx, conn, writeParams)
+	if err != nil {
+		fmt.Println("ERR: ", err)
+
+		return err
+	}
+
+	if err := constructResponse(writeRes); err != nil {
+		return err
+	}
+
+	slog.Info("Updating the products and services")
+
+	updateParams := common.WriteParams{
+		ObjectName: "productsAndServices",
+		RecordData: map[string]any{
+			"defaultUnitCost": 10000.00,
 		},
 		RecordId: writeRes.RecordId,
 	}
