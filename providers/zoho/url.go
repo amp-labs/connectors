@@ -12,8 +12,7 @@ import (
 )
 
 const (
-	timeLayout     = "2006-01-02T15:04:05.000Z"
-	articlesObject = "articles"
+	timeLayout = "2006-01-02T15:04:05.000Z"
 )
 
 type (
@@ -28,6 +27,9 @@ var (
 	identityFn  = func(s string) string { return s }                            //nolint: gochecknoglobals
 	fieldJoiner = func(flds []string) string { return strings.Join(flds, ",") } //nolint: gochecknoglobals
 )
+
+var deskFieldParamsObject = datautils.NewSet( //nolint: gochecknoglobals
+	"accounts", "tickets", "contacts")
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
 	switch c.moduleID { // nolint: exhaustive
@@ -58,7 +60,9 @@ func (c *Connector) buildModuleURL(params common.ReadParams, apiVersion string,
 	c.constructIncrementalParams(url, params)
 
 	fields := c.prepareFields(params, fldTransformer)
-	if params.ObjectName != articlesObject {
+
+	if c.moduleID == providers.ZohoCRM || (c.moduleID == providers.ZohoDesk &&
+		deskFieldParamsObject.Has(params.ObjectName)) {
 		url.WithQueryParam("fields", fields)
 	}
 
