@@ -34,10 +34,13 @@ var objectAPIPath = datautils.NewDefaultMap(datautils.Map[string, string]{ //nol
 })
 
 var writeObjectAPIPath = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
-	ObjectNameSequence: "sequence/create",
-	ObjectNameNote:     "note/create",
+	ObjectNameProspect:        "prospect/create",
+	ObjectNameProspectAccount: "prospectaccount/create",
+	ObjectNameSequence:        "sequence/create",
+	ObjectNameNote:            "note/create",
+	ObjectNameTask:            "task/create",
 }, func(objectName string) string {
-	return objectName
+	return objectName + "/create"
 })
 
 func supportedOperations() components.EndpointRegistryInput {

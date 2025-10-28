@@ -140,13 +140,23 @@ func (c *Connector) parseReadResponse(
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	method := http.MethodPost
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "api", apiVersion, params.ObjectName)
+	objectAPIPath := writeObjectAPIPath.Get(params.ObjectName)
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "api", apiVersion, objectAPIPath)
 	if err != nil {
 		return nil, err
 	}
 
 	if params.RecordId != "" {
 		method = http.MethodPut
+
+		// Note Object update and create have different API paths
+		if params.ObjectName == ObjectNameNote {
+			url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "api", apiVersion, params.ObjectName, "update")
+			if err != nil {
+				return nil, err
+			}
+		}
 
 		url.AddPath(params.RecordId)
 	}
@@ -179,6 +189,7 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
+	// the record ID key is in the format: objectnameid, e.g., prospectid
 	recordIdKey := params.ObjectName + "id"
 
 	recordID, err := jsonquery.New(body).IntegerOptional(recordIdKey)
