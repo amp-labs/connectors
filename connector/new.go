@@ -69,6 +69,7 @@ import (
 	"github.com/amp-labs/connectors/providers/lever"
 	"github.com/amp-labs/connectors/providers/linear"
 	"github.com/amp-labs/connectors/providers/linkedin"
+	"github.com/amp-labs/connectors/providers/loxo"
 	"github.com/amp-labs/connectors/providers/marketo"
 	"github.com/amp-labs/connectors/providers/microsoft"
 	"github.com/amp-labs/connectors/providers/mixmax"
@@ -173,6 +174,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Lever:                   wrapper(newLeverConnector),
 	providers.Linear:                  wrapper(newLinearConnector),
 	providers.LinkedIn:                wrapper(newLinkedInConnector),
+	providers.Loxo:                    wrapper(newLoxoConnector),
 	providers.Marketo:                 wrapper(newMarketoConnector),
 	providers.Microsoft:               wrapper(newMicrosoftConnector),
 	providers.Mixmax:                  wrapper(newMixmaxConnector),
@@ -831,4 +833,9 @@ func newChorusConnector(params common.ConnectorParams,
 func newChargebeeConnector(params common.ConnectorParams,
 ) (*chargebee.Connector, error) {
 	return chargebee.NewConnector(params)
+}
+
+func newLoxoConnector(params common.ConnectorParams,
+) (*loxo.Connector, error) {
+	return loxo.NewConnector(params)
 }
