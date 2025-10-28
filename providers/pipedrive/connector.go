@@ -26,7 +26,7 @@ type Connector struct {
 // if any of the required fields are not instantiated.
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	params, err := paramsbuilder.Apply(parameters{}, opts,
-		WithModule(providers.PipedriveLegacy),
+		WithModule(providers.ModulePipedriveLegacy),
 	)
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	conn.Module = params.Selection
 
-	if conn.Module.ID == providers.PipedriveCRM {
+	if conn.Module.ID == providers.ModulePipedriveCRM {
 		conn.crmAdapter = &crm.Adapter{
 			Client:  conn.Client,
 			BaseURL: providerInfo.BaseURL,

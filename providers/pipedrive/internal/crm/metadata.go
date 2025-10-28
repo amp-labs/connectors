@@ -34,7 +34,7 @@ type Schema struct {
 }
 
 func (s *Schema) Select(objectNames []string) (*common.ListObjectMetadataResult, error) {
-	return s.Metadata.Select(providers.PipedriveCRM, objectNames)
+	return s.Metadata.Select(providers.ModulePipedriveCRM, objectNames)
 }
 
 var metadataDiscoveryEndpoints = datautils.Map[string, string]{ // nolint: gochecknoglobals
@@ -66,7 +66,7 @@ func (a *Adapter) ListObjectMetadata(
 
 		// we only add this limit incase we're sampling fields from actual data.
 		if !metadataDiscoveryEndpoints.Has(obj) {
-			mdt, err := Schemas.SelectOne(providers.PipedriveCRM, obj)
+			mdt, err := Schemas.SelectOne(providers.ModulePipedriveCRM, obj)
 			if err != nil {
 				objectMetadata.Errors[obj] = err
 
