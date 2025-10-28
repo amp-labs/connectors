@@ -24,7 +24,7 @@ func run() error {
 
 	conn := outplay.GetOutplayConnector(ctx)
 
-	prospectId, err := testCreatingPropects(ctx, conn)
+	prospectId, err := testCreatingProspects(ctx, conn)
 	if err != nil {
 		return err
 	}
@@ -42,7 +42,7 @@ func run() error {
 	return nil
 }
 
-func testCreatingPropects(ctx context.Context, conn *cc.Connector) (string, error) {
+func testCreatingProspects(ctx context.Context, conn *cc.Connector) (string, error) {
 	params := common.WriteParams{
 		ObjectName: "prospect",
 		RecordData: map[string]any{
