@@ -2,9 +2,8 @@
 
   
 ## Supported Objects   
-Below is an exhaustive list of objects & methods support  ed on the objects
+Below is an exhaustive list of objects & methods supported on the objects
   
---------------------------------------------------------------------------
 | Object                    | Resource                    | Method       |
 | --------------------------| ----------------------------| -------------|
 | appAlerts                 | appAlerts                   | read         |
@@ -13,7 +12,7 @@ Below is an exhaustive list of objects & methods support  ed on the objects
 | clientEmails              | clientEmails                | read         |
 | clientPhones              | clientPhones                | read         |
 | clients                   | clients                     | read         |
-| Expenses                  | Expenses                    | read         |
+| expenses                  | expenses                    | read         |
 | invoices                  | invoices                    | read         |
 | jobs                      | jobs                        | read         |
 | paymentsRecords           | paymentsRecords             | read         |
@@ -36,12 +35,11 @@ Below is an exhaustive list of objects & methods support  ed on the objects
 |                           | expenseCreate               |              |
 | expenses                  | expenseEdit                 | write        |
 |                           | expenseDelete               |              |
-| jobs                      | jobCreate jobEdit           | write        |
+| jobs                      | jobCreate, jobEdit          | write        |
 | productsAndServices       | productsAndServicesCreate   | write        |
 |                           | productAndServicesEdit      | write        |
-| quotes                    | quoteCreate quoteEdit       | write        |
-| requests                  | requestCreate requestEdit   | write        |
+| quotes                    | quoteCreate, quoteEdit      | write        |
+| requests                  | requestCreate, requestEdit  | write        |
 | taxes                     | taxCreate                   | write        |
 | taxGroups                 | taxGroupCreate              | write        |
-| vehicles                  | vehicleCreate vehicleDelete | write        |
-|-------------------------------------------------------------------------
+| vehicles                  | vehicleCreate, vehicleDelete| write        |
