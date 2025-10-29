@@ -1,7 +1,6 @@
 package readhelper
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -9,8 +8,6 @@ import (
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
-
-var ErrKeyNotFound = errors.New("incsync: key not found in one or more records; please verify the key")
 
 // FilterSortedRecords filters and returns only the records that have changed since the last sync,
 // based on a provided timestamp key and reference value.
@@ -67,20 +64,13 @@ func FilterSortedRecords(data *ajson.Node, recordsKey string, since time.Time, /
 	}
 
 	for idx, nodeRecord := range nodeRecords {
-		// Extract the timestamp value from the record
-		timestamp, err := jsonquery.New(nodeRecord).StringRequired(timestampKey)
+		recordTimestamp, err := extractTimestamp(nodeRecord, timestampKey, timestampFormat)
 		if err != nil {
-			return nil, next, fmt.Errorf("error: bad since timestamp key: %w", err)
-		}
-
-		// Parse the timestamp using the provider's specific format
-		recordTimestamp, err := time.Parse(timestampFormat, timestamp)
-		if err != nil {
-			return nil, next, fmt.Errorf("error: cannot parse timestamp for key %q: %w", timestampKey, err)
+			return nil, "", err
 		}
 
 		// Check if this record is newer than our reference time
-		if since.Before(recordTimestamp) {
+		if since.Before(*recordTimestamp) {
 			updatedNodeRecords = append(updatedNodeRecords, nodeRecord)
 
 			// If this is the last record and it's new, we might have more pages
@@ -106,4 +96,113 @@ func FilterSortedRecords(data *ajson.Node, recordsKey string, since time.Time, /
 	}
 
 	return updatedRecords, next, nil
+}
+
+// MakeIdentityFilterFunc returns a RecordsFilterFunc that allows all records to pass through unchanged.
+// It delegates pagination control entirely to the provided nextPageFunc.
+//
+// Example usage:
+//
+//	return common.ParseResultFiltered(params, resp,
+//		common.MakeRecordsFunc(responseFieldName),
+//		readhelper.MakeIdentityFilterFunc(makeNextRecordsURL(request.URL)),
+//		common.MakeMarshaledDataFunc(nil),
+//		params.Fields,
+//	)
+func MakeIdentityFilterFunc(nextPageFunc common.NextPageFunc) common.RecordsFilterFunc {
+	return func(params common.ReadParams, body *ajson.Node, records []*ajson.Node) ([]*ajson.Node, string, error) {
+		next, err := nextPageFunc(body)
+
+		return records, next, err
+	}
+}
+
+// MakeTimeFilterFunc returns a RecordsFilterFunc that filters records based on timestamp boundaries.
+// It uses the provided TimeOrder to determine whether pagination should continue, and TimeBoundary
+// to decide whether the timestamp inclusivity applies to the Since/Until values.
+//
+// If records are ordered (Chronological or ReverseOrder), pagination is stopped early when all
+// remaining records would fall outside the requested time range.
+//
+// Arguments:
+//   - order: defines the chronological order of the input records.
+//   - boundary: defines whether Since/Until are inclusive or exclusive.
+//   - timestampKey: JSON key used to extract the timestamp value from each record.
+//   - timestampFormat: time format layout for parsing timestamps.
+//   - nextPageFunc: function used to determine the next page token from the response body.
+func MakeTimeFilterFunc(
+	order TimeOrder, boundary *TimeBoundary,
+	timestampKey string, timestampFormat string,
+	nextPageFunc common.NextPageFunc,
+) common.RecordsFilterFunc {
+	return func(params common.ReadParams, body *ajson.Node, records []*ajson.Node) ([]*ajson.Node, string, error) {
+		if len(records) == 0 {
+			// Nothing to process on this page.
+			return nil, "", nil
+		}
+
+		var (
+			filtered []*ajson.Node
+			hasMore  bool
+		)
+
+		for idx, nodeRecord := range records {
+			recordTimestamp, err := extractTimestamp(nodeRecord, timestampKey, timestampFormat)
+			if err != nil {
+				return nil, "", err
+			}
+
+			if boundary.Contains(params, *recordTimestamp) {
+				filtered = append(filtered, nodeRecord)
+				hasMore = hasMore || hasNextPage(order, idx, len(records))
+			}
+		}
+
+		// When we can infer that no further pages will satisfy the time range,
+		// skip pagination entirely.
+		if !hasMore {
+			return filtered, "", nil
+		}
+
+		next, err := nextPageFunc(body)
+		if err != nil {
+			return nil, next, fmt.Errorf("error: constructing next page value: %w", err)
+		}
+
+		return filtered, next, nil
+	}
+}
+
+// hasNextPage determines whether pagination should continue based on
+// record ordering and position within the current page.
+func hasNextPage(order TimeOrder, idx int, recordsLen int) bool {
+	switch order {
+	case Unordered:
+		// Pagination cannot be inferred; assume more pages exist.
+		return true
+	case ChronologicalOrder:
+		// If last record on this page is still inside range, there might be more.
+		return idx == recordsLen-1
+	case ReverseOrder:
+		// If first record in reverse-ordered page is still inside range, there might be more.
+		return idx == 0
+	default:
+		return false
+	}
+}
+
+func extractTimestamp(nodeRecord *ajson.Node, timestampKey string, timestampFormat string) (*time.Time, error) {
+	// Extract the timestamp value from the record
+	timestamp, err := jsonquery.New(nodeRecord).StringRequired(timestampKey)
+	if err != nil {
+		return nil, fmt.Errorf("error: bad since timestamp key: %w", err)
+	}
+
+	// Parse the timestamp using the provider's specific format
+	recordTimestamp, err := time.Parse(timestampFormat, timestamp)
+	if err != nil {
+		return nil, fmt.Errorf("error: cannot parse timestamp for key %q: %w", timestampKey, err)
+	}
+
+	return &recordTimestamp, nil
 }
