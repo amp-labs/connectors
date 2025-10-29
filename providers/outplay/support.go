@@ -18,6 +18,7 @@ var (
 	ObjectNameTask            = "task"
 	ObjectNameCallAnalysis    = "callanalysis"
 	ObjectNameProspectMails   = "prospectmails"
+	ObjectNameNote            = "note"
 )
 
 var objectAPIPath = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
@@ -32,6 +33,22 @@ var objectAPIPath = datautils.NewDefaultMap(datautils.Map[string, string]{ //nol
 	return objectName
 })
 
+var writeObjectAPIPath = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
+	ObjectNameSequence: "sequence/create",
+	ObjectNameNote:     "note/create",
+	ObjectNameTask:     "task/create",
+}, func(objectName string) string {
+	return objectName
+})
+
+var writeObjectResponseIDField = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
+	ObjectNameProspectAccount: "accountid",
+	ObjectNameNote:            "noteId",
+}, func(objectName string) string {
+	// Default ID field pattern
+	return objectName + "id"
+})
+
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
 		ObjectNameProspect,
@@ -43,11 +60,23 @@ func supportedOperations() components.EndpointRegistryInput {
 		ObjectNameProspectMails,
 	}
 
+	writeSupport := []string{
+		ObjectNameProspect,
+		ObjectNameProspectAccount,
+		ObjectNameSequence,
+		ObjectNameNote,
+		ObjectNameTask,
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
