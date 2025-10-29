@@ -135,7 +135,7 @@ type BatchWriteSupportConfig struct {
 	// DefaultRecordLimit The default number of records supported in a batch
 	DefaultRecordLimit *int `json:"defaultRecordLimit,omitempty"`
 
-	// ObjectRecordLimits Any object-level overrides for number of records supported in a batch
+	// ObjectRecordLimits Defines object-level overrides for batch record limits. Keys represent object names, and values specify the maximum number of records per batch for those objects.
 	ObjectRecordLimits *map[string]int `json:"objectRecordLimits,omitempty"`
 
 	// Supported Whether this type of batch write operation is supported
