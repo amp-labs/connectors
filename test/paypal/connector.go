@@ -37,6 +37,6 @@ func getConfig(reader *credscanning.ProviderCredentials) *clientcredentials.Conf
 	return &clientcredentials.Config{
 		ClientID:     reader.Get(credscanning.Fields.ClientId),
 		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
-		TokenURL:     "https://api-m.sandbox.paypal.com",
+		TokenURL:     "https://api-m.sandbox.paypal.com/v1/oauth2/token",
 	}
 }
