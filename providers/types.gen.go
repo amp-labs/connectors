@@ -136,7 +136,7 @@ type BatchWriteSupportConfig struct {
 	DefaultRecordLimit *int `json:"defaultRecordLimit,omitempty"`
 
 	// ObjectRecordLimits Any object-level overrides for number of records supported in a batch
-	ObjectRecordLimits *map[string]ObjectRecordLimit `json:"objectRecordLimits,omitempty"`
+	ObjectRecordLimits *map[string]int `json:"objectRecordLimits,omitempty"`
 
 	// Supported Whether this type of batch write operation is supported
 	Supported bool `json:"supported"`
@@ -309,14 +309,6 @@ type Oauth2Opts struct {
 
 // Oauth2OptsGrantType defines model for Oauth2Opts.GrantType.
 type Oauth2OptsGrantType string
-
-// ObjectRecordLimit defines model for ObjectRecordLimit.
-type ObjectRecordLimit struct {
-	Create int `json:"create"`
-	Delete int `json:"delete"`
-	Update int `json:"update"`
-	Upsert int `json:"upsert"`
-}
 
 // Provider defines model for Provider.
 type Provider = string
