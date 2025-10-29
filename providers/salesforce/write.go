@@ -8,6 +8,11 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+func (c *Connector) BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error) {
+	// Delegated.
+	return c.batchAdapter.BatchWrite(ctx, params)
+}
+
 // Write will write data to Salesforce.
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	if err := config.ValidateParams(); err != nil {
