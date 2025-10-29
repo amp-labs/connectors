@@ -184,6 +184,7 @@ func (c *Connector) parseWriteResponse(
 ) (*common.WriteResult, error) {
 	body, ok := response.Body()
 	if !ok {
+		// it is unlikely to have no payload
 		return &common.WriteResult{
 			Success: true,
 		}, nil
