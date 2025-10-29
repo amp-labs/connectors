@@ -1,6 +1,8 @@
 package snapchatads
 
 import (
+	"path"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -82,7 +84,7 @@ func DataMarshall(resp *common.JSONHTTPResponse, objName string) MarshalledData 
 			return nil, common.ErrEmptyJSONHTTPResponse
 		}
 
-		arr, err := jsonquery.New(node).ArrayOptional(objName)
+		arr, err := jsonquery.New(node).ArrayOptional(getObjectNodePath(objName))
 		if err != nil {
 			return nil, err
 		}
@@ -96,6 +98,10 @@ func getRecords(objName string, records []*ajson.Node, fields []string,
 	data := make([]common.ReadResultRow, len(records))
 
 	objKey := naming.NewSingularString(objName).String()
+
+	if !endpointsRequiringOrganizationMetadata.Has(objName) {
+		objKey = path.Base(objName)
+	}
 
 	for i, element := range records { // nolint:varnamelen
 		originalRecord, err := jsonquery.Convertor.ObjectToMap(element)
