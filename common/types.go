@@ -305,7 +305,6 @@ type BatchWriteType string
 const (
 	BatchWriteTypeCreate BatchWriteType = "create"
 	BatchWriteTypeUpdate BatchWriteType = "update"
-	BatchWriteTypeUpsert BatchWriteType = "upsert"
 )
 
 // BatchWriteParam defines the input required to execute a batch write operation.
@@ -317,46 +316,19 @@ type BatchWriteParam struct {
 	Type BatchWriteType
 	// Records contains the collection of record payloads to be written.
 	Records []any
-	// Associations contains associations between objects (HubSpot-specific).
-	// This is optional and may not be supported by all providers.
-	Associations any // optional
 }
 
 // BatchWriteResult aggregates the outcome of a synchronous batch write operation.
 // It reports an overall batch status, any top-level errors, and the per-record
 // results for each record processed in the batch.
 type BatchWriteResult struct {
-	// Status summarizes the batch outcome (success, fail, or partial).
+	// Status summarizes the batch outcome (success, failure, or partial).
 	Status BatchStatus
 	// Errors lists top-level errors that are not tied to specific records.
+	// While errors that are specific to certain records are found in Results[i].Errors
 	Errors []any
 	// Results contains the detailed outcomes for each record in the batch.
 	Results []WriteResult
-	// SuccessCount is the number of successfully written records.
-	SuccessCount int `json:"successCount"`
-	// FailureCount is the number of failed records.
-	FailureCount int `json:"failureCount"`
-}
-
-// BatchDeleteParam defines the input required to execute a batch delete operation.
-// It enables deleting multiple records belonging to the same object in a single request.
-type BatchDeleteParam struct {
-	// ObjectName identifies the target object for the delete operation.
-	ObjectName ObjectName
-	// RecordIDs specifies the identifiers of the records to remove.
-	RecordIDs []string
-}
-
-// BatchDeleteResult aggregates the outcome of a synchronous batch delete operation.
-// It reports an overall batch status, any top-level errors, and the per-record
-// results for each record processed in the batch.
-type BatchDeleteResult struct {
-	// Status summarizes the batch outcome (success, fail, or partial).
-	Status BatchStatus
-	// Errors lists top-level errors that are not tied to specific records.
-	Errors []any
-	// Results contains the detailed outcomes for each record in the batch.
-	Results []DeleteResult
 	// SuccessCount is the number of successfully written records.
 	SuccessCount int `json:"successCount"`
 	// FailureCount is the number of failed records.

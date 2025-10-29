@@ -86,22 +86,6 @@ type BatchWriteConnector interface {
 	BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error)
 }
 
-// BatchDeleteConnector provides synchronous operations for deleting multiple records in a single request.
-// It serves the same purpose as DeleteConnector but operates
-// on collections of records instead of individual ones.
-//
-// Implementations should handle each record independently and report both
-// overall and per-record outcomes through the returned result types.
-// Errors returned from the methods represent connector-level issues such as
-// network failures or invalid authentication, not individual record failures.
-type BatchDeleteConnector interface {
-	Connector
-
-	// BatchDelete removes multiple records identified by params.RecordIds.
-	// The returned BatchDeleteResult reports both overall and per-record outcomes.
-	BatchDelete(ctx context.Context, params *common.BatchDeleteParam) (*common.BatchDeleteResult, error)
-}
-
 // ObjectMetadataConnector is an interface that extends the Connector interface with
 // the ability to list object metadata.
 type ObjectMetadataConnector interface {

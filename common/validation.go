@@ -69,31 +69,19 @@ func (p DeleteParams) ValidateParams() error {
 	return nil
 }
 
-var ErrUnknownBatchWriteType = errors.New("unknown batch write type") // TODO should it be "mode"?
+var ErrUnknownBatchWriteType = errors.New("unknown batch write type")
 
 func (p BatchWriteParam) ValidateParams() error {
 	if len(p.ObjectName) == 0 {
 		return ErrMissingObjects
 	}
 
-	if p.Type == BatchWriteTypeCreate || p.Type == BatchWriteTypeUpdate || p.Type == BatchWriteTypeUpsert {
+	if p.Type == BatchWriteTypeCreate || p.Type == BatchWriteTypeUpdate {
 		return ErrUnknownBatchWriteType
 	}
 
 	if len(p.Records) == 0 {
 		return ErrMissingRecordData
-	}
-
-	return nil
-}
-
-func (p BatchDeleteParam) ValidateParams() error {
-	if len(p.ObjectName) == 0 {
-		return ErrMissingObjects
-	}
-
-	if len(p.RecordIDs) == 0 {
-		return ErrMissingRecordID
 	}
 
 	return nil
