@@ -39,9 +39,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Error invalid params",
 			Input: common.ReadParams{ObjectName: "contacts", Fields: connectors.Fields("last_name")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusBadRequest, errorBadRequest),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/custom-fields"),
+				Then:  mockserver.Response(http.StatusOK, nil),
+				Else:  mockserver.Response(http.StatusBadRequest, errorBadRequest),
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
@@ -56,12 +58,13 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Since:      time.Date(2025, 8, 22, 8, 22, 56, 0, time.UTC),
 				Until:      time.Date(2025, 8, 25, 8, 32, 0, 0, time.UTC),
 			},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPOST(),
-					mockcond.Path("/v2/contacts/search"),
-					mockcond.Body(`{
+				Cases: mockserver.Cases{{
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/v2/contacts/search"),
+						mockcond.Body(`{
 						"filters": {
 							"updated": {
 								"start":"2025-08-22T08:22:56Z",
@@ -69,8 +72,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 							}
 						}
 					}`),
-				},
-				Then: mockserver.Response(http.StatusOK, responseContactsFirstPage),
+					},
+					Then: mockserver.Response(http.StatusOK, responseContactsFirstPage),
+				}, {
+					If:   mockcond.Path("/v2/custom-fields"),
+					Then: mockserver.Response(http.StatusOK, nil),
+				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -110,14 +117,15 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Since:      time.Date(2025, 8, 22, 8, 22, 56, 0, time.UTC),
 				Until:      time.Date(2025, 8, 25, 8, 32, 0, 0, time.UTC),
 			},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPOST(),
-					mockcond.Path("/v2/contacts/search"),
-					mockcond.QueryParam("limit", "100"),
-					mockcond.QueryParam("offset", "WyI0Il0="),
-					mockcond.Body(`{
+				Cases: mockserver.Cases{{
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/v2/contacts/search"),
+						mockcond.QueryParam("limit", "100"),
+						mockcond.QueryParam("offset", "WyI0Il0="),
+						mockcond.Body(`{
 						"filters": {
 							"updated": {
 								"start":"2025-08-22T08:22:56Z",
@@ -125,8 +133,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 							}
 						}
 					}`),
-				},
-				Then: mockserver.Response(http.StatusOK, responseContactsLastPage),
+					},
+					Then: mockserver.Response(http.StatusOK, responseContactsLastPage),
+				}, {
+					If:   mockcond.Path("/v2/custom-fields"),
+					Then: mockserver.Response(http.StatusOK, nil),
+				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -153,18 +165,23 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("last_name"),
 			},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPOST(),
-					mockcond.Path("/v2/contacts/search"),
-					mockcond.Body(`{
+				Cases: mockserver.Cases{{
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/v2/contacts/search"),
+						mockcond.Body(`{
 						"filters": {
 							"updated": {}
 						}
 					}`),
-				},
-				Then: mockserver.Response(http.StatusOK, responseContactsEmptyPage),
+					},
+					Then: mockserver.Response(http.StatusOK, responseContactsEmptyPage),
+				}, {
+					If:   mockcond.Path("/v2/custom-fields"),
+					Then: mockserver.Response(http.StatusOK, nil),
+				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
