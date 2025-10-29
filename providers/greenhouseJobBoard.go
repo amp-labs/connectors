@@ -24,7 +24,9 @@ func init() {
 				Update: false,
 				Upsert: false,
 			},
-			Proxy:     true,
+			// This is tested & provider guide has been written, but we are not shipping it yet since
+			// we haven't decided if this will be an independent connector.
+			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
