@@ -272,7 +272,7 @@ type Association struct {
 	Raw             map[string]any `json:"raw,omitempty"`
 }
 
-// WriteResult is what's returned from writing data via the Write call.
+// WriteResult represents the outcome of a single record write operation.
 type WriteResult struct {
 	// Success is true if write succeeded.
 	Success bool `json:"success"`
@@ -284,11 +284,69 @@ type WriteResult struct {
 	Data map[string]any `json:"data,omitempty"` // optional
 }
 
-// DeleteResult is what's returned from deleting data via the Delete call.
+// DeleteResult represents the outcome of a single record delete operation.
 type DeleteResult struct {
 	// Success is true if deletion succeeded.
 	Success bool `json:"success"`
 }
+
+// BatchStatus describes the aggregate outcome of a batch operation.
+type BatchStatus string
+
+const (
+	BatchStatusSuccess BatchStatus = "success"
+	BatchStatusFail    BatchStatus = "fail"
+	BatchStatusPartial BatchStatus = "partial"
+)
+
+// BatchResult aggregates the outcome of a synchronous batch operation.
+// It reports an overall batch status, any top-level errors, and the per-record
+// results for each record processed in the batch.
+//
+// [R] is the per-record result type (for example, WriteResult or DeleteResult).
+type BatchResult[R any] struct {
+	// Status summarizes the batch outcome (success, fail, or partial).
+	Status BatchStatus
+	// Errors lists top-level errors that are not tied to specific records.
+	Errors []any
+	// Results contains the detailed outcomes for each record in the batch.
+	Results []R
+}
+
+// BatchWriteType specifies the intended operation type within a batch modification.
+type BatchWriteType string // TODO maybe we should call this "BatchWriteMode"?
+
+const (
+	BatchWriteTypeCreate BatchWriteType = "create"
+	BatchWriteTypeUpdate BatchWriteType = "update"
+	BatchWriteTypeUpsert BatchWriteType = "upsert"
+)
+
+// BatchWriteParam defines the input required to execute a batch write operation.
+// It allows creating, updating, or upserting multiple records in a single request.
+type BatchWriteParam struct {
+	// ObjectName identifies the target object for the write operation.
+	ObjectName ObjectName
+	// Type defines how the records should be processed: create, update, or upsert.
+	Type BatchWriteType // TODO maybe we should call this "Mode"?
+	// Records contains the collection of record payloads to be written.
+	Records []any
+}
+
+// BatchWriteResult represents the outcome of a batch write request.
+type BatchWriteResult BatchResult[WriteResult]
+
+// BatchDeleteParam defines the input required to execute a batch delete operation.
+// It enables deleting multiple records belonging to the same object in a single request.
+type BatchDeleteParam struct {
+	// ObjectName identifies the target object for the delete operation.
+	ObjectName ObjectName
+	// RecordIDs specifies the identifiers of the records to remove.
+	RecordIDs []string
+}
+
+// BatchDeleteResult represents the outcome of a batch delete request.
+type BatchDeleteResult BatchResult[DeleteResult]
 
 // WriteMethod is signature for any HTTP method that performs write modifications.
 // Ex: Post/Put/Patch.

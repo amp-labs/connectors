@@ -1,6 +1,8 @@
 package common
 
-import "errors"
+import (
+	"errors"
+)
 
 var (
 	// ErrMissingObjects is returned when no objects are provided in the request.
@@ -61,6 +63,36 @@ func (p DeleteParams) ValidateParams() error {
 	}
 
 	if len(p.RecordId) == 0 {
+		return ErrMissingRecordID
+	}
+
+	return nil
+}
+
+var ErrUnknownBatchWriteType = errors.New("unknown batch write type") // TODO should it be "mode"?
+
+func (p BatchWriteParam) ValidateParams() error {
+	if len(p.ObjectName) == 0 {
+		return ErrMissingObjects
+	}
+
+	if p.Type == BatchWriteTypeCreate || p.Type == BatchWriteTypeUpdate || p.Type == BatchWriteTypeUpsert {
+		return ErrUnknownBatchWriteType
+	}
+
+	if len(p.Records) == 0 {
+		return ErrMissingRecordData
+	}
+
+	return nil
+}
+
+func (p BatchDeleteParam) ValidateParams() error {
+	if len(p.ObjectName) == 0 {
+		return ErrMissingObjects
+	}
+
+	if len(p.RecordIDs) == 0 {
 		return ErrMissingRecordID
 	}
 
