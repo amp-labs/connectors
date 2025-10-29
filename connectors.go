@@ -178,6 +178,12 @@ type SubscribeConnector interface {
 	//nolint:revive
 }
 
+type BatchWriteConnector interface {
+	Connector
+
+	BatchWrite(ctx context.Context, params BatchWriteParams) (*BatchWriteResult, error)
+}
+
 // ConfigurationConnector is a connector that has methods to expose connector
 // configuration values to a caller. This is an interface as opposed to a
 // ProviderInfo value because PageSize might change based on the provider license
@@ -191,9 +197,11 @@ type ConfigurationConnector interface {
 type (
 	ReadParams               = common.ReadParams
 	WriteParams              = common.WriteParams
+	BatchWriteParams         = common.BatchWriteParams
 	DeleteParams             = common.DeleteParams
 	ReadResult               = common.ReadResult
 	WriteResult              = common.WriteResult
+	BatchWriteResult         = common.BatchWriteResult
 	DeleteResult             = common.DeleteResult
 	ListObjectMetadataResult = common.ListObjectMetadataResult
 

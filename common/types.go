@@ -284,6 +284,66 @@ type WriteResult struct {
 	Data map[string]any `json:"data,omitempty"` // optional
 }
 
+// BatchWriteParams contains parameters for batch write operations.
+type BatchWriteParams struct {
+	// ObjectName is the name of the object we are writing, e.g. "Contact", "Account"
+	ObjectName string // required
+
+	// Records is an array of records to write. Each record can be a create or update.
+	// For updates, the record must contain an ID field (provider-specific field name).
+	Records []BatchWriteRecord // required
+
+	// Associations contains associations between objects (HubSpot-specific).
+	// This is optional and may not be supported by all providers.
+	Associations any // optional
+}
+
+// BatchWriteRecord represents a single record in a batch write operation.
+type BatchWriteRecord struct {
+	// RecordId is the ID of the record for updates. Empty for creates.
+	RecordId string // optional
+
+	// RecordData is the data to write (fields and values).
+	RecordData map[string]any // required
+}
+
+// BatchWriteResult contains the results of a batch write operation.
+type BatchWriteResult struct {
+	// Success is true if ALL records were written successfully.
+	Success bool `json:"success"`
+
+	// Results contains individual results for each record in the batch.
+	// The order matches the input Records array.
+	Results []BatchWriteItemResult `json:"results"`
+
+	// SuccessCount is the number of successfully written records.
+	SuccessCount int `json:"successCount"`
+
+	// FailureCount is the number of failed records.
+	FailureCount int `json:"failureCount"`
+}
+
+// BatchWriteItemResult represents the result of writing a single record in a batch.
+type BatchWriteItemResult struct {
+	// Index is the position of this record in the original batch (0-based).
+	Index int `json:"index"`
+
+	// Success is true if this specific record was written successfully.
+	Success bool `json:"success"`
+
+	// RecordId is the ID of the created/updated record (on success).
+	RecordId string `json:"recordId,omitempty"`
+
+	// Data contains the response data from the provider (on success).
+	Data map[string]any `json:"data,omitempty"`
+
+	// Error contains the error message (on failure).
+	Error string `json:"error,omitempty"`
+
+	// Errors contains detailed error objects from the provider (on failure).
+	Errors []any `json:"errors,omitempty"`
+}
+
 // DeleteResult is what's returned from deleting data via the Delete call.
 type DeleteResult struct {
 	// Success is true if deletion succeeded.
