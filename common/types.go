@@ -272,7 +272,7 @@ type Association struct {
 	Raw             map[string]any `json:"raw,omitempty"`
 }
 
-// WriteResult is what's returned from writing data via the Write call.
+// WriteResult represents the outcome of a single record write operation.
 type WriteResult struct {
 	// Success is true if write succeeded.
 	Success bool `json:"success"`
@@ -284,10 +284,55 @@ type WriteResult struct {
 	Data map[string]any `json:"data,omitempty"` // optional
 }
 
-// DeleteResult is what's returned from deleting data via the Delete call.
+// DeleteResult represents the outcome of a single record delete operation.
 type DeleteResult struct {
 	// Success is true if deletion succeeded.
 	Success bool `json:"success"`
+}
+
+// BatchStatus describes the aggregate outcome of a batch operation.
+type BatchStatus string
+
+const (
+	BatchStatusSuccess BatchStatus = "success"
+	BatchStatusFailure BatchStatus = "failure"
+	BatchStatusPartial BatchStatus = "partial"
+)
+
+// BatchWriteType specifies the intended operation type within a batch modification.
+type BatchWriteType string
+
+const (
+	BatchWriteTypeCreate BatchWriteType = "create"
+	BatchWriteTypeUpdate BatchWriteType = "update"
+)
+
+// BatchWriteParam defines the input required to execute a batch write operation.
+// It allows creating, updating, or upserting multiple records in a single request.
+type BatchWriteParam struct {
+	// ObjectName identifies the target object for the write operation.
+	ObjectName ObjectName
+	// Type defines how the records should be processed: create, update, or upsert.
+	Type BatchWriteType
+	// Records contains the collection of record payloads to be written.
+	Records []any
+}
+
+// BatchWriteResult aggregates the outcome of a synchronous batch write operation.
+// It reports an overall batch status, any top-level errors, and the per-record
+// results for each record processed in the batch.
+type BatchWriteResult struct {
+	// Status summarizes the batch outcome (success, failure, or partial).
+	Status BatchStatus
+	// Errors lists top-level errors that are not tied to specific records.
+	// While errors that are specific to certain records are found in Results[i].Errors
+	Errors []any
+	// Results contains the detailed outcomes for each record in the batch.
+	Results []WriteResult
+	// SuccessCount is the number of successfully written records.
+	SuccessCount int `json:"successCount"`
+	// FailureCount is the number of failed records.
+	FailureCount int `json:"failureCount"`
 }
 
 // WriteMethod is signature for any HTTP method that performs write modifications.
