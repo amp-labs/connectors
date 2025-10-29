@@ -69,20 +69,35 @@ type DeleteConnector interface {
 	Delete(ctx context.Context, params DeleteParams) (*DeleteResult, error)
 }
 
-// BatchWriterConnector provides synchronous operations for writing and deleting multiple records in a single request.
-// It serves the same purpose as WriteConnector and DeleteConnector but operates
+// BatchWriteConnector provides synchronous operations for writing multiple records in a single request.
+// It serves the same purpose as WriteConnector but operates
 // on collections of records instead of individual ones.
 //
 // Implementations should handle each record independently and report both
 // overall and per-record outcomes through the returned result types.
 // Errors returned from the methods represent connector-level issues such as
 // network failures or invalid authentication, not individual record failures.
-type BatchWriterConnector interface {
+type BatchWriteConnector interface {
+	Connector
+
 	// BatchWrite performs a batch create, update, or upsert operation.
 	// Each record in params.Records is processed according to params.Type.
 	// The returned BatchWriteResult includes both per-record outcomes and the aggregate batch status.
 	BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error)
-	// BatchDelete removes multiple records identified by params.RecordIDs.
+}
+
+// BatchDeleteConnector provides synchronous operations for deleting multiple records in a single request.
+// It serves the same purpose as DeleteConnector but operates
+// on collections of records instead of individual ones.
+//
+// Implementations should handle each record independently and report both
+// overall and per-record outcomes through the returned result types.
+// Errors returned from the methods represent connector-level issues such as
+// network failures or invalid authentication, not individual record failures.
+type BatchDeleteConnector interface {
+	Connector
+
+	// BatchDelete removes multiple records identified by params.RecordIds.
 	// The returned BatchDeleteResult reports both overall and per-record outcomes.
 	BatchDelete(ctx context.Context, params *common.BatchDeleteParam) (*common.BatchDeleteResult, error)
 }
