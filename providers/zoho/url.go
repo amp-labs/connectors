@@ -28,7 +28,7 @@ var (
 	fieldJoiner = func(flds []string) string { return strings.Join(flds, ",") } //nolint: gochecknoglobals
 )
 
-var deskFieldParamsObject = datautils.NewSet( //nolint: gochecknoglobals
+var deskObjectsWithFieldQuerySupport = datautils.NewSet( //nolint: gochecknoglobals
 	"accounts", "tickets", "contacts")
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
@@ -62,7 +62,7 @@ func (c *Connector) buildModuleURL(params common.ReadParams, apiVersion string,
 	fields := c.prepareFields(params, fldTransformer)
 
 	if c.moduleID == providers.ZohoCRM || (c.moduleID == providers.ZohoDesk &&
-		deskFieldParamsObject.Has(params.ObjectName)) {
+		deskObjectsWithFieldQuerySupport.Has(params.ObjectName)) {
 		url.WithQueryParam("fields", fields)
 	}
 
