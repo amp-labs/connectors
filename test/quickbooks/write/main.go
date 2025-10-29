@@ -93,6 +93,7 @@ func testCreatePaymentMethod(ctx context.Context, conn *cc.Connector) (string, e
 
 	_, _ = os.Stdout.Write(jsonStr)
 	_, _ = os.Stdout.WriteString("\n")
+
 	return res.Data["Id"].(string), nil
 }
 
@@ -119,5 +120,6 @@ func testCreateTaxAgency(ctx context.Context, conn *cc.Connector) (string, error
 
 	_, _ = os.Stdout.Write(jsonStr)
 	_, _ = os.Stdout.WriteString("\n")
+
 	return res.Data["Id"].(string), nil
 }
