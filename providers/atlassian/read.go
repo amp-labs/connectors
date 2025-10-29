@@ -90,7 +90,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 }
 
 func (c *Connector) buildReadURL() (*urlbuilder.URL, error) {
-    // https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-rest-api-3-search-jql-post
+	// https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-rest-api-3-search-jql-post
 	url, err := c.getModuleURL("search/jql")
 	if err != nil {
 		return nil, err
