@@ -213,12 +213,18 @@ type (
 	WriteResult              = common.WriteResult
 	DeleteResult             = common.DeleteResult
 	BatchWriteParam          = common.BatchWriteParam
-	BatchWriteType           = common.BatchWriteType
 	BatchWriteResult         = common.BatchWriteResult
-	BatchStatus              = common.BatchStatus
 	ListObjectMetadataResult = common.ListObjectMetadataResult
 
 	ErrorWithStatus = common.HTTPError //nolint:errname
+)
+
+const (
+	BatchStatusSuccess   = common.BatchStatusSuccess
+	BatchStatusFailure   = common.BatchStatusFailure
+	BatchStatusPartial   = common.BatchStatusPartial
+	BatchWriteTypeCreate = common.BatchWriteTypeCreate
+	BatchWriteTypeUpdate = common.BatchWriteTypeUpdate
 )
 
 var Fields = datautils.NewStringSet // nolint:gochecknoglobals
