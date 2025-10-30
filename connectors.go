@@ -221,6 +221,14 @@ type (
 	ErrorWithStatus = common.HTTPError //nolint:errname
 )
 
+const (
+	BatchStatusSuccess   = common.BatchStatusSuccess
+	BatchStatusFailure   = common.BatchStatusFailure
+	BatchStatusPartial   = common.BatchStatusPartial
+	BatchWriteTypeCreate = common.BatchWriteTypeCreate
+	BatchWriteTypeUpdate = common.BatchWriteTypeUpdate
+)
+
 var Fields = datautils.NewStringSet // nolint:gochecknoglobals
 
 type SubscriptionMaintainerConnector interface {
