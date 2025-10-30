@@ -55,5 +55,18 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722337781/media/clari_1722337779.svg",
 			},
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name: "inputShouldNotBeCollectedForClariCopilot",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleOtherModule: ModuleDependency{},
+					},
+				},
+				{
+					Name: "inputShouldBeCollectedForClariCopilot",
+				},
+			},
+		},
 	})
 }

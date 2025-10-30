@@ -42,6 +42,15 @@ func init() {
 					Name:        "workspace",
 					DisplayName: "Base URL",
 				},
+				{
+					Name: "inputShouldNotBeCollectedForSugarCRM",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleOtherModule: ModuleDependency{},
+					},
+				},
+				{
+					Name: "inputShouldBeCollectedForSugarCRM",
+				},
 			},
 		},
 	})

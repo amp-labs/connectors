@@ -24,6 +24,15 @@ func init() {
 					DisplayName: "Subdomain",
 					DocsURL:     "https://help.salesforce.com/s/articleView?language=en_US&id=sf.faq_domain_name_what.htm&type=5",
 				},
+				{
+					Name: "inputShouldNotBeCollectedForSalesforceMarketing",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleOtherModule: ModuleDependency{},
+					},
+				},
+				{
+					Name: "inputShouldBeCollectedForSalesforceMarketing",
+				},
 			},
 		},
 		Support: Support{

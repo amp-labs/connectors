@@ -37,5 +37,18 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722471227/media/sellsy_1722471226.svg",
 			},
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name: "inputShouldNotBeCollectedForSellsy",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleOtherModule: ModuleDependency{},
+					},
+				},
+				{
+					Name: "inputShouldBeCollectedForSellsy",
+				},
+			},
+		},
 	})
 }

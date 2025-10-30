@@ -29,5 +29,18 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1734352330/media/ashbyhq.com_1734352330.svg",
 			},
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name: "inputShouldNotBeCollectedForAshby",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleOtherModule: ModuleDependency{},
+					},
+				},
+				{
+					Name: "inputShouldBeCollectedForAshby",
+				},
+			},
+		},
 	})
 }

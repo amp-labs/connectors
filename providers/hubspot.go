@@ -10,7 +10,8 @@ const Hubspot Provider = "hubspot"
 
 const (
 	// ModuleHubspotCRM is the module used for accessing standard CRM objects.
-	ModuleHubspotCRM common.ModuleID = "crm"
+	ModuleHubspotCRM  common.ModuleID = "crm"
+	ModuleOtherModule common.ModuleID = "someOtherModule"
 )
 
 func init() { //nolint:funlen
@@ -76,6 +77,20 @@ func init() { //nolint:funlen
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
 					Name: "ownerId",
+				},
+			},
+			Input: []MetadataItemInput{
+				{
+					Name: "inputShouldNotBeCollectedForCRM",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleOtherModule: ModuleDependency{},
+					},
+				},
+				{
+					Name: "inputShouldBeCollectedForCRM",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleHubspotCRM: ModuleDependency{},
+					},
 				},
 			},
 		},
