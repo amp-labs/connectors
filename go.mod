@@ -6,8 +6,8 @@ require (
 	github.com/PuerkitoBio/goquery v1.10.3
 	github.com/antchfx/xmlquery v1.5.0
 	github.com/aws/aws-sdk-go-v2 v1.39.5
-	github.com/aws/aws-sdk-go-v2/config v1.31.15
-	github.com/aws/aws-sdk-go-v2/credentials v1.18.19
+	github.com/aws/aws-sdk-go-v2/config v1.31.16
+	github.com/aws/aws-sdk-go-v2/credentials v1.18.20
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/chromedp/chromedp v0.14.2
 	github.com/deiu/linkparser v0.0.0-20170608193052-9b6849e15168
@@ -33,15 +33,15 @@ require (
 require (
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/antchfx/xpath v1.3.5 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.11 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.11 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.11 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.12 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.12 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.12 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.2 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.11 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.29.8 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.3 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.38.9 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.12 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.30.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.39.0 // indirect
 	github.com/aws/smithy-go v1.23.1 // indirect
 	github.com/chromedp/cdproto v0.0.0-20250724212937-08a3db8b4327 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
