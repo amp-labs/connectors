@@ -124,6 +124,8 @@ func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
 	if ObjectsWithSearchQueryParam.Has(params.ObjectName) {
 		switch params.ObjectName {
 		case "dmpSegments":
+			// nolint:lll
+			// https://learn.microsoft.com/en-us/linkedin/marketing/matched-audiences/create-and-manage-segments?tabs=http#find-dmp-segments-by-account
 			url.WithQueryParam("q", "account")
 
 			url.WithQueryParam("start", "0")
@@ -134,6 +136,8 @@ func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
 
 			url.WithUnencodedQueryParam("account", accountsValue)
 		case "adAnalytics":
+			//nolint:lll
+			//https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads-reporting/ads-reporting?tabs=http#analytics-finder
 			url.WithQueryParam("q", "analytics")
 
 			url.WithQueryParam("timeGranularity", "DAILY")
