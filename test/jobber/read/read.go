@@ -26,19 +26,23 @@ func main() {
 
 	conn := jobber.GetJobberConnector(ctx)
 
-	if err := testRead(ctx, conn, "apps"); err != nil {
+	if err := testRead(ctx, conn, "apps", nil); err != nil {
 		slog.Error(err.Error())
 	}
 
-	if err := testRead(ctx, conn, "clients"); err != nil {
+	if err := testRead(ctx, conn, "clients", nil); err != nil {
+		slog.Error(err.Error())
+	}
+
+	if err := testRead(ctx, conn, "visits", []string{"id", "title"}); err != nil {
 		slog.Error(err.Error())
 	}
 }
 
-func testRead(ctx context.Context, conn *ap.Connector, objectName string) error {
+func testRead(ctx context.Context, conn *ap.Connector, objectName string, fields []string) error {
 	params := common.ReadParams{
 		ObjectName: objectName,
-		Fields:     connectors.Fields(""),
+		Fields:     connectors.Fields(fields...),
 	}
 
 	res, err := conn.Read(ctx, params)
