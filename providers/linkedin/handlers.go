@@ -36,8 +36,8 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	}
 
 	if ObjectsWithSearchQueryParam.Has(objectName) {
-		// nolint:111
 		// For dmpSegments, metadata is fetched based on the associated ad account.
+		// nolint:111
 		// Refer https://learn.microsoft.com/en-us/linkedin/marketing/matched-audiences/create-and-manage-segments?view=li-lms-2025-08&tabs=http#find-dmp-segments-by-account.
 		if objectName == "dmpSegments" {
 			url.WithQueryParam("q", "account")
