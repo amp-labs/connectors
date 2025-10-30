@@ -76,7 +76,8 @@ func (p BatchWriteParam) ValidateParams() error {
 		return ErrMissingObjects
 	}
 
-	if p.Type == BatchWriteTypeCreate || p.Type == BatchWriteTypeUpdate {
+	// Neither "create" nor "update".
+	if p.Type != BatchWriteTypeCreate && p.Type != BatchWriteTypeUpdate {
 		return ErrUnknownBatchWriteType
 	}
 
