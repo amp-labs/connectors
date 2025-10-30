@@ -25,16 +25,17 @@ func init() {
 					DocsURL:     "https://help.salesforce.com/s/articleView?language=en_US&id=sf.faq_domain_name_what.htm&type=5",
 				},
 				{
-					Name: "inputShouldNotBeCollectedForSalesforceMarketing",
+					Name: "All Inputs should be collected for Salesforce marketing",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleOtherModule: ModuleDependency{},
 					},
 				},
 				{
-					Name: "inputShouldBeCollectedForSalesforceMarketing",
+					Name: "Since this provider has no modules, all module deps are ignored.",
 				},
 			},
 		},
+		DefaultModule: ModuleSalesforceCRM,
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
