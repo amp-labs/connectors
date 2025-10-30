@@ -95,6 +95,7 @@ func main() {
 	jsonStr, _ := json.MarshalIndent(res, "", "  ")
 
 	slog.Info("Creating Meeting...")
+
 	_, _ = os.Stdout.Write(jsonStr)
 	_, _ = os.Stdout.WriteString("\n")
 
@@ -115,6 +116,7 @@ func main() {
 	jsonStr, _ = json.MarshalIndent(res, "", "  ")
 
 	slog.Info("Creating Digital Interaction...")
+
 	_, _ = os.Stdout.Write(jsonStr)
 	_, _ = os.Stdout.WriteString("\n")
 

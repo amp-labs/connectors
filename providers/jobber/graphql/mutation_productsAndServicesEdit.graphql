@@ -23,5 +23,9 @@ mutation ProductsAndServicesEdit($id: EncodedId! $input: ProductsAndServicesEdit
           taxable
           visible
         }
+        userErrors {
+          message
+          path
+        }
     }
 }

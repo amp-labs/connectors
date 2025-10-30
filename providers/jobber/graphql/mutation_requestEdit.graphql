@@ -38,5 +38,9 @@ mutation RequestEdit($id: EncodedId! $input: RequestEditInput!) {
           title
           updatedAt
         }
+        userErrors {
+          message
+          path
+        }
     }
 }

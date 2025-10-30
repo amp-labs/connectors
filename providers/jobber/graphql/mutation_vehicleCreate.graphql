@@ -27,5 +27,9 @@ mutation VehicleCreate($input: VehicleCreateInput!) {
         vin
         year
       }
+      userErrors {
+        message
+        path
+      }
     }
 }

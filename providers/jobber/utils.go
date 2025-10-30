@@ -2,6 +2,7 @@ package jobber
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
@@ -74,3 +75,19 @@ func makeNextRecordsURL(objName string) common.NextPageFunc {
 		return "", nil
 	}
 }
+
+// Singularize all objectname expect productsAndServices object.
+func getObjectName(objName string) string {
+	if objName == "productsAndServices" {
+		return objName
+	}
+
+	return naming.NewSingularString(objName).String()
+}
+
+// All write objects use the singular form of the node path, except for the productsAndServices object.
+var writeObjectNodePathMapping = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+	"productsAndServices": "productOrService",
+}, func(objectName string) string {
+	return naming.NewSingularString(objectName).String()
+})

@@ -25,6 +25,7 @@ import (
 	"github.com/amp-labs/connectors/providers/calendly"
 	"github.com/amp-labs/connectors/providers/campaignmonitor"
 	"github.com/amp-labs/connectors/providers/capsule"
+	"github.com/amp-labs/connectors/providers/chargebee"
 	"github.com/amp-labs/connectors/providers/chilipiper"
 	"github.com/amp-labs/connectors/providers/chorus"
 	"github.com/amp-labs/connectors/providers/claricopilot"
@@ -68,6 +69,7 @@ import (
 	"github.com/amp-labs/connectors/providers/lever"
 	"github.com/amp-labs/connectors/providers/linear"
 	"github.com/amp-labs/connectors/providers/linkedin"
+	"github.com/amp-labs/connectors/providers/loxo"
 	"github.com/amp-labs/connectors/providers/marketo"
 	"github.com/amp-labs/connectors/providers/microsoft"
 	"github.com/amp-labs/connectors/providers/mixmax"
@@ -89,6 +91,7 @@ import (
 	"github.com/amp-labs/connectors/providers/sellsy"
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/smartlead"
+	"github.com/amp-labs/connectors/providers/snapchatads"
 	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/xero"
@@ -128,6 +131,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.CampaignMonitor:         wrapper(newCampaignMonitorConnector),
 	providers.Capsule:                 wrapper(newCapsuleConnector),
 	providers.Calendly:                wrapper(newCalendlyConnector),
+	providers.Chargebee:               wrapper(newChargebeeConnector),
 	providers.ChiliPiper:              wrapper(newChiliPiperConnector),
 	providers.Chorus:                  wrapper(newChorusConnector),
 	providers.ClariCopilot:            wrapper(newClariCopilotConnector),
@@ -171,6 +175,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Lever:                   wrapper(newLeverConnector),
 	providers.Linear:                  wrapper(newLinearConnector),
 	providers.LinkedIn:                wrapper(newLinkedInConnector),
+	providers.Loxo:                    wrapper(newLoxoConnector),
 	providers.Marketo:                 wrapper(newMarketoConnector),
 	providers.Microsoft:               wrapper(newMicrosoftConnector),
 	providers.Mixmax:                  wrapper(newMixmaxConnector),
@@ -192,6 +197,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Sellsy:                  wrapper(newSellsyConnector),
 	providers.ServiceNow:              wrapper(newServiceNowConnector),
 	providers.Smartlead:               wrapper(newSmartleadConnector),
+	providers.SnapchatAds:             wrapper(newSnapchatAdsConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
 	providers.Xero:                    wrapper(newXeroConnector),
@@ -294,10 +300,7 @@ func newAtlassianConnector(
 func newPipelinerConnector(
 	params common.ConnectorParams,
 ) (*pipeliner.Connector, error) {
-	return pipeliner.NewConnector(
-		pipeliner.WithWorkspace(params.Workspace),
-		pipeliner.WithAuthenticatedClient(params.AuthenticatedClient),
-	)
+	return pipeliner.NewConnector(params)
 }
 
 func newSmartleadConnector(
@@ -827,4 +830,19 @@ func newJobberConnector(params common.ConnectorParams,
 func newChorusConnector(params common.ConnectorParams,
 ) (*chorus.Connector, error) {
 	return chorus.NewConnector(params)
+}
+
+func newChargebeeConnector(params common.ConnectorParams,
+) (*chargebee.Connector, error) {
+	return chargebee.NewConnector(params)
+}
+
+func newLoxoConnector(params common.ConnectorParams,
+) (*loxo.Connector, error) {
+	return loxo.NewConnector(params)
+}
+
+func newSnapchatAdsConnector(params common.ConnectorParams,
+) (*snapchatads.Connector, error) {
+	return snapchatads.NewConnector(params)
 }

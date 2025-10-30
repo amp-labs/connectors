@@ -1,0 +1,40 @@
+{
+  "pagination": {
+    "page": 1,
+    "limit": 50,
+    "hasmorerecords": false
+  },
+  "data": [
+    {
+      "stage": {
+        "id": 0,
+        "name": ""
+      },
+      "owner": {
+        "id": 263,
+        "name": "Suresh Avatar",
+        "email": "outplaytest@martinz.co.in"
+      },
+      "accountid": 16448,
+      "name": "padikal",
+      "externalid": "",
+      "description": "HCL Technologies Limited is an Indian multinational information technology service and consulting company headquartered in Noida, Uttar Pradesh.",
+      "employeecount": 0,
+      "industrytype": "springs3",
+      "linkedin": "",
+      "twitter": "http://twitter.com/suresh",
+      "foundedyear": "1976",
+      "city": "Noida",
+      "website": "http://HCL.com",
+      "fields": {
+        "acc_txtpicklist": "neww",
+        "acc_nopicklist": "",
+        "acc_date": "2022-08-11",
+        "acc_textfield": "",
+        "acc_numfield": "",
+        "rating": "",
+        "farooqaccount": ""
+      }
+    }
+  ]
+}

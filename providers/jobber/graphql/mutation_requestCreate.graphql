@@ -35,5 +35,9 @@ mutation RequestCreate($input: RequestCreateInput!) {
           title
           updatedAt
         }
+        userErrors {
+          message
+          path
+        }
     }
 }

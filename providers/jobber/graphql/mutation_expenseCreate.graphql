@@ -316,5 +316,9 @@ mutation ExpenseCreate($input: ExpenseCreateInput!) {
           total
           updatedAt
         }
+        userErrors {
+          message
+          path
+        }
     }
 }
