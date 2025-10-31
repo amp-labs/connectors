@@ -9,7 +9,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 const LinkedInVersion = "202504"
@@ -19,18 +18,7 @@ type responseObject struct {
 }
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	var (
-		url *urlbuilder.URL
-		err error
-	)
-
-	switch {
-	case ObjectWithAccountId.Has(objectName):
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", "adAccounts", c.AdAccountId, objectName)
-	default:
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", objectName)
-	}
-
+	url, err := c.constructURL(objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -125,18 +113,7 @@ func (c *Connector) parseReadResponse(
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	var (
-		url *urlbuilder.URL
-		err error
-	)
-
-	switch {
-	case ObjectWithAccountId.Has(params.ObjectName):
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", "adAccounts", c.AdAccountId, params.ObjectName)
-	default:
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", params.ObjectName)
-	}
-
+	url, err := c.constructURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -182,19 +159,7 @@ func (c *Connector) parseWriteResponse(
 }
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	var (
-		url *urlbuilder.URL
-		err error
-	)
-
-	switch {
-	case ObjectWithAccountId.Has(params.ObjectName):
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", "adAccounts",
-			c.AdAccountId, params.ObjectName, params.RecordId)
-	default:
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", params.ObjectName, params.RecordId)
-	}
-
+	url, err := c.constructURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
