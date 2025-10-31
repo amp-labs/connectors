@@ -48,10 +48,10 @@ Below is an exhaustive list of objects & methods supported on the objects
 | pronouns                                  | pronouns                                 | read       |
 | question_types                            | question_types                           | read       |
 | schedule_items                            | schedule_items                           | read       |
-| scorecards                                | scorecards                               | read       |
+| scorecards                                | scorecards                               | read,write |
 | scorecards/scorecard_recommendation_types | scorecards/scorecard_recommendation_types| read       |
 | scorecards/scorecard_types                | scorecards/scorecard_types               | read       |
-| scorecards/scorecard_templates            | scorecards/scorecard_templates           | read       |
+| scorecards/scorecard_templates            | scorecards/scorecard_templates           | read,write |
 | scorecards/scorecard_visibility_types     | scorecards/scorecard_visibility_types    | read       |
 | seniority_levels                          | seniority_levels                         | read       |
 | sms                                       | sms                                      | read,write |
