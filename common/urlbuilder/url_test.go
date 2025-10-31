@@ -415,3 +415,69 @@ func TestURLOrigin(t *testing.T) {
 		})
 	}
 }
+
+func TestWithUnencodedQueryParam(t *testing.T) { // nolint:funlen
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		input    string
+		modifier func(*URL)
+		expected string
+	}{
+		{
+			name:  "Add one query parameter",
+			input: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en",
+			modifier: func(u *URL) {
+				u.WithUnencodedQueryParam("videoId", "%3A45565451%3A")
+			},
+			expected: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en&videoId=%3A45565451%3A",
+		},
+		{
+			name:  "Add list query parameter",
+			input: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en",
+			modifier: func(u *URL) {
+				u.WithUnencodedQueryParamList("videoId", []string{"%3A45565451%3A", "%3A987568%3A"})
+			},
+			expected: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en" +
+				"&videoId=%3A45565451%3A&videoId=%3A987568%3A",
+		},
+		{
+			name:  "Replace query parameter from unencode param to encode params",
+			input: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en",
+			modifier: func(u *URL) {
+				u.WithUnencodedQueryParam("videoId", "%3A55555555%3A")
+				u.WithUnencodedQueryParam("videoId", "(69874521)")
+			},
+			expected: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en&videoId=(69874521)",
+		},
+		{
+			name:  "Remove query parameter",
+			input: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en&videoId=%3A45565451%3A",
+			modifier: func(u *URL) {
+				u.RemoveQueryParam("videoId")
+			},
+			expected: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en",
+		},
+	}
+
+	for _, tt := range tests { // nolint:varnamelen
+		// nolint:varnamelen
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			u, err := New(tt.input)
+			if err != nil {
+				t.Fatalf("bad test (%v)", tt.name)
+			}
+
+			// apply modifications from test scenario
+			tt.modifier(u)
+			output := u.String()
+
+			if !reflect.DeepEqual(output, tt.expected) {
+				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, output)
+			}
+		})
+	}
+}
