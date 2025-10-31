@@ -31,6 +31,20 @@ func (m Map[K, V]) ShallowCopy() Map[K, V] {
 	return result
 }
 
+func (m Map[K, V]) DeepCopy() (Map[K, V], error) {
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+
+	var result Map[K, V]
+	if err = json.Unmarshal(bytes, &result); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (m Map[K, V]) Keys() []K {
 	keys := make([]K, 0)
 	for k := range m {

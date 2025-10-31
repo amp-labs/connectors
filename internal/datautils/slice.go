@@ -32,6 +32,16 @@ func SliceToMap[K comparable, V any](list []V, makeKey func(V) K) Map[K, V] {
 	return result
 }
 
+func ToAnySlice[T any](slice []T) []any {
+	result := make([]any, len(slice))
+
+	for i, v := range slice {
+		result[i] = v
+	}
+
+	return result
+}
+
 // ForEach applies the provided function f to each element of s,
 // returning a new slice containing the results.
 //
@@ -51,4 +61,24 @@ func ForEach[F, T any](input []F, mapper func(F) T) []T {
 	}
 
 	return output
+}
+
+func ForEachWithErr[F, T any](input []F, mapper func(F) (T, error)) ([]T, error) {
+	if len(input) == 0 {
+		return make([]T, 0), nil
+	}
+
+	var (
+		err    error
+		output = make([]T, len(input))
+	)
+
+	for index, value := range input {
+		output[index], err = mapper(value)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return output, nil
 }
