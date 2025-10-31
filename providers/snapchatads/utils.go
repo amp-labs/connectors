@@ -99,6 +99,17 @@ func getRecords(objName string, records []*ajson.Node, fields []string,
 
 	objKey := naming.NewSingularString(objName).String()
 
+	// We derive the objKey for direct objects as the last path segment of the object name.
+	// Ex: Below is a response for the direct object(no sharedId in the url path) 'targeting/device/os_type'.
+	// Here, the objKey is the last path segment of the object name.
+	// "targeting_dimensions": [
+	//     {
+	//         "sub_request_status": "SUCCESS",
+	//         "os_type": { -------> objKey
+	//             "id": "1",
+	//             "name": "iOS"
+	//         }
+	//     },
 	if !endpointsRequiringOrganizationMetadata.Has(objName) {
 		objKey = path.Base(objName)
 	}
