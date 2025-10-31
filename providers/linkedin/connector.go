@@ -34,7 +34,6 @@ type Connector struct {
 
 	// Require authenticated client
 	common.RequireAuthenticatedClient
-	common.RequireMetadata
 
 	// Supported operations
 	components.SchemaProvider

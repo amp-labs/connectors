@@ -29,6 +29,20 @@ var ObjectWithAccountId = datautils.NewSet( //nolint:gochecknoglobals
 	"adCampaigns",
 )
 
+// AccountIdInURLPathAndQueryParam defines the set of LinkedIn objects
+// that require the `adAccountId` to be included both in the URL path
+// (e.g., /rest/adAccounts/{adAccountId}/adCampaigns)
+// and as a query parameter (dmpSegments?account={adAccountId}).
+//
+// These objects are ad-related and LinkedIn's API expects the account
+// context in both the request path and query to properly scope results.
+var accountIdInURLPathAndQueryParam = datautils.NewSet( //nolint:gochecknoglobals
+	"adCampaignGroups",
+	"adCampaigns",
+	"dmpSegments",
+	"adAnalytics",
+)
+
 // cursorPaginationObject holds the list of objects that use cursor-based pagination.
 // These endpoints require passing a cursor (like "nextPageToken") to fetch paginated results.
 var cursorPaginationObject = datautils.NewSet( //nolint:gochecknoglobals
@@ -105,18 +119,7 @@ func handleNormalPagination(node *ajson.Node) (string, error) {
 
 //nolint:cyclop,funlen
 func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
-	var (
-		url *urlbuilder.URL
-		err error
-	)
-
-	switch {
-	case ObjectWithAccountId.Has(params.ObjectName):
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", "adAccounts", c.AdAccountId, params.ObjectName)
-	default:
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", params.ObjectName)
-	}
-
+	url, err := c.constructURL(params.ObjectName)
 	if err != nil {
 		return "", err
 	}
@@ -183,4 +186,30 @@ func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
 	}
 
 	return url.String(), nil
+}
+
+func (c *Connector) constructURL(objName string) (*urlbuilder.URL, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	// Returns an error if the object is ad-related and the adAccountId is missing.
+	// It doesn't affect non-ads related object.
+	if accountIdInURLPathAndQueryParam.Has(objName) && c.AdAccountId == "" {
+		return nil, fmt.Errorf("missing adAccountId: this object (%s) requires an ad account ID", objName)
+	}
+
+	switch {
+	case ObjectWithAccountId.Has(objName):
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", "adAccounts", c.AdAccountId, objName)
+	default:
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", objName)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return url, nil
 }
