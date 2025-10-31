@@ -47,6 +47,11 @@ func MainFn() int {
 		return 1
 	}
 
+	err = testRead(context.Background(), conn, "targeting/demographics/advanced_demographics", []string{"id", "name"})
+	if err != nil {
+		return 1
+	}
+
 	return 0
 }
 

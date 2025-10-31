@@ -117,7 +117,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		response,
-		common.ExtractRecordsFromPath(params.ObjectName),
+		common.ExtractRecordsFromPath(getObjectNodePath(params.ObjectName)),
 		makeNextRecordsURL(),
 		DataMarshall(response, params.ObjectName),
 		params.Fields,
