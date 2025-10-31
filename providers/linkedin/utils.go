@@ -197,7 +197,7 @@ func (c *Connector) constructURL(objName string) (*urlbuilder.URL, error) {
 	// Returns an error if the object is ad-related and the adAccountId is missing.
 	// It doesn't affect non-ads related object.
 	if accountIdInURLPathAndQueryParam.Has(objName) && c.AdAccountId == "" {
-		return nil, fmt.Errorf("missing adAccountId: this object (%s) requires an ad account ID", objName)
+		return nil, fmt.Errorf("missing adAccountId: this object (%s) requires an ad account ID", objName) // nolint:err113
 	}
 
 	switch {
