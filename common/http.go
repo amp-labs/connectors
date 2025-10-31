@@ -110,12 +110,26 @@ type ErrorHandler func(rsp *http.Response, body []byte) error
 
 type ResponseHandler func(rsp *http.Response) (*http.Response, error)
 
-// HTTPClient is an HTTP client that handles OAuth access token refreshes.
+// ShouldHandleError determines whether the default or custom ErrorHandler
+// should be invoked for a given HTTP response.
+// Returning true indicates that the response represents an error that requires handling.
+type ShouldHandleError func(response *http.Response) bool
+
+// HTTPClient is an HTTP client that handles OAuth access token refreshes
+// and provides hooks for custom error and response handling.
 type HTTPClient struct {
-	Base            string                  // optional base URL. If not set, then all URLs must be absolute.
-	Client          AuthenticatedHTTPClient // underlying HTTP client. Required.
-	ErrorHandler    ErrorHandler            // optional error handler. If not set, then the default error handler is used.
-	ResponseHandler ResponseHandler         // optional, Allows mutation of the http.Response from the Saas API response.
+	// [Deprecated] URL endpoints are not the responsibility of HTTPClient.
+	// NOTE: to avoid linter errors the deprecation comment is not of correct golang formatting.
+	// Optional base URL. If unset, all request URLs must be absolute.
+	Base string
+	// Underlying HTTP client. Required.
+	Client AuthenticatedHTTPClient
+	// Optional ErrorHandler. If not set, then the default error handler is used.
+	ErrorHandler ErrorHandler
+	// Optional ResponseHandler, allowing mutation of the http.Response returned by the SaaS API.
+	ResponseHandler ResponseHandler
+	// Optional predicate deciding whether the ErrorHandler should be invoked.
+	ShouldHandleError ShouldHandleError
 }
 
 // getURL returns the base prefixed URL.
@@ -597,15 +611,26 @@ func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, err
 		return nil, nil, fmt.Errorf("error reading response body: %w", err)
 	}
 
-	// Check the response status code
-	if res.StatusCode < 200 || res.StatusCode > 299 {
+	shouldHandleError := h.ShouldHandleError
+	if shouldHandleError == nil {
+		// Default predicate: treat "non-2xx" responses as requiring error handling.
+		shouldHandleError = func(response *http.Response) bool {
+			return response.StatusCode < 200 || response.StatusCode > 299
+		}
+	}
+
+	if shouldHandleError(res) {
 		if h.ErrorHandler != nil {
+			// Invoke the custom error handler.
 			return res, body, h.ErrorHandler(res, body)
 		}
 
+		// Fallback to generic error interpretation.
 		return res, body, InterpretError(res, body)
 	}
 
+	// Response may indicate a logical failure at the API level (e.g., a record-level error),
+	// but it is not a fatal HTTP error. Connectors can handle it according to their contract.
 	return res, body, nil
 }
 
