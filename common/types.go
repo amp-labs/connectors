@@ -193,7 +193,14 @@ type WriteParams struct {
 	Associations any // optional
 }
 
+func (p WriteParams) GetRecord() (Record, error) {
+	return RecordDataToMap(p.RecordData)
+}
+
 // RecordDataToMap converts WriteParams.RecordData into a map[string]any.
+//
+// When possible use WriteParams.GetRecord instead.
+//
 // If RecordData is already a map, it is returned directly.
 // Otherwise, it is serialized to JSON and then deserialized back into a map.
 func RecordDataToMap(recordData any) (map[string]any, error) {
@@ -316,6 +323,22 @@ type BatchWriteParam struct {
 	Type BatchWriteType
 	// Records contains the collection of record payloads to be written.
 	Records []any
+}
+
+func (p BatchWriteParam) IsCreate() bool {
+	return p.Type == BatchWriteTypeCreate
+}
+
+func (p BatchWriteParam) IsUpdate() bool {
+	return p.Type == BatchWriteTypeUpdate
+}
+
+type Record map[string]any
+
+func (p BatchWriteParam) GetRecords() ([]Record, error) {
+	return datautils.ForEachWithErr(p.Records, func(record any) (Record, error) {
+		return RecordDataToMap(record)
+	})
 }
 
 // BatchWriteResult aggregates the outcome of a synchronous batch write operation.
@@ -585,6 +608,10 @@ type ObjectEvents struct {
 }
 
 type ObjectName string
+
+func (n ObjectName) String() string {
+	return string(n)
+}
 
 type SubscribeParams struct {
 	Request any
