@@ -1,4 +1,4 @@
-package pipedrive
+package legacy
 
 import (
 	"context"
@@ -10,17 +10,17 @@ import (
 
 // Read retrieves data based on the provided read parameters.
 // https://developers.pipedrive.com/docs/api/v1
-func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+func (a *Adapter) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
 
-	url, err := c.buildReadURL(config)
+	url, err := a.buildReadURL(config)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.Client.Get(ctx, url.String())
+	resp, err := a.Client.Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
@@ -33,14 +33,14 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 }
 
-func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
+func (a *Adapter) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
 	// If NextPage is set, then we're reading the next page of results.
 	// The NextPage URL has all the necessary parameters.
 	if len(config.NextPage) > 0 {
 		return urlbuilder.New(config.NextPage.String())
 	}
 
-	url, err := c.getReadURL(config.ObjectName)
+	url, err := a.getReadURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
