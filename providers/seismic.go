@@ -42,7 +42,7 @@ func init() { // nolint: funlen
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
 			Write:     false,
 		},
@@ -53,7 +53,7 @@ func init() { // nolint: funlen
 				BaseURL:     "https://api.seismic.com/reporting",
 				Support: Support{
 					Proxy: false,
-					Read:  false,
+					Read:  true,
 					Write: false,
 				},
 			},
