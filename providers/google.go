@@ -8,9 +8,14 @@ const (
 
 const (
 	// ModuleGoogleCalendar is the module used for listing user calendars.
+	// https://developers.google.com/workspace/calendar/api/v3/reference
 	ModuleGoogleCalendar common.ModuleID = "calendar"
 	// ModuleGoogleContacts is the module used for listing contacts from People API.
+	// https://developers.google.com/people
 	ModuleGoogleContacts common.ModuleID = "contacts"
+	// ModuleGoogleMail is the module used for listing emails from Gmail API.
+	// https://developers.google.com/workspace/gmail/api/reference/rest
+	ModuleGoogleMail common.ModuleID = "mail"
 )
 
 //nolint:funlen
@@ -44,6 +49,15 @@ func init() {
 			ModuleGoogleContacts: {
 				BaseURL:     "https://people.googleapis.com",
 				DisplayName: "Google Contacts",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
+			ModuleGoogleMail: {
+				BaseURL:     "https://gmail.googleapis.com/gmail",
+				DisplayName: "Google Mail (Gmail)",
 				Support: Support{
 					Read:      false,
 					Subscribe: false,
