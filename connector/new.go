@@ -94,6 +94,7 @@ import (
 	"github.com/amp-labs/connectors/providers/snapchatads"
 	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/teamleader"
+	"github.com/amp-labs/connectors/providers/teamwork"
 	"github.com/amp-labs/connectors/providers/xero"
 	"github.com/amp-labs/connectors/providers/zendeskchat"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
@@ -200,6 +201,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.SnapchatAds:             wrapper(newSnapchatAdsConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
+	providers.Teamwork:                wrapper(newTeamworkConnector),
 	providers.Xero:                    wrapper(newXeroConnector),
 	providers.ZendeskChat:             wrapper(newZendeskChatConnector),
 	providers.ZendeskSupport:          wrapper(newZendeskSupportConnector),
@@ -727,6 +729,12 @@ func newTeamleaderConnector(
 	params common.ConnectorParams,
 ) (*teamleader.Connector, error) {
 	return teamleader.NewConnector(params)
+}
+
+func newTeamworkConnector(
+	params common.ConnectorParams,
+) (*teamwork.Connector, error) {
+	return teamwork.NewConnector(params)
 }
 
 func newCampaignMonitorConnector(
