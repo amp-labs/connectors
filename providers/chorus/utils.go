@@ -59,16 +59,26 @@ var PaginationObject = datautils.NewSet( //nolint:gochecknoglobals
 // The resulting fields for the above will be: type, id, language, name...
 type MarshalledData func([]map[string]any, []string) ([]common.ReadResultRow, error)
 
-func DataMarshall(resp *common.JSONHTTPResponse) MarshalledData {
+func DataMarshall(resp *common.JSONHTTPResponse, nodePath string) MarshalledData {
 	return func(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
 		node, ok := resp.Body()
 		if !ok {
 			return nil, common.ErrEmptyJSONHTTPResponse
 		}
 
-		arr, err := jsonquery.New(node).ArrayOptional("data")
+		arr, err := jsonquery.New(node).ArrayOptional(nodePath)
 		if err != nil {
 			return nil, err
+		}
+
+		// No need to flatten records for the engagements object because its data is not nested under any nodePath.
+		if nodePath == "engagements" {
+			arrData, err := jsonquery.Convertor.ArrayToMap(arr)
+			if err != nil {
+				return nil, err
+			}
+
+			return common.GetMarshaledData(arrData, fields)
 		}
 
 		flattenrecords, err := flattenRecords(arr)
@@ -152,16 +162,25 @@ func flattenRecords(arr []*ajson.Node) (map[string]any, error) {
 	return flattenMap, nil
 }
 
-func makeNextRecord(nextPage int) common.NextPageFunc {
+func makeNextRecord(nextPage int, nodePath string) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		// Extract the data key value from the response.
-		value, err := jsonquery.New(node).ArrayRequired("data")
+		value, err := jsonquery.New(node).ArrayRequired(nodePath)
 		if err != nil {
 			return "", err
 		}
 
 		if len(value) == 0 {
 			return "", nil
+		}
+
+		if nodePath == "engagements" {
+			continuationKey, err := jsonquery.New(node).StringOptional("continuation_key")
+			if err != nil {
+				return "", err
+			}
+
+			return *continuationKey, nil
 		}
 
 		nextStart := nextPage + PageSize

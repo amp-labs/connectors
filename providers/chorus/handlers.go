@@ -18,7 +18,19 @@ import (
 const apiVersion = "v1"
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName)
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	// All objects use the v1 version, except the engagements object (which uses v3 for Get Conversations).
+	switch objectName {
+	case "engagements":
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "v3", objectName)
+	default:
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName)
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +61,15 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrEmptyJSONHTTPResponse
 	}
 
-	res, err := jsonquery.New(body).ArrayRequired("data")
+	// All objects have the nodePath value as "data", except the engagements object, which uses "engagements".
+	// https://api-docs.chorus.ai/#03ff1d49-b8fb-4c8a-9407-d32e5f975964
+	nodePath := "data"
+
+	if objectName == "engagements" {
+		nodePath = "engagements"
+	}
+
+	res, err := jsonquery.New(body).ArrayRequired(nodePath)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +132,18 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	switch params.ObjectName {
+	case "engagements":
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "v3", params.ObjectName)
+	default:
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -123,6 +154,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		if params.NextPage != "" {
 			url.WithQueryParam("page[number]", params.NextPage.String())
 		}
+	}
+
+	// continuation_key is the pagination parameter used to retrieve the next page of results in the engagements object.
+	if params.ObjectName == "engagements" && params.NextPage != "" {
+		url.WithQueryParam("continuation_key", params.NextPage.String())
 	}
 
 	if IncrementalObjectQueryParam.Has(params.ObjectName) {
@@ -161,11 +197,17 @@ func (c *Connector) parseReadResponse(
 		}
 	}
 
+	nodePath := "data"
+
+	if params.ObjectName == "engagements" {
+		nodePath = "engagements"
+	}
+
 	return common.ParseResult(
 		response,
-		common.ExtractRecordsFromPath("data"),
-		makeNextRecord(nextPage),
-		DataMarshall(response),
+		common.ExtractRecordsFromPath(nodePath),
+		makeNextRecord(nextPage, nodePath),
+		DataMarshall(response, nodePath),
 		params.Fields,
 	)
 }
