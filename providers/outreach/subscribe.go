@@ -35,6 +35,8 @@ func (c *Connector) Subscribe(
 					EventName:  string(event),
 					Error:      fmt.Sprintf("failed to create subscription for object %s, event %s: %v", obj, event, err),
 				})
+
+				continue
 			}
 
 			result, err := c.createSubscriptions(ctx, payload, c.Client.Post)
@@ -180,7 +182,7 @@ func (c *Connector) UpdateSubscription(
 	for key := range desiredSubs {
 		_, exist := currentSubs[key]
 		if exist {
-			break
+			continue
 		}
 
 		parts := strings.Split(key, ":")
@@ -191,8 +193,10 @@ func (c *Connector) UpdateSubscription(
 			newfailedSubscriptions = append(newfailedSubscriptions, FailedSubscription{
 				ObjectName: objectName,
 				EventName:  event,
-				Error:      fmt.Sprintf("failed to create subscription for object %s, event %s: %v", objectName, event, err),
+				Error:      fmt.Sprintf("failed to build payload for object %s, event %s: %v", objectName, event, err),
 			})
+
+			continue
 		}
 
 		result, err := c.createSubscriptions(ctx, payload, c.Client.Post)
