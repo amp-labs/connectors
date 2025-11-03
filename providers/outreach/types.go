@@ -1,7 +1,7 @@
 package outreach
 
 type SubscriptionRequest struct {
-	UniqueRef       string `json:"unique_ref" validate:"required"`
+	UniqueRef       string `json:"unique_ref"        validate:"required"`
 	WebhookEndPoint string `json:"webhook_end_point" validate:"required"`
 }
 
@@ -10,14 +10,14 @@ type SubscriptionPayload struct {
 }
 
 type SubscriptionData struct {
-	Type       string            `json:"type" validate:"required"`
+	Type       string            `json:"type"       validate:"required"`
 	Attributes AttributesPayload `json:"attributes" validate:"required"`
 }
 
 type AttributesPayload struct {
-	Action   string `json:"action" validate:"required"`
+	Action   string `json:"action"   validate:"required"`
 	Resource string `json:"resource" validate:"required"`
-	URL      string `json:"url" validate:"required"`
+	URL      string `json:"url"      validate:"required"`
 }
 
 type ModuleEvent string
