@@ -15,6 +15,7 @@ func supportedOperations() components.EndpointRegistryInput {
 		"playlists",
 		"scorecards",
 		"teams",
+		"engagements",
 	}
 
 	writeSupport := []string{

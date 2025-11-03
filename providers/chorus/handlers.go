@@ -25,7 +25,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 
 	// All objects use the v1 version, except the engagements object (which uses v3 for Get Conversations).
 	switch objectName {
-	case "engagements":
+	case objectEngagement:
 		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "v3", objectName)
 	default:
 		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName)
@@ -45,6 +45,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	return req, nil
 }
 
+// nolint:funlen
 func (c *Connector) parseSingleObjectMetadataResponse(
 	ctx context.Context,
 	objectName string,
@@ -65,7 +66,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	// https://api-docs.chorus.ai/#03ff1d49-b8fb-4c8a-9407-d32e5f975964
 	nodePath := "data"
 
-	if objectName == "engagements" {
+	if objectName == objectEngagement {
 		nodePath = "engagements"
 	}
 
@@ -138,7 +139,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	)
 
 	switch params.ObjectName {
-	case "engagements":
+	case objectEngagement:
 		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "v3", params.ObjectName)
 	default:
 		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
@@ -157,7 +158,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	// continuation_key is the pagination parameter used to retrieve the next page of results in the engagements object.
-	if params.ObjectName == "engagements" && params.NextPage != "" {
+	if params.ObjectName == objectEngagement && params.NextPage != "" {
 		url.WithQueryParam("continuation_key", params.NextPage.String())
 	}
 
@@ -199,7 +200,7 @@ func (c *Connector) parseReadResponse(
 
 	nodePath := "data"
 
-	if params.ObjectName == "engagements" {
+	if params.ObjectName == objectEngagement {
 		nodePath = "engagements"
 	}
 

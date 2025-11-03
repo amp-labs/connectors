@@ -27,6 +27,8 @@ var PaginationObject = datautils.NewSet( //nolint:gochecknoglobals
 	"playlists",
 )
 
+const objectEngagement = "engagements"
+
 // chorus object has a special field named "attributes" which holds all the important fields.
 // Therefore, nested "values" will be removed and fields inside the "values" field will be moved
 // to the top level of the object.
@@ -72,7 +74,7 @@ func DataMarshall(resp *common.JSONHTTPResponse, nodePath string) MarshalledData
 		}
 
 		// No need to flatten records for the engagements object because its data is not nested under any nodePath.
-		if nodePath == "engagements" {
+		if nodePath == objectEngagement {
 			arrData, err := jsonquery.Convertor.ArrayToMap(arr)
 			if err != nil {
 				return nil, err
@@ -174,7 +176,7 @@ func makeNextRecord(nextPage int, nodePath string) common.NextPageFunc {
 			return "", nil
 		}
 
-		if nodePath == "engagements" {
+		if nodePath == objectEngagement {
 			continuationKey, err := jsonquery.New(node).StringOptional("continuation_key")
 			if err != nil {
 				return "", err
