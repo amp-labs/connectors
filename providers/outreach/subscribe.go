@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/go-playground/validator"
 )
 
@@ -95,6 +96,33 @@ func (c *Connector) Subscribe(
 	return subscriptionResult, nil
 }
 
+func (c *Connector) DeleteSubscription(
+	ctx context.Context,
+	result common.SubscriptionResult,
+) error {
+	if result.Result == nil {
+		return fmt.Errorf("%w: Result cannot be null", errMissingParams) //nolint:err113,lll
+	}
+
+	subscriptionData, ok := result.Result.(*SubscriptionResultData)
+	if !ok {
+		return fmt.Errorf("%w: expected SubscriptionResult to be type %T but got %T", errInvalidRequestType, subscriptionData, result.Result) //nolint:err113,lll
+	}
+
+	if len(subscriptionData.SuccessfulSubscriptions) == 0 {
+		return fmt.Errorf("%w: subscription is empty", errMissingParams)
+	}
+
+	for _, subscription := range subscriptionData.SuccessfulSubscriptions {
+		err := c.deleteSubscription(ctx, subscription.ID)
+		if err != nil {
+			return fmt.Errorf("failed to delete subscription with ID %s: %w", subscription.ID, err)
+		}
+	}
+
+	return nil
+}
+
 func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error) {
 	if params.Request == nil {
 		return nil, fmt.Errorf("%w: request is nil", errMissingParams)
@@ -114,15 +142,13 @@ func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error
 	return req, nil
 }
 
-func (c *Connector) getSubscribeURL() (*string, error) {
+func (c *Connector) getSubscribeURL() (*urlbuilder.URL, error) {
 	url, err := c.getApiURL("webhooks")
 	if err != nil {
 		return nil, err
 	}
 
-	urlStr := url.String()
-
-	return &urlStr, nil
+	return url, nil
 }
 
 func getProviderEventName(subscriptionEvent common.SubscriptionEventType) (ModuleEvent, error) {
@@ -147,7 +173,7 @@ func (c *Connector) createSubscriptions(ctx context.Context,
 		return nil, err
 	}
 
-	resp, err := updater(ctx, *url, payload)
+	resp, err := updater(ctx, url.String(), payload)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create subscription: %w", err)
 	}
@@ -158,4 +184,20 @@ func (c *Connector) createSubscriptions(ctx context.Context,
 	}
 
 	return result, nil
+}
+
+func (c *Connector) deleteSubscription(ctx context.Context, subscriptionID string) error {
+	url, err := c.getSubscribeURL()
+	if err != nil {
+		return err
+	}
+
+	url.AddPath(subscriptionID)
+
+	_, err = c.Client.Delete(ctx, url.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
