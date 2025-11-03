@@ -78,9 +78,9 @@ func init() {
 				BaseURL:     "https://{{.zoho_desk_domain}}",
 				DisplayName: "Zoho Desk",
 				Support: Support{
-					Read:      false,
+					Read:      true,
 					Subscribe: false,
-					Write:     false,
+					Write:     true,
 				},
 			},
 			ZohoProjects: {
