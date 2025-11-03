@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"path"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -56,7 +57,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	// Determine key for inner map
-	objKey := objectName
+	objKey := path.Base(objectName)
 	if endpointsRequiringOrganizationMetadata.Has(objectName) {
 		objKey = naming.NewSingularString(objectName).String()
 	}
