@@ -29,7 +29,7 @@ func (c *Connector) GetRecordsByIds(
 
 	url.WithQueryParam("ids", strings.Join(recordIds, ","))
 
-	fieldsNames := constructFieldNames(fields)
+	fieldsNames := strings.Join(fields, ",")
 
 	url.WithQueryParam("fields", fieldsNames)
 
