@@ -37,9 +37,15 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
+	parts := strings.Split(objectName, "_")
+
+	for i, part := range parts {
+		parts[i] = naming.CapitalizeFirstLetter(part)
+	}
+
 	objectMetadata := common.ObjectMetadata{
 		Fields:      make(map[string]common.FieldMetadata),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
+		DisplayName: strings.Join(parts, " "),
 	}
 
 	body, ok := response.Body()
