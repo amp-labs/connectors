@@ -63,7 +63,35 @@ func (c *Connector) VerifyWebhookMessage(
 
 // UpdatedFields implements common.SubscriptionUpdateEvent.
 func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
-	panic("unimplemented")
+	m := evt.asMap()
+
+	data, err := m.Get("data")
+	if err != nil {
+		return nil, err
+	}
+
+	dataMap, ok := data.(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("%w: expected %T got %T", errTypeMismatch, dataMap, data)
+	}
+
+	attributes, ok := dataMap["attributes"].(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("%w: expected %T got %T", errTypeMismatch, attributes, dataMap["attributes"])
+	}
+
+	updatedFields := make([]string, 0, len(attributes))
+
+	for field := range attributes {
+		// updatedAt is always included in the attributes, but we don't consider it an updated field
+		if field == "updatedAt" {
+			continue
+		}
+
+		updatedFields = append(updatedFields, field)
+	}
+
+	return updatedFields, nil
 }
 
 func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
@@ -185,8 +213,9 @@ func (evt SubscriptionEvent) RecordId() (string, error) {
 	return id, nil
 }
 
+// No workspace concept in Outreach.
 func (evt SubscriptionEvent) Workspace() (string, error) {
-	panic("unimplemented")
+	return "", nil
 }
 
 // asMap returns the event as a StringMap.
