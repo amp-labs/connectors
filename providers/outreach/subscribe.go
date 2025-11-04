@@ -144,8 +144,6 @@ func (c *Connector) UpdateSubscription(
 
 				continue
 			}
-
-			delete(currentSubs, key)
 		}
 	}
 
