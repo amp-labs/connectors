@@ -28,7 +28,7 @@ func (c *Connector) Subscribe(
 	for obj, events := range params.SubscriptionEvents {
 		providerEvents := events.Events
 		for _, event := range providerEvents {
-			payload, err := buildPayload(event, obj, req.WebhookEndPoint)
+			payload, err := buildPayload(event, obj, req.WebhookEndPoint, req.Secret)
 			if err != nil {
 				failedSubscriptions = append(failedSubscriptions, FailedSubscription{
 					ObjectName: string(obj),
@@ -188,7 +188,10 @@ func (c *Connector) UpdateSubscription(
 		parts := strings.Split(key, ":")
 		objectName, event := parts[0], parts[1]
 
-		payload, err := buildPayload(common.SubscriptionEventType(event), common.ObjectName(objectName), req.WebhookEndPoint)
+		payload, err := buildPayload(
+			common.SubscriptionEventType(event),
+			common.ObjectName(objectName),
+			req.WebhookEndPoint, req.Secret)
 		if err != nil {
 			newfailedSubscriptions = append(newfailedSubscriptions, FailedSubscription{
 				ObjectName: objectName,
@@ -344,6 +347,7 @@ func buildPayload(
 	event common.SubscriptionEventType,
 	objectName common.ObjectName,
 	webhookURL string,
+	secret string,
 ) (*SubscriptionPayload, error) {
 	Event, err := getProviderEventName(event)
 	if err != nil {
@@ -357,6 +361,7 @@ func buildPayload(
 				Action:   string(Event),
 				Resource: string(objectName),
 				URL:      webhookURL,
+				Secret:   secret,
 			},
 		},
 	}

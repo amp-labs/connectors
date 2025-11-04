@@ -3,6 +3,7 @@ package outreach
 type SubscriptionRequest struct {
 	UniqueRef       string `json:"unique_ref"        validate:"required"`
 	WebhookEndPoint string `json:"webhook_end_point" validate:"required"`
+	Secret          string `json:"secret,omitempty"`
 }
 
 type SubscriptionPayload struct {
@@ -18,6 +19,7 @@ type AttributesPayload struct {
 	Action   string `json:"action"   validate:"required"`
 	Resource string `json:"resource" validate:"required"`
 	URL      string `json:"url"      validate:"required"`
+	Secret   string `json:"secret"`
 }
 
 type ModuleEvent string
