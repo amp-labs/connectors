@@ -6,6 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/batch"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/custom"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/pardot"
 )
@@ -19,18 +20,31 @@ const (
 	uriToolingEventRelayConfig = restAPISuffix + "/tooling/sobjects/EventRelayConfig"
 )
 
-// Connector is a Salesforce connector.
+// Connector provides integration with Salesforce provider.
+//
+// This implementation currently supports two functional modules:
+//
+//   - CRM: the primary Salesforce data module responsible for standard objects.
+//   - Pardot: the Account Engagement module, implemented as a separate adapter.
+//
+// The CRM module is undergoing partial migration: some operations are implemented directly within Connector,
+// while others are delegated to specialized sub-adapters (see below).
+// These sub-adapters will be consolidated as the migration completes under "crm.Adapter".
 type Connector struct {
 	Client *common.JSONHTTPClient
 
 	providerInfo *providers.ProviderInfo
 	moduleInfo   *providers.ModuleInfo
 	moduleID     common.ModuleID
-	// Module Pardot -- lives in its own struct:
+
+	// pardotAdapter handles the Salesforce Account Engagement (Pardot) module.
+	// It provides dedicated support for Pardot-specific endpoints and metadata.
 	pardotAdapter *pardot.Adapter
-	// Module CRM -- is partially delegated to other structs
-	// some functionality is delegated into the following structs:
-	customAdapter *custom.Adapter
+
+	// CRM module sub-adapters.
+	// These delegate specialized subsets of CRM functionality to keep Connector modular and prevent code bloat.
+	customAdapter *custom.Adapter // used for connectors.UpsertMetadataConnector capabilities.
+	batchAdapter  *batch.Adapter  // used for connectors.BatchWriteConnector capabilities.
 }
 
 // NewConnector returns a new Salesforce connector.
@@ -65,11 +79,18 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		XML:  &interpreter.DirectFaultyResponder{Callback: conn.interpretXMLError},
 	}.Handle
 
+	// Delegate selected CRM functionality to internal adapters to
+	// prevent this package from growing too large. These adapters
+	// effectively "inline" specialized responsibilities while sharing
+	// the same HTTP and module context.
+	//
+	// Note: moduleInfo always refers to the Salesforce CRM module.
+	// These adapters are not applicable to the Pardot module.
 	conn.customAdapter = custom.NewAdapter(httpClient, conn.moduleInfo)
+	conn.batchAdapter = batch.NewAdapter(httpClient, conn.moduleInfo)
 
-	// Empty module name, root module, standard salesforce module fallback to default Salesforce behaviour.
-	// Account Engagement module will initialize the pardot adapter.
-	// Read/Write/ListObjectMetadata will delegate to this adapter.
+	// Initialize the Pardot (Account Engagement) adapter if applicable.
+	// In that case, read/write/list metadata operations are delegated to it.
 	moduleID := params.Module.Selection.ID
 	if isPardotModule(moduleID) {
 		conn.pardotAdapter, err = pardot.NewAdapter(conn.Client, conn.moduleInfo, params.Metadata.Map)
