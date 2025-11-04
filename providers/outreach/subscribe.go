@@ -120,25 +120,12 @@ func (c *Connector) UpdateSubscription(
 		return nil, fmt.Errorf("%w: subscription is empty", errMissingParams)
 	}
 
-	// currentSubs maps "objectName:eventName" to subscription ID
-	// It stores all currently active subscriptions
-	currentSubs := make(map[string]string)
-
-	for _, sub := range subscriptionData.SuccessfulSubscriptions {
-		key := fmt.Sprintf("%s:%s", sub.ObjectName, sub.EventName)
-		currentSubs[key] = sub.ID
-	}
-
-	// desiredSubs maps "objectName:eventName" to true
-	// It stores all desired subscriptions based on the input params
-	desiredSubs := make(map[string]bool)
-
-	for obj, events := range params.SubscriptionEvents {
-		for _, evt := range events.Events {
-			key := fmt.Sprintf("%s:%s", string(obj), string(evt))
-			desiredSubs[key] = true
-		}
-	}
+	// currentSubs are the currently active subscriptions
+	// desiredSubs are the subscriptions we want to have after the update
+	currentSubs, desiredSubs := buildSubscriptionMaps(
+		subscriptionData.SuccessfulSubscriptions,
+		params.SubscriptionEvents,
+	)
 
 	var newsuccessfulSubscriptions []SuccessfulSubscription //nolint:prealloc
 
@@ -322,6 +309,32 @@ func (c *Connector) deleteSubscription(ctx context.Context, subscriptionID strin
 	}
 
 	return nil
+}
+
+// buildSubscriptionMaps creates maps of current and desired subscriptions.
+func buildSubscriptionMaps(
+	successfulSubs []SuccessfulSubscription,
+	subscriptionEvents map[common.ObjectName]common.ObjectEvents,
+) (map[string]string, map[string]bool) {
+	// currentSubs maps "objectName:eventName" to subscription ID
+	currentSubs := make(map[string]string)
+
+	for _, sub := range successfulSubs {
+		key := fmt.Sprintf("%s:%s", sub.ObjectName, sub.EventName)
+		currentSubs[key] = sub.ID
+	}
+
+	// desiredSubs maps "objectName:eventName" to true
+	desiredSubs := make(map[string]bool)
+
+	for obj, events := range subscriptionEvents {
+		for _, evt := range events.Events {
+			key := fmt.Sprintf("%s:%s", string(obj), string(evt))
+			desiredSubs[key] = true
+		}
+	}
+
+	return currentSubs, desiredSubs
 }
 
 func getProviderEventName(subscriptionEvent common.SubscriptionEventType) (ModuleEvent, error) {
