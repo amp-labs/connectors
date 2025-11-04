@@ -139,7 +139,7 @@ func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 	case "updated":
 		return common.SubscriptionEventTypeUpdate, nil
 	case "deleted":
-		return common.SubscriptionEventTypeUpdate, nil
+		return common.SubscriptionEventTypeDelete, nil
 	default:
 		return common.SubscriptionEventTypeOther, nil
 	}
