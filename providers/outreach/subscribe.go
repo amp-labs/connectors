@@ -28,33 +28,12 @@ func (c *Connector) Subscribe(
 	for obj, events := range params.SubscriptionEvents {
 		providerEvents := events.Events
 		for _, event := range providerEvents {
-			payload, err := buildPayload(event, obj, req.WebhookEndPoint, req.Secret)
-			if err != nil {
-				failedSubscriptions = append(failedSubscriptions, FailedSubscription{
-					ObjectName: string(obj),
-					EventName:  string(event),
-					Error:      fmt.Sprintf("failed to create subscription for object %s, event %s: %v", obj, event, err),
-				})
-
-				continue
+			successful, failed := c.createSingleSubscription(ctx, event, obj, req)
+			if successful != nil {
+				successfulSubscriptions = append(successfulSubscriptions, *successful)
+			} else {
+				failedSubscriptions = append(failedSubscriptions, *failed)
 			}
-
-			result, err := c.createSubscriptions(ctx, payload, c.Client.Post)
-			if err != nil {
-				failedSubscriptions = append(failedSubscriptions, FailedSubscription{
-					ObjectName: string(obj),
-					EventName:  string(event),
-					Error:      fmt.Sprintf("failed to create subscription for object %s, event %s: %v", obj, event, err),
-				})
-
-				continue
-			}
-
-			successfulSubscriptions = append(successfulSubscriptions, SuccessfulSubscription{
-				ID:         result.Data.ID,
-				ObjectName: string(obj),
-				EventName:  string(event),
-			})
 		}
 	}
 
@@ -141,6 +120,8 @@ func (c *Connector) UpdateSubscription(
 		return nil, fmt.Errorf("%w: subscription is empty", errMissingParams)
 	}
 
+	// currentSubs maps "objectName:eventName" to subscription ID
+	// It stores all currently active subscriptions
 	currentSubs := make(map[string]string)
 
 	for _, sub := range subscriptionData.SuccessfulSubscriptions {
@@ -148,6 +129,8 @@ func (c *Connector) UpdateSubscription(
 		currentSubs[key] = sub.ID
 	}
 
+	// desiredSubs maps "objectName:eventName" to true
+	// It stores all desired subscriptions based on the input params
 	desiredSubs := make(map[string]bool)
 
 	for obj, events := range params.SubscriptionEvents {
@@ -179,8 +162,11 @@ func (c *Connector) UpdateSubscription(
 		}
 	}
 
+	// Add new subscriptions that are desired but not currently present
 	for key := range desiredSubs {
 		_, exist := currentSubs[key]
+
+		// If the subscription already exists, we don't need to create it
 		if exist {
 			continue
 		}
@@ -188,41 +174,17 @@ func (c *Connector) UpdateSubscription(
 		parts := strings.Split(key, ":")
 		objectName, event := parts[0], parts[1]
 
-		payload, err := buildPayload(
-			common.SubscriptionEventType(event),
-			common.ObjectName(objectName),
-			req.WebhookEndPoint, req.Secret)
-		if err != nil {
-			newfailedSubscriptions = append(newfailedSubscriptions, FailedSubscription{
-				ObjectName: objectName,
-				EventName:  event,
-				Error:      fmt.Sprintf("failed to build payload for object %s, event %s: %v", objectName, event, err),
-			})
-
-			continue
+		successful, failed := c.createSingleSubscription(ctx, common.SubscriptionEventType(event), common.ObjectName(objectName), req) //nolint:lll
+		if successful != nil {
+			newsuccessfulSubscriptions = append(newsuccessfulSubscriptions, *successful)
+		} else {
+			newfailedSubscriptions = append(newfailedSubscriptions, *failed)
 		}
-
-		result, err := c.createSubscriptions(ctx, payload, c.Client.Post)
-		if err != nil {
-			newfailedSubscriptions = append(newfailedSubscriptions, FailedSubscription{
-				ObjectName: objectName,
-				EventName:  event,
-				Error:      fmt.Sprintf("failed to create subscription for object %s, event %s: %v", objectName, event, err),
-			})
-
-			continue
-		}
-
-		newsuccessfulSubscriptions = append(newsuccessfulSubscriptions, SuccessfulSubscription{
-			ID:         result.Data.ID,
-			ObjectName: objectName,
-			EventName:  event,
-		})
 	}
 
-	// we need to remove the deleted subscriptions from the previous successful subscriptions
 	var updatedSuccessfulSubscriptions []SuccessfulSubscription
 
+	// Delete subscriptions that are no longer desired
 	for _, sub := range subscriptionData.SuccessfulSubscriptions {
 		key := fmt.Sprintf("%s:%s", sub.ObjectName, sub.EventName)
 		if _, exist := desiredSubs[key]; exist {
@@ -264,6 +226,38 @@ func (c *Connector) UpdateSubscription(
 	return updatedResult, nil
 }
 
+// createSingleSubscription attempts to create a single subscription and returns either a successful or failed result.
+func (c *Connector) createSingleSubscription(
+	ctx context.Context,
+	event common.SubscriptionEventType,
+	obj common.ObjectName,
+	req *SubscriptionRequest,
+) (*SuccessfulSubscription, *FailedSubscription) {
+	payload, err := buildPayload(event, obj, req.WebhookEndPoint, req.Secret)
+	if err != nil {
+		return nil, &FailedSubscription{
+			ObjectName: string(obj),
+			EventName:  string(event),
+			Error:      fmt.Sprintf("failed to create subscription for object %s, event %s: %v", obj, event, err),
+		}
+	}
+
+	result, err := c.createSubscriptions(ctx, payload, c.Client.Post)
+	if err != nil {
+		return nil, &FailedSubscription{
+			ObjectName: string(obj),
+			EventName:  string(event),
+			Error:      fmt.Sprintf("failed to create subscription for object %s, event %s: %v", obj, event, err),
+		}
+	}
+
+	return &SuccessfulSubscription{
+		ID:         result.Data.ID,
+		ObjectName: string(obj),
+		EventName:  string(event),
+	}, nil
+}
+
 func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error) {
 	if params.Request == nil {
 		return nil, fmt.Errorf("%w: request is nil", errMissingParams)
@@ -290,19 +284,6 @@ func (c *Connector) getSubscribeURL() (*urlbuilder.URL, error) {
 	}
 
 	return url, nil
-}
-
-func getProviderEventName(subscriptionEvent common.SubscriptionEventType) (ModuleEvent, error) {
-	switch subscriptionEvent { //nolint:exhaustive
-	case common.SubscriptionEventTypeCreate:
-		return Created, nil
-	case common.SubscriptionEventTypeUpdate:
-		return Updated, nil
-	case common.SubscriptionEventTypeDelete:
-		return Destroyed, nil
-	default:
-		return "", fmt.Errorf("%w: %s", errUnsupportedEventType, subscriptionEvent)
-	}
 }
 
 func (c *Connector) createSubscriptions(ctx context.Context,
@@ -341,6 +322,19 @@ func (c *Connector) deleteSubscription(ctx context.Context, subscriptionID strin
 	}
 
 	return nil
+}
+
+func getProviderEventName(subscriptionEvent common.SubscriptionEventType) (ModuleEvent, error) {
+	switch subscriptionEvent { //nolint:exhaustive
+	case common.SubscriptionEventTypeCreate:
+		return Created, nil
+	case common.SubscriptionEventTypeUpdate:
+		return Updated, nil
+	case common.SubscriptionEventTypeDelete:
+		return Destroyed, nil
+	default:
+		return "", fmt.Errorf("%w: %s", errUnsupportedEventType, subscriptionEvent)
+	}
 }
 
 func buildPayload(

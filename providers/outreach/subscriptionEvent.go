@@ -14,18 +14,18 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-var (
-	_ common.SubscriptionEvent       = SubscriptionEvent{}
-	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
-
-	errTypeMismatch = errors.New("type mismatch")
-)
-
 type (
 	SubscriptionEvent          map[string]any
 	OutreachVerificationParams struct {
 		Secret string
 	}
+)
+
+var (
+	_ common.SubscriptionEvent       = SubscriptionEvent{}
+	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
+
+	errTypeMismatch = errors.New("type mismatch")
 )
 
 const (
@@ -61,7 +61,6 @@ func (c *Connector) VerifyWebhookMessage(
 	return nil
 }
 
-// UpdatedFields implements common.SubscriptionUpdateEvent.
 func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
 	m := evt.asMap()
 
