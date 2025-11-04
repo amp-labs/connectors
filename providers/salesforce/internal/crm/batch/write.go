@@ -74,7 +74,11 @@ func (a *Adapter) batchWriteCreate(
 			return items[payloadItem.Extension.Attributes.ReferenceID]
 		},
 		func(payloadItem PayloadItem, respItem *CreateItem) (*common.WriteResult, error) {
-			return constructWriteResult(payloadItem, respItem)
+			if respItem == nil {
+				return createUnprocessableItem(payloadItem), nil
+			}
+
+			return respItem.ToWriteResult()
 		},
 	)
 }
@@ -121,7 +125,11 @@ func (a *Adapter) batchWriteUpdate(
 			return &list[index]
 		},
 		func(payloadItem PayloadItem, respItem *UpdateItem) (*common.WriteResult, error) {
-			return constructWriteResult(payloadItem, respItem)
+			if respItem == nil {
+				return createUnprocessableItem(payloadItem), nil
+			}
+
+			return respItem.ToWriteResult()
 		},
 	)
 }
@@ -143,25 +151,6 @@ func (a *Adapter) handleEmptyResponse(rsp *common.JSONHTTPResponse) (*common.Bat
 		Errors:  errors,
 		Results: nil,
 	}, nil
-}
-
-func constructWriteResult(payloadItem PayloadItem, respItem writeResultConvertable) (*common.WriteResult, error) {
-	if respItem == nil {
-		// Salesforce didn't return matching response for the record.
-		// This only means that some other records have failed and no records were processed.
-		// However, this record was valid.
-		return &common.WriteResult{
-			Success:  false, // not processed
-			RecordId: "",
-			Errors: []any{
-				common.ErrBatchUnprocessedRecord,
-				fmt.Sprintf("record's referenceId is %v", payloadItem.Extension.Attributes.ReferenceID),
-			},
-			Data: nil,
-		}, nil
-	}
-
-	return respItem.ToWriteResult()
 }
 
 func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilder.URL, error) {
@@ -258,15 +247,6 @@ func (r ResponseCreate) GetItemsMap() map[string]*CreateItem {
 	return mapping
 }
 
-type writeResultConvertable interface {
-	ToWriteResult() (*common.WriteResult, error)
-}
-
-var (
-	_ writeResultConvertable = CreateItem{}
-	_ writeResultConvertable = UpdateItem{}
-)
-
 func (i CreateItem) ToWriteResult() (*common.WriteResult, error) {
 	data, err := common.RecordDataToMap(i)
 	if err != nil {
@@ -293,4 +273,19 @@ func (i UpdateItem) ToWriteResult() (*common.WriteResult, error) {
 		Errors:   datautils.ToAnySlice(i.Errors),
 		Data:     data,
 	}, nil
+}
+
+func createUnprocessableItem(payloadItem PayloadItem) *common.WriteResult {
+	// Salesforce didn't return matching response for the record.
+	// This only means that some other records have failed and no records were processed.
+	// However, this record was valid.
+	return &common.WriteResult{
+		Success:  false, // not processed
+		RecordId: "",
+		Errors: []any{
+			common.ErrBatchUnprocessedRecord,
+			fmt.Sprintf("record's referenceId is %v", payloadItem.Extension.Attributes.ReferenceID),
+		},
+		Data: nil,
+	}
 }
