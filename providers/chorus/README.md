@@ -13,6 +13,7 @@ Chorus API version: v1
 | playlists             | playlists             | read, write |
 | scorecards            | scorecards            | read        |
 | teams                 | teams                 | read        |
+| engagements           | engagements           | read        |
 | moments               | moments               | write       |
 | smart_playlists       | smart_playlists       | write       |
 | playlists/moments     | playlists/moments     | write       |
