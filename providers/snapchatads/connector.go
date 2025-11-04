@@ -45,6 +45,10 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		},
 	}
 
+	authMetadata := NewAuthMetadataVars(params.Metadata)
+
+	conn.organizationId = authMetadata.OrganizationId
+
 	return conn, nil
 }
 
