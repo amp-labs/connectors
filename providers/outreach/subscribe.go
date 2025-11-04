@@ -171,7 +171,8 @@ func (c *Connector) UpdateSubscription(
 
 	var updatedSuccessfulSubscriptions []SuccessfulSubscription
 
-	// Delete subscriptions that are no longer desired
+	// Retain existing successful subscriptions that were not removed
+	// and add newly created successful subscriptions
 	for _, sub := range subscriptionData.SuccessfulSubscriptions {
 		key := fmt.Sprintf("%s:%s", sub.ObjectName, sub.EventName)
 		if _, exist := desiredSubs[key]; exist {
