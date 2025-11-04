@@ -1,14 +1,56 @@
 package common
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/amp-labs/connectors/internal/goutils"
+)
+
+var ErrNumWriteResultExceedsTotalRecords = errors.New(
+	"number of batch WriteResult entries exceeds total number of payload Records",
+)
 
 // NewBatchWriteResult constructs a new BatchWriteResult summarizing the outcome
-// of a batch write operation. It calculates success/failure counts and assigns
-// the corresponding BatchStatus based on those counts.
+// of a batch write operation. It validates input consistency, computes
+// success/failure counts, and derives the BatchStatus based on those counts.
+//
+// Rules and assumptions:
+//
+//   - len(results) must not exceed totalNumRecords.
+//     If it does, the constructor returns a joined error containing
+//     ErrInvalidImplementation and ErrNumWriteResultExceedsTotalRecords.
+//
+//   - successCounter < 0 triggers automatic counting of successes from the
+//     results slice. This is a convenience for callers that did not precompute
+//     successes. However, providing an explicit success count is preferred.
+//
+//   - successCounter cannot exceed totalNumRecords.
+//     If it does, the counter is recomputed defensively.
+//
+//   - failureCounter is computed as totalNumRecords - successCounter.
+//
+//   - A BatchWriteResult always satisfies:
+//     SuccessCount + FailureCount == totalNumRecords
+//     and
+//     len(Results) ≤ totalNumRecords.
+//
+//   - fatalErrors represent top-level (batch-level) errors that may coexist
+//     with item-level successes. For example, partial API failures or warnings
+//     that affected only some records.
+//
+// Constructors may return an error to signal invalid or inconsistent usage
+// rather than to represent runtime provider failures.
 func NewBatchWriteResult(
-	fatalErrors []any, results []WriteResult,
-	successCounter, totalNumRecords int,
-) *BatchWriteResult {
+	results []WriteResult, successCounter, totalNumRecords int, fatalErrors []any,
+) (*BatchWriteResult, error) {
+	if len(results) > totalNumRecords {
+		return nil, errors.Join(ErrInvalidImplementation, ErrNumWriteResultExceedsTotalRecords)
+	}
+
+	if successCounter < 0 || successCounter > totalNumRecords {
+		successCounter = countSuccesses(results)
+	}
+
 	failureCounter := totalNumRecords - successCounter
 
 	return &BatchWriteResult{
@@ -17,7 +59,30 @@ func NewBatchWriteResult(
 		Results:      results,
 		SuccessCount: successCounter,
 		FailureCount: failureCounter,
+	}, nil
+}
+
+// NewBatchWriteResultFailed constructs a BatchWriteResult representing a fully
+// failed batch operation. It assumes zero successful records and marks the
+// BatchStatus as failure. The constructor still validates that the number of
+// WriteResult entries does not exceed totalNumRecords.
+//
+// fatalErrors may include provider-level or transport-level issues explaining
+// the batch failure.
+func NewBatchWriteResultFailed(
+	results []WriteResult, totalNumRecords int, fatalErrors []any,
+) (*BatchWriteResult, error) {
+	if len(results) > totalNumRecords {
+		return nil, errors.Join(ErrInvalidImplementation, ErrNumWriteResultExceedsTotalRecords)
 	}
+
+	return &BatchWriteResult{
+		Status:       newBatchStatus(0, totalNumRecords, totalNumRecords),
+		Errors:       fatalErrors,
+		Results:      results,
+		SuccessCount: 0,
+		FailureCount: totalNumRecords,
+	}, nil
 }
 
 func newBatchStatus(successCounter, failureCounter, total int) BatchStatus {
@@ -36,10 +101,9 @@ func newBatchStatus(successCounter, failureCounter, total int) BatchStatus {
 // BatchWriteResponseMatcher matches a single payload item from the request
 // to its corresponding provider response item.
 //
-// Implementations may perform the match by inspecting the payload item's data
-// or by using its index, depending on how the provider structures its response.
-// For providers that return responses in the same order as the request,
-// the index argument enables a simple positional lookup.
+// Implementations may match items by inspecting payload data or by using the index,
+// depending on how the provider structures its response. For providers that return
+// responses in the same order as the request, the index allows a straightforward positional lookup.
 //
 // The function must be deterministic and fast — given a payload item (and its index),
 // it should return the corresponding response item or nil if none exists.
@@ -94,7 +158,11 @@ func ParseBatchWrite[P, R any](
 	)
 
 	for index, record := range payloadItems {
-		response := responseMatcher(index, record)
+		response, err := invokeResponseMatcher(responseMatcher, index, record)
+		if err != nil {
+			// Index out of bounds is downgraded from panic to error inside the invoker.
+			return nil, err
+		}
 
 		result, err := responseToResult(record, response)
 		if err != nil {
@@ -113,5 +181,35 @@ func ParseBatchWrite[P, R any](
 		}
 	}
 
-	return NewBatchWriteResult(fatalErrors, results, successCounter, totalNumRecords), nil
+	return NewBatchWriteResult(results, successCounter, totalNumRecords, fatalErrors)
+}
+
+func countSuccesses(results []WriteResult) int {
+	count := 0
+
+	for _, result := range results {
+		if result.Success {
+			count += 1
+		}
+	}
+
+	return count
+}
+
+// invokeResponseMatcher safely executes the provided response matcher function.
+// It guards against panics—such as index out-of-range or unexpected nil access—
+// converting them into regular errors instead of crashing.
+//
+// This acts as a safety net for connector implementors who may have used
+// the index incorrectly when matching payload and response items.
+func invokeResponseMatcher[P, R any](
+	responseMatcher BatchWriteResponseMatcher[P, R],
+	index int, record P,
+) (responseItem *R, err error) {
+	defer goutils.PanicRecovery(func(cause error) {
+		err = cause
+		responseItem = nil
+	})
+
+	return responseMatcher(index, record), nil
 }
