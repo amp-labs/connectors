@@ -44,7 +44,7 @@ func (c *Connector) VerifyWebhookMessage(
 
 	verificationParams, err := common.AssertType[*OutreachVerificationParams](params.Param)
 	if err != nil {
-		return fmt.Errorf("%w: %v", errMissingParams, err)
+		return fmt.Errorf("%w: %w", errMissingParams, err)
 	}
 
 	signature := request.Headers.Get(OutreachWebhookSignatureHeader)
@@ -62,7 +62,7 @@ func (c *Connector) VerifyWebhookMessage(
 }
 
 // UpdatedFields implements common.SubscriptionUpdateEvent.
-func (s SubscriptionEvent) UpdatedFields() ([]string, error) {
+func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
 	panic("unimplemented")
 }
 
@@ -185,7 +185,7 @@ func (evt SubscriptionEvent) RecordId() (string, error) {
 	return id, nil
 }
 
-func (s SubscriptionEvent) Workspace() (string, error) {
+func (evt SubscriptionEvent) Workspace() (string, error) {
 	panic("unimplemented")
 }
 
