@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 const Salesforce Provider = "salesforce"
@@ -49,6 +50,18 @@ func init() { // nolint:funlen
 				BaseURL:     "https://{{.workspace}}.my.salesforce.com",
 				DisplayName: "Salesforce",
 				Support: Support{
+					BatchWrite: &BatchWriteSupport{
+						Create: BatchWriteSupportConfig{
+							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
+							ObjectRecordLimits: nil,
+							Supported:          true,
+						},
+						Update: BatchWriteSupportConfig{
+							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
+							ObjectRecordLimits: nil,
+							Supported:          true,
+						},
+					},
 					BulkWrite: BulkWriteSupport{
 						Insert: false,
 						Update: false,
