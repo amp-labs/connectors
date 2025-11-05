@@ -1,7 +1,12 @@
 // nolint:ireturn
 package datautils
 
-import "encoding/json"
+import (
+	"encoding/gob"
+	"encoding/json"
+
+	"github.com/amp-labs/connectors/internal/goutils"
+)
 
 // Map is a generic version of map with useful methods.
 // It can return Keys as a slice or a Set.
@@ -19,8 +24,10 @@ func FromMap[K comparable, V any](source map[K]V) Map[K, V] {
 	return source
 }
 
-// ShallowCopy performs copying which should cover most cases.
-// For deep copy you could use goutils.Clone.
+// ShallowCopy creates a shallow copy of the map.
+// It copies the top-level keys and values, but does not clone
+// nested or referenced objects. Use this when you only need
+// a separate map container, not deep copies of the values.
 func (m Map[K, V]) ShallowCopy() Map[K, V] {
 	result := make(map[K]V)
 
@@ -29,6 +36,20 @@ func (m Map[K, V]) ShallowCopy() Map[K, V] {
 	}
 
 	return result
+}
+
+func init() {
+	gob.Register(Map[string, any]{})
+}
+
+// DeepCopy creates a deep copy of the map using `goutils.Clone`.
+//
+// Internally this uses `encoding/gob`, so all concrete key/value types
+// must be registered with `gob.Register` before use.
+//
+// Register the missing types (e.g. `gob.Register(MyStruct{})`) before calling DeepCopy.
+func (m Map[K, V]) DeepCopy() (Map[K, V], error) {
+	return goutils.Clone(m)
 }
 
 func (m Map[K, V]) Keys() []K {
