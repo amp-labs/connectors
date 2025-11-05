@@ -27,6 +27,7 @@ func supportedOperations() components.EndpointRegistryInput {
 		"targeting/device/marketing_name",
 		"targeting/geo/country",
 		"targeting/interests/dlxs",
+		"targeting/interests/dlxc",
 		"targeting/interests/dlxp",
 		"targeting/interests/nln",
 		"targeting/location/categories_loi",
