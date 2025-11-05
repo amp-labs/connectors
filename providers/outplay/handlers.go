@@ -1,13 +1,17 @@
 package outplay
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 const (
@@ -131,4 +135,82 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	method := http.MethodPost
+
+	objectAPIPath := writeObjectAPIPath.Get(params.ObjectName)
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "api", apiVersion, objectAPIPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		method = http.MethodPut
+
+		// Note Object update and create have different API paths
+		if params.ObjectName == ObjectNameNote {
+			url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "api", apiVersion, params.ObjectName, "update")
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		url.AddPath(params.RecordId)
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		// it is unlikely to have no payload
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	recordIdKey := writeObjectResponseIDField.Get(params.ObjectName)
+
+	recordID, err := jsonquery.New(body).IntegerOptional(recordIdKey)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return nil, err
+	}
+
+	recordIDStr := ""
+	if recordID != nil {
+		recordIDStr = strconv.Itoa(int(*recordID))
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordIDStr,
+		Errors:   nil,
+		Data:     resp,
+	}, nil
 }
