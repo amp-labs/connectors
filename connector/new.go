@@ -852,5 +852,4 @@ func newSnapchatAdsConnector(params common.ConnectorParams,
 func newOutplayConnector(params common.ConnectorParams,
 ) (*outplay.Connector, error) {
 	return outplay.NewConnector(params)
-
 }
