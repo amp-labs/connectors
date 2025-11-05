@@ -69,6 +69,23 @@ type DeleteConnector interface {
 	Delete(ctx context.Context, params DeleteParams) (*DeleteResult, error)
 }
 
+// BatchWriteConnector provides synchronous operations for writing multiple records in a single request.
+// It serves the same purpose as WriteConnector but operates
+// on collections of records instead of individual ones.
+//
+// Implementations should handle each record independently and report both
+// overall and per-record outcomes through the returned result types.
+// Errors returned from the methods represent connector-level issues such as
+// network failures or invalid authentication, not individual record failures.
+type BatchWriteConnector interface {
+	Connector
+
+	// BatchWrite performs a batch create, update, or upsert operation.
+	// Each record in params.Records is processed according to params.Type.
+	// The returned BatchWriteResult includes both per-record outcomes and the aggregate batch status.
+	BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error)
+}
+
 // ObjectMetadataConnector is an interface that extends the Connector interface with
 // the ability to list object metadata.
 type ObjectMetadataConnector interface {
@@ -195,9 +212,21 @@ type (
 	ReadResult               = common.ReadResult
 	WriteResult              = common.WriteResult
 	DeleteResult             = common.DeleteResult
+	BatchWriteParam          = common.BatchWriteParam
+	BatchWriteType           = common.BatchWriteType
+	BatchWriteResult         = common.BatchWriteResult
+	BatchStatus              = common.BatchStatus
 	ListObjectMetadataResult = common.ListObjectMetadataResult
 
 	ErrorWithStatus = common.HTTPError //nolint:errname
+)
+
+const (
+	BatchStatusSuccess   = common.BatchStatusSuccess
+	BatchStatusFailure   = common.BatchStatusFailure
+	BatchStatusPartial   = common.BatchStatusPartial
+	BatchWriteTypeCreate = common.BatchWriteTypeCreate
+	BatchWriteTypeUpdate = common.BatchWriteTypeUpdate
 )
 
 var Fields = datautils.NewStringSet // nolint:gochecknoglobals

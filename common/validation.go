@@ -1,6 +1,8 @@
 package common
 
-import "errors"
+import (
+	"errors"
+)
 
 var (
 	// ErrMissingObjects is returned when no objects are provided in the request.
@@ -62,6 +64,30 @@ func (p DeleteParams) ValidateParams() error {
 
 	if len(p.RecordId) == 0 {
 		return ErrMissingRecordID
+	}
+
+	return nil
+}
+
+var (
+	// ErrUnknownBatchWriteType is returned when enum option for the write type is invalid.
+	ErrUnknownBatchWriteType = errors.New("unknown batch write type")
+	// ErrUnsupportedBatchWriteType is returned when connector doesn't implement batch write type.
+	ErrUnsupportedBatchWriteType = errors.New("batch write type is not supported")
+)
+
+func (p BatchWriteParam) ValidateParams() error {
+	if len(p.ObjectName) == 0 {
+		return ErrMissingObjects
+	}
+
+	// Neither "create" nor "update".
+	if p.Type != BatchWriteTypeCreate && p.Type != BatchWriteTypeUpdate {
+		return ErrUnknownBatchWriteType
+	}
+
+	if len(p.Records) == 0 {
+		return ErrMissingRecordData
 	}
 
 	return nil

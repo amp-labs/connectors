@@ -19,8 +19,8 @@ mutation ClientEdit($id:EncodedId! $input: ClientEditInput!) {
             }
           	billingAddressPresent
           	companyName
-						createdAt
-						defaultEmails
+			createdAt
+			defaultEmails
           	defaultPhones
           	firstName
           	id
@@ -40,6 +40,10 @@ mutation ClientEdit($id:EncodedId! $input: ClientEditInput!) {
           	secondaryName
           	title
           	updatedAt 	
+        }
+		userErrors {
+			message
+			path
         }
     }
 }	

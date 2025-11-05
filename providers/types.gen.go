@@ -122,6 +122,26 @@ type BasicAuthOpts struct {
 	DocsURL string `json:"docsURL,omitempty"`
 }
 
+// BatchWriteSupport defines model for BatchWriteSupport.
+type BatchWriteSupport struct {
+	Create BatchWriteSupportConfig `json:"create"`
+	Delete BatchWriteSupportConfig `json:"delete"`
+	Update BatchWriteSupportConfig `json:"update"`
+	Upsert BatchWriteSupportConfig `json:"upsert"`
+}
+
+// BatchWriteSupportConfig defines model for BatchWriteSupportConfig.
+type BatchWriteSupportConfig struct {
+	// DefaultRecordLimit The default number of records supported in a batch
+	DefaultRecordLimit *int `json:"defaultRecordLimit,omitempty"`
+
+	// ObjectRecordLimits Defines object-level overrides for batch record limits. Keys represent object names, and values specify the maximum number of records per batch for those objects.
+	ObjectRecordLimits *map[string]int `json:"objectRecordLimits,omitempty"`
+
+	// Supported Whether this type of batch write operation is supported
+	Supported bool `json:"supported"`
+}
+
 // BulkWriteSupport defines model for BulkWriteSupport.
 type BulkWriteSupport struct {
 	Delete bool `json:"delete"`
@@ -380,12 +400,13 @@ type SubscribeSupport struct {
 
 // Support The supported features for the provider.
 type Support struct {
-	BulkWrite        BulkWriteSupport  `json:"bulkWrite" validate:"required"`
-	Proxy            bool              `json:"proxy"`
-	Read             bool              `json:"read"`
-	Subscribe        bool              `json:"subscribe"`
-	SubscribeSupport *SubscribeSupport `json:"subscribeSupport,omitempty"`
-	Write            bool              `json:"write"`
+	BatchWrite       *BatchWriteSupport `json:"batchWrite,omitempty"`
+	BulkWrite        BulkWriteSupport   `json:"bulkWrite" validate:"required"`
+	Proxy            bool               `json:"proxy"`
+	Read             bool               `json:"read"`
+	Subscribe        bool               `json:"subscribe"`
+	SubscribeSupport *SubscribeSupport  `json:"subscribeSupport,omitempty"`
+	Write            bool               `json:"write"`
 }
 
 // TokenMetadataFields Fields to be used to extract token metadata from the token response.

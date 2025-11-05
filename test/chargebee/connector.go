@@ -18,6 +18,7 @@ func GetChargebeeConnector(ctx context.Context) *chargebee.Connector {
 	if err != nil {
 		testUtils.Fail(err.Error())
 	}
+
 	conn, err := chargebee.NewConnector(
 		common.ConnectorParams{
 			AuthenticatedClient: client,

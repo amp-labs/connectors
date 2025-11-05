@@ -193,6 +193,7 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 	future.Go(func() (struct{}, error) {
 		time.Sleep(WaitBeforeExitSeconds * time.Second)
 		os.Exit(0)
+
 		return struct{}{}, nil
 	})
 }

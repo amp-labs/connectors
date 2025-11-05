@@ -192,7 +192,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	graphqlQueryName := params.ObjectName
+	graphqlQueryName := getObjectName(params.ObjectName)
 
 	if params.RecordId != "" {
 		graphqlQueryName += "Edit"
@@ -249,7 +249,28 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	graphqlQueryName := params.ObjectName
+	// When the user provides an invalid field while creating an object,
+	// the API returns an error under the "errors" field with a 200 status code.
+	// EX. {
+	// "errors": [
+	//     {
+	//         "message": "Argument 'name' on InputObject 'ProductsAndServicesInput' is required. Expected type String!",
+	//         "locations": [
+	//             {
+	//                 "line": 2,
+	//                 "column": 38
+	//             }
+	//         ],...
+	errorArr, err := jsonquery.New(body).ArrayOptional("errors")
+	if err != nil {
+		return nil, err
+	}
+
+	if err = checkErrorInResponse(errorArr); err != nil {
+		return nil, err
+	}
+
+	graphqlQueryName := getObjectName(params.ObjectName)
 
 	if params.RecordId != "" {
 		graphqlQueryName += "Edit"
@@ -257,7 +278,27 @@ func (c *Connector) parseWriteResponse(
 		graphqlQueryName += "Create"
 	}
 
-	objectResponse, err := jsonquery.New(body, "data", graphqlQueryName).ObjectOptional(params.ObjectName)
+	jsonQuery := jsonquery.New(body, "data", graphqlQueryName)
+
+	// User errors appear under the "userErrors" field when existing data is provided while creating an object.
+	// Ex.{
+	// "data": {
+	//     "productsAndServicesCreate": {
+	//         "productOrService": null,
+	//         "userErrors": [
+	//             {
+	//                 "message": "A product or service already exists with that name",
+	//  .......
+	errorArr, err = jsonQuery.ArrayOptional("userErrors")
+	if err != nil {
+		return nil, err
+	}
+
+	if err = checkErrorInResponse(errorArr); err != nil {
+		return nil, err
+	}
+
+	objectResponse, err := jsonQuery.ObjectOptional(writeObjectNodePathMapping.Get(params.ObjectName))
 	if err != nil {
 		return nil, err
 	}
@@ -286,7 +327,7 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 		return nil, err
 	}
 
-	graphqlQueryName := params.ObjectName
+	graphqlQueryName := getObjectName(params.ObjectName)
 
 	graphqlQueryName += "Delete"
 
@@ -337,8 +378,8 @@ func (c *Connector) parseDeleteResponse(
 		return nil, err
 	}
 
-	if objectResponse != nil {
-		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, http.StatusNotFound)
+	if err = checkErrorInResponse(objectResponse); err != nil {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", err, http.StatusNotFound)
 	}
 
 	// A successful delete returns 200 OK

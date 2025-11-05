@@ -1,0 +1,187 @@
+{
+  "data": [
+    {
+      "type": "radio",
+      "parameters": {
+        "items": [
+          {
+            "id": 9,
+            "label": "Orange",
+            "checked": true,
+            "rank": 0
+          },
+          {
+            "id": 10,
+            "label": "Strawberry",
+            "checked": false,
+            "rank": 1
+          },
+          {
+            "id": 11,
+            "label": "Kiwi",
+            "checked": false,
+            "rank": 2
+          }
+        ]
+      },
+      "id": 4,
+      "name": "Fruits",
+      "code": "fruits",
+      "description": "",
+      "mandatory": false,
+      "rank": 0,
+      "related_objects": [
+        "contact"
+      ],
+      "show_on_pdf": false,
+      "customfield_group": {
+        "id": 0,
+        "name": "",
+        "code": "",
+        "open_by_default": true
+      }
+    },
+    {
+      "type": "checkbox",
+      "parameters": {
+        "min": null,
+        "max": null,
+        "items": [
+          {
+            "id": 12,
+            "label": "Art",
+            "checked": false,
+            "rank": 0
+          },
+          {
+            "id": 13,
+            "label": "Travelling",
+            "checked": false,
+            "rank": 1
+          },
+          {
+            "id": 14,
+            "label": "Movies",
+            "checked": false,
+            "rank": 2
+          }
+        ]
+      },
+      "id": 5,
+      "name": "Hobbies",
+      "code": "hobbies",
+      "description": "",
+      "mandatory": false,
+      "rank": 0,
+      "related_objects": [
+        "contact"
+      ],
+      "show_on_pdf": false,
+      "customfield_group": {
+        "id": 0,
+        "name": "",
+        "code": "",
+        "open_by_default": true
+      }
+    },
+    {
+      "type": "date",
+      "parameters": {
+        "min_date": null,
+        "max_date": null
+      },
+      "id": 6,
+      "name": "Birthday",
+      "code": "birthday",
+      "description": "",
+      "mandatory": false,
+      "rank": 0,
+      "related_objects": [
+        "contact"
+      ],
+      "show_on_pdf": false,
+      "customfield_group": {
+        "id": 0,
+        "name": "",
+        "code": "",
+        "open_by_default": true
+      }
+    },
+    {
+      "type": "boolean",
+      "parameters": {
+        "default_value": true
+      },
+      "id": 7,
+      "name": "Recent",
+      "code": "recent",
+      "description": "",
+      "mandatory": false,
+      "rank": 0,
+      "related_objects": [
+        "contact"
+      ],
+      "show_on_pdf": false,
+      "customfield_group": {
+        "id": 0,
+        "name": "",
+        "code": "",
+        "open_by_default": true
+      }
+    },
+    {
+      "type": "simple-text",
+      "parameters": {
+        "default_value": null,
+        "char_min": null,
+        "char_max": null
+      },
+      "id": 8,
+      "name": "Biography",
+      "code": "biography",
+      "description": "",
+      "mandatory": false,
+      "rank": 0,
+      "related_objects": [
+        "contact"
+      ],
+      "show_on_pdf": false,
+      "customfield_group": {
+        "id": 0,
+        "name": "",
+        "code": "",
+        "open_by_default": true
+      }
+    },
+    {
+      "type": "numeric",
+      "parameters": {
+        "default_value": null,
+        "min_value": null,
+        "max_value": null
+      },
+      "id": 9,
+      "name": "Age",
+      "code": "age",
+      "description": "",
+      "mandatory": false,
+      "rank": 0,
+      "related_objects": [
+        "contact"
+      ],
+      "show_on_pdf": false,
+      "customfield_group": {
+        "id": 0,
+        "name": "",
+        "code": "",
+        "open_by_default": true
+      }
+    }
+  ],
+  "pagination": {
+    "limit": 25,
+    "count": 3,
+    "total": 3,
+    "offset": "WyI2Il0="
+  }
+}

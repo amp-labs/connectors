@@ -1,0 +1,24 @@
+{
+  "person": {
+    "id": 1659529,
+    "name": "Sam",
+    "profile_picture_thumb_url": "/profile_pictures/thumb/missing.png",
+    "profile_picture_original_url": "/profile_pictures/original/missing.png",
+    "linkedin_url": "https://www.linkedin.com/search/results/people/?keywords=Sam",
+    "agency_id": 39026,
+    "person_types": [
+      {
+        "id": 2157,
+        "key": "candidate",
+        "name": "Candidate",
+        "default": true,
+        "position": 1
+      }
+    ],
+    "source_type": {
+      "id": 38518,
+      "name": "API"
+    }
+  },
+  "errors": []
+}

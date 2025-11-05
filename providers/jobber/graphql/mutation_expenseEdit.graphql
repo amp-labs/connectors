@@ -319,5 +319,9 @@ mutation ExpenseEdit($id: EncodedId! $input: ExpenseEditInput!) {
           total
           updatedAt
         }
+        userErrors {
+          message
+          path
+        }
     }
 }
