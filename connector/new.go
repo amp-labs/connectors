@@ -76,6 +76,7 @@ import (
 	"github.com/amp-labs/connectors/providers/monday"
 	"github.com/amp-labs/connectors/providers/netsuite"
 	"github.com/amp-labs/connectors/providers/nutshell"
+	"github.com/amp-labs/connectors/providers/outplay"
 	"github.com/amp-labs/connectors/providers/outreach"
 	"github.com/amp-labs/connectors/providers/paddle"
 	"github.com/amp-labs/connectors/providers/pinterest"
@@ -183,6 +184,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Netsuite:                wrapper(newNetsuiteConnector),
 	providers.Nutshell:                wrapper(newNutshellConnector),
 	providers.Outreach:                wrapper(newOutreachConnector),
+	providers.Outplay:                 wrapper(newOutplayConnector),
 	providers.Paddle:                  wrapper(newPaddleConnector),
 	providers.Pinterest:               wrapper(newPinterestConnector),
 	providers.Pipedrive:               wrapper(newPipedriveConnector),
@@ -845,4 +847,9 @@ func newLoxoConnector(params common.ConnectorParams,
 func newSnapchatAdsConnector(params common.ConnectorParams,
 ) (*snapchatads.Connector, error) {
 	return snapchatads.NewConnector(params)
+}
+
+func newOutplayConnector(params common.ConnectorParams,
+) (*outplay.Connector, error) {
+	return outplay.NewConnector(params)
 }
