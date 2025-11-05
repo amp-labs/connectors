@@ -2,6 +2,7 @@
 package datautils
 
 import (
+	"encoding/gob"
 	"encoding/json"
 
 	"github.com/amp-labs/connectors/internal/goutils"
@@ -37,10 +38,16 @@ func (m Map[K, V]) ShallowCopy() Map[K, V] {
 	return result
 }
 
-// DeepCopy creates a deep copy of the map.
-// It duplicates all keys and values recursively using
-// `goutils.Clone`, preserving type integrity for complex objects.
-// Returns an error if cloning fails.
+func init() {
+	gob.Register(Map[string, any]{})
+}
+
+// DeepCopy creates a deep copy of the map using `goutils.Clone`.
+//
+// Internally this uses `encoding/gob`, so all concrete key/value types
+// must be registered with `gob.Register` before use.
+//
+// Register the missing types (e.g. `gob.Register(MyStruct{})`) before calling DeepCopy.
 func (m Map[K, V]) DeepCopy() (Map[K, V], error) {
 	return goutils.Clone(m)
 }
