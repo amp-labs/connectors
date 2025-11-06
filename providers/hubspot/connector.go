@@ -5,18 +5,25 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/batch"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/custom"
 )
 
-// Connector is a Hubspot connector.
+// Connector provides integration with Hubspot provider.
+//
+// The CRM module is undergoing partial migration: some operations are implemented directly within Connector,
+// while others are delegated to specialized sub-adapters (see below).
+// These sub-adapters will be consolidated as the migration completes under "crm.Adapter".
 type Connector struct {
 	Client       *common.JSONHTTPClient
 	providerInfo *providers.ProviderInfo
 	moduleInfo   *providers.ModuleInfo
 	moduleID     common.ModuleID
 
-	// Delegate for the UpsertMetadat functionality.
-	customAdapter *custom.Adapter
+	// CRM module sub-adapters
+	// These delegate specialized subsets of Hubspot CRM functionality to keep Connector modular and prevent code bloat.
+	customAdapter *custom.Adapter // used for connectors.UpsertMetadataConnector capabilities.
+	batchAdapter  *batch.Adapter  // used for connectors.BatchWriteConnector capabilities.
 }
 
 const (
@@ -55,6 +62,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
 
 	conn.customAdapter = custom.NewAdapter(conn.Client, conn.moduleInfo)
+	conn.batchAdapter = batch.NewAdapter(conn.Client.HTTPClient, conn.moduleInfo)
 
 	return conn, nil
 }
