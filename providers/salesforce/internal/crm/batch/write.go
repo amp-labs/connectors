@@ -80,6 +80,7 @@ func (a *Adapter) batchWriteCreate(
 
 			return respItem.ToWriteResult()
 		},
+		nil,
 	)
 }
 
@@ -131,6 +132,7 @@ func (a *Adapter) batchWriteUpdate(
 
 			return respItem.ToWriteResult()
 		},
+		nil,
 	)
 }
 
