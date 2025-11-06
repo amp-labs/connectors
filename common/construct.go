@@ -34,14 +34,14 @@ var ErrNumWriteResultExceedsTotalRecords = errors.New(
 //     and
 //     len(Results) ≤ totalNumRecords.
 //
-//   - fatalErrors represent top-level (batch-level) errors that may coexist
-//     with item-level successes. For example, partial API failures or warnings
-//     that affected only some records.
+//   - unmatchedErrors represent provider responses that could not be associated
+//     with specific payload items — for example, schema validation issues or
+//     general API errors returned alongside per-record results.
 //
 // Constructors may return an error to signal invalid or inconsistent usage
 // rather than to represent runtime provider failures.
 func NewBatchWriteResult(
-	results []WriteResult, successCounter, totalNumRecords int, fatalErrors []any,
+	results []WriteResult, successCounter, totalNumRecords int, unmatchedErrors []any,
 ) (*BatchWriteResult, error) {
 	if len(results) > totalNumRecords {
 		return nil, errors.Join(ErrInvalidImplementation, ErrNumWriteResultExceedsTotalRecords)
@@ -55,7 +55,7 @@ func NewBatchWriteResult(
 
 	return &BatchWriteResult{
 		Status:       newBatchStatus(successCounter, failureCounter, totalNumRecords),
-		Errors:       fatalErrors,
+		Errors:       unmatchedErrors,
 		Results:      results,
 		SuccessCount: successCounter,
 		FailureCount: failureCounter,
@@ -67,10 +67,9 @@ func NewBatchWriteResult(
 // BatchStatus as failure. The constructor still validates that the number of
 // WriteResult entries does not exceed totalNumRecords.
 //
-// fatalErrors may include provider-level or transport-level issues explaining
-// the batch failure.
+// unmatchedErrors may include provider-level issues explaining the failure that cannot be tied to specific records.
 func NewBatchWriteResultFailed(
-	results []WriteResult, totalNumRecords int, fatalErrors []any,
+	results []WriteResult, totalNumRecords int, unmatchedErrors []any,
 ) (*BatchWriteResult, error) {
 	if len(results) > totalNumRecords {
 		return nil, errors.Join(ErrInvalidImplementation, ErrNumWriteResultExceedsTotalRecords)
@@ -78,7 +77,7 @@ func NewBatchWriteResultFailed(
 
 	return &BatchWriteResult{
 		Status:       newBatchStatus(0, totalNumRecords, totalNumRecords),
-		Errors:       fatalErrors,
+		Errors:       unmatchedErrors,
 		Results:      results,
 		SuccessCount: 0,
 		FailureCount: totalNumRecords,
@@ -146,14 +145,14 @@ var ErrBatchUnprocessedRecord = errors.New("record was not processed due to othe
 // payloadItems		- list of items that are part of payload to create/update each record.
 // responseMatcher	- list of items that are part of payload to create/update each record.
 // responseToResult	- a transformer that converts a matched item pair (payload P, response R) into a WriteResult.
-// fatalErrors		– top-level errors not tied to individual records,
+// unmatchedErrors	– top-level errors not tied to individual records,
 //
 //	such as validation failures detected before response matching.
 func ParseBatchWrite[P, R any](
 	payloadItems []P,
 	responseMatcher BatchWriteResponseMatcher[P, R],
 	responseToResult BatchWriteResponseTransformer[P, R],
-	fatalErrors []any,
+	unmatchedErrors []any,
 ) (*BatchWriteResult, error) {
 	var (
 		totalNumRecords = len(payloadItems)
@@ -170,7 +169,7 @@ func ParseBatchWrite[P, R any](
 
 		result, err := responseToResult(record, response)
 		if err != nil {
-			fatalErrors = append(fatalErrors, err)
+			unmatchedErrors = append(unmatchedErrors, err)
 
 			// Record cannot be added into the list of results ([]WriteResult).
 			continue
@@ -185,7 +184,7 @@ func ParseBatchWrite[P, R any](
 		}
 	}
 
-	return NewBatchWriteResult(results, successCounter, totalNumRecords, fatalErrors)
+	return NewBatchWriteResult(results, successCounter, totalNumRecords, unmatchedErrors)
 }
 
 func countSuccesses(results []WriteResult) int {
