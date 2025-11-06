@@ -341,20 +341,20 @@ func (p BatchWriteParam) GetRecords() ([]Record, error) {
 	})
 }
 
-// BatchWriteResult aggregates the outcome of a synchronous batch write operation.
-// It provides both a high-level summary of the batch outcome and detailed results
-// for records that could be matched back to specific payload items.
+// BatchWriteResult represents the outcome of a provider batch write operation.
 //
-// The HubSpot connector (and potentially others) may return more errors than the number
-// of submitted payload items, or omit per-record identifiers altogether. In such cases,
-// unidentifiable errors are included in the top-level Errors slice.
+// It contains both a high-level summary of the batch and detailed per-record results.
 //
-// Each identifiable record — that is, one that could be matched by reference ID or
-// record ID — contributes a WriteResult entry in Results. If a record failed for
-// multiple identifiable reasons, they are grouped under that record’s WriteResult.Errors.
+// Providers may return more errors than there are payload items, or omit identifiers
+// that would allow matching errors to specific records. In such cases, unmatched or
+// batch-level issues are collected in the top-level Errors slice.
+//
+// Each identifiable record—matched by reference ID or record ID—produces a WriteResult
+// entry in Results. If multiple identifiable errors occurred for the same record, they
+// are grouped under WriteResult.Errors.
 //
 // Top-level Errors represent issues that apply to the batch as a whole or to records
-// that could not be reliably matched back to specific payload items.
+// that could not be reliably matched to payload items.
 type BatchWriteResult struct {
 	// Status summarizes the batch outcome (success, failure, or partial).
 	Status BatchStatus
