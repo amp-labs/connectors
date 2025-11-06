@@ -1,0 +1,20 @@
+{
+  "records": [
+    {
+      "FirstName": "Siena",
+      "LastName": "Dyer",
+      "attributes": {
+        "referenceId": "ref0",
+        "type": "Contact"
+      }
+    },
+    {
+      "FirstName": "Markus",
+      "LastName": "Blevins",
+      "attributes": {
+        "referenceId": "ref1",
+        "type": "Contact"
+      }
+    }
+  ]
+}

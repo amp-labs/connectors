@@ -1,0 +1,20 @@
+{
+  "hasErrors": true,
+  "results": [
+    {
+      "referenceId": "ref1",
+      "errors": [
+        {
+          "statusCode": "INVALID_INPUT",
+          "message": "Duplicate ReferenceId provided in the request.",
+          "fields": []
+        },
+        {
+          "statusCode": "PROCESSING_HALTED",
+          "message": "Duplicate ReferenceId found: ref1",
+          "fields": []
+        }
+      ]
+    }
+  ]
+}
