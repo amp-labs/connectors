@@ -43,7 +43,6 @@ func init() { //nolint:funlen
 			Subscribe: false,
 			Write:     true,
 		},
-		DefaultModule: ModuleHubspotCRM,
 		Modules: &Modules{
 			ModuleHubspotCRM: {
 				BaseURL:     "https://api.hubapi.com/crm",
