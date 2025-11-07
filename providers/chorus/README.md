@@ -5,7 +5,7 @@
 Below is an exhaustive list of objects & methods supported on the objects
 Refer API docs link https://api-docs.chorus.ai
 
-Chorus API version: v1
+Chorus API version: v1 for all object expect engagements object which have v3.
 ---------------------------------------------------------------
 | Object                | Resource              | Method      |
 | emails                | emails                | read        |
