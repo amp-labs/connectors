@@ -6,9 +6,11 @@ const Greenhouse Provider = "greenhouse"
 func init() {
 	// Greenhouse Configuration
 	SetInfo(Greenhouse, ProviderInfo{
-		DisplayName: "Greenhouse",
+		DisplayName: "Greenhouse (Harvest)",
 		AuthType:    Oauth2,
 		BaseURL:     "https://harvest.greenhouse.io",
+		// OAuth 2.0 Auth Code is applicable only for Partner integrations, not for Custom integrations.
+		// Partner integrations are official, pre-built connections while Custom integrations use Greenhouse APIs to build unique workflows not covered by those partners.
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.greenhouse.io/authorize",
