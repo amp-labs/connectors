@@ -74,7 +74,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 						  "statusCode": "REQUIRED_FIELD_MISSING",
 						  "message": "Required fields are missing: [LastName]",
 						  "fields": ["LastName"]}`)},
-					Data: map[string]any{"referenceId": "ref0"},
+					Data: nil,
 				}, {
 					Success:  false,
 					RecordId: "",
@@ -126,7 +126,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 						  "message": "Duplicate ReferenceId found: ref1",
 						  "fields": []}`),
 					},
-					Data: map[string]any{"referenceId": "ref1"},
+					Data: nil,
 				}},
 				SuccessCount: 0,
 				FailureCount: 2,
@@ -272,16 +272,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 							"statusCode": "MISSING_ARGUMENT",
 							"message": "Id not specified in an update call",
 							"fields": []}`)},
-					Data: map[string]any{
-						"success": false,
-						"errors": []any{
-							map[string]any{
-								"statusCode": "MISSING_ARGUMENT",
-								"message":    "Id not specified in an update call",
-								"fields":     []any{},
-							},
-						},
-					},
+					Data: nil,
 				}, {
 					Success:  false,
 					RecordId: "",
@@ -289,16 +280,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 							"statusCode": "MISSING_ARGUMENT",
 							"message": "Id not specified in an update call",
 							"fields": []}`)},
-					Data: map[string]any{
-						"success": false,
-						"errors": []any{
-							map[string]any{
-								"statusCode": "MISSING_ARGUMENT",
-								"message":    "Id not specified in an update call",
-								"fields":     []any{},
-							},
-						},
-					},
+					Data: nil,
 				}},
 				SuccessCount: 0,
 				FailureCount: 2,
@@ -337,16 +319,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 							"statusCode": "MISSING_ARGUMENT",
 							"message": "Id not specified in an update call",
 							"fields": []}`)},
-					Data: map[string]any{
-						"success": false,
-						"errors": []any{
-							map[string]any{
-								"statusCode": "MISSING_ARGUMENT",
-								"message":    "Id not specified in an update call",
-								"fields":     []any{},
-							},
-						},
-					},
+					Data: nil,
 				}},
 				SuccessCount: 1,
 				FailureCount: 1,
