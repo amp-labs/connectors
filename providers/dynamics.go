@@ -108,7 +108,8 @@ func init() { // nolint:funlen
 			Input: []MetadataItemInput{
 				{
 					Name:        "workspace",
-					DisplayName: "Organization ID",
+					DisplayName: "Environment Name",
+					DocsURL:     "https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/compose-http-requests-handle-errors?view=dataverse-latest#web-api-url-and-versions",
 				},
 			},
 		},
