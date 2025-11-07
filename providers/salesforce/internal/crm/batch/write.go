@@ -222,58 +222,74 @@ type ResponseCreate struct {
 type ResponseUpdate []UpdateItem
 
 type UpdateItem struct {
+	codec.RawJSON[UpdateItemData]
+}
+
+type UpdateItemData struct {
 	Success bool        `json:"success"`
 	ID      string      `json:"id,omitempty"`
 	Errors  []ItemError `json:"errors"`
 }
 
 type CreateItem struct {
+	codec.RawJSON[CreateItemData]
+}
+
+type CreateItemData struct {
 	ReferenceId string      `json:"referenceId"`
 	ID          string      `json:"id"`
 	Errors      []ItemError `json:"errors"`
 }
 
-type ItemError struct {
-	StatusCode string `json:"statusCode"`
-	Message    string `json:"message"`
-	Fields     []any  `json:"fields"`
-}
+type ItemError map[string]any
 
 func (r ResponseCreate) GetItemsMap() map[string]*CreateItem {
 	mapping := make(map[string]*CreateItem)
 
 	for _, item := range r.Results {
-		mapping[item.ReferenceId] = &item
+		mapping[item.Data.ReferenceId] = &item
 	}
 
 	return mapping
 }
 
 func (i CreateItem) ToWriteResult() (*common.WriteResult, error) {
-	data, err := common.RecordDataToMap(i)
-	if err != nil {
-		return nil, err
+	success := len(i.Data.Errors) == 0
+
+	if success {
+		return &common.WriteResult{
+			Success:  true,
+			RecordId: i.Data.ID,
+			Errors:   nil,
+			Data:     i.Raw,
+		}, nil
 	}
 
 	return &common.WriteResult{
-		Success:  len(i.Errors) == 0,
-		RecordId: i.ID,
-		Errors:   datautils.ToAnySlice(i.Errors),
-		Data:     data,
+		Success:  false,
+		RecordId: i.Data.ID,
+		Errors:   datautils.ToAnySlice(i.Data.Errors),
+		Data:     nil,
 	}, nil
 }
 
 func (i UpdateItem) ToWriteResult() (*common.WriteResult, error) {
-	data, err := common.RecordDataToMap(i)
-	if err != nil {
-		return nil, err
+	success := len(i.Data.Errors) == 0
+
+	if success {
+		return &common.WriteResult{
+			Success:  true,
+			RecordId: i.Data.ID,
+			Errors:   nil,
+			Data:     i.Raw,
+		}, nil
 	}
 
 	return &common.WriteResult{
-		Success:  len(i.Errors) == 0,
-		RecordId: i.ID,
-		Errors:   datautils.ToAnySlice(i.Errors),
-		Data:     data,
+		Success:  false,
+		RecordId: i.Data.ID,
+		Errors:   datautils.ToAnySlice(i.Data.Errors),
+		Data:     nil,
 	}, nil
 }
 
