@@ -28,7 +28,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	case objectEngagement:
 		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "v3", objectName)
 	default:
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName)
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "api", apiVersion, objectName)
 	}
 
 	if err != nil {
@@ -142,7 +142,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	case objectEngagement:
 		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "v3", params.ObjectName)
 	default:
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "api", apiVersion, params.ObjectName)
 	}
 
 	if err != nil {
