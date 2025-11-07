@@ -185,9 +185,8 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer +
-					"/rest/adAccounts?q=search&pageSize=100&pageToken=DgFM1V9r6aUuA4M6V0uGFxY9ASDBvzxZod6VsdWmjiQ",
-				Done: false,
+				NextPage: "DgFM1V9r6aUuA4M6V0uGFxY9ASDBvzxZod6VsdWmjiQ",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
