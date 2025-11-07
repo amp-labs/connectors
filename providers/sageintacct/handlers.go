@@ -33,25 +33,56 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
+// nolint:lll
 // We flatten the fields, groups, and refs into a single map of field metadata
 // with dot-notation keys for nested fields.
 // We require to mention the fields explicitly in the read requests.
 // Sage doesn't support wildcard selection of fields or nested field selection.
 // So we need to ensure all fields are explicitly specified in the request like audit.createdByUser.key.
 // Due to which we are flattening the metadata here.
+//
+// IMPORTANT: Lists (array fields like "locations", "departments") are NOT queryable in SageIntacct.
+// According to SageIntacct API documentation:
+// "A field may not be queryable if it returns a list of data, which is not supported for querying"
+// Ref: https://developer.sage.com/intacct/docs/1/sage-intacct-rest-api/api-essentials/query-service#troubleshooting-and-faqs
+//
 // Example:
 /*
-   "audit": {
-	   "createdByUser": {
-		   "key": { ... },
-		   "name": { ... }
-	   },
-	   "createdDate": { ... }
+metadata response structure:
+   "fields": {
+     "id": { ... },
+     "name": { ... }
+   },
+   "groups": {
+     "audit": {
+       "fields": {
+         "createdByUser": {
+           "fields": { "key": {...}, "name": {...} }
+         },
+         "createdDate": { ... }
+       }
+     }
+   },
+   "refs": {
+     "contact": {
+       "fields": { "id": {...}, "firstName": {...} }
+     }
+   },
+   "lists": {
+     "locations": {
+       "fields": { "id": {...}, "key": {...} }  // NOT queryable - will be ignored
+     }
    }
-   Becomes:
+
+   Flattened output:
+   "id": { ... },
+   "name": { ... },
    "audit.createdByUser.key": { ... },
    "audit.createdByUser.name": { ... },
-   "audit.createdDate": { ... }
+   "audit.createdDate": { ... },
+   "contact.id": { ... },
+   "contact.firstName": { ... }
+   // Note: "locations" is NOT included because lists are not queryable
 */
 
 func (c *Connector) parseSingleObjectMetadataResponse(
