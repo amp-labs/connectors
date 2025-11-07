@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"maps"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -31,6 +32,27 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
+
+// We flatten the fields, groups, and refs into a single map of field metadata
+// with dot-notation keys for nested fields.
+// We require to mention the fields explicitly in the read requests.
+// Sage doesn't support wildcard selection of fields or nested field selection.
+// So we need to ensure all fields are explicitly specified in the request like audit.createdByUser.key.
+// Due to which we are flattening the metadata here.
+// Example:
+/*
+   "audit": {
+	   "createdByUser": {
+		   "key": { ... },
+		   "name": { ... }
+	   },
+	   "createdDate": { ... }
+   }
+   Becomes:
+   "audit.createdByUser.key": { ... },
+   "audit.createdByUser.name": { ... },
+   "audit.createdDate": { ... }
+*/
 
 func (c *Connector) parseSingleObjectMetadataResponse(
 	ctx context.Context,
@@ -63,26 +85,20 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
-	for fieldName, fieldDef := range res.Result.Fields {
-		objectMetadata.Fields[fieldName] = common.FieldMetadata{
-			DisplayName:  naming.CapitalizeFirstLetterEveryWord(fieldName),
-			ValueType:    mapSageIntacctTypeToValueType(fieldDef.Type),
-			ProviderType: fieldDef.Type,
-			ReadOnly:     fieldDef.ReadOnly,
-			Values:       mapValuesFromEnum(fieldDef),
-		}
+	// Flatten top-level fields
+	topLevelFields := flattenFields("", res.Result.Fields)
+	maps.Copy(objectMetadata.Fields, topLevelFields)
+
+	// Flatten groups (nested objects like audit, etc.)
+	if len(res.Result.Groups) > 0 {
+		groupFields := flattenGroups("", res.Result.Groups)
+		maps.Copy(objectMetadata.Fields, groupFields)
 	}
 
-	if len(res.Result.Groups) > 0 {
-		for groupName := range res.Result.Groups {
-			objectMetadata.Fields[groupName] = common.FieldMetadata{
-				DisplayName:  naming.CapitalizeFirstLetterEveryWord(groupName),
-				ValueType:    common.ValueTypeOther,
-				ProviderType: "object",
-				ReadOnly:     false,
-				Values:       []common.FieldValue{},
-			}
-		}
+	// Flatten refs (reference objects)
+	if len(res.Result.Refs) > 0 {
+		refFields := flattenRefs("", res.Result.Refs)
+		maps.Copy(objectMetadata.Fields, refFields)
 	}
 
 	return &objectMetadata, nil
