@@ -42,6 +42,25 @@
         "id": {
           "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
           "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "6ae72bca-9421-4fa8-bae2-19ced262607a"
+        },
+        "api_slug": "team",
+        "type": "record-reference",
+        "is_writable": true,
+        "is_multiselect": true,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "record_reference": {
+            "allowed_object_ids": [
+              "1a4b88cf-520e-4394-886b-941c07c78854"
+            ]
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
           "attribute_id": "548a073b-c739-46c7-878a-91739a2fac9c"
         },
         "api_slug": "created_at",
