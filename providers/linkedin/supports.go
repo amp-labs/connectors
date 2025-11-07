@@ -15,6 +15,8 @@ func supportedOperations() components.EndpointRegistryInput {
 		"adAccounts",
 		"adCampaignGroups",
 		"adCampaigns",
+		"dmpSegments",
+		"adAnalytics",
 	}
 
 	supportWrite := []string{
