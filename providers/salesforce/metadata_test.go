@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -16,6 +17,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	responseOrgMeta := testutils.DataFromFile(t, "metadata-organization-sampled.json")
+	responseCustomObjMeta := testutils.DataFromFile(t, "metadata/custom-object-with-custom-fields.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -54,14 +56,17 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Name",
 								ValueType:    "string",
 								ProviderType: "string",
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(true),
 								ReadOnly:     false,
-								Values:       nil,
 							},
 							"preferencesconsentmanagementenabled": {
 								DisplayName:  "ConsentManagementEnabled",
 								ValueType:    "boolean",
 								ProviderType: "boolean",
 								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(true),
 								Values:       nil,
 							},
 							"latitude": {
@@ -69,6 +74,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "float",
 								ProviderType: "double",
 								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(false),
 								Values:       nil,
 							},
 							"monthlypageviewsused": {
@@ -76,6 +83,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "int",
 								ProviderType: "int",
 								ReadOnly:     true,
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(false),
 								Values:       nil,
 							},
 							"systemmodstamp": {
@@ -83,6 +92,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "datetime",
 								ProviderType: "datetime",
 								ReadOnly:     true,
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(true),
 								Values:       nil,
 							},
 							"defaultaccountaccess": {
@@ -90,6 +101,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "singleSelect",
 								ProviderType: "picklist",
 								ReadOnly:     true,
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "None",
 									DisplayValue: "Private",
@@ -112,6 +125,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "other",
 								ProviderType: "phone",
 								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(false),
 								Values:       nil,
 							},
 						},
@@ -123,6 +138,57 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"phone":                               "Phone",
 							"preferencesconsentmanagementenabled": "ConsentManagementEnabled",
 							"systemmodstamp":                      "System Modstamp",
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Custom and required fields",
+			Input: []string{"TestObject15__c"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.Body(`{"allOrNone":false,"compositeRequest":[{
+					"referenceId":"TestObject15__c",
+					"method":"GET",
+					"url":"/services/data/v60.0/sobjects/TestObject15__c/describe"
+				}]}`),
+				Then: mockserver.Response(http.StatusOK, responseCustomObjMeta),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"testobject15__c": {
+						DisplayName: "Test Object 15",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Record ID",
+								ValueType:    "other",
+								ProviderType: "id",
+								ReadOnly:     true,
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(true),
+							},
+							"interests__c": {
+								DisplayName:  "Interests",
+								ValueType:    "multiSelect",
+								ProviderType: "multipicklist",
+								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(true),
+								IsRequired:   goutils.Pointer(true),
+								Values: []common.FieldValue{{
+									Value:        "art",
+									DisplayValue: "art",
+								}, {
+									Value:        "swimming",
+									DisplayValue: "swimming",
+								}, {
+									Value:        "travel",
+									DisplayValue: "travel",
+								}},
+							},
 						},
 					},
 				},
