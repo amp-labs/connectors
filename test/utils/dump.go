@@ -13,6 +13,7 @@ func DumpJSON(v any, w io.Writer) {
 	if result, ok := v.(*common.ListObjectMetadataResult); ok {
 		// Nested errors must be explicitly converted to a string to be displayed.
 		errorsMap := map[string]string{}
+
 		for k, err := range result.Errors {
 			if err != nil {
 				errorsMap[k] = err.Error() // convert error to string
@@ -20,6 +21,7 @@ func DumpJSON(v any, w io.Writer) {
 				errorsMap[k] = ""
 			}
 		}
+
 		v = map[string]any{
 			"Result": result.Result,
 			"Errors": errorsMap,

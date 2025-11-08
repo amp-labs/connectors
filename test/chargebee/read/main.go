@@ -59,5 +59,4 @@ func main() {
 
 	slog.Info("Reading invoices..")
 	utils.DumpJSON(res, os.Stdout)
-
 }
