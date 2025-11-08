@@ -201,6 +201,8 @@ type SubscribeConnector interface {
 // or based on the endpoint, in which case we can modify DefaultPageSize() to accept
 // ReadParams as well.
 type ConfigurationConnector interface {
+	Connector
+
 	DefaultPageSize() int
 }
 
