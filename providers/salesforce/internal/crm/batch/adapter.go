@@ -58,6 +58,8 @@ func (a *Adapter) getModuleURL() string {
 //
 // nolint:lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_composite_sobject_tree_flat.htm
+//
+// By default batch write is "ALL_OR_NONE=true" for all create endpoints. This cannot be changed.
 func (a *Adapter) getCreateURL(objectName common.ObjectName) (*urlbuilder.URL, error) {
 	return urlbuilder.New(a.getModuleURL(), restAPISuffix, "/composite/tree", objectName.String())
 }
@@ -69,6 +71,8 @@ func (a *Adapter) getCreateURL(objectName common.ObjectName) (*urlbuilder.URL, e
 //
 // nolint:lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_update.htm
+//
+// By default batch write is "ALL_OR_NONE=false" for all update endpoints which can be configured in request payload.
 func (a *Adapter) getUpdateURL() (*urlbuilder.URL, error) {
 	return urlbuilder.New(a.getModuleURL(), restAPISuffix, "/composite/sobjects")
 }
