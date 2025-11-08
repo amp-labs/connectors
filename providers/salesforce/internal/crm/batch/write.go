@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/codec"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 // nolint:lll
@@ -184,7 +185,16 @@ func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 		}
 	}
 
-	return &Payload{Records: items}, nil
+	if params.IsUpdate() {
+		return &Payload{
+			Records:   items,
+			AllOrNone: goutils.Pointer(true),
+		}, nil
+	}
+
+	return &Payload{
+		Records: items,
+	}, nil
 }
 
 // Payload represents the composite API request body.
@@ -192,6 +202,11 @@ func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 // https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_composite_sobject_tree_flat.htm
 type Payload struct {
 	Records []PayloadItem `json:"records"`
+
+	// AllOrNone is accepted by Update endpoint for output with partial success.
+	// nolint:lll
+	// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_update.htm
+	AllOrNone *bool `json:"allOrNone"`
 }
 
 // PayloadItem represents a single item in the composite API payload.
