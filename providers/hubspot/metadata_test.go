@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
@@ -57,6 +58,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "string",
 								ProviderType: "string.text",
 								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"mobilephone": {
@@ -64,6 +66,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "string",
 								ProviderType: "string.phonenumber",
 								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(false),
 								Values:       nil,
 							},
 
@@ -73,6 +76,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "boolean",
 								ProviderType: "bool.booleancheckbox",
 								ReadOnly:     true,
+								IsCustom:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"autogen": {
@@ -80,6 +84,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "boolean",
 								ProviderType: "enumeration.booleancheckbox",
 								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(true),
 								Values:       nil,
 							},
 
@@ -89,6 +94,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "float",
 								ProviderType: "number.number",
 								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"hubspotscore": {
@@ -96,6 +102,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "float",
 								ProviderType: "number.calculation_score",
 								ReadOnly:     true,
+								IsCustom:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"hs_associated_target_accounts": {
@@ -103,6 +110,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "float",
 								ProviderType: "number.calculation_rollup",
 								ReadOnly:     true,
+								IsCustom:     goutils.Pointer(false),
 								Values:       nil,
 							},
 
@@ -112,6 +120,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "singleSelect",
 								ProviderType: "enumeration.select",
 								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "active",
 									DisplayValue: "Active",
@@ -125,6 +134,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "singleSelect",
 								ProviderType: "enumeration.radio",
 								ReadOnly:     true,
+								IsCustom:     goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "bucket_1",
 									DisplayValue: "1 Star",
@@ -144,6 +154,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "multiSelect",
 								ProviderType: "enumeration.checkbox",
 								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(false),
 								Values:       nil,
 							},
 
@@ -153,6 +164,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "datetime",
 								ProviderType: "datetime.calculation_rollup",
 								ReadOnly:     true,
+								IsCustom:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"hs_date_entered_customer": {
@@ -160,6 +172,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "datetime",
 								ProviderType: "datetime.calculation_read_time",
 								ReadOnly:     true,
+								IsCustom:     goutils.Pointer(false),
 								Values:       nil,
 							},
 
@@ -169,6 +182,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "other",
 								ProviderType: "object_coordinates.text",
 								ReadOnly:     true,
+								IsCustom:     goutils.Pointer(false),
 								Values:       nil,
 							},
 						},
@@ -208,6 +222,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "singleSelect",
 								ProviderType: "enumeration.select",
 								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "contacts-lifecycle-pipeline",
 									DisplayValue: "Lifecycle Stage Pipeline",
@@ -245,6 +260,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "singleSelect",
 								ProviderType: "enumeration.select",
 								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "default",
 									DisplayValue: "Sales Pipeline",
@@ -255,6 +271,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "singleSelect",
 								ProviderType: "enumeration.radio",
 								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "default:appointmentscheduled",
 									DisplayValue: "Appointment Scheduled",
