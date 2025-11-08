@@ -3,6 +3,7 @@ package modulelinter
 import (
 	"go/ast"
 	"go/token"
+	"strings"
 
 	"github.com/golangci/plugin-module-register/register"
 	"golang.org/x/tools/go/analysis"
@@ -112,8 +113,9 @@ func (m *ModuleLinter) run(pass *analysis.Pass) (any, error) {
 				}
 			}
 
-			hasModules := modulesField != nil && len(getModulesMap(modulesField)) > 0
-			hasMultipleModules := hasModules && len(getModulesMap(modulesField)) > 1
+			modulesMap := getModulesMap(modulesField)
+			hasModules := modulesField != nil && len(modulesMap) > 0
+			hasMultipleModules := hasModules && len(modulesMap) > 1
 
 			// Rule 1: Check if multiple modules require DefaultModule
 			if hasMultipleModules {
@@ -260,9 +262,15 @@ func getModulesMap(modulesValue ast.Expr) map[string]bool {
 			continue
 		}
 
-		// The key is the module ID
-		if ident, ok := kv.Key.(*ast.Ident); ok {
-			result[ident.Name] = true
+		// The key can be either an identifier or a string literal
+		switch key := kv.Key.(type) {
+		case *ast.Ident:
+			result[key.Name] = true
+		case *ast.BasicLit:
+			if key.Kind == token.STRING {
+				// Remove quotes from string literal
+				result[strings.Trim(key.Value, `"`)] = true
+			}
 		}
 	}
 
