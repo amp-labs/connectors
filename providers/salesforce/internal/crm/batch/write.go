@@ -263,30 +263,52 @@ func (r ResponseCreate) GetItemsMap() map[string]*CreateItem {
 }
 
 func (i CreateItem) ToWriteResult() (*common.WriteResult, error) {
-	data, err := common.RecordDataToMap(i)
-	if err != nil {
-		return nil, err
+	success := len(i.Errors) == 0
+
+	if success {
+		data, err := common.RecordDataToMap(i)
+		if err != nil {
+			return nil, err
+		}
+
+		return &common.WriteResult{
+			Success:  true,
+			RecordId: i.ID,
+			Errors:   nil,
+			Data:     data,
+		}, nil
 	}
 
 	return &common.WriteResult{
-		Success:  len(i.Errors) == 0,
+		Success:  false,
 		RecordId: i.ID,
 		Errors:   datautils.ToAnySlice(i.Errors),
-		Data:     data,
+		Data:     nil,
 	}, nil
 }
 
 func (i UpdateItem) ToWriteResult() (*common.WriteResult, error) {
-	data, err := common.RecordDataToMap(i)
-	if err != nil {
-		return nil, err
+	success := len(i.Errors) == 0
+
+	if success {
+		data, err := common.RecordDataToMap(i)
+		if err != nil {
+			return nil, err
+		}
+
+		return &common.WriteResult{
+			Success:  true,
+			RecordId: i.ID,
+			Errors:   nil,
+			Data:     data,
+		}, nil
 	}
 
 	return &common.WriteResult{
-		Success:  len(i.Errors) == 0,
+		Success:  false,
 		RecordId: i.ID,
 		Errors:   datautils.ToAnySlice(i.Errors),
-		Data:     data,
+		Data:     nil,
 	}, nil
 }
 
