@@ -135,6 +135,9 @@ func init() { // nolint:funlen
 					Name:        "workspace",
 					DisplayName: "Subdomain",
 					DocsURL:     "https://help.salesforce.com/s/articleView?language=en_US&id=sf.faq_domain_name_what.htm&type=5",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleSalesforceCRM: ModuleDependency{},
+					},
 				},
 			},
 		},
