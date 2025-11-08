@@ -55,14 +55,23 @@ func init() { //nolint:funlen
 				{
 					Name:        "region",
 					DisplayName: "Region",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleAWSIdentityCenter: ModuleDependency{},
+					},
 				},
 				{
 					Name:        "identityStoreId",
 					DisplayName: "Identity Store ID",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleAWSIdentityCenter: ModuleDependency{},
+					},
 				},
 				{
 					Name:        "instanceArn",
 					DisplayName: "Instance ARN",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleAWSIdentityCenter: ModuleDependency{},
+					},
 				},
 				// IMPORTANT: The 'serviceDomain' variable is figured out in the connector,
 				// at runtime. It is not part of the metadata.

@@ -12,7 +12,7 @@ lint: custom-gcl
 # Build custom golangci-lint binary with nogoroutine linter plugin
 custom-gcl:
 	@if [ ! -f custom-gcl ]; then \
-		echo "Building custom golangci-lint binary with nogoroutine linter..."; \
+		echo "Building custom golangci-lint binary with nogoroutine & module linter..."; \
 		golangci-lint custom; \
 	fi
 

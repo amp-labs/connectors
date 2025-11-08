@@ -6,10 +6,10 @@ const (
 	Seismic Provider = "seismic"
 
 	// ModuleReporting is the module used for accessing and manging reporting API.
-	ModuleReporting common.ModuleID = "reporting"
+	ModuleSeismicReporting common.ModuleID = "reporting"
 
 	// ModuleIntegration is the module used for accessing and manging integration API.
-	ModuleIntegration common.ModuleID = "integration"
+	ModuleSeismicIntegration common.ModuleID = "integration"
 )
 
 func init() { // nolint: funlen
@@ -46,9 +46,9 @@ func init() { // nolint: funlen
 			Subscribe: false,
 			Write:     false,
 		},
-		DefaultModule: ModuleReporting,
+		DefaultModule: ModuleSeismicReporting,
 		Modules: &Modules{
-			ModuleReporting: {
+			ModuleSeismicReporting: {
 				DisplayName: "Seismic Reporting",
 				BaseURL:     "https://api.seismic.com/reporting",
 				Support: Support{
@@ -57,7 +57,7 @@ func init() { // nolint: funlen
 					Write: false,
 				},
 			},
-			ModuleIntegration: {
+			ModuleSeismicIntegration: {
 				DisplayName: "Seismic Integration",
 				BaseURL:     "https://api.seismic.com/integration",
 				Support: Support{
@@ -72,6 +72,10 @@ func init() { // nolint: funlen
 				{
 					Name:        "workspace",
 					DisplayName: "Tenant",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleSeismicIntegration: ModuleDependency{},
+						ModuleSeismicReporting:   ModuleDependency{},
+					},
 				},
 			},
 		},
