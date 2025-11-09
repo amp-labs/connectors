@@ -2,11 +2,13 @@ package outreach
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"strings"
+	"sync"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/go-playground/validator"
 )
 
@@ -21,48 +23,68 @@ func (c *Connector) Subscribe(
 	}
 
 	var successfulSubscriptions []SuccessfulSubscription
+	var firstError error
+	var errorOnce sync.Once
+	var mutex sync.Mutex
 
-	var failedSubscriptions []FailedSubscription
+	callbacks := make([]simultaneously.Job, 0)
 
 	// Process all object+event combinations
 	for obj, events := range params.SubscriptionEvents {
-		providerEvents := events.Events
-		for _, event := range providerEvents {
-			successful, failed := c.createSingleSubscription(ctx, event, obj, req)
-			if successful != nil {
-				successfulSubscriptions = append(successfulSubscriptions, *successful)
-			} else {
-				failedSubscriptions = append(failedSubscriptions, *failed)
-			}
+		for _, event := range events.Events {
+
+			currObj := obj
+			currentEvent := event
+
+			callbacks = append(callbacks, func(ctx context.Context) error {
+				successful, failed := c.createSingleSubscription(ctx, currentEvent, currObj, req)
+				mutex.Lock()
+				defer mutex.Unlock()
+
+				if failed != nil {
+					errorOnce.Do(func() {
+						firstError = failed
+					})
+				} else {
+					successfulSubscriptions = append(successfulSubscriptions, *successful)
+				}
+
+				return nil
+			})
+
 		}
 	}
 
-	subscriptionResult := &common.SubscriptionResult{
-		Result: &SubscriptionResultData{
-			SuccessfulSubscriptions: successfulSubscriptions,
-			FailedSubscriptions:     failedSubscriptions,
-		},
+	err = simultaneously.DoCtx(ctx, -1, callbacks...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to process subscriptions: %w", err)
+	}
+
+	res := &common.SubscriptionResult{
 		ObjectEvents: params.SubscriptionEvents,
 	}
 
-	if len(failedSubscriptions) > 0 {
-		if len(successfulSubscriptions) > 0 {
-			// Partial success - some worked, some failed
-			subscriptionResult.Status = common.SubscriptionStatusSuccess
+	if firstError != nil {
+		rollbackErr := c.rollbackSubscriptions(ctx, successfulSubscriptions)
+		if rollbackErr != nil {
 
-			return subscriptionResult, nil
-		} else {
-			// Complete failure - nothing worked
-			subscriptionResult.Status = common.SubscriptionStatusFailed
+			res.Status = common.SubscriptionStatusFailedToRollback
+			res.Result = rollbackErr
 
-			return subscriptionResult, nil
+			return res, errors.Join(firstError, rollbackErr)
 		}
+		res.Status = common.SubscriptionStatusFailed
+		res.ObjectEvents = nil
+
+		return res, firstError
 	}
 
-	// Complete success - everything worked
-	subscriptionResult.Status = common.SubscriptionStatusSuccess
+	res.Status = common.SubscriptionStatusSuccess
+	res.Result = &SubscriptionResultData{
+		SuccessfulSubscriptions: successfulSubscriptions,
+	}
 
-	return subscriptionResult, nil
+	return res, nil
 }
 
 func (c *Connector) DeleteSubscription(
@@ -92,149 +114,21 @@ func (c *Connector) DeleteSubscription(
 	return nil
 }
 
-//nolint:cyclop,funlen
-func (c *Connector) UpdateSubscription(
-	ctx context.Context,
-	params common.SubscribeParams,
-	previousResult *common.SubscriptionResult,
-) (*common.SubscriptionResult, error) {
-	req, err := validateRequest(params)
-	if err != nil {
-		return nil, err
-	}
-
-	if previousResult.Result == nil {
-		return nil, fmt.Errorf("%w: Result cannot be null", errMissingParams) //nolint:err113,lll
-	}
-
-	subscriptionData, ok := previousResult.Result.(*SubscriptionResultData)
-	if !ok {
-		return nil, fmt.Errorf(
-			"%w: expected SubscriptionResult to be type %T but got %T",
-			errInvalidRequestType,
-			subscriptionData,
-			previousResult.Result)
-	}
-
-	if len(subscriptionData.SuccessfulSubscriptions) == 0 {
-		return nil, fmt.Errorf("%w: subscription is empty", errMissingParams)
-	}
-
-	// currentSubs are the currently active subscriptions
-	// desiredSubs are the subscriptions we want to have after the update
-	currentSubs, desiredSubs := buildSubscriptionMaps(
-		subscriptionData.SuccessfulSubscriptions,
-		params.SubscriptionEvents,
-	)
-
-	var newsuccessfulSubscriptions []SuccessfulSubscription //nolint:prealloc
-
-	var newfailedSubscriptions []FailedSubscription
-
-	// Remove subscriptions that are no longer desired
-	for key, subID := range currentSubs {
-		if !desiredSubs[key] {
-			err := c.deleteSubscription(ctx, subID)
-			if err != nil {
-				newfailedSubscriptions = append(newfailedSubscriptions, FailedSubscription{
-					ObjectName: strings.Split(key, ":")[0],
-					EventName:  strings.Split(key, ":")[1],
-					Error:      fmt.Sprintf("failed to delete subscription for %s: %v", key, err),
-				})
-
-				continue
-			}
-		}
-	}
-
-	// Add new subscriptions that are desired but not currently present
-	for key := range desiredSubs {
-		_, exist := currentSubs[key]
-
-		// If the subscription already exists, we don't need to create it
-		if exist {
-			continue
-		}
-
-		parts := strings.Split(key, ":")
-		objectName, event := parts[0], parts[1]
-
-		successful, failed := c.createSingleSubscription(ctx, common.SubscriptionEventType(event), common.ObjectName(objectName), req) //nolint:lll
-		if successful != nil {
-			newsuccessfulSubscriptions = append(newsuccessfulSubscriptions, *successful)
-		} else {
-			newfailedSubscriptions = append(newfailedSubscriptions, *failed)
-		}
-	}
-
-	var updatedSuccessfulSubscriptions []SuccessfulSubscription
-
-	// Retain existing successful subscriptions that were not removed
-	// and add newly created successful subscriptions
-	for _, sub := range subscriptionData.SuccessfulSubscriptions {
-		key := fmt.Sprintf("%s:%s", sub.ObjectName, sub.EventName)
-		if _, exist := desiredSubs[key]; exist {
-			updatedSuccessfulSubscriptions = append(updatedSuccessfulSubscriptions, sub)
-		}
-	}
-
-	updatedSuccessfulSubscriptions = append(updatedSuccessfulSubscriptions, newsuccessfulSubscriptions...)
-
-	var updatedFailedSubscriptions []FailedSubscription
-	updatedFailedSubscriptions = append(updatedFailedSubscriptions, subscriptionData.FailedSubscriptions...)
-	updatedFailedSubscriptions = append(updatedFailedSubscriptions, newfailedSubscriptions...)
-
-	updatedResult := &common.SubscriptionResult{
-		Result: &SubscriptionResultData{
-			SuccessfulSubscriptions: updatedSuccessfulSubscriptions,
-			FailedSubscriptions:     updatedFailedSubscriptions,
-		},
-		ObjectEvents: params.SubscriptionEvents,
-	}
-
-	if len(updatedFailedSubscriptions) > 0 {
-		if len(updatedSuccessfulSubscriptions) > 0 {
-			// Partial success - some worked, some failed
-			updatedResult.Status = common.SubscriptionStatusSuccess
-
-			return updatedResult, nil
-		} else {
-			// Complete failure - nothing worked
-			updatedResult.Status = common.SubscriptionStatusFailed
-
-			return updatedResult, nil
-		}
-	}
-
-	// Complete success - everything worked
-	updatedResult.Status = common.SubscriptionStatusSuccess
-
-	return updatedResult, nil
-}
-
 // createSingleSubscription attempts to create a single subscription and returns either a successful or failed result.
 func (c *Connector) createSingleSubscription(
 	ctx context.Context,
 	event common.SubscriptionEventType,
 	obj common.ObjectName,
 	req *SubscriptionRequest,
-) (*SuccessfulSubscription, *FailedSubscription) {
+) (*SuccessfulSubscription, error) {
 	payload, err := buildPayload(event, obj, req.WebhookEndPoint, req.Secret)
 	if err != nil {
-		return nil, &FailedSubscription{
-			ObjectName: string(obj),
-			EventName:  string(event),
-			Error:      fmt.Sprintf("failed to create subscription for object %s, event %s: %v", obj, event, err),
-		}
+		return nil, fmt.Errorf("failed to create subscription for object %s, event %s: %v", obj, event, err)
 	}
 
 	result, err := c.createSubscriptions(ctx, payload, c.Client.Post)
 	if err != nil {
-		return nil, &FailedSubscription{
-			ObjectName: string(obj),
-			EventName:  string(event),
-			Error:      fmt.Sprintf("failed to create subscription for object %s, event %s: %v", obj, event, err),
-		}
+		return nil, fmt.Errorf("failed to create subscription for object %s, event %s: %v", obj, event, err)
 	}
 
 	return &SuccessfulSubscription{
@@ -310,30 +204,34 @@ func (c *Connector) deleteSubscription(ctx context.Context, subscriptionID strin
 	return nil
 }
 
-// buildSubscriptionMaps creates maps of current and desired subscriptions.
-func buildSubscriptionMaps(
-	successfulSubs []SuccessfulSubscription,
-	subscriptionEvents map[common.ObjectName]common.ObjectEvents,
-) (map[string]string, map[string]bool) {
-	// currentSubs maps "objectName:eventName" to subscription ID
-	currentSubs := make(map[string]string)
+func (c *Connector) rollbackSubscriptions(
+	ctx context.Context,
+	subscriptions []SuccessfulSubscription,
+) error {
+	var rollbackErrors error
+	var mutex sync.Mutex
 
-	for _, sub := range successfulSubs {
-		key := fmt.Sprintf("%s:%s", sub.ObjectName, sub.EventName)
-		currentSubs[key] = sub.ID
+	callbacks := make([]simultaneously.Job, 0, len(subscriptions))
+	for _, sub := range subscriptions {
+		sub := sub
+		callbacks = append(callbacks, func(ctx context.Context) error {
+			err := c.deleteSubscription(ctx, sub.ID)
+			if err != nil {
+				mutex.Lock()
+				defer mutex.Unlock()
+				rollbackErrors = errors.Join(rollbackErrors, fmt.Errorf("failed to rollback subscription %s (%s:%s): %w",
+					sub.ID, sub.ObjectName, sub.EventName, err))
+			}
+			return nil
+		})
 	}
 
-	// desiredSubs maps "objectName:eventName" to true
-	desiredSubs := make(map[string]bool)
-
-	for obj, events := range subscriptionEvents {
-		for _, evt := range events.Events {
-			key := fmt.Sprintf("%s:%s", string(obj), string(evt))
-			desiredSubs[key] = true
-		}
+	err := simultaneously.DoCtx(ctx, -1, callbacks...)
+	if err != nil {
+		rollbackErrors = errors.Join(rollbackErrors, fmt.Errorf("failed to rollback subscriptions: %w", err))
 	}
 
-	return currentSubs, desiredSubs
+	return rollbackErrors
 }
 
 func getProviderEventName(subscriptionEvent common.SubscriptionEventType) (ModuleEvent, error) {

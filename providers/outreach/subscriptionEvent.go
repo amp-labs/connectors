@@ -82,11 +82,6 @@ func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
 	updatedFields := make([]string, 0, len(attributes))
 
 	for field := range attributes {
-		// updatedAt is always included in the attributes, but we don't consider it an updated field
-		if field == "updatedAt" {
-			continue
-		}
-
 		updatedFields = append(updatedFields, field)
 	}
 
