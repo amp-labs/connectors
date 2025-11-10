@@ -38,36 +38,36 @@ func MainFn() int {
 }
 
 func testAdAccounts(ctx context.Context) error {
-	conn := linkedin.GetConnector(ctx)
+	conn := linkedin.GetAdsConnector(ctx)
 
-	slog.Info("Creating the Ad Account")
+	// slog.Info("Creating the Ad Account")
 
-	writeParams := common.WriteParams{
-		ObjectName: "adAccounts",
-		RecordData: map[string]any{
-			"currency":                       "USD",
-			"name":                           "Demo Account",
-			"notifiedOnCampaignOptimization": true,
-			"notifiedOnCreativeApproval":     true,
-			"notifiedOnCreativeRejection":    true,
-			"notifiedOnEndOfCampaign":        true,
-			"reference":                      "urn:li:organization:2414183",
-			"type":                           "BUSINESS",
-			"test":                           true,
-		},
-		RecordId: "",
-	}
+	// writeParams := common.WriteParams{
+	// 	ObjectName: "adAccounts",
+	// 	RecordData: map[string]any{
+	// 		"currency":                       "USD",
+	// 		"name":                           "Demo Account",
+	// 		"notifiedOnCampaignOptimization": true,
+	// 		"notifiedOnCreativeApproval":     true,
+	// 		"notifiedOnCreativeRejection":    true,
+	// 		"notifiedOnEndOfCampaign":        true,
+	// 		"reference":                      "urn:li:organization:2414183",
+	// 		"type":                           "BUSINESS",
+	// 		"test":                           true,
+	// 	},
+	// 	RecordId: "",
+	// }
 
-	writeRes, err := Write(ctx, conn, writeParams)
-	if err != nil {
-		fmt.Println("ERR: ", err)
+	// writeRes, err := Write(ctx, conn, writeParams)
+	// if err != nil {
+	// 	fmt.Println("ERR: ", err)
 
-		return err
-	}
+	// 	return err
+	// }
 
-	if err := constructResponse(writeRes); err != nil {
-		return err
-	}
+	// if err := constructResponse(writeRes); err != nil {
+	// 	return err
+	// }
 
 	slog.Info("updating the Ad Account")
 
@@ -80,7 +80,7 @@ func testAdAccounts(ctx context.Context) error {
 				},
 			},
 		},
-		RecordId: writeRes.RecordId,
+		RecordId: "517370155",
 	}
 
 	updateRes, err := Write(ctx, conn, updateParams)
@@ -98,51 +98,51 @@ func testAdAccounts(ctx context.Context) error {
 }
 
 func TestAdTargetTemplates(ctx context.Context) error {
-	conn := linkedin.GetConnector(ctx)
+	conn := linkedin.GetAdsConnector(ctx)
 
-	slog.Info("Creating the Ad target templates")
+	// slog.Info("Creating the Ad target templates")
 
-	writeParams := common.WriteParams{
-		ObjectName: "adTargetTemplates",
-		RecordData: map[string]any{
-			"name":        "AI Audience Template",
-			"description": "Tech Audience interested in Artificial Intelligence in North America",
-			"account":     "urn:li:sponsoredAccount:514674276",
-			"targetingCriteria": map[string]any{
-				"include": map[string]any{
-					"and": []map[string]any{
-						{
-							"or": map[string]any{
-								"urn:li:adTargetingFacet:interests": []string{
-									"urn:li:interest:308",
-								},
-							},
-						},
-					},
-				},
-				"exclude": map[string]any{
-					"or": map[string]any{
-						"urn:li:adTargetingFacet:seniorities": []string{
-							"urn:li:seniority:1",
-							"urn:li:seniority:2",
-						},
-					},
-				},
-			},
-		},
-		RecordId: "",
-	}
+	// writeParams := common.WriteParams{
+	// 	ObjectName: "adTargetTemplates",
+	// 	RecordData: map[string]any{
+	// 		"name":        "AI Audience Template",
+	// 		"description": "Tech Audience interested in Artificial Intelligence in North America",
+	// 		"account":     "urn:li:sponsoredAccount:514674276",
+	// 		"targetingCriteria": map[string]any{
+	// 			"include": map[string]any{
+	// 				"and": []map[string]any{
+	// 					{
+	// 						"or": map[string]any{
+	// 							"urn:li:adTargetingFacet:interests": []string{
+	// 								"urn:li:interest:308",
+	// 							},
+	// 						},
+	// 					},
+	// 				},
+	// 			},
+	// 			"exclude": map[string]any{
+	// 				"or": map[string]any{
+	// 					"urn:li:adTargetingFacet:seniorities": []string{
+	// 						"urn:li:seniority:1",
+	// 						"urn:li:seniority:2",
+	// 					},
+	// 				},
+	// 			},
+	// 		},
+	// 	},
+	// 	RecordId: "",
+	// }
 
-	writeRes, err := Write(ctx, conn, writeParams)
-	if err != nil {
-		fmt.Println("ERR: ", err)
+	// writeRes, err := Write(ctx, conn, writeParams)
+	// if err != nil {
+	// 	fmt.Println("ERR: ", err)
 
-		return err
-	}
+	// 	return err
+	// }
 
-	if err := constructResponse(writeRes); err != nil {
-		return err
-	}
+	// if err := constructResponse(writeRes); err != nil {
+	// 	return err
+	// }
 
 	slog.Info("Updating the Ad target templates")
 
@@ -155,7 +155,7 @@ func TestAdTargetTemplates(ctx context.Context) error {
 				},
 			},
 		},
-		RecordId: writeParams.RecordId,
+		RecordId: "42633049",
 	}
 
 	updateRes, err := Write(ctx, conn, updateParams)
@@ -173,7 +173,7 @@ func TestAdTargetTemplates(ctx context.Context) error {
 }
 
 func testConversationAds(ctx context.Context) error {
-	conn := linkedin.GetConnector(ctx)
+	conn := linkedin.GetAdsConnector(ctx)
 
 	slog.Info("Creating conversation Ads")
 

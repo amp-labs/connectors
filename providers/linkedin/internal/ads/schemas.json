@@ -1,6 +1,6 @@
 {
     "modules": {
-        "root": {
+        "ads": {
             "id": "root",
             "path": "rest",
             "objects": {

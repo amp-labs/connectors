@@ -20,7 +20,7 @@ func main() {
 func MainFn() int {
 	ctx := context.Background()
 
-	conn := linkedin.GetConnector(ctx)
+	conn := linkedin.GetAdsConnector(ctx)
 
 	err := testRead(context.Background(), conn, "adTargetingFacets", []string{"facetName", "entityTypes"}, time.Time{}, time.Time{})
 	if err != nil {

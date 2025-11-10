@@ -1,4 +1,4 @@
-package linkedin
+package shared
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
-var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
+var ErrorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	[]interpreter.FormatTemplate{
 		{
 			MustKeys: nil,

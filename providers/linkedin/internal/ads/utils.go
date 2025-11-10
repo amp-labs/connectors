@@ -1,4 +1,4 @@
-package linkedin
+package ads
 
 import (
 	"fmt"
@@ -7,16 +7,11 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers/linkedin/internal/shared"
 	"github.com/spyzhov/ajson"
 )
 
-const (
-	pageSize  = 100
-	countSize = 100
-)
-
-var ObjectsWithSearchQueryParam = datautils.NewSet( //nolint:gochecknoglobals
+var objectsWithSearchQueryParam = datautils.NewSet( //nolint:gochecknoglobals
 	"adAccounts",
 	"adCampaignGroups",
 	"adCampaigns",
@@ -24,7 +19,7 @@ var ObjectsWithSearchQueryParam = datautils.NewSet( //nolint:gochecknoglobals
 	"adAnalytics",
 )
 
-var ObjectWithAccountId = datautils.NewSet( //nolint:gochecknoglobals
+var objectWithAccountId = datautils.NewSet( //nolint:gochecknoglobals
 	"adCampaignGroups",
 	"adCampaigns",
 )
@@ -47,81 +42,25 @@ var normalPaginationObject = datautils.NewSet( //nolint:gochecknoglobals
 func makeNextRecord(objName string) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		if cursorPaginationObject.Has(objName) {
-			return handleCursorPagination(node)
+			return shared.HandleCursorPagination(node)
 		}
 
 		if normalPaginationObject.Has(objName) {
-			return handleNormalPagination(node)
+			return shared.HandleNormalPagination(node)
 		}
 
 		return "", nil
 	}
 }
 
-func handleCursorPagination(node *ajson.Node) (string, error) {
-	pagination, err := jsonquery.New(node).ObjectOptional("metadata")
-	if err != nil {
-		return "", err
-	}
-
-	if pagination != nil {
-		nextPage, err := jsonquery.New(pagination).StrWithDefault("nextPageToken", "")
-		if err != nil {
-			return "", err
-		}
-
-		if nextPage != "" {
-			return nextPage, nil
-		}
-	}
-
-	return "", nil
-}
-
-func handleNormalPagination(node *ajson.Node) (string, error) {
-	paging, err := jsonquery.New(node).ObjectOptional("paging")
-	if err != nil {
-		return "", err
-	}
-
-	if paging != nil {
-		nextPage, err := jsonquery.New(paging).IntegerWithDefault("count", 0)
-		if err != nil {
-			return "", err
-		}
-
-		if nextPage != 0 {
-			start, err := jsonquery.New(paging).IntegerWithDefault("start", 0)
-			if err != nil {
-				return "", err
-			}
-
-			return strconv.Itoa(int(start) + int(nextPage)), nil
-		}
-	}
-
-	return "", nil
-}
-
 //nolint:cyclop,funlen
-func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
-	var (
-		url *urlbuilder.URL
-		err error
-	)
-
-	switch {
-	case ObjectWithAccountId.Has(params.ObjectName):
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", "adAccounts", c.AdAccountId, params.ObjectName)
-	default:
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", params.ObjectName)
-	}
-
+func (c *Adapter) buildReadURL(params common.ReadParams) (string, error) {
+	url, err := c.constructURL(params.ObjectName)
 	if err != nil {
 		return "", err
 	}
 
-	if ObjectsWithSearchQueryParam.Has(params.ObjectName) {
+	if objectsWithSearchQueryParam.Has(params.ObjectName) {
 		switch params.ObjectName {
 		case "dmpSegments":
 			// nolint:lll
@@ -130,7 +69,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
 
 			url.WithQueryParam("start", "0")
 
-			url.WithQueryParam("count", strconv.Itoa(countSize))
+			url.WithQueryParam("count", strconv.Itoa(shared.CountSize))
 
 			accountsValue := fmt.Sprintf("urn%%3Ali%%3AsponsoredAccount%%3A%s", c.AdAccountId) //nolint:perfsprint
 
@@ -170,7 +109,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
 		default:
 			url.WithQueryParam("q", "search")
 
-			url.WithQueryParam("pageSize", strconv.Itoa(pageSize))
+			url.WithQueryParam("pageSize", strconv.Itoa(shared.PageSize))
 		}
 	}
 
@@ -183,4 +122,24 @@ func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
 	}
 
 	return url.String(), nil
+}
+
+func (c *Adapter) constructURL(objName string) (*urlbuilder.URL, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	switch {
+	case objectWithAccountId.Has(objName):
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", "adAccounts", c.AdAccountId, objName)
+	default:
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", objName)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return url, nil
 }

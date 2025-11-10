@@ -33,13 +33,13 @@ func MainFn() int {
 }
 
 func testAdAccounts(ctx context.Context) error {
-	conn := linkedin.GetConnector(ctx)
+	conn := linkedin.GetAdsConnector(ctx)
 
 	slog.Info("Deleting the adAccounts")
 
 	deleteParams := common.DeleteParams{
 		ObjectName: "adAccounts",
-		RecordId:   "514674276",
+		RecordId:   "517370155",
 	}
 
 	res, err := Delete(ctx, conn, deleteParams)
@@ -57,7 +57,7 @@ func testAdAccounts(ctx context.Context) error {
 }
 
 func TestAdCampaignsGroup(ctx context.Context) error {
-	conn := linkedin.GetConnector(ctx)
+	conn := linkedin.GetAdsConnector(ctx)
 
 	slog.Info("Deleting the adCampaignGroups")
 
