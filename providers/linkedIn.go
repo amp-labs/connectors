@@ -11,6 +11,7 @@ const (
 	ModuleAds common.ModuleID = "ads"
 )
 
+// nolint:funlen
 func init() {
 	// LinkedIn configuration
 	SetInfo(LinkedIn, ProviderInfo{
