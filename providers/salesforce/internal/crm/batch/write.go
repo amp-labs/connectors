@@ -261,7 +261,7 @@ type Payload struct {
 	// AllOrNone is accepted by Update endpoint for output with partial success.
 	// nolint:lll
 	// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_update.htm
-	AllOrNone *bool `json:"allOrNone"`
+	AllOrNone *bool `json:"allOrNone,omitempty"`
 }
 
 // PayloadItem represents a single item in the composite API payload.
