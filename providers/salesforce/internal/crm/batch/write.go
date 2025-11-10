@@ -165,7 +165,8 @@ func (a *Adapter) parseUpdateResponse(
 // length is shorter than expected.
 //
 // From the Salesforce docs:
-// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_update.htm
+// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/
+// resources_composite_sobjects_collections_update.htm
 //
 //	"Objects are updated in the order they're listed.
 //	 The SaveResult objects are returned in the same order."
