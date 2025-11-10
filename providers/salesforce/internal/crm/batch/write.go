@@ -169,22 +169,22 @@ func (a *Adapter) handleEmptyResponse(rsp *common.JSONHTTPResponse) (*common.Bat
 // This function creates a BatchWriteResult with all records marked as failed.
 // Returns nil if the response is not an error array.
 func (a *Adapter) handleErrorResponse(rsp *common.JSONHTTPResponse, records []PayloadItem) *common.BatchWriteResult {
-	// Try to unmarshal as error array
-	var sfErrors []SalesforceError
-	if err := rsp.UnmarshalBody(&sfErrors); err != nil {
+	// Try to unmarshal as error array using the common.UnmarshalJSON function
+	sfErrors, err := common.UnmarshalJSON[[]SalesforceError](rsp)
+	if err != nil || sfErrors == nil {
 		// Not an error array, let the caller handle it
 		return nil
 	}
 
-	if len(sfErrors) == 0 {
+	if len(*sfErrors) == 0 {
 		return nil
 	}
 
 	// Create failed WriteResult for each record
 	results := make([]common.WriteResult, len(records))
 	for i := range records {
-		errors := make([]any, len(sfErrors))
-		for j, sfErr := range sfErrors {
+		errors := make([]any, len(*sfErrors))
+		for j, sfErr := range *sfErrors {
 			errors[j] = ItemError{
 				StatusCode: sfErr.ErrorCode,
 				Message:    sfErr.Message,
