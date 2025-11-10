@@ -2,6 +2,7 @@ package batch
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -11,6 +12,8 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 )
+
+var ErrBatchWriteFailed = errors.New("batch write failed")
 
 // nolint:lll
 // BatchWrite executes a Salesforce composite create or update request.
@@ -62,8 +65,9 @@ func (a *Adapter) batchWriteCreate(
 		// Check if this is an error response (e.g., allOrNone failure)
 		if errorResult := a.handleErrorResponse(rsp, payload.Records); errorResult != nil {
 			// Return both result and error so server returns 422
-			return errorResult, fmt.Errorf("batch write failed: %d records failed", errorResult.FailureCount)
+			return errorResult, fmt.Errorf("%w: %d records failed", ErrBatchWriteFailed, errorResult.FailureCount)
 		}
+
 		return nil, err
 	}
 
@@ -94,7 +98,7 @@ func (a *Adapter) batchWriteCreate(
 	// For creates, allOrNone is always true by default (cannot be changed).
 	// If there are failures, return 422
 	if result.FailureCount > 0 {
-		return result, fmt.Errorf("batch write failed: %d records failed", result.FailureCount)
+		return result, fmt.Errorf("%w: %d records failed", ErrBatchWriteFailed, result.FailureCount)
 	}
 
 	return result, nil
@@ -114,8 +118,9 @@ func (a *Adapter) batchWriteUpdate(
 		// Check if this is an error response (e.g., allOrNone failure)
 		if errorResult := a.handleErrorResponse(rsp, payload.Records); errorResult != nil {
 			// Return both result and error so server returns 422
-			return errorResult, fmt.Errorf("batch write failed: %d records failed", errorResult.FailureCount)
+			return errorResult, fmt.Errorf("%w: %d records failed", ErrBatchWriteFailed, errorResult.FailureCount)
 		}
+
 		return nil, err
 	}
 
@@ -161,7 +166,7 @@ func (a *Adapter) batchWriteUpdate(
 	// For updates, AllOrNone is set to true in the payload.
 	// If there are failures, return 422
 	if payload.AllOrNone != nil && *payload.AllOrNone && result.FailureCount > 0 {
-		return result, fmt.Errorf("batch write failed: %d records failed", result.FailureCount)
+		return result, fmt.Errorf("%w: %d records failed", ErrBatchWriteFailed, result.FailureCount)
 	}
 
 	return result, nil
@@ -204,6 +209,7 @@ func (a *Adapter) handleErrorResponse(rsp *common.JSONHTTPResponse, records []Pa
 
 	// Create failed WriteResult for each record
 	results := make([]common.WriteResult, len(records))
+
 	for i := range records {
 		errors := make([]any, len(*sfErrors))
 		for j, sfErr := range *sfErrors {
