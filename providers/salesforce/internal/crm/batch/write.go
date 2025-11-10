@@ -59,6 +59,11 @@ func (a *Adapter) batchWriteCreate(
 	// Parse and process response.
 	response, err := common.UnmarshalJSON[ResponseCreate](rsp)
 	if err != nil {
+		// Check if this is an error response (e.g., allOrNone failure)
+		if errorResult := a.handleErrorResponse(rsp, payload.Records); errorResult != nil {
+			// Return both result and error so server returns 422
+			return errorResult, fmt.Errorf("batch write failed: %d records failed", errorResult.FailureCount)
+		}
 		return nil, err
 	}
 
@@ -95,6 +100,11 @@ func (a *Adapter) batchWriteUpdate(
 	// Parse and process response.
 	response, err := common.UnmarshalJSON[ResponseUpdate](rsp)
 	if err != nil {
+		// Check if this is an error response (e.g., allOrNone failure)
+		if errorResult := a.handleErrorResponse(rsp, payload.Records); errorResult != nil {
+			// Return both result and error so server returns 422
+			return errorResult, fmt.Errorf("batch write failed: %d records failed", errorResult.FailureCount)
+		}
 		return nil, err
 	}
 
@@ -152,6 +162,51 @@ func (a *Adapter) handleEmptyResponse(rsp *common.JSONHTTPResponse) (*common.Bat
 		Errors:  errors,
 		Results: nil,
 	}, nil
+}
+
+// handleErrorResponse attempts to parse the response as a Salesforce error array.
+// When allOrNone=true fails, Salesforce returns 400 with an error array instead of normal response.
+// This function creates a BatchWriteResult with all records marked as failed.
+// Returns nil if the response is not an error array.
+func (a *Adapter) handleErrorResponse(rsp *common.JSONHTTPResponse, records []PayloadItem) *common.BatchWriteResult {
+	// Try to unmarshal as error array
+	var sfErrors []SalesforceError
+	if err := rsp.UnmarshalBody(&sfErrors); err != nil {
+		// Not an error array, let the caller handle it
+		return nil
+	}
+
+	if len(sfErrors) == 0 {
+		return nil
+	}
+
+	// Create failed WriteResult for each record
+	results := make([]common.WriteResult, len(records))
+	for i := range records {
+		errors := make([]any, len(sfErrors))
+		for j, sfErr := range sfErrors {
+			errors[j] = ItemError{
+				StatusCode: sfErr.ErrorCode,
+				Message:    sfErr.Message,
+				Fields:     []any{},
+			}
+		}
+
+		results[i] = common.WriteResult{
+			Success:  false,
+			RecordId: "",
+			Errors:   errors,
+			Data:     nil,
+		}
+	}
+
+	return &common.BatchWriteResult{
+		Status:       common.BatchStatusFailure,
+		Errors:       nil,
+		Results:      results,
+		SuccessCount: 0,
+		FailureCount: len(records),
+	}
 }
 
 func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilder.URL, error) {
@@ -250,6 +305,13 @@ type ItemError struct {
 	StatusCode string `json:"statusCode"`
 	Message    string `json:"message"`
 	Fields     []any  `json:"fields"`
+}
+
+// SalesforceError represents the error format returned by Salesforce API.
+// This is used when Salesforce returns an error array instead of normal response.
+type SalesforceError struct {
+	Message   string `json:"message"`
+	ErrorCode string `json:"errorCode"`
 }
 
 func (r ResponseCreate) GetItemsMap() map[string]*CreateItem {
