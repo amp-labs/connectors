@@ -91,8 +91,9 @@ func (a *Adapter) batchWriteCreate(
 		return nil, err
 	}
 
-	// If AllOrNone is true and there are failures, return 422
-	if payload.AllOrNone != nil && *payload.AllOrNone && result.FailureCount > 0 {
+	// For creates, allOrNone is always true by default (cannot be changed).
+	// If there are failures, return 422
+	if result.FailureCount > 0 {
 		return result, fmt.Errorf("batch write failed: %d records failed", result.FailureCount)
 	}
 
@@ -157,8 +158,8 @@ func (a *Adapter) batchWriteUpdate(
 		return nil, err
 	}
 
-	// If AllOrNone is true and there are failures, return 422
-	// For updates, AllOrNone is always true by default
+	// For updates, AllOrNone is set to true in the payload.
+	// If there are failures, return 422
 	if payload.AllOrNone != nil && *payload.AllOrNone && result.FailureCount > 0 {
 		return result, fmt.Errorf("batch write failed: %d records failed", result.FailureCount)
 	}
