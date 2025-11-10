@@ -38,6 +38,6 @@ Note:
 Note: 
 - In this connector, lot of endpoints having same name but differ in the body parameter which are Events, posts, creatives. Go through the Advertising & Targeting section in the link https://learn.microsoft.com/ru-ru/linkedin/marketing/overview?view=li-lms-2025-04.
 - using openAPI to getting metadata for adAnalytics object and refer the link https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads-reporting/ads-reporting?view=li-lms-2025-09&tabs=http#metrics-available to know the list of fields.
-- We separate the linked connector into two modules:
+- We separate the linkedIn connector into two modules:
   - Platform (regular LinkedIn consumer API)
   - Ads API

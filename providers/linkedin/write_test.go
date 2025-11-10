@@ -155,7 +155,7 @@ func constructTestAdsConnector(serverURL string) (*Connector, error) {
 	return constructTestConnector(serverURL, providers.ModuleAds, map[string]string{"adAccountId": "514674276"})
 }
 
-func constructTestConnector(serverURL string, moduleID common.ModuleID, metadata map[string]string) (*Connector, error) {
+func constructTestConnector(serverURL string, moduleID common.ModuleID, metadata map[string]string) (*Connector, error) { //nolint:lll
 	connector, err := NewConnector(common.ConnectorParams{
 		Module:              moduleID,
 		AuthenticatedClient: http.DefaultClient,

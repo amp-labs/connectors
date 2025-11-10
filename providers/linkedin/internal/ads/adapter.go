@@ -40,6 +40,7 @@ type Adapter struct {
 	AdAccountId string
 }
 
+// nolint:funlen
 func NewAdapter(params common.ConnectorParams) (*Adapter, error) {
 	conn, err := components.Initialize(providers.LinkedIn, params, constructor)
 	if err != nil {
