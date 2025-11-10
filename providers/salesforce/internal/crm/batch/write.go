@@ -166,68 +166,6 @@ func (a *Adapter) batchWriteUpdate(
 	return a.checkAllOrNoneFailure(payload, result)
 }
 
-// handleUpdateErrorResponse handles error responses for update operations.
-func (a *Adapter) handleUpdateErrorResponse(
-	rsp *common.JSONHTTPResponse, records []PayloadItem, err error,
-) (*common.BatchWriteResult, error) {
-	// Check if this is an error response (e.g., allOrNone failure)
-	if errorResult := a.handleErrorResponse(rsp, records); errorResult != nil {
-		// Return both result and error so server returns 422
-		return errorResult, fmt.Errorf("%w: %d records failed", ErrBatchWriteFailed, errorResult.FailureCount)
-	}
-
-	return nil, err
-}
-
-// parseUpdateResponse parses the update response and converts it to BatchWriteResult.
-func (a *Adapter) parseUpdateResponse(
-	records []PayloadItem, response *ResponseUpdate,
-) (*common.BatchWriteResult, error) {
-	// nolint:lll
-	return common.ParseBatchWrite(
-		records,
-		a.createUpdateResponseMatcher(response),
-		a.createUpdateResponseTransformer(),
-	)
-}
-
-// createUpdateResponseMatcher creates a matcher function for update responses.
-// In Salesforce composite update responses, each item corresponds positionally
-// to the submitted payload item. Even when a record fails, its response entry
-// is still present but may have an empty "id" field.
-//
-// The index is used to correlate payloads and responses. However, we still
-// guard against out-of-range access to ensure robustness if the response
-// length is shorter than expected.
-//
-// From the Salesforce docs:
-// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/
-// resources_composite_sobjects_collections_update.htm
-//
-//	"Objects are updated in the order they're listed.
-//	 The SaveResult objects are returned in the same order."
-func (a *Adapter) createUpdateResponseMatcher(response *ResponseUpdate) func(int, PayloadItem) *UpdateItem {
-	return func(index int, payloadItem PayloadItem) *UpdateItem {
-		list := *response
-		if index < 0 || index >= len(list) {
-			return nil
-		}
-
-		return &list[index]
-	}
-}
-
-// createUpdateResponseTransformer creates a transformer function for update responses.
-func (a *Adapter) createUpdateResponseTransformer() func(PayloadItem, *UpdateItem) (*common.WriteResult, error) {
-	return func(payloadItem PayloadItem, respItem *UpdateItem) (*common.WriteResult, error) {
-		if respItem == nil {
-			return createUnprocessableItem(payloadItem), nil
-		}
-
-		return respItem.ToWriteResult()
-	}
-}
-
 // checkAllOrNoneFailure checks if allOrNone is enabled and there are failures,
 // returning an error to trigger 422 status code.
 func (a *Adapter) checkAllOrNoneFailure(
