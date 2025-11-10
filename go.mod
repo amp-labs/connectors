@@ -17,7 +17,6 @@ require (
 	github.com/go-test/deep v1.1.1
 	github.com/gobwas/glob v0.2.3
 	github.com/golang-jwt/jwt/v5 v5.3.0
-	github.com/golangci/plugin-module-register v0.1.2
 	github.com/google/uuid v1.6.0
 	github.com/iancoleman/strcase v0.3.0
 	github.com/invopop/yaml v0.3.1
@@ -29,7 +28,6 @@ require (
 	golang.org/x/net v0.46.0
 	golang.org/x/oauth2 v0.32.0
 	golang.org/x/text v0.30.0
-	golang.org/x/tools v0.37.0
 )
 
 require (
@@ -66,8 +64,6 @@ require (
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/woodsbury/decimal128 v1.3.0 // indirect
-	golang.org/x/mod v0.28.0 // indirect
-	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/sys v0.37.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )
