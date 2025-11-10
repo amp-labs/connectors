@@ -2,6 +2,7 @@ package batch
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -11,6 +12,8 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 )
+
+var ErrBatchWriteFailed = errors.New("batch write failed")
 
 // nolint:lll
 // BatchWrite executes a Salesforce composite create or update request.
@@ -59,6 +62,12 @@ func (a *Adapter) batchWriteCreate(
 	// Parse and process response.
 	response, err := common.UnmarshalJSON[ResponseCreate](rsp)
 	if err != nil {
+		// Check if this is an error response (e.g., allOrNone failure)
+		if errorResult := a.handleErrorResponse(rsp, payload.Records); errorResult != nil {
+			// Return both result and error so server returns 422
+			return errorResult, fmt.Errorf("%w: %d records failed", ErrBatchWriteFailed, errorResult.FailureCount)
+		}
+
 		return nil, err
 	}
 
@@ -69,7 +78,7 @@ func (a *Adapter) batchWriteCreate(
 	// Map indexed by unique reference ids. Created once for the lookup.
 	items := response.GetItemsMap()
 
-	return common.ParseBatchWrite[PayloadItem, CreateItem](
+	result, err := common.ParseBatchWrite[PayloadItem, CreateItem](
 		payload.Records,
 		func(index int, payloadItem PayloadItem) *CreateItem {
 			return items[payloadItem.Extension.Attributes.ReferenceID]
@@ -82,6 +91,17 @@ func (a *Adapter) batchWriteCreate(
 			return respItem.ToWriteResult()
 		},
 	)
+	if err != nil {
+		return nil, err
+	}
+
+	// For creates, allOrNone is always true by default (cannot be changed).
+	// If there are failures, return 422
+	if result.FailureCount > 0 {
+		return result, fmt.Errorf("%w: %d records failed", ErrBatchWriteFailed, result.FailureCount)
+	}
+
+	return result, nil
 }
 
 func (a *Adapter) batchWriteUpdate(
@@ -95,6 +115,12 @@ func (a *Adapter) batchWriteUpdate(
 	// Parse and process response.
 	response, err := common.UnmarshalJSON[ResponseUpdate](rsp)
 	if err != nil {
+		// Check if this is an error response (e.g., allOrNone failure)
+		if errorResult := a.handleErrorResponse(rsp, payload.Records); errorResult != nil {
+			// Return both result and error so server returns 422
+			return errorResult, fmt.Errorf("%w: %d records failed", ErrBatchWriteFailed, errorResult.FailureCount)
+		}
+
 		return nil, err
 	}
 
@@ -103,7 +129,7 @@ func (a *Adapter) batchWriteUpdate(
 	}
 
 	// nolint:lll
-	return common.ParseBatchWrite(
+	result, err := common.ParseBatchWrite(
 		payload.Records,
 		func(index int, payloadItem PayloadItem) *UpdateItem {
 			// In Salesforce composite update responses, each item corresponds
@@ -116,8 +142,8 @@ func (a *Adapter) batchWriteUpdate(
 			//
 			// From the Salesforce docs:
 			// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_update.htm
-			//   “Objects are updated in the order they’re listed.
-			//    The SaveResult objects are returned in the same order.”
+			//   "Objects are updated in the order they're listed.
+			//    The SaveResult objects are returned in the same order."
 			list := *response
 			if index < 0 || index >= len(list) {
 				return nil
@@ -133,6 +159,87 @@ func (a *Adapter) batchWriteUpdate(
 			return respItem.ToWriteResult()
 		},
 	)
+	if err != nil {
+		return nil, err
+	}
+
+	return a.checkAllOrNoneFailure(payload, result)
+}
+
+// handleUpdateErrorResponse handles error responses for update operations.
+func (a *Adapter) handleUpdateErrorResponse(
+	rsp *common.JSONHTTPResponse, records []PayloadItem, err error,
+) (*common.BatchWriteResult, error) {
+	// Check if this is an error response (e.g., allOrNone failure)
+	if errorResult := a.handleErrorResponse(rsp, records); errorResult != nil {
+		// Return both result and error so server returns 422
+		return errorResult, fmt.Errorf("%w: %d records failed", ErrBatchWriteFailed, errorResult.FailureCount)
+	}
+
+	return nil, err
+}
+
+// parseUpdateResponse parses the update response and converts it to BatchWriteResult.
+func (a *Adapter) parseUpdateResponse(
+	records []PayloadItem, response *ResponseUpdate,
+) (*common.BatchWriteResult, error) {
+	// nolint:lll
+	return common.ParseBatchWrite(
+		records,
+		a.createUpdateResponseMatcher(response),
+		a.createUpdateResponseTransformer(),
+	)
+}
+
+// createUpdateResponseMatcher creates a matcher function for update responses.
+// In Salesforce composite update responses, each item corresponds positionally
+// to the submitted payload item. Even when a record fails, its response entry
+// is still present but may have an empty "id" field.
+//
+// The index is used to correlate payloads and responses. However, we still
+// guard against out-of-range access to ensure robustness if the response
+// length is shorter than expected.
+//
+// From the Salesforce docs:
+// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/
+// resources_composite_sobjects_collections_update.htm
+//
+//	"Objects are updated in the order they're listed.
+//	 The SaveResult objects are returned in the same order."
+func (a *Adapter) createUpdateResponseMatcher(response *ResponseUpdate) func(int, PayloadItem) *UpdateItem {
+	return func(index int, payloadItem PayloadItem) *UpdateItem {
+		list := *response
+		if index < 0 || index >= len(list) {
+			return nil
+		}
+
+		return &list[index]
+	}
+}
+
+// createUpdateResponseTransformer creates a transformer function for update responses.
+func (a *Adapter) createUpdateResponseTransformer() func(PayloadItem, *UpdateItem) (*common.WriteResult, error) {
+	return func(payloadItem PayloadItem, respItem *UpdateItem) (*common.WriteResult, error) {
+		if respItem == nil {
+			return createUnprocessableItem(payloadItem), nil
+		}
+
+		return respItem.ToWriteResult()
+	}
+}
+
+// checkAllOrNoneFailure checks if allOrNone is enabled and there are failures,
+// returning an error to trigger 422 status code.
+func (a *Adapter) checkAllOrNoneFailure(
+	payload *Payload, result *common.BatchWriteResult,
+) (*common.BatchWriteResult, error) {
+	// For updates, AllOrNone is set to true in the payload.
+	// If there are failures, return 422
+	if payload.AllOrNone != nil && *payload.AllOrNone && result.FailureCount > 0 {
+		return result, fmt.Errorf("%w: %d records failed", ErrBatchWriteFailed, result.FailureCount)
+	}
+
+	return result, nil
 }
 
 func (a *Adapter) handleEmptyResponse(rsp *common.JSONHTTPResponse) (*common.BatchWriteResult, error) {
@@ -152,6 +259,52 @@ func (a *Adapter) handleEmptyResponse(rsp *common.JSONHTTPResponse) (*common.Bat
 		Errors:  errors,
 		Results: nil,
 	}, nil
+}
+
+// handleErrorResponse attempts to parse the response as a Salesforce error array.
+// When allOrNone=true fails, Salesforce returns 400 with an error array instead of normal response.
+// This function creates a BatchWriteResult with all records marked as failed.
+// Returns nil if the response is not an error array.
+func (a *Adapter) handleErrorResponse(rsp *common.JSONHTTPResponse, records []PayloadItem) *common.BatchWriteResult {
+	// Try to unmarshal as error array using the common.UnmarshalJSON function
+	sfErrors, err := common.UnmarshalJSON[[]SalesforceError](rsp)
+	if err != nil || sfErrors == nil {
+		// Not an error array, let the caller handle it
+		return nil
+	}
+
+	if len(*sfErrors) == 0 {
+		return nil
+	}
+
+	// Create failed WriteResult for each record
+	results := make([]common.WriteResult, len(records))
+
+	for i := range records {
+		errors := make([]any, len(*sfErrors))
+		for j, sfErr := range *sfErrors {
+			errors[j] = ItemError{
+				StatusCode: sfErr.ErrorCode,
+				Message:    sfErr.Message,
+				Fields:     []any{},
+			}
+		}
+
+		results[i] = common.WriteResult{
+			Success:  false,
+			RecordId: "",
+			Errors:   errors,
+			Data:     nil,
+		}
+	}
+
+	return &common.BatchWriteResult{
+		Status:       common.BatchStatusFailure,
+		Errors:       nil,
+		Results:      results,
+		SuccessCount: 0,
+		FailureCount: len(records),
+	}
 }
 
 func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilder.URL, error) {
@@ -206,7 +359,7 @@ type Payload struct {
 	// AllOrNone is accepted by Update endpoint for output with partial success.
 	// nolint:lll
 	// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_update.htm
-	AllOrNone *bool `json:"allOrNone"`
+	AllOrNone *bool `json:"allOrNone,omitempty"`
 }
 
 // PayloadItem represents a single item in the composite API payload.
@@ -250,6 +403,13 @@ type ItemError struct {
 	StatusCode string `json:"statusCode"`
 	Message    string `json:"message"`
 	Fields     []any  `json:"fields"`
+}
+
+// SalesforceError represents the error format returned by Salesforce API.
+// This is used when Salesforce returns an error array instead of normal response.
+type SalesforceError struct {
+	Message   string `json:"message"`
+	ErrorCode string `json:"errorCode"`
 }
 
 func (r ResponseCreate) GetItemsMap() map[string]*CreateItem {
