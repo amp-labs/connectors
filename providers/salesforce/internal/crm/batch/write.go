@@ -115,18 +115,55 @@ func (a *Adapter) batchWriteUpdate(
 	// Parse and process response.
 	response, err := common.UnmarshalJSON[ResponseUpdate](rsp)
 	if err != nil {
-		return a.handleUpdateErrorResponse(rsp, payload.Records, err)
+		// Check if this is an error response (e.g., allOrNone failure)
+		if errorResult := a.handleErrorResponse(rsp, payload.Records); errorResult != nil {
+			// Return both result and error so server returns 422
+			return errorResult, fmt.Errorf("%w: %d records failed", ErrBatchWriteFailed, errorResult.FailureCount)
+		}
+
+		return nil, err
 	}
 
 	if response == nil {
 		return a.handleEmptyResponse(rsp)
 	}
 
-	result, err := a.parseUpdateResponse(payload.Records, response)
+	// nolint:lll
+	result, err := common.ParseBatchWrite(
+		payload.Records,
+		func(index int, payloadItem PayloadItem) *UpdateItem {
+			// In Salesforce composite update responses, each item corresponds
+			// positionally to the submitted payload item. Even when a record fails,
+			// its response entry is still present but may have an empty "id" field.
+			//
+			// The index is used to correlate payloads and responses. However, we still
+			// guard against out-of-range access to ensure robustness if the response
+			// length is shorter than expected.
+			//
+			// From the Salesforce docs:
+			// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_update.htm
+			//   "Objects are updated in the order they're listed.
+			//    The SaveResult objects are returned in the same order."
+			list := *response
+			if index < 0 || index >= len(list) {
+				return nil
+			}
+
+			return &list[index]
+		},
+		func(payloadItem PayloadItem, respItem *UpdateItem) (*common.WriteResult, error) {
+			if respItem == nil {
+				return createUnprocessableItem(payloadItem), nil
+			}
+
+			return respItem.ToWriteResult()
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
 
+<<<<<<< HEAD
 	return a.checkAllOrNoneFailure(payload, result)
 }
 
@@ -197,6 +234,8 @@ func (a *Adapter) createUpdateResponseTransformer() func(PayloadItem, *UpdateIte
 func (a *Adapter) checkAllOrNoneFailure(
 	payload *Payload, result *common.BatchWriteResult,
 ) (*common.BatchWriteResult, error) {
+=======
+>>>>>>> parent of 2348a6bd (fix linter erros)
 	// For updates, AllOrNone is set to true in the payload.
 	// If there are failures, return 422
 	if payload.AllOrNone != nil && *payload.AllOrNone && result.FailureCount > 0 {
