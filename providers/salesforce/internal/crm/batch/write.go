@@ -74,7 +74,7 @@ func (a *Adapter) batchWriteCreate(
 	// Map indexed by unique reference ids. Created once for the lookup.
 	items := response.GetItemsMap()
 
-	return common.ParseBatchWrite[PayloadItem, CreateItem](
+	result, err := common.ParseBatchWrite[PayloadItem, CreateItem](
 		payload.Records,
 		func(index int, payloadItem PayloadItem) *CreateItem {
 			return items[payloadItem.Extension.Attributes.ReferenceID]
@@ -87,6 +87,16 @@ func (a *Adapter) batchWriteCreate(
 			return respItem.ToWriteResult()
 		},
 	)
+	if err != nil {
+		return nil, err
+	}
+
+	// If AllOrNone is true and there are failures, return 422
+	if payload.AllOrNone != nil && *payload.AllOrNone && result.FailureCount > 0 {
+		return result, fmt.Errorf("batch write failed: %d records failed", result.FailureCount)
+	}
+
+	return result, nil
 }
 
 func (a *Adapter) batchWriteUpdate(
@@ -113,7 +123,7 @@ func (a *Adapter) batchWriteUpdate(
 	}
 
 	// nolint:lll
-	return common.ParseBatchWrite(
+	result, err := common.ParseBatchWrite(
 		payload.Records,
 		func(index int, payloadItem PayloadItem) *UpdateItem {
 			// In Salesforce composite update responses, each item corresponds
@@ -126,8 +136,8 @@ func (a *Adapter) batchWriteUpdate(
 			//
 			// From the Salesforce docs:
 			// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_update.htm
-			//   “Objects are updated in the order they’re listed.
-			//    The SaveResult objects are returned in the same order.”
+			//   "Objects are updated in the order they're listed.
+			//    The SaveResult objects are returned in the same order."
 			list := *response
 			if index < 0 || index >= len(list) {
 				return nil
@@ -143,6 +153,17 @@ func (a *Adapter) batchWriteUpdate(
 			return respItem.ToWriteResult()
 		},
 	)
+	if err != nil {
+		return nil, err
+	}
+
+	// If AllOrNone is true and there are failures, return 422
+	// For updates, AllOrNone is always true by default
+	if payload.AllOrNone != nil && *payload.AllOrNone && result.FailureCount > 0 {
+		return result, fmt.Errorf("batch write failed: %d records failed", result.FailureCount)
+	}
+
+	return result, nil
 }
 
 func (a *Adapter) handleEmptyResponse(rsp *common.JSONHTTPResponse) (*common.BatchWriteResult, error) {
