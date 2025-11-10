@@ -13,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
 
+// nolint:dupl
 func TestAdsWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
