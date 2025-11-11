@@ -55,6 +55,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					"company-config/user": {
 						DisplayName: "Company-config/user",
 						Fields: map[string]common.FieldMetadata{
+							// Top-level fields
 							"accountEmail": {
 								DisplayName:  "Accountemail",
 								ValueType:    "string",
@@ -81,6 +82,93 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 										Value:        "full",
 									},
 								},
+							},
+							// Flattened nested fields from refs.contact
+							"contact.id": {
+								DisplayName:  "Contact.id",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     false,
+								Values:       []common.FieldValue{},
+							},
+							"contact.key": {
+								DisplayName:  "Contact.key",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     false,
+								Values:       []common.FieldValue{},
+							},
+							"contact.firstName": {
+								DisplayName:  "Contact.firstname",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     false,
+								Values:       []common.FieldValue{},
+							},
+							"contact.lastName": {
+								DisplayName:  "Contact.lastname",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     false,
+								Values:       []common.FieldValue{},
+							},
+							"contact.email1": {
+								DisplayName:  "Contact.email1",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     false,
+								Values:       []common.FieldValue{},
+							},
+							// Flattened nested fields from refs.contact.groups.mailingAddress
+							"contact.mailingAddress.addressLine1": {
+								DisplayName:  "Contact.mailingaddress.addressline1",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     false,
+								Values:       []common.FieldValue{},
+							},
+							"contact.mailingAddress.city": {
+								DisplayName:  "Contact.mailingaddress.city",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     false,
+								Values:       []common.FieldValue{},
+							},
+							"contact.mailingAddress.state": {
+								DisplayName:  "Contact.mailingaddress.state",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     false,
+								Values:       []common.FieldValue{},
+							},
+							"contact.mailingAddress.country": {
+								DisplayName:  "Contact.mailingaddress.country",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     false,
+								Values:       []common.FieldValue{},
+							},
+							// Flattened nested fields from refs.entity
+							"entity.id": {
+								DisplayName:  "Entity.id",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     false,
+								Values:       []common.FieldValue{},
+							},
+							"entity.key": {
+								DisplayName:  "Entity.key",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     false,
+								Values:       []common.FieldValue{},
+							},
+							"entity.name": {
+								DisplayName:  "Entity.name",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     true,
+								Values:       []common.FieldValue{},
 							},
 						},
 						FieldsMap: nil,

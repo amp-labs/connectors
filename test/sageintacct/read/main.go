@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -27,7 +28,8 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "general-ledger/account",
-		Fields:     connectors.Fields("id", "name", "accountType"),
+		Fields:     connectors.Fields("id", "name", "audit.modifiedDateTime"),
+		Since:      time.Date(2025, 9, 14, 0, 0, 0, 0, time.UTC),
 	})
 	if err != nil {
 		utils.Fail("error reading accounts from Sage Intacct", "error", err)
@@ -49,7 +51,9 @@ func main() {
 
 	res, err = conn.Read(ctx, common.ReadParams{
 		ObjectName: "company-config/employee",
-		Fields:     connectors.Fields("id", "jobTitle", "name", "gender"),
+		Fields:     connectors.Fields("id", "jobTitle", "name", "gender", "audit.modifiedDateTime"),
+		Since:      time.Date(2020, 11, 15, 0, 0, 0, 0, time.UTC),
+		Until:      time.Date(2020, 11, 20, 0, 0, 0, 0, time.UTC),
 	})
 	if err != nil {
 		utils.Fail("error reading employees from Sage Intacct", "error", err)

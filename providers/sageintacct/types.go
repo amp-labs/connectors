@@ -33,6 +33,7 @@ type SageIntacctGroup struct {
 type SageIntacctRef struct {
 	APIObject string                         `json:"apiObject"`
 	Fields    map[string]SageIntacctFieldDef `json:"fields"`
+	Groups    map[string]SageIntacctGroup    `json:"groups,omitempty"`
 }
 
 type SageIntacctMeta struct {
