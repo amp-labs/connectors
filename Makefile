@@ -7,14 +7,33 @@
 # successful only if no such files exist.
 .PHONY: lint
 lint: custom-gcl
-	./custom-gcl run -c .golangci.yml && (gci list . | sed 's/^/BadFormat: /'; [ $$(gci list . | wc -c) -eq 0 ])
+	@output="$$(./custom-gcl run -c .golangci.yml 2>&1)"; \
+	echo "$$output"; \
+	if echo "$$output" | grep -Eq "build linters|module.* not found"; then \
+		echo "❌ GolangCI-Lint plugin build failed. Try 'make linter-rebuild'."; \
+		exit 1; \
+	fi; \
+	gci list . | sed 's/^/BadFormat: /'; \
+	[ $$(gci list . | wc -c) -eq 0 ]
 
-# Build custom golangci-lint binary with nogoroutine linter plugin
+
+# Build custom golangci-lint binary with linter plugins nogoroutine, modulelinter.
+.PHONY: custom-gcl
 custom-gcl:
 	@if [ ! -f custom-gcl ]; then \
 		echo "Building custom golangci-lint binary with nogoroutine & module linter..."; \
 		golangci-lint custom; \
 	fi
+
+# Builds custom golangci-lint binary printing the details.
+.PHONY: linter-rebuild
+linter-rebuild:
+	golangci-lint custom --verbose
+
+# Invalidates golangci-lint cache.
+.PHONY: linter-clear-cache
+linter-clear-cache:
+	golangci-lint cache clean
 
 # Run a few autoformatters and print out unfixable errors
 # PRE-REQUISITES: install linters, see https://ampersand.slab.com/posts/engineering-onboarding-guide-environment-set-up-9v73t3l8#huik9-install-linters
