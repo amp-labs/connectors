@@ -252,6 +252,9 @@ type MetadataItemInput struct {
 
 	// Name The internal identifier for the metadata field
 	Name string `json:"name"`
+
+	// Prompt Human-readable description that can contain instructions on how to collect metadata
+	Prompt string `json:"prompt,omitempty"`
 }
 
 // MetadataItemPostAuthentication defines model for MetadataItemPostAuthentication.
