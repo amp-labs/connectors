@@ -16,8 +16,8 @@ import (
 func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	errBadFirstRecord := testutils.DataFromFile(t, "batch/create/contacts/err-bad-request-on-first.json")
-	errBadSecondRecord := testutils.DataFromFile(t, "batch/create/contacts/err-bad-request-on-second.json")
+	errBadRequest := testutils.DataFromFile(t, "batch/create/contacts/err-bad-request.json")
+	errCreatePartial := testutils.DataFromFile(t, "batch/create/contacts/partial-but-allOrNone.json")
 	createPayload := testutils.DataFromFile(t, "batch/create/contacts/payload.json")
 	responseCreateContacts := testutils.DataFromFile(t, "batch/create/contacts/success.json")
 
@@ -60,29 +60,22 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/services/data/v60.0/composite/tree/Contact"),
-				Then:  mockserver.Response(http.StatusBadRequest, errBadFirstRecord),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/services/data/v60.0/composite/sobjects"),
+				},
+				Then: mockserver.Response(http.StatusBadRequest, errBadRequest),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
 				Status: common.BatchStatusFailure,
-				Errors: nil,
+				Errors: []any{"record was not processed due to other records failures: " +
+					"error REQUIRED_FIELD_MISSING: At least 1 record is required"},
 				Results: []common.WriteResult{{
 					Success:  false,
 					RecordId: "",
-					Errors: []any{mockutils.JSONErrorWrapper(`{
-						  "statusCode": "REQUIRED_FIELD_MISSING",
-						  "message": "Required fields are missing: [LastName]",
-						  "fields": ["LastName"]}`)},
-					Data: map[string]any{"referenceId": "ref0"},
-				}, {
-					Success:  false,
-					RecordId: "",
-					Errors: []any{
-						common.ErrBatchUnprocessedRecord,
-						"record's referenceId is ref1",
-					},
-					Data: nil,
+					Errors:   []any{common.ErrBatchUnprocessedRecord},
+					Data:     nil,
 				}},
 				SuccessCount: 0,
 				FailureCount: 2,
@@ -98,8 +91,11 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/services/data/v60.0/composite/tree/Contact"),
-				Then:  mockserver.Response(http.StatusBadRequest, errBadSecondRecord),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/services/data/v60.0/composite/sobjects"),
+				},
+				Then: mockserver.Response(http.StatusBadRequest, errCreatePartial),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
@@ -108,25 +104,22 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Results: []common.WriteResult{{
 					Success:  false,
 					RecordId: "",
-					Errors: []any{
-						common.ErrBatchUnprocessedRecord,
-						"record's referenceId is ref0",
-					},
+					Errors: []any{mockutils.JSONErrorWrapper(`{
+						"statusCode": "REQUIRED_FIELD_MISSING",
+						"message": "Required fields are missing: [LastName]",
+						"fields": ["LastName"]
+					}`)},
 					Data: nil,
 				}, {
 					Success:  false,
 					RecordId: "",
-					Errors: []any{
-						mockutils.JSONErrorWrapper(`{
-						  "statusCode": "INVALID_INPUT",
-						  "message": "Duplicate ReferenceId provided in the request.",
-						  "fields": []}`),
-						mockutils.JSONErrorWrapper(`{
-						  "statusCode": "PROCESSING_HALTED",
-						  "message": "Duplicate ReferenceId found: ref1",
-						  "fields": []}`),
-					},
-					Data: map[string]any{"referenceId": "ref1"},
+					// nolint:lll
+					Errors: []any{mockutils.JSONErrorWrapper(`{
+						"statusCode": "ALL_OR_NONE_OPERATION_ROLLED_BACK",
+						"message": "Record rolled back because not all records were valid and the request was using AllOrNone header",
+						"fields": []
+					}`)},
+					Data: nil,
 				}},
 				SuccessCount: 0,
 				FailureCount: 2,
@@ -142,30 +135,17 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/services/data/v60.0/composite/tree/Contact"),
-				Then:  mockserver.Response(http.StatusBadRequest, nil),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/services/data/v60.0/composite/sobjects"),
+				},
+				Then: mockserver.Response(http.StatusBadRequest, nil),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
-				Status: common.BatchStatusFailure,
-				Errors: []any{},
-				Results: []common.WriteResult{{
-					Success:  false,
-					RecordId: "",
-					Errors: []any{
-						common.ErrBatchUnprocessedRecord,
-						"record's referenceId is ref0",
-					},
-					Data: nil,
-				}, {
-					Success:  false,
-					RecordId: "",
-					Errors: []any{
-						common.ErrBatchUnprocessedRecord,
-						"record's referenceId is ref1",
-					},
-					Data: nil,
-				}},
+				Status:       common.BatchStatusFailure,
+				Errors:       []any{common.ErrEmptyJSONHTTPResponse},
+				Results:      nil,
 				SuccessCount: 0,
 				FailureCount: 2,
 			},
@@ -181,7 +161,8 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/services/data/v60.0/composite/tree/Contact"),
+					mockcond.MethodPOST(),
+					mockcond.Path("/services/data/v60.0/composite/sobjects"),
 					mockcond.BodyBytes(createPayload), // validate that connector knows how to create payload.
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateContacts),
@@ -192,19 +173,21 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Errors: []any{},
 				Results: []common.WriteResult{{
 					Success:  true,
-					RecordId: "003ak00000kLkZLAA0",
+					RecordId: "003ak00000luKU1AAM",
 					Errors:   nil,
 					Data: map[string]any{
-						"referenceId": "ref0",
-						"id":          "003ak00000kLkZLAA0",
+						"success": true,
+						"id":      "003ak00000luKU1AAM",
+						"errors":  []any{},
 					},
 				}, {
 					Success:  true,
-					RecordId: "003ak00000kLkZMAA0",
+					RecordId: "003ak00000luKU2AAM",
 					Errors:   nil,
 					Data: map[string]any{
-						"referenceId": "ref1",
-						"id":          "003ak00000kLkZMAA0",
+						"success": true,
+						"id":      "003ak00000luKU2AAM",
+						"errors":  []any{},
 					},
 				}},
 				SuccessCount: 2,
@@ -230,7 +213,8 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	errNoIDs := testutils.DataFromFile(t, "batch/update/contacts/err-each-no-ids.json")
-	errUpdatePartial := testutils.DataFromFile(t, "batch/update/contacts/partial-no-ids.json")
+	updatePayload := testutils.DataFromFile(t, "batch/update/contacts/payload.json")
+	errUpdatePartial := testutils.DataFromFile(t, "batch/update/contacts/partial-but-allOrNone.json")
 	responseUpdateContacts := testutils.DataFromFile(t, "batch/update/contacts/success.json")
 
 	type record = common.Record
@@ -258,8 +242,11 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/services/data/v60.0/composite/sobjects"),
-				Then:  mockserver.Response(http.StatusBadRequest, errNoIDs),
+				If: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.Path("/services/data/v60.0/composite/sobjects"),
+				},
+				Then: mockserver.Response(http.StatusBadRequest, errNoIDs),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
@@ -272,16 +259,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 							"statusCode": "MISSING_ARGUMENT",
 							"message": "Id not specified in an update call",
 							"fields": []}`)},
-					Data: map[string]any{
-						"success": false,
-						"errors": []any{
-							map[string]any{
-								"statusCode": "MISSING_ARGUMENT",
-								"message":    "Id not specified in an update call",
-								"fields":     []any{},
-							},
-						},
-					},
+					Data: nil,
 				}, {
 					Success:  false,
 					RecordId: "",
@@ -289,16 +267,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 							"statusCode": "MISSING_ARGUMENT",
 							"message": "Id not specified in an update call",
 							"fields": []}`)},
-					Data: map[string]any{
-						"success": false,
-						"errors": []any{
-							map[string]any{
-								"statusCode": "MISSING_ARGUMENT",
-								"message":    "Id not specified in an update call",
-								"fields":     []any{},
-							},
-						},
-					},
+					Data: nil,
 				}},
 				SuccessCount: 0,
 				FailureCount: 2,
@@ -307,6 +276,8 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name: "Partial result where one contact did not have an id",
+			// For right now no partial response is supported.
+			// As of right now, connector always sets payload with AllOrNone=true.
 			Input: &common.BatchWriteParam{
 				ObjectName: "Contact",
 				Type:       common.BatchWriteTypeUpdate,
@@ -314,42 +285,38 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/services/data/v60.0/composite/sobjects"),
-				Then:  mockserver.Response(http.StatusMultiStatus, errUpdatePartial),
+				If: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.Path("/services/data/v60.0/composite/sobjects"),
+					mockcond.BodyBytes(updatePayload),
+				},
+				Then: mockserver.Response(http.StatusOK, errUpdatePartial),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
-				Status: common.BatchStatusPartial,
+				Status: common.BatchStatusFailure,
 				Errors: nil,
 				Results: []common.WriteResult{{
-					Success:  true,
-					RecordId: "003ak00000jvIfpAAE",
-					Errors:   nil,
-					Data: map[string]any{
-						"id":      "003ak00000jvIfpAAE",
-						"success": true,
-						"errors":  []any{},
-					},
+					Success:  false,
+					RecordId: "",
+					Errors: []any{mockutils.JSONErrorWrapper(`{
+						"statusCode": "ALL_OR_NONE_OPERATION_ROLLED_BACK",
+						"message": "Record rolled back because not all records were valid and the request was using AllOrNone header",
+						"fields": []
+					}`)},
+					Data: nil,
 				}, {
 					Success:  false,
 					RecordId: "",
 					Errors: []any{mockutils.JSONErrorWrapper(`{
-							"statusCode": "MISSING_ARGUMENT",
-							"message": "Id not specified in an update call",
-							"fields": []}`)},
-					Data: map[string]any{
-						"success": false,
-						"errors": []any{
-							map[string]any{
-								"statusCode": "MISSING_ARGUMENT",
-								"message":    "Id not specified in an update call",
-								"fields":     []any{},
-							},
-						},
-					},
+						"statusCode": "INVALID_FIELD",
+						"message": "No such column 'unknownField_LastName' on sobject of type Contact",
+						"fields": []
+					}`)},
+					Data: nil,
 				}},
-				SuccessCount: 1,
-				FailureCount: 1,
+				SuccessCount: 0,
+				FailureCount: 2,
 			},
 			ExpectedErrs: nil,
 		},
@@ -362,8 +329,11 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/services/data/v60.0/composite/sobjects"),
-				Then:  mockserver.Response(http.StatusOK, responseUpdateContacts),
+				If: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.Path("/services/data/v60.0/composite/sobjects"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseUpdateContacts),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
