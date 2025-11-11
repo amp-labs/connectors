@@ -1,0 +1,22 @@
+[
+  {
+    "success": false,
+    "errors": [
+      {
+        "statusCode": "ALL_OR_NONE_OPERATION_ROLLED_BACK",
+        "message": "Record rolled back because not all records were valid and the request was using AllOrNone header",
+        "fields": []
+      }
+    ]
+  },
+  {
+    "success": false,
+    "errors": [
+      {
+        "statusCode": "INVALID_FIELD",
+        "message": "No such column 'unknownField_LastName' on sobject of type Contact",
+        "fields": []
+      }
+    ]
+  }
+]

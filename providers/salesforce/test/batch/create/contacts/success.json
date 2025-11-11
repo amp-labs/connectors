@@ -1,13 +1,12 @@
-{
-  "hasErrors": false,
-  "results": [
-    {
-      "referenceId": "ref0",
-      "id": "003ak00000kLkZLAA0"
-    },
-    {
-      "referenceId": "ref1",
-      "id": "003ak00000kLkZMAA0"
-    }
-  ]
-}
+[
+  {
+    "id": "003ak00000luKU1AAM",
+    "success": true,
+    "errors": []
+  },
+  {
+    "id": "003ak00000luKU2AAM",
+    "success": true,
+    "errors": []
+  }
+]
