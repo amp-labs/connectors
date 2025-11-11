@@ -1,0 +1,11 @@
+{
+  "status": "error",
+  "message": "Duplicate IDs found in batch input: [123456]. IDs must be unique",
+  "correlationId": "d1ace858-83f2-4266-b681-ad412ecb165d",
+  "context": {
+    "ids": [
+      "123456"
+    ]
+  },
+  "category": "VALIDATION_ERROR"
+}
