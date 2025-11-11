@@ -113,7 +113,7 @@ func init() { // nolint:funlen
 				},
 				{
 					Name:        "region",
-					DisplayName: "Region (datacenter)",
+					DisplayName: "Region (e.g. crm/crm4/crm7)",
 					DocsURL:     "https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/compose-http-requests-handle-errors?view=dataverse-latest#web-api-url-and-versions",
 				},
 			},
