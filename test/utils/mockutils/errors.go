@@ -26,5 +26,18 @@ func errorsAre(actualError error, expectedErrors ExpectedSubsetErrors) bool {
 }
 
 func (e ExpectedSubsetErrors) Error() string {
-	return errors.Join(e...).Error()
+	joined := errors.Join(e...)
+	if joined == nil {
+		return ""
+	}
+
+	return joined.Error()
 }
+
+// JSONErrorWrapper marks a string literal as a JSON structure to be compared semantically.
+//
+// When used in test expectations, this signals the comparator to treat the wrapped
+// value as JSON — it will parse both sides and compare their data structures instead
+// of comparing raw strings. This allows tests to assert equality between Go structs
+// and their expected JSON representation in error results.
+type JSONErrorWrapper string
