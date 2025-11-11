@@ -51,28 +51,18 @@ func (a *Adapter) getModuleURL() string {
 	return a.moduleInfo.BaseURL
 }
 
-// getCreateURL builds the endpoint for creating multiple records of the same object type.
-//
-// Object name is required as a suffix of the URL.
-// Only one type of objects can be created at a time, this is by Salesforce API design.
+// getCreateURL builds the endpoint for creating multiple records across one or more object types.
 //
 // nolint:lll
-// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_composite_sobject_tree_flat.htm
-//
-// By default batch write is "ALL_OR_NONE=true" for all create endpoints. This cannot be changed.
-func (a *Adapter) getCreateURL(objectName common.ObjectName) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.getModuleURL(), restAPISuffix, "/composite/tree", objectName.String())
+// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_create.htm
+func (a *Adapter) getCreateURL() (*urlbuilder.URL, error) {
+	return urlbuilder.New(a.getModuleURL(), restAPISuffix, "/composite/sobjects")
 }
 
 // getUpdateURL builds the endpoint for updating multiple records across one or more object types.
 //
-// Objects of multiple type can be created as part of one request, and it is not limited to one objectName
-// and therefore no such argument is needed unlike the getCreateURL.
-//
 // nolint:lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_update.htm
-//
-// By default batch write is "ALL_OR_NONE=false" for all update endpoints which can be configured in request payload.
 func (a *Adapter) getUpdateURL() (*urlbuilder.URL, error) {
 	return urlbuilder.New(a.getModuleURL(), restAPISuffix, "/composite/sobjects")
 }

@@ -2,7 +2,6 @@ package batch
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -41,98 +40,68 @@ func (a *Adapter) BatchWrite(ctx context.Context, params *common.BatchWriteParam
 		return nil, err
 	}
 
+	write := a.Client.Post
 	if params.IsUpdate() {
-		return a.batchWriteUpdate(ctx, url, payload)
+		write = a.Client.Patch
 	}
 
-	return a.batchWriteCreate(ctx, url, payload)
-}
-
-func (a *Adapter) batchWriteCreate(
-	ctx context.Context, url *urlbuilder.URL, payload *Payload,
-) (*common.BatchWriteResult, error) {
-	rsp, err := a.Client.Post(ctx, url.String(), payload)
+	rsp, err := write(ctx, url.String(), payload)
 	if err != nil {
 		return nil, err
 	}
 
 	// Parse and process response.
-	response, err := common.UnmarshalJSON[ResponseCreate](rsp)
+	response, err := common.UnmarshalJSON[Response](rsp)
 	if err != nil {
 		return nil, err
 	}
 
-	if response == nil {
-		return a.handleEmptyResponse(rsp)
-	}
-
-	// Map indexed by unique reference ids. Created once for the lookup.
-	items := response.GetItemsMap()
-
-	return common.ParseBatchWrite[PayloadItem, CreateItem](
-		payload.Records,
-		func(index int, payloadItem PayloadItem) *CreateItem {
-			return items[payloadItem.Extension.Attributes.ReferenceID]
-		},
-		func(payloadItem PayloadItem, respItem *CreateItem) (*common.WriteResult, error) {
-			if respItem == nil {
-				return createUnprocessableItem(payloadItem), nil
-			}
-
-			return respItem.ToWriteResult()
-		},
-	)
-}
-
-func (a *Adapter) batchWriteUpdate(
-	ctx context.Context, url *urlbuilder.URL, payload *Payload,
-) (*common.BatchWriteResult, error) {
-	rsp, err := a.Client.Patch(ctx, url.String(), payload)
-	if err != nil {
-		return nil, err
-	}
-
-	// Parse and process response.
-	response, err := common.UnmarshalJSON[ResponseUpdate](rsp)
-	if err != nil {
-		return nil, err
-	}
-
-	if response == nil {
+	if response == nil || len(*response) == 0 {
 		return a.handleEmptyResponse(rsp)
 	}
 
 	// nolint:lll
 	return common.ParseBatchWrite(
 		payload.Records,
-		func(index int, payloadItem PayloadItem) *UpdateItem {
-			// In Salesforce composite update responses, each item corresponds
-			// positionally to the submitted payload item. Even when a record fails,
-			// its response entry is still present but may have an empty "id" field.
-			//
-			// The index is used to correlate payloads and responses. However, we still
-			// guard against out-of-range access to ensure robustness if the response
-			// length is shorter than expected.
-			//
-			// From the Salesforce docs:
-			// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_update.htm
-			//   “Objects are updated in the order they’re listed.
-			//    The SaveResult objects are returned in the same order.”
-			list := *response
-			if index < 0 || index >= len(list) {
-				return nil
-			}
-
-			return &list[index]
-		},
-		func(payloadItem PayloadItem, respItem *UpdateItem) (*common.WriteResult, error) {
-			if respItem == nil {
-				return createUnprocessableItem(payloadItem), nil
-			}
-
-			return respItem.ToWriteResult()
-		},
+		responseMatcher(response),
+		resultBuilder,
 	)
+}
+
+// nolint:lll
+// responseMatcher matches records with response items.
+//
+// The index is used to correlate payloads and responses.
+// However, we still guard against out-of-range access to ensure robustness
+// if the response length is shorter than expected.
+//
+// From the Salesforce docs:
+// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_create.htm
+//
+//	"Objects are created in the order they’re listed.
+//	The SaveResult objects are returned in the order in which the create requests were specified."
+//
+// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_update.htm
+//
+//	"Objects are updated in the order they’re listed.
+//	 The SaveResult objects are returned in the same order."
+func responseMatcher(response *Response) common.BatchWriteResponseMatcher[PayloadItem, Item] {
+	return func(index int, payloadItem PayloadItem) *Item {
+		list := *response
+		if index < 0 || index >= len(list) {
+			return nil
+		}
+
+		return &list[index]
+	}
+}
+
+func resultBuilder(_ PayloadItem, respItem *Item) (*common.WriteResult, error) {
+	if respItem == nil {
+		return createUnprocessableItem(), nil
+	}
+
+	return respItem.ToWriteResult()
 }
 
 func (a *Adapter) handleEmptyResponse(rsp *common.JSONHTTPResponse) (*common.BatchWriteResult, error) {
@@ -156,7 +125,7 @@ func (a *Adapter) handleEmptyResponse(rsp *common.JSONHTTPResponse) (*common.Bat
 
 func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilder.URL, error) {
 	if params.IsCreate() {
-		return a.getCreateURL(params.ObjectName)
+		return a.getCreateURL()
 	}
 
 	if params.IsUpdate() {
@@ -178,22 +147,15 @@ func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 			Record: record,
 			Extension: RecordExtension{
 				Attributes: RecordAttributes{
-					Type:        params.ObjectName.String(),
-					ReferenceID: fmt.Sprintf("ref%d", index),
+					Type: params.ObjectName.String(),
 				},
 			},
 		}
 	}
 
-	if params.IsUpdate() {
-		return &Payload{
-			Records:   items,
-			AllOrNone: goutils.Pointer(true),
-		}, nil
-	}
-
 	return &Payload{
-		Records: items,
+		Records:   items,
+		AllOrNone: goutils.Pointer(true),
 	}, nil
 }
 
@@ -203,9 +165,7 @@ func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 type Payload struct {
 	Records []PayloadItem `json:"records"`
 
-	// AllOrNone is accepted by Update endpoint for output with partial success.
-	// nolint:lll
-	// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_update.htm
+	// AllOrNone is accepted by Create and Update endpoint for output with partial success.
 	AllOrNone *bool `json:"allOrNone"`
 }
 
@@ -220,30 +180,16 @@ type RecordExtension struct {
 }
 
 type RecordAttributes struct {
-	Type        string `json:"type"`
-	ReferenceID string `json:"referenceId"`
+	Type string `json:"type"`
 }
 
-// ResponseCreate is structure returned by API either for "200 OK" or "400 Bad Request".
-type ResponseCreate struct {
-	HasErrors bool         `json:"hasErrors"`
-	Results   []CreateItem `json:"results"`
-}
+// Response is structure returned by API either for "200 OK" or "400 Bad Request".
+type Response []Item
 
-// ResponseUpdate is structure retuned by update operation.
-// This differs from the creation such that it is a list of objects at top JSON node level.
-type ResponseUpdate []UpdateItem
-
-type UpdateItem struct {
+type Item struct {
 	Success bool        `json:"success"`
 	ID      string      `json:"id,omitempty"`
 	Errors  []ItemError `json:"errors"`
-}
-
-type CreateItem struct {
-	ReferenceId string      `json:"referenceId"`
-	ID          string      `json:"id"`
-	Errors      []ItemError `json:"errors"`
 }
 
 type ItemError struct {
@@ -252,17 +198,7 @@ type ItemError struct {
 	Fields     []any  `json:"fields"`
 }
 
-func (r ResponseCreate) GetItemsMap() map[string]*CreateItem {
-	mapping := make(map[string]*CreateItem)
-
-	for _, item := range r.Results {
-		mapping[item.ReferenceId] = &item
-	}
-
-	return mapping
-}
-
-func (i CreateItem) ToWriteResult() (*common.WriteResult, error) {
+func (i Item) ToWriteResult() (*common.WriteResult, error) {
 	success := len(i.Errors) == 0
 
 	if success {
@@ -287,32 +223,7 @@ func (i CreateItem) ToWriteResult() (*common.WriteResult, error) {
 	}, nil
 }
 
-func (i UpdateItem) ToWriteResult() (*common.WriteResult, error) {
-	success := len(i.Errors) == 0
-
-	if success {
-		data, err := common.RecordDataToMap(i)
-		if err != nil {
-			return nil, err
-		}
-
-		return &common.WriteResult{
-			Success:  true,
-			RecordId: i.ID,
-			Errors:   nil,
-			Data:     data,
-		}, nil
-	}
-
-	return &common.WriteResult{
-		Success:  false,
-		RecordId: i.ID,
-		Errors:   datautils.ToAnySlice(i.Errors),
-		Data:     nil,
-	}, nil
-}
-
-func createUnprocessableItem(payloadItem PayloadItem) *common.WriteResult {
+func createUnprocessableItem() *common.WriteResult {
 	// Salesforce didn't return matching response for the record.
 	// This only means that some other records have failed and no records were processed.
 	// However, this record was valid.
@@ -321,7 +232,6 @@ func createUnprocessableItem(payloadItem PayloadItem) *common.WriteResult {
 		RecordId: "",
 		Errors: []any{
 			common.ErrBatchUnprocessedRecord,
-			fmt.Sprintf("record's referenceId is %v", payloadItem.Extension.Attributes.ReferenceID),
 		},
 		Data: nil,
 	}
