@@ -15,8 +15,9 @@ import (
 const (
 	limitQuery       = "limit"
 	metadataPageSize = "1"
-	pageSize         = 30
 )
+
+var pageSize = 30 //nolint:gochecknoglobals
 
 type readResponse struct {
 	Data []any          `json:"data"`
@@ -103,6 +104,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
+	if params.PageSize != 0 {
+		pageSize = params.PageSize
+	}
+
 	url.WithQueryParam(limitQuery, strconv.Itoa(pageSize))
 
 	if params.NextPage != "" {
@@ -120,7 +125,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		response,
-		records(params.ObjectName),
+		records(),
 		nextRecordsURL(),
 		common.GetMarshaledData,
 		params.Fields,

@@ -37,7 +37,7 @@ func main() {
 	utils.DumpJSON(res, os.Stdout)
 
 	res, err = conn.Read(ctx, common.ReadParams{
-		ObjectName: "visitors",
+		ObjectName: "departments",
 		Fields: connectors.Fields(
 			"name",
 		),
@@ -46,6 +46,6 @@ func main() {
 		utils.Fail("error reading from Instantly", "error", err)
 	}
 
-	slog.Info("Reading visitors..")
+	slog.Info("Reading departments..")
 	utils.DumpJSON(res, os.Stdout)
 }

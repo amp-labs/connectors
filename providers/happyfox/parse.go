@@ -8,7 +8,7 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-func records(objectName string) common.RecordsFunc {
+func records() common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
 		records, err := jsonquery.New(node).ArrayRequired("data")
 		if err != nil {
@@ -33,7 +33,7 @@ func nextRecordsURL() common.NextPageFunc {
 			return "", err
 		}
 
-		if currentPage != nil && total != nil {
+		if currentPage != nil || total != nil {
 			if *currentPage < *total {
 				return strconv.Itoa(int(*currentPage + 1)), nil
 			}
