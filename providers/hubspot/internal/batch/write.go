@@ -162,7 +162,14 @@ func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilde
 
 func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 	items, err := datautils.ForEachWithErr(params.Records, func(record any) (PayloadItem, error) {
-		return common.RecordDataToMap(record)
+		recordMap, err := common.RecordDataToMap(record)
+		if err != nil {
+			return nil, err
+		}
+
+		return PayloadItem{
+			"properties": recordMap,
+		}, nil
 	})
 	if err != nil {
 		return nil, err
