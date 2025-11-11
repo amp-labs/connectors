@@ -268,6 +268,7 @@ func newDynamicsCRMConnector(
 	return dynamicscrm.NewConnector(
 		dynamicscrm.WithWorkspace(params.Workspace),
 		dynamicscrm.WithAuthenticatedClient(params.AuthenticatedClient),
+		dynamicscrm.WithMetadata(params.Metadata),
 	)
 }
 

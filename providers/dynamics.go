@@ -69,7 +69,7 @@ func init() { // nolint:funlen
 	SetInfo(DynamicsCRM, ProviderInfo{
 		DisplayName: "Microsoft Dynamics CRM",
 		AuthType:    Oauth2,
-		BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com/api/data",
+		BaseURL:     "https://{{.workspace}}.api.{{.region}}.dynamics.com/api/data",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:              AuthorizationCode,
 			AuthURL:                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
@@ -108,8 +108,16 @@ func init() { // nolint:funlen
 			Input: []MetadataItemInput{
 				{
 					Name:        "workspace",
-					DisplayName: "Environment Name",
+					DisplayName: "Web API environment",
 					DocsURL:     "https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/compose-http-requests-handle-errors?view=dataverse-latest#web-api-url-and-versions",
+					Prompt:      "Copy the environment name (e.g. `org123456`) from your Web API endpoint URL. It appears right after `https://` and before `.api.`",
+				},
+				{
+					Name:         "region",
+					DisplayName:  "Region",
+					DefaultValue: "crm",
+					DocsURL:      "https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/compose-http-requests-handle-errors?view=dataverse-latest#web-api-url-and-versions",
+					Prompt:       "Copy the region (e.g. `crm4`) from your Web API endpoint URL. It appears right after `.api.` and before `.dynamics.com`",
 				},
 			},
 		},
