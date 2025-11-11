@@ -144,6 +144,9 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),
 		WithWorkspace("test-workspace"),
+		WithMetadata(map[string]string{
+			"region": "crm",
+		}),
 	)
 	if err != nil {
 		return nil, err

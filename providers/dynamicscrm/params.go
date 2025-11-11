@@ -42,7 +42,6 @@ func (p parameters) ValidateParams() error {
 	return errors.Join(
 		p.Client.ValidateParams(),
 		p.Workspace.ValidateParams(),
-		p.Metadata.ValidateParams(),
 	)
 }
 
@@ -68,6 +67,6 @@ func WithWorkspace(workspaceRef string) Option {
 
 func WithMetadata(metadata map[string]string) Option {
 	return func(params *parameters) {
-		params.WithMetadata(metadata, nil)
+		params.WithMetadata(metadata, []string{"region"})
 	}
 }

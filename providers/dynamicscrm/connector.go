@@ -4,6 +4,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -29,7 +30,13 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		},
 	}
 
-	providerInfo, err := providers.ReadInfo(conn.Provider(), &params.Workspace)
+	// Combine workspace and metadata catalog variables
+	catalogVars := []catalogreplacer.CatalogVariable{&params.Workspace}
+	for _, v := range params.GetCatalogVars() {
+		catalogVars = append(catalogVars, v)
+	}
+
+	providerInfo, err := providers.ReadInfo(conn.Provider(), catalogVars...)
 	if err != nil {
 		return nil, err
 	}
