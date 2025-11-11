@@ -115,6 +115,7 @@ func init() { // nolint:funlen
 				{
 					Name:        "region",
 					DisplayName: "Region",
+					DefaultValue: "crm",
 					DocsURL:     "https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/compose-http-requests-handle-errors?view=dataverse-latest#web-api-url-and-versions",
 					Prompt:      "Copy the region (e.g. `crm4`) from your Web API endpoint URL. It appears right after `.api.` and before `.dynamics.com`",
 				},
