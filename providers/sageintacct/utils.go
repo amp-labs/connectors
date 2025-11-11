@@ -84,7 +84,7 @@ func buildReadBody(params common.ReadParams) (map[string]interface{}, error) {
 	return payload, nil
 }
 
-// flattenFields recursively flattens nested field definitions into dot-notation paths.
+// flattenFields flattens nested field definitions into dot-notation paths.
 // For example, audit.createdByUser.key becomes a single field entry.
 func flattenFields(prefix string, fields map[string]SageIntacctFieldDef) map[string]common.FieldMetadata {
 	result := make(map[string]common.FieldMetadata)
@@ -107,7 +107,8 @@ func flattenFields(prefix string, fields map[string]SageIntacctFieldDef) map[str
 	return result
 }
 
-// flattenGroups recursively flattens group definitions into dot-notation paths.
+// flattenGroups flattens group definitions into dot-notation paths.
+// Groups can contain nested field definitions that are processed into flat paths.
 func flattenGroups(prefix string, groups map[string]SageIntacctGroup) map[string]common.FieldMetadata {
 	result := make(map[string]common.FieldMetadata)
 
@@ -117,7 +118,6 @@ func flattenGroups(prefix string, groups map[string]SageIntacctGroup) map[string
 			groupPath = prefix + "." + groupName
 		}
 
-		// Flatten the fields within this group
 		groupFields := flattenFields(groupPath, group.Fields)
 		maps.Copy(result, groupFields)
 	}
@@ -125,8 +125,8 @@ func flattenGroups(prefix string, groups map[string]SageIntacctGroup) map[string
 	return result
 }
 
-// flattenRefs recursively flattens reference (nested object) definitions into dot-notation paths.
-// Refs can contain both fields and nested groups.
+// flattenRefs flattens reference (nested object) definitions into dot-notation paths.
+// Refs can contain both fields and nested groups, which are all processed into flat paths.
 func flattenRefs(prefix string, refs map[string]SageIntacctRef) map[string]common.FieldMetadata {
 	result := make(map[string]common.FieldMetadata)
 
@@ -136,12 +136,9 @@ func flattenRefs(prefix string, refs map[string]SageIntacctRef) map[string]commo
 			refPath = prefix + "." + refName
 		}
 
-		// Flatten the fields within this reference
 		refFields := flattenFields(refPath, ref.Fields)
 		maps.Copy(result, refFields)
 
-		// Recursively flatten any nested groups within the ref
-		// (e.g., contact.mailingAddress.city)
 		if len(ref.Groups) > 0 {
 			refGroups := flattenGroups(refPath, ref.Groups)
 			maps.Copy(result, refGroups)
