@@ -162,7 +162,33 @@ func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilde
 
 func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 	items, err := datautils.ForEachWithErr(params.Records, func(record any) (PayloadItem, error) {
-		return common.RecordDataToMap(record)
+		recordMap, err := common.RecordDataToMap(record)
+		if err != nil {
+			return nil, err
+		}
+
+		if _, containsProperties := recordMap["properties"]; containsProperties {
+			// User specified payload correctly.
+			// Using this approach user can specify associations.
+			// Example:
+			// "inputs": [
+			//    {
+			//      "associations": [{
+			//          "types": [ {"associationCategory": "HUBSPOT_DEFINED","associationTypeId": 123}],
+			//          "to": {"id": "<string>"}
+			//      }],
+			//      "objectWriteTraceId": "<string>",
+			//      "properties": {}
+			//    }
+			//  ]
+			return recordMap, nil
+		}
+
+		// User forgot to nest every record with 'properties'.
+		// This also means user is not using associations.
+		return map[string]any{
+			"properties": recordMap,
+		}, nil
 	})
 	if err != nil {
 		return nil, err
