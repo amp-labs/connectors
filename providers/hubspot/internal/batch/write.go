@@ -168,7 +168,8 @@ func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 		}
 
 		return PayloadItem{
-			"properties": recordMap,
+			"properties":   recordMap,
+			"associations": nil,
 		}, nil
 	})
 	if err != nil {
