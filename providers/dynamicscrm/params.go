@@ -68,6 +68,6 @@ func WithWorkspace(workspaceRef string) Option {
 
 func WithMetadata(metadata map[string]string) Option {
 	return func(params *parameters) {
-		params.WithMetadata(metadata, []string{"region"})
+		params.WithMetadata(metadata, nil)
 	}
 }
