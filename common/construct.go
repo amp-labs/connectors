@@ -143,17 +143,21 @@ var ErrBatchUnprocessedRecord = errors.New("record was not processed due to othe
 //	R is the provider response item type (what was received).
 //
 // Arguments:
-// payloadItems - list of items that are part of payload to create/update each record.
-// responseMatcher - list of items that are part of payload to create/update each record.
+// payloadItems		- list of items that are part of payload to create/update each record.
+// responseMatcher	- list of items that are part of payload to create/update each record.
+// responseToResult	- a transformer that converts a matched item pair (payload P, response R) into a WriteResult.
+// fatalErrors		– top-level errors not tied to individual records,
+//
+//	such as validation failures detected before response matching.
 func ParseBatchWrite[P, R any](
 	payloadItems []P,
 	responseMatcher BatchWriteResponseMatcher[P, R],
 	responseToResult BatchWriteResponseTransformer[P, R],
+	fatalErrors []any,
 ) (*BatchWriteResult, error) {
 	var (
 		totalNumRecords = len(payloadItems)
 		results         = make([]WriteResult, 0, totalNumRecords)
-		fatalErrors     []any
 		successCounter  = 0
 	)
 
@@ -207,7 +211,7 @@ func invokeResponseMatcher[P, R any](
 	index int, record P,
 ) (responseItem *R, err error) {
 	defer goutils.PanicRecovery(func(cause error) {
-		err = cause
+		err = errors.Join(ErrInvalidImplementation, cause)
 		responseItem = nil
 	})
 

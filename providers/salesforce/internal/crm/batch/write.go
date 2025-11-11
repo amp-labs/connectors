@@ -65,6 +65,7 @@ func (a *Adapter) BatchWrite(ctx context.Context, params *common.BatchWriteParam
 		payload.Records,
 		responseMatcher(response),
 		resultBuilder,
+		nil,
 	)
 }
 
