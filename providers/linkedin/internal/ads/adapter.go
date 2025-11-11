@@ -14,7 +14,6 @@ import (
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/linkedin/internal/shared"
-	"github.com/amp-labs/connectors/tools/fileconv"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
@@ -23,16 +22,15 @@ var (
 	//go:embed schemas.json
 	schemaContent []byte
 
-	fileManager = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV2](
-		schemaContent, fileconv.NewSiblingFileLocator())
+	fileManager = scrapper.NewReader[staticschema.FieldMetadataMapV2](schemaContent)
 
 	schemas = fileManager.MustLoadSchemas()
 )
 
 type Adapter struct {
 	*components.Connector
-	components.SchemaProvider
 	common.RequireMetadata
+	components.SchemaProvider
 	components.Reader
 	components.Writer
 	components.Deleter

@@ -13,7 +13,7 @@ import (
 )
 
 func (c *Adapter) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "rest", params.ObjectName)
+	url, err := urlbuilder.New(c.ModuleInfo().BaseURL, "rest", params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (c *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 	}
 
 	req.Header.Add("LinkedIn-Version", shared.LinkedInVersion) // nolint:canonicalheader
-	req.Header.Add("X-Restli-Protocol-Version", "2.0.0")
+	req.Header.Add("X-Restli-Protocol-Version", shared.ProtocolVersion)
 
 	return req, nil
 }
@@ -48,11 +48,11 @@ func (c *Adapter) parseWriteResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.WriteResult, error) {
-	RecordId := response.Headers.Get("X-Restli-Id")
+	recordId := response.Headers.Get("X-Restli-Id")
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: RecordId,
+		RecordId: recordId,
 		Errors:   nil,
 		Data:     nil,
 	}, nil

@@ -11,6 +11,7 @@ const (
 	PageSize        = 100
 	CountSize       = 100
 	LinkedInVersion = "202504"
+	ProtocolVersion = "2.0.0"
 )
 
 func HandleCursorPagination(node *ajson.Node) (string, error) {
@@ -33,7 +34,7 @@ func HandleCursorPagination(node *ajson.Node) (string, error) {
 	return "", nil
 }
 
-func HandleNormalPagination(node *ajson.Node) (string, error) {
+func HandleOffsetPagination(node *ajson.Node) (string, error) {
 	paging, err := jsonquery.New(node).ObjectOptional("paging")
 	if err != nil {
 		return "", err

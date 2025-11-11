@@ -12,7 +12,7 @@ import (
 )
 
 func (c *Adapter) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "rest", params.ObjectName, u.QueryEscape(params.RecordId))
+	url, err := urlbuilder.New(c.ModuleInfo().BaseURL, "rest", params.ObjectName, u.QueryEscape(params.RecordId))
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func (c *Adapter) buildDeleteRequest(ctx context.Context, params common.DeletePa
 	}
 
 	req.Header.Add("LinkedIn-Version", shared.LinkedInVersion) // nolint:canonicalheader
-	req.Header.Add("X-Restli-Protocol-Version", "2.0.0")
+	req.Header.Add("X-Restli-Protocol-Version", shared.ProtocolVersion)
 
 	return req, nil
 }

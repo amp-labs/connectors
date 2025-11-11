@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"time"
@@ -11,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	ap "github.com/amp-labs/connectors/providers/linkedin"
 	"github.com/amp-labs/connectors/test/linkedin"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
@@ -63,14 +63,7 @@ func testRead(ctx context.Context, conn *ap.Connector, objName string, fields []
 		return fmt.Errorf("failed to read %s: %w", objName, err)
 	}
 
-	// Print the results.
-	jsonStr, err := json.MarshalIndent(res, "", "  ")
-	if err != nil {
-		return fmt.Errorf("error marshalling JSON: %w", err)
-	}
-
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
+	utils.DumpJSON(res, os.Stdout)
 
 	return nil
 }

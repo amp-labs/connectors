@@ -39,7 +39,7 @@ func (c *Adapter) buildSingleObjectMetadataRequest(ctx context.Context, objectNa
 	}
 
 	req.Header.Add("LinkedIn-Version", shared.LinkedInVersion) // nolint:canonicalheader
-	req.Header.Add("X-Restli-Protocol-Version", "2.0.0")
+	req.Header.Add("X-Restli-Protocol-Version", shared.ProtocolVersion)
 
 	return req, nil
 }
@@ -64,6 +64,7 @@ func (c *Adapter) parseSingleObjectMetadataResponse(
 		return nil, shared.ErrMetadataNotFound
 	}
 
+	// Using the first result data to generate the metadata.
 	for field := range data.Elements[0] {
 		objectMetadata.Fields[field] = common.FieldMetadata{
 			DisplayName:  field,

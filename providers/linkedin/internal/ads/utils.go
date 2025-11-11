@@ -46,7 +46,7 @@ func makeNextRecord(objName string) common.NextPageFunc {
 		}
 
 		if normalPaginationObject.Has(objName) {
-			return shared.HandleNormalPagination(node)
+			return shared.HandleOffsetPagination(node)
 		}
 
 		return "", nil
@@ -125,21 +125,10 @@ func (c *Adapter) buildReadURL(params common.ReadParams) (string, error) {
 }
 
 func (c *Adapter) constructURL(objName string) (*urlbuilder.URL, error) {
-	var (
-		url *urlbuilder.URL
-		err error
-	)
-
 	switch {
 	case objectWithAccountId.Has(objName):
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", "adAccounts", c.AdAccountId, objName)
+		return urlbuilder.New(c.ModuleInfo().BaseURL, "rest", "adAccounts", c.AdAccountId, objName)
 	default:
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "rest", objName)
+		return urlbuilder.New(c.ModuleInfo().BaseURL, "rest", objName)
 	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	return url, nil
 }

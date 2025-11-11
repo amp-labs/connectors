@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"os"
@@ -10,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	ap "github.com/amp-labs/connectors/providers/linkedin"
 	"github.com/amp-labs/connectors/test/linkedin"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
@@ -54,9 +54,7 @@ func testPosts(ctx context.Context) error {
 		return err
 	}
 
-	if err := constructResponse(writeRes); err != nil {
-		return err
-	}
+	utils.DumpJSON(writeRes, os.Stdout)
 
 	slog.Info("updating the posts")
 
@@ -85,9 +83,7 @@ func testPosts(ctx context.Context) error {
 		return err
 	}
 
-	if err := constructResponse(updateRes); err != nil {
-		return err
-	}
+	utils.DumpJSON(updateRes, os.Stdout)
 
 	return nil
 }
@@ -99,17 +95,4 @@ func Write(ctx context.Context, conn *ap.Connector, payload common.WriteParams) 
 	}
 
 	return res, nil
-}
-
-// unmarshal the write response.
-func constructResponse(res *common.WriteResult) error {
-	jsonStr, err := json.MarshalIndent(res, "", " ")
-	if err != nil {
-		return fmt.Errorf("error marshalling JSON: %w", err)
-	}
-
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
-
-	return nil
 }

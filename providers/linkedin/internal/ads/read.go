@@ -20,7 +20,7 @@ func (c *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 	}
 
 	req.Header.Add("LinkedIn-Version", shared.LinkedInVersion) // nolint:canonicalheader
-	req.Header.Add("X-Restli-Protocol-Version", "2.0.0")
+	req.Header.Add("X-Restli-Protocol-Version", shared.ProtocolVersion)
 
 	return req, nil
 }

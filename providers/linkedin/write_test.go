@@ -36,10 +36,14 @@ func TestAdsWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 					}),
 					mockcond.MethodPOST(),
 				},
-				Then: mockserver.Response(http.StatusOK, nil),
+				Then: mockserver.ResponseChainedFuncs(
+					mockserver.Header("X-Restli-Id", "514674276"),
+					mockserver.Response(http.StatusOK, nil),
+				),
 			}.Server(),
 			Expected: &common.WriteResult{
-				Success: true,
+				Success:  true,
+				RecordId: "514674276",
 			},
 			ExpectedErrs: nil,
 		},
@@ -103,10 +107,14 @@ func TestPlatformWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 					}),
 					mockcond.MethodPOST(),
 				},
-				Then: mockserver.Response(http.StatusOK, nil),
+				Then: mockserver.ResponseChainedFuncs(
+					mockserver.Header("X-Restli-Id", "urn:li:share:7393604235420078080"),
+					mockserver.Response(http.StatusOK, nil),
+				),
 			}.Server(),
 			Expected: &common.WriteResult{
-				Success: true,
+				Success:  true,
+				RecordId: "urn:li:share:7393604235420078080",
 			},
 			ExpectedErrs: nil,
 		},
