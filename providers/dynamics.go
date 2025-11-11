@@ -69,7 +69,7 @@ func init() { // nolint:funlen
 	SetInfo(DynamicsCRM, ProviderInfo{
 		DisplayName: "Microsoft Dynamics CRM",
 		AuthType:    Oauth2,
-		BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com/api/data",
+		BaseURL:     "https://{{.workspace}}.api.{{.region}}.dynamics.com/api/data",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:              AuthorizationCode,
 			AuthURL:                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
@@ -109,6 +109,11 @@ func init() { // nolint:funlen
 				{
 					Name:        "workspace",
 					DisplayName: "Environment Name",
+					DocsURL:     "https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/compose-http-requests-handle-errors?view=dataverse-latest#web-api-url-and-versions",
+				},
+				{
+					Name:        "region",
+					DisplayName: "Region (datacenter)",
 					DocsURL:     "https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/compose-http-requests-handle-errors?view=dataverse-latest#web-api-url-and-versions",
 				},
 			},

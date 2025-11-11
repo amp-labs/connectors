@@ -22,6 +22,7 @@ type Option = func(params *parameters)
 type parameters struct {
 	paramsbuilder.Client
 	paramsbuilder.Workspace
+	paramsbuilder.Metadata
 }
 
 func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
@@ -33,6 +34,7 @@ func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unuse
 	return &common.ConnectorParams{
 		AuthenticatedClient: oldParams.Client.Caller.Client,
 		Workspace:           oldParams.Workspace.Name,
+		Metadata:            oldParams.Map,
 	}, nil
 }
 
@@ -40,6 +42,7 @@ func (p parameters) ValidateParams() error {
 	return errors.Join(
 		p.Client.ValidateParams(),
 		p.Workspace.ValidateParams(),
+		p.Metadata.ValidateParams(),
 	)
 }
 
@@ -60,5 +63,11 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 func WithWorkspace(workspaceRef string) Option {
 	return func(params *parameters) {
 		params.WithWorkspace(workspaceRef)
+	}
+}
+
+func WithMetadata(metadata map[string]string) Option {
+	return func(params *parameters) {
+		params.WithMetadata(metadata, []string{"region"})
 	}
 }
