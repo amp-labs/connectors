@@ -481,6 +481,15 @@ type FieldMetadata struct {
 	// ReadOnly would indicate if field can be modified or only read.
 	ReadOnly bool
 
+	// IsCustom indicates whether the field is user-defined or custom.
+	// True means the field was added by the user, false means it is native to the provider.
+	IsCustom *bool
+
+	// IsRequired indicates whether a value for the field is mandatory
+	// when creating or updating the object.
+	// True means the field must have a value, false means it is optional.
+	IsRequired *bool
+
 	// Values is a list of possible values for this field.
 	// It is applicable only if the type is either singleSelect or multiSelect, otherwise slice is nil.
 	Values []FieldValue
