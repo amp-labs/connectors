@@ -81,7 +81,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		mf metadataFetcher = c.crmMetadata //nolint: varnamelen
 	)
 
-	if c.moduleID == providers.ZohoDesk {
+	if c.moduleID == providers.ModuleZohoDesk {
 		mf = c.deskMetadata
 	}
 

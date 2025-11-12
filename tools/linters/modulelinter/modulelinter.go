@@ -38,7 +38,7 @@ func (m *ModuleLinter) BuildAnalyzers() ([]*analysis.Analyzer, error) {
 	return []*analysis.Analyzer{
 		{
 			Name: "modulelinter",
-			Doc:  "checks module-related rules in ProviderInfo: DefaultModule and ModuleDependencies",
+			Doc:  "checks module-related rules: DefaultModule for multi-module providers, ModuleDependencies in metadata, and module constant naming convention (Module<ProviderName><ModuleName>)",
 			Run:  m.run,
 		},
 	}, nil
@@ -56,6 +56,9 @@ func (m *ModuleLinter) run(pass *analysis.Pass) (any, error) {
 		if file.Name.Name != "providers" && file.Name.Name != "testdata" {
 			continue
 		}
+
+		// Rule 3: Check module constant naming convention
+		m.checkModuleConstantNaming(pass, file)
 
 		// Traverse the AST looking for SetInfo calls
 		ast.Inspect(file, func(node ast.Node) bool {
@@ -219,6 +222,117 @@ func (m *ModuleLinter) checkMetadataModuleDependencies(pass *analysis.Pass, meta
 			})
 		}
 	}
+}
+
+// checkModuleConstantNaming validates that module constants follow the naming convention:
+// Module<ProviderName><ModuleName>
+func (m *ModuleLinter) checkModuleConstantNaming(pass *analysis.Pass, file *ast.File) {
+	// First, find the provider name from the file
+	providerName := m.findProviderName(file)
+	if providerName == "" {
+		return // No provider found in this file, skip
+	}
+
+	// Expected prefix: Module + ProviderName (e.g., "ModuleSalesforce", "ModuleZoho")
+	expectedPrefix := "Module" + providerName
+
+	// Check all constant declarations
+	for _, decl := range file.Decls {
+		genDecl, ok := decl.(*ast.GenDecl)
+		if !ok || genDecl.Tok != token.CONST {
+			continue
+		}
+
+		for _, spec := range genDecl.Specs {
+			valueSpec, ok := spec.(*ast.ValueSpec)
+			if !ok {
+				continue
+			}
+
+			// Check if this is a ModuleID constant (type common.ModuleID)
+			if !m.isModuleIDType(valueSpec.Type) {
+				continue
+			}
+
+			// Check each name in this const spec
+			for _, name := range valueSpec.Names {
+				if name.Name == "_" {
+					continue // Skip blank identifiers
+				}
+
+				// Module constants MUST start with Module<ProviderName>
+				if !strings.HasPrefix(name.Name, expectedPrefix) {
+					pass.Report(analysis.Diagnostic{
+						Pos:     name.Pos(),
+						End:     name.End(),
+						Message: "Module constant '" + name.Name + "' must follow naming convention 'Module<ProviderName><ModuleName>'. Expected to start with: '" + expectedPrefix + "'",
+					})
+				}
+			}
+		}
+	}
+}
+
+// findProviderName finds the provider name constant in the file.
+// It looks for constants of type Provider and returns the constant name.
+// Example: const Salesforce Provider = "salesforce" returns "Salesforce"
+func (m *ModuleLinter) findProviderName(file *ast.File) string {
+	for _, decl := range file.Decls {
+		genDecl, ok := decl.(*ast.GenDecl)
+		if !ok || genDecl.Tok != token.CONST {
+			continue
+		}
+
+		for _, spec := range genDecl.Specs {
+			valueSpec, ok := spec.(*ast.ValueSpec)
+			if !ok {
+				continue
+			}
+
+			// Check if this constant has type Provider
+			if !m.isProviderType(valueSpec.Type) {
+				continue
+			}
+
+			// Return the first Provider constant name found
+			// This is typically the main provider name (e.g., "Salesforce", "Zoho")
+			if len(valueSpec.Names) > 0 {
+				return valueSpec.Names[0].Name
+			}
+		}
+	}
+	return ""
+}
+
+// isProviderType checks if the type expression is "Provider".
+func (m *ModuleLinter) isProviderType(typeExpr ast.Expr) bool {
+	if typeExpr == nil {
+		return false
+	}
+
+	ident, ok := typeExpr.(*ast.Ident)
+	return ok && ident.Name == "Provider"
+}
+
+// isModuleIDType checks if the type expression is "common.ModuleID".
+func (m *ModuleLinter) isModuleIDType(typeExpr ast.Expr) bool {
+	if typeExpr == nil {
+		return false
+	}
+
+	// Check for common.ModuleID (selector expression)
+	selExpr, ok := typeExpr.(*ast.SelectorExpr)
+	if !ok {
+		return false
+	}
+
+	// Check if X is "common" and Sel is "ModuleID"
+	xIdent, ok := selExpr.X.(*ast.Ident)
+	if !ok || xIdent.Name != "common" {
+		return false
+	}
+
+	return selExpr.Sel.Name == "ModuleID"
 }
 
 // isSetInfoCall checks if the call expression is a SetInfo call.
