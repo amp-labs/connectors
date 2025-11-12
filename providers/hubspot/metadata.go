@@ -177,7 +177,6 @@ func (c *Connector) getObjectMetadataFromCRMSearch(
 			DisplayName:  fieldName,
 			ValueType:    common.ValueTypeOther,
 			ProviderType: "", // not available
-			ReadOnly:     goutils.Pointer(false),
 			Values:       nil,
 		}
 	}

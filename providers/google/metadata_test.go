@@ -1,7 +1,6 @@
 package google
 
 import (
-	"github.com/amp-labs/connectors/internal/goutils"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -45,14 +44,12 @@ func TestCalendarListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cy
 								DisplayName:  "Id",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"value": {
 								DisplayName:  "Value",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 						},

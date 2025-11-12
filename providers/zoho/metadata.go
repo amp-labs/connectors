@@ -35,12 +35,19 @@ type metadataFieldsV2 struct {
 	Fields []field `json:"fields"`
 }
 
+// Response from: https://www.zoho.com/crm/developer/docs/api/v6/field-meta.html
+//
 //nolint:tagliatelle
 type field struct {
-	Name           string        `json:"api_name"`
-	DisplayName    string        `json:"field_label"`
-	Type           string        `json:"data_type"`
-	ReadOnly       bool          `json:"read_only"`
+	Name        string `json:"api_name"`
+	DisplayName string `json:"field_label"`
+	Type        string `json:"data_type"`
+	// Whether field is read only for the current user
+	// We ignore this.
+	ReadOnly bool `json:"read_only"`
+	// Whether field is always read only for everyone
+	// This is the field we return in FieldMetadata.ReadOnly
+	FieldReadOnly  bool          `json:"field_read_only"`
 	PickListValues []fieldValues `json:"pick_list_values,omitempty"`
 	// The rest metadata details
 }
@@ -187,7 +194,7 @@ func parseCRMMetadataResponse(resp *common.JSONHTTPResponse, objectName string) 
 			DisplayName:  fld.DisplayName,
 			ValueType:    nativeCRMType(fld.Type),
 			ProviderType: fld.Type,
-			ReadOnly:     goutils.Pointer(fld.ReadOnly),
+			ReadOnly:     goutils.Pointer(fld.FieldReadOnly),
 			Values:       fieldValues,
 		}
 

@@ -224,7 +224,6 @@ func (c *Connector) parseMetadata(resp *common.JSONHTTPResponse) (map[string]com
 			DisplayName:  k,
 			ValueType:    common.ValueTypeOther,
 			ProviderType: "", // not available
-			ReadOnly:     goutils.Pointer(false),
 			Values:       nil,
 		}
 	}

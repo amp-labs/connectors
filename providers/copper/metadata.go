@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers/copper/internal/metadata"
 )
 
@@ -35,7 +34,6 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 				DisplayName:  field.DisplayName,
 				ValueType:    getFieldValueType(field),
 				ProviderType: field.DataType,
-				ReadOnly:     goutils.Pointer(false),
 				Values:       field.getValues(),
 			})
 		}

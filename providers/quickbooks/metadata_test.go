@@ -1,7 +1,6 @@
 package quickbooks
 
 import (
-	"github.com/amp-labs/connectors/internal/goutils"
 	"net/http"
 	"testing"
 
@@ -96,7 +95,6 @@ func buildFieldMetadata(fields map[string]string) map[string]common.FieldMetadat
 			DisplayName:  name,
 			ValueType:    common.ValueType(typ),
 			ProviderType: "",
-			ReadOnly:     goutils.Pointer(false),
 			Values:       nil,
 		}
 	}

@@ -1,7 +1,6 @@
 package copper
 
 import (
-	"github.com/amp-labs/connectors/internal/goutils"
 	"net/http"
 	"testing"
 
@@ -68,7 +67,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Fruits",
 								ValueType:    common.ValueTypeSingleSelect,
 								ProviderType: "Dropdown",
-								ReadOnly:     goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "2082340",
 									DisplayValue: "Banana",
@@ -86,7 +84,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Birthday",
 								ValueType:    "datetime",
 								ProviderType: "Date",
-								ReadOnly:     goutils.Pointer(false),
 							},
 							"custom_field_child_of": {
 								DisplayName:  "Child of",
@@ -102,7 +99,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Fruits",
 								ValueType:    "singleSelect",
 								ProviderType: "Dropdown",
-								ReadOnly:     goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "2082340",
 									DisplayValue: "Banana",
@@ -125,7 +121,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Many",
 								ValueType:    "multiSelect",
 								ProviderType: "MultiSelect",
-								ReadOnly:     goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "2082480",
 									DisplayValue: "Option 1",

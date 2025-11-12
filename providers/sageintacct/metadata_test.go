@@ -1,12 +1,12 @@
 package sageintacct
 
 import (
-	"github.com/amp-labs/connectors/internal/goutils"
 	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -61,14 +61,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Accountemail",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"adminPrivileges": {
 								DisplayName:  "Adminprivileges",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
 								Values: []common.FieldValue{
 									{
 										DisplayValue: "Off",
@@ -89,35 +87,30 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Contact.id",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"contact.key": {
 								DisplayName:  "Contact.key",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"contact.firstName": {
 								DisplayName:  "Contact.firstname",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"contact.lastName": {
 								DisplayName:  "Contact.lastname",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"contact.email1": {
 								DisplayName:  "Contact.email1",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							// Flattened nested fields from refs.contact.groups.mailingAddress
@@ -125,28 +118,24 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Contact.mailingaddress.addressline1",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"contact.mailingAddress.city": {
 								DisplayName:  "Contact.mailingaddress.city",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"contact.mailingAddress.state": {
 								DisplayName:  "Contact.mailingaddress.state",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"contact.mailingAddress.country": {
 								DisplayName:  "Contact.mailingaddress.country",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							// Flattened nested fields from refs.entity
@@ -154,14 +143,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Entity.id",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"entity.key": {
 								DisplayName:  "Entity.key",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"entity.name": {

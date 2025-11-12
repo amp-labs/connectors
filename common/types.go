@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 var (
@@ -514,7 +513,6 @@ func (f FieldsMetadata) AddFieldWithDisplayOnly(fieldName string, displayName st
 		DisplayName:  displayName,
 		ValueType:    "",
 		ProviderType: "",
-		ReadOnly:     goutils.Pointer(false),
 		Values:       nil,
 	}
 }

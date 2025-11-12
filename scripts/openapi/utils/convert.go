@@ -2,7 +2,6 @@ package utilsopenapi
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/amp-labs/connectors/internal/staticschema"
 )
@@ -13,7 +12,6 @@ func ConvertMetadataFieldToFieldMetadataMapV2(field metadatadef.Field) staticsch
 			DisplayName:  field.Name,
 			ValueType:    getFieldValueType(field),
 			ProviderType: field.Type,
-			ReadOnly:     goutils.Pointer(false),
 			Values:       getFieldValueOptions(field),
 		},
 	}

@@ -2,12 +2,12 @@
 package attio
 
 import (
-	"github.com/amp-labs/connectors/internal/goutils"
 	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -84,21 +84,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "api_slug",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"id": {
 								DisplayName:  "id",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"name": {
 								DisplayName:  "name",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 						},
@@ -115,28 +112,24 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "email_address",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"first_name": {
 								DisplayName:  "first_name",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"id": {
 								DisplayName:  "id",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"last_name": {
 								DisplayName:  "last_name",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 						},
@@ -154,21 +147,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "content_plaintext",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"id": {
 								DisplayName:  "id",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"title": {
 								DisplayName:  "title",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 						},
@@ -185,14 +175,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "content_plaintext",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"id": {
 								DisplayName:  "id",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 						},
@@ -215,21 +203,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "domains",
 								ValueType:    "multiSelect",
 								ProviderType: "domain",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"name": {
 								DisplayName:  "name",
 								ValueType:    "string",
 								ProviderType: "text",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"team": {
 								DisplayName:  "team",
 								ValueType:    "multiSelect",
 								ProviderType: "record-reference",
-								ReadOnly:     goutils.Pointer(false),
 								Values: common.FieldValues{
 									{
 										Value:        "d0be3734-3b4d-4094-9925-9dd906941197",
@@ -274,14 +259,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "user_id",
 								ValueType:    "string",
 								ProviderType: "text",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"education": {
 								DisplayName:  "education",
 								ValueType:    "multiSelect",
 								ProviderType: "select",
-								ReadOnly:     goutils.Pointer(false),
 								Values: common.FieldValues{
 									{Value: "UG", DisplayValue: "UG"},
 									{Value: "PG", DisplayValue: "PG"},

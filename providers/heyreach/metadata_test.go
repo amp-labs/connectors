@@ -1,7 +1,6 @@
 package heyreach
 
 import (
-	"github.com/amp-labs/connectors/internal/goutils"
 	"net/http"
 	"testing"
 
@@ -54,28 +53,24 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "id",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"name": {
 								DisplayName:  "name",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"creationTime": {
 								DisplayName:  "creationTime",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"status": {
 								DisplayName:  "status",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 						},
@@ -93,28 +88,24 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "id",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"name": {
 								DisplayName:  "name",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"creationTime": {
 								DisplayName:  "creationTime",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"listType": {
 								DisplayName:  "listType",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 						},
@@ -132,28 +123,24 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "id",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"emailAddress": {
 								DisplayName:  "emailAddress",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"firstName": {
 								DisplayName:  "firstName",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"lastName": {
 								DisplayName:  "lastName",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 						},

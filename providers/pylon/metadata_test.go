@@ -1,7 +1,6 @@
 package pylon
 
 import (
-	"github.com/amp-labs/connectors/internal/goutils"
 	"net/http"
 	"testing"
 
@@ -50,56 +49,48 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "account",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"avatar_url": {
 								DisplayName:  "avatar_url",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"custom_fields": {
 								DisplayName:  "custom_fields",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"email": {
 								DisplayName:  "email",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"emails": {
 								DisplayName:  "emails",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"id": {
 								DisplayName:  "id",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"name": {
 								DisplayName:  "name",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"portal_role": {
 								DisplayName:  "portal_role",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 						},
@@ -112,21 +103,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "hex_color",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"id": {
 								DisplayName:  "id",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"object_type": {
 								DisplayName:  "object_type",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 
@@ -134,7 +122,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "value",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 						},

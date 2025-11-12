@@ -11,7 +11,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/capsule/metadata"
@@ -47,7 +46,6 @@ func (c *Connector) ListObjectMetadata(
 				DisplayName:  field.Name,
 				ValueType:    field.getValueType(),
 				ProviderType: field.Type,
-				ReadOnly:     goutils.Pointer(false),
 				Values:       field.getValues(),
 			})
 		}
