@@ -20,7 +20,7 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.64.3
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
-      - name: Build custom golangci-lint with nogoroutine linter
+      - name: Build custom golangci-lint with custom linters
         run: golangci-lint custom
 
       - name: Lint Go code
