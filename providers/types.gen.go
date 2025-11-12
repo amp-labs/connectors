@@ -303,6 +303,9 @@ type Oauth2Opts struct {
 	ExplicitWorkspaceRequired bool                `json:"explicitWorkspaceRequired"`
 	GrantType                 Oauth2OptsGrantType `json:"grantType"`
 
+	// ScopeMappings Maps input scopes to their full OAuth scope values with template variable support. Scopes not in this map are passed through unchanged. Needed for some providers.
+	ScopeMappings map[string]string `json:"scopeMappings,omitempty"`
+
 	// TokenMetadataFields Fields to be used to extract token metadata from the token response.
 	TokenMetadataFields TokenMetadataFields `json:"tokenMetadataFields"`
 
