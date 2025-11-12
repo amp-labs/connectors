@@ -58,3 +58,8 @@ func (c *Connector) getCRMSearchURL(config searchCRMParams) (string, error) {
 
 	return c.getURL(relativeURL)
 }
+
+// https://developers.hubspot.com/docs/api-reference/crm-properties-v3/core/get-crm-v3-properties-objectType
+func (c *Connector) getPropertiesURL(objectName string) (string, error) {
+	return c.getURL(strings.Join([]string{"properties", objectName}, "/"))
+}
