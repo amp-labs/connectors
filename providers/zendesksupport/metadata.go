@@ -5,6 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 )
 
@@ -39,7 +40,7 @@ func (c *Connector) ListObjectMetadata(
 				DisplayName:  field.TitleInPortal,
 				ValueType:    field.GetValueType(),
 				ProviderType: field.Type,
-				ReadOnly:     false,
+				ReadOnly:     goutils.Pointer(false),
 				Values:       field.getValues(),
 			})
 		}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 func (c *Connector) ListObjectMetadata(
@@ -127,7 +128,7 @@ func (c *Connector) fetchObjectMetadata(
 			DisplayName:  field,
 			ValueType:    inferValueTypeFromData(value),
 			ProviderType: "", // not available
-			ReadOnly:     false,
+			ReadOnly:     goutils.Pointer(false),
 			Values:       nil,
 		}
 	}

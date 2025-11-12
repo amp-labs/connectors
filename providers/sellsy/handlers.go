@@ -10,6 +10,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/sellsy/internal/metadata"
 	"github.com/spyzhov/ajson"
@@ -130,7 +131,7 @@ func (c *Connector) ListObjectMetadata(
 				DisplayName:  field.Name,
 				ValueType:    field.getValueType(),
 				ProviderType: field.Type,
-				ReadOnly:     false,
+				ReadOnly:     goutils.Pointer(false),
 				Values:       field.getValues(),
 			})
 		}

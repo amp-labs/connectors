@@ -1,6 +1,7 @@
 package zendesksupport
 
 import (
+	"github.com/amp-labs/connectors/internal/goutils"
 	"net/http"
 	"testing"
 
@@ -120,13 +121,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "comment",
 								ValueType:    "other",
 								ProviderType: "object",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 							},
 							"priority": {
 								DisplayName:  "priority",
 								ValueType:    "singleSelect",
 								ProviderType: "string",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "urgent",
 									DisplayValue: "urgent",
@@ -146,7 +147,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Customer Type",
 								ValueType:    "singleSelect",
 								ProviderType: "tagger",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "vip_customer",
 									DisplayValue: "VIP Customer",

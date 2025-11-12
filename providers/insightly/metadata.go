@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers/insightly/metadata"
 )
 
@@ -37,7 +38,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 				DisplayName:  field.DisplayName,
 				ValueType:    getFieldValueType(field),
 				ProviderType: field.Type,
-				ReadOnly:     !field.Editable,
+				ReadOnly:     goutils.Pointer(!field.Editable),
 				Values:       field.getValues(),
 			})
 		}

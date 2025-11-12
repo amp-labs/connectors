@@ -12,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
@@ -74,7 +75,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 			DisplayName:  field,
 			ValueType:    common.ValueTypeOther,
 			ProviderType: "",
-			ReadOnly:     false,
+			ReadOnly:     goutils.Pointer(false),
 			Values:       nil,
 		}
 	}

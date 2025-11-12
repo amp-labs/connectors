@@ -1,6 +1,7 @@
 package capsule
 
 import (
+	"github.com/amp-labs/connectors/internal/goutils"
 	"net/http"
 	"testing"
 
@@ -38,7 +39,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Id",
 								ValueType:    "int",
 								ProviderType: "Long",
-								ReadOnly:     true,
+								ReadOnly:     goutils.Pointer(true),
 							},
 							"updateLastContacted": {
 								DisplayName:  "Update Last Contacted",
@@ -54,7 +55,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Last Contacted At",
 								ValueType:    "date",
 								ProviderType: "Date",
-								ReadOnly:     true,
+								ReadOnly:     goutils.Pointer(true),
 							},
 							"type": {
 								DisplayName:  "Type",
@@ -94,7 +95,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Created At",
 								ValueType:    "date",
 								ProviderType: "Date",
-								ReadOnly:     true,
+								ReadOnly:     goutils.Pointer(true),
 							},
 							"status": {
 								DisplayName:  "Status",

@@ -1,6 +1,7 @@
 package fathom
 
 import (
+	"github.com/amp-labs/connectors/internal/goutils"
 	"net/http"
 	"testing"
 
@@ -49,14 +50,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "created_at",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"crm_matches": {
 								DisplayName:  "crm_matches",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 
@@ -64,14 +65,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "meeting_title",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"meeting_type": {
 								DisplayName:  "meeting_type",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 
@@ -79,28 +80,28 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "recording_end_time",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"recording_start_time": {
 								DisplayName:  "recording_start_time",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"scheduled_end_time": {
 								DisplayName:  "scheduled_end_time",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"scheduled_start_time": {
 								DisplayName:  "scheduled_start_time",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 
@@ -108,28 +109,28 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "title",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"transcript": {
 								DisplayName:  "transcript",
 								ValueType:    "other",
 								ProviderType: "",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"transcript_language": {
 								DisplayName:  "transcript_language",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"url": {
 								DisplayName:  "url",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 						},
@@ -142,14 +143,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "created_at",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"name": {
 								DisplayName:  "name",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 						},

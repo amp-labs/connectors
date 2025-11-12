@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers/linkedin/internal/shared"
 )
 
@@ -70,7 +71,7 @@ func (c *Adapter) parseSingleObjectMetadataResponse(
 			DisplayName:  field,
 			ValueType:    common.ValueTypeOther,
 			ProviderType: "",
-			ReadOnly:     false,
+			ReadOnly:     goutils.Pointer(false),
 			Values:       nil,
 		}
 	}

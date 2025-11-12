@@ -62,7 +62,7 @@ func (d objectDefinition) GetFields() []staticschema.FieldMetadataMapV2 {
 				DisplayName:  fieldName,
 				ValueType:    primitiveType,
 				ProviderType: string(primitiveType),
-				ReadOnly:     false,
+				ReadOnly:     goutils.Pointer(false),
 				Values:       nil,
 			},
 		})

@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
@@ -197,7 +198,7 @@ func (c *Connector) parseStandardOrCustomMetadata(
 			DisplayName:  apiSlug,
 			ValueType:    getFieldValueType(value.Type, value.IsMultiselect),
 			ProviderType: value.Type,
-			ReadOnly:     !value.IsWritable,
+			ReadOnly:     goutils.Pointer(!value.IsWritable),
 			Values:       defaultValues,
 		}
 	}
@@ -223,7 +224,7 @@ func (c *Connector) parseMetadata(resp *common.JSONHTTPResponse) (map[string]com
 			DisplayName:  k,
 			ValueType:    common.ValueTypeOther,
 			ProviderType: "", // not available
-			ReadOnly:     false,
+			ReadOnly:     goutils.Pointer(false),
 			Values:       nil,
 		}
 	}

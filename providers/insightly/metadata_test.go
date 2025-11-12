@@ -1,6 +1,7 @@
 package insightly
 
 import (
+	"github.com/amp-labs/connectors/internal/goutils"
 	"net/http"
 	"testing"
 
@@ -175,7 +176,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "AutoNumber1",
 								ValueType:    "other",
 								ProviderType: "AUTONUMBER",
-								ReadOnly:     true,
+								ReadOnly:     goutils.Pointer(true),
 							},
 						},
 					},
