@@ -24,7 +24,7 @@ func init() { // nolint:funlen
 
 			// Map of source scopes that will be transformed into target scopes
 			ScopeMappings: map[string]string{
-				".default": "https://api.businesscentral.dynamics.com",
+				".default": "https://api.businesscentral.dynamics.com/.default",
 			},
 		},
 		Media: &Media{
