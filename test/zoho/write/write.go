@@ -23,7 +23,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetZohoConnector(ctx, providers.ZohoCRM)
+	conn := connTest.GetZohoConnector(ctx, providers.ModuleZohoCRM)
 
 	if err := createDeals(ctx, conn); err != nil {
 		slog.Error(err.Error())

@@ -25,8 +25,8 @@ type Connector struct {
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	params, err := paramsbuilder.Apply(parameters{}, opts,
-		WithModule(providers.ZohoCRM), // The module is resolved on behalf of the user if the option is missing.
-		WithLocation(defaultLocation), // Use US region as default for testing
+		WithModule(providers.ModuleZohoCRM), // The module is resolved on behalf of the user if the option is missing.
+		WithLocation(defaultLocation),       // Use US region as default for testing
 	)
 	if err != nil {
 		return nil, err
