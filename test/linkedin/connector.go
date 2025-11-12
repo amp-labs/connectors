@@ -19,11 +19,11 @@ var fieldAdAccountId = credscanning.Field{ //nolint:gochecknoglobals
 }
 
 func GetPlatformConnector(ctx context.Context) *linkedin.Connector {
-	return getConnector(ctx, providers.ModulePlatform)
+	return getConnector(ctx, providers.ModuleLinkedInPlatform)
 }
 
 func GetAdsConnector(ctx context.Context) *linkedin.Connector {
-	return getConnector(ctx, providers.ModuleAds)
+	return getConnector(ctx, providers.ModuleLinkedInAds)
 }
 
 func getConnector(ctx context.Context, moduleID common.ModuleID) *linkedin.Connector {
@@ -41,7 +41,7 @@ func getConnector(ctx context.Context, moduleID common.ModuleID) *linkedin.Conne
 
 	metadata := map[string]string{}
 
-	if moduleID == providers.ModuleAds {
+	if moduleID == providers.ModuleLinkedInAds {
 		metadata["adAccountId"] = reader.Get(fieldAdAccountId)
 	}
 

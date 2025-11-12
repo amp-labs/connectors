@@ -157,11 +157,11 @@ func TestPlatformWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 }
 
 func constructTestPlatformConnector(serverURL string) (*Connector, error) {
-	return constructTestConnector(serverURL, providers.ModulePlatform, nil)
+	return constructTestConnector(serverURL, providers.ModuleLinkedInPlatform, nil)
 }
 
 func constructTestAdsConnector(serverURL string) (*Connector, error) {
-	return constructTestConnector(serverURL, providers.ModuleAds, map[string]string{"adAccountId": "514674276"})
+	return constructTestConnector(serverURL, providers.ModuleLinkedInAds, map[string]string{"adAccountId": "514674276"})
 }
 
 func constructTestConnector(serverURL string, moduleID common.ModuleID, metadata map[string]string) (*Connector, error) { //nolint:lll
