@@ -50,6 +50,7 @@ import (
 	"github.com/amp-labs/connectors/providers/google"
 	"github.com/amp-labs/connectors/providers/gorgias"
 	"github.com/amp-labs/connectors/providers/groove"
+	"github.com/amp-labs/connectors/providers/happyfox"
 	"github.com/amp-labs/connectors/providers/helpscoutmailbox"
 	"github.com/amp-labs/connectors/providers/heyreach"
 	"github.com/amp-labs/connectors/providers/highlevelstandard"
@@ -157,6 +158,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Google:                  wrapper(newGoogleConnector),
 	providers.Gorgias:                 wrapper(newGorgiasConnector),
 	providers.Groove:                  wrapper(newGrooveConnector),
+	providers.HappyFox:                wrapper(newHappyFoxConnector),
 	providers.HelpScoutMailbox:        wrapper(newHelpScoutMailboxConnector),
 	providers.HeyReach:                wrapper(newHeyReachConnector),
 	providers.HighLevelStandard:       wrapper(newHighLevelStandardConnector),
@@ -853,4 +855,9 @@ func newSnapchatAdsConnector(params common.ConnectorParams,
 func newOutplayConnector(params common.ConnectorParams,
 ) (*outplay.Connector, error) {
 	return outplay.NewConnector(params)
+}
+
+func newHappyFoxConnector(params common.ConnectorParams,
+) (*happyfox.Connector, error) {
+	return happyfox.NewConnector(params)
 }
