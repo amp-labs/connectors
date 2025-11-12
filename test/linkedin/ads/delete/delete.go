@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"os"
@@ -10,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	ap "github.com/amp-labs/connectors/providers/linkedin"
 	"github.com/amp-labs/connectors/test/linkedin"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
@@ -33,13 +33,13 @@ func MainFn() int {
 }
 
 func testAdAccounts(ctx context.Context) error {
-	conn := linkedin.GetConnector(ctx)
+	conn := linkedin.GetAdsConnector(ctx)
 
 	slog.Info("Deleting the adAccounts")
 
 	deleteParams := common.DeleteParams{
 		ObjectName: "adAccounts",
-		RecordId:   "514674276",
+		RecordId:   "517370155",
 	}
 
 	res, err := Delete(ctx, conn, deleteParams)
@@ -49,15 +49,13 @@ func testAdAccounts(ctx context.Context) error {
 		return err
 	}
 
-	if err := constructResponse(res); err != nil {
-		return err
-	}
+	utils.DumpJSON(res, os.Stdout)
 
 	return nil
 }
 
 func TestAdCampaignsGroup(ctx context.Context) error {
-	conn := linkedin.GetConnector(ctx)
+	conn := linkedin.GetAdsConnector(ctx)
 
 	slog.Info("Deleting the adCampaignGroups")
 
@@ -73,9 +71,7 @@ func TestAdCampaignsGroup(ctx context.Context) error {
 		return err
 	}
 
-	if err := constructResponse(res); err != nil {
-		return err
-	}
+	utils.DumpJSON(res, os.Stdout)
 
 	return nil
 }
@@ -87,17 +83,4 @@ func Delete(ctx context.Context, conn *ap.Connector, payload common.DeleteParams
 	}
 
 	return res, nil
-}
-
-// unmarshal the delte response.
-func constructResponse(res *common.DeleteResult) error {
-	jsonStr, err := json.MarshalIndent(res, "", " ")
-	if err != nil {
-		return fmt.Errorf("error marshalling JSON: %w", err)
-	}
-
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
-
-	return nil
 }

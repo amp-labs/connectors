@@ -12,7 +12,7 @@ import (
 func main() {
 	ctx := context.Background()
 
-	conn := linkedin.GetConnector(ctx)
+	conn := linkedin.GetAdsConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"adTargetingFacets", "dmpEngagementSourceTypes", "dmpSegments", "adAnalytics"})
 	if err != nil {

@@ -18,7 +18,15 @@ var fieldAdAccountId = credscanning.Field{ //nolint:gochecknoglobals
 	SuffixENV: "AD_ACCOUNT_ID",
 }
 
-func GetConnector(ctx context.Context) *linkedin.Connector {
+func GetPlatformConnector(ctx context.Context) *linkedin.Connector {
+	return getConnector(ctx, providers.ModulePlatform)
+}
+
+func GetAdsConnector(ctx context.Context) *linkedin.Connector {
+	return getConnector(ctx, providers.ModuleAds)
+}
+
+func getConnector(ctx context.Context, moduleID common.ModuleID) *linkedin.Connector {
 	filePath := credscanning.LoadPath(providers.LinkedIn)
 	reader := utils.MustCreateProvCredJSON(filePath, true, fieldAdAccountId)
 
@@ -31,11 +39,16 @@ func GetConnector(ctx context.Context) *linkedin.Connector {
 		utils.Fail(err.Error())
 	}
 
+	metadata := map[string]string{}
+
+	if moduleID == providers.ModuleAds {
+		metadata["adAccountId"] = reader.Get(fieldAdAccountId)
+	}
+
 	conn, err := linkedin.NewConnector(common.ConnectorParams{
+		Module:              moduleID,
 		AuthenticatedClient: client,
-		Metadata: map[string]string{
-			"adAccountId": reader.Get(fieldAdAccountId),
-		},
+		Metadata:            metadata,
 	})
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"os"
@@ -10,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	ap "github.com/amp-labs/connectors/providers/linkedin"
 	"github.com/amp-labs/connectors/test/linkedin"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
@@ -38,7 +38,7 @@ func MainFn() int {
 }
 
 func testAdAccounts(ctx context.Context) error {
-	conn := linkedin.GetConnector(ctx)
+	conn := linkedin.GetAdsConnector(ctx)
 
 	slog.Info("Creating the Ad Account")
 
@@ -65,9 +65,7 @@ func testAdAccounts(ctx context.Context) error {
 		return err
 	}
 
-	if err := constructResponse(writeRes); err != nil {
-		return err
-	}
+	utils.DumpJSON(writeRes, os.Stdout)
 
 	slog.Info("updating the Ad Account")
 
@@ -80,7 +78,7 @@ func testAdAccounts(ctx context.Context) error {
 				},
 			},
 		},
-		RecordId: writeRes.RecordId,
+		RecordId: "517370155",
 	}
 
 	updateRes, err := Write(ctx, conn, updateParams)
@@ -90,15 +88,13 @@ func testAdAccounts(ctx context.Context) error {
 		return err
 	}
 
-	if err := constructResponse(updateRes); err != nil {
-		return err
-	}
+	utils.DumpJSON(updateRes, os.Stdout)
 
 	return nil
 }
 
 func TestAdTargetTemplates(ctx context.Context) error {
-	conn := linkedin.GetConnector(ctx)
+	conn := linkedin.GetAdsConnector(ctx)
 
 	slog.Info("Creating the Ad target templates")
 
@@ -140,9 +136,7 @@ func TestAdTargetTemplates(ctx context.Context) error {
 		return err
 	}
 
-	if err := constructResponse(writeRes); err != nil {
-		return err
-	}
+	utils.DumpJSON(writeRes, os.Stdout)
 
 	slog.Info("Updating the Ad target templates")
 
@@ -155,7 +149,7 @@ func TestAdTargetTemplates(ctx context.Context) error {
 				},
 			},
 		},
-		RecordId: writeParams.RecordId,
+		RecordId: "42633049",
 	}
 
 	updateRes, err := Write(ctx, conn, updateParams)
@@ -165,15 +159,13 @@ func TestAdTargetTemplates(ctx context.Context) error {
 		return err
 	}
 
-	if err := constructResponse(updateRes); err != nil {
-		return err
-	}
+	utils.DumpJSON(updateRes, os.Stdout)
 
 	return nil
 }
 
 func testConversationAds(ctx context.Context) error {
-	conn := linkedin.GetConnector(ctx)
+	conn := linkedin.GetAdsConnector(ctx)
 
 	slog.Info("Creating conversation Ads")
 
@@ -192,9 +184,7 @@ func testConversationAds(ctx context.Context) error {
 		return err
 	}
 
-	if err := constructResponse(writeRes); err != nil {
-		return err
-	}
+	utils.DumpJSON(writeRes, os.Stdout)
 
 	return nil
 }
@@ -206,17 +196,4 @@ func Write(ctx context.Context, conn *ap.Connector, payload common.WriteParams) 
 	}
 
 	return res, nil
-}
-
-// unmarshal the write response.
-func constructResponse(res *common.WriteResult) error {
-	jsonStr, err := json.MarshalIndent(res, "", " ")
-	if err != nil {
-		return fmt.Errorf("error marshalling JSON: %w", err)
-	}
-
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
-
-	return nil
 }

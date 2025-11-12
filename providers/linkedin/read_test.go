@@ -12,7 +12,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
+func TestAdsRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	adTargetingFacetsResponse := testutils.DataFromFile(t, "adTargetingFacets.json")
@@ -197,7 +197,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestAdsConnector(tt.Server.URL)
 			})
 		})
 	}
