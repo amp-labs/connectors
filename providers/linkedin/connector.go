@@ -34,14 +34,14 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	}
 
 	switch connector.Module() { //nolint:exhaustive
-	case providers.ModulePlatform:
+	case providers.ModuleLinkedInPlatform:
 		adapter, err := platform.NewAdapter(params)
 		if err != nil {
 			return nil, err
 		}
 
 		connector.Platform = adapter
-	case providers.ModuleAds:
+	case providers.ModuleLinkedInAds:
 		adapter, err := ads.NewAdapter(params)
 		if err != nil {
 			return nil, err
