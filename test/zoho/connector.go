@@ -2,6 +2,7 @@ package zoho
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -23,6 +24,8 @@ func GetZohoConnector(ctx context.Context, module common.ModuleID) *zoho.Connect
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
 	}
+
+	fmt.Println("Module: ", module)
 
 	return conn
 }

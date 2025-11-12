@@ -21,7 +21,6 @@ type metadataFetcher func(ctx context.Context, objectName string) (*common.Objec
 // doc: https://www.zoho.com/crm/developer/docs/api/v6/field-meta.html
 const (
 	restMetadataEndpoint = "settings/fields"
-	organizations        = "organizations"
 	users                = "users"
 	org                  = "org"
 )
@@ -83,6 +82,10 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 	if c.moduleID == providers.ModuleZohoDesk {
 		mf = c.deskMetadata
+	}
+
+	if c.isServiceDeskPlusModule() {
+		return c.servicedeskplusAdapter.ListObjectMetadata(ctx, objectNames)
 	}
 
 	if len(objectNames) == 0 {
