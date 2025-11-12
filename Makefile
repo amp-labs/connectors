@@ -61,6 +61,10 @@ test:
 test-parallel:
 	go test -v ./... -parallel=8 -count=3
 
+.PHONY: test-pretty
+test-pretty:
+	go run gotest.tools/gotestsum@latest
+
 # Creates PR URLs for each template
 # Click on one of them or manually add ?template=<file.md> to the URL if you are creating a PR via the Github website
 # Templates: Under github/PULL_REQUEST_TEMPLATE directory you can add more templates
