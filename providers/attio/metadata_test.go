@@ -203,18 +203,21 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "domains",
 								ValueType:    "multiSelect",
 								ProviderType: "domain",
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"name": {
 								DisplayName:  "name",
 								ValueType:    "string",
 								ProviderType: "text",
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"team": {
 								DisplayName:  "team",
 								ValueType:    "multiSelect",
 								ProviderType: "record-reference",
+								ReadOnly:     goutils.Pointer(false),
 								Values: common.FieldValues{
 									{
 										Value:        "d0be3734-3b4d-4094-9925-9dd906941197",
@@ -259,12 +262,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "user_id",
 								ValueType:    "string",
 								ProviderType: "text",
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"education": {
 								DisplayName:  "education",
 								ValueType:    "multiSelect",
 								ProviderType: "select",
+								ReadOnly:     goutils.Pointer(false),
 								Values: common.FieldValues{
 									{Value: "UG", DisplayValue: "UG"},
 									{Value: "PG", DisplayValue: "PG"},

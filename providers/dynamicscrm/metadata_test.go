@@ -127,12 +127,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "New Password Input",
 								ValueType:    "string",
 								ProviderType: "StringType",
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"adx_publicprofilecopy": {
 								DisplayName:  "Public Profile Copy",
 								ValueType:    "string",
 								ProviderType: "MemoType",
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"merged": {
@@ -153,6 +155,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Import Sequence Number",
 								ValueType:    "int",
 								ProviderType: "IntegerType",
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"exchangerate": {
@@ -166,12 +169,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Annual Income",
 								ValueType:    "float",
 								ProviderType: "MoneyType",
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"birthdate": {
 								DisplayName:  "Birthday",
 								ValueType:    "date",
 								ProviderType: "DateTimeType",
+								ReadOnly:     goutils.Pointer(false),
 								Values:       nil,
 							},
 							"createdon": {
@@ -185,6 +190,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Status",
 								ValueType:    "singleSelect",
 								ProviderType: "StateType",
+								ReadOnly:     goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "0",
 									DisplayValue: "Active",
@@ -197,6 +203,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Status Reason",
 								ValueType:    "singleSelect",
 								ProviderType: "StatusType",
+								ReadOnly:     goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "1",
 									DisplayValue: "Active",
@@ -209,6 +216,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Gender",
 								ValueType:    "singleSelect",
 								ProviderType: "PicklistType",
+								ReadOnly:     goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "1",
 									DisplayValue: "Male",
@@ -221,6 +229,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Marital Status",
 								ValueType:    "singleSelect",
 								ProviderType: "PicklistType",
+								ReadOnly:     goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "1",
 									DisplayValue: "Single",
@@ -239,6 +248,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Education",
 								ValueType:    "singleSelect",
 								ProviderType: "PicklistType",
+								ReadOnly:     goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "1",
 									DisplayValue: "Default Value",
