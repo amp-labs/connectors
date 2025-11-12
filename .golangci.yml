@@ -57,7 +57,7 @@ linters-settings:
           - "internal/simultaneously"
     modulelinter:
       type: "module"
-      description: "Checks module-related rules: DefaultModule for multi-module providers and ModuleDependencies in metadata"
+      description: "Checks module-related rules: DefaultModule, ModuleDependencies, and module constant naming (Module<ProviderName><ModuleName>)"
       settings: {}
 
 issues:
