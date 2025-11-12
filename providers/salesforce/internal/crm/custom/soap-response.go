@@ -92,3 +92,69 @@ type Error struct {
 	Message    string `xml:"message"`
 	StatusCode string `xml:"statusCode"`
 }
+
+type ReadMetadataBody[R any] struct {
+	Response ReadMetadataResponse[R] `xml:"readMetadataResponse"`
+}
+
+type ReadMetadataResponse[R any] struct {
+	Results []ReadMetadataResult[R] `xml:"result"`
+}
+
+type ReadMetadataResult[R any] struct {
+	Records []R `xml:"records"`
+}
+
+type PermissionSetResponse ReadMetadataBody[PermissionSet]
+
+// GetFieldPermissions returns all FieldPermissions from the PermissionSetResponse
+// that belong to the default Ampersand-managed permission set
+// (see DefaultPermissionSetName).
+//
+// Records marked as xsi:nil="true" are skipped.
+// Only records with xsi:type="PermissionSet" are processed.
+//
+// Example of empty response:
+//
+//	<readMetadataResponse>
+//	  <result>
+//	    <records xsi:nil="true"/>
+//	  </result>
+//	</readMetadataResponse>
+func (r PermissionSetResponse) GetFieldPermissions() FieldPermissions {
+	fieldPermissions := make(FieldPermissions)
+
+	for _, result := range r.Response.Results {
+		for _, record := range result.Records {
+			if record.IsNil || record.XSIType != PermissionSetType {
+				continue
+			}
+
+			if record.FullName == DefaultPermissionSetName {
+				for _, permission := range record.FieldPermissions {
+					fieldPermissions[permission.FullName] = permission
+				}
+			}
+		}
+	}
+
+	return fieldPermissions
+}
+
+type PermissionSet struct {
+	XSIType          string            `xml:"http://www.w3.org/2001/XMLSchema-instance type,attr"`
+	IsNil            bool              `xml:"http://www.w3.org/2001/XMLSchema-instance nil,attr"`
+	FullName         string            `xml:"fullName"`
+	FieldPermissions []FieldPermission `xml:"fieldPermissions"`
+}
+
+type FieldPermissions map[string]FieldPermission
+
+// FieldPermission represents the access rights for a single field.
+// This type is used both in request payloads and in responses, as the structure
+// is identical in both cases.
+type FieldPermission struct {
+	FullName string `xml:"field"`
+	Readable bool   `xml:"readable"`
+	Editable bool   `xml:"editable"`
+}
