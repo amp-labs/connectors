@@ -241,3 +241,39 @@ type SubscriptionMaintainerConnector interface {
 		previousResult *common.SubscriptionResult,
 	) (*common.SubscriptionResult, error)
 }
+
+// Entity represents the type of entity being referenced in provider APIs.
+// This is used to determine the appropriate normalization rules for entity names.
+type Entity string
+
+const (
+	// EntityObject represents an object/table in the provider's data model (e.g., "Account", "Contact").
+	EntityObject Entity = "object"
+	// EntityField represents a field/column within an object (e.g., "firstName", "email").
+	EntityField Entity = "field"
+)
+
+// EntityNamingConnector is an interface that extends the Connector interface with
+// the ability to normalize entity names according to provider-specific conventions.
+// This is useful for handling provider API inconsistencies such as case-sensitivity,
+// pluralization rules, special character handling, and other naming conventions.
+//
+// For example:
+//   - Some providers require exact case matching (e.g., Salesforce's "Account" vs "account")
+//   - Some providers use plural object names while others use singular
+//   - Some providers have special formatting requirements for custom fields
+//
+// Implementations should normalize entity names to match the provider's expected format,
+// ensuring consistent API interactions regardless of how the entity name is provided.
+type EntityNamingConnector interface {
+	Connector
+
+	// NormalizeEntityName normalizes the entity name for the given entity type.
+	// This is useful for handling things like case-sensitivity, pluralization, etc.
+	// The precise normalization rules are provider-specific, and the caller should
+	// consult the provider's documentation for more information.
+	//
+	// The input parameter is the entity name to be normalized.
+	// The normalized entity name is returned as a string, or an error is returned
+	NormalizeEntityName(ctx context.Context, entity Entity, input string) (normalized string, err error)
+}
