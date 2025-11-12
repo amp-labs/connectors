@@ -86,7 +86,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	//
 	// Note: moduleInfo always refers to the Salesforce CRM module.
 	// These adapters are not applicable to the Pardot module.
-	conn.customAdapter = custom.NewAdapter(httpClient, conn.moduleInfo)
+	conn.customAdapter = custom.NewAdapter(httpClient, conn.Client, conn.moduleInfo)
 	conn.batchAdapter = batch.NewAdapter(httpClient, conn.moduleInfo)
 
 	// Initialize the Pardot (Account Engagement) adapter if applicable.
