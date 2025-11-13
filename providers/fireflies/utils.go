@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	defaultPageSize = 1
+	defaultPageSize = 50
 )
 
 var supportLimitAndSkip = datautils.NewSet( //nolint:gochecknoglobals
