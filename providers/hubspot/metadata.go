@@ -307,6 +307,7 @@ func (f fieldDescription) implyEnumerationType(fieldName string) (common.ValueTy
 	if len(f.Options) != 0 {
 		// List of values is not nil, at least one option exists.
 		values = make([]common.FieldValue, len(f.Options))
+
 		for index, option := range f.Options {
 			displayValue := option.Label
 			// For persona field, use description if it exists, otherwise fall back to label
