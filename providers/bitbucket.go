@@ -37,5 +37,14 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					// similar to oganization in Github
+					Name:        "workspace",
+					DisplayName: "Workspace",
+				},
+			},
+		},
 	})
 }
