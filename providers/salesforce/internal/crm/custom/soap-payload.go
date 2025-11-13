@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 )
 
@@ -45,6 +46,23 @@ func NewCustomFieldsPayload(params *common.UpsertMetadataParams) (*UpsertCustomF
 	return &UpsertCustomFieldsPayload{
 		MetadataList: fields,
 	}, nil
+}
+
+func (p UpsertCustomFieldsPayload) getOptionalFields() FieldPermissions {
+	fields := make(FieldPermissions)
+
+	for _, meta := range p.MetadataList {
+		if !meta.Required {
+			name := meta.FullName
+			fields[name] = FieldPermission{
+				FullName: name,
+				Readable: true,
+				Editable: true,
+			}
+		}
+	}
+
+	return fields
 }
 
 const metadataTypeCustomField = "CustomField"
@@ -329,4 +347,52 @@ func valueOrDefault(value *int, defaultValue int) int {
 	}
 
 	return *value
+}
+
+// ReadMetadataPayload used to read metadata objects.
+type ReadMetadataPayload struct {
+	XMLName xml.Name `xml:"readMetadata"`
+
+	// Type is the object type. Ex: PermissionSet.
+	Type string `xml:"type"`
+	// FullNames is a name of object instance.
+	FullNames string `xml:"fullNames"`
+}
+
+func NewReadPermissionSetPayload() *ReadMetadataPayload {
+	return &ReadMetadataPayload{
+		Type:      PermissionSetType,
+		FullNames: DefaultPermissionSetName,
+	}
+}
+
+type UpsertPermissionSetPayload UpsertMetadataPayload[MetadataPermissionSet]
+
+func NewPermissionSetPayload(fieldPermissions FieldPermissions) *UpsertPermissionSetPayload {
+	return &UpsertPermissionSetPayload{
+		MetadataList: []MetadataPermissionSet{
+			{
+				AttributeMetadataType: PermissionSetType,
+				FullName:              DefaultPermissionSetName,
+				Label:                 DefaultPermissionSetLabel,
+				Description:           DefaultPermissionSetDescription,
+				Fields:                datautils.FromMap(fieldPermissions).Values(),
+			},
+		},
+	}
+}
+
+// MetadataPermissionSet fields can be found here:
+// https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_permissionset.htm
+type MetadataPermissionSet struct {
+	XMLName               xml.Name `xml:"metadata"`
+	AttributeMetadataType string   `xml:"xsi:type,attr"`
+
+	// Common properties.
+	FullName    string `xml:"fullName"`
+	Label       string `xml:"label"`
+	Description string `xml:"description"`
+
+	// Fields
+	Fields []FieldPermission `xml:"fieldPermissions"`
 }

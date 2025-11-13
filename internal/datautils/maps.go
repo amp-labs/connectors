@@ -154,3 +154,24 @@ func StructToMap(obj any) (map[string]any, error) {
 
 	return result, nil
 }
+
+// MergeMaps creates a new map by combining all provided maps.
+//
+// Each key from the input maps is copied into the resulting map.
+// This is a **shallow copy**: the values themselves are not cloned,
+// so if they are pointers, slices, maps, or other reference types,
+// modifications to those values will be reflected in both the input and output maps.
+//
+// If the same key exists in multiple input maps, the value from the
+// last map in the argument list takes precedence.
+//
+// The original maps are not modified.
+func MergeMaps[K comparable, V any](maps ...map[K]V) map[K]V {
+	result := FromMap(make(map[K]V))
+
+	for _, mapping := range maps {
+		result.AddMapValues(FromMap(mapping))
+	}
+
+	return result
+}
