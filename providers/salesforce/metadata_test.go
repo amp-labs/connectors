@@ -17,7 +17,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	responseOrgMeta := testutils.DataFromFile(t, "metadata-organization-sampled.json")
-	responseCustomObjMeta := testutils.DataFromFile(t, "metadata/custom-object-with-custom-fields.json")
+	responseCustomObjMeta := testutils.DataFromFile(t, "metadata/read/custom-object-with-custom-fields.json")
 
 	tests := []testroutines.Metadata{
 		{

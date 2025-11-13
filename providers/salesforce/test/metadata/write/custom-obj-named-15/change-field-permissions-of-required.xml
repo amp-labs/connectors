@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://soap.sforce.com/2006/04/metadata">
+    <soapenv:Body>
+        <upsertMetadataResponse>
+            <result>
+                <created>false</created>
+                <errors>
+                    <message>You cannot deploy to a required field: TestObject15__c.Interests__c</message>
+                    <statusCode>FIELD_INTEGRITY_EXCEPTION</statusCode>
+                </errors>
+                <fullName>System Administrator</fullName>
+                <success>false</success>
+            </result>
+        </upsertMetadataResponse>
+    </soapenv:Body>
+</soapenv:Envelope>
