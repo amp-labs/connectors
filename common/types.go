@@ -326,7 +326,7 @@ type BatchWriteParam struct {
 	Records []any
 	// Items contains structured batch items with per-record associations.
 	// Each item includes the record data and optional associations specific to that record.
-	Items []WriteItem
+	Batch []WriteItem
 }
 
 // BatchWriteItem represents a single item in a batch write operation.
