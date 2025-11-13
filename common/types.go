@@ -322,7 +322,20 @@ type BatchWriteParam struct {
 	// Type defines how the records should be processed: create, update, or upsert.
 	Type BatchWriteType
 	// Records contains the collection of record payloads to be written.
+	// Deprecated: Use Items instead for per-record associations support.
 	Records []any
+	// Items contains structured batch items with per-record associations.
+	// Each item includes the record data and optional associations specific to that record.
+	Items []WriteItem
+}
+
+// BatchWriteItem represents a single item in a batch write operation.
+// It contains both the record data and any associations specific to that record.
+type WriteItem struct {
+	// Record is the record data to be written.
+	Record any
+	// Associations contains associations specific to this record.
+	Associations any
 }
 
 func (p BatchWriteParam) IsCreate() bool {

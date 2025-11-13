@@ -137,13 +137,19 @@ func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilde
 }
 
 func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
-	records, err := params.GetRecords()
-	if err != nil {
-		return nil, err
-	}
+	items := make([]PayloadItem, len(params.Items))
 
-	items := make([]PayloadItem, len(records))
-	for index, record := range records {
+	for index, item := range params.Items {
+		// Salesforce does not support associations in batch write operations
+		if item.Associations != nil {
+			return nil, common.ErrOperationNotSupportedForObject
+		}
+
+		record, err := common.RecordDataToMap(item.Record)
+		if err != nil {
+			return nil, err
+		}
+
 		items[index] = PayloadItem{
 			Record: record,
 			Extension: RecordExtension{
