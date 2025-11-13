@@ -73,13 +73,15 @@ func GetDomainsForLocation(location string) (*LocationDomains, error) { // nolin
 	case "uk":
 		return &LocationDomains{
 			ServiceDeskPlusDomain: "servicedeskplus.uk",
+			TokenDomain:           "accounts.zoho.sa",
 		}, nil
 	case "sa":
 		return &LocationDomains{
 			ServiceDeskPlusDomain: "servicedeskplus.sa",
+			TokenDomain:           "accounts.zoho.uk",
 		}, nil
 	default:
-		return nil, fmt.Errorf("%w %q; must be one of: us, eu, in, au, cn, jp, ca (case-insensitive)",
+		return nil, fmt.Errorf("%w %q; must be one of: us, eu, in, au, cn, jp, ca, uk, sa (case-insensitive)",
 			ErrInvalidLocation, location)
 	}
 }
