@@ -1,0 +1,12 @@
+mutation {
+  updateMeetingPrivacy(
+    input: {
+        id: "{{.id}}",
+        privacy: {{.privacy}}
+    }
+  ) {
+    id
+    title
+    privacy
+  }
+}

@@ -1,9 +1,13 @@
 {
-  "rows": 1,
-  "data": [
+  "Data": [
     {
-      "fields": {},
-      "raw": {
+      "Associations": {},
+      "Fields": {
+        "id": "01K9YRA38QP7YVR035B745A53J",
+        "title": "audio-sample-1.mp3"
+      },
+      "Id": "",
+      "Raw": {
         "apps_preview": {
           "outputs": []
         },
@@ -11,20 +15,18 @@
         "cal_id": null,
         "calendar_id": null,
         "calendar_type": null,
-        "date": 1745912100000,
-        "duration": 10.529999732971191,
-        "fireflies_users": [
-          "sample@gmail.com"
-        ],
-        "id": "01JT07GYXM9VYY5NQFGXPVD3FT",
-        "meeting_attendees": null,
+        "date": 1763042400000,
+        "duration": 6.199999809265137,
+        "fireflies_users": [],
+        "id": "01K9YRA38QP7YVR035B745A53J",
+        "meeting_attendees": [],
         "meeting_info": {
-          "fred_joined": true,
+          "fred_joined": null,
           "silent_meeting": false,
-          "summary_status": "skipped"
+          "summary_status": "processed"
         },
-        "meeting_link": "https://meet.google.com/wki-tqmq-ehq",
-        "organizer_email": "sample@gmail.com",
+        "meeting_link": null,
+        "organizer_email": "integration.test@withampersand.com",
         "participants": [],
         "sentences": [
           {
@@ -33,53 +35,53 @@
               "metric": null,
               "pricing": null,
               "question": null,
-              "sentiment": "neutral",
+              "sentiment": "positive",
               "task": null,
-              "text_cleanup": "Oh, okay."
+              "text_cleanup": "Please type a statement for a witness statement."
             },
-            "end_time": 33.378,
+            "end_time": 4.48,
             "index": 0,
-            "raw_text": "Oh, okay.",
+            "raw_text": "Please type a statement for a witness statement.",
             "speaker_id": 0,
             "speaker_name": null,
-            "start_time": 28.21,
-            "text": "Oh, okay."
+            "start_time": 1.44,
+            "text": "Please type a statement for a witness statement."
           },
           {
             "ai_filters": {
               "date_and_time": null,
-              "metric": null,
+              "metric": "Address is sample solicitors address 1, address 2, address 3 and then postcode underneath the date is 19th February 2010.",
               "pricing": null,
               "question": null,
               "sentiment": "neutral",
-              "task": "Can you tell me about the coroutines and channels in quali.",
-              "text_cleanup": "Can you tell me about the coroutines and channels in quali."
+              "task": null,
+              "text_cleanup": "Address is sample solicitors address 1, address 2, address 3 and then postcode underneath the date is 19th February 2010."
             },
-            "end_time": 37.75,
+            "end_time": 14.48,
             "index": 1,
-            "raw_text": "Can you tell me about the coroutines and channels in quali.",
+            "raw_text": "Address is sample solicitors address 1, address 2, address 3 and then postcode underneath the date is 19th February 2010.",
             "speaker_id": 0,
             "speaker_name": null,
-            "start_time": 33.554,
-            "text": "Can you tell me about the coroutines and channels in quali."
+            "start_time": 4.88,
+            "text": "Address is sample solicitors address 1, address 2, address 3 and then postcode underneath the date is 19th February 2010."
           },
           {
             "ai_filters": {
               "date_and_time": null,
-              "metric": null,
+              "metric": "Your reference is A for Alpha, B for Bravo, C for Charlie, P for Papa, Q for Quebec, R for Romeo 12 345.",
               "pricing": null,
               "question": null,
               "sentiment": "neutral",
               "task": null,
-              "text_cleanup": "We are implementing this in our project fireplace CIA."
+              "text_cleanup": "Your reference is A for Alpha, B for Bravo, C for Charlie, P for Papa, Q for Quebec, R for Romeo 12 345."
             },
-            "end_time": 49.11,
+            "end_time": 25.04,
             "index": 2,
-            "raw_text": "We are implementing this in our project fireplace CIA.",
+            "raw_text": "Your reference is A for Alpha, B for Bravo, C for Charlie, P for Papa, Q for Quebec, R for Romeo 12 345.",
             "speaker_id": 0,
             "speaker_name": null,
-            "start_time": 43.85,
-            "text": "We are implementing this in our project fireplace CIA."
+            "start_time": 15.2,
+            "text": "Your reference is A for Alpha, B for Bravo, C for Charlie, P for Papa, Q for Quebec, R for Romeo 12 345."
           },
           {
             "ai_filters": {
@@ -89,15 +91,15 @@
               "question": null,
               "sentiment": "neutral",
               "task": null,
-              "text_cleanup": "So we are testing out the output."
+              "text_cleanup": "Our reference is A for Alpha, C for Charlie, C for Charlie9876."
             },
-            "end_time": 53.43,
+            "end_time": 30.32,
             "index": 3,
-            "raw_text": "So we are testing out the output.",
+            "raw_text": "Our reference is A for Alpha, C for Charlie, C for Charlie9876.",
             "speaker_id": 0,
             "speaker_name": null,
-            "start_time": 50.49,
-            "text": "So we are testing out the output."
+            "start_time": 25.36,
+            "text": "Our reference is A for Alpha, C for Charlie, C for Charlie9876."
           },
           {
             "ai_filters": {
@@ -107,15 +109,15 @@
               "question": null,
               "sentiment": "neutral",
               "task": null,
-              "text_cleanup": "Hello."
+              "text_cleanup": "Inspector on the next line is Joe Bloggs, Claim Technician."
             },
-            "end_time": 57.934,
+            "end_time": 34.76,
             "index": 4,
-            "raw_text": "Hello.",
+            "raw_text": "Inspector on the next line is Joe Bloggs, Claim Technician.",
             "speaker_id": 0,
             "speaker_name": null,
-            "start_time": 57.51,
-            "text": "Hello."
+            "start_time": 31.4,
+            "text": "Inspector on the next line is Joe Bloggs, Claim Technician."
           },
           {
             "ai_filters": {
@@ -125,15 +127,33 @@
               "question": null,
               "sentiment": "neutral",
               "task": null,
-              "text_cleanup": "My Testing."
+              "text_cleanup": "On the next line, Tom Smith."
             },
-            "end_time": 58.526,
+            "end_time": 36.2,
             "index": 5,
-            "raw_text": "My Testing.",
+            "raw_text": "On the next line, Tom Smith.",
             "speaker_id": 0,
             "speaker_name": null,
-            "start_time": 57.982,
-            "text": "My Testing."
+            "start_time": 34.76,
+            "text": "On the next line, Tom Smith."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "Underneath that, please put a rectangle box with client interviewed in inverted commas."
+            },
+            "end_time": 42.44,
+            "index": 6,
+            "raw_text": "Underneath that, please put a rectangle box with client interviewed in inverted commas.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 36.76,
+            "text": "Underneath that, please put a rectangle box with client interviewed in inverted commas."
           },
           {
             "ai_filters": {
@@ -143,52 +163,1820 @@
               "question": null,
               "sentiment": "neutral",
               "task": null,
-              "text_cleanup": "Hello."
+              "text_cleanup": "Next line."
             },
-            "end_time": 58.814,
-            "index": 6,
-            "raw_text": "Hello.",
+            "end_time": 43.76,
+            "index": 7,
+            "raw_text": "Next line.",
             "speaker_id": 0,
             "speaker_name": null,
-            "start_time": 58.558,
-            "text": "Hello."
+            "start_time": 43.16,
+            "text": "Next line."
           },
           {
             "ai_filters": {
               "date_and_time": null,
-              "metric": "One, two, three.",
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "Dear Sirs, your client Henry Jones."
+            },
+            "end_time": 46.839,
+            "index": 8,
+            "raw_text": "Dear Sirs, your client Henry Jones.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 43.76,
+            "text": "Dear Sirs, your client Henry Jones."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
               "pricing": null,
               "question": null,
               "sentiment": "neutral",
-              "task": "One, two, three.",
-              "text_cleanup": "One, two, three."
+              "task": null,
+              "text_cleanup": "Next line."
             },
-            "end_time": 59.93,
-            "index": 7,
-            "raw_text": "One, two, three.",
+            "end_time": 47.88,
+            "index": 9,
+            "raw_text": "Next line.",
             "speaker_id": 0,
             "speaker_name": null,
-            "start_time": 58.862,
-            "text": "One, two, three."
+            "start_time": 47.24,
+            "text": "Next line."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": "Accident date 12th of May 2008.",
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Accident date 12th of May 2008."
+            },
+            "end_time": 50.44,
+            "index": 10,
+            "raw_text": "Accident date 12th of May 2008.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 47.96,
+            "text": "Accident date 12th of May 2008."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Paragraph."
+            },
+            "end_time": 51.56,
+            "index": 11,
+            "raw_text": "Paragraph.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 50.92,
+            "text": "Paragraph."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": "We are pleased to confirm that we have interviewed your client and as such we are pleased to supply our findings to you in the following manner.",
+              "text_cleanup": "We are pleased to confirm that we have interviewed your client and as such we are pleased to supply our findings to you in the following manner."
+            },
+            "end_time": 58.16,
+            "index": 12,
+            "raw_text": "We are pleased to confirm that we have interviewed your client and as such we are pleased to supply our findings to you in the following manner.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 51.8,
+            "text": "We are pleased to confirm that we have interviewed your client and as such we are pleased to supply our findings to you in the following manner."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Paragraph."
+            },
+            "end_time": 59.52,
+            "index": 13,
+            "raw_text": "Paragraph.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 58.8,
+            "text": "Paragraph."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "Please type client underlined and bold as the heading."
+            },
+            "end_time": 62.64,
+            "index": 14,
+            "raw_text": "Please type client underlined and bold as the heading.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 59.92,
+            "text": "Please type client underlined and bold as the heading."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "New paragraph."
+            },
+            "end_time": 64.4,
+            "index": 15,
+            "raw_text": "New paragraph.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 63.68,
+            "text": "New paragraph."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": "Henry Jones is 32 years of age.",
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Henry Jones is 32 years of age."
+            },
+            "end_time": 66.2,
+            "index": 16,
+            "raw_text": "Henry Jones is 32 years of age.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 64.4,
+            "text": "Henry Jones is 32 years of age."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": "He lives with his wife and four children and is currently unemployed.",
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "He lives with his wife and four children and is currently unemployed."
+            },
+            "end_time": 69.28,
+            "index": 17,
+            "raw_text": "He lives with his wife and four children and is currently unemployed.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 66.2,
+            "text": "He lives with his wife and four children and is currently unemployed."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Paragraph."
+            },
+            "end_time": 70.16,
+            "index": 18,
+            "raw_text": "Paragraph.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 69.52,
+            "text": "Paragraph."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "And gave his evidence quite well."
+            },
+            "end_time": 72.16,
+            "index": 19,
+            "raw_text": "And gave his evidence quite well.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 70.72,
+            "text": "And gave his evidence quite well."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 72.72,
+            "index": 20,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 72.16,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "He has a confident nature and applied disposition."
+            },
+            "end_time": 75.44,
+            "index": 21,
+            "raw_text": "He has a confident nature and applied disposition.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 73.12,
+            "text": "He has a confident nature and applied disposition."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 76.08,
+            "index": 22,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 75.44,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "He answered all questions asked of him and we were not given any particular reason to doubt the evidence he offered throughout the interview process."
+            },
+            "end_time": 82.88,
+            "index": 23,
+            "raw_text": "He answered all questions asked of him and we were not given any particular reason to doubt the evidence he offered throughout the interview process.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 76.16,
+            "text": "He answered all questions asked of him and we were not given any particular reason to doubt the evidence he offered throughout the interview process."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 84.38,
+            "index": 24,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 83.82,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "Next heading is bold underline and his evidence."
+            },
+            "end_time": 88.46,
+            "index": 25,
+            "raw_text": "Next heading is bold underline and his evidence.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 85.18,
+            "text": "Next heading is bold underline and his evidence."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "New paragraph."
+            },
+            "end_time": 89.58,
+            "index": 26,
+            "raw_text": "New paragraph.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 88.7,
+            "text": "New paragraph."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "We would refer to the attached statement which you will wish to consider in its entirety, but briefly."
+            },
+            "end_time": 96.74,
+            "index": 27,
+            "raw_text": "We would refer to the attached statement which you will wish to consider in its entirety, but briefly.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 89.98,
+            "text": "We would refer to the attached statement which you will wish to consider in its entirety, but briefly."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "The main points can be summarised as follows."
+            },
+            "end_time": 98.86,
+            "index": 28,
+            "raw_text": "The main points can be summarised as follows.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 96.74,
+            "text": "The main points can be summarised as follows."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Next heading."
+            },
+            "end_time": 101.26,
+            "index": 29,
+            "raw_text": "Next heading.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 100.38,
+            "text": "Next heading."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "A Full Stop and then accident circumstances in bold."
+            },
+            "end_time": 104.7,
+            "index": 30,
+            "raw_text": "A Full Stop and then accident circumstances in bold.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 101.26,
+            "text": "A Full Stop and then accident circumstances in bold."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Not underlined."
+            },
+            "end_time": 105.82,
+            "index": 31,
+            "raw_text": "Not underlined.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 104.78,
+            "text": "Not underlined."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "Next paragraph please."
+            },
+            "end_time": 107.62,
+            "index": 32,
+            "raw_text": "Next paragraph please.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 106.62,
+            "text": "Next paragraph please."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Bullet point."
+            },
+            "end_time": 108.14,
+            "index": 33,
+            "raw_text": "Bullet point.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 107.62,
+            "text": "Bullet point."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": "These he was working for Simple Signs Limited as a factory operative and had been since the 9th first 2007.",
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "These he was working for Simple Signs Limited as a factory operative and had been since the 9th first 2007."
+            },
+            "end_time": 115.52,
+            "index": 34,
+            "raw_text": "These he was working for Simple Signs Limited as a factory operative and had been since the 9th first 2007.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 108.14,
+            "text": "These he was working for Simple Signs Limited as a factory operative and had been since the 9th first 2007."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "The full stop."
+            },
+            "end_time": 117.24,
+            "index": 35,
+            "raw_text": "The full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 116.24,
+            "text": "The full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "The company manufactured road signs and he states he did not receive any formal training before commencing his job."
+            },
+            "end_time": 123.04,
+            "index": 36,
+            "raw_text": "The company manufactured road signs and he states he did not receive any formal training before commencing his job.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 117.24,
+            "text": "The company manufactured road signs and he states he did not receive any formal training before commencing his job."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 123.6,
+            "index": 37,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 123.04,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Next bullet point."
+            },
+            "end_time": 124.56,
+            "index": 38,
+            "raw_text": "Next bullet point.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 123.6,
+            "text": "Next bullet point."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": "The Incident happened on 12th of May 2008 at 10.30am his normal job will be to place templates on metal road signs, but this was not required and so he was told to pull the feet off barriers.",
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "The Incident happened on 12th of May 2008 at 10.30am his normal job will be to place templates on metal road signs, but this was not required and so he was told to pull the feet off barriers."
+            },
+            "end_time": 136.88,
+            "index": 39,
+            "raw_text": "The Incident happened on 12th of May 2008 at 10.30am his normal job will be to place templates on metal road signs, but this was not required and so he was told to pull the feet off barriers.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 124.88,
+            "text": "The Incident happened on 12th of May 2008 at 10.30am his normal job will be to place templates on metal road signs, but this was not required and so he was told to pull the feet off barriers."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Barriers are used by construction companies and they needed to be be resprayed."
+            },
+            "end_time": 140.25,
+            "index": 40,
+            "raw_text": "Barriers are used by construction companies and they needed to be be resprayed.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 136.96,
+            "text": "Barriers are used by construction companies and they needed to be be resprayed."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "Yellow he was told by his supervisor, comma John Smith, comma to pull the barriers off their supporting feet instead of using a sledgehammer as it was suggested that a sledgehammer would break the feet."
+            },
+            "end_time": 150.61,
+            "index": 41,
+            "raw_text": "Yellow he was told by his supervisor, comma John Smith, comma to pull the barriers off their supporting feet instead of using a sledgehammer as it was suggested that a sledgehammer would break the feet.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 140.25,
+            "text": "Yellow he was told by his supervisor, comma John Smith, comma to pull the barriers off their supporting feet instead of using a sledgehammer as it was suggested that a sledgehammer would break the feet."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 151.17,
+            "index": 42,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 150.61,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "It was also suggested that a machine could be used, but it was cheaper to use manual labor."
+            },
+            "end_time": 155.89,
+            "index": 43,
+            "raw_text": "It was also suggested that a machine could be used, but it was cheaper to use manual labor.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 151.65,
+            "text": "It was also suggested that a machine could be used, but it was cheaper to use manual labor."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 156.41,
+            "index": 44,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 155.89,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "New bullet point."
+            },
+            "end_time": 157.25,
+            "index": 45,
+            "raw_text": "New bullet point.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 156.41,
+            "text": "New bullet point."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": "He was on his third barrier and was pulling it out of its feet when he tore the shoulder muscles in his left shoulder.",
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "He was on his third barrier and was pulling it out of its feet when he tore the shoulder muscles in his left shoulder."
+            },
+            "end_time": 163.01,
+            "index": 46,
+            "raw_text": "He was on his third barrier and was pulling it out of its feet when he tore the shoulder muscles in his left shoulder.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 157.65,
+            "text": "He was on his third barrier and was pulling it out of its feet when he tore the shoulder muscles in his left shoulder."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 163.57,
+            "index": 47,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 163.01,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "New bullet point."
+            },
+            "end_time": 164.53,
+            "index": 48,
+            "raw_text": "New bullet point.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 163.65,
+            "text": "New bullet point."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "He spoke to John Smith about his injury who said he was just trying to get out of the job."
+            },
+            "end_time": 168.41,
+            "index": 49,
+            "raw_text": "He spoke to John Smith about his injury who said he was just trying to get out of the job.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 164.61,
+            "text": "He spoke to John Smith about his injury who said he was just trying to get out of the job."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 168.93,
+            "index": 50,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 168.41,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "However, when your client stated that he needed to go to hospital, John replied get yourself away then put get yourself away then in inverted commas."
+            },
+            "end_time": 178.09,
+            "index": 51,
+            "raw_text": "However, when your client stated that he needed to go to hospital, John replied get yourself away then put get yourself away then in inverted commas.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 169.45,
+            "text": "However, when your client stated that he needed to go to hospital, John replied get yourself away then put get yourself away then in inverted commas."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "Please."
+            },
+            "end_time": 178.41,
+            "index": 52,
+            "raw_text": "Please.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 178.09,
+            "text": "Please."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "New bullet points."
+            },
+            "end_time": 181.17,
+            "index": 53,
+            "raw_text": "New bullet points.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 180.01,
+            "text": "New bullet points."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "He is not aware if the incident was reported in the accident report book and he is not aware of any Health and Safety Executive investigation."
+            },
+            "end_time": 188.89,
+            "index": 54,
+            "raw_text": "He is not aware if the incident was reported in the accident report book and he is not aware of any Health and Safety Executive investigation.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 181.17,
+            "text": "He is not aware if the incident was reported in the accident report book and he is not aware of any Health and Safety Executive investigation."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 190.53,
+            "index": 55,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 189.93,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "New bullet points."
+            },
+            "end_time": 191.33,
+            "index": 56,
+            "raw_text": "New bullet points.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 190.53,
+            "text": "New bullet points."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "He believed the incident could have been avoided if he had taken the feet off with a sledgehammer."
+            },
+            "end_time": 194.97,
+            "index": 57,
+            "raw_text": "He believed the incident could have been avoided if he had taken the feet off with a sledgehammer.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 191.33,
+            "text": "He believed the incident could have been avoided if he had taken the feet off with a sledgehammer."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 195.45,
+            "index": 58,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 194.97,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "He also reiterated that the feet would normally be taken off with a machine, but inverted commas."
+            },
+            "end_time": 201.06,
+            "index": 59,
+            "raw_text": "He also reiterated that the feet would normally be taken off with a machine, but inverted commas.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 195.45,
+            "text": "He also reiterated that the feet would normally be taken off with a machine, but inverted commas."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "John Smith wants a way to pull them off because it was much cheaper."
+            },
+            "end_time": 204.02,
+            "index": 60,
+            "raw_text": "John Smith wants a way to pull them off because it was much cheaper.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 201.06,
+            "text": "John Smith wants a way to pull them off because it was much cheaper."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "He states there was no health and safety policy in place at all at all at the time of the incident and he had never signed any health and safety documents."
+            },
+            "end_time": 214.98,
+            "index": 61,
+            "raw_text": "He states there was no health and safety policy in place at all at all at the time of the incident and he had never signed any health and safety documents.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 206.66,
+            "text": "He states there was no health and safety policy in place at all at all at the time of the incident and he had never signed any health and safety documents."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 215.7,
+            "index": 62,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 215.06,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Next heading is B."
+            },
+            "end_time": 217.78,
+            "index": 63,
+            "raw_text": "Next heading is B.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 216.42,
+            "text": "Next heading is B."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 218.46,
+            "index": 64,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 217.86,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "And then quantum."
+            },
+            "end_time": 219.34,
+            "index": 65,
+            "raw_text": "And then quantum.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 218.46,
+            "text": "And then quantum."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "Please put that in bold and then start A new bullet point."
+            },
+            "end_time": 222.74,
+            "index": 66,
+            "raw_text": "Please put that in bold and then start A new bullet point.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 219.34,
+            "text": "Please put that in bold and then start A new bullet point."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "He arrived at Hospital at 12:30pm and was seen by a doctor."
+            },
+            "end_time": 227.38,
+            "index": 67,
+            "raw_text": "He arrived at Hospital at 12:30pm and was seen by a doctor.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 223.22,
+            "text": "He arrived at Hospital at 12:30pm and was seen by a doctor."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "He was given a support for his shoulder and told to take painkillers."
+            },
+            "end_time": 230.73,
+            "index": 68,
+            "raw_text": "He was given a support for his shoulder and told to take painkillers.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 227.81,
+            "text": "He was given a support for his shoulder and told to take painkillers."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 231.25,
+            "index": 69,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 230.73,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "He was diagnosed that he had torn muscles in his left shoulder and had tissue damage."
+            },
+            "end_time": 236.45,
+            "index": 70,
+            "raw_text": "He was diagnosed that he had torn muscles in his left shoulder and had tissue damage.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 231.25,
+            "text": "He was diagnosed that he had torn muscles in his left shoulder and had tissue damage."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 237.01,
+            "index": 71,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 236.45,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "He was told to get a sick note from his gp."
+            },
+            "end_time": 239.21,
+            "index": 72,
+            "raw_text": "He was told to get a sick note from his gp.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 237.01,
+            "text": "He was told to get a sick note from his gp."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 239.81,
+            "index": 73,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 239.21,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": "Ultimately, he got a sick note for some three, four weeks.",
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Ultimately, he got a sick note for some three, four weeks."
+            },
+            "end_time": 245.41,
+            "index": 74,
+            "raw_text": "Ultimately, he got a sick note for some three, four weeks.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 241.65,
+            "text": "Ultimately, he got a sick note for some three, four weeks."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 246.25,
+            "index": 75,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 245.57,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "New bullet point."
+            },
+            "end_time": 247.17,
+            "index": 76,
+            "raw_text": "New bullet point.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 246.25,
+            "text": "New bullet point."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "He still continues to see his GP once each month and is prescribed numerous medications."
+            },
+            "end_time": 251.81,
+            "index": 77,
+            "raw_text": "He still continues to see his GP once each month and is prescribed numerous medications.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 247.33,
+            "text": "He still continues to see his GP once each month and is prescribed numerous medications."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "He has not had any physiotherapy and continues to have problems sleeping and can't do any heavy lifting."
+            },
+            "end_time": 257.11,
+            "index": 78,
+            "raw_text": "He has not had any physiotherapy and continues to have problems sleeping and can't do any heavy lifting.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 252.37,
+            "text": "He has not had any physiotherapy and continues to have problems sleeping and can't do any heavy lifting."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 257.82,
+            "index": 79,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 257.34,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": "He describes the difficulties he has in cold weather and in connection with his social life and domestic duties and as a result he has been unemployed for the last 13 months.",
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "He describes the difficulties he has in cold weather and in connection with his social life and domestic duties and as a result he has been unemployed for the last 13 months."
+            },
+            "end_time": 268.06,
+            "index": 80,
+            "raw_text": "He describes the difficulties he has in cold weather and in connection with his social life and domestic duties and as a result he has been unemployed for the last 13 months.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 258.22,
+            "text": "He describes the difficulties he has in cold weather and in connection with his social life and domestic duties and as a result he has been unemployed for the last 13 months."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "New bullet points."
+            },
+            "end_time": 270.58,
+            "index": 81,
+            "raw_text": "New bullet points.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 269.74,
+            "text": "New bullet points."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": "He did get a job as a Lorry driver in June 2009 but only lasted four days due to his shoulder injury.",
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "He did get a job as a Lorry driver in June 2009 but only lasted four days due to his shoulder injury."
+            },
+            "end_time": 275.94,
+            "index": 82,
+            "raw_text": "He did get a job as a Lorry driver in June 2009 but only lasted four days due to his shoulder injury.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 270.58,
+            "text": "He did get a job as a Lorry driver in June 2009 but only lasted four days due to his shoulder injury."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 276.54,
+            "index": 83,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 275.94,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "End of the bullet points."
+            },
+            "end_time": 278.26,
+            "index": 84,
+            "raw_text": "End of the bullet points.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 277.26,
+            "text": "End of the bullet points."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "New heading."
+            },
+            "end_time": 279.1,
+            "index": 85,
+            "raw_text": "New heading.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 278.26,
+            "text": "New heading."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "Opinion Stroke recommendation which is bold and underlined."
+            },
+            "end_time": 282.14,
+            "index": 86,
+            "raw_text": "Opinion Stroke recommendation which is bold and underlined.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 279.1,
+            "text": "Opinion Stroke recommendation which is bold and underlined."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "New paragraph."
+            },
+            "end_time": 283.18,
+            "index": 87,
+            "raw_text": "New paragraph.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 282.3,
+            "text": "New paragraph."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Not bullet pointed."
+            },
+            "end_time": 284.06,
+            "index": 88,
+            "raw_text": "Not bullet pointed.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 283.18,
+            "text": "Not bullet pointed."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "The claimant suggests that there was no health and safety policy in force at his place of employment and he was never given any manual handling training."
+            },
+            "end_time": 291.55,
+            "index": 89,
+            "raw_text": "The claimant suggests that there was no health and safety policy in force at his place of employment and he was never given any manual handling training.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 284.06,
+            "text": "The claimant suggests that there was no health and safety policy in force at his place of employment and he was never given any manual handling training."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "He describes being instructed to pull the barriers out of their supporting feet by hand, but suggests that on occasion this would have been performed by a machine, but it was in inverted commas cheaper to use manual labour."
+            },
+            "end_time": 302.83,
+            "index": 90,
+            "raw_text": "He describes being instructed to pull the barriers out of their supporting feet by hand, but suggests that on occasion this would have been performed by a machine, but it was in inverted commas cheaper to use manual labour.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 291.87,
+            "text": "He describes being instructed to pull the barriers out of their supporting feet by hand, but suggests that on occasion this would have been performed by a machine, but it was in inverted commas cheaper to use manual labour."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Furthermore, he had been told not to use a sledgehammer to dislodge the feet as had the potential of damaging them."
+            },
+            "end_time": 309.35,
+            "index": 91,
+            "raw_text": "Furthermore, he had been told not to use a sledgehammer to dislodge the feet as had the potential of damaging them.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 303.87,
+            "text": "Furthermore, he had been told not to use a sledgehammer to dislodge the feet as had the potential of damaging them."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 309.83,
+            "index": 92,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 309.35,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "New paragraph."
+            },
+            "end_time": 310.67,
+            "index": 93,
+            "raw_text": "New paragraph.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 309.83,
+            "text": "New paragraph."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "If indeed he had not gone through any manual handling training comerth and clearly this his employers will have a case to answer and may well struggle to evidence any risk assessment relating to the activities he was undertaking at the material time."
+            },
+            "end_time": 323.89,
+            "index": 94,
+            "raw_text": "If indeed he had not gone through any manual handling training comerth and clearly this his employers will have a case to answer and may well struggle to evidence any risk assessment relating to the activities he was undertaking at the material time.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 310.91,
+            "text": "If indeed he had not gone through any manual handling training comerth and clearly this his employers will have a case to answer and may well struggle to evidence any risk assessment relating to the activities he was undertaking at the material time."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "negative",
+              "task": null,
+              "text_cleanup": "Full stop."
+            },
+            "end_time": 324.57,
+            "index": 95,
+            "raw_text": "Full stop.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 323.89,
+            "text": "Full stop."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "New heading is timesheet, which is bold and underlined under that."
+            },
+            "end_time": 329.29,
+            "index": 96,
+            "raw_text": "New heading is timesheet, which is bold and underlined under that.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 325.21,
+            "text": "New heading is timesheet, which is bold and underlined under that."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": "We have engaged upon this file as follows.",
+              "text_cleanup": "We have engaged upon this file as follows."
+            },
+            "end_time": 332.57,
+            "index": 97,
+            "raw_text": "We have engaged upon this file as follows.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 329.29,
+            "text": "We have engaged upon this file as follows."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": "Please put this in Bullet points File administration and then telecross and then Hyphen and then 40 minutes.",
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "Please put this in Bullet points File administration and then telecross and then Hyphen and then 40 minutes."
+            },
+            "end_time": 342.13,
+            "index": 98,
+            "raw_text": "Please put this in Bullet points File administration and then telecross and then Hyphen and then 40 minutes.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 333.77,
+            "text": "Please put this in Bullet points File administration and then telecross and then Hyphen and then 40 minutes."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": "Next bullet point interview with your client hyphen 1 hour 15 minutes.",
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Next bullet point interview with your client hyphen 1 hour 15 minutes."
+            },
+            "end_time": 346.13,
+            "index": 99,
+            "raw_text": "Next bullet point interview with your client hyphen 1 hour 15 minutes.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 342.29,
+            "text": "Next bullet point interview with your client hyphen 1 hour 15 minutes."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": "Next bullet point technical compilation 40 minutes finalization 20 minutes.",
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Next bullet point technical compilation 40 minutes finalization 20 minutes."
+            },
+            "end_time": 353.33,
+            "index": 100,
+            "raw_text": "Next bullet point technical compilation 40 minutes finalization 20 minutes.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 346.85,
+            "text": "Next bullet point technical compilation 40 minutes finalization 20 minutes."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": "Next header is enclosures please Bold and alarm that and we enclose the following again Bullet points A typed version of the draft statement we have taken.",
+              "text_cleanup": "Next header is enclosures please Bold and alarm that and we enclose the following again Bullet points A typed version of the draft statement we have taken."
+            },
+            "end_time": 362.13,
+            "index": 101,
+            "raw_text": "Next header is enclosures please Bold and alarm that and we enclose the following again Bullet points A typed version of the draft statement we have taken.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 353.89,
+            "text": "Next header is enclosures please Bold and alarm that and we enclose the following again Bullet points A typed version of the draft statement we have taken."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Next bullet point A note of our fee."
+            },
+            "end_time": 364.61,
+            "index": 102,
+            "raw_text": "Next bullet point A note of our fee.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 362.61,
+            "text": "Next bullet point A note of our fee."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Next line."
+            },
+            "end_time": 366.53,
+            "index": 103,
+            "raw_text": "Next line.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 365.49,
+            "text": "Next line."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "positive",
+              "task": null,
+              "text_cleanup": "If we can be of any further assistance, please do not hesitate to let us know."
+            },
+            "end_time": 370.33,
+            "index": 104,
+            "raw_text": "If we can be of any further assistance, please do not hesitate to let us know.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 366.93,
+            "text": "If we can be of any further assistance, please do not hesitate to let us know."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Yours faithfully."
+            },
+            "end_time": 371.25,
+            "index": 105,
+            "raw_text": "Yours faithfully.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 370.33,
+            "text": "Yours faithfully."
           }
         ],
-        "speakers": null,
-        "summary": null,
-        "title": "Enchement",
-        "transcript_url": "https://app.fireflies.ai/view/01JT07GYXM9VYY5NQFGXPVD3FT",
+        "speakers": [],
+        "summary": {
+          "action_items": "\n**Unassigned**\nFinalize and send the witness statement document including all interview findings and medical details (00:00)\nVerify if the accident was reported in the accident book and check for any Health and Safety Executive investigations (02:43)\nFollow-up on any outstanding health and safety policy documentation and training records at Simple Signs Limited at the time of accident (02:43)\nDispatch enclosures such as the typed draft statement and fee note to the relevant parties (05:50)\n",
+          "bullet_gist": "≡ƒ⌐╣ Injury Incident: Henry Jones injured his shoulder on May 12, 2008, due to unsafe manual handling practices.\n≡ƒôÜ Lack of Training: No prior training was given, and the employerΓÇÖs cost-cutting increased injury risks significantly.\n≡ƒÿ╖ Health Consequences: Injury led to ongoing pain, sleep issues, and 13 months of unemployment affecting Henry's quality of life.\n≡ƒôä Legal Documentation: A witness statement supports Henry's claim and notes failures in safety policies and training by the employer.\nΓÅ│ Case Management Time: Approximately 3 hours and 55 minutes was tracked for managing the claim, ensuring transparency and efficiency.",
+          "gist": "The meeting addressed an injury incident at Simple Signs Limited, focusing on safety policy failures and their impact on employee health.",
+          "keywords": [
+            "witness statement",
+            "manual handling",
+            "shoulder injury",
+            "health and safety",
+            "accident circumstances",
+            "employer liability"
+          ],
+          "meeting_type": null,
+          "outline": null,
+          "overview": "- **Injury Incident:** Henry Jones injured his shoulder on May 12, 2008, due to unsafe manual handling practices.  \n- **Lack of Training:** No prior training was given, and the employerΓÇÖs cost-cutting increased injury risks significantly.  \n- **Health Consequences:** Injury led to ongoing pain, sleep issues, and 13 months of unemployment affecting Henry's quality of life.  \n- **Legal Documentation:** A witness statement supports Henry's claim and notes failures in safety policies and training by the employer.  \n- **Case Management Time:** Approximately 3 hours and 55 minutes was tracked for managing the claim, ensuring transparency and efficiency.",
+          "short_overview": null,
+          "short_summary": "The meeting detailed an injury incident involving Henry Jones at Simple Signs Limited on May 12, 2008, caused by unsafe manual handling practices and a lack of safety policies. Henry, who had no formal training and was instructed by supervisor John Smith to perform manual labor instead of using machinery, sustained a torn shoulder muscle. Despite raising concerns, John dismissed his injury claims, and no formal accident report was filed. The discussion emphasized significant safety and training gaps within the company, leading to ongoing health issues for Henry, including pain and unemployment. A formal witness statement dated February 19, 2010, outlines the incident and supports Henry's claim for compensation, highlighting the employer's liability due to inadequate training and safety measures. Time tracking for case management was also noted to ensure transparency and efficient claim handling.",
+          "shorthand_bullet": "≡ƒô¥ **Witness Statement Preparation** (00:00 - 00:00)\nPreparation of a witness statement dated 19th February 2010 referencing the client Henry Jones and the accident dated 12th May 2008.\nThe document includes specific codes and references for tracking.\n≡ƒæñ **Interview Details** (00:00 - 01:00)\nHenry Jones, aged 32, unemployed, living with wife and four children, gave confident and consistent evidence.\n≡ƒÜº **Accident Circumstances Summary** (01:28 - 02:43)\nHenry worked for Simple Signs Limited since 9th January 2007 without formal training.\nOn 12th May 2008 at 10:30 am, he was tasked with manually removing barrier feet instead of using a sledgehammer or machine, allegedly for cost-saving reasons, when he injured his left shoulder.\n≡ƒæ¿ΓÇì≡ƒÅ¡ **Supervisor's Response** (02:43 - 03:56)\nSupervisor John Smith allegedly minimized the injury, questioning whether Henry was avoiding work and delaying hospital treatment.\nLack of health and safety policy and no manual handling training provided; unclear if the incident was formally reported or investigated.\n≡ƒÅÑ **Medical Outcomes** (03:56 - 05:09)\nHenry arrived at hospital at 12:30 pm, diagnosed with torn shoulder muscles, advised on painkillers and sick leave for 3-4 weeks.\nOngoing GP visits, no physiotherapy, persistent pain impacting sleep, social life, domestic tasks, leading to unemployment for 13 months.\nHenry briefly worked as a lorry driver in June 2009 but stopped after 4 days due to injury.\nΓÜû∩╕Å **Employer Responsibility Notes** (05:09 - 06:11)\nOpinion and recommendation notes underscore employer responsibility for lack of health and safety training and risk assessment during the manual handling task, highlighting cost-saving motives for unsafe practices.\n",
+          "topics_discussed": null,
+          "transcript_chapters": []
+        },
+        "title": "audio-sample-1.mp3",
+        "transcript_url": "https://app.fireflies.ai/view/01K9YRA38QP7YVR035B745A53J",
         "user": {
-          "email": "sample@gmail.com",
+          "email": "integration.test@withampersand.com",
           "integrations": null,
           "is_admin": true,
-          "minutes_consumed": 15.379999160766602,
-          "name": "Sample",
-          "num_transcripts": 2,
-          "recent_meeting": "01JT07GYXM9VYY5NQFGXPVD3FT",
-          "user_id": "01JSH43RZP1W6GAWQ2B87EAK7X"
+          "minutes_consumed": 22.979999542236328,
+          "name": "Integration Test",
+          "num_transcripts": 3,
+          "recent_meeting": "01K9YRA38QP7YVR035B745A53J",
+          "user_id": "YUBzRk85N2"
         },
         "video_url": null
       }
     }
   ],
-  "nextPage": "1"
+  "Done": false,
+  "NextPage": "1",
+  "Rows": 1
 }

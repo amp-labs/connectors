@@ -7,12 +7,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/graphql"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
@@ -46,7 +48,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 				}
 			}
 		}
-	}`, naming.NewSingularString(naming.CapitalizeFirstLetterEveryWord(objectName)).String())
+	}`, naming.NewSingularString(naming.CapitalizeFirstLetter(objectName)).String())
 
 	// Create the request body as a map
 	requestBody := map[string]string{
@@ -73,9 +75,11 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
+	re := regexp.MustCompile(`([a-z])([A-Z])`)
+
 	objectMetadata := common.ObjectMetadata{
 		Fields:      make(map[string]common.FieldMetadata),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
+		DisplayName: naming.CapitalizeFirstLetter(re.ReplaceAllString(objectName, `${1} ${2}`)),
 	}
 
 	metadataResp, err := common.UnmarshalJSON[MetadataResponse](response)
@@ -134,10 +138,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	var (
-		skip  = 0
-		limit int
-	)
+	var skip = 0
 
 	if params.NextPage != "" {
 		// Parse the page number from NextPage
@@ -147,11 +148,21 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		}
 	}
 
-	limit = defaultPageSize
+	var fromDate, toDate string
+
+	if !params.Since.IsZero() {
+		fromDate = datautils.Time.FormatRFC3339inUTC(params.Since)
+	}
+
+	if !params.Until.IsZero() {
+		toDate = datautils.Time.FormatRFC3339inUTC(params.Until)
+	}
 
 	pagination := graphql.PaginationParameter{
-		Limit: limit,
-		Skip:  skip,
+		Limit:    defaultPageSize,
+		Skip:     skip,
+		FromDate: fromDate,
+		ToDate:   toDate,
 	}
 
 	query, err := graphql.Operation(queryFiles, "query", params.ObjectName, pagination)
@@ -159,11 +170,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	requestBody := map[string]string{
-		"query": query,
-	}
-
-	jsonBody, err := json.Marshal(requestBody)
+	jsonBody, err := json.Marshal(map[string]string{"query": query})
 	if err != nil {
 		return nil, err
 	}
@@ -182,42 +189,10 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	data, err := common.UnmarshalJSON[Response](resp)
-	if err != nil {
-		return nil, common.ErrFailedToUnmarshalBody
-	}
-
-	var (
-		records      []any
-		responseData []map[string]any
-	)
-
-	switch params.ObjectName {
-	case usersObjectName:
-		responseData = data.Data.Users
-	case transcriptsObjectName:
-		responseData = data.Data.Transcripts
-	case bitesObjectName:
-		responseData = data.Data.Bites
-	default:
-		return nil, fmt.Errorf("%w: %s", common.ErrObjectNotSupported, params.ObjectName)
-	}
-
-	if len(responseData) == 0 {
-		errMsg := "missing expected values for object: " + params.ObjectName
-
-		return nil, fmt.Errorf("%s, error: %w", errMsg, common.ErrMissingExpectedValues)
-	}
-
-	records = make([]any, len(responseData))
-	for i, value := range responseData {
-		records[i] = value
-	}
-
 	return common.ParseResult(
 		resp,
-		common.ExtractOptionalRecordsFromPath(params.ObjectName, "data"),
-		makeNextRecordsURL(params, len(records)),
+		common.ExtractOptionalRecordsFromPath(objectNameMapping.Get(params.ObjectName), "data"),
+		makeNextRecordsURL(params),
 		common.GetMarshaledData,
 		params.Fields,
 	)
@@ -274,7 +249,7 @@ func (c *Connector) parseWriteResponse(
 
 	var recordID string
 
-	if params.ObjectName == "bite" {
+	if params.ObjectName == "bites" {
 		recordID, err = jsonquery.New(objectResponse, "bite").StrWithDefault("id", "")
 		if err != nil {
 			return nil, err
@@ -290,6 +265,7 @@ func (c *Connector) parseWriteResponse(
 		Success:  true,
 		RecordId: recordID,
 		Data:     response,
+		Errors:   nil,
 	}, nil
 }
 
@@ -330,8 +306,20 @@ func (c *Connector) parseDeleteResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.DeleteResult, error) {
-	if resp.Code != http.StatusOK {
-		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, resp.Code)
+	body, ok := resp.Body()
+	if !ok {
+		return &common.DeleteResult{
+			Success: true,
+		}, nil
+	}
+
+	objectResponse, err := jsonquery.New(body).ArrayOptional("errors")
+	if err != nil {
+		return nil, err
+	}
+
+	if err = checkErrorInResponse(objectResponse); err != nil {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", err, http.StatusNotFound)
 	}
 
 	// A successful delete returns 200 OK
