@@ -138,7 +138,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	var skip = 0
+	var skip int
 
 	if params.NextPage != "" {
 		// Parse the page number from NextPage
