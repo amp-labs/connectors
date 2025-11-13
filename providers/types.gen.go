@@ -206,6 +206,15 @@ type CustomAuthQueryParam struct {
 	ValueTemplate string `json:"valueTemplate" skipSubstitutions:"true"`
 }
 
+// DependentModule Dependency for a single module.
+type DependentModule struct {
+	// Optional Whether this input is optional for the module.
+	Optional bool `json:"optional,omitempty"`
+}
+
+// DependentModules Does this metadata item only apply to a specific module?
+type DependentModules = map[common.ModuleID]DependentModule
+
 // Labels defines model for Labels.
 type Labels map[string]string
 
@@ -241,14 +250,14 @@ type MetadataItemInput struct {
 	// DefaultValue Default value for this metadata item
 	DefaultValue string `json:"defaultValue,omitempty"`
 
+	// DependentModules Does this metadata item only apply to a specific module?
+	DependentModules *DependentModules `json:"dependentModules,omitempty"`
+
 	// DisplayName The human-readable name for the field
 	DisplayName string `json:"displayName,omitempty"`
 
 	// DocsURL URL with more information about how to locate this value
 	DocsURL string `json:"docsURL,omitempty"`
-
-	// ModuleDependencies Does this metadata item only apply to a specific module?
-	ModuleDependencies *ModuleDependencies `json:"moduleDependencies,omitempty"`
 
 	// Name The internal identifier for the metadata field
 	Name string `json:"name"`
@@ -259,18 +268,12 @@ type MetadataItemInput struct {
 
 // MetadataItemPostAuthentication defines model for MetadataItemPostAuthentication.
 type MetadataItemPostAuthentication struct {
-	// ModuleDependencies Does this metadata item only apply to a specific module?
-	ModuleDependencies *ModuleDependencies `json:"moduleDependencies,omitempty"`
+	// DependentModules Does this metadata item only apply to a specific module?
+	DependentModules *DependentModules `json:"dependentModules,omitempty"`
 
 	// Name The internal identifier for the metadata field
 	Name string `json:"name"`
 }
-
-// ModuleDependencies Does this metadata item only apply to a specific module?
-type ModuleDependencies = map[common.ModuleID]ModuleDependency
-
-// ModuleDependency Dependency for a single module.
-type ModuleDependency = map[string]interface{}
 
 // ModuleInfo defines model for ModuleInfo.
 type ModuleInfo struct {
