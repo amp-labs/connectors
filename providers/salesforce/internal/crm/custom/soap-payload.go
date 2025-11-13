@@ -17,19 +17,23 @@ const (
 	defaultNumDisplayLines = 10
 )
 
-type UpsertMetadataPayload struct {
+// UpsertMetadataPayload represents the request body for the Salesforce Metadata API
+// `upsertMetadata` operation. It supports creating or updating various metadata specified via [M] generic.
+type UpsertMetadataPayload[M any] struct {
 	XMLName xml.Name `xml:"upsertMetadata"`
 
-	// List of fields to create
-	FieldsMetadata []UpsertMetadataCustomField `xml:"metadata"`
+	// MetadataList contains the list of metadata components to create or update.
+	MetadataList []M
 }
 
-func NewCustomFieldsPayload(params *common.UpsertMetadataParams) (*UpsertMetadataPayload, error) {
-	fields := make([]UpsertMetadataCustomField, 0)
+type UpsertCustomFieldsPayload UpsertMetadataPayload[MetadataCustomField]
+
+func NewCustomFieldsPayload(params *common.UpsertMetadataParams) (*UpsertCustomFieldsPayload, error) {
+	fields := make([]MetadataCustomField, 0)
 
 	for objectName, fieldDefinitions := range params.Fields {
 		for _, fieldDefinition := range fieldDefinitions {
-			field, err := newUpsertMetadataCustomField(objectName, fieldDefinition)
+			field, err := newMetadataCustomField(objectName, fieldDefinition)
 			if err != nil {
 				return nil, err
 			}
@@ -38,16 +42,16 @@ func NewCustomFieldsPayload(params *common.UpsertMetadataParams) (*UpsertMetadat
 		}
 	}
 
-	return &UpsertMetadataPayload{
-		FieldsMetadata: fields,
+	return &UpsertCustomFieldsPayload{
+		MetadataList: fields,
 	}, nil
 }
 
 const metadataTypeCustomField = "CustomField"
 
-// UpsertMetadataCustomField fields can be found here:
+// MetadataCustomField fields can be found here:
 // https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/customfield.htm
-type UpsertMetadataCustomField struct {
+type MetadataCustomField struct {
 	XMLName               xml.Name `xml:"metadata"`
 	AttributeMetadataType string   `xml:"xsi:type,attr"`
 
@@ -78,15 +82,15 @@ type UpsertMetadataCustomField struct {
 	ValueSet *ValueSet `xml:"valueSet,omitempty"`
 }
 
-func newUpsertMetadataCustomField(
+func newMetadataCustomField(
 	objectName string, definition common.FieldDefinition,
-) (*UpsertMetadataCustomField, error) {
+) (*MetadataCustomField, error) {
 	fieldType, err := matchFieldType(definition)
 	if err != nil {
 		return nil, err
 	}
 
-	result := UpsertMetadataCustomField{
+	result := MetadataCustomField{
 		AttributeMetadataType: metadataTypeCustomField,
 		Type:                  fieldType,
 		FullName:              fmt.Sprintf("%v.%v", objectName, definition.FieldName),
@@ -108,8 +112,8 @@ func newUpsertMetadataCustomField(
 // Each data type requires unique payload setup.
 // Date, Checkbox are straightforward, but others rely on String/Numeric/Association options.
 func handleTypeRequirements(
-	field UpsertMetadataCustomField, definition common.FieldDefinition,
-) UpsertMetadataCustomField {
+	field MetadataCustomField, definition common.FieldDefinition,
+) MetadataCustomField {
 	if definition.ValueType == common.ValueTypeString {
 		return handleTypeString(field, definition)
 	}
@@ -155,7 +159,7 @@ func matchFieldType(definition common.FieldDefinition) (string, error) {
 }
 
 // Automatically picks the type of field based on the length of the string.
-func handleTypeString(field UpsertMetadataCustomField, definition common.FieldDefinition) UpsertMetadataCustomField {
+func handleTypeString(field MetadataCustomField, definition common.FieldDefinition) MetadataCustomField {
 	if definition.StringOptions == nil {
 		return field
 	}
@@ -182,8 +186,8 @@ func handleTypeString(field UpsertMetadataCustomField, definition common.FieldDe
 // are supplied then we automatically imply the Lookup field type.
 // Note that there are other types, ex: ExternalLookup, IndirectLookup.
 func handleTypeAssociation(
-	field UpsertMetadataCustomField, definition common.FieldDefinition,
-) UpsertMetadataCustomField {
+	field MetadataCustomField, definition common.FieldDefinition,
+) MetadataCustomField {
 	field.Type = "Lookup"
 
 	if definition.Association.TargetField != "" {
@@ -195,8 +199,8 @@ func handleTypeAssociation(
 
 // Prepares the payload data structure which holds the options for Multi or Single select fields.
 func handleTypeSelections(
-	field UpsertMetadataCustomField, definition common.FieldDefinition,
-) UpsertMetadataCustomField {
+	field MetadataCustomField, definition common.FieldDefinition,
+) MetadataCustomField {
 	if definition.ValueType == common.ValueTypeMultiSelect {
 		// Must specify 'visibleLines' for a CustomField of type MultiselectPicklist.
 		visibleLines := valueOrDefault(definition.StringOptions.NumDisplayLines, defaultNumDisplayLines)
@@ -232,8 +236,8 @@ func handleTypeSelections(
 }
 
 func enhanceWithStringOptions(
-	field UpsertMetadataCustomField, definition common.FieldDefinition,
-) UpsertMetadataCustomField {
+	field MetadataCustomField, definition common.FieldDefinition,
+) MetadataCustomField {
 	if definition.StringOptions == nil {
 		return field
 	}
@@ -265,8 +269,8 @@ func enhanceWithStringOptions(
 }
 
 func enhanceWithNumericOptions(
-	field UpsertMetadataCustomField, definition common.FieldDefinition,
-) UpsertMetadataCustomField {
+	field MetadataCustomField, definition common.FieldDefinition,
+) MetadataCustomField {
 	if definition.NumericOptions == nil {
 		return field
 	}
@@ -279,8 +283,8 @@ func enhanceWithNumericOptions(
 }
 
 func enhanceWithAssociation(
-	field UpsertMetadataCustomField, definition common.FieldDefinition,
-) UpsertMetadataCustomField {
+	field MetadataCustomField, definition common.FieldDefinition,
+) MetadataCustomField {
 	if definition.Association == nil {
 		return field
 	}
