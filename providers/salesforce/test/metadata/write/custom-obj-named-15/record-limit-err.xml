@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:sf="http://soap.sforce.com/2006/04/metadata">
+    <soapenv:Body>
+        <soapenv:Fault>
+            <faultcode>sf:EXCEEDED_ID_LIMIT</faultcode>
+            <faultstring>EXCEEDED_ID_LIMIT: record limit reached. cannot submit more than 10 records in this operation
+            </faultstring>
+        </soapenv:Fault>
+    </soapenv:Body>
+</soapenv:Envelope>
