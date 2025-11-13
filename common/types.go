@@ -314,6 +314,15 @@ const (
 	BatchWriteTypeUpdate BatchWriteType = "update"
 )
 
+// BatchItem represents a single item in a batch write operation.
+// It contains the record data and optional associations.
+type BatchItem struct {
+	// Record contains the record data to be written.
+	Record map[string]any `json:"record"`
+	// Associations contains optional associations for this record (e.g., Hubspot).
+	Associations []any `json:"associations,omitempty"`
+}
+
 // BatchWriteParam defines the input required to execute a batch write operation.
 // It allows creating, updating, or upserting multiple records in a single request.
 type BatchWriteParam struct {
@@ -322,7 +331,10 @@ type BatchWriteParam struct {
 	// Type defines how the records should be processed: create, update, or upsert.
 	Type BatchWriteType
 	// Records contains the collection of record payloads to be written.
+	// Deprecated: Use Batch instead for new implementations.
 	Records []any
+	// Batch contains the collection of batch items with records and associations.
+	Batch []BatchItem
 }
 
 func (p BatchWriteParam) IsCreate() bool {
@@ -335,10 +347,48 @@ func (p BatchWriteParam) IsUpdate() bool {
 
 type Record map[string]any
 
+// GetRecords returns the records to be written.
+// If Batch is populated, it extracts records from batch items.
+// Otherwise, it uses the deprecated Records field.
 func (p BatchWriteParam) GetRecords() ([]Record, error) {
+	// Use Batch if available (new format)
+	if len(p.Batch) > 0 {
+		records := make([]Record, len(p.Batch))
+		for i, item := range p.Batch {
+			records[i] = item.Record
+		}
+		return records, nil
+	}
+
+	// Fall back to Records field (old format)
 	return datautils.ForEachWithErr(p.Records, func(record any) (Record, error) {
 		return RecordDataToMap(record)
 	})
+}
+
+// GetBatch returns the batch items with records and associations.
+// If Batch field is empty, it converts Records to batch items (without associations).
+func (p BatchWriteParam) GetBatch() ([]BatchItem, error) {
+	// Return Batch if available (new format)
+	if len(p.Batch) > 0 {
+		return p.Batch, nil
+	}
+
+	// Convert Records to BatchItem format (old format compatibility)
+	records, err := p.GetRecords()
+	if err != nil {
+		return nil, err
+	}
+
+	batch := make([]BatchItem, len(records))
+	for i, record := range records {
+		batch[i] = BatchItem{
+			Record:       record,
+			Associations: nil,
+		}
+	}
+
+	return batch, nil
 }
 
 // BatchWriteResult represents the outcome of a provider batch write operation.

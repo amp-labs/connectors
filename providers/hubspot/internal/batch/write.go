@@ -161,11 +161,19 @@ func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilde
 }
 
 func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
-	items, err := datautils.ForEachWithErr(params.Records, func(record any) (PayloadItem, error) {
-		return common.RecordDataToMap(record)
-	})
+	// Get batch items (supports both old Records and new Batch format)
+	batchItems, err := params.GetBatch()
 	if err != nil {
 		return nil, err
+	}
+
+	// Build payload items with properties and associations
+	items := make([]PayloadItem, len(batchItems))
+	for i, batchItem := range batchItems {
+		items[i] = PayloadItem{
+			Properties:   batchItem.Record,
+			Associations: batchItem.Associations,
+		}
 	}
 
 	return &Payload{Records: items}, nil
@@ -188,9 +196,11 @@ type Payload struct {
 }
 
 // PayloadItem represents a single item in the API payload.
-// Hubspot's payload is identical to what client supplies to the connector.
-// This is an alias.
-type PayloadItem common.Record
+// It contains the record properties and optional associations.
+type PayloadItem struct {
+	Properties   map[string]any `json:"properties"`
+	Associations []any          `json:"associations,omitempty"`
+}
 
 // Response models a HubSpot batch success response.
 type Response struct {
@@ -248,7 +258,7 @@ type IssueResponse struct {
 type Issue any
 
 func (i PayloadItem) GetID() (string, error) {
-	node, err := jsonquery.Convertor.NodeFromMap(i)
+	node, err := jsonquery.Convertor.NodeFromMap(i.Properties)
 	if err != nil {
 		return "", err
 	}
