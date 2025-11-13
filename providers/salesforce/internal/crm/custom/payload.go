@@ -243,11 +243,17 @@ func enhanceWithStringOptions(
 	// Picklists don't specify the default value here. It is done inside ValueSet struct.
 	// Client should pass this when working with Text or LongTextArea.
 	if !definition.ValueType.IsSelectionType() {
-		// For Text and LongTextArea fields, wrap the defaultValue in quotes so Salesforce
-		// treats it as a string literal rather than a field reference in formulas.
 		if definition.StringOptions.DefaultValue != nil {
 			defaultValue := *definition.StringOptions.DefaultValue
-			field.DefaultValue = fmt.Sprintf("%q", defaultValue)
+			// For Text and LongTextArea fields, wrap the defaultValue in quotes so Salesforce
+			// treats it as a string literal rather than a field reference in formulas.
+			defaultValueFormat := "%q"
+			if definition.ValueType == common.ValueTypeBoolean {
+				// For booleans the value cannot be wrapped in quotes.
+				defaultValueFormat = "%v"
+			}
+
+			field.DefaultValue = fmt.Sprintf(defaultValueFormat, defaultValue)
 		}
 	}
 
