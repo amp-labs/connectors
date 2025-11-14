@@ -49,6 +49,7 @@ func init() {
 					DisplayName:  "API Subdomain",
 					DefaultValue: "api",
 					DocsURL:      "https://apidoc.samanage.com/#section/General-Concepts/Service-URL",
+					Prompt:       "Enter your region subdomain: api (US), apieu (Europe), or apiau (APJ)",
 				},
 			},
 		},
