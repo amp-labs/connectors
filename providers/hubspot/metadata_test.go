@@ -373,3 +373,42 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 
 	return connector, nil
 }
+
+func TestPersonaFieldDisplayValuePrefersDescription(t *testing.T) {
+	t.Parallel()
+
+	fdescription := fieldDescription{
+		Name:      "HS_PERSONA",
+		Type:      "enumeration",
+		FieldType: "select",
+		Options: []fieldEnumerationOption{
+			{
+				Value:       "persona-1",
+				Label:       "Persona Label",
+				Description: "Persona Description",
+			},
+			{
+				Value: "persona-2",
+				Label: "Persona Fallback",
+			},
+		},
+	}
+
+	metadata := fdescription.transformToFieldMetadata()
+
+	if metadata.ValueType != common.ValueTypeSingleSelect {
+		t.Fatalf("expected ValueType %q, got %q", common.ValueTypeSingleSelect, metadata.ValueType)
+	}
+
+	if len(metadata.Values) != 2 {
+		t.Fatalf("expected 2 values, got %d", len(metadata.Values))
+	}
+
+	if metadata.Values[0].DisplayValue != "Persona Description" {
+		t.Fatalf("expected first display value to use description, got %q", metadata.Values[0].DisplayValue)
+	}
+
+	if metadata.Values[1].DisplayValue != "Persona Fallback" {
+		t.Fatalf("expected second display value to fall back to label, got %q", metadata.Values[1].DisplayValue)
+	}
+}
