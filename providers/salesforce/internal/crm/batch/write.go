@@ -11,6 +11,18 @@ import (
 	"github.com/amp-labs/connectors/internal/goutils"
 )
 
+type associationsNotSupportedError struct{}
+
+func (associationsNotSupportedError) Error() string {
+	return "Salesforce batch write does not support associations; remove the 'associations' field from each record"
+}
+
+func (associationsNotSupportedError) Unwrap() error {
+	return common.ErrOperationNotSupportedForObject
+}
+
+var errAssociationsNotSupported = associationsNotSupportedError{}
+
 // nolint:lll
 // BatchWrite executes a Salesforce composite create or update request.
 // It validates the input, builds the appropriate payload, sends the API call,
@@ -142,7 +154,7 @@ func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 	for index, item := range params.Batch {
 		// Salesforce does not support associations in batch write operations
 		if item.Associations != nil {
-			return nil, common.ErrOperationNotSupportedForObject
+			return nil, errAssociationsNotSupported
 		}
 
 		record, err := common.RecordDataToMap(item.Record)
