@@ -1,7 +1,6 @@
 package custom
 
 import (
-	"encoding/xml"
 	"fmt"
 	"sort"
 	"strings"
@@ -10,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-// Parses XML output from Salesforce.
+// Converts XML output from Salesforce.
 // It may include errors for each field.
 // See sample response below:
 /*
@@ -27,17 +26,11 @@ import (
        </result>
    </upsertMetadataResponse>
 */
-func parseResponse(response []byte) (*common.UpsertMetadataResult, error) {
-	var envelope Envelope
-
-	if err := xml.Unmarshal(response, &envelope); err != nil {
-		return nil, err
-	}
-
+func transformResponseToResult(resp *UpsertMetadataResponse) (*common.UpsertMetadataResult, error) {
 	errorMessages := datautils.NewStringSet()
 	fields := make(map[string]map[string]common.FieldUpsertResult)
 
-	for _, result := range envelope.Body.Response.Results {
+	for _, result := range resp.Response.Results {
 		for _, errorObj := range result.Errors {
 			errorMessages.AddOne(errorObj.Message)
 		}
@@ -82,17 +75,10 @@ func parseResponse(response []byte) (*common.UpsertMetadataResult, error) {
 	}, nil
 }
 
-type Envelope struct {
-	XMLName xml.Name `xml:"Envelope"`
-	Body    Body     `xml:"Body"`
-}
-
-type Body struct {
-	Response UpsertMetadataResponse `xml:"upsertMetadataResponse"`
-}
-
 type UpsertMetadataResponse struct {
-	Results []UpsertMetadataResult `xml:"result"`
+	Response struct {
+		Results []UpsertMetadataResult `xml:"result"`
+	} `xml:"upsertMetadataResponse"`
 }
 
 type UpsertMetadataResult struct {

@@ -22,14 +22,10 @@ func NewAdapter(httpClient *common.HTTPClient, moduleInfo *providers.ModuleInfo)
 	}
 }
 
-func APIVersionSOAP() string {
-	return apiVersion
-}
-
 func (a *Adapter) getModuleURL() string {
 	return a.moduleInfo.BaseURL
 }
 
 func (a *Adapter) getSoapURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.getModuleURL(), "services/Soap/m", APIVersionSOAP())
+	return urlbuilder.New(a.getModuleURL(), "services/Soap/m", apiVersion)
 }
