@@ -86,7 +86,7 @@ func (p BatchWriteParam) ValidateParams() error {
 		return ErrUnknownBatchWriteType
 	}
 
-	if len(p.Records) == 0 {
+	if len(p.Batch) == 0 {
 		return ErrMissingRecordData
 	}
 

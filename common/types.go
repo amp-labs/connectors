@@ -321,9 +321,20 @@ type BatchWriteParam struct {
 	ObjectName ObjectName
 	// Type defines how the records should be processed: create, update, or upsert.
 	Type BatchWriteType
-	// Records contains the collection of record payloads to be written.
-	Records []any
+	// Batch contains the collection of record payloads to be written.
+	Batch BatchItems
 }
+
+type BatchItem struct {
+	Record       map[string]any
+	Associations any
+}
+
+func (i BatchItem) GetRecord() (Record, error) {
+	return RecordDataToMap(i.Record)
+}
+
+type BatchItems []BatchItem
 
 func (p BatchWriteParam) IsCreate() bool {
 	return p.Type == BatchWriteTypeCreate
@@ -336,8 +347,8 @@ func (p BatchWriteParam) IsUpdate() bool {
 type Record map[string]any
 
 func (p BatchWriteParam) GetRecords() ([]Record, error) {
-	return datautils.ForEachWithErr(p.Records, func(record any) (Record, error) {
-		return RecordDataToMap(record)
+	return datautils.ForEachWithErr(p.Batch, func(batchItem BatchItem) (Record, error) {
+		return RecordDataToMap(batchItem.Record)
 	})
 }
 

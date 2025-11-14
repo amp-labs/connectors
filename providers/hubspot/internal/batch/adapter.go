@@ -53,7 +53,8 @@ func (a *Adapter) getModuleURL() string {
 
 // getCreateURL builds the HubSpot batch create endpoint for the given object type.
 //
-// Contacts example: https://developers.hubspot.com/docs/api-reference/crm-contacts-v3/basic/get-crm-v3-objects-contacts
+// nolint:lll
+// Contacts example: https://developers.hubspot.com/docs/api-reference/crm-contacts-v3/batch/post-crm-v3-objects-contacts-batch-create
 func (a *Adapter) getCreateURL(objectName common.ObjectName) (*urlbuilder.URL, error) {
 	return urlbuilder.New(a.getModuleURL(), apiVersion, "objects", objectName.String(), "batch/create")
 }
