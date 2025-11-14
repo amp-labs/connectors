@@ -311,7 +311,8 @@ func (f fieldDescription) implyEnumerationType(fieldName string) (common.ValueTy
 		for index, option := range f.Options {
 			displayValue := option.Label
 			// For persona field, use description if it exists, otherwise fall back to label
-			if fieldName == "hs_persona" && option.Description != "" {
+			//https://community.hubspot.com/t5/APIs-Integrations/Getting-Wrong-Value-from-Persona-in-API/m-p/1193587/highlight/true#M84004
+			if strings.EqualFold(fieldName, "hs_persona") && option.Description != "" {
 				displayValue = option.Description
 			}
 
