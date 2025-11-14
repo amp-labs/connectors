@@ -34,6 +34,7 @@ These are highlighted below as
 | targeting/device/marketing_name              | targeting/device/marketing_name               | read          |
 | targeting/geo/country                        | targeting/geo/country                         | read          |
 | targeting/interests/dlxs                     | targeting/interests/dlxs                      | read          |
+| targeting/interests/dlxc                     | targeting/interests/dlxc                      | read          |
 | targeting/interests/dlxp                     | targeting/interests/dlxp                      | read          |
 | targeting/interests/nln                      | targeting/interests/nln                       | read          |
 | targeting/location/categories_loi            | targeting/location/categories_loi             | read          |

@@ -20,26 +20,19 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	errManyInvalidFields := testutils.DataFromFile(t, "batch/create/contacts/err-many-invalid-properties.json")
 	responseCreateContacts := testutils.DataFromFile(t, "batch/create/contacts/success.json")
 
-	type record struct {
-		Properties map[string]any `json:"properties"`
-	}
-
-	createRecords := []any{
-		record{
-			Properties: map[string]any{
-				"email":     "Markus.Blevins@hubspot.com",
-				"lastname":  "Blevins",
-				"firstname": "Markus",
-			},
+	createRecords := common.BatchItems{{
+		Record: map[string]any{
+			"email":     "Markus.Blevins@hubspot.com",
+			"lastname":  "Blevins",
+			"firstname": "Markus",
 		},
-		record{
-			Properties: map[string]any{
-				"email":     "Siena.Dyer@hubspot.com",
-				"lastname":  "Dyer",
-				"firstname": "Siena",
-			},
+	}, {
+		Record: map[string]any{
+			"email":     "Siena.Dyer@hubspot.com",
+			"lastname":  "Dyer",
+			"firstname": "Siena",
 		},
-	}
+	}}
 
 	tests := []testroutines.BatchWrite{
 		{
@@ -63,7 +56,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
 				Type:       common.BatchWriteTypeCreate,
-				Records:    createRecords,
+				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -85,7 +78,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
 				Type:       common.BatchWriteTypeCreate,
-				Records:    createRecords,
+				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -107,7 +100,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
 				Type:       common.BatchWriteTypeCreate,
-				Records:    createRecords,
+				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -145,7 +138,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
 				Type:       common.BatchWriteTypeCreate,
-				Records:    createRecords,
+				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -200,29 +193,21 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	errUpdatePartial := testutils.DataFromFile(t, "batch/update/contacts/err-partial-success.json")
 	responseUpdateContacts := testutils.DataFromFile(t, "batch/update/contacts/success.json")
 
-	type record struct {
-		ID         string         `json:"id"`
-		Properties map[string]any `json:"properties"`
-	}
-
-	updateRecords := []any{
-		record{
-			ID: "171591000198",
-			Properties: map[string]any{
-				"email":     "Markus.Blevins@hubspot.com",
-				"lastname":  "Blevins (updated)",
-				"firstname": "Markus (updated)",
-			},
+	updateRecords := common.BatchItems{{
+		Record: map[string]any{
+			"id":        "171591000198",
+			"email":     "Markus.Blevins@hubspot.com",
+			"lastname":  "Blevins (updated)",
+			"firstname": "Markus (updated)",
 		},
-		record{
-			ID: "171591000199",
-			Properties: map[string]any{
-				"email":     "Siena.Dyer@hubspot.com",
-				"firstname": "Siena (updated)",
-				"lastname":  "Dyer (updated)",
-			},
+	}, {
+		Record: map[string]any{
+			"id":        "171591000199",
+			"email":     "Siena.Dyer@hubspot.com",
+			"firstname": "Siena (updated)",
+			"lastname":  "Dyer (updated)",
 		},
-	}
+	}}
 
 	tests := []testroutines.BatchWrite{
 		{
@@ -230,7 +215,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
 				Type:       common.BatchWriteTypeUpdate,
-				Records:    updateRecords,
+				Batch:      updateRecords,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -252,7 +237,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
 				Type:       common.BatchWriteTypeUpdate,
-				Records:    updateRecords,
+				Batch:      updateRecords,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -290,24 +275,21 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
 				Type:       common.BatchWriteTypeUpdate,
-				Records: []any{
-					record{
-						ID: "unknowIdentifier888", // This identifier will have no response corespondent.
-						Properties: map[string]any{
-							"email":     "Markus.Blevins@hubspot.com",
-							"lastname":  "Blevins (updated)",
-							"firstname": "Markus (updated)",
-						},
+				Batch: common.BatchItems{{
+					Record: map[string]any{
+						"id":        "unknowIdentifier888", // This identifier will have no response corespondent.
+						"email":     "Markus.Blevins@hubspot.com",
+						"lastname":  "Blevins (updated)",
+						"firstname": "Markus (updated)",
 					},
-					record{
-						ID: "171591000199",
-						Properties: map[string]any{
-							"email":     "Siena.Dyer@hubspot.com",
-							"firstname": "Siena (updated)",
-							"lastname":  "Dyer (updated)",
-						},
+				}, {
+					Record: map[string]any{
+						"id":        "171591000199",
+						"email":     "Siena.Dyer@hubspot.com",
+						"firstname": "Siena (updated)",
+						"lastname":  "Dyer (updated)",
 					},
-				},
+				}},
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -347,7 +329,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
 				Type:       common.BatchWriteTypeUpdate,
-				Records:    updateRecords,
+				Batch:      updateRecords,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),

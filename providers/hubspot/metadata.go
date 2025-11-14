@@ -243,8 +243,9 @@ type fieldDescription struct {
 }
 
 type fieldEnumerationOption struct {
-	Label string `json:"label"`
-	Value string `json:"value"`
+	Label       string `json:"label"`
+	Value       string `json:"value"`
+	Description string `json:"description"`
 }
 
 type fieldModificationMetadata struct {
@@ -281,7 +282,7 @@ func (f fieldDescription) transformToFieldMetadata() common.FieldMetadata {
 	case "datetime":
 		valueType = common.ValueTypeDateTime
 	case "enumeration":
-		valueType, values = f.implyEnumerationType()
+		valueType, values = f.implyEnumerationType(f.Name)
 		// Enumeration type means there are predefined field values.
 	default:
 		// ex: object_coordinates, phone_number
@@ -300,16 +301,25 @@ func (f fieldDescription) transformToFieldMetadata() common.FieldMetadata {
 	}
 }
 
-func (f fieldDescription) implyEnumerationType() (common.ValueType, []common.FieldValue) {
+func (f fieldDescription) implyEnumerationType(fieldName string) (common.ValueType, []common.FieldValue) {
 	var values []common.FieldValue
 
 	if len(f.Options) != 0 {
 		// List of values is not nil, at least one option exists.
 		values = make([]common.FieldValue, len(f.Options))
+
 		for index, option := range f.Options {
+			displayValue := option.Label
+			// For persona field, use description if it exists, otherwise fall back to label
+			// https://community.hubspot.com/t5/APIs-Integrations/Getting-Wrong-Value-from-Persona-in-API/
+			// m-p/1193587/highlight/true#M84004
+			if strings.EqualFold(fieldName, "hs_persona") && option.Description != "" {
+				displayValue = option.Description
+			}
+
 			values[index] = common.FieldValue{
 				Value:        option.Value,
-				DisplayValue: option.Label,
+				DisplayValue: displayValue,
 			}
 		}
 	}

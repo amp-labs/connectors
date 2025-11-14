@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/hubspot"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/brianvoe/gofakeit/v6"
@@ -30,11 +31,11 @@ func main() {
 
 	// Init records for creation.
 	numRecords := 15
-	records := make([]any, numRecords)
+	records := make(common.BatchItems, numRecords)
 
 	for i := 0; i < numRecords; i++ {
-		records[i] = record{
-			Properties: map[string]any{
+		records[i] = common.BatchItem{
+			Record: map[string]any{
 				"lastname":  gofakeit.Name() + " (TODO Delete)",
 				"firstname": gofakeit.Name(),
 			},
@@ -45,7 +46,7 @@ func main() {
 	res, err := conn.BatchWrite(ctx, &connectors.BatchWriteParam{
 		ObjectName: "contacts",
 		Type:       connectors.BatchWriteTypeCreate,
-		Records:    records,
+		Batch:      records,
 	})
 	if err != nil {
 		utils.Fail("error reading", "error", err)
