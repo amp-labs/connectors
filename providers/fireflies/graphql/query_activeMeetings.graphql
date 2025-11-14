@@ -1,0 +1,11 @@
+query {
+  active_meetings {
+    id
+    title
+    organizer_email
+    meeting_link
+    start_time
+    end_time
+    privacy
+  }
+}

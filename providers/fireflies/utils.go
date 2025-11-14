@@ -1,46 +1,47 @@
 package fireflies
 
 import (
-	"fmt"
+	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
 const (
-	defaultPageSize        = 50
-	usersObjectName        = "users"
-	transcriptsObjectName  = "transcripts"
-	bitesObjectName        = "bites"
-	objectNameLiveMeeting  = "liveMeetings"
-	objectNameUserRole     = "userRole"
-	objectNameAudio        = "audio"
-	objectNameMeetingTitle = "meetingTitle"
+	defaultPageSize = 50
 )
 
 var supportLimitAndSkip = datautils.NewSet( //nolint:gochecknoglobals
-	transcriptsObjectName,
-	bitesObjectName,
+	"transcripts",
+	"bites",
 )
 
-func makeNextRecordsURL(params common.ReadParams, count int) func(*ajson.Node) (string, error) {
+var objectNameMapping = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+	"userGroups":     "user_groups",
+	"activeMeetings": "active_meetings",
+}, func(objectName string) string {
+	return objectName
+})
+
+func makeNextRecordsURL(params common.ReadParams) func(*ajson.Node) (string, error) {
 	return func(node *ajson.Node) (string, error) {
 		if !supportLimitAndSkip.Has(params.ObjectName) {
 			return "", nil
 		}
 
-		if count < defaultPageSize {
+		records, err := jsonquery.New(node, "data").ArrayRequired(objectNameMapping.Get(params.ObjectName))
+		if err != nil {
+			return "", err
+		}
+
+		if len(records) < defaultPageSize {
 			return "", nil
 		}
 
-		var (
-			currentPage int
-			err         error
-		)
+		var currentPage int
 
 		if params.NextPage != "" {
 			currentPage, err = strconv.Atoi(params.NextPage.String())
@@ -49,32 +50,18 @@ func makeNextRecordsURL(params common.ReadParams, count int) func(*ajson.Node) (
 			}
 		}
 
-		nextPage := currentPage + count
+		nextPage := currentPage + len(records)
 
 		return strconv.Itoa(nextPage), nil
 	}
 }
 
-func supportedOperations() components.EndpointRegistryInput {
-	// We support reading everything under schema.json, so we get all the objects and join it into a pattern.
-	readSupport := []string{usersObjectName, transcriptsObjectName, bitesObjectName}
-	writeSupport := []string{objectNameLiveMeeting, bitesObjectName, objectNameUserRole, objectNameAudio, objectNameMeetingTitle} // nolint
-	deleteSupport := []string{transcriptsObjectName}
+// For object names like activeMeetings or userGroups, we need to display them as
+// "Active Meetings" or "User Groups".
+// This code inserts a space between a lowercase letter followed by an uppercase letter,
+// effectively splitting a camelCase word into separate words.
+func createDisplayName(objName string) string {
+	re := regexp.MustCompile(`([a-z])([A-Z])`)
 
-	return components.EndpointRegistryInput{
-		common.ModuleRoot: {
-			{
-				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
-				Support:  components.ReadSupport,
-			},
-			{
-				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
-				Support:  components.WriteSupport,
-			},
-			{
-				Endpoint: fmt.Sprintf("{%s}", strings.Join(deleteSupport, ",")),
-				Support:  components.DeleteSupport,
-			},
-		},
-	}
+	return re.ReplaceAllString(objName, `${1} ${2}`)
 }
