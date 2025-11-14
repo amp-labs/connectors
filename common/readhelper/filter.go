@@ -43,6 +43,7 @@ import (
 //	)
 func FilterSortedRecords(data *ajson.Node, recordsKey string, since time.Time, //nolint:cyclop
 	timestampKey string, timestampFormat string, nextPageFunc common.NextPageFunc,
+	zoom ...string,
 ) ([]map[string]any, string, error) {
 	var (
 		updatedNodeRecords []*ajson.Node
@@ -64,7 +65,7 @@ func FilterSortedRecords(data *ajson.Node, recordsKey string, since time.Time, /
 	}
 
 	for idx, nodeRecord := range nodeRecords {
-		recordTimestamp, err := extractTimestamp(nodeRecord, timestampKey, timestampFormat)
+		recordTimestamp, err := extractTimestamp(nodeRecord, timestampKey, timestampFormat, zoom...)
 		if err != nil {
 			return nil, "", err
 		}
@@ -191,9 +192,10 @@ func hasNextPage(order TimeOrder, idx int, recordsLen int) bool {
 	}
 }
 
-func extractTimestamp(nodeRecord *ajson.Node, timestampKey string, timestampFormat string) (*time.Time, error) {
+func extractTimestamp(nodeRecord *ajson.Node, timestampKey string, timestampFormat string, zoom ...string,
+) (*time.Time, error) {
 	// Extract the timestamp value from the record
-	timestamp, err := jsonquery.New(nodeRecord).StringRequired(timestampKey)
+	timestamp, err := jsonquery.New(nodeRecord, zoom...).StringRequired(timestampKey)
 	if err != nil {
 		return nil, fmt.Errorf("error: bad since timestamp key: %w", err)
 	}
