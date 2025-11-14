@@ -23,8 +23,11 @@ func (c *Connector) Subscribe(
 	}
 
 	var successfulSubscriptions []SuccessfulSubscription
+
 	var firstError error
+
 	var errorOnce sync.Once
+
 	var mutex sync.Mutex
 
 	callbacks := make([]simultaneously.Job, 0)
@@ -32,12 +35,12 @@ func (c *Connector) Subscribe(
 	// Process all object+event combinations
 	for obj, events := range params.SubscriptionEvents {
 		for _, event := range events.Events {
-
 			currObj := obj
 			currentEvent := event
 
 			callbacks = append(callbacks, func(ctx context.Context) error {
 				successful, failed := c.createSingleSubscription(ctx, currentEvent, currObj, req)
+
 				mutex.Lock()
 				defer mutex.Unlock()
 
@@ -51,7 +54,6 @@ func (c *Connector) Subscribe(
 
 				return nil
 			})
-
 		}
 	}
 
@@ -67,12 +69,12 @@ func (c *Connector) Subscribe(
 	if firstError != nil {
 		rollbackErr := c.rollbackSubscriptions(ctx, successfulSubscriptions)
 		if rollbackErr != nil {
-
 			res.Status = common.SubscriptionStatusFailedToRollback
 			res.Result = rollbackErr
 
 			return res, errors.Join(firstError, rollbackErr)
 		}
+
 		res.Status = common.SubscriptionStatusFailed
 		res.ObjectEvents = nil
 
@@ -123,12 +125,12 @@ func (c *Connector) createSingleSubscription(
 ) (*SuccessfulSubscription, error) {
 	payload, err := buildPayload(event, obj, req.WebhookEndPoint, req.Secret)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create subscription for object %s, event %s: %v", obj, event, err)
+		return nil, fmt.Errorf("failed to create subscription for object %s, event %s: %w", obj, event, err)
 	}
 
 	result, err := c.createSubscriptions(ctx, payload, c.Client.Post)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create subscription for object %s, event %s: %v", obj, event, err)
+		return nil, fmt.Errorf("failed to create subscription for object %s, event %s: %w", obj, event, err)
 	}
 
 	return &SuccessfulSubscription{
@@ -209,19 +211,22 @@ func (c *Connector) rollbackSubscriptions(
 	subscriptions []SuccessfulSubscription,
 ) error {
 	var rollbackErrors error
+
 	var mutex sync.Mutex
 
 	callbacks := make([]simultaneously.Job, 0, len(subscriptions))
+
 	for _, sub := range subscriptions {
-		sub := sub
 		callbacks = append(callbacks, func(ctx context.Context) error {
 			err := c.deleteSubscription(ctx, sub.ID)
 			if err != nil {
 				mutex.Lock()
 				defer mutex.Unlock()
+
 				rollbackErrors = errors.Join(rollbackErrors, fmt.Errorf("failed to rollback subscription %s (%s:%s): %w",
 					sub.ID, sub.ObjectName, sub.EventName, err))
 			}
+
 			return nil
 		})
 	}
