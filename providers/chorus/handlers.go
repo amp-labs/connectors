@@ -90,7 +90,6 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 			DisplayName:  name,
 			ValueType:    common.ValueTypeOther,
 			ProviderType: "", // not available
-			ReadOnly:     false,
 			Values:       nil,
 		}
 	}

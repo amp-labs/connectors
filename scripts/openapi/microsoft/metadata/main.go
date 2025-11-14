@@ -41,7 +41,6 @@ func fieldToMetadata(field metadatadef.Field) staticschema.FieldMetadataMapV2 {
 			DisplayName:  field.Name,
 			ValueType:    getFieldValueType(field),
 			ProviderType: field.Type,
-			ReadOnly:     false,
 		},
 	}
 }

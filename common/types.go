@@ -501,7 +501,7 @@ type FieldMetadata struct {
 	ProviderType string
 
 	// ReadOnly would indicate if field can be modified or only read.
-	ReadOnly bool
+	ReadOnly *bool
 
 	// IsCustom indicates whether the field is user-defined or custom.
 	// True means the field was added by the user, false means it is native to the provider.
@@ -524,7 +524,6 @@ func (f FieldsMetadata) AddFieldWithDisplayOnly(fieldName string, displayName st
 		DisplayName:  displayName,
 		ValueType:    "",
 		ProviderType: "",
-		ReadOnly:     false,
 		Values:       nil,
 	}
 }

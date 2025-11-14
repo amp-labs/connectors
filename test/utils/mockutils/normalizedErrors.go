@@ -36,10 +36,12 @@ func (errorNormalizedComparator) ErrorEquals(actualErr, expectedErr any) bool {
 	// 2. If both implement error, compare semantically.
 	aErr, aOK := actualErr.(error)
 	eErr, eOL := expectedErr.(error)
+
 	if aOK && eOL {
 		if errors.Is(aErr, eErr) || strings.Contains(aErr.Error(), eErr.Error()) {
 			return true
 		}
+
 		return false
 	}
 
@@ -60,6 +62,7 @@ func (errorNormalizedComparator) ErrorEquals(actualErr, expectedErr any) bool {
 	// 4. Fallback string-based comparison.
 	aStr := fmt.Sprintf("%v", actualErr)
 	eStr := fmt.Sprintf("%v", expectedErr)
+
 	if aStr == eStr {
 		return true
 	}

@@ -95,7 +95,6 @@ func buildFieldMetadata(fields map[string]string) map[string]common.FieldMetadat
 			DisplayName:  name,
 			ValueType:    common.ValueType(typ),
 			ProviderType: "",
-			ReadOnly:     false,
 			Values:       nil,
 		}
 	}

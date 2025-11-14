@@ -108,20 +108,19 @@ err := simultaneously.DoCtx(ctx, maxConcurrent, callbacks...)
 
 **Why?** These primitives automatically handle panic recovery and prevent unbounded goroutine spawning, protecting against production outages.
 
-## Linter Enforcement
+# Linter
 
-This restriction is enforced via a custom `nogoroutine` linter built into the project's golangci-lint configuration.
+First time set-up:
 
-To use the linter:
+Build custom linters:
 ```bash
-# Build the custom golangci-lint binary (includes the nogoroutine linter)
-golangci-lint custom
-
-# Run linting (using the custom binary)
-./custom-gcl run
+make custom-gcl
 ```
 
-The linter automatically excludes the `future` and `simultaneously` packages themselves, which need to use the `go` keyword internally.
+Ongoing linter usage:
+```bash
+make fix
+```
 
 # Contributors
 

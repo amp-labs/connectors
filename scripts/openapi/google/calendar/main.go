@@ -54,7 +54,6 @@ func main() {
 					DisplayName:  fieldNameConvertToDisplayName(field.Name),
 					ValueType:    providerTypeConvertToValueType(field.Type),
 					ProviderType: field.Type,
-					ReadOnly:     false,
 					Values:       nil,
 				},
 			}

@@ -39,7 +39,6 @@ func (c *Connector) ListObjectMetadata(
 				DisplayName:  field.TitleInPortal,
 				ValueType:    field.GetValueType(),
 				ProviderType: field.Type,
-				ReadOnly:     false,
 				Values:       field.getValues(),
 			})
 		}

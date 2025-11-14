@@ -177,7 +177,6 @@ func (c *Connector) getObjectMetadataFromCRMSearch(
 			DisplayName:  fieldName,
 			ValueType:    common.ValueTypeOther,
 			ProviderType: "", // not available
-			ReadOnly:     false,
 			Values:       nil,
 		}
 	}
@@ -293,7 +292,7 @@ func (f fieldDescription) transformToFieldMetadata() common.FieldMetadata {
 		DisplayName:  f.Label,
 		ValueType:    valueType,
 		ProviderType: f.Type + "." + f.FieldType,
-		ReadOnly:     f.ModificationMetadata.ReadOnlyValue,
+		ReadOnly:     goutils.Pointer(f.ModificationMetadata.ReadOnlyValue),
 		IsCustom:     goutils.Pointer(!f.IsBuiltIn),
 		// IsRequired cannot be known from current struct, info is acquired by different API call and set there.
 		IsRequired: nil,
