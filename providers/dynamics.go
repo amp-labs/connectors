@@ -21,6 +21,11 @@ func init() { // nolint:funlen
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
+
+			// Map of source scopes that will be transformed into target scopes
+			ScopeMappings: map[string]string{
+				".default": "https://api.businesscentral.dynamics.com/.default",
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -80,6 +85,12 @@ func init() { // nolint:funlen
 			ExplicitWorkspaceRequired: true,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
+			},
+
+			// Map of source scopes that will be transformed into target scopes
+			ScopeMappings: map[string]string{
+				"user_impersonation": "https://{{.workspace}}.api.{{.region}}.dynamics.com/user_impersonation",
+				".default":           "https://{{.workspace}}.api.{{.region}}.dynamics.com/.default",
 			},
 		},
 		Media: &Media{
