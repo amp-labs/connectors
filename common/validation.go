@@ -86,7 +86,8 @@ func (p BatchWriteParam) ValidateParams() error {
 		return ErrUnknownBatchWriteType
 	}
 
-	if len(p.Records) == 0 {
+	// Check the new Batch field instead of the deprecated Records field
+	if len(p.Batch) == 0 {
 		return ErrMissingRecordData
 	}
 
