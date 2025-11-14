@@ -6,8 +6,6 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/spyzhov/ajson"
 )
 
 // Implement error abstraction layers to streamline provider error handling.
@@ -47,22 +45,15 @@ func (r ResponseError) CombineErr(base error) error {
 }
 
 // This function uses to check wether the response(200 statuscode) contain error or not.
-func checkErrorInResponse(errorArr []*ajson.Node) error {
-	if len(errorArr) == 0 {
+func checkErrorInResponse(errorArr *ResponseError) error {
+	if errorArr == nil {
 		return nil
 	}
 
 	var errorMsg strings.Builder
 
-	for _, value := range errorArr {
-		errMsg, err := jsonquery.New(value).StrWithDefault("message", "")
-		if err != nil {
-			return err
-		}
-
-		if errMsg != "" {
-			errorMsg.WriteString(errMsg + "; ")
-		}
+	for _, msg := range errorArr.Errors {
+		errorMsg.WriteString(msg.Message + "; ")
 	}
 
 	return errors.New(strings.TrimSuffix(errorMsg.String(), "; ")) //nolint:err113

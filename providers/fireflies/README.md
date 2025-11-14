@@ -19,3 +19,7 @@ Below is an exhaustive list of objects & methods supported on the objects
 | audio              | uploadAudio                           | write           |
 | meetingPrivacy     | updateMeetingPrivacy                  | write           |
 --------------------------------------------------------------------------------
+
+Below objects supports incremental read
+- transcripts
+- analytics

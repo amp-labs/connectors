@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -75,11 +74,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
-	re := regexp.MustCompile(`([a-z])([A-Z])`)
 
 	objectMetadata := common.ObjectMetadata{
 		Fields:      make(map[string]common.FieldMetadata),
-		DisplayName: naming.CapitalizeFirstLetter(re.ReplaceAllString(objectName, `${1} ${2}`)),
+		DisplayName: naming.CapitalizeFirstLetter(createDisplayName(objectName)),
 	}
 
 	metadataResp, err := common.UnmarshalJSON[MetadataResponse](response)
@@ -306,19 +304,12 @@ func (c *Connector) parseDeleteResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.DeleteResult, error) {
-	body, ok := resp.Body()
-	if !ok {
-		return &common.DeleteResult{
-			Success: true,
-		}, nil
-	}
-
-	objectResponse, err := jsonquery.New(body).ArrayOptional("errors")
+	response, err := common.UnmarshalJSON[ResponseError](resp)
 	if err != nil {
 		return nil, err
 	}
 
-	if err = checkErrorInResponse(objectResponse); err != nil {
+	if err = checkErrorInResponse(response); err != nil {
 		return nil, fmt.Errorf("%w: failed to delete record: %d", err, http.StatusNotFound)
 	}
 

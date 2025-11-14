@@ -1,6 +1,7 @@
 package fireflies
 
 import (
+	"regexp"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -53,4 +54,14 @@ func makeNextRecordsURL(params common.ReadParams) func(*ajson.Node) (string, err
 
 		return strconv.Itoa(nextPage), nil
 	}
+}
+
+// For object names like activeMeetings or userGroups, we need to display them as
+// "Active Meetings" or "User Groups".
+// This code inserts a space between a lowercase letter followed by an uppercase letter,
+// effectively splitting a camelCase word into separate words.
+func createDisplayName(objName string) string {
+	re := regexp.MustCompile(`([a-z])([A-Z])`)
+
+	return re.ReplaceAllString(objName, `${1} ${2}`)
 }
