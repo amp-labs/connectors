@@ -16,7 +16,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	switch c.moduleID { //nolint:exhaustive
 	case providers.ModuleZohoDesk:
 		return c.read(ctx, config, nil)
-
+	case providers.ModuleZohoServiceDeskPlus:
+		return c.servicedeskplusAdapter.Read(ctx, config)
 	default:
 		headers := constructHeaders(config)
 
