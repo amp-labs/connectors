@@ -12,9 +12,15 @@ import (
 	"golang.org/x/oauth2"
 )
 
+var fieldWorkspace = credscanning.Field{
+	Name:      "workspace",
+	PathJSON:  "metadata.workspace",
+	SuffixENV: "WORKSPACE",
+}
+
 func GetConnector(ctx context.Context) *bitbucket.Connector {
 	filePath := credscanning.LoadPath(providers.Bitbucket)
-	reader := utils.MustCreateProvCredJSON(filePath, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true, fieldWorkspace)
 
 	options := []common.OAuthOption{
 		common.WithOAuthClient(http.DefaultClient),
@@ -30,8 +36,13 @@ func GetConnector(ctx context.Context) *bitbucket.Connector {
 		utils.Fail(err.Error())
 	}
 
+	mp := make(map[string]string)
+	mp["workspace"] = reader.Get(fieldWorkspace)
+
 	conn, err := bitbucket.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
+		Metadata:            mp,
+		Workspace:           reader.Get(fieldWorkspace),
 	})
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
