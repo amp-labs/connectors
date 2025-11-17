@@ -32,7 +32,7 @@ type InputData struct {
 	ListInfo *listInfo `json:"list_info"`
 }
 
-func (input InputData) Marshal() (string, error) {
+func (input InputData) MarshalToString() (string, error) {
 	listInfoJSON, err := json.Marshal(input)
 	if err != nil {
 		return "", fmt.Errorf("error marshaling list_info: %w", err)
@@ -60,9 +60,7 @@ func (a *Adapter) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error
 	if hasCreationDate.Has(params.ObjectName) {
 		input.ListInfo.SortField = "created_date"
 		input.ListInfo.SortOrder = "desc"
-	}
-
-	if hasCreationTime.Has(params.ObjectName) {
+	} else if hasCreationTime.Has(params.ObjectName) {
 		input.ListInfo.SortField = "created_time"
 		input.ListInfo.SortOrder = "desc"
 	}
@@ -76,7 +74,7 @@ func (a *Adapter) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error
 		input.ListInfo.Page = nextPage
 	}
 
-	inf, err := input.Marshal()
+	inf, err := input.MarshalToString()
 	if err != nil {
 		return nil, err
 	}
@@ -116,12 +114,12 @@ func (a *Adapter) Read(ctx context.Context, config common.ReadParams) (*common.R
 			}, nil
 		}
 
-		return manualIncrementalSync(node, config.ObjectName, config, timestampKey, timeLayout, getNextRecordsURL())
+		return manualIncrementalSync(node, config.ObjectName, config, timestampKey, timeLayout, getNextRecordsURL)
 	}
 
 	return common.ParseResult(res,
 		extractRecordsFromPath(config.ObjectName),
-		getNextRecordsURL(),
+		getNextRecordsURL,
 		common.GetMarshaledData,
 		config.Fields,
 	)

@@ -24,24 +24,22 @@ func extractRecordsFromPath(objectName string) common.RecordsFunc {
 	return common.ExtractRecordsFromPath(objectName)
 }
 
-func getNextRecordsURL() common.NextPageFunc {
-	return func(node *ajson.Node) (string, error) {
-		hasMoreRecords, err := jsonquery.New(node, "list_info").BoolOptional("has_more_rows")
+func getNextRecordsURL(node *ajson.Node) (string, error) {
+	hasMoreRecords, err := jsonquery.New(node, "list_info").BoolWithDefault("has_more_rows", false)
+	if err != nil {
+		return "", err
+	}
+
+	if hasMoreRecords {
+		currentPage, err := jsonquery.New(node, "list_info").IntegerOptional("page")
 		if err != nil {
 			return "", err
 		}
 
-		if hasMoreRecords != nil && *hasMoreRecords {
-			currentPage, err := jsonquery.New(node, "list_info").IntegerOptional("page")
-			if err != nil {
-				return "", err
-			}
-
-			if currentPage != nil {
-				return strconv.Itoa(int(*currentPage + 1)), nil
-			}
+		if currentPage != nil {
+			return strconv.Itoa(int(*currentPage + 1)), nil
 		}
-
-		return "", nil
 	}
+
+	return "", nil
 }
