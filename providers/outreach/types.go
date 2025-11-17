@@ -39,6 +39,8 @@ type createSubscriptionsResponse struct {
 }
 
 type createSubscriptionsResponseData struct {
+	// ID is the webhook subscription ID returned by Outreach API.
+	// Outreach always returns this as a number (e.g., 15, 16, 17), not a string.
 	ID         int            `json:"id"`
 	Type       string         `json:"type"`
 	Attributes map[string]any `json:"attributes"`

@@ -1,3 +1,12 @@
+// Package main provides an integration test for the GetRecordsByIds method.
+//
+// This test dynamically:
+// 1. Creates 3 test accounts in Outreach
+// 2. Fetches them using GetRecordsByIds with specific field selection
+// 3. Verifies all created records are returned correctly
+// 4. Cleans up by deleting all test accounts
+//
+// Run with: go run ./test/outreach/record/main.go
 package main
 
 import (

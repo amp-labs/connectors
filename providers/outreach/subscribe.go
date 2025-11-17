@@ -162,7 +162,9 @@ func (c *Connector) UpdateSubscription(
 		)
 	}
 
-	// Build a map of existing subscriptions for quick lookup
+	// Build a map of existing subscriptions for quick lookup.
+	// Key format: "objectName:eventName" (e.g., "account:created")
+	// This composite key allows O(1) lookup when comparing existing vs requested subscriptions.
 	existingSubscriptions := make(map[string]bool)
 
 	for objName, eventsMap := range prevState.Subscriptions {
@@ -187,7 +189,12 @@ func (c *Connector) UpdateSubscription(
 		}
 	}
 
-	// Determine what to delete (in existing but not in requested)
+	// Categorize existing subscriptions into delete/keep buckets.
+	//
+	// Algorithm:
+	// - If subscription exists but is NOT requested → delete it (webhook no longer needed)
+	// - If subscription exists AND is requested → keep it (reuse existing webhook)
+	// - If subscription is requested but NOT existing → will be created in next step
 	subscriptionsToDelete := &SubscriptionResult{
 		Subscriptions: make(map[common.ObjectName]map[string]createSubscriptionsResponse),
 	}
@@ -224,7 +231,8 @@ func (c *Connector) UpdateSubscription(
 		}
 	}
 
-	// Determine what to create (in requested but not in existing)
+	// Determine what to create (in requested but not in existing).
+	// We check against existingSubscriptions to avoid recreating webhooks that already exist.
 	newSubscriptionEvents := make(map[common.ObjectName]common.ObjectEvents)
 
 	for objName, events := range params.SubscriptionEvents {
@@ -237,6 +245,7 @@ func (c *Connector) UpdateSubscription(
 			}
 
 			key := string(objName) + ":" + string(providerEvent)
+			// Only create if it doesn't already exist (wasn't in the "keep" list)
 			if !existingSubscriptions[key] {
 				eventsToCreate = append(eventsToCreate, event)
 			}
@@ -262,11 +271,13 @@ func (c *Connector) UpdateSubscription(
 		}
 	}
 
-	// Merge the results: kept subscriptions + newly created subscriptions
+	// Merge the results: kept subscriptions + newly created subscriptions.
+	// Start with subscriptions we kept from the previous state (these already existed and are still wanted).
 	finalResult := &SubscriptionResult{
 		Subscriptions: subscriptionsToKeep.Subscriptions,
 	}
 
+	// Add newly created subscriptions to the final result.
 	if createResult != nil && createResult.Result != nil {
 		newSubs, ok := createResult.Result.(*SubscriptionResult)
 		if ok {

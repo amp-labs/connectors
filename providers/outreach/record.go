@@ -4,12 +4,16 @@ import (
 	"context"
 	"strings"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-// It uses Outreach API's filter syntax: filter[id]=1,2,3.
+var _ connectors.BatchRecordReaderConnector = &Connector{}
+
+// GetRecordsByIds implements BatchRecordReaderConnector for Outreach.
+// It fetches records for the given object and IDs, returning a ReadResult for each.
 func (c *Connector) GetRecordsByIds( //nolint:revive
 	ctx context.Context,
 	objectName string,
@@ -62,7 +66,9 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	return readResult.Data, nil
 }
 
-// Uses Outreach API filter syntax: filter[id]=1,2,3.
+// buildReadByIDsURL constructs a URL for fetching multiple records by their IDs.
+// Uses Outreach API's filter syntax where IDs are comma-separated: filter[id]=1,2,3
+// This is more efficient than making individual requests for each ID.
 func (c *Connector) buildReadByIDsURL(objectName string, ids []string) (*urlbuilder.URL, error) {
 	url, err := c.getApiURL(objectName)
 	if err != nil {

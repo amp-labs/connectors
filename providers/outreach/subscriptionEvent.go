@@ -32,6 +32,10 @@ const (
 	OutreachWebhookSignatureHeader = "Outreach-Webhook-Signature"
 )
 
+// VerifyWebhookMessage implements WebhookVerifierConnector for Outreach.
+// Returns (true, nil) if signature verification succeeds.
+// Returns (false, error) if verification fails or encounters an error.
+// Note: Return type changed from error to (bool, error) to match the interface contract.
 func (c *Connector) VerifyWebhookMessage(
 	_ context.Context,
 	request *common.WebhookRequest,
