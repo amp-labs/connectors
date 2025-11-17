@@ -100,7 +100,6 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 			DisplayName:  field.Name,
 			ValueType:    getFieldValueType(valueType),
 			ProviderType: valueType,
-			ReadOnly:     false,
 			Values:       nil,
 		}
 	}

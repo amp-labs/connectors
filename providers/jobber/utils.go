@@ -10,7 +10,7 @@ import (
 
 const (
 	apiVersion      = "2025-01-20"
-	defaultPageSize = 100
+	defaultPageSize = 50
 )
 
 // Jobber API Documentation: https://developer.getjobber.com/docs

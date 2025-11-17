@@ -70,7 +70,6 @@ func (c *Adapter) parseSingleObjectMetadataResponse(
 			DisplayName:  field,
 			ValueType:    common.ValueTypeOther,
 			ProviderType: "",
-			ReadOnly:     false,
 			Values:       nil,
 		}
 	}
