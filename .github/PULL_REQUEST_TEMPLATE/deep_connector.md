@@ -7,7 +7,7 @@ Read more: https://ampersand.slab.com/posts/deep-connectors-guide-6x4fhxne#ht0ds
 - [ ] Connector uses `internal/components`
 - [ ] Metadata uses V2 metadata format
 - [ ] Read supports pagination and incremental sync
-- [ ] Raw response is returned as is, no formatting or flattening is performed.
+- [ ] Raw response is returned as is for **READ** & **METADATA**, no formatting or flattening is performed.
 - [ ] Write payloads should accept what `ReadResults.Fields` is returning. Any unnecessary nesting around the input is removed.
 - [ ] Provider errors are mapped if non-standard (errors with 200 response code are converted to 4XX)
 - [ ] Custom fields, if not human readable names, are resolved to readable names.
