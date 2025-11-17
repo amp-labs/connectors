@@ -1,5 +1,9 @@
 package outreach
 
+import (
+	"github.com/amp-labs/connectors/common"
+)
+
 type SubscriptionRequest struct {
 	UniqueRef       string `json:"unique_ref"        validate:"required"`
 	WebhookEndPoint string `json:"webhook_end_point" validate:"required"`
@@ -35,40 +39,18 @@ type createSubscriptionsResponse struct {
 }
 
 type createSubscriptionsResponseData struct {
-	ID         string                        `json:"id"`
-	Type       string                        `json:"type"`
-	Attributes createSubscriptionsAttributes `json:"attributes"`
+	ID         int            `json:"id"`
+	Type       string         `json:"type"`
+	Attributes map[string]any `json:"attributes"`
 }
 
-type createSubscriptionsAttributes struct {
-	Action         string `json:"action"`
-	Active         bool   `json:"active"`
-	CleanupToken   string `json:"cleanupToken"`
-	URL            string `json:"url"`
-	CreatedAt      string `json:"createdAt"`
-	Resource       string `json:"resource"`
-	Secret         string `json:"secret"`
-	PayloadVersion string `json:"payloadVersion"`
-	CreatorAppName string `json:"creatorAppName"`
-	CreatorAppId   string `json:"creatorAppId"`
-	DisabledReason string `json:"disabledReason"`
-	DisabledSince  string `json:"disabledSince"`
-	DisabledUntil  string `json:"disabledUntil"`
-}
-
+// SuccessfulSubscription is used internally for rollback tracking.
 type SuccessfulSubscription struct {
-	ID         string `json:"id"`
-	ObjectName string `json:"object_name"`
-	EventName  string `json:"event_name"`
+	ID         string
+	ObjectName string
+	EventName  string
 }
 
-type FailedSubscription struct {
-	ObjectName string `json:"object_name"`
-	EventName  string `json:"event_name"`
-	Error      string `json:"error"` // Use string instead of error for JSON serialization
-}
-
-type SubscriptionResultData struct {
-	SuccessfulSubscriptions []SuccessfulSubscription `json:"successful_subscriptions"`
-	FailedSubscriptions     []FailedSubscription     `json:"failed_subscriptions"`
+type SubscriptionResult struct {
+	Subscriptions map[common.ObjectName]map[string]createSubscriptionsResponse `json:"Subscriptions"`
 }

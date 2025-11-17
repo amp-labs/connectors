@@ -4,15 +4,29 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"sync"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/go-playground/validator"
 )
 
-// nolint: funlen
+var _ connectors.SubscribeConnector = &Connector{}
+
+func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
+	return &common.SubscribeParams{}
+}
+
+func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
+	return &common.SubscriptionResult{
+		Result: &SubscriptionResult{},
+	}
+}
+
+// nolint: funlen, cyclop
 func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -22,7 +36,9 @@ func (c *Connector) Subscribe(
 		return nil, err
 	}
 
-	var successfulSubscriptions []SuccessfulSubscription
+	// Store successful subscriptions with their full response data
+	subscriptionsMap := make(map[common.ObjectName]map[string]createSubscriptionsResponse)
+	successfulSubscriptions := make([]SuccessfulSubscription, 0)
 
 	var firstError error
 
@@ -39,17 +55,39 @@ func (c *Connector) Subscribe(
 			currentEvent := event
 
 			callbacks = append(callbacks, func(ctx context.Context) error {
-				successful, failed := c.createSingleSubscription(ctx, currentEvent, currObj, req)
+				response, failErr := c.createSingleSubscription(ctx, currentEvent, currObj, req)
 
 				mutex.Lock()
 				defer mutex.Unlock()
 
-				if failed != nil {
+				if failErr != nil {
 					errorOnce.Do(func() {
-						firstError = failed
+						firstError = failErr
 					})
 				} else {
-					successfulSubscriptions = append(successfulSubscriptions, *successful)
+					// Convert common event type to provider event type (ModuleEvent) as string
+					providerEvent, err := getProviderEventName(currentEvent)
+					if err != nil {
+						errorOnce.Do(func() {
+							firstError = fmt.Errorf("failed to convert event type %s: %w", currentEvent, err)
+						})
+
+						return nil
+					}
+
+					// Initialize nested map if needed
+					if subscriptionsMap[currObj] == nil {
+						subscriptionsMap[currObj] = make(map[string]createSubscriptionsResponse)
+					}
+
+					subscriptionsMap[currObj][string(providerEvent)] = *response
+
+					// Keep track of successful subscriptions for rollback
+					successfulSubscriptions = append(successfulSubscriptions, SuccessfulSubscription{
+						ID:         strconv.Itoa(response.Data.ID),
+						ObjectName: string(currObj),
+						EventName:  string(providerEvent),
+					})
 				}
 
 				return nil
@@ -57,36 +95,205 @@ func (c *Connector) Subscribe(
 		}
 	}
 
+	res := &common.SubscriptionResult{
+		ObjectEvents: params.SubscriptionEvents,
+	}
+
 	err = simultaneously.DoCtx(ctx, -1, callbacks...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to process subscriptions: %w", err)
 	}
 
-	res := &common.SubscriptionResult{
-		ObjectEvents: params.SubscriptionEvents,
-	}
+	objectEvents := make(map[common.ObjectName]common.ObjectEvents)
 
 	if firstError != nil {
-		rollbackErr := c.rollbackSubscriptions(ctx, successfulSubscriptions)
+		_, failedToRollBack, rollbackErr := c.rollbackSubscriptions(ctx, successfulSubscriptions)
 		if rollbackErr != nil {
 			res.Status = common.SubscriptionStatusFailedToRollback
-			res.Result = rollbackErr
+
+			for _, failedSub := range failedToRollBack {
+				objectEvents[common.ObjectName(failedSub.ObjectName)] = common.ObjectEvents{
+					Events: []common.SubscriptionEventType{common.SubscriptionEventType(failedSub.EventName)},
+				}
+			}
+
+			res.ObjectEvents = objectEvents
 
 			return res, errors.Join(firstError, rollbackErr)
 		}
 
 		res.Status = common.SubscriptionStatusFailed
 		res.ObjectEvents = nil
+		// rolledBack and failedToRollBack are available for caller to use if needed
 
 		return res, firstError
 	}
 
 	res.Status = common.SubscriptionStatusSuccess
-	res.Result = &SubscriptionResultData{
-		SuccessfulSubscriptions: successfulSubscriptions,
+	res.Result = &SubscriptionResult{
+		Subscriptions: subscriptionsMap,
 	}
 
 	return res, nil
+}
+
+// UpdateSubscription updates an existing subscription by comparing the previous
+// subscription state with the new desired state.
+// It deletes subscriptions that are no longer needed and creates new ones.
+//
+//nolint:funlen,cyclop
+func (c *Connector) UpdateSubscription(
+	ctx context.Context,
+	params common.SubscribeParams,
+	previousResult *common.SubscriptionResult,
+) (*common.SubscriptionResult, error) {
+	// Validate the previous result
+	if previousResult == nil || previousResult.Result == nil {
+		return nil, fmt.Errorf("%w: missing previousResult or previousResult.Result", errMissingParams)
+	}
+
+	prevState, ok := previousResult.Result.(*SubscriptionResult)
+	if !ok {
+		return nil, fmt.Errorf(
+			"%w: expected previousResult.Result to be type %T, but got %T",
+			errInvalidRequestType,
+			prevState,
+			previousResult.Result,
+		)
+	}
+
+	// Build a map of existing subscriptions for quick lookup
+	existingSubscriptions := make(map[string]bool)
+	for objName, eventsMap := range prevState.Subscriptions {
+		for eventName := range eventsMap {
+			key := string(objName) + ":" + eventName
+			existingSubscriptions[key] = true
+		}
+	}
+
+	// Build a map of requested subscriptions
+	requestedSubscriptions := make(map[string]bool)
+	for objName, events := range params.SubscriptionEvents {
+		for _, event := range events.Events {
+			providerEvent, err := getProviderEventName(event)
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert event type %s: %w", event, err)
+			}
+			key := string(objName) + ":" + string(providerEvent)
+			requestedSubscriptions[key] = true
+		}
+	}
+
+	// Determine what to delete (in existing but not in requested)
+	subscriptionsToDelete := &SubscriptionResult{
+		Subscriptions: make(map[common.ObjectName]map[string]createSubscriptionsResponse),
+	}
+	subscriptionsToKeep := &SubscriptionResult{
+		Subscriptions: make(map[common.ObjectName]map[string]createSubscriptionsResponse),
+	}
+
+	for objName, eventsMap := range prevState.Subscriptions {
+		for eventName, response := range eventsMap {
+			key := string(objName) + ":" + eventName
+			if !requestedSubscriptions[key] {
+				// Need to delete this subscription
+				if subscriptionsToDelete.Subscriptions[objName] == nil {
+					subscriptionsToDelete.Subscriptions[objName] = make(map[string]createSubscriptionsResponse)
+				}
+				subscriptionsToDelete.Subscriptions[objName][eventName] = response
+			} else {
+				// Keep this subscription
+				if subscriptionsToKeep.Subscriptions[objName] == nil {
+					subscriptionsToKeep.Subscriptions[objName] = make(map[string]createSubscriptionsResponse)
+				}
+				subscriptionsToKeep.Subscriptions[objName][eventName] = response
+			}
+		}
+	}
+
+	// Delete subscriptions that are no longer needed
+	if len(subscriptionsToDelete.Subscriptions) > 0 {
+		deleteResult := common.SubscriptionResult{Result: subscriptionsToDelete}
+		if err := c.DeleteSubscription(ctx, deleteResult); err != nil {
+			return nil, fmt.Errorf("failed to delete previous subscriptions: %w", err)
+		}
+	}
+
+	// Determine what to create (in requested but not in existing)
+	newSubscriptionEvents := make(map[common.ObjectName]common.ObjectEvents)
+	for objName, events := range params.SubscriptionEvents {
+		var eventsToCreate []common.SubscriptionEventType
+		for _, event := range events.Events {
+			providerEvent, err := getProviderEventName(event)
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert event type %s: %w", event, err)
+			}
+			key := string(objName) + ":" + string(providerEvent)
+			if !existingSubscriptions[key] {
+				eventsToCreate = append(eventsToCreate, event)
+			}
+		}
+		if len(eventsToCreate) > 0 {
+			newSubscriptionEvents[objName] = common.ObjectEvents{Events: eventsToCreate}
+		}
+	}
+
+	// Create new subscriptions
+	var createResult *common.SubscriptionResult
+	if len(newSubscriptionEvents) > 0 {
+		newParams := params
+		newParams.SubscriptionEvents = newSubscriptionEvents
+		var err error
+		createResult, err = c.Subscribe(ctx, newParams)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create new subscriptions: %w", err)
+		}
+	}
+
+	// Merge the results: kept subscriptions + newly created subscriptions
+	finalResult := &SubscriptionResult{
+		Subscriptions: subscriptionsToKeep.Subscriptions,
+	}
+
+	if createResult != nil && createResult.Result != nil {
+		newSubs, ok := createResult.Result.(*SubscriptionResult)
+		if ok {
+			for objName, eventsMap := range newSubs.Subscriptions {
+				if finalResult.Subscriptions[objName] == nil {
+					finalResult.Subscriptions[objName] = make(map[string]createSubscriptionsResponse)
+				}
+				for eventName, response := range eventsMap {
+					finalResult.Subscriptions[objName][eventName] = response
+				}
+			}
+		}
+	}
+
+	// Build the final ObjectEvents map
+	finalObjectEvents := make(map[common.ObjectName]common.ObjectEvents)
+	for objName, eventsMap := range finalResult.Subscriptions {
+		var events []common.SubscriptionEventType
+		for eventName := range eventsMap {
+			// Convert provider event name back to common event type
+			switch eventName {
+			case string(Created):
+				events = append(events, common.SubscriptionEventTypeCreate)
+			case string(Updated):
+				events = append(events, common.SubscriptionEventTypeUpdate)
+			case string(Destroyed):
+				events = append(events, common.SubscriptionEventTypeDelete)
+			}
+		}
+		if len(events) > 0 {
+			finalObjectEvents[objName] = common.ObjectEvents{Events: events}
+		}
+	}
+
+	return &common.SubscriptionResult{
+		Status:       common.SubscriptionStatusSuccess,
+		Result:       finalResult,
+		ObjectEvents: finalObjectEvents,
+	}, nil
 }
 
 func (c *Connector) DeleteSubscription(
@@ -97,32 +304,41 @@ func (c *Connector) DeleteSubscription(
 		return fmt.Errorf("%w: Result cannot be null", errMissingParams) //nolint:err113,lll
 	}
 
-	subscriptionData, ok := result.Result.(*SubscriptionResultData)
+	subscriptionData, ok := result.Result.(*SubscriptionResult)
 	if !ok {
 		return fmt.Errorf("%w: expected SubscriptionResult to be type %T but got %T", errInvalidRequestType, subscriptionData, result.Result) //nolint:err113,lll
 	}
 
-	if len(subscriptionData.SuccessfulSubscriptions) == 0 {
+	if len(subscriptionData.Subscriptions) == 0 {
 		return fmt.Errorf("%w: subscription is empty", errMissingParams)
 	}
 
-	for _, subscription := range subscriptionData.SuccessfulSubscriptions {
-		err := c.deleteSubscription(ctx, subscription.ID)
-		if err != nil {
-			return fmt.Errorf("failed to delete subscription with ID %s: %w", subscription.ID, err)
+	// Extract subscription IDs from the nested map and delete them
+	for objName, eventsMap := range subscriptionData.Subscriptions {
+		for eventType, response := range eventsMap {
+			err := c.deleteSubscription(ctx, strconv.Itoa(response.Data.ID))
+			if err != nil {
+				return fmt.Errorf(
+					"failed to delete subscription for object %s, event %s (ID: %d): %w",
+					objName,
+					eventType,
+					response.Data.ID,
+					err,
+				)
+			}
 		}
 	}
 
 	return nil
 }
 
-// createSingleSubscription attempts to create a single subscription and returns either a successful or failed result.
+// createSingleSubscription attempts to create a single subscription and returns the full response.
 func (c *Connector) createSingleSubscription(
 	ctx context.Context,
 	event common.SubscriptionEventType,
 	obj common.ObjectName,
 	req *SubscriptionRequest,
-) (*SuccessfulSubscription, error) {
+) (*createSubscriptionsResponse, error) {
 	payload, err := buildPayload(event, obj, req.WebhookEndPoint, req.Secret)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create subscription for object %s, event %s: %w", obj, event, err)
@@ -133,11 +349,7 @@ func (c *Connector) createSingleSubscription(
 		return nil, fmt.Errorf("failed to create subscription for object %s, event %s: %w", obj, event, err)
 	}
 
-	return &SuccessfulSubscription{
-		ID:         result.Data.ID,
-		ObjectName: string(obj),
-		EventName:  string(event),
-	}, nil
+	return result, nil
 }
 
 func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error) {
@@ -209,34 +421,42 @@ func (c *Connector) deleteSubscription(ctx context.Context, subscriptionID strin
 func (c *Connector) rollbackSubscriptions(
 	ctx context.Context,
 	subscriptions []SuccessfulSubscription,
-) error {
+) (rolledBack []SuccessfulSubscription, failedToRollBack []SuccessfulSubscription, err error) {
 	var rollbackErrors error
 
 	var mutex sync.Mutex
 
 	callbacks := make([]simultaneously.Job, 0, len(subscriptions))
 
-	for _, sub := range subscriptions {
-		callbacks = append(callbacks, func(ctx context.Context) error {
-			err := c.deleteSubscription(ctx, sub.ID)
-			if err != nil {
-				mutex.Lock()
-				defer mutex.Unlock()
+	for _, subFromList := range subscriptions {
+		callbacks = append(callbacks,
+			func(sub SuccessfulSubscription) func(ctx context.Context) error {
+				return func(ctx context.Context) error {
+					deleteErr := c.deleteSubscription(ctx, sub.ID)
 
-				rollbackErrors = errors.Join(rollbackErrors, fmt.Errorf("failed to rollback subscription %s (%s:%s): %w",
-					sub.ID, sub.ObjectName, sub.EventName, err))
-			}
+					mutex.Lock()
+					defer mutex.Unlock()
 
-			return nil
-		})
+					if deleteErr != nil {
+						failedToRollBack = append(failedToRollBack, sub)
+						rollbackErrors = errors.Join(rollbackErrors, fmt.Errorf("failed to rollback subscription %s (%s:%s): %w",
+							sub.ID, sub.ObjectName, sub.EventName, deleteErr))
+					} else {
+						rolledBack = append(rolledBack, sub)
+					}
+
+					return nil
+				}
+			}(subFromList),
+		)
 	}
 
-	err := simultaneously.DoCtx(ctx, -1, callbacks...)
+	err = simultaneously.DoCtx(ctx, -1, callbacks...)
 	if err != nil {
 		rollbackErrors = errors.Join(rollbackErrors, fmt.Errorf("failed to rollback subscriptions: %w", err))
 	}
 
-	return rollbackErrors
+	return rolledBack, failedToRollBack, rollbackErrors
 }
 
 func getProviderEventName(subscriptionEvent common.SubscriptionEventType) (ModuleEvent, error) {
