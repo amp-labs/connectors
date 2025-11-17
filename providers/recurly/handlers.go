@@ -3,7 +3,6 @@ package recurly
 import (
 	"context"
 	"net/http"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -11,7 +10,7 @@ import (
 
 var (
 	ApiVersionHeader = "application/vnd.recurly.v2021-02-25+json" //nolint:gochecknoglobals
-	limit            = "200"                                      //nolint:gochecknoglobals
+	limit            = "2"                                        //nolint:gochecknoglobals
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -19,30 +18,14 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	var err error
 
-	if params.NextPage != "" {
-		// NextPage contains the full path with cursor,
-		// e.g., "/accounts?cursor=xy0togeu9vun%3A1763384298.485542&limit=2&sort=created_at"
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL + params.NextPage.String())
-		if err != nil {
-			return nil, err
-		}
+	if params.NextPage == "" {
+		url, err = buildFirstPageURL(c.ProviderInfo().BaseURL, params)
 	} else {
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
-		if err != nil {
-			return nil, err
-		}
+		url, err = buildNextPageURL(c.ProviderInfo().BaseURL, params.NextPage.String())
+	}
 
-		url.WithQueryParam("limit", limit)
-
-		if supportIncrementalRead.Has(params.ObjectName) {
-			if !params.Since.IsZero() {
-				url.WithQueryParam("begin_time", params.Since.Format(time.RFC3339))
-			}
-
-			if !params.Until.IsZero() {
-				url.WithQueryParam("end_time", params.Until.Format(time.RFC3339))
-			}
-		}
+	if err != nil {
+		return nil, err
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
