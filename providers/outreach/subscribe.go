@@ -141,7 +141,7 @@ func (c *Connector) Subscribe(
 // subscription state with the new desired state.
 // It deletes subscriptions that are no longer needed and creates new ones.
 //
-//nolint:funlen,cyclop
+//nolint:funlen,cyclop,gocognit,gocyclo
 func (c *Connector) UpdateSubscription(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -164,6 +164,7 @@ func (c *Connector) UpdateSubscription(
 
 	// Build a map of existing subscriptions for quick lookup
 	existingSubscriptions := make(map[string]bool)
+
 	for objName, eventsMap := range prevState.Subscriptions {
 		for eventName := range eventsMap {
 			key := string(objName) + ":" + eventName
@@ -173,12 +174,14 @@ func (c *Connector) UpdateSubscription(
 
 	// Build a map of requested subscriptions
 	requestedSubscriptions := make(map[string]bool)
+
 	for objName, events := range params.SubscriptionEvents {
 		for _, event := range events.Events {
 			providerEvent, err := getProviderEventName(event)
 			if err != nil {
 				return nil, fmt.Errorf("failed to convert event type %s: %w", event, err)
 			}
+
 			key := string(objName) + ":" + string(providerEvent)
 			requestedSubscriptions[key] = true
 		}
@@ -200,12 +203,14 @@ func (c *Connector) UpdateSubscription(
 				if subscriptionsToDelete.Subscriptions[objName] == nil {
 					subscriptionsToDelete.Subscriptions[objName] = make(map[string]createSubscriptionsResponse)
 				}
+
 				subscriptionsToDelete.Subscriptions[objName][eventName] = response
 			} else {
 				// Keep this subscription
 				if subscriptionsToKeep.Subscriptions[objName] == nil {
 					subscriptionsToKeep.Subscriptions[objName] = make(map[string]createSubscriptionsResponse)
 				}
+
 				subscriptionsToKeep.Subscriptions[objName][eventName] = response
 			}
 		}
@@ -221,18 +226,22 @@ func (c *Connector) UpdateSubscription(
 
 	// Determine what to create (in requested but not in existing)
 	newSubscriptionEvents := make(map[common.ObjectName]common.ObjectEvents)
+
 	for objName, events := range params.SubscriptionEvents {
 		var eventsToCreate []common.SubscriptionEventType
+
 		for _, event := range events.Events {
 			providerEvent, err := getProviderEventName(event)
 			if err != nil {
 				return nil, fmt.Errorf("failed to convert event type %s: %w", event, err)
 			}
+
 			key := string(objName) + ":" + string(providerEvent)
 			if !existingSubscriptions[key] {
 				eventsToCreate = append(eventsToCreate, event)
 			}
 		}
+
 		if len(eventsToCreate) > 0 {
 			newSubscriptionEvents[objName] = common.ObjectEvents{Events: eventsToCreate}
 		}
@@ -240,10 +249,13 @@ func (c *Connector) UpdateSubscription(
 
 	// Create new subscriptions
 	var createResult *common.SubscriptionResult
+
 	if len(newSubscriptionEvents) > 0 {
 		newParams := params
 		newParams.SubscriptionEvents = newSubscriptionEvents
+
 		var err error
+
 		createResult, err = c.Subscribe(ctx, newParams)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create new subscriptions: %w", err)
@@ -262,6 +274,7 @@ func (c *Connector) UpdateSubscription(
 				if finalResult.Subscriptions[objName] == nil {
 					finalResult.Subscriptions[objName] = make(map[string]createSubscriptionsResponse)
 				}
+
 				for eventName, response := range eventsMap {
 					finalResult.Subscriptions[objName][eventName] = response
 				}
@@ -271,8 +284,10 @@ func (c *Connector) UpdateSubscription(
 
 	// Build the final ObjectEvents map
 	finalObjectEvents := make(map[common.ObjectName]common.ObjectEvents)
+
 	for objName, eventsMap := range finalResult.Subscriptions {
 		var events []common.SubscriptionEventType
+
 		for eventName := range eventsMap {
 			// Convert provider event name back to common event type
 			switch eventName {
@@ -284,6 +299,7 @@ func (c *Connector) UpdateSubscription(
 				events = append(events, common.SubscriptionEventTypeDelete)
 			}
 		}
+
 		if len(events) > 0 {
 			finalObjectEvents[objName] = common.ObjectEvents{Events: events}
 		}

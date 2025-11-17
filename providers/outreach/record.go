@@ -9,8 +9,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-// GetRecordsByIds returns records matching identifiers.
-// It uses Outreach API's filter syntax: filter[id]=1,2,3
+// It uses Outreach API's filter syntax: filter[id]=1,2,3.
 func (c *Connector) GetRecordsByIds( //nolint:revive
 	ctx context.Context,
 	objectName string,
@@ -63,8 +62,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	return readResult.Data, nil
 }
 
-// buildReadByIDsURL constructs a URL for fetching multiple records by their IDs.
-// Uses Outreach API filter syntax: filter[id]=1,2,3
+// Uses Outreach API filter syntax: filter[id]=1,2,3.
 func (c *Connector) buildReadByIDsURL(objectName string, ids []string) (*urlbuilder.URL, error) {
 	url, err := c.getApiURL(objectName)
 	if err != nil {

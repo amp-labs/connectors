@@ -25,6 +25,7 @@ func main() {
 
 	// Step 1: Create multiple test accounts
 	fmt.Println("Creating test accounts...")
+
 	recordIDs := make([]string, 0, 3)
 
 	for i := 0; i < 3; i++ {
@@ -46,6 +47,7 @@ func main() {
 
 	// Step 2: Fetch the created records using GetRecordsByIds
 	fmt.Println("\nFetching accounts by IDs...")
+
 	res, err := conn.GetRecordsByIds(ctx,
 		"accounts",
 		recordIDs,
@@ -65,6 +67,7 @@ func main() {
 
 	// Verify all record IDs are present in the results
 	foundIDs := make(map[string]bool)
+
 	for _, record := range res {
 		if id, ok := record.Fields["id"].(float64); ok {
 			foundIDs[fmt.Sprintf("%.0f", id)] = true
@@ -81,6 +84,7 @@ func main() {
 
 	// Step 4: Clean up - delete the created accounts
 	fmt.Println("\nCleaning up - deleting test accounts...")
+
 	for i, recordID := range recordIDs {
 		deleteResult, err := conn.Delete(ctx, common.DeleteParams{
 			ObjectName: "accounts",
@@ -89,9 +93,11 @@ func main() {
 		if err != nil {
 			utils.Fail("error deleting account", "error", err, "recordId", recordID, "iteration", i)
 		}
+
 		if !deleteResult.Success {
 			utils.Fail("delete operation failed", "recordId", recordID)
 		}
+
 		fmt.Printf("✓ Deleted account %d (ID: %s)\n", i+1, recordID)
 	}
 
