@@ -12,6 +12,7 @@ Most common connector methods can be tested using:
 * testroutines.Write - Write
 * testroutines.Metadata - ListObjectMetadata
 * testroutines.Delete - Delete
+* testroutines.BatchWrite - BatchWrite
 
 They can be used as a template to declare your unique test case type.
 The main difference among them is
