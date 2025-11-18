@@ -93,7 +93,7 @@ var Fields = struct { // nolint:gochecknoglobals
 	},
 	Workspace: Field{
 		Name:      "workspace",
-		PathJSON:  "substitutions.workspace",
+		PathJSON:  "metadata.workspace",
 		SuffixENV: "WORKSPACE",
 	},
 	State: Field{
