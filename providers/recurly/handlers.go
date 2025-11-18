@@ -33,6 +33,8 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
+	// version is required in the Accept header
+	// see: https://recurly.com/developers/api/v2021-02-25/index.html#section/Getting-Started/Versioning
 	req.Header.Set("Accept", ApiVersionHeader)
 
 	return req, nil
