@@ -37,5 +37,28 @@ func main() {
 	slog.Info("Reading accounts..")
 	utils.DumpJSON(res, os.Stdout)
 
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "plans",
+		Fields:     connectors.Fields("id", "code", "state"),
+	})
+
+	if err != nil {
+		utils.Fail("error reading from recurly", "error", err)
+	}
+
+	slog.Info("Reading plans..")
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "items",
+		Fields:     connectors.Fields("id", "code", "name"),
+	})
+
+	if err != nil {
+		utils.Fail("error reading from recurly", "error", err)
+	}
+
+	slog.Info("Reading items..")
+	utils.DumpJSON(res, os.Stdout)
 	slog.Info("Read operation completed successfully.")
 }
