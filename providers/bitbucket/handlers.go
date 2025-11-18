@@ -109,8 +109,8 @@ func (c *Connector) constructReadURL(params common.ReadParams) (string, error) {
 
 func (c *Connector) mapObjectsEndpoints(objectName string) string {
 	switch objectName {
-	case "pipelies-config/variable":
-		return fmt.Sprintf("/workspaces/%s/pipelies-config/variable", c.Workspace)
+	case "variables":
+		return fmt.Sprintf("/workspaces/%s/pipelines-config/variables", c.Workspace)
 	case "repositories":
 		return "repositories/" + c.Workspace
 	case "snippets":
