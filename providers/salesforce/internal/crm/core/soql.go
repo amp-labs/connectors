@@ -1,4 +1,4 @@
-package salesforce
+package core
 
 import (
 	"fmt"
@@ -13,16 +13,16 @@ const (
 	identifiersLimitStr = "200"
 )
 
-// soqlBuilder builder of Salesforce Object Query Language.
+// SOQLBuilder builder of Salesforce Object Query Language.
 // It constructs query dynamically.
-type soqlBuilder struct {
+type SOQLBuilder struct {
 	fields string
 	from   string
 	where  []string
 	limit  string
 }
 
-func (s *soqlBuilder) SelectFields(fields []string) *soqlBuilder {
+func (s *SOQLBuilder) SelectFields(fields []string) *SOQLBuilder {
 	for _, field := range fields {
 		if field == "*" {
 			s.fields = "FIELDS(ALL)"
@@ -39,19 +39,19 @@ func (s *soqlBuilder) SelectFields(fields []string) *soqlBuilder {
 	return s
 }
 
-func (s *soqlBuilder) From(from string) *soqlBuilder {
+func (s *SOQLBuilder) From(from string) *SOQLBuilder {
 	s.from = from
 
 	return s
 }
 
-func (s *soqlBuilder) Limit(l int) *soqlBuilder {
+func (s *SOQLBuilder) Limit(l int) *SOQLBuilder {
 	s.limit = strconv.Itoa(l)
 
 	return s
 }
 
-func (s *soqlBuilder) Where(condition string) *soqlBuilder {
+func (s *SOQLBuilder) Where(condition string) *SOQLBuilder {
 	if s.where == nil {
 		s.where = make([]string, 0)
 	}
@@ -61,7 +61,7 @@ func (s *soqlBuilder) Where(condition string) *soqlBuilder {
 	return s
 }
 
-func (s *soqlBuilder) WithIDs(identifiers []string) *soqlBuilder {
+func (s *SOQLBuilder) WithIDs(identifiers []string) *SOQLBuilder {
 	// Decorate each id with quotes.
 	for index, id := range identifiers {
 		identifiers[index] = fmt.Sprintf("'%v'", id)
@@ -74,7 +74,7 @@ func (s *soqlBuilder) WithIDs(identifiers []string) *soqlBuilder {
 	return s.Where(fmt.Sprintf("Id IN (%v)", identifiersList))
 }
 
-func (s *soqlBuilder) String() string {
+func (s *SOQLBuilder) String() string {
 	query := fmt.Sprintf("SELECT %s FROM %s", s.fields, s.from)
 
 	if len(s.where) != 0 {
