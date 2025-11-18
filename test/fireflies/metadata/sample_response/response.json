@@ -1,394 +1,653 @@
 {
+  "Errors": {},
   "Result": {
+    "activeMeetings": {
+      "DisplayName": "Active Meetings",
+      "Fields": {
+        "end_time": {
+          "DisplayName": "end_time",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "ValueType": "string",
+          "Values": []
+        },
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "ValueType": "string",
+          "Values": []
+        },
+        "meeting_link": {
+          "DisplayName": "meeting_link",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "ValueType": "string",
+          "Values": []
+        },
+        "organizer_email": {
+          "DisplayName": "organizer_email",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "ValueType": "string",
+          "Values": []
+        },
+        "privacy": {
+          "DisplayName": "privacy",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MeetingPrivacy",
+          "ReadOnly": false,
+          "ValueType": "other",
+          "Values": []
+        },
+        "start_time": {
+          "DisplayName": "start_time",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "ValueType": "string",
+          "Values": []
+        },
+        "title": {
+          "DisplayName": "title",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "analytics": {
+      "DisplayName": "Analytics",
+      "Fields": {
+        "team": {
+          "DisplayName": "team",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "TeamAnalytics",
+          "ReadOnly": false,
+          "ValueType": "other",
+          "Values": []
+        },
+        "users": {
+          "DisplayName": "users",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": false,
+          "ValueType": "",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
     "bites": {
       "DisplayName": "Bites",
       "Fields": {
         "captions": {
           "DisplayName": "captions",
-          "ValueType": "",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "",
+          "Values": []
         },
         "created_at": {
           "DisplayName": "created_at",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "created_from": {
           "DisplayName": "created_from",
-          "ValueType": "other",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "BiteOrigin",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "other",
+          "Values": []
         },
         "end_time": {
           "DisplayName": "end_time",
-          "ValueType": "float",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "Float",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "float",
+          "Values": []
         },
         "id": {
           "DisplayName": "id",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "ID",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "media_type": {
           "DisplayName": "media_type",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "name": {
           "DisplayName": "name",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "preview": {
           "DisplayName": "preview",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "privacies": {
           "DisplayName": "privacies",
-          "ValueType": "",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "",
+          "Values": []
         },
         "sources": {
           "DisplayName": "sources",
-          "ValueType": "",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "",
+          "Values": []
         },
         "start_time": {
           "DisplayName": "start_time",
-          "ValueType": "float",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "Float",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "float",
+          "Values": []
         },
         "status": {
           "DisplayName": "status",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "summary": {
           "DisplayName": "summary",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "summary_status": {
           "DisplayName": "summary_status",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "thumbnail": {
           "DisplayName": "thumbnail",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "transcript_id": {
           "DisplayName": "transcript_id",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "user": {
           "DisplayName": "user",
-          "ValueType": "other",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "BiteUser",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "other",
+          "Values": []
         },
         "user_id": {
           "DisplayName": "user_id",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         }
       },
-      "FieldsMap": null
+      "FieldsMap": {}
     },
     "transcripts": {
       "DisplayName": "Transcripts",
       "Fields": {
         "analytics": {
           "DisplayName": "analytics",
-          "ValueType": "other",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "MeetingAnalytics",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "other",
+          "Values": []
         },
         "apps_preview": {
           "DisplayName": "apps_preview",
-          "ValueType": "other",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "Apps",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "other",
+          "Values": []
         },
         "audio_url": {
           "DisplayName": "audio_url",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "cal_id": {
           "DisplayName": "cal_id",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "calendar_id": {
           "DisplayName": "calendar_id",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "calendar_type": {
           "DisplayName": "calendar_type",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
+        },
+        "channels": {
+          "DisplayName": "channels",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": false,
+          "ValueType": "",
+          "Values": []
         },
         "date": {
           "DisplayName": "date",
-          "ValueType": "float",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "Float",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "float",
+          "Values": []
         },
         "dateString": {
           "DisplayName": "dateString",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "duration": {
           "DisplayName": "duration",
-          "ValueType": "float",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "Float",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "float",
+          "Values": []
         },
         "fireflies_users": {
           "DisplayName": "fireflies_users",
-          "ValueType": "",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "",
+          "Values": []
         },
         "host_email": {
           "DisplayName": "host_email",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "id": {
           "DisplayName": "id",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
+        },
+        "meeting_attendance": {
+          "DisplayName": "meeting_attendance",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": false,
+          "ValueType": "",
+          "Values": []
         },
         "meeting_attendees": {
           "DisplayName": "meeting_attendees",
-          "ValueType": "",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "",
+          "Values": []
         },
         "meeting_info": {
           "DisplayName": "meeting_info",
-          "ValueType": "other",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "MeetingInfo",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "other",
+          "Values": []
         },
         "meeting_link": {
           "DisplayName": "meeting_link",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "organizer_email": {
           "DisplayName": "organizer_email",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "participants": {
           "DisplayName": "participants",
-          "ValueType": "",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "",
+          "Values": []
         },
         "privacy": {
           "DisplayName": "privacy",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "sentences": {
           "DisplayName": "sentences",
-          "ValueType": "",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "",
+          "Values": []
         },
         "speakers": {
           "DisplayName": "speakers",
-          "ValueType": "",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "",
+          "Values": []
         },
         "summary": {
           "DisplayName": "summary",
-          "ValueType": "other",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "Summary",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "other",
+          "Values": []
         },
         "title": {
           "DisplayName": "title",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "transcript_url": {
           "DisplayName": "transcript_url",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "user": {
           "DisplayName": "user",
-          "ValueType": "other",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "User",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "other",
+          "Values": []
         },
         "video_url": {
           "DisplayName": "video_url",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         }
       },
-      "FieldsMap": null
+      "FieldsMap": {}
+    },
+    "userGroups": {
+      "DisplayName": "User Groups",
+      "Fields": {
+        "handle": {
+          "DisplayName": "handle",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "ValueType": "string",
+          "Values": []
+        },
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "ValueType": "string",
+          "Values": []
+        },
+        "members": {
+          "DisplayName": "members",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": false,
+          "ValueType": "",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
     },
     "users": {
       "DisplayName": "Users",
       "Fields": {
         "email": {
           "DisplayName": "email",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "integrations": {
           "DisplayName": "integrations",
-          "ValueType": "",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "",
+          "Values": []
         },
         "is_admin": {
           "DisplayName": "is_admin",
-          "ValueType": "boolean",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "Boolean",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "boolean",
+          "Values": []
         },
         "minutes_consumed": {
           "DisplayName": "minutes_consumed",
-          "ValueType": "float",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "Float",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "float",
+          "Values": []
         },
         "name": {
           "DisplayName": "name",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "num_transcripts": {
           "DisplayName": "num_transcripts",
-          "ValueType": "float",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "Float",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "float",
+          "Values": []
         },
         "recent_meeting": {
           "DisplayName": "recent_meeting",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "recent_transcript": {
           "DisplayName": "recent_transcript",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         },
         "user_groups": {
           "DisplayName": "user_groups",
-          "ValueType": "",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "",
+          "Values": []
         },
         "user_id": {
           "DisplayName": "user_id",
-          "ValueType": "string",
+          "IsCustom": null,
+          "IsRequired": null,
           "ProviderType": "String",
           "ReadOnly": false,
-          "Values": null
+          "ValueType": "string",
+          "Values": []
         }
       },
-      "FieldsMap": null
+      "FieldsMap": {}
     }
-  },
-  "Errors": {}
+  }
 }

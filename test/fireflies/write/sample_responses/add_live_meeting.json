@@ -1,7 +1,7 @@
 {
   "Data": {
-    "updateMeetingTitle": {
-      "title": "Daily Standup"
+    "addToLiveMeeting": {
+      "success": true
     }
   },
   "Errors": [],

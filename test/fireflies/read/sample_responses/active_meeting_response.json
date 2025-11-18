@@ -1,0 +1,24 @@
+{
+  "Data": [
+    {
+      "Associations": {},
+      "Fields": {
+        "id": "01K9YQE96WY7C3PFZ1275DN9GF",
+        "title": "demo"
+      },
+      "Id": "",
+      "Raw": {
+        "end_time": "2025-11-13T14:45:51.580Z",
+        "id": "01K9YQE96WY7C3PFZ1275DN9GF",
+        "meeting_link": "https://meet.google.com/hey-gdmi-xht",
+        "organizer_email": "sample@gmail.com",
+        "privacy": "link",
+        "start_time": "2025-11-13T13:45:51.580Z",
+        "title": "demo"
+      }
+    }
+  ],
+  "Done": true,
+  "NextPage": "",
+  "Rows": 1
+}

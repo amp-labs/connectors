@@ -1,32 +1,24 @@
 {
-  "rows": 2,
-  "data": [
+  "Data": [
     {
-      "fields": {},
-      "raw": {
+      "Associations": {},
+      "Fields": {
+        "user_id": "YUBzRk85N2"
+      },
+      "Id": "",
+      "Raw": {
         "email": "sample@gmail.com",
         "integrations": null,
         "is_admin": true,
-        "minutes_consumed": 17.510000228881836,
-        "name": "Sanple",
-        "num_transcripts": 4,
-        "recent_meeting": "01JT00ZS7XEYTAS2M2P4MV3QRZ",
-        "user_id": "01JSGPR5VD5Q17X1246BW1SXBB"
-      }
-    },
-    {
-      "fields": {},
-      "raw": {
-        "email": "sample1@gmail.com",
-        "integrations": null,
-        "is_admin": true,
-        "minutes_consumed": 15.379999160766602,
-        "name": "Sample1",
+        "minutes_consumed": 12.479999542236328,
+        "name": "Foobar",
         "num_transcripts": 2,
-        "recent_meeting": "01JT07GYXM9VYY5NQFGXPVD3FT",
-        "user_id": "01JSH43RZP1W6GAWQ2B87EAK7X"
+        "recent_meeting": "01K9YRA38QP7YVR035B745A53J",
+        "user_id": "YUBzRk85N2"
       }
     }
   ],
-  "done": true
+  "Done": true,
+  "NextPage": "",
+  "Rows": 1
 }
