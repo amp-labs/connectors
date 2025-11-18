@@ -1,0 +1,566 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "audits": {
+          "displayName": "Audits",
+          "path": "/audits",
+          "responseKey": "",
+          "fields": {
+            "audit": {
+              "displayName": "audit",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "catalog_items": {
+          "displayName": "Catalog_items",
+          "path": "/catalog_items",
+          "responseKey": "",
+          "fields": {
+            "catalog_item": {
+              "displayName": "catalog_item",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "categories": {
+          "displayName": "Categories",
+          "path": "/categories",
+          "responseKey": "",
+          "fields": {
+            "category": {
+              "displayName": "category",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "change_catalogs": {
+          "displayName": "Change_catalogs",
+          "path": "/change_catalogs",
+          "responseKey": "",
+          "fields": {
+            "change_catalog": {
+              "displayName": "change_catalog",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "changes": {
+          "displayName": "Changes",
+          "path": "/changes",
+          "responseKey": "",
+          "fields": {
+            "change": {
+              "displayName": "change",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "configuration_items": {
+          "displayName": "Configuration_items",
+          "path": "/configuration_items",
+          "responseKey": "",
+          "fields": {
+            "configuration_item": {
+              "displayName": "configuration_item",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "contracts": {
+          "displayName": "Contracts",
+          "path": "/contracts",
+          "responseKey": "",
+          "fields": {
+            "contract": {
+              "displayName": "contract",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "departments": {
+          "displayName": "Departments",
+          "path": "/departments",
+          "responseKey": "",
+          "fields": {
+            "department": {
+              "displayName": "department",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "groups": {
+          "displayName": "Groups",
+          "path": "/groups",
+          "responseKey": "",
+          "fields": {
+            "group": {
+              "displayName": "group",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "hardwares": {
+          "displayName": "Hardwares",
+          "path": "/hardwares",
+          "responseKey": "",
+          "fields": {
+            "hardware": {
+              "displayName": "hardware",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "incidents": {
+          "displayName": "Incidents",
+          "path": "/incidents",
+          "responseKey": "",
+          "fields": {
+            "assets": {
+              "displayName": "assets",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "assignee": {
+              "displayName": "assignee",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "category": {
+              "displayName": "category",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "cc": {
+              "displayName": "cc",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "changes": {
+              "displayName": "changes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "configuration_items": {
+              "displayName": "configuration_items",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_by": {
+              "displayName": "created_by",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "custom": {
+              "displayName": "custom",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_fields_values": {
+              "displayName": "custom_fields_values",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "customer_satisfaction_survey_completed_at": {
+              "displayName": "customer_satisfaction_survey_completed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customer_satisfaction_survey_sent_at": {
+              "displayName": "customer_satisfaction_survey_sent_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "department": {
+              "displayName": "department",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description_no_html": {
+              "displayName": "description_no_html",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "discovery_hardware": {
+              "displayName": "discovery_hardware",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "due_at": {
+              "displayName": "due_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "group_assignee": {
+              "displayName": "group_assignee",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "href_account_domain": {
+              "displayName": "href_account_domain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "incidents": {
+              "displayName": "incidents",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "is_service_request": {
+              "displayName": "is_service_request",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "mobiles": {
+              "displayName": "mobiles",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number": {
+              "displayName": "number",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "number_of_comments": {
+              "displayName": "number_of_comments",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "origin": {
+              "displayName": "origin",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "other_assets": {
+              "displayName": "other_assets",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "price": {
+              "displayName": "price",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "priority": {
+              "displayName": "priority",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "problems": {
+              "displayName": "problems",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "purchase_order": {
+              "displayName": "purchase_order",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "releases": {
+              "displayName": "releases",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "requester": {
+              "displayName": "requester",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "resolution_code": {
+              "displayName": "resolution_code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "resolution_description": {
+              "displayName": "resolution_description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "resolved_by": {
+              "displayName": "resolved_by",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "site": {
+              "displayName": "site",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sla_violations": {
+              "displayName": "sla_violations",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "solutions": {
+              "displayName": "solutions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subcategory": {
+              "displayName": "subcategory",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "tasks": {
+              "displayName": "tasks",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "time_tracks": {
+              "displayName": "time_tracks",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_saw_all_comments": {
+              "displayName": "user_saw_all_comments",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "mobiles": {
+          "displayName": "Mobiles",
+          "path": "/mobiles",
+          "responseKey": "",
+          "fields": {
+            "mobile": {
+              "displayName": "mobile",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "other_assets": {
+          "displayName": "Other_assets",
+          "path": "/other_assets",
+          "responseKey": "",
+          "fields": {
+            "other_asset": {
+              "displayName": "other_asset",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "printers": {
+          "displayName": "Printers",
+          "path": "/printers",
+          "responseKey": "",
+          "fields": {
+            "printer": {
+              "displayName": "printer",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "problems": {
+          "displayName": "Problems",
+          "path": "/problems",
+          "responseKey": "",
+          "fields": {
+            "problem": {
+              "displayName": "problem",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "purchase_orders": {
+          "displayName": "Purchase_orders",
+          "path": "/purchase_orders",
+          "responseKey": "",
+          "fields": {
+            "purchase_order": {
+              "displayName": "purchase_order",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "releases": {
+          "displayName": "Releases",
+          "path": "/releases",
+          "responseKey": "",
+          "fields": {
+            "release": {
+              "displayName": "release",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "risks": {
+          "displayName": "Risks",
+          "path": "/risks",
+          "responseKey": "",
+          "fields": {
+            "affected_assets": {
+              "displayName": "affected_assets",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "category": {
+              "displayName": "category",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "discarded": {
+              "displayName": "discarded",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "resolved": {
+              "displayName": "resolved",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "severity": {
+              "displayName": "severity",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated at": {
+              "displayName": "updated at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "roles": {
+          "displayName": "Roles",
+          "path": "/roles",
+          "responseKey": "",
+          "fields": {
+            "role": {
+              "displayName": "role",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "sites": {
+          "displayName": "Sites",
+          "path": "/sites",
+          "responseKey": "",
+          "fields": {
+            "site": {
+              "displayName": "site",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "softwares": {
+          "displayName": "Softwares",
+          "path": "/softwares",
+          "responseKey": "",
+          "fields": {
+            "software": {
+              "displayName": "software",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "solutions": {
+          "displayName": "Solutions",
+          "path": "/solutions",
+          "responseKey": "",
+          "fields": {
+            "solution": {
+              "displayName": "solution",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "",
+          "fields": {
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "vendors": {
+          "displayName": "Vendors",
+          "path": "/vendors",
+          "responseKey": "",
+          "fields": {
+            "vendor": {
+              "displayName": "vendor",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}
