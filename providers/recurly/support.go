@@ -13,6 +13,19 @@ import (
 //nolint:gochecknoglobals
 var supportIncrementalRead = datautils.NewStringSet(
 	"accounts",
+	"acquisitions",
+	"subscriptions",
+	"items",
+	"plans",
+	"add_ons",
+	"measured_units",
+	"coupons",
+	"invoices",
+	"line_items",
+	"credit_payments",
+	"transactions",
+	"custom_field_definitions",
+	"shipping_methods",
 )
 
 func supportedOperations() components.EndpointRegistryInput {
