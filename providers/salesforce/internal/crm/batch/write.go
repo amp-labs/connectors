@@ -203,7 +203,6 @@ func (i Item) ToWriteResult() (*common.WriteResult, error) {
 	success := len(i.Errors) == 0
 
 	if success {
-
 		return &common.WriteResult{
 			Success:  true,
 			RecordId: i.ID,
