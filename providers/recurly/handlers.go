@@ -10,7 +10,7 @@ import (
 
 var (
 	ApiVersionHeader = "application/vnd.recurly.v2021-02-25+json" //nolint:gochecknoglobals
-	limit            = "2"                                        //nolint:gochecknoglobals
+	limit            = "200"                                      //nolint:gochecknoglobals
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {

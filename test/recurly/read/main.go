@@ -24,7 +24,6 @@ func main() {
 
 	conn := recurly.GetRecurlyConnector(ctx)
 
-	// 2025-11-17T12:58:49Z
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "accounts",
 		Fields:     connectors.Fields("id", "company", "parent_account_id"),
