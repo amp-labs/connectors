@@ -71,9 +71,9 @@ func init() {
 				{
 					Name:        "workspace",
 					DisplayName: "Account ID",
-					ModuleDependencies: &ModuleDependencies{
-						ModuleNetsuiteRESTAPI: ModuleDependency{},
-						ModuleNetsuiteSuiteQL: ModuleDependency{},
+					DependentModules: &DependentModules{
+						ModuleNetsuiteRESTAPI: DependentModule{},
+						ModuleNetsuiteSuiteQL: DependentModule{},
 					},
 				},
 			},

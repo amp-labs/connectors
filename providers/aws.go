@@ -55,22 +55,22 @@ func init() { //nolint:funlen
 				{
 					Name:        "region",
 					DisplayName: "Region",
-					ModuleDependencies: &ModuleDependencies{
-						ModuleAWSIdentityCenter: ModuleDependency{},
+					DependentModules: &DependentModules{
+						ModuleAWSIdentityCenter: DependentModule{},
 					},
 				},
 				{
 					Name:        "identityStoreId",
 					DisplayName: "Identity Store ID",
-					ModuleDependencies: &ModuleDependencies{
-						ModuleAWSIdentityCenter: ModuleDependency{},
+					DependentModules: &DependentModules{
+						ModuleAWSIdentityCenter: DependentModule{},
 					},
 				},
 				{
 					Name:        "instanceArn",
 					DisplayName: "Instance ARN",
-					ModuleDependencies: &ModuleDependencies{
-						ModuleAWSIdentityCenter: ModuleDependency{},
+					DependentModules: &DependentModules{
+						ModuleAWSIdentityCenter: DependentModule{},
 					},
 				},
 				// IMPORTANT: The 'serviceDomain' variable is figured out in the connector,

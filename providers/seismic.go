@@ -72,9 +72,9 @@ func init() { // nolint: funlen
 				{
 					Name:        "workspace",
 					DisplayName: "Tenant",
-					ModuleDependencies: &ModuleDependencies{
-						ModuleSeismicIntegration: ModuleDependency{},
-						ModuleSeismicReporting:   ModuleDependency{},
+					DependentModules: &DependentModules{
+						ModuleSeismicIntegration: DependentModule{},
+						ModuleSeismicReporting:   DependentModule{},
 					},
 				},
 			},

@@ -77,8 +77,8 @@ func init() {
 					Name:        "adAccountId",
 					DisplayName: "Ad Account ID",
 					DocsURL:     "https://www.linkedin.com/help/linkedin/answer/a424270/find-linkedin-ads-account-details",
-					ModuleDependencies: &ModuleDependencies{
-						ModuleLinkedInAds: ModuleDependency{},
+					DependentModules: &DependentModules{
+						ModuleLinkedInAds: DependentModule{},
 					},
 					Prompt: "Follow the instructions under the `LinkedIn Ads account ID number` section to retrieve the ID.",
 				},
