@@ -37,7 +37,7 @@ func (c *Connector) Subscribe(
 	}
 
 	// Store successful subscriptions with their full response data
-	subscriptionsMap := make(map[common.ObjectName]map[string]createSubscriptionsResponse)
+	subscriptionsMap := make(map[common.ObjectName]map[ModuleEvent]createSubscriptionsResponse)
 	successfulSubscriptions := make([]SuccessfulSubscription, 0)
 
 	var firstError error
@@ -77,10 +77,10 @@ func (c *Connector) Subscribe(
 
 					// Initialize nested map if needed
 					if subscriptionsMap[currObj] == nil {
-						subscriptionsMap[currObj] = make(map[string]createSubscriptionsResponse)
+						subscriptionsMap[currObj] = make(map[ModuleEvent]createSubscriptionsResponse)
 					}
 
-					subscriptionsMap[currObj][string(providerEvent)] = *response
+					subscriptionsMap[currObj][providerEvent] = *response
 
 					// Keep track of successful subscriptions for rollback
 					successfulSubscriptions = append(successfulSubscriptions, SuccessfulSubscription{
@@ -112,9 +112,17 @@ func (c *Connector) Subscribe(
 			res.Status = common.SubscriptionStatusFailedToRollback
 
 			for _, failedSub := range failedToRollBack {
-				objectEvents[common.ObjectName(failedSub.ObjectName)] = common.ObjectEvents{
-					Events: []common.SubscriptionEventType{common.SubscriptionEventType(failedSub.EventName)},
+				if _, ok := objectEvents[common.ObjectName(failedSub.ObjectName)]; !ok {
+					objectEvents[common.ObjectName(failedSub.ObjectName)] = common.ObjectEvents{
+						Events: []common.SubscriptionEventType{},
+					}
 				}
+
+				currentEvent := objectEvents[common.ObjectName(failedSub.ObjectName)]
+
+				currentEvent.Events = append(currentEvent.Events, common.SubscriptionEventType(failedSub.EventName))
+
+				objectEvents[common.ObjectName(failedSub.ObjectName)] = currentEvent
 			}
 
 			res.ObjectEvents = objectEvents
@@ -169,7 +177,7 @@ func (c *Connector) UpdateSubscription(
 
 	for objName, eventsMap := range prevState.Subscriptions {
 		for eventName := range eventsMap {
-			key := string(objName) + ":" + eventName
+			key := string(objName) + ":" + string(eventName)
 			existingSubscriptions[key] = true
 		}
 	}
@@ -196,26 +204,26 @@ func (c *Connector) UpdateSubscription(
 	// - If subscription exists AND is requested → keep it (reuse existing webhook)
 	// - If subscription is requested but NOT existing → will be created in next step
 	subscriptionsToDelete := &SubscriptionResult{
-		Subscriptions: make(map[common.ObjectName]map[string]createSubscriptionsResponse),
+		Subscriptions: make(map[common.ObjectName]map[ModuleEvent]createSubscriptionsResponse),
 	}
 	subscriptionsToKeep := &SubscriptionResult{
-		Subscriptions: make(map[common.ObjectName]map[string]createSubscriptionsResponse),
+		Subscriptions: make(map[common.ObjectName]map[ModuleEvent]createSubscriptionsResponse),
 	}
 
 	for objName, eventsMap := range prevState.Subscriptions {
 		for eventName, response := range eventsMap {
-			key := string(objName) + ":" + eventName
+			key := string(objName) + ":" + string(eventName)
 			if !requestedSubscriptions[key] {
 				// Need to delete this subscription
 				if subscriptionsToDelete.Subscriptions[objName] == nil {
-					subscriptionsToDelete.Subscriptions[objName] = make(map[string]createSubscriptionsResponse)
+					subscriptionsToDelete.Subscriptions[objName] = make(map[ModuleEvent]createSubscriptionsResponse)
 				}
 
 				subscriptionsToDelete.Subscriptions[objName][eventName] = response
 			} else {
 				// Keep this subscription
 				if subscriptionsToKeep.Subscriptions[objName] == nil {
-					subscriptionsToKeep.Subscriptions[objName] = make(map[string]createSubscriptionsResponse)
+					subscriptionsToKeep.Subscriptions[objName] = make(map[ModuleEvent]createSubscriptionsResponse)
 				}
 
 				subscriptionsToKeep.Subscriptions[objName][eventName] = response
@@ -283,7 +291,7 @@ func (c *Connector) UpdateSubscription(
 		if ok {
 			for objName, eventsMap := range newSubs.Subscriptions {
 				if finalResult.Subscriptions[objName] == nil {
-					finalResult.Subscriptions[objName] = make(map[string]createSubscriptionsResponse)
+					finalResult.Subscriptions[objName] = make(map[ModuleEvent]createSubscriptionsResponse)
 				}
 
 				for eventName, response := range eventsMap {
@@ -302,11 +310,11 @@ func (c *Connector) UpdateSubscription(
 		for eventName := range eventsMap {
 			// Convert provider event name back to common event type
 			switch eventName {
-			case string(Created):
+			case Created:
 				events = append(events, common.SubscriptionEventTypeCreate)
-			case string(Updated):
+			case Updated:
 				events = append(events, common.SubscriptionEventTypeUpdate)
-			case string(Destroyed):
+			case Destroyed:
 				events = append(events, common.SubscriptionEventTypeDelete)
 			}
 		}
@@ -391,8 +399,8 @@ func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error
 
 	validate := validator.New()
 
-	if validate.Struct(req) != nil {
-		return nil, fmt.Errorf("%w: request is invalid", errInvalidRequestType)
+	if err := validate.Struct(req); err != nil {
+		return nil, fmt.Errorf("%w: request is invalid: %w", errInvalidRequestType, err)
 	}
 
 	return req, nil

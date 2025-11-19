@@ -54,5 +54,5 @@ type SuccessfulSubscription struct {
 }
 
 type SubscriptionResult struct {
-	Subscriptions map[common.ObjectName]map[string]createSubscriptionsResponse `json:"Subscriptions"`
+	Subscriptions map[common.ObjectName]map[ModuleEvent]createSubscriptionsResponse `json:"Subscriptions"`
 }
