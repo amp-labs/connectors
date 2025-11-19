@@ -32,33 +32,37 @@ const (
 	OutreachWebhookSignatureHeader = "Outreach-Webhook-Signature"
 )
 
+// VerifyWebhookMessage implements WebhookVerifierConnector for Outreach.
+// Returns (true, nil) if signature verification succeeds.
+// Returns (false, error) if verification fails or encounters an error.
+// Note: Return type changed from error to (bool, error) to match the interface contract.
 func (c *Connector) VerifyWebhookMessage(
 	_ context.Context,
 	request *common.WebhookRequest,
 	params *common.VerificationParams,
-) error {
+) (bool, error) {
 	// Verify the webhook message
 	if request == nil || params == nil {
-		return fmt.Errorf("%w: request and params cannot be nil", errMissingParams)
+		return false, fmt.Errorf("%w: request and params cannot be nil", errMissingParams)
 	}
 
 	verificationParams, err := common.AssertType[*OutreachVerificationParams](params.Param)
 	if err != nil {
-		return fmt.Errorf("%w: %w", errMissingParams, err)
+		return false, fmt.Errorf("%w: %w", errMissingParams, err)
 	}
 
 	signature := request.Headers.Get(OutreachWebhookSignatureHeader)
 	if signature == "" {
-		return fmt.Errorf("%w: missing %s header", ErrMissingSignature, OutreachWebhookSignatureHeader)
+		return false, fmt.Errorf("%w: missing %s header", ErrMissingSignature, OutreachWebhookSignatureHeader)
 	}
 
 	expectedSignature := computeSignature(verificationParams.Secret, request.Body)
 
 	if !hmac.Equal([]byte(signature), []byte(expectedSignature)) {
-		return fmt.Errorf("%w: signature mismatch", ErrInvalidSignature)
+		return false, fmt.Errorf("%w: signature mismatch", ErrInvalidSignature)
 	}
 
-	return nil
+	return true, nil
 }
 
 func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
