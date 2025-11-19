@@ -6,7 +6,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.11.0
 	github.com/antchfx/xmlquery v1.5.0
 	github.com/aws/aws-sdk-go-v2 v1.39.6
-	github.com/aws/aws-sdk-go-v2/config v1.31.20
+	github.com/aws/aws-sdk-go-v2/config v1.31.21
 	github.com/aws/aws-sdk-go-v2/credentials v1.18.25
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/chromedp/chromedp v0.14.2
