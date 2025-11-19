@@ -1,0 +1,23 @@
+{
+  "object": "string",
+  "has_more": true,
+  "next": "/invoices?cursor=string",
+  "data": [
+    {
+      "id": "string",
+      "uuid": "string",
+      "object": "string",
+      "type": "charge",
+      "origin": "carryforward_credit",
+      "state": "all",
+      "created_at": "2019-08-24T14:15:22Z",
+      "updated_at": "2019-08-24T14:15:22Z",
+      "due_at": "2019-08-24T14:15:22Z",
+      "closed_at": "2019-08-24T14:15:22Z",
+      "dunning_campaign_id": "string",
+      "dunning_events_sent": 0,
+      "final_dunning_event": true,
+      "business_entity_id": "string"
+    }
+  ]
+}
