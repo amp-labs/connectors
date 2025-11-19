@@ -70,7 +70,7 @@ File formats can be categorized into common authentication types. Below, you wil
   "clientSecret": "...",
   "accessToken": "...",
   "refreshToken": "...",
-  "substitutions": {
+  "metadata": {
     "workspace": "..."
   },
   "expiry": "2024-03-26T16:22:32.768450621+02:00",

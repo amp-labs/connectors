@@ -29,7 +29,7 @@ import (
 //		"clientSecret": "**************",
 //		"scopes": "crm.contacts.read,crm.contacts.write", (optional)
 //		"provider": "salesforce",
-//		"substitutions": { (optional)
+//		"metadata": { (optional)
 //		    "workspace": "some-subdomain"
 //		},
 //		"accessToken": "**************",
@@ -43,7 +43,7 @@ const (
 	DefaultCredsFile = "creds.json"
 	DefaultPort      = 4444
 
-	SubstitutionsFieldName = "Substitutions"
+	MetadataFieldName = "Metadata"
 )
 
 // ==============================
@@ -55,8 +55,8 @@ var registry = scanning.NewRegistry()
 var readers = []scanning.Reader{
 	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
-		JSONPath: "$['substitutions']",
-		KeyName:  SubstitutionsFieldName,
+		JSONPath: "$['metadata']",
+		KeyName:  MetadataFieldName,
 	},
 	credscanning.Fields.Provider.GetJSONReader(DefaultCredsFile),
 	credscanning.Fields.ClientId.GetJSONReader(DefaultCredsFile),
@@ -84,12 +84,12 @@ func main() {
 
 	provider := registry.MustString(credscanning.Fields.Provider.Name)
 
-	subs, err := registry.GetMap(SubstitutionsFieldName)
+	metadata, err := registry.GetMap(MetadataFieldName)
 	if err != nil {
-		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}")
+		slog.Warn("no connector metadata, ensure that the provider info doesn't have any {{variables}}")
 	}
 
-	catalogVariables := paramsbuilder.NewCatalogVariables(subs)
+	catalogVariables := paramsbuilder.NewCatalogVariables(metadata)
 
 	info, err := providers.ReadInfo(provider, catalogVariables...)
 	if err != nil {
@@ -104,7 +104,7 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
-	substitutionsMap := substitutions.Registry[*ajson.Node](subs)
+	metadataMap := substitutions.Registry[*ajson.Node](metadata)
 
 	proxy := createProviderProxy(ctx, info, proxyserv.Factory{
 		Provider:         provider,
@@ -112,7 +112,7 @@ func main() {
 		Debug:            *debug,
 		Registry:         registry,
 		CredsFilePath:    DefaultCredsFile,
-		Substitutions:    substitutionsMap.ConvertStrMap(),
+		Metadata:         metadataMap.ConvertStrMap(),
 	})
 
 	proxy.Start(ctx, DefaultPort)

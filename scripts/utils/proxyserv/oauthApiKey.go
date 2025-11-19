@@ -16,7 +16,7 @@ import (
 func (f Factory) CreateProxyAPIKey(ctx context.Context) *Proxy {
 	apiKey := getAPIKey(f.Registry)
 	providerInfo := getProviderConfig(f.Provider, f.CatalogVariables)
-	httpClient := setupAPIKeyHTTPClient(ctx, providerInfo, apiKey, f.Debug, f.Substitutions)
+	httpClient := setupAPIKeyHTTPClient(ctx, providerInfo, apiKey, f.Debug, f.Metadata)
 	baseURL := getBaseURL(providerInfo)
 
 	return newProxy(baseURL, httpClient)
