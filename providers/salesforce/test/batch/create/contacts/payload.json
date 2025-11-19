@@ -1,0 +1,19 @@
+{
+  "allOrNone": true,
+  "records": [
+    {
+      "FirstName": "Siena",
+      "LastName": "Dyer",
+      "attributes": {
+        "type": "Contact"
+      }
+    },
+    {
+      "FirstName": "Markus",
+      "LastName": "Blevins",
+      "attributes": {
+        "type": "Contact"
+      }
+    }
+  ]
+}
