@@ -1,6 +1,7 @@
 package salesforce
 
 import (
+	"errors"
 	"net/http"
 	"testing"
 
@@ -281,6 +282,228 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
 				return constructTestConnectorAccountEngagement(tt.Server.URL)
+			})
+		})
+	}
+}
+
+func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
+	t.Parallel()
+
+	errBadRequest := testutils.DataFromFile(t, "metadata/write/object15/bad-request.xml")
+	payloadManyFields := testutils.DataFromFile(t, "metadata/write/object15/mix-of-many-fields-payload.xml")
+	responseManyFields := testutils.DataFromFile(t, "metadata/write/object15/mix-of-many-fields-response.xml")
+
+	tests := []testroutines.UpsertMetadata{
+		{
+			Name:         "At least one object name must be queried",
+			Input:        nil,
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFieldsMetadata},
+		},
+		{
+			Name: "Upsert with invalid payload",
+			Input: &common.UpsertMetadataParams{
+				Fields: map[string][]common.FieldDefinition{
+					"TestObject15__c": {
+						{
+							FieldName:   "IsReady__c",
+							DisplayName: "IsReady",
+							Description: "Indicates the readiness for next steps.",
+							ValueType:   common.ValueTypeBoolean,
+							Required:    true,
+							Unique:      false,
+							Indexed:     false,
+							StringOptions: &common.StringFieldOptions{
+								DefaultValue: goutils.Pointer("false"),
+							},
+						},
+					},
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentXML(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/services/Soap/m/60.0"),
+				},
+				Then: mockserver.Response(http.StatusOK, errBadRequest),
+			}.Server(),
+			Expected: nil,
+			ExpectedErrs: []error{
+				common.ErrBadRequest,
+				errors.New("Can not specify 'required' for a CustomField of type Checkbox"), // nolint:err113
+			},
+		},
+		{
+			Name: "Upsert many fields of various types",
+			Input: &common.UpsertMetadataParams{
+				Fields: map[string][]common.FieldDefinition{
+					"TestObject15__c": {
+						{
+							FieldName:   "Birthday__c",
+							DisplayName: "Birthday",
+							Description: "Story describing birthday",
+							ValueType:   common.ValueTypeString,
+							Required:    false,
+							Unique:      false,
+							Indexed:     false,
+							StringOptions: &common.StringFieldOptions{
+								Length: goutils.Pointer(30),
+							},
+						}, {
+							FieldName:   "Hobby__c",
+							DisplayName: "Hobby",
+							Description: "Your hobby description",
+							ValueType:   common.ValueTypeString,
+							Required:    false,
+							Unique:      false,
+							Indexed:     false,
+							StringOptions: &common.StringFieldOptions{
+								Length:          goutils.Pointer(444),
+								NumDisplayLines: goutils.Pointer(39),
+							},
+						}, {
+							FieldName:   "Age__c",
+							DisplayName: "Age",
+							Description: "How many years you lived.",
+							ValueType:   common.ValueTypeInt,
+							Required:    true,
+							Unique:      false,
+							Indexed:     false,
+							NumericOptions: &common.NumericFieldOptions{
+								DefaultValue: goutils.Pointer(18.0),
+								Precision:    goutils.Pointer(3),
+								Scale:        goutils.Pointer(2),
+							},
+						}, {
+							FieldName:   "Interests__c",
+							DisplayName: "Interests",
+							Description: "Topics that are of interest.",
+							ValueType:   common.ValueTypeMultiSelect,
+							Required:    true,
+							Unique:      false,
+							Indexed:     false,
+							StringOptions: &common.StringFieldOptions{
+								Values:           []string{"art", "travel", "swimming"},
+								ValuesRestricted: true,
+								DefaultValue:     goutils.Pointer("art"),
+							},
+						}, {
+							FieldName:   "IsReady__c",
+							DisplayName: "IsReady",
+							Description: "Indicates the readiness for next steps.",
+							ValueType:   common.ValueTypeBoolean,
+							Required:    false,
+							Unique:      false,
+							Indexed:     false,
+							StringOptions: &common.StringFieldOptions{
+								DefaultValue: goutils.Pointer("false"),
+							},
+						}, {
+							FieldName:   "Connection__c",
+							DisplayName: "Connection",
+							Description: "Connection to other objects.",
+							ValueType:   common.ValueTypeOther,
+							Required:    false,
+							Unique:      false,
+							Indexed:     false,
+							Association: &common.AssociationDefinition{
+								AssociationType: "associatedAccount",
+								TargetObject:    "Account",
+								// TargetField: "Identifier",  makes an IndirectLookup field
+								// (Salesforce account must have that in the first place)
+								OnDelete:               "SetNull",
+								ReverseLookupFieldName: "MyAccount",
+							},
+						},
+					},
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentXML(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/services/Soap/m/60.0"),
+					mockcond.BodyBytes(payloadManyFields),
+				},
+				Then: mockserver.Response(http.StatusOK, responseManyFields),
+			}.Server(),
+			Expected: &common.UpsertMetadataResult{
+				Success: true,
+				Fields: map[string]map[string]common.FieldUpsertResult{
+					"TestObject15__c": {
+						"Birthday__c": {
+							FieldName: "Birthday__c",
+							Action:    "create",
+						},
+						"Hobby__c": {
+							FieldName: "Hobby__c",
+							Action:    "create",
+						},
+						"Age__c": {
+							FieldName: "Age__c",
+							Action:    "update",
+						},
+						"Interests__c": {
+							FieldName: "Interests__c",
+							Action:    "create",
+						},
+						"IsReady__c": {
+							FieldName: "IsReady__c",
+							Action:    "update",
+						},
+						"Connection__c": {
+							FieldName: "Connection__c",
+							Action:    "update",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx := common.WithAuthToken(t.Context(), "TEST_ACCESS_TOKEN")
+
+			tt.RunWithContext(t, ctx, func() (connectors.UpsertMetadataConnector, error) {
+				return constructTestConnector(tt.Server.URL)
+			})
+		})
+	}
+}
+
+func TestUpsertMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
+	t.Parallel()
+
+	tests := []testroutines.UpsertMetadata{
+		{
+			Name: "Access token must be injected into the context",
+			Input: &common.UpsertMetadataParams{
+				Fields: map[string][]common.FieldDefinition{
+					"Account": {
+						{
+							FieldName: "Birthday__c",
+							ValueType: common.ValueTypeString,
+						},
+					},
+				},
+			},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingAccessToken},
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.UpsertMetadataConnector, error) {
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}
