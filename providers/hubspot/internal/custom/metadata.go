@@ -20,6 +20,10 @@ import (
 func (a *Adapter) UpsertMetadata(
 	ctx context.Context, params *common.UpsertMetadataParams,
 ) (*common.UpsertMetadataResult, error) {
+	if err := params.ValidateParams(); err != nil {
+		return nil, err
+	}
+
 	result := &common.UpsertMetadataResult{
 		Success: true,
 		Fields:  make(map[string]map[string]common.FieldUpsertResult),

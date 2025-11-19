@@ -20,6 +20,10 @@ var (
 func (a *Adapter) UpsertMetadata(
 	ctx context.Context, params *common.UpsertMetadataParams,
 ) (*common.UpsertMetadataResult, error) {
+	if err := params.ValidateParams(); err != nil {
+		return nil, err
+	}
+
 	customFields, err := NewCustomFieldsPayload(params)
 	if err != nil {
 		return nil, err
