@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
@@ -23,6 +24,20 @@ var recordIdFields = datautils.NewDefaultMap(datautils.Map[string, string]{ //no
 }, func(k string) string {
 	return ""
 })
+
+func constructUpdateEndpoint(url *urlbuilder.URL, objectName, recordId string) *urlbuilder.URL {
+	switch objectName {
+	case accounts:
+		url.AddPath("update")
+	case users:
+		url.AddPath("update")
+		url.WithQueryParam("userId", recordId)
+	default:
+		url.AddPath(recordId)
+	}
+
+	return url
+}
 
 func responseSchema(objectName string) (string, string) {
 	switch objectName {
