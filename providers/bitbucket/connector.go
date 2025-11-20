@@ -31,14 +31,24 @@ type Connector struct {
 
 	// Require authenticated client
 	common.RequireAuthenticatedClient
+	common.RequireWorkspace
 
 	// Supported operations
 	components.SchemaProvider
 	components.Reader
+
+	Workspace string
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(providers.Bitbucket, params, constructor)
+	connector, err := components.Initialize(providers.Bitbucket, params, constructor)
+	if err != nil {
+		return nil, err
+	}
+
+	connector.Workspace = params.Workspace
+
+	return connector, nil
 }
 
 func constructor(base *components.Connector) (*Connector, error) {

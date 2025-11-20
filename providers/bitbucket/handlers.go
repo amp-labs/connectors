@@ -2,6 +2,7 @@ package bitbucket
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -84,7 +85,9 @@ func (c *Connector) constructReadURL(params common.ReadParams) (string, error) {
 		return params.NextPage.String(), nil
 	}
 
-	url, err := urlbuilder.New(c.ModuleInfo().BaseURL, restAPIVersion, params.ObjectName)
+	endpoint := c.mapObjectsEndpoints(params.ObjectName)
+
+	url, err := urlbuilder.New(c.ModuleInfo().BaseURL, restAPIVersion, endpoint)
 	if err != nil {
 		return "", err
 	}
@@ -102,6 +105,29 @@ func (c *Connector) constructReadURL(params common.ReadParams) (string, error) {
 	}
 
 	return url.String(), nil
+}
+
+func (c *Connector) mapObjectsEndpoints(objectName string) string {
+	switch objectName {
+	case "pipelines-config/variables":
+		return fmt.Sprintf("/workspaces/%s/pipelines-config/variables", c.Workspace)
+	case "repositories":
+		return "repositories/" + c.Workspace
+	case "snippets":
+		return "snippets/" + c.Workspace
+	case "hooks":
+		return fmt.Sprintf("/workspaces/%s/hooks", c.Workspace)
+	case "members":
+		return fmt.Sprintf("/workspaces/%s/members", c.Workspace)
+	case "permissions":
+		return fmt.Sprintf("/workspaces/%s/permissions", c.Workspace)
+	case "permissions/repositories":
+		return fmt.Sprintf("/workspaces/%s/permissions/repositories", c.Workspace)
+	case "projects":
+		return fmt.Sprintf("/workspaces/%s/projects", c.Workspace)
+	default:
+		return objectName
+	}
 }
 
 func getNextRecordsURL(node *ajson.Node) (string, error) {
