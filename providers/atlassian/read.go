@@ -64,6 +64,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			fmt.Sprintf(`updated < "-%vm"`, untilMinutes),
 		}
 
+		fmt.Println(strings.Join(conditions, " and "))
+
 		reqBody := issueRequest{
 			Fields:     config.Fields.List(),
 			JQL:        strings.Join(conditions, " and "),
