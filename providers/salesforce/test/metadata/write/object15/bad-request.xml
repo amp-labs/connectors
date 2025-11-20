@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://soap.sforce.com/2006/04/metadata">
+    <soapenv:Body>
+        <upsertMetadataResponse>
+            <result>
+                <created>false</created>
+                <errors>
+                    <message>Can not specify 'required' for a CustomField of type Checkbox</message>
+                    <statusCode>FIELD_INTEGRITY_EXCEPTION</statusCode>
+                </errors>
+                <fullName>TestObject15__c.IsReady__c</fullName>
+                <success>false</success>
+            </result>
+        </upsertMetadataResponse>
+    </soapenv:Body>
+</soapenv:Envelope>
