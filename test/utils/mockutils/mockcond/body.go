@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+
+	"github.com/amp-labs/connectors/common/xquery"
 )
 
 // BodyBytes returns a check expecting body to match template bytes.
@@ -29,8 +31,9 @@ func Body(expected string) Check {
 
 		textEquals := textBodyMatch(body, expected)
 		jsonEquals := jsonBodyMatch(body, expected)
+		xmlEquals := xmlBodyMatch(body, expected)
 
-		return textEquals || jsonEquals
+		return textEquals || jsonEquals || xmlEquals
 	}
 }
 
@@ -46,6 +49,20 @@ func jsonBodyMatch(actual []byte, expected string) bool {
 	}
 
 	return reflect.DeepEqual(first, second)
+}
+
+func xmlBodyMatch(actual []byte, expected string) bool {
+	first, err := xquery.NewXML(actual)
+	if err != nil {
+		return false
+	}
+
+	second, err := xquery.NewXML([]byte(expected))
+	if err != nil {
+		return false
+	}
+
+	return first.EqualsIgnoreOrder(second)
 }
 
 func textBodyMatch(actual []byte, expected string) bool {
