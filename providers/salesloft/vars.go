@@ -14,60 +14,127 @@ var (
 	//nolint:revive
 )
 
-var salesloftSubscriptionEvents = datautils.NewSet(
-	"account_created",
-	"account_updated",
-	"account_deleted",
+var salesloftEventMappings = map[string]SalesloftEventMapping{
+	"accounts": {
+		ObjectName: "account",
+		SupportedEvents: datautils.NewSet(
+			SalesloftEventType("account_created"),
+			SalesloftEventType("account_updated"),
+			SalesloftEventType("account_deleted"),
+		),
+	},
 
-	"bulk_job_completed",
+	"bulk_jobs": {
+		ObjectName: "bulk_job",
+		SupportedEvents: datautils.NewSet(
+			SalesloftEventType("bulk_job_completed"),
+		),
+	},
 
-	"cadence_created",
-	"cadence_updated",
-	"cadence_deleted",
+	"cadences": {
+		ObjectName: "cadence",
+		SupportedEvents: datautils.NewSet(
+			SalesloftEventType("cadence_created"),
+			SalesloftEventType("cadence_updated"),
+			SalesloftEventType("cadence_deleted"),
+		),
+	},
 
-	"cadence_membership_created",
-	"cadence_membership_updated",
+	"cadence_memberships": {
+		ObjectName: "cadence_membership",
+		SupportedEvents: datautils.NewSet(
+			SalesloftEventType("cadence_membership_created"),
+			SalesloftEventType("cadence_membership_updated"),
+		),
+	},
 
-	"call_created",
-	"call_updated",
+	"activities/calls": {
+		ObjectName: "call",
+		SupportedEvents: datautils.NewSet(
+			SalesloftEventType("call_created"),
+			SalesloftEventType("call_updated"),
+		),
+	},
 
-	"call_data_record_created",
-	"call_data_record_updated",
+	"call_data_records": {
+		ObjectName: "call_data_record",
+		SupportedEvents: datautils.NewSet(
+			SalesloftEventType("call_data_record_created"),
+			SalesloftEventType("call_data_record_updated"),
+		),
+	},
 
-	"conversation_created",
+	"conversations": {
+		ObjectName: "conversation",
+		SupportedEvents: datautils.NewSet(
+			SalesloftEventType("conversation_created"),
+			SalesloftEventType("conversation_updated"),
+		),
+	},
 
-	// "conversation_recording_created", //we don't support read for this.
+	"activities/emails": {
+		ObjectName: "email",
+		SupportedEvents: datautils.NewSet(
+			SalesloftEventType("email_updated"),
+		),
+	},
 
-	// "conversation_transcript_created", //we don't support read for this obj.
+	"meetings": {
+		ObjectName: "meeting",
+		SupportedEvents: datautils.NewSet(
+			SalesloftEventType("meeting_booked"),
+			SalesloftEventType("meeting_updated"),
+		),
+	},
 
-	"email_updated",
+	"notes": {
+		ObjectName: "note",
+		SupportedEvents: datautils.NewSet(
+			SalesloftEventType("note_created"),
+			SalesloftEventType("note_updated"),
+			SalesloftEventType("note_deleted"),
+		),
+	},
 
-	// "email_with_body_and_subject_updated", // Not supported object
+	"people": {
+		ObjectName: "person",
+		SupportedEvents: datautils.NewSet(
+			SalesloftEventType("person_created"),
+			SalesloftEventType("person_updated"),
+			SalesloftEventType("person_deleted"),
+		),
+	},
 
-	// "link_swap", //Not supported object
+	"steps": {
+		ObjectName: "step",
+		SupportedEvents: datautils.NewSet(
+			SalesloftEventType("step_created"),
+			SalesloftEventType("step_updated"),
+			SalesloftEventType("step_deleted"),
+		),
+	},
 
-	"meeting_booked",
-	"meeting_updated",
+	"successes": {
+		ObjectName: "success",
+		SupportedEvents: datautils.NewSet(
+			SalesloftEventType("success_created"),
+		),
+	},
 
-	"note_created",
-	"note_updated",
-	"note_deleted",
-
-	// "person_created",
-	// "person_updated", // Not supported object
-	// "person_deleted",
-
-	"step_created",
-	"step_updated",
-	"step_deleted",
-
-	"success_created",
-
-	"task_completed",
-	"task_created",
-	"task_updated",
-	"task_deleted",
-
-	"user_created",
-	"user_updated",
-)
+	"tasks": {
+		ObjectName: "task",
+		SupportedEvents: datautils.NewSet(
+			SalesloftEventType("task_created"),
+			SalesloftEventType("task_updated"),
+			SalesloftEventType("task_deleted"),
+			SalesloftEventType("task_completed"),
+		),
+	},
+	"users": {
+		ObjectName: "user",
+		SupportedEvents: datautils.NewSet(
+			SalesloftEventType("user_created"),
+			SalesloftEventType("user_updated"),
+		),
+	},
+}

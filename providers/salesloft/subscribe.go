@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/amp-labs/connectors"
@@ -33,6 +32,12 @@ func (c *Connector) Subscribe(
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
 	req, err := validateRequest(params)
+	if err != nil {
+		return nil, err
+	}
+
+	// Validate that requested events are supported
+	err = validateSubscriptionRequest(params.SubscriptionEvents)
 	if err != nil {
 		return nil, err
 	}
@@ -350,14 +355,15 @@ func buildSalesloftEventType(objectName common.ObjectName, eventType common.Subs
 		return "", err
 	}
 
-	// Make object singular by removing 's' suffix for plural forms.
-	// Current Salesloft objects only use 's' suffix for plurals (e.g., "accounts" -> "account"),
-	// so simple trimming is sufficient. For future complex pluralization, consider using
-	// a library like "github.com/jinzhu/inflection" or similar.
-	objNameStr := strings.TrimSuffix(string(objectName), "s")
+	mapping, exists := salesloftEventMappings[string(objectName)]
+	if !exists {
+		return "", fmt.Errorf("object '%s' is not supported", objectName)
+	}
+
+	objectNameStr := mapping.ObjectName
 
 	// Salesloft format: "{objectName}_{action}"
-	combined := fmt.Sprintf("%s_%s", objNameStr, action)
+	combined := fmt.Sprintf("%s_%s", objectNameStr, action)
 	return SalesloftEventType(combined), nil
 }
 
@@ -369,8 +375,40 @@ func getEventAction(eventType common.SubscriptionEventType) (EventAction, error)
 	case common.SubscriptionEventTypeUpdate:
 		return ActionUpdated, nil
 	case common.SubscriptionEventTypeDelete:
-		return ActionDestroyed, nil
+		return ActionDeleted, nil
 	default:
 		return "", fmt.Errorf("%w: %s", errUnsupportedEventType, eventType)
 	}
+}
+
+func validateSubscriptionRequest(subscriptionEvents map[common.ObjectName]common.ObjectEvents) error {
+	var validationErrors error
+
+	for objectName, events := range subscriptionEvents {
+		mapping, exist := salesloftEventMappings[(string(objectName))]
+		if !exist {
+			validationErrors = errors.Join(validationErrors,
+				fmt.Errorf("%s object is not supported", objectName))
+
+			continue
+		}
+
+		for _, event := range events.Events {
+			salesloftEvent, err := buildSalesloftEventType(objectName, event)
+			if err != nil {
+				validationErrors = errors.Join(validationErrors,
+					fmt.Errorf("failed to build Salesloft event type for object '%s' and event '%s': %w", objectName, event, err))
+
+				continue
+			}
+
+			if !mapping.SupportedEvents.Has(salesloftEvent) {
+				validationErrors = errors.Join(validationErrors,
+					fmt.Errorf("subscription event '%s' is not supported for object '%s'", event, objectName))
+
+			}
+		}
+	}
+
+	return validationErrors
 }

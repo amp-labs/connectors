@@ -2,6 +2,7 @@ package salesloft
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 type SubscriptionRequest struct {
@@ -48,7 +49,12 @@ type SalesloftEventType string
 type EventAction string
 
 const (
-	ActionCreated   EventAction = "created"   //nolint:gochecknoglobals
-	ActionUpdated   EventAction = "updated"   //nolint:gochecknoglobals
-	ActionDestroyed EventAction = "destroyed" //nolint:gochecknoglobals
+	ActionCreated EventAction = "created" //nolint:gochecknoglobals
+	ActionUpdated EventAction = "updated" //nolint:gochecknoglobals
+	ActionDeleted EventAction = "deleted" //nolint:gochecknoglobals
 )
+
+type SalesloftEventMapping struct {
+	ObjectName      string                            // singular form used by Salesloft
+	SupportedEvents datautils.Set[SalesloftEventType] // actual Salesloft event names supported (O(1) lookup)
+}
