@@ -1,7 +1,6 @@
 package testroutines
 
 import (
-	"context"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -22,6 +21,6 @@ func (d Delete) Run(t *testing.T, builder ConnectorBuilder[connectors.DeleteConn
 	})
 
 	conn := builder.Build(t, d.Name)
-	output, err := conn.Delete(context.Background(), d.Input)
+	output, err := conn.Delete(t.Context(), d.Input)
 	DeleteType(d).Validate(t, err, output)
 }

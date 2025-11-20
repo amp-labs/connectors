@@ -1,7 +1,6 @@
 package testroutines
 
 import (
-	"context"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -22,6 +21,6 @@ func (m Metadata) Run(t *testing.T, builder ConnectorBuilder[connectors.ObjectMe
 	})
 
 	conn := builder.Build(t, m.Name)
-	output, err := conn.ListObjectMetadata(context.Background(), m.Input)
+	output, err := conn.ListObjectMetadata(t.Context(), m.Input)
 	MetadataType(m).Validate(t, err, output)
 }
