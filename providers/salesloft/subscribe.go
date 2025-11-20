@@ -110,9 +110,18 @@ func (c *Connector) Subscribe(
 			res.Status = common.SubscriptionStatusFailedToRollback
 
 			for _, failedSub := range failedToRollBack {
-				objectEvents[common.ObjectName(failedSub.ObjectName)] = common.ObjectEvents{
-					Events: []common.SubscriptionEventType{common.SubscriptionEventType(failedSub.EventName)},
+				if _, ok := objectEvents[common.ObjectName(failedSub.ObjectName)]; !ok {
+					objectEvents[common.ObjectName(failedSub.ObjectName)] = common.ObjectEvents{
+						Events: []common.SubscriptionEventType{},
+					}
 				}
+
+				currentEvent := objectEvents[common.ObjectName(failedSub.ObjectName)]
+
+				currentEvent.Events = append(currentEvent.Events, common.SubscriptionEventType(failedSub.EventName))
+
+				objectEvents[common.ObjectName(failedSub.ObjectName)] = currentEvent
+
 			}
 
 			res.ObjectEvents = objectEvents
@@ -121,6 +130,8 @@ func (c *Connector) Subscribe(
 
 		res.Status = common.SubscriptionStatusFailed
 		res.ObjectEvents = nil
+		// rolledBack and failedToRollBack are available for caller to use if needed
+
 		return res, firstError
 	}
 
@@ -130,107 +141,6 @@ func (c *Connector) Subscribe(
 	}
 
 	return res, nil
-}
-
-// parseSalesloftEventType splits a Salesloft event type back into object name and action
-// Example: parseSalesloftEventType("person_created") -> ("person", "created", nil)
-func parseSalesloftEventType(eventType SalesloftEventType) (string, EventAction, error) {
-	parts := strings.Split(string(eventType), "_")
-	if len(parts) != 2 {
-		return "", "", fmt.Errorf("%w: invalid format '%s', expected 'objectName_action'", errInvalidModuleEvent, eventType)
-	}
-
-	objectName := parts[0]
-	action := EventAction(parts[1])
-
-	// Validate the action part
-	switch action {
-	case ActionCreated, ActionUpdated, ActionDestroyed:
-		return objectName, action, nil
-	default:
-		return "", "", fmt.Errorf("%w: unknown action '%s'", errUnsupportedEventType, action)
-	}
-}
-
-func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error) {
-	if params.Request == nil {
-		return nil, fmt.Errorf("%w: request is nil", errMissingParams)
-	}
-
-	req, ok := params.Request.(*SubscriptionRequest)
-	if !ok {
-		return nil, fmt.Errorf("%w: expected '%T', got '%T'", errInvalidRequestType, req, params.Request)
-	}
-
-	validate := validator.New()
-
-	if validate.Struct(req) != nil {
-		return nil, fmt.Errorf("%w: request is invalid", errInvalidRequestType)
-	}
-
-	return req, nil
-}
-
-// createSingleSubscription attempts to create a single subscription and returns the full response
-func (c *Connector) createSingleSubscription(
-	ctx context.Context,
-	event common.SubscriptionEventType,
-	obj common.ObjectName,
-	req *SubscriptionRequest,
-) (*SubscriptionResponse, error) {
-	payload, err := buildSubscriptionPayload(event, obj, req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create subscription payload for object %s, event %s: %w", obj, event, err)
-	}
-
-	result, err := c.createSubscription(ctx, payload)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create subscription for object %s, event %s: %w", obj, event, err)
-	}
-
-	return result, nil
-}
-
-func buildSubscriptionPayload(
-	event common.SubscriptionEventType,
-	objectName common.ObjectName,
-	req *SubscriptionRequest,
-) (*SubscriptionPayload, error) {
-	salesloftEventType, err := buildSalesloftEventType(objectName, event)
-	if err != nil {
-		return nil, err
-	}
-
-	payload := &SubscriptionPayload{
-		CallbackURL:   req.WebhookEndPoint,
-		EventType:     string(salesloftEventType),
-		CallbackToken: req.Secret,
-	}
-
-	return payload, nil
-}
-
-// createSubscription makes the API call to create a webhook subscription
-func (c *Connector) createSubscription(
-	ctx context.Context,
-	payload *SubscriptionPayload,
-) (*SubscriptionResponse, error) {
-	url, err := c.getSubscribeURL()
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.Client.Post(ctx, url.String(), payload)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create subscription: %w", err)
-	}
-
-	result, err := common.UnmarshalJSON[SubscriptionResponse](resp)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal subscription response: %w", err)
-	}
-
-	return result, nil
 }
 
 // DeleteSubscription deletes webhook subscriptions
@@ -271,25 +181,47 @@ func (c *Connector) DeleteSubscription(
 	return nil
 }
 
-func (c *Connector) getSubscribeURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, ApiVersion, "webhook_subscriptions")
+// createSingleSubscription attempts to create a single subscription and returns the full response
+func (c *Connector) createSingleSubscription(
+	ctx context.Context,
+	event common.SubscriptionEventType,
+	obj common.ObjectName,
+	req *SubscriptionRequest,
+) (*SubscriptionResponse, error) {
+	payload, err := buildSubscriptionPayload(event, obj, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create subscription payload for object %s, event %s: %w", obj, event, err)
+	}
+
+	result, err := c.createSubscription(ctx, payload)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create subscription for object %s, event %s: %w", obj, event, err)
+	}
+
+	return result, nil
 }
 
-// deleteSubscription deletes a single subscription by ID
-func (c *Connector) deleteSubscription(ctx context.Context, subscriptionID string) error {
+// createSubscription makes the API call to create a webhook subscription
+func (c *Connector) createSubscription(
+	ctx context.Context,
+	payload *SubscriptionPayload,
+) (*SubscriptionResponse, error) {
 	url, err := c.getSubscribeURL()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	url.AddPath(subscriptionID)
-
-	_, err = c.Client.Delete(ctx, url.String())
+	resp, err := c.Client.Post(ctx, url.String(), payload)
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("failed to create subscription: %w", err)
 	}
 
-	return nil
+	result, err := common.UnmarshalJSON[SubscriptionResponse](resp)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal subscription response: %w", err)
+	}
+
+	return result, nil
 }
 
 // rollbackSubscriptions attempts to delete all successful subscriptions in case of partial failure
@@ -334,6 +266,65 @@ func (c *Connector) rollbackSubscriptions(
 	return rolledBack, failedToRollBack, rollbackErrors
 }
 
+func (c *Connector) getSubscribeURL() (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.BaseURL, ApiVersion, "webhook_subscriptions")
+}
+
+// deleteSubscription deletes a single subscription by ID
+func (c *Connector) deleteSubscription(ctx context.Context, subscriptionID string) error {
+	url, err := c.getSubscribeURL()
+	if err != nil {
+		return err
+	}
+
+	url.AddPath(subscriptionID)
+
+	_, err = c.Client.Delete(ctx, url.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func buildSubscriptionPayload(
+	event common.SubscriptionEventType,
+	objectName common.ObjectName,
+	req *SubscriptionRequest,
+) (*SubscriptionPayload, error) {
+	salesloftEventType, err := buildSalesloftEventType(objectName, event)
+	if err != nil {
+		return nil, err
+	}
+
+	payload := &SubscriptionPayload{
+		CallbackURL:   req.WebhookEndPoint,
+		EventType:     string(salesloftEventType),
+		CallbackToken: req.Secret,
+	}
+
+	return payload, nil
+}
+
+func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error) {
+	if params.Request == nil {
+		return nil, fmt.Errorf("%w: request is nil", errMissingParams)
+	}
+
+	req, ok := params.Request.(*SubscriptionRequest)
+	if !ok {
+		return nil, fmt.Errorf("%w: expected '%T', got '%T'", errInvalidRequestType, req, params.Request)
+	}
+
+	validate := validator.New()
+
+	if validate.Struct(req) != nil {
+		return nil, fmt.Errorf("%w: request is invalid", errInvalidRequestType)
+	}
+
+	return req, nil
+}
+
 // buildSalesloftEventType combines object name and event action into Salesloft's expected format.
 // Example: account + create -> account_created
 func buildSalesloftEventType(objectName common.ObjectName, eventType common.SubscriptionEventType) (SalesloftEventType, error) {
@@ -346,10 +337,7 @@ func buildSalesloftEventType(objectName common.ObjectName, eventType common.Subs
 	// Current Salesloft objects only use 's' suffix for plurals (e.g., "accounts" -> "account"),
 	// so simple trimming is sufficient. For future complex pluralization, consider using
 	// a library like "github.com/jinzhu/inflection" or similar.
-	objNameStr := string(objectName)
-	if strings.HasSuffix(objNameStr, "s") {
-		objNameStr = strings.TrimSuffix(objNameStr, "s")
-	}
+	objNameStr := strings.TrimSuffix(string(objectName), "s")
 
 	// Salesloft format: "{objectName}_{action}"
 	combined := fmt.Sprintf("%s_%s", objNameStr, action)

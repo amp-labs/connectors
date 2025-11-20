@@ -37,7 +37,7 @@ type SuccessfulSubscription struct {
 
 // SubscriptionResult stores the final subscription results
 type SubscriptionResult struct {
-	Subscriptions map[common.ObjectName]map[string]SubscriptionResponse `json:"subscriptions"`
+	Subscriptions map[common.ObjectName]map[SalesloftEventType]SubscriptionResponse `json:"subscriptions"`
 }
 
 // SalesloftEventType represents the combined event type format used by Salesloft

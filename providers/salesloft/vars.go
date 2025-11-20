@@ -7,24 +7,11 @@ import (
 )
 
 var (
-	errInvalidRequestType    = errors.New("invalid request type")
-	errMissingParams         = errors.New("missing required parameters")
-	errWatchFieldsAll        = errors.New("watch fields all is not supported")
-	errTooManyWatchFields    = errors.New("too many watch fields")
-	errSubscriptionFailed    = errors.New("subscription failed")
-	errNoSubscriptionCreated = errors.New("no subscription created")
-	errUnsupportedEventType  = errors.New("unsupported event type")
-	errFieldNotFound         = errors.New("field not found")
-	errObjectNameNotFound    = errors.New("object name not found")
-	errInvalidModuleEvent    = errors.New("invalid module event")
+	errInvalidRequestType   = errors.New("invalid request type")
+	errMissingParams        = errors.New("missing required parameters")
+	errUnsupportedEventType = errors.New("unsupported event type")
+
 	//nolint:revive
-	errInconsistentChannelIdsMismatch = errors.New("all events must have the same channel id")
-	errChannelIdMismatch              = errors.New("channel id does not match provided unique ref")
-	errInvalidDuration                = errors.New("duration cannot be greater than 1 week")
-	errModuleNameNotString            = errors.New("module_name is not a string")
-	errAPINameNotString               = errors.New("api_name is not a string")
-	errIDNotString                    = errors.New("id is not a string")
-	errFieldIDNotString               = errors.New("field id is not a string")
 )
 
 var salesloftSubscriptionEvents = datautils.NewSet(
@@ -49,15 +36,15 @@ var salesloftSubscriptionEvents = datautils.NewSet(
 
 	"conversation_created",
 
-	"conversation_recording_created",
+	// "conversation_recording_created", //we don't support read for this.
 
-	"conversation_transcript_created",
+	// "conversation_transcript_created", //we don't support read for this obj.
 
 	"email_updated",
 
-	"email_with_body_and_subject_updated",
+	// "email_with_body_and_subject_updated", // Not supported object
 
-	"link_swap",
+	// "link_swap", //Not supported object
 
 	"meeting_booked",
 	"meeting_updated",
@@ -66,9 +53,9 @@ var salesloftSubscriptionEvents = datautils.NewSet(
 	"note_updated",
 	"note_deleted",
 
-	"person_created",
-	"person_updated",
-	"person_deleted",
+	// "person_created",
+	// "person_updated", // Not supported object
+	// "person_deleted",
 
 	"step_created",
 	"step_updated",
