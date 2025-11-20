@@ -293,6 +293,13 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	errBadRequest := testutils.DataFromFile(t, "metadata/write/object15/bad-request.xml")
 	payloadManyFields := testutils.DataFromFile(t, "metadata/write/object15/mix-of-many-fields-payload.xml")
 	responseManyFields := testutils.DataFromFile(t, "metadata/write/object15/mix-of-many-fields-response.xml")
+	payloadFieldPermissions := testutils.DataFromFile(t, "metadata/write/read-field-permissions-payload.xml")
+	responseFieldPermissions := testutils.DataFromFile(t, "metadata/write/read-field-permissions-response.xml")
+	payloadFieldPermissionsUpsert := testutils.DataFromFile(t, "metadata/write/write-field-permissions-payload.xml")
+	responseFieldPermissionsUpsert := testutils.DataFromFile(t, "metadata/write/write-field-permissions-response.xml")
+	responsePermissionSet := testutils.DataFromFile(t, "metadata/write/permission-set.json")
+	responseUserInfo := testutils.DataFromFile(t, "metadata/write/user-info.json")
+	duplicatePermissionAssignment := testutils.DataFromFile(t, "metadata/write/err-duplicate-permission-assignment.json")
 
 	tests := []testroutines.UpsertMetadata{
 		{
@@ -420,14 +427,66 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 			},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentXML(),
-				If: mockcond.And{
-					mockcond.MethodPOST(),
-					mockcond.Path("/services/Soap/m/60.0"),
-					mockcond.BodyBytes(payloadManyFields),
-				},
-				Then: mockserver.Response(http.StatusOK, responseManyFields),
+				Cases: mockserver.Cases{{
+					// Upsert fields.
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/services/Soap/m/60.0"),
+						mockcond.BodyBytes(payloadManyFields),
+					},
+					Then: mockserver.Response(http.StatusOK, responseManyFields),
+				}, {
+					// Fetch permission set which contains field permissions.
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/services/Soap/m/60.0"),
+						mockcond.BodyBytes(payloadFieldPermissions),
+					},
+					Then: mockserver.Response(http.StatusOK, responseFieldPermissions),
+				}, {
+					// Upsert permission set with combined fields.
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/services/Soap/m/60.0"),
+						mockcond.BodyBytes(payloadFieldPermissionsUpsert),
+					},
+					Then: mockserver.Response(http.StatusOK, responseFieldPermissionsUpsert),
+				}, {
+					// Fetch permission set identifier.
+					If: mockcond.And{
+						mockcond.MethodGET(),
+						mockcond.Path("/services/data/v60.0/query"),
+						mockcond.QueryParam("q",
+							`SELECT Id,Name FROM PermissionSet WHERE Name='IntegrationCustomFieldVisibility'`),
+					},
+					Then: mockserver.ResponseChainedFuncs(
+						mockserver.ContentJSON(),
+						mockserver.Response(http.StatusOK, responsePermissionSet),
+					),
+				}, {
+					// Fetch user identifier.
+					If: mockcond.And{
+						mockcond.MethodGET(),
+						mockcond.Path("/services/oauth2/userinfo"),
+					},
+					Then: mockserver.ResponseChainedFuncs(
+						mockserver.ContentJSON(),
+						mockserver.Response(http.StatusOK, responseUserInfo),
+					),
+				}, {
+					// Assign permission set to the user.
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/services/data/v60.0/sobjects/PermissionSetAssignment"),
+						mockcond.Body(`{"AssigneeId":"005006007008","PermissionSetId":"0PSak00000M9uBBGAZ"}`),
+					},
+					Then: mockserver.ResponseChainedFuncs(
+						mockserver.ContentJSON(),
+						mockserver.Response(http.StatusBadRequest, duplicatePermissionAssignment),
+					),
+				}},
 			}.Server(),
 			Expected: &common.UpsertMetadataResult{
 				Success: true,

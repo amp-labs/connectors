@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Header xmlns="http://soap.sforce.com/2006/04/metadata">
+        <AllOrNoneHeader>
+            <allOrNone>true</allOrNone>
+        </AllOrNoneHeader>
+        <SessionHeader>
+            <sessionId>TEST_ACCESS_TOKEN</sessionId>
+        </SessionHeader>
+    </soapenv:Header>
+    <soapenv:Body xmlns="http://soap.sforce.com/2006/04/metadata">
+        <upsertMetadata>
+            <metadata xsi:type="PermissionSet">
+                <fullName>IntegrationCustomFieldVisibility</fullName>
+                <label>Custom Field Visibility for Integration</label>
+                <description>Permission set for integration to be able to read value of custom fields.
+                </description>
+                <fieldPermissions>
+                    <field>TestObject15__c.Connection__c</field>
+                    <readable>true</readable>
+                    <editable>true</editable>
+                </fieldPermissions>
+                <fieldPermissions>
+                    <field>TestObject15__c.Hobby__c</field>
+                    <readable>true</readable>
+                    <editable>true</editable>
+                </fieldPermissions>
+                <fieldPermissions>
+                    <field>TestObject15__c.IsReady__c</field>
+                    <readable>true</readable>
+                    <editable>true</editable>
+                </fieldPermissions>
+                <fieldPermissions>
+                    <field>TestObject15__c.Birthday__c</field>
+                    <readable>true</readable>
+                    <editable>true</editable>
+                </fieldPermissions>
+            </metadata>
+        </upsertMetadata>
+    </soapenv:Body>
+</soapenv:Envelope>

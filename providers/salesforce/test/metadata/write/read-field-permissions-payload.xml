@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Header xmlns="http://soap.sforce.com/2006/04/metadata">
+        <AllOrNoneHeader>
+            <allOrNone>true</allOrNone>
+        </AllOrNoneHeader>
+        <SessionHeader>
+            <sessionId>TEST_ACCESS_TOKEN</sessionId>
+        </SessionHeader>
+    </soapenv:Header>
+    <soapenv:Body xmlns="http://soap.sforce.com/2006/04/metadata">
+        <readMetadata>
+            <type>PermissionSet</type>
+            <fullNames>IntegrationCustomFieldVisibility</fullNames>
+        </readMetadata>
+    </soapenv:Body>
+</soapenv:Envelope>
