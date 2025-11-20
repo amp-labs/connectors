@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
@@ -39,7 +40,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if config.ObjectName == issues {
+	if naming.PluralityAndCaseIgnoreEqual(config.ObjectName, issues) {
 		var sinceMinutes, untilMinutes int64
 
 		write := c.Client.Post
