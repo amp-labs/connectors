@@ -3,6 +3,7 @@ package atlassian
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -39,21 +40,33 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 
 	if config.ObjectName == issues {
-		var minutes int64
+		var sinceMinutes, untilMinutes int64
 
 		write := c.Client.Post
 
-		timeDuration := time.Since(time.Unix(0, 0).UTC())
-		minutes = int64(timeDuration.Minutes())
+		sinceTimeDuration := time.Since(time.Unix(0, 0).UTC())
+		sinceMinutes = int64(sinceTimeDuration.Minutes())
+		untilTimeDuration := time.Since(time.Now().UTC())
+		untilMinutes = int64(untilTimeDuration.Minutes())
 
 		if !config.Since.IsZero() {
-			diff := time.Since(config.Since)
-			minutes = int64(diff.Minutes())
+			sinceDiff := time.Since(config.Since)
+			sinceMinutes = int64(sinceDiff.Minutes())
+		}
+
+		if !config.Until.IsZero() {
+			untilTimeDuration := time.Since(config.Until)
+			untilMinutes = int64(untilTimeDuration.Minutes())
+		}
+
+		conditions := []string{
+			fmt.Sprintf(`updated > "-%vm"`, sinceMinutes),
+			fmt.Sprintf(`updated < "-%vm"`, untilMinutes),
 		}
 
 		reqBody := issueRequest{
 			Fields:     config.Fields.List(),
-			JQL:        fmt.Sprintf(`updated > "-%vm"`, minutes),
+			JQL:        strings.Join(conditions, " and "),
 			MaxResults: pageSize,
 		}
 
