@@ -40,6 +40,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
+	fmt.Println("config.ObjectName================================================", config.ObjectName)
+
 	if naming.PluralityAndCaseIgnoreEqual(config.ObjectName, issues) {
 		var sinceMinutes, untilMinutes int64
 
