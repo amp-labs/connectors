@@ -13,8 +13,8 @@ import (
 const (
 	PermissionSetType               = "PermissionSet"
 	DefaultPermissionSetName        = "IntegrationCustomFieldVisibility"
-	DefaultPermissionSetLabel       = "Ampersand defined permissions for optional Custom Fields"
-	DefaultPermissionSetDescription = "Permissions for optional Custom Fields created by Ampersand connector via UpsertMetadata" // nolint:lll
+	DefaultPermissionSetLabel       = "Custom Field Visibility for Integration"
+	DefaultPermissionSetDescription = "Permission set for integration to be able to read value of custom fields." // nolint:lll
 )
 
 var (

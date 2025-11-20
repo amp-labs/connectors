@@ -13,8 +13,8 @@
         <upsertMetadata>
             <metadata xsi:type="PermissionSet">
                 <fullName>IntegrationCustomFieldVisibility</fullName>
-                <label>Ampersand defined permissions for optional Custom Fields</label>
-                <description>Permissions for optional Custom Fields created by Ampersand connector via UpsertMetadata
+                <label>Custom Field Visibility for Integration</label>
+                <description>Permission set for integration to be able to read value of custom fields.
                 </description>
                 <fieldPermissions>
                     <field>TestObject15__c.Connection__c</field>
