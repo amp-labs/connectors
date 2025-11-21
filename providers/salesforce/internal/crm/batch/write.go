@@ -46,7 +46,9 @@ func (a *Adapter) BatchWrite(ctx context.Context, params *common.BatchWriteParam
 		write = a.Client.Patch
 	}
 
-	rsp, err := write(ctx, url.String(), payload)
+	headers := common.TransformWriteHeaders(params.Headers, common.HeaderModeOverwrite)
+
+	rsp, err := write(ctx, url.String(), payload, headers...)
 	if err != nil {
 		return nil, err
 	}

@@ -177,6 +177,11 @@ type ReadParams struct {
 	PageSize int // optional
 }
 
+type WriteHeader struct {
+	Key   string
+	Value string
+}
+
 // WriteParams defines how we are writing data to a SaaS API.
 type WriteParams struct {
 	// The name of the object we are writing, e.g. "Account"
@@ -191,6 +196,8 @@ type WriteParams struct {
 
 	// Associations contains associations between the object and other objects.
 	Associations any // optional
+
+	Headers []WriteHeader // optional
 }
 
 func (p WriteParams) GetRecord() (Record, error) {
@@ -323,6 +330,21 @@ type BatchWriteParam struct {
 	Type BatchWriteType
 	// Batch contains the collection of record payloads to be written.
 	Batch BatchItems
+	// Headers contains additional headers to be added to the request.
+	Headers []WriteHeader // optional
+}
+
+func TransformWriteHeaders(headers []WriteHeader, mode HeaderMode) []Header {
+	transformedHeaders := []Header{}
+	for _, header := range headers {
+		transformedHeaders = append(transformedHeaders, Header{
+			Key:   header.Key,
+			Value: header.Value,
+			Mode:  mode,
+		})
+	}
+
+	return transformedHeaders
 }
 
 type BatchItem struct {
