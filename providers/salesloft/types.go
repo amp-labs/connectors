@@ -38,12 +38,12 @@ type SuccessfulSubscription struct {
 
 // SubscriptionResult stores the final subscription results
 type SubscriptionResult struct {
-	Subscriptions map[common.ObjectName]map[SalesloftEventType]SubscriptionResponse `json:"subscriptions"`
+	Subscriptions map[common.ObjectName]map[ModuleEvent]SubscriptionResponse `json:"subscriptions"`
 }
 
-// SalesloftEventType represents the combined event type format used by Salesloft
+// ModuleEvent represents the combined event type format used by Salesloft
 // Format: "{objectName}_{eventAction}" (e.g., "person_created", "call_updated")
-type SalesloftEventType string
+type ModuleEvent string
 
 // Base event actions used in Salesloft
 type EventAction string
@@ -55,6 +55,6 @@ const (
 )
 
 type SalesloftEventMapping struct {
-	ObjectName      string                            // singular form used by Salesloft
-	SupportedEvents datautils.Set[SalesloftEventType] // actual Salesloft event names supported (O(1) lookup)
+	ObjectName      string                     // singular form used by Salesloft
+	SupportedEvents datautils.Set[ModuleEvent] // actual Salesloft event names supported (O(1) lookup)
 }

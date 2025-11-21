@@ -3,6 +3,7 @@ package salesloft
 import (
 	"errors"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
@@ -14,127 +15,127 @@ var (
 	//nolint:revive
 )
 
-var salesloftEventMappings = map[string]SalesloftEventMapping{
+var salesloftEventMappings = map[common.ObjectName]SalesloftEventMapping{
 	"accounts": {
 		ObjectName: "account",
 		SupportedEvents: datautils.NewSet(
-			SalesloftEventType("account_created"),
-			SalesloftEventType("account_updated"),
-			SalesloftEventType("account_deleted"),
+			ModuleEvent("account_created"),
+			ModuleEvent("account_updated"),
+			ModuleEvent("account_deleted"),
 		),
 	},
 
 	"bulk_jobs": {
 		ObjectName: "bulk_job",
 		SupportedEvents: datautils.NewSet(
-			SalesloftEventType("bulk_job_completed"),
+			ModuleEvent("bulk_job_completed"),
 		),
 	},
 
 	"cadences": {
 		ObjectName: "cadence",
 		SupportedEvents: datautils.NewSet(
-			SalesloftEventType("cadence_created"),
-			SalesloftEventType("cadence_updated"),
-			SalesloftEventType("cadence_deleted"),
+			ModuleEvent("cadence_created"),
+			ModuleEvent("cadence_updated"),
+			ModuleEvent("cadence_deleted"),
 		),
 	},
 
 	"cadence_memberships": {
 		ObjectName: "cadence_membership",
 		SupportedEvents: datautils.NewSet(
-			SalesloftEventType("cadence_membership_created"),
-			SalesloftEventType("cadence_membership_updated"),
+			ModuleEvent("cadence_membership_created"),
+			ModuleEvent("cadence_membership_updated"),
 		),
 	},
 
 	"activities/calls": {
 		ObjectName: "call",
 		SupportedEvents: datautils.NewSet(
-			SalesloftEventType("call_created"),
-			SalesloftEventType("call_updated"),
+			ModuleEvent("call_created"),
+			ModuleEvent("call_updated"),
 		),
 	},
 
 	"call_data_records": {
 		ObjectName: "call_data_record",
 		SupportedEvents: datautils.NewSet(
-			SalesloftEventType("call_data_record_created"),
-			SalesloftEventType("call_data_record_updated"),
+			ModuleEvent("call_data_record_created"),
+			ModuleEvent("call_data_record_updated"),
 		),
 	},
 
 	"conversations": {
 		ObjectName: "conversation",
 		SupportedEvents: datautils.NewSet(
-			SalesloftEventType("conversation_created"),
-			SalesloftEventType("conversation_updated"),
+			ModuleEvent("conversation_created"),
+			ModuleEvent("conversation_updated"),
 		),
 	},
 
 	"activities/emails": {
 		ObjectName: "email",
 		SupportedEvents: datautils.NewSet(
-			SalesloftEventType("email_updated"),
+			ModuleEvent("email_updated"),
 		),
 	},
 
 	"meetings": {
 		ObjectName: "meeting",
 		SupportedEvents: datautils.NewSet(
-			SalesloftEventType("meeting_booked"),
-			SalesloftEventType("meeting_updated"),
+			ModuleEvent("meeting_booked"),
+			ModuleEvent("meeting_updated"),
 		),
 	},
 
 	"notes": {
 		ObjectName: "note",
 		SupportedEvents: datautils.NewSet(
-			SalesloftEventType("note_created"),
-			SalesloftEventType("note_updated"),
-			SalesloftEventType("note_deleted"),
+			ModuleEvent("note_created"),
+			ModuleEvent("note_updated"),
+			ModuleEvent("note_deleted"),
 		),
 	},
 
 	"people": {
 		ObjectName: "person",
 		SupportedEvents: datautils.NewSet(
-			SalesloftEventType("person_created"),
-			SalesloftEventType("person_updated"),
-			SalesloftEventType("person_deleted"),
+			ModuleEvent("person_created"),
+			ModuleEvent("person_updated"),
+			ModuleEvent("person_deleted"),
 		),
 	},
 
 	"steps": {
 		ObjectName: "step",
 		SupportedEvents: datautils.NewSet(
-			SalesloftEventType("step_created"),
-			SalesloftEventType("step_updated"),
-			SalesloftEventType("step_deleted"),
+			ModuleEvent("step_created"),
+			ModuleEvent("step_updated"),
+			ModuleEvent("step_deleted"),
 		),
 	},
 
 	"successes": {
 		ObjectName: "success",
 		SupportedEvents: datautils.NewSet(
-			SalesloftEventType("success_created"),
+			ModuleEvent("success_created"),
 		),
 	},
 
 	"tasks": {
 		ObjectName: "task",
 		SupportedEvents: datautils.NewSet(
-			SalesloftEventType("task_created"),
-			SalesloftEventType("task_updated"),
-			SalesloftEventType("task_deleted"),
-			SalesloftEventType("task_completed"),
+			ModuleEvent("task_created"),
+			ModuleEvent("task_updated"),
+			ModuleEvent("task_deleted"),
+			ModuleEvent("task_completed"),
 		),
 	},
 	"users": {
 		ObjectName: "user",
 		SupportedEvents: datautils.NewSet(
-			SalesloftEventType("user_created"),
-			SalesloftEventType("user_updated"),
+			ModuleEvent("user_created"),
+			ModuleEvent("user_updated"),
 		),
 	},
 }

@@ -43,7 +43,7 @@ func (c *Connector) Subscribe(
 	}
 
 	// Store successful subscriptions with their full response data
-	subscriptionsMap := make(map[common.ObjectName]map[SalesloftEventType]SubscriptionResponse)
+	subscriptionsMap := make(map[common.ObjectName]map[ModuleEvent]SubscriptionResponse)
 	successfulSubscriptions := make([]SuccessfulSubscription, 0)
 
 	var firstError error
@@ -57,46 +57,46 @@ func (c *Connector) Subscribe(
 	// Process all object+event combinations
 	for obj, events := range params.SubscriptionEvents {
 		for _, event := range events.Events {
-			currObj := obj
-			currentEvent := event
+			// This converts common event type to Salesloft event type format and also
+			// expands events if needed (e.g., "tasks" update -> "task_completed" and "task_updated")
+			providerEvents, err := expandEvent(obj, event)
+			if err != nil {
+				return nil, err
+			}
 
-			callbacks = append(callbacks, func(ctx context.Context) error {
-				response, failErr := c.createSingleSubscription(ctx, currentEvent, currObj, req)
+			for _, providerEvent := range providerEvents {
+				currObj := obj
+				currProviderEvent := providerEvent
 
-				mutex.Lock()
-				defer mutex.Unlock()
+				callbacks = append(callbacks, func(ctx context.Context) error {
+					response, failErr := c.createSingleSubscription(ctx, currProviderEvent, currObj, req)
 
-				if failErr != nil {
-					errorOnce.Do(func() {
-						firstError = failErr
-					})
-				} else {
-					// Convert common event type to Salesloft event type format
-					salesloftEventType, err := buildSalesloftEventType(currObj, currentEvent)
-					if err != nil {
+					mutex.Lock()
+					defer mutex.Unlock()
+
+					if failErr != nil {
 						errorOnce.Do(func() {
-							firstError = fmt.Errorf("failed to convert event type %s for object %s: %w", currentEvent, currObj, err)
+							firstError = failErr
 						})
-						return nil
+					} else {
+						// Initialize nested map if needed
+						if subscriptionsMap[currObj] == nil {
+							subscriptionsMap[currObj] = make(map[ModuleEvent]SubscriptionResponse)
+						}
+
+						subscriptionsMap[currObj][currProviderEvent] = *response
+
+						// Keep track of successful subscriptions for rollback
+						successfulSubscriptions = append(successfulSubscriptions, SuccessfulSubscription{
+							ID:         strconv.Itoa(response.ID),
+							ObjectName: string(currObj),
+							EventName:  string(currProviderEvent),
+						})
 					}
 
-					// Initialize nested map if needed
-					if subscriptionsMap[currObj] == nil {
-						subscriptionsMap[currObj] = make(map[SalesloftEventType]SubscriptionResponse)
-					}
-
-					subscriptionsMap[currObj][salesloftEventType] = *response
-
-					// Keep track of successful subscriptions for rollback
-					successfulSubscriptions = append(successfulSubscriptions, SuccessfulSubscription{
-						ID:         strconv.Itoa(response.ID),
-						ObjectName: string(currObj),
-						EventName:  string(salesloftEventType),
-					})
-				}
-
-				return nil
-			})
+					return nil
+				})
+			}
 		}
 	}
 
@@ -128,7 +128,6 @@ func (c *Connector) Subscribe(
 				currentEvent.Events = append(currentEvent.Events, common.SubscriptionEventType(failedSub.EventName))
 
 				objectEvents[common.ObjectName(failedSub.ObjectName)] = currentEvent
-
 			}
 
 			res.ObjectEvents = objectEvents
@@ -151,17 +150,20 @@ func (c *Connector) Subscribe(
 }
 
 // GetRecordsByIds implements connectors.SubscribeConnector.
-func (c *Connector) GetRecordsByIds(ctx context.Context, objectName string, recordIds []string, fields []string, associations []string) ([]common.ReadResultRow, error) {
+func (c *Connector) GetRecordsByIds(ctx context.Context,
+	objectName string, recordIds []string, fields []string, associations []string) ([]common.ReadResultRow, error) {
 	panic("unimplemented")
 }
 
 // UpdateSubscription implements connectors.SubscribeConnector.
-func (c *Connector) UpdateSubscription(ctx context.Context, params common.SubscribeParams, previousResult *common.SubscriptionResult) (*common.SubscriptionResult, error) {
+func (c *Connector) UpdateSubscription(ctx context.Context,
+	params common.SubscribeParams, previousResult *common.SubscriptionResult) (*common.SubscriptionResult, error) {
 	panic("unimplemented")
 }
 
 // VerifyWebhookMessage implements connectors.SubscribeConnector.
-func (c *Connector) VerifyWebhookMessage(ctx context.Context, request *common.WebhookRequest, params *common.VerificationParams) (bool, error) {
+func (c *Connector) VerifyWebhookMessage(ctx context.Context,
+	request *common.WebhookRequest, params *common.VerificationParams) (bool, error) {
 	panic("unimplemented")
 }
 
@@ -203,16 +205,17 @@ func (c *Connector) DeleteSubscription(
 	return nil
 }
 
-// createSingleSubscription attempts to create a single subscription and returns the full response
+// createSingleSubscription attempts to create a single subscription and returns the full response.
 func (c *Connector) createSingleSubscription(
 	ctx context.Context,
-	event common.SubscriptionEventType,
+	event ModuleEvent,
 	obj common.ObjectName,
 	req *SubscriptionRequest,
 ) (*SubscriptionResponse, error) {
-	payload, err := buildSubscriptionPayload(event, obj, req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create subscription payload for object %s, event %s: %w", obj, event, err)
+	payload := &SubscriptionPayload{
+		CallbackURL:   req.WebhookEndPoint,
+		EventType:     string(event),
+		CallbackToken: req.Secret,
 	}
 
 	result, err := c.createSubscription(ctx, payload)
@@ -275,7 +278,6 @@ func (c *Connector) rollbackSubscriptions(
 					}
 					return nil
 				}
-
 			}(subFromList),
 		)
 	}
@@ -309,25 +311,6 @@ func (c *Connector) deleteSubscription(ctx context.Context, subscriptionID strin
 	return nil
 }
 
-func buildSubscriptionPayload(
-	event common.SubscriptionEventType,
-	objectName common.ObjectName,
-	req *SubscriptionRequest,
-) (*SubscriptionPayload, error) {
-	salesloftEventType, err := buildSalesloftEventType(objectName, event)
-	if err != nil {
-		return nil, err
-	}
-
-	payload := &SubscriptionPayload{
-		CallbackURL:   req.WebhookEndPoint,
-		EventType:     string(salesloftEventType),
-		CallbackToken: req.Secret,
-	}
-
-	return payload, nil
-}
-
 func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error) {
 	if params.Request == nil {
 		return nil, fmt.Errorf("%w: request is nil", errMissingParams)
@@ -347,15 +330,35 @@ func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error
 	return req, nil
 }
 
-// buildSalesloftEventType combines object name and event action into Salesloft's expected format.
+// expandEvent converts a common event type into one or more Salesloft module events
+// Format: "{objectName}_{eventAction}" (e.g., "person_created", "call_updated")
+func expandEvent(objectName common.ObjectName, eventType common.SubscriptionEventType) ([]ModuleEvent, error) {
+	// Special case for "tasks" object.
+	// We need to subscribe to both "task_completed" and "task_updated" events when an update event is requested.
+	if string(objectName) == "tasks" && eventType == common.SubscriptionEventTypeUpdate {
+		return []ModuleEvent{
+			"task_completed",
+			"task_updated",
+		}, nil
+	}
+
+	salesloftEvent, err := buildModuleEvent(objectName, eventType)
+	if err != nil {
+		return nil, err
+	}
+
+	return []ModuleEvent{salesloftEvent}, nil
+}
+
+// buildModuleEvent combines object name and event action into Salesloft's expected format.
 // Example: account + create -> account_created
-func buildSalesloftEventType(objectName common.ObjectName, eventType common.SubscriptionEventType) (SalesloftEventType, error) {
+func buildModuleEvent(objectName common.ObjectName, eventType common.SubscriptionEventType) (ModuleEvent, error) {
 	action, err := getEventAction(eventType)
 	if err != nil {
 		return "", err
 	}
 
-	mapping, exists := salesloftEventMappings[string(objectName)]
+	mapping, exists := salesloftEventMappings[objectName]
 	if !exists {
 		return "", fmt.Errorf("object '%s' is not supported", objectName)
 	}
@@ -364,19 +367,23 @@ func buildSalesloftEventType(objectName common.ObjectName, eventType common.Subs
 
 	// Salesloft format: "{objectName}_{action}"
 	combined := fmt.Sprintf("%s_%s", objectNameStr, action)
-	return SalesloftEventType(combined), nil
+	return ModuleEvent(combined), nil
 }
 
 // getEventAction converts common event types to Salesloft event actions
 func getEventAction(eventType common.SubscriptionEventType) (EventAction, error) {
 	switch eventType { //nolint:exhaustive
 	case common.SubscriptionEventTypeCreate:
+
 		return ActionCreated, nil
 	case common.SubscriptionEventTypeUpdate:
+
 		return ActionUpdated, nil
 	case common.SubscriptionEventTypeDelete:
+
 		return ActionDeleted, nil
 	default:
+
 		return "", fmt.Errorf("%w: %s", errUnsupportedEventType, eventType)
 	}
 }
@@ -385,7 +392,7 @@ func validateSubscriptionRequest(subscriptionEvents map[common.ObjectName]common
 	var validationErrors error
 
 	for objectName, events := range subscriptionEvents {
-		mapping, exist := salesloftEventMappings[(string(objectName))]
+		mapping, exist := salesloftEventMappings[objectName]
 		if !exist {
 			validationErrors = errors.Join(validationErrors,
 				fmt.Errorf("%s object is not supported", objectName))
@@ -394,7 +401,7 @@ func validateSubscriptionRequest(subscriptionEvents map[common.ObjectName]common
 		}
 
 		for _, event := range events.Events {
-			salesloftEvent, err := buildSalesloftEventType(objectName, event)
+			salesloftEvent, err := buildModuleEvent(objectName, event)
 			if err != nil {
 				validationErrors = errors.Join(validationErrors,
 					fmt.Errorf("failed to build Salesloft event type for object '%s' and event '%s': %w", objectName, event, err))
@@ -405,7 +412,6 @@ func validateSubscriptionRequest(subscriptionEvents map[common.ObjectName]common
 			if !mapping.SupportedEvents.Has(salesloftEvent) {
 				validationErrors = errors.Join(validationErrors,
 					fmt.Errorf("subscription event '%s' is not supported for object '%s'", event, objectName))
-
 			}
 		}
 	}
