@@ -4,6 +4,7 @@ const GetResponse Provider = "getResponse"
 
 func init() {
 	// GetResponse configuration
+
 	SetInfo(GetResponse, ProviderInfo{
 		DisplayName: "GetResponse",
 		AuthType:    Oauth2,
