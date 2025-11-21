@@ -163,12 +163,6 @@ func (c *Connector) UpdateSubscription(ctx context.Context,
 	panic("unimplemented")
 }
 
-func (c *Connector) VerifyWebhookMessage(ctx context.Context,
-	request *common.WebhookRequest, params *common.VerificationParams,
-) (bool, error) {
-	panic("unimplemented")
-}
-
 // DeleteSubscription deletes webhook subscriptions.
 func (c *Connector) DeleteSubscription(
 	ctx context.Context,

@@ -13,6 +13,8 @@ var (
 	errUnsupportedEventType         = errors.New("unsupported event type")
 	errUnsupportedObject            = errors.New("unsupported object")
 	errUnsupportedSubscriptionEvent = errors.New("unsupported subscription event")
+	ErrMissingSignature             = errors.New("missing webhook signature header")
+	ErrInvalidSignature             = errors.New("invalid webhook signature")
 	//nolint:revive
 )
 
