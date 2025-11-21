@@ -38,21 +38,14 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 
 	if config.ObjectName == issues {
-		var minutes int64
-
-		write := c.Client.Post
-
-		timeDuration := time.Since(time.Unix(0, 0).UTC())
-		minutes = int64(timeDuration.Minutes())
-
-		if !config.Since.IsZero() {
-			diff := time.Since(config.Since)
-			minutes = int64(diff.Minutes())
-		}
+		jqlQuery := jql.New().
+			SinceMinutes(config.Since).
+			UntilMinutes(config.Until).
+			String()
 
 		reqBody := issueRequest{
 			Fields:     config.Fields.List(),
-			JQL:        fmt.Sprintf(`updated > "-%vm"`, minutes),
+			JQL:        jqlQuery,
 			MaxResults: pageSize,
 		}
 
@@ -60,7 +53,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			reqBody.NextPageToken = config.NextPage.String()
 		}
 
-		resp, err := write(ctx, url.String(), reqBody)
+		resp, err := c.Client.Post(ctx, url.String(), reqBody)
 		if err != nil {
 			return nil, err
 		}
@@ -90,23 +83,5 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 func (c *Connector) buildReadURL() (*urlbuilder.URL, error) {
 	// https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-rest-api-3-search-jql-post
-	url, err := c.getModuleURL("search/jql")
-	if err != nil {
-		return nil, err
-	}
-
-	if len(config.NextPage) != 0 {
-		url.WithQueryParam("startAt", config.NextPage.String())
-	}
-
-	jqlQuery := jql.New().
-		SinceMinutes(config.Since).
-		UntilMinutes(config.Until).
-		String()
-
-	if jqlQuery != "" {
-		url.WithQueryParam("jql", jqlQuery)
-	}
-
-	return url, nil
+	return c.getModuleURL("search/jql")
 }
