@@ -46,9 +46,6 @@ func (q *JQL) String() string {
 		return fmt.Sprintf(`updated < "%vm"`, q.until)
 	}
 
-	// Neither since nor until is specified, query everything that was updated since time origin.
-	timeDuration := time.Since(time.Unix(0, 0).UTC())
-	minutes := int64(timeDuration.Minutes())
-
-	return fmt.Sprintf(`updated > "-%vm"`, minutes)
+	// Neither since nor until is specified. Request records updated before now, which is all records.
+	return `updated < "0m"`
 }
