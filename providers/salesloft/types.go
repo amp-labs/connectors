@@ -6,14 +6,14 @@ import (
 )
 
 type SubscriptionRequest struct {
-	UniqueRef       string `json:"unique_ref"         validate:"required"`
-	WebhookEndPoint string `json:"webhook_end_point"  validate:"required"`
+	UniqueRef       string `json:"unique_ref"        validate:"required"`
+	WebhookEndPoint string `json:"webhook_end_point" validate:"required"`
 	Secret          string `json:"secret,omitempty"`
 }
 
 type SubscriptionPayload struct {
-	CallbackURL   string `json:"callback_url"        validate:"required"`
-	EventType     string `json:"event_type" validate:"required"`
+	CallbackURL   string `json:"callback_url"   validate:"required"`
+	EventType     string `json:"event_type"     validate:"required"`
 	CallbackToken string `json:"callback_token" validate:"required"`
 }
 

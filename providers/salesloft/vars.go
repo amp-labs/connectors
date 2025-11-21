@@ -8,10 +8,11 @@ import (
 )
 
 var (
-	errInvalidRequestType   = errors.New("invalid request type")
-	errMissingParams        = errors.New("missing required parameters")
-	errUnsupportedEventType = errors.New("unsupported event type")
-	errUnsupportedObject    = errors.New("unsupported object")
+	errInvalidRequestType           = errors.New("invalid request type")
+	errMissingParams                = errors.New("missing required parameters")
+	errUnsupportedEventType         = errors.New("unsupported event type")
+	errUnsupportedObject            = errors.New("unsupported object")
+	errUnsupportedSubscriptionEvent = errors.New("unsupported subscription event")
 	//nolint:revive
 )
 

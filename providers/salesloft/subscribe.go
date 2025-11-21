@@ -26,7 +26,7 @@ func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	}
 }
 
-// nolint: funlen, cyclop
+// nolint: funlen, cyclop,gocognit
 func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -131,6 +131,7 @@ func (c *Connector) Subscribe(
 			}
 
 			res.ObjectEvents = objectEvents
+
 			return res, errors.Join(firstError, rollbackErr)
 		}
 
@@ -150,17 +151,21 @@ func (c *Connector) Subscribe(
 }
 
 //nolint:revive
-func (c *Connector) GetRecordsByIds(ctx context.Context, objectName string, recordIds []string, fields []string, associations []string) ([]common.ReadResultRow, error) {
+func (c *Connector) GetRecordsByIds(ctx context.Context, objectName string,
+	recordIds []string, fields []string, associations []string,
+) ([]common.ReadResultRow, error) {
 	panic("unimplemented")
 }
 
 func (c *Connector) UpdateSubscription(ctx context.Context,
-	params common.SubscribeParams, previousResult *common.SubscriptionResult) (*common.SubscriptionResult, error) {
+	params common.SubscribeParams, previousResult *common.SubscriptionResult,
+) (*common.SubscriptionResult, error) {
 	panic("unimplemented")
 }
 
 func (c *Connector) VerifyWebhookMessage(ctx context.Context,
-	request *common.WebhookRequest, params *common.VerificationParams) (bool, error) {
+	request *common.WebhookRequest, params *common.VerificationParams,
+) (bool, error) {
 	panic("unimplemented")
 }
 
@@ -406,7 +411,7 @@ func validateSubscriptionRequest(subscriptionEvents map[common.ObjectName]common
 
 			if !mapping.SupportedEvents.Has(salesloftEvent) {
 				validationErrors = errors.Join(validationErrors,
-					fmt.Errorf("subscription event '%s' is not supported for object '%s'", event, objectName))
+					fmt.Errorf("%w: event '%s' for object '%s'", errUnsupportedSubscriptionEvent, event, objectName))
 			}
 		}
 	}
