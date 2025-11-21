@@ -334,6 +334,19 @@ type BatchWriteParam struct {
 	Headers []WriteHeader // optional
 }
 
+func TransformWriteHeaders(headers []WriteHeader, mode HeaderMode) []Header {
+	transformedHeaders := []Header{}
+	for _, header := range headers {
+		transformedHeaders = append(transformedHeaders, Header{
+			Key:   header.Key,
+			Value: header.Value,
+			Mode:  mode,
+		})
+	}
+
+	return transformedHeaders
+}
+
 type BatchItem struct {
 	Record       map[string]any
 	Associations any

@@ -36,14 +36,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		url.WithQueryParam("_HttpMethod", "PATCH")
 	}
 
-	headers := []common.Header{}
-	for _, header := range config.Headers {
-		headers = append(headers, common.Header{
-			Key:   header.Key,
-			Value: header.Value,
-			Mode:  common.HeaderModeOverwrite,
-		})
-	}
+	headers := common.TransformWriteHeaders(config.Headers, common.HeaderModeOverwrite)
 
 	rsp, err := c.Client.Post(ctx, url.String(), config.RecordData, headers...)
 	if err != nil {
