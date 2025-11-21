@@ -11,10 +11,11 @@ var (
 	errInvalidRequestType   = errors.New("invalid request type")
 	errMissingParams        = errors.New("missing required parameters")
 	errUnsupportedEventType = errors.New("unsupported event type")
-
+	errUnsupportedObject    = errors.New("unsupported object")
 	//nolint:revive
 )
 
+//nolint:gochecknoglobals
 var salesloftEventMappings = map[common.ObjectName]SalesloftEventMapping{
 	"accounts": {
 		ObjectName: "account",

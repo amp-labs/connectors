@@ -11,14 +11,12 @@ type SubscriptionRequest struct {
 	Secret          string `json:"secret,omitempty"`
 }
 
-// SubscriptionPayload represents the payload sent to Salesloft's webhook API
 type SubscriptionPayload struct {
 	CallbackURL   string `json:"callback_url"        validate:"required"`
 	EventType     string `json:"event_type" validate:"required"`
 	CallbackToken string `json:"callback_token" validate:"required"`
 }
 
-// SubscriptionResponse represents the response from Salesloft's webhook API
 type SubscriptionResponse struct {
 	UserGuide     string `json:"user_guid"`
 	TenantId      string `json:"tenant_id"`
@@ -29,23 +27,20 @@ type SubscriptionResponse struct {
 	CallbackToken string `json:"callback_token"`
 }
 
-// SuccessfulSubscription tracks successful subscriptions for rollback purposes
 type SuccessfulSubscription struct {
 	ID         string
 	ObjectName string
 	EventName  string
 }
 
-// SubscriptionResult stores the final subscription results
 type SubscriptionResult struct {
 	Subscriptions map[common.ObjectName]map[ModuleEvent]SubscriptionResponse `json:"subscriptions"`
 }
 
-// ModuleEvent represents the combined event type format used by Salesloft
-// Format: "{objectName}_{eventAction}" (e.g., "person_created", "call_updated")
+// ModuleEvent represents the combined event type format used by Salesloft.
+// Format: "{objectName}_{eventAction}" (e.g., "person_created", "call_updated").
 type ModuleEvent string
 
-// Base event actions used in Salesloft
 type EventAction string
 
 const (
@@ -55,6 +50,6 @@ const (
 )
 
 type SalesloftEventMapping struct {
-	ObjectName      string                     // singular form used by Salesloft
-	SupportedEvents datautils.Set[ModuleEvent] // actual Salesloft event names supported (O(1) lookup)
+	ObjectName      string
+	SupportedEvents datautils.Set[ModuleEvent]
 }
