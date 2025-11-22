@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Don't ask on main or release branches
+if [[ "$BRANCH" == "main" || "$BRANCH" == release/* ]]; then
+  exit 0
+fi
+
+REMOTE_BRANCH=$(git ls-remote --heads origin "$BRANCH")
+
+if [[ -z "$REMOTE_BRANCH" ]]; then
+  echo "No remote branch found → generating PR"
+
+  "./scripts/git/pr_template_select.sh"
+  RETURN=$?
+
+  if [[ $RETURN -ne 0 ]]; then
+    echo "PR creation aborted. Push cancelled."
+    exit 1
+  fi
+fi
+
