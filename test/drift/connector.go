@@ -40,9 +40,8 @@ func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 		ClientID:     reader.Get(credscanning.Fields.ClientId),
 		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://dev.drift.com/authorize",
-			TokenURL: "https://driftapi.com/oauth2/token",
-
+			AuthURL:   "https://dev.drift.com/authorize",
+			TokenURL:  "https://driftapi.com/oauth2/token",
 			AuthStyle: oauth2.AuthStyleAutoDetect,
 		},
 	}
