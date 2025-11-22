@@ -65,12 +65,10 @@ test-parallel:
 test-pretty:
 	go run gotest.tools/gotestsum@latest
 
-# Creates PR URLs for each template
-# Click on one of them or manually add ?template=<file.md> to the URL if you are creating a PR via the Github website
-# Templates: Under github/PULL_REQUEST_TEMPLATE directory you can add more templates
-.PHONY: pr-template
-pr-template:
-	. ./scripts/bash/pr_options.sh; pr_template
+# Set up git hooks which will use PR templates on branch push.
+.PHONY: git-hooks-install
+git-hooks-install:
+	. ./scripts/git/install_hooks.sh; install
 
 # Compiles connector generator CLI. For more information see scripts/connectorgen/README.md
 .PHONY: connector-gen
