@@ -21,6 +21,7 @@ const (
 	// SalesloftDocsPrefixURL documentation root.
 	SalesloftDocsPrefixURL = "https://developers.salesloft.com"
 	// ModelIndexURL - on this page all links to dedicated Models can be found.
+	s
 	ModelIndexURL = "https://developers.salesloft.com/docs/api"
 
 	ConnectorBaseURL = "https://api.salesloft.com"
