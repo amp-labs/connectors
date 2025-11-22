@@ -195,19 +195,8 @@ PR_URL="https://github.com/${ORGANIZATION}/${REPO_NAME}/compare/${TARGET_BRANCH}
 # USER_NAME=$(git config user.name)
 # PR_FORK_URL="https://github.com/${ORGANIZATION}/${REPO_NAME}/compare/${TARGET_BRANCH}...${USER_NAME}:${REPO_NAME}:${SOURCE_BRANCH}?title=${PR_TITLE}&body=${PR_BODY}"
 
-if command -v open >/dev/null; then
-  echo "============================================================="
-  echo "Opening PR, please reload webpage once branch is fully pushed"
-  echo "============================================================="
-  open "$PR_URL"
-elif command -v xdg-open >/dev/null; then
-  echo "============================================================="
-  echo "Opening PR, please reload webpage once branch is fully pushed"
-  echo "============================================================="
-  xdg-open "$PR_URL"
-else
-  echo "============================================================="
-  echo "Open manually:"
-  echo "$PR_URL"
-  echo "============================================================="
-fi
+
+echo "============================================================="
+echo "Open manually:"
+echo "$PR_URL"
+echo "============================================================="
