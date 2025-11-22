@@ -1,7 +1,9 @@
 package bitbucket
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -147,4 +149,68 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	url, err := c.constructWriteURL(params)
+	if err != nil {
+		return nil, err
+	}
+
+	method := http.MethodPost
+
+	if params.RecordId != "" {
+		url.AddPath(params.RecordId)
+
+		method = http.MethodPut
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+func (c *Connector) constructWriteURL(params common.WriteParams) (*urlbuilder.URL, error) {
+	// With the current implementation we can onnly write projects, webhooks and snippets
+	switch params.ObjectName {
+	case "projects", "hooks":
+		return urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion,
+			fmt.Sprintf("workspaces/%s/%s", c.Workspace, params.ObjectName))
+	case "snippets":
+		return urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, "snippets/"+c.Workspace)
+	default:
+		return urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
+	}
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{ // nolint:nilerr
+			Success: true,
+		}, nil
+	}
+
+	resp, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success: true,
+		Data:    resp,
+	}, nil
 }
