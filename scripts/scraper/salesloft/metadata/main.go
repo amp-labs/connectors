@@ -33,7 +33,8 @@ var (
 		"/docs/api/bulk-jobs-results-index/",
 	)
 	suffixesOfIndexForSchemas = []string{ // nolint:gochecknoglobals
-		"-index", // majority of indexes ending with this suffix are LIST operations.
+		// majority of indexes ending with this suffix are LIST operations.
+		"-index",
 		"-transcriptions-find-all-transcripts",
 		"-find-all",
 	}
