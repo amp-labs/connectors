@@ -17,7 +17,7 @@ type SubscriptionPayload struct {
 }
 
 type SubscriptionResponse struct {
-	UserGuide     string `json:"user_guid"`
+	UserGUID      string `json:"user_guid"`
 	TenantId      string `json:"tenant_id"`
 	ID            int    `json:"id"`
 	EventType     string `json:"event_type"`
@@ -25,7 +25,6 @@ type SubscriptionResponse struct {
 	CallbackURL   string `json:"callback_url"`
 	CallbackToken string `json:"callback_token"`
 }
-
 type SuccessfulSubscription struct {
 	ID         string
 	ObjectName string
