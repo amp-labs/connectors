@@ -37,7 +37,7 @@ func (c *Connector) Subscribe(
 	}
 
 	// Validate that requested events are supported
-	err = validateSubscriptionRequest(params.SubscriptionEvents)
+	err = validateSubscriptionEvents(params.SubscriptionEvents)
 	if err != nil {
 		return nil, err
 	}
@@ -335,7 +335,7 @@ func expandEvent(objectName common.ObjectName, eventType common.SubscriptionEven
 	return events, nil
 }
 
-func validateSubscriptionRequest(subscriptionEvents map[common.ObjectName]common.ObjectEvents) error {
+func validateSubscriptionEvents(subscriptionEvents map[common.ObjectName]common.ObjectEvents) error {
 	var validationErrors error
 
 	for objectName, events := range subscriptionEvents {
