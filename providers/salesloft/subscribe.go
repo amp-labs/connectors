@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
+	"slices"
 	"strconv"
 	"sync"
 
@@ -150,10 +152,178 @@ func (c *Connector) Subscribe(
 	return res, nil
 }
 
-func (c *Connector) UpdateSubscription(ctx context.Context,
-	params common.SubscribeParams, previousResult *common.SubscriptionResult,
+// nolint: funlen, cyclop,gocognit, gocyclo
+func (c *Connector) UpdateSubscription(
+	ctx context.Context,
+	params common.SubscribeParams,
+	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-	panic("unimplemented")
+	// Validate the previous result
+	if previousResult == nil || previousResult.Result == nil {
+		return nil, fmt.Errorf("%w: missing previousResult or previousResult.Result", errMissingParams)
+	}
+
+	prevState, ok := previousResult.Result.(*SubscriptionResult)
+	if !ok {
+		return nil, fmt.Errorf(
+			"%w: expected previousResult.Result to be type %T, but got %T",
+			errInvalidRequestType,
+			prevState,
+			previousResult.Result,
+		)
+	}
+
+	// Build a map of existing subscriptions for quick lookup.
+	// This composite key allows O(1) lookup when comparing existing vs requested subscriptions.
+	existingSubscriptions := make(map[ModuleEvent]bool)
+
+	for _, eventsMap := range prevState.Subscriptions {
+		for eventName := range eventsMap {
+			existingSubscriptions[eventName] = true
+		}
+	}
+
+	// Build a map of requested subscriptions
+	requestedSubscriptions := make(map[ModuleEvent]bool)
+
+	for objName, events := range params.SubscriptionEvents {
+		for _, event := range events.Events {
+			providerEvents, err := expandEvent(objName, event)
+			if err != nil {
+				return nil, fmt.Errorf("failed to expandEvent event type %s: %w", event, err)
+			}
+
+			for _, providerEvt := range providerEvents {
+				requestedSubscriptions[providerEvt] = true
+			}
+		}
+	}
+
+	// Categorize existing subscriptions into delete/keep buckets.
+	//
+	// Algorithm:
+	// - If subscription exists but is NOT requested → delete it (webhook no longer needed)
+	// - If subscription exists AND is requested → keep it (reuse existing webhook)
+	// - If subscription is requested but NOT existing → will be created in next step
+	subscriptionsToDelete := &SubscriptionResult{
+		Subscriptions: make(map[common.ObjectName]map[ModuleEvent]SubscriptionResponse),
+	}
+	subscriptionsToKeep := &SubscriptionResult{
+		Subscriptions: make(map[common.ObjectName]map[ModuleEvent]SubscriptionResponse),
+	}
+
+	for objName, eventsMap := range prevState.Subscriptions {
+		for eventName, response := range eventsMap {
+			if !requestedSubscriptions[eventName] {
+				// Need to delete this subscription
+				if subscriptionsToDelete.Subscriptions[objName] == nil {
+					subscriptionsToDelete.Subscriptions[objName] = make(map[ModuleEvent]SubscriptionResponse)
+				}
+
+				subscriptionsToDelete.Subscriptions[objName][eventName] = response
+			} else {
+				// Keep this subscription
+				if subscriptionsToKeep.Subscriptions[objName] == nil {
+					subscriptionsToKeep.Subscriptions[objName] = make(map[ModuleEvent]SubscriptionResponse)
+				}
+
+				subscriptionsToKeep.Subscriptions[objName][eventName] = response
+			}
+		}
+	}
+
+	// Delete subscriptions that are no longer needed
+	if len(subscriptionsToDelete.Subscriptions) > 0 {
+		deleteResult := common.SubscriptionResult{Result: subscriptionsToDelete}
+		if err := c.DeleteSubscription(ctx, deleteResult); err != nil {
+			return nil, fmt.Errorf("failed to delete previous subscriptions: %w", err)
+		}
+	}
+
+	// Determine what to create (in requested but not in existing).
+	// We check against existingSubscriptions to avoid recreating webhooks that already exist.
+	newSubscriptionEvents := make(map[common.ObjectName]common.ObjectEvents)
+
+	for objName, events := range params.SubscriptionEvents {
+		var eventsToCreate []common.SubscriptionEventType
+
+		for _, event := range events.Events {
+			providerEvents, err := expandEvent(objName, event)
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert event type %s: %w", event, err)
+			}
+
+			for _, providerEvt := range providerEvents {
+				// Only create if it doesn't already exist (wasn't in the "keep" list)
+				if !existingSubscriptions[providerEvt] {
+					eventsToCreate = append(eventsToCreate, event)
+				}
+			}
+		}
+
+		if len(eventsToCreate) > 0 {
+			newSubscriptionEvents[objName] = common.ObjectEvents{Events: eventsToCreate}
+		}
+	}
+
+	// Create new subscriptions
+	var createResult *common.SubscriptionResult
+
+	if len(newSubscriptionEvents) > 0 {
+		newParams := params
+		newParams.SubscriptionEvents = newSubscriptionEvents
+
+		var err error
+
+		createResult, err = c.Subscribe(ctx, newParams)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create new subscriptions: %w", err)
+		}
+	}
+
+	// Merge the results: kept subscriptions + newly created subscriptions.
+	// Start with subscriptions we kept from the previous state (these already existed and are still wanted).
+	finalResult := &SubscriptionResult{
+		Subscriptions: subscriptionsToKeep.Subscriptions,
+	}
+
+	// Add newly created subscriptions to the final result.
+	if createResult != nil && createResult.Result != nil {
+		newSubs, ok := createResult.Result.(*SubscriptionResult)
+		if ok {
+			for objName, eventsMap := range newSubs.Subscriptions {
+				if finalResult.Subscriptions[objName] == nil {
+					finalResult.Subscriptions[objName] = make(map[ModuleEvent]SubscriptionResponse)
+				}
+
+				maps.Copy(finalResult.Subscriptions[objName], eventsMap)
+			}
+		}
+	}
+
+	// Build the final ObjectEvents map
+	finalObjectEvents := make(map[common.ObjectName]common.ObjectEvents)
+
+	for objName, eventsMap := range finalResult.Subscriptions {
+		var events []common.SubscriptionEventType
+
+		for eventName := range eventsMap {
+			// Convert provider event name back to common event type
+			if commonEvent, found := ModuleEventToCommon(eventName); found {
+				events = append(events, commonEvent)
+			}
+		}
+
+		if len(events) > 0 {
+			finalObjectEvents[objName] = common.ObjectEvents{Events: events}
+		}
+	}
+
+	return &common.SubscriptionResult{
+		Status:       common.SubscriptionStatusSuccess,
+		Result:       finalResult,
+		ObjectEvents: finalObjectEvents,
+	}, nil
 }
 
 // DeleteSubscription deletes webhook subscriptions.
@@ -400,4 +570,33 @@ func (m EventMapping) GetAllSupportedEvents() []ModuleEvent {
 	events = append(events, m.DeleteEvents...)
 
 	return events
+}
+
+// ModuleEventToCommon converts a provider event back to common event type.
+func ModuleEventToCommon(e ModuleEvent) (common.SubscriptionEventType, bool) {
+	// Search through all mappings to find which object this event belongs to
+	for _, mapping := range salesloftEventMappings {
+		if commonEvent, found := mapping.Events.ToCommonEvent(e); found {
+			return commonEvent, true
+		}
+	}
+
+	return "", false
+}
+
+// ToCommonEvent converts a provider event back to common event type.
+func (m EventMapping) ToCommonEvent(providerEvent ModuleEvent) (common.SubscriptionEventType, bool) {
+	if slices.Contains(m.CreateEvents, providerEvent) {
+		return common.SubscriptionEventTypeCreate, true
+	}
+
+	if slices.Contains(m.UpdateEvents, providerEvent) {
+		return common.SubscriptionEventTypeUpdate, true
+	}
+
+	if slices.Contains(m.DeleteEvents, providerEvent) {
+		return common.SubscriptionEventTypeDelete, true
+	}
+
+	return "", false
 }
