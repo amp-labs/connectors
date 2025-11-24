@@ -150,13 +150,6 @@ func (c *Connector) Subscribe(
 	return res, nil
 }
 
-//nolint:revive
-func (c *Connector) GetRecordsByIds(ctx context.Context, objectName string,
-	recordIds []string, fields []string, associations []string,
-) ([]common.ReadResultRow, error) {
-	panic("unimplemented")
-}
-
 func (c *Connector) UpdateSubscription(ctx context.Context,
 	params common.SubscribeParams, previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
@@ -327,59 +320,19 @@ func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error
 	return req, nil
 }
 
-// expandEvent converts a common event type into one or more Salesloft module events.
-// Format: "{objectName}_{eventAction}" (e.g., "person_created", "call_updated").
+// expandEvent converts a common event type into one or more Salesloft module events using the mapping.
 func expandEvent(objectName common.ObjectName, eventType common.SubscriptionEventType) ([]ModuleEvent, error) {
-	// Special case for "tasks" object.
-	// We need to subscribe to both "task_completed" and "task_updated" events when an update event is requested.
-	if string(objectName) == "tasks" && eventType == common.SubscriptionEventTypeUpdate {
-		return []ModuleEvent{
-			"task_completed",
-			"task_updated",
-		}, nil
-	}
-
-	salesloftEvent, err := buildModuleEvent(objectName, eventType)
-	if err != nil {
-		return nil, err
-	}
-
-	return []ModuleEvent{salesloftEvent}, nil
-}
-
-// buildModuleEvent combines object name and event action into Salesloft's expected format.
-// Example: account + create -> account_created.
-func buildModuleEvent(objectName common.ObjectName, eventType common.SubscriptionEventType) (ModuleEvent, error) {
-	action, err := getEventAction(eventType)
-	if err != nil {
-		return "", err
-	}
-
 	mapping, exists := salesloftEventMappings[objectName]
 	if !exists {
-		return "", fmt.Errorf("%w: %s", errUnsupportedObject, objectName)
+		return nil, fmt.Errorf("%w: %s", errUnsupportedObject, objectName)
 	}
 
-	objectNameStr := mapping.ObjectName
-
-	// Salesloft format: "{objectName}_{action}"
-	combined := fmt.Sprintf("%s_%s", objectNameStr, action)
-
-	return ModuleEvent(combined), nil
-}
-
-// getEventAction converts common event types to Salesloft event actions.
-func getEventAction(eventType common.SubscriptionEventType) (EventAction, error) {
-	switch eventType { //nolint:exhaustive
-	case common.SubscriptionEventTypeCreate:
-		return ActionCreated, nil
-	case common.SubscriptionEventTypeUpdate:
-		return ActionUpdated, nil
-	case common.SubscriptionEventTypeDelete:
-		return ActionDeleted, nil
-	default:
-		return "", fmt.Errorf("%w: %s", errUnsupportedEventType, eventType)
+	events := mapping.Events.ToProviderEvents(eventType)
+	if len(events) == 0 {
+		return nil, fmt.Errorf("%w: %s for object %s", errUnsupportedEventType, eventType, objectName)
 	}
+
+	return events, nil
 }
 
 func validateSubscriptionRequest(subscriptionEvents map[common.ObjectName]common.ObjectEvents) error {
@@ -394,21 +347,57 @@ func validateSubscriptionRequest(subscriptionEvents map[common.ObjectName]common
 			continue
 		}
 
+		// Get all supported events for this object
+		supportedEvents := mapping.Events.GetAllSupportedEvents()
+
+		supportedSet := make(map[ModuleEvent]bool)
+		for _, evt := range supportedEvents {
+			supportedSet[evt] = true
+		}
+
 		for _, event := range events.Events {
-			salesloftEvent, err := buildModuleEvent(objectName, event)
-			if err != nil {
+			providerEvents := mapping.Events.ToProviderEvents(event)
+			if len(providerEvents) == 0 {
 				validationErrors = errors.Join(validationErrors,
-					fmt.Errorf("failed to build Salesloft event type for object '%s' and event '%s': %w", objectName, event, err))
+					fmt.Errorf("%w: event '%s' for object '%s'", errUnsupportedSubscriptionEvent, event, objectName))
 
 				continue
 			}
 
-			if !mapping.SupportedEvents.Has(salesloftEvent) {
-				validationErrors = errors.Join(validationErrors,
-					fmt.Errorf("%w: event '%s' for object '%s'", errUnsupportedSubscriptionEvent, event, objectName))
+			// Validate that all provider events are supported
+			for _, providerEvent := range providerEvents {
+				if !supportedSet[providerEvent] {
+					validationErrors = errors.Join(validationErrors,
+						fmt.Errorf("%w: provider event '%s' for common event '%s' and object '%s'",
+							errUnsupportedSubscriptionEvent, providerEvent, event, objectName))
+				}
 			}
 		}
 	}
 
 	return validationErrors
+}
+
+// ToProviderEvents converts a common event type to one or more Salesloft provider events.
+func (m EventMapping) ToProviderEvents(commonEvent common.SubscriptionEventType) []ModuleEvent {
+	switch commonEvent { // nolint:exhaustive
+	case common.SubscriptionEventTypeCreate:
+		return m.CreateEvents
+	case common.SubscriptionEventTypeUpdate:
+		return m.UpdateEvents
+	case common.SubscriptionEventTypeDelete:
+		return m.DeleteEvents
+	default:
+		return nil
+	}
+}
+
+// GetAllSupportedEvents returns all provider events that this mapping supports.
+func (m EventMapping) GetAllSupportedEvents() []ModuleEvent {
+	var events []ModuleEvent
+	events = append(events, m.CreateEvents...)
+	events = append(events, m.UpdateEvents...)
+	events = append(events, m.DeleteEvents...)
+
+	return events
 }
