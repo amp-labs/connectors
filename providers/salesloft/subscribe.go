@@ -256,7 +256,12 @@ func (c *Connector) UpdateSubscription(
 			for _, providerEvt := range providerEvents {
 				// Only create if it doesn't already exist (wasn't in the "keep" list)
 				if !existingSubscriptions[providerEvt] {
-					eventsToCreate = append(eventsToCreate, event)
+					// Avoid duplicates
+					// Events like "update" can map to multiple provider events,
+					// so we need to ensure we don't add the same common event multiple times.
+					if !slices.Contains(eventsToCreate, event) {
+						eventsToCreate = append(eventsToCreate, event)
+					}
 				}
 			}
 		}
@@ -309,8 +314,13 @@ func (c *Connector) UpdateSubscription(
 
 		for eventName := range eventsMap {
 			// Convert provider event name back to common event type
-			if commonEvent, found := ModuleEventToCommon(eventName); found {
-				events = append(events, commonEvent)
+			if commonEvent, found := ModuleEventToCommon(eventName, objName); found {
+				// Avoid duplicates
+				// Events like "update" can map to multiple provider events,
+				// so we need to ensure we don't add the same common event multiple times.
+				if !slices.Contains(events, commonEvent) {
+					events = append(events, commonEvent)
+				}
 			}
 		}
 
@@ -573,12 +583,15 @@ func (m EventMapping) GetAllSupportedEvents() []ModuleEvent {
 }
 
 // ModuleEventToCommon converts a provider event back to common event type.
-func ModuleEventToCommon(e ModuleEvent) (common.SubscriptionEventType, bool) {
-	// Search through all mappings to find which object this event belongs to
-	for _, mapping := range salesloftEventMappings {
-		if commonEvent, found := mapping.Events.ToCommonEvent(e); found {
-			return commonEvent, true
-		}
+func ModuleEventToCommon(e ModuleEvent, objectName common.ObjectName) (common.SubscriptionEventType, bool) {
+	mapping, exists := salesloftEventMappings[objectName]
+	if !exists {
+		return "", false
+	}
+
+	commonEvent, found := mapping.Events.ToCommonEvent(e)
+	if found {
+		return commonEvent, true
 	}
 
 	return "", false
