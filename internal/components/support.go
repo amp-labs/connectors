@@ -20,7 +20,7 @@ type EndpointRegistry struct {
 // TODO: Is this a good abstraction for defining mappings between object names to request/response URLs & keys?
 // https://github.com/amp-labs/connectors/pull/1335#discussion_r1945529129
 
-// EndpointSupport defines support configuration for modules and their endpoints. Each key in this map
+// EndpointRegistryInput defines support configuration for modules and their endpoints. Each key in this map
 // is a module that supports an array of endpoints. Each endpoint is defined by a string and a support level.
 // For example, you may define a root module that supports reading /users/* and /accounts/*, but only supports
 // writing to /users/:id.
@@ -30,6 +30,14 @@ type EndpointRegistryInput map[common.ModuleID][]struct {
 	glob     glob.Glob // Compiled pattern for matching
 }
 
+// Deprecated: EndpointRegistry is based on a static list of known objects and
+// no longer reflects all providers accurately. Some providers now expose
+// dynamic or custom objects that cannot be validated without extra API calls,
+// which we have decided not to support.
+//
+// The registry will be removed. Clients should rely on
+// provider documentation to determine which objects are supported.
+// NewEndpointRegistry.
 func NewEndpointRegistry(es EndpointRegistryInput) (*EndpointRegistry, error) {
 	if err := precompileEndpoints(es); err != nil {
 		return nil, fmt.Errorf("failed to compile endpoint patterns: %w", err)

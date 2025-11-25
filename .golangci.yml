@@ -42,6 +42,10 @@ linters-settings:
   # See https://staticcheck.io/docs/configuration/options/#checks
   stylecheck:
     checks: ["all", "-ST1003"]
+  staticcheck:
+    checks:
+      # "Using a deprecated function, variable, constant or field"
+      - "-SA1019" # https://staticcheck.dev/docs/checks#SA1019
   varnamelen:
     # The longest distance, in source lines, that is being considered a "small scope" where it is ok to use short variable names.
     # The default is 5, which is quite strict.
