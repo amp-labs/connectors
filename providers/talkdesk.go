@@ -60,7 +60,7 @@ func init() {
 					DefaultValue: "api.talkdeskapp.com",
 					DisplayName:  "Talkdesk API Domain",
 					Prompt:       "Provide Your Regional API domain: US(api.talkdeskapp.com), EU(api.talkdeskapp.eu)...",
-					DocsURL:      "https://docs.talkdesk.com/docs/how-to-guarantee-your-app-works-in-all-regions#supported-regions-and-base-urls",
+					DocsURL:      "https://docs.talkdesk.com/docs/how-to-guarantee-your-app-works-in-all-regions#supported-regions-and-base-urls", // nolint:lll
 				},
 				{
 					Name:         "talkdesk_token_domain",
