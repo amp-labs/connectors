@@ -1,3 +1,13 @@
+---
+template_name: "New Connector in catalog"
+pr_title: "[{{ticket}}] feat({{provider}}): Add Provider to catalog"
+priority: 1
+fields:
+  - name: "ticket"
+    prompt: "Enter Linear ticket number"
+  - name: "provider"
+    prompt: "Enter provider name"
+---
 # Configuration
 <Any special connector notes>
 
