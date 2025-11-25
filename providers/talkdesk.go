@@ -6,11 +6,21 @@ func init() {
 	SetInfo(Talkdesk, ProviderInfo{
 		DisplayName: "Talkdesk",
 		AuthType:    Oauth2,
-		BaseURL:     "https://api.talkdeskapp.com",
+		// Talkdesk deploys in multiple geographic locations
+		// US - api.talkdeskapp.com
+		// Europe - api.talkdeskapp.eu
+		// Canada - api.talkdeskappca.com
+		// Australia - api.mytalkdesk.au
+		// UK - api.talkdeskapp.co.uk
+		BaseURL: "https://{{.talkdesk_api_domain}}",
 		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://{{.workspace}}.talkdeskid.com/oauth/authorize",
-			TokenURL:                  "https://{{.workspace}}.talkdeskid.com/oauth/token",
+			GrantType: AuthorizationCode,
+			// US - talkdeskid.com
+			// EU - talkdeskid.eu
+			// AU - talkdeskid.au
+			// CA - talkdeskidca.com
+			AuthURL:                   "https://{{.workspace}}.{{.talkdesk_token_domain}}/oauth/authorize",
+			TokenURL:                  "https://{{.workspace}}.{{.talkdesk_token_domain}}/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
 			TokenMetadataFields: TokenMetadataFields{
@@ -44,6 +54,20 @@ func init() {
 				{
 					Name:        "workspace",
 					DisplayName: "Account name",
+				},
+				{
+					Name:         "talkdesk_api_domain",
+					DefaultValue: "api.talkdeskapp.com",
+					DisplayName:  "Talkdesk API Domain",
+					Prompt:       "Provide Your Regional API domain: US(api.talkdeskapp.com), EU(api.talkdeskapp.eu)...",
+					DocsURL:      "https://docs.talkdesk.com/docs/how-to-guarantee-your-app-works-in-all-regions#supported-regions-and-base-urls",
+				},
+				{
+					Name:         "talkdesk_token_domain",
+					DefaultValue: "talkdeskid.com",
+					DisplayName:  "Talkdesk Token Domain",
+					Prompt:       "Provide Your Regional API Token domain: US(talkdeskid.com), EU(talkdeskid.eu)...",
+					DocsURL:      "https://docs.talkdesk.com/reference/authorization-code-basic-post",
 				},
 			},
 		},
