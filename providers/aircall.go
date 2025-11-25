@@ -6,14 +6,24 @@ func init() {
 	// Aircall Configuration
 	SetInfo(Aircall, ProviderInfo{
 		DisplayName: "Aircall",
-		AuthType:    Oauth2,
-		BaseURL:     "https://api.aircall.io",
-		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://dashboard.aircall.io/oauth/authorize",
-			TokenURL:                  "https://api.aircall.io/v1/oauth/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
+		// AuthType:    Oauth2,
+		AuthType: ApiKey,
+		BaseURL:  "https://api.aircall.io",
+		/*	Oauth2Opts: &Oauth2Opts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://dashboard.aircall.io/oauth/authorize",
+				TokenURL:                  "https://api.aircall.io/v1/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+		*/
+		ApiKeyOpts: &ApiKeyOpts{
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name:        "Authorization",
+				ValuePrefix: "Basic",
+			},
+			DocsURL: "https://developer.aircall.io/api-references/#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -22,7 +32,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     true,
+			Proxy:     true, // proxy integration was tested with OAuth2, not API Key
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
