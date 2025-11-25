@@ -143,6 +143,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	}
 }
 
+func TestConnectorStringMethods(t *testing.T) {
+	t.Parallel()
+
+	conn, err := constructTestConnector("http://mockserver.test")
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	testutils.CheckOutput(t, "conn.Provider():", "blackbaud", conn.Provider())
+	testutils.CheckOutput(t, "conn.String():", "blackbaud.Connector[root]", conn.String())
+}
+
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: mockutils.NewClient(),
