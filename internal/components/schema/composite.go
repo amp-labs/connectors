@@ -51,7 +51,7 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 		if err != nil {
 			// This is unexpected and means something has gone wrong, expected errors should be in metadata.Errors
 			slog.Error("Schema provider failed with error",
-				"schemaProvider", schemaProvider.String(), "error", err)
+				"schemaProvider", schemaProvider.SchemaAcquisitionStrategy(), "error", err)
 			// Construct errors for all the remaining unprocessed objects
 			// and add them to result.Errors
 			for obj := range unprocessedObjs {
@@ -78,8 +78,8 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 
 		if len(metadata.Errors) > 0 && notLastProvider {
 			slog.Debug("Still some unprocessed objects left, trying next schema provider:",
-				"provider", schemaProvider.String(),
-				"nextProvider", c.schemaProviders[idx+1].String(),
+				"provider", schemaProvider.SchemaAcquisitionStrategy(),
+				"nextProvider", c.schemaProviders[idx+1].SchemaAcquisitionStrategy(),
 				"unprocessedObjects", unprocessedObjs.List())
 		}
 	}
@@ -105,6 +105,6 @@ func safeGetMetadata(
 	return schemaProvider.ListObjectMetadata(ctx, objects.List())
 }
 
-func (c *CompositeSchemaProvider) String() string {
+func (c *CompositeSchemaProvider) SchemaAcquisitionStrategy() string {
 	return "CompositeSchemaProvider"
 }

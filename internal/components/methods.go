@@ -2,7 +2,6 @@ package components
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -25,6 +24,19 @@ type Deleter interface {
 
 // SchemaProvider represents the ability to retrieve metadata about objects.
 type SchemaProvider interface {
-	fmt.Stringer
+	// SchemaAcquisitionStrategy returns a short description of the mechanism
+	// this provider uses to obtain schema metadata. This is intended primarily
+	// for logging, diagnostics, and observability. Examples include:
+	//
+	//   - "OpenAPISchemaProvider"     (schema loaded from OpenAPI definitions)
+	//   - "AggregateSchemaProvider"   (schema retrieved in a single batch request)
+	//   - "CompositeSchemaProvider"   (multiple providers attempted in sequence)
+	//   - "ObjectSchemaProvider"      (schema fetched per object)
+	//
+	// The returned string does not need to be unique, but should identify the
+	// approach clearly enough for operational debugging.
+	SchemaAcquisitionStrategy() string
+
+	// ListObjectMetadata see connectors.ObjectMetadataConnector.
 	ListObjectMetadata(ctx context.Context, objects []string) (*common.ListObjectMetadataResult, error)
 }
