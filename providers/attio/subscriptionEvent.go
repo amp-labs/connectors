@@ -37,7 +37,6 @@ const (
 // VerifyWebhookMessage implements WebhookVerifierConnector for Attio.
 // Returns (true, nil) if signature verification succeeds.
 // Returns (false, error) if verification fails or encounters an error.
-// Note: Return type changed from error to (bool, error) to match the interface contract.
 func (c *Connector) VerifyWebhookMessage(
 	_ context.Context,
 	request *common.WebhookRequest,
@@ -196,12 +195,12 @@ func (evt SubscriptionEvent) Workspace() (string, error) {
 
 	dataMap, exist := data.(map[string]any)
 	if !exist {
-		return "", fmt.Errorf("%w: expected %T got %T", errTypeMismatch, dataMap, data) // nolint:err113
+		return "", fmt.Errorf("%w: expected %T got %T", errTypeMismatch, dataMap, data)
 	}
 
 	idMap, ok := dataMap["id"].(map[string]string)
 	if !ok {
-		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, idMap, dataMap["id"]) // nolint:err113
+		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, idMap, dataMap["id"])
 	}
 
 	id, ok := idMap["workspace_id"]
