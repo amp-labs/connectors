@@ -22,9 +22,9 @@ type Subscription struct {
 type ModuleEvent string
 
 var (
-	Created   ModuleEvent = "created"   //nolint:gochecknoglobals
-	Updated   ModuleEvent = "updated"   //nolint:gochecknoglobals
-	Destroyed ModuleEvent = "destroyed" //nolint:gochecknoglobals
+	Created ModuleEvent = "created" //nolint:gochecknoglobals
+	Updated ModuleEvent = "updated" //nolint:gochecknoglobals
+	Deleted ModuleEvent = "deleted" //nolint:gochecknoglobals
 )
 
 type createSubscriptionsResponse struct {
