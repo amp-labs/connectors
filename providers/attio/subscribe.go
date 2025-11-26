@@ -57,7 +57,6 @@ func (c *Connector) Subscribe(
 	return res, nil
 }
 
-// nolint: llll
 // UpdateSubscription implements connectors.SubscribeConnector.
 func (c *Connector) UpdateSubscription(ctx context.Context,
 	params common.SubscribeParams, previousResult *common.SubscriptionResult,
