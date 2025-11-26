@@ -24,7 +24,7 @@ type Deleter interface {
 
 // SchemaProvider represents the ability to retrieve metadata about objects.
 type SchemaProvider interface {
-	// SchemaAcquisitionStrategy returns a short description of the mechanism
+	// SchemaSource returns a short name of the mechanism
 	// this provider uses to obtain schema metadata. This is intended primarily
 	// for logging, diagnostics, and observability. Examples include:
 	//
@@ -35,7 +35,7 @@ type SchemaProvider interface {
 	//
 	// The returned string does not need to be unique, but should identify the
 	// approach clearly enough for operational debugging.
-	SchemaAcquisitionStrategy() string
+	SchemaSource() string
 
 	// ListObjectMetadata see connectors.ObjectMetadataConnector.
 	ListObjectMetadata(ctx context.Context, objects []string) (*common.ListObjectMetadataResult, error)

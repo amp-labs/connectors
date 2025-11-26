@@ -39,6 +39,6 @@ func (p *AggregateSchemaProvider) ListObjectMetadata(
 	return p.operation.ExecuteRequest(ctx, objects)
 }
 
-func (p *AggregateSchemaProvider) SchemaAcquisitionStrategy() string {
+func (p *AggregateSchemaProvider) SchemaSource() string {
 	return "AggregateSchemaProvider"
 }

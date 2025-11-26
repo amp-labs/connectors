@@ -2,15 +2,12 @@ package schema
 
 import (
 	"context"
-	"errors"
 	"log/slog"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
-
-var ErrUnableToGetMetadata = errors.New("unable to get metadata")
 
 // CompositeSchemaProvider gets metadata from multiple providers with fallback.
 // For example, certain connectors may have OpenAPI definitions for some objects,
@@ -51,7 +48,7 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 		if err != nil {
 			// This is unexpected and means something has gone wrong, expected errors should be in metadata.Errors
 			slog.Error("Schema provider failed with error",
-				"schemaProvider", schemaProvider.SchemaAcquisitionStrategy(), "error", err)
+				"schemaProvider", schemaProvider.SchemaSource(), "error", err)
 			// Construct errors for all the remaining unprocessed objects
 			// and add them to result.Errors
 			for obj := range unprocessedObjs {
@@ -78,8 +75,8 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 
 		if len(metadata.Errors) > 0 && notLastProvider {
 			slog.Debug("Still some unprocessed objects left, trying next schema provider:",
-				"provider", schemaProvider.SchemaAcquisitionStrategy(),
-				"nextProvider", c.schemaProviders[idx+1].SchemaAcquisitionStrategy(),
+				"provider", schemaProvider.SchemaSource(),
+				"nextProvider", c.schemaProviders[idx+1].SchemaSource(),
 				"unprocessedObjects", unprocessedObjs.List())
 		}
 	}
@@ -105,6 +102,6 @@ func safeGetMetadata(
 	return schemaProvider.ListObjectMetadata(ctx, objects.List())
 }
 
-func (c *CompositeSchemaProvider) SchemaAcquisitionStrategy() string {
+func (c *CompositeSchemaProvider) SchemaSource() string {
 	return "CompositeSchemaProvider"
 }

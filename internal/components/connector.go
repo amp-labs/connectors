@@ -57,18 +57,26 @@ func Initialize[T any](
 	return conn, nil
 }
 
+// JSONHTTPClient returns the connector's JSON-capable HTTP client.
+// Defined explicitly to expose the method on Connector for compile-time conflict detection with interfaces.
 func (c Connector) JSONHTTPClient() *common.JSONHTTPClient {
 	return c.Transport.JSONHTTPClient() // do not remove
 }
 
+// HTTPClient returns the underlying raw HTTP client.
+// Defined explicitly to expose the method on Connector for compile-time conflict detection with interfaces.
 func (c Connector) HTTPClient() *common.HTTPClient {
-	return c.Transport.HTTPClient() // do not remove
+	return c.Transport.HTTPClient()
 }
 
+// Provider returns the provider associated with this connector.
+// Defined explicitly to expose the method on Connector for compile-time conflict detection with interfaces.
 func (c Connector) Provider() providers.Provider {
-	return c.Transport.ProviderContext.Provider() // do not remove
+	return c.Transport.ProviderContext.Provider()
 }
 
+// String returns a human-readable identifier for this connector.
+// Defined explicitly to expose the method on Connector for compile-time conflict detection with interfaces.
 func (c Connector) String() string {
-	return c.Transport.ProviderContext.String() // do not remove
+	return c.Transport.ProviderContext.String()
 }

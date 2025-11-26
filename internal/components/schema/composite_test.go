@@ -30,7 +30,7 @@ func (m *MockSchemaProvider) ListObjectMetadata(
 	return args.Get(0).(*common.ListObjectMetadataResult), args.Error(1)
 }
 
-func (m *MockSchemaProvider) SchemaAcquisitionStrategy() string {
+func (m *MockSchemaProvider) SchemaSource() string {
 	args := m.Called()
 
 	return args.String(0)
@@ -124,7 +124,7 @@ func TestCompositeSchemaProvider_ListObjectMetadata(t *testing.T) {
 			name:    "first provider successfully gets metadata for all objects",
 			objects: []string{"user", "order"},
 			setupMocks: func(mock1, mock2 *MockSchemaProvider) {
-				mock1.On("SchemaAcquisitionStrategy").Return("MockProvider1")
+				mock1.On("SchemaSource").Return("MockProvider1")
 				// Because objects are first converted to a set then back to a slice,
 				// the order is not guaranteed. We need to mock both possible orders.
 				mock1.On("ListObjectMetadata", mock.Anything, []string{"user", "order"}).Return(
@@ -141,11 +141,11 @@ func TestCompositeSchemaProvider_ListObjectMetadata(t *testing.T) {
 			name:    "first provider fails, second provider succeeds",
 			objects: []string{"user", "order"},
 			setupMocks: func(mock1, mock2 *MockSchemaProvider) {
-				mock1.On("SchemaAcquisitionStrategy").Return("MockProvider1")
+				mock1.On("SchemaSource").Return("MockProvider1")
 				mock1.On("ListObjectMetadata", mock.Anything, mock.Anything).Return(
 					nil, errors.New("provider 1 failed"))
 
-				mock2.On("SchemaAcquisitionStrategy").Return("MockProvider2")
+				mock2.On("SchemaSource").Return("MockProvider2")
 				mock2.On("ListObjectMetadata", mock.Anything, []string{"user", "order"}).Return(
 					userAndOrderSuccess, nil)
 				mock2.On("ListObjectMetadata", mock.Anything, []string{"order", "user"}).Return(
@@ -158,7 +158,7 @@ func TestCompositeSchemaProvider_ListObjectMetadata(t *testing.T) {
 			name:    "both providers have partial success",
 			objects: []string{"user", "order", "product"},
 			setupMocks: func(mock1, mock2 *MockSchemaProvider) {
-				mock1.On("SchemaAcquisitionStrategy").Return("MockProvider1")
+				mock1.On("SchemaSource").Return("MockProvider1")
 				mock1.On("ListObjectMetadata", mock.Anything, []string{"order", "product", "user"}).Return(userOnlySuccess, nil)
 				mock1.On("ListObjectMetadata", mock.Anything, []string{"order", "user", "product"}).Return(userOnlySuccess, nil)
 				mock1.On("ListObjectMetadata", mock.Anything, []string{"product", "order", "user"}).Return(userOnlySuccess, nil)
@@ -166,7 +166,7 @@ func TestCompositeSchemaProvider_ListObjectMetadata(t *testing.T) {
 				mock1.On("ListObjectMetadata", mock.Anything, []string{"user", "order", "product"}).Return(userOnlySuccess, nil)
 				mock1.On("ListObjectMetadata", mock.Anything, []string{"user", "product", "order"}).Return(userOnlySuccess, nil)
 
-				mock2.On("SchemaAcquisitionStrategy").Return("MockProvider2")
+				mock2.On("SchemaSource").Return("MockProvider2")
 				mock2.On("ListObjectMetadata", mock.Anything, []string{"order", "product"}).Return(orderOnlySuccess, nil)
 				mock2.On("ListObjectMetadata", mock.Anything, []string{"product", "order"}).Return(orderOnlySuccess, nil)
 			},
@@ -177,11 +177,11 @@ func TestCompositeSchemaProvider_ListObjectMetadata(t *testing.T) {
 			name:    "all providers fail",
 			objects: []string{"user", "order"},
 			setupMocks: func(mock1, mock2 *MockSchemaProvider) {
-				mock1.On("SchemaAcquisitionStrategy").Return("MockProvider1")
+				mock1.On("SchemaSource").Return("MockProvider1")
 				mock1.On("ListObjectMetadata", mock.Anything, mock.Anything).Return(
 					nil, errors.New("provider 1 failed"))
 
-				mock2.On("SchemaAcquisitionStrategy").Return("MockProvider2")
+				mock2.On("SchemaSource").Return("MockProvider2")
 				mock2.On("ListObjectMetadata", mock.Anything, mock.Anything).Return(
 					nil, errors.New("provider 2 failed"))
 			},
