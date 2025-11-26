@@ -14,7 +14,10 @@ import (
 )
 
 type (
-	SubscriptionEvent       map[string]any
+	SubscriptionEvent map[string]any
+
+	// Attio sends Secret in response when we subscribe to webhooks.
+	// We use this secret to verify the webhook signatures.
 	AttioVerificationParams struct {
 		Secret string
 	}
