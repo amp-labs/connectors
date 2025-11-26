@@ -32,7 +32,7 @@ func (c *Connector) Subscribe(
 		return nil, err
 	}
 
-	payload, err := buildPayload(params.SubscriptionEvents, req.WebhookEndPoint)
+	payload, err := buildPayload(params.SubscriptionEvents, req.WebhookEndpoint)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build subscription payload: %w", err)
 	}
@@ -100,12 +100,13 @@ func (c *Connector) DeleteSubscription(
 	result common.SubscriptionResult,
 ) error {
 	if result.Result == nil {
-		return fmt.Errorf("%w: Result cannot be null", errMissingParams) //nolint:err113,lll
+		return fmt.Errorf("%w: Result cannot be nil", errMissingParams)
 	}
 
 	subscriptionData, ok := result.Result.(*SubscriptionResult)
 	if !ok {
-		return fmt.Errorf("%w: expected SubscriptionResult to be type %T but got %T", errInvalidRequestType, subscriptionData, result.Result) //nolint:err113,lll
+		return fmt.Errorf("%w: expected SubscriptionResult to be type %T but got %T",
+			errInvalidRequestType, subscriptionData, result.Result)
 	}
 
 	if len(subscriptionData.Data.Subscriptions) == 0 {

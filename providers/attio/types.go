@@ -2,7 +2,7 @@ package attio
 
 type SubscriptionRequest struct {
 	UniqueRef       string `json:"unique_ref"        validate:"required"`
-	WebhookEndPoint string `json:"webhook_end_point" validate:"required"`
+	WebhookEndpoint string `json:"webhook_end_point" validate:"required"`
 	Secret          string `json:"secret,omitempty"`
 }
 
