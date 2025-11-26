@@ -144,12 +144,7 @@ func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error
 }
 
 func (c *Connector) getSubscribeURL() (*urlbuilder.URL, error) {
-	url, err := c.getApiURL("webhooks")
-	if err != nil {
-		return nil, err
-	}
-
-	return url, nil
+	return c.getApiURL("webhooks")
 }
 
 func (c *Connector) createSubscriptions(ctx context.Context,
@@ -208,17 +203,17 @@ func buildPayload(
 
 	for objectName, events := range subscriptionEvents {
 		for _, event := range events.Events {
-			Event, err := getProviderEventName(event)
+			event, err := getProviderEventName(event)
 			if err != nil {
 				return nil, err
 			}
 
 			subscriptionObjectName := readObjectNameToSubscriptionName.Get(string(objectName))
 
-			providerventType := subscriptionObjectName + "." + string(Event)
+			providerEventType := subscriptionObjectName + "." + string(event)
 
 			subscriptions = append(subscriptions, Subscription{
-				EventType: providerventType,
+				EventType: providerEventType,
 				// Filter is an object used to limit which webhook events are delivered.
 				// Filters can target specific records (by list_id, entry_id) and specific
 				// It cannot be used to do field level filtering.
