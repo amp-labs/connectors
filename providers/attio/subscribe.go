@@ -183,11 +183,8 @@ func (c *Connector) deleteSubscription(ctx context.Context, subscriptionID strin
 	url.AddPath(subscriptionID)
 
 	_, err = c.Client.Delete(ctx, url.String())
-	if err != nil {
-		return err
-	}
 
-	return nil
+	return err
 }
 
 func getProviderEventName(subscriptionEvent common.SubscriptionEventType) (ModuleEvent, error) {
@@ -222,6 +219,12 @@ func buildPayload(
 
 			subscriptions = append(subscriptions, Subscription{
 				EventType: providerventType,
+				// Filter is an object used to limit which webhook events are delivered.
+				// Filters can target specific records (by list_id, entry_id) and specific
+				// It cannot be used to do field level filtering.
+				// Use null to receive all events without filtering.
+				// Ref: https://docs.attio.com/rest-api/guides/webhooks#filtering
+				Filter: nil,
 			})
 		}
 	}

@@ -31,7 +31,7 @@ const (
 	SignatureHeader = "attio-signature"
 )
 
-// VerifyWebhookMessage implements WebhookVerifierConnector for Outreach.
+// VerifyWebhookMessage implements WebhookVerifierConnector for Attio.
 // Returns (true, nil) if signature verification succeeds.
 // Returns (false, error) if verification fails or encounters an error.
 // Note: Return type changed from error to (bool, error) to match the interface contract.
@@ -69,11 +69,11 @@ func (c *Connector) VerifyWebhookMessage(
 }
 
 func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
-	return nil, errors.New("UpdatedFields does not exist for Attio subscriptions") //nolint:err113
+	return nil, errors.New("attio webhooks do not provide updated field information") //nolint:err113
 }
 
 func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
-	return 0, errors.New("EventTimeStampNano does not exist for Attio subscriptions") //nolint:err113
+	return 0, errors.New("attio webhooks do not include event timestamps") //nolint:err113
 }
 
 func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
@@ -138,12 +138,12 @@ func (evt SubscriptionEvent) RawEventName() (string, error) {
 		return "", fmt.Errorf("%w: expected %T got %T", errTypeMismatch, eventsMap, events)
 	}
 
-	EventName, ok := eventsMap["event_type"].(string)
+	eventName, ok := eventsMap["event_type"].(string)
 	if !ok {
-		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, EventName, eventsMap["event_type"])
+		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, eventName, eventsMap["event_type"])
 	}
 
-	return EventName, nil
+	return eventName, nil
 }
 
 func (evt SubscriptionEvent) RawMap() (map[string]any, error) {
@@ -212,6 +212,18 @@ func (evt SubscriptionEvent) Workspace() (string, error) {
 
 // asMap returns the event as a StringMap.
 func (evt SubscriptionEvent) asMap() common.StringMap {
+	// extract first event from events array
+	// Attio sends an array of events, but it only contains one event per webhook call.
+	// So we extract the first event for processing.
+	evtsArry, ok := evt["events"].([]any)
+	if ok && len(evtsArry) > 0 {
+		firstEvt, ok := evtsArry[0].(map[string]any)
+		if ok {
+			return common.StringMap(firstEvt)
+		}
+	}
+
+	// Fallback to returning the whole event if extraction fails
 	return common.StringMap(evt)
 }
 
