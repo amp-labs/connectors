@@ -152,9 +152,8 @@ func TestConnectorStringMethods(t *testing.T) {
 	}
 
 	testutils.CheckOutput(t, "conn.Provider():", "blackbaud", conn.Provider())
-	// TODO the String method is invoked from components.SchemaProvider instead of components.Connector.
-	// testutils.CheckOutput(t, "conn.String():", "blackbaud.Connector[root]", conn.String())
-} // nolint:wsl
+	testutils.CheckOutput(t, "conn.String():", "blackbaud.Connector[root]", conn.String())
+}
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{

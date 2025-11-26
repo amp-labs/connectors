@@ -30,6 +30,6 @@ func (p *OpenAPISchemaProvider[F, C]) ListObjectMetadata(
 	return p.schemas.Select(p.module, objects)
 }
 
-func (p *OpenAPISchemaProvider[F, C]) String() string {
+func (p *OpenAPISchemaProvider[F, C]) SchemaAcquisitionStrategy() string {
 	return "OpenAPISchemaProvider"
 }
