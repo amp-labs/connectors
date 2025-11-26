@@ -11,12 +11,12 @@ type SubscriptionPayload struct {
 }
 
 type SubscriptionData struct {
-	TargetURL     string         `json:"target_url"       validate:"required"`
+	TargetURL     string         `json:"target_url"    validate:"required"`
 	Subscriptions []Subscription `json:"subscriptions" validate:"required"`
 }
 
 type Subscription struct {
-	EventType string `json:"event_type"   validate:"required"`
+	EventType string `json:"event_type" validate:"required"`
 }
 
 type ModuleEvent string
