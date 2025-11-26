@@ -57,6 +57,45 @@ func (c *Connector) Subscribe(
 	return res, nil
 }
 
+// nolint: llll
+// UpdateSubscription implements connectors.SubscribeConnector.
+func (c *Connector) UpdateSubscription(ctx context.Context,
+	params common.SubscribeParams, previousResult *common.SubscriptionResult,
+) (*common.SubscriptionResult, error) {
+	// Validate the previous result
+	if previousResult == nil || previousResult.Result == nil {
+		return nil, fmt.Errorf("%w: missing previousResult or previousResult.Result", errMissingParams)
+	}
+
+	prevState, ok := previousResult.Result.(*SubscriptionResult)
+	if !ok {
+		return nil, fmt.Errorf(
+			"%w: expected previousResult.Result to be type %T, but got %T",
+			errInvalidRequestType,
+			prevState,
+			previousResult.Result,
+		) //nolint:lll
+	}
+
+	// Delete the existing subscription
+	err := c.deleteSubscription(ctx, prevState.Data.ID.WebhookID)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"failed to delete previous subscription (ID: %s): %w",
+			prevState.Data.ID.WebhookID,
+			err,
+		)
+	}
+
+	// Create a new subscription
+	newResult, err := c.Subscribe(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create new subscription: %w", err)
+	}
+
+	return newResult, nil
+}
+
 func (c *Connector) DeleteSubscription(
 	ctx context.Context,
 	result common.SubscriptionResult,
@@ -159,7 +198,7 @@ func getProviderEventName(subscriptionEvent common.SubscriptionEventType) (Modul
 	case common.SubscriptionEventTypeUpdate:
 		return Updated, nil
 	case common.SubscriptionEventTypeDelete:
-		return Destroyed, nil
+		return Deleted, nil
 	default:
 		return "", fmt.Errorf("%w: %s", errUnsupportedEventType, subscriptionEvent)
 	}
