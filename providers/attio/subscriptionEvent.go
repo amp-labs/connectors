@@ -186,7 +186,6 @@ func (evt SubscriptionEvent) RecordId() (string, error) {
 	return id, nil
 }
 
-// No workspace concept in Outreach.
 func (evt SubscriptionEvent) Workspace() (string, error) {
 	m := evt.asMap()
 
