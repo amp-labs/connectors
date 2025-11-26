@@ -17,6 +17,7 @@ type SubscriptionData struct {
 
 type Subscription struct {
 	EventType string `json:"event_type" validate:"required"`
+	Filter    any    `json:"filter"     validate:"required"`
 }
 
 type ModuleEvent string
@@ -31,7 +32,7 @@ type createSubscriptionsResponse struct {
 	Data createSubscriptionsResponseData `json:"data"`
 }
 
-type createSubscriptionsResponseId struct {
+type createSubscriptionsResponseID struct {
 	WorkspaceID string `json:"workspace_id"`
 	WebhookID   string `json:"webhook_id"`
 }
@@ -39,7 +40,7 @@ type createSubscriptionsResponseId struct {
 type createSubscriptionsResponseData struct {
 	TargetURL     string                        `json:"target_url"`
 	Subscriptions []Subscription                `json:"subscriptions" validate:"required"`
-	ID            createSubscriptionsResponseId `json:"id"`
+	ID            createSubscriptionsResponseID `json:"id"`
 	Status        string                        `json:"status"`
 	CreatedAt     string                        `json:"created_at"`
 }
@@ -52,5 +53,5 @@ type SuccessfulSubscription struct {
 }
 
 type SubscriptionResult struct {
-	Data createSubscriptionsResponseData `json:"Data"`
+	Data createSubscriptionsResponseData `json:"data"`
 }
