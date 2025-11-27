@@ -194,3 +194,33 @@ func supportsDateFiltering(objectName string) bool {
 		return false
 	}
 }
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	// Validate that the object supports delete operations
+	// Aircall supports delete for: contacts, users, tags, teams
+	// See: https://developer.aircall.io/api-references/
+	switch params.ObjectName {
+	case "contacts", "users", "tags", "teams":
+		// Supported
+	default:
+		return nil, fmt.Errorf("%w: %s", common.ErrOperationNotSupportedForObject, "delete not supported for "+params.ObjectName)
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName, params.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
+}
+
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context,
+	params common.DeleteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
+}

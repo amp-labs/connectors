@@ -75,7 +75,7 @@ func testCreateContact(ctx context.Context, conn *aircall.Connector, index int) 
 		"phone_numbers": []map[string]any{
 			{
 				"label": "Work",
-				"value": gofakeit.Phone(),
+				"value": fmt.Sprintf("+1%d", gofakeit.Number(2000000000, 8999999999)),
 			},
 		},
 		"emails": []map[string]any{
