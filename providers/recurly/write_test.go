@@ -236,7 +236,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Create coupon via POST",
+			Name: "Successfully Create coupon",
 			Input: common.WriteParams{
 				ObjectName: "coupons",
 				RecordData: map[string]any{
