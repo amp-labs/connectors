@@ -1,11 +1,15 @@
 package aircall
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
@@ -92,8 +96,49 @@ func makeNextRecordsURL() common.NextPageFunc {
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	// TODO: Implement write support
-	return nil, common.ErrNotImplemented
+	// Marshal RecordData to JSON
+	body, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	var url *urlbuilder.URL
+	var method string
+
+	if params.RecordId != "" {
+		// Update
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName, params.RecordId)
+		if err != nil {
+			return nil, err
+		}
+
+		switch params.ObjectName {
+		case "contacts":
+			// Aircall specific: POST for updates on contacts
+			// https://developer.aircall.io/api-references/#update-a-contact
+			method = http.MethodPost
+		case "users", "tags", "numbers", "teams":
+			// Standard PUT for updates
+			method = http.MethodPut
+		default:
+			return nil, fmt.Errorf("%w: %s", common.ErrOperationNotSupportedForObject, "update not supported for "+params.ObjectName)
+		}
+	} else {
+		// Create
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+		if err != nil {
+			return nil, err
+		}
+
+		switch params.ObjectName {
+		case "contacts", "users", "tags", "teams", "numbers", "calls":
+			method = http.MethodPost
+		default:
+			return nil, fmt.Errorf("%w: %s", common.ErrOperationNotSupportedForObject, "create not supported for "+params.ObjectName)
+		}
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(body))
 }
 
 func (c *Connector) parseWriteResponse(
@@ -102,8 +147,40 @@ func (c *Connector) parseWriteResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.WriteResult, error) {
-	// TODO: Implement write support
-	return nil, common.ErrNotImplemented
+	// Aircall responses are wrapped in a singular object key
+	// e.g. "contacts" -> "contact"
+	objectKey := naming.NewSingularString(params.ObjectName).String()
+
+	body, ok := response.Body()
+	if !ok {
+		return nil, common.ErrEmptyJSONHTTPResponse
+	}
+
+	// Extract the object
+	node, err := jsonquery.New(body).ObjectRequired(objectKey)
+	if err != nil {
+		return nil, err
+	}
+
+	// Extract ID
+	// Aircall IDs are integers, but we return string
+	idInt, err := jsonquery.New(node).IntegerRequired("id")
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract record ID: %w", err)
+	}
+	recordID := strconv.FormatInt(idInt, 10)
+
+	// Extract data
+	dataMap, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Data:     dataMap,
+	}, nil
 }
 
 func supportsDateFiltering(objectName string) bool {
