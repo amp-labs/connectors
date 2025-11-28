@@ -1,0 +1,48 @@
+{
+  "data": {
+    "search": {
+      "transactions": {
+        "edges": [
+          {
+            "node": {
+              "id": "txn_123",
+              "legacyId": "tx123456",
+              "createdAt": "2025-01-20T09:15:00Z",
+              "amount": {
+                "value": "100.00",
+                "currencyCode": "USD"
+              },
+              "status": "settled",
+              "orderId": "order_789",
+              "customer": {
+                "id": "customer_123",
+                "email": "john.doe@example.com"
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "txn_456",
+              "legacyId": "tx456789",
+              "createdAt": "2025-01-21T11:30:00Z",
+              "amount": {
+                "value": "50.00",
+                "currencyCode": "USD"
+              },
+              "status": "authorized",
+              "orderId": "order_012",
+              "customer": {
+                "id": "customer_456",
+                "email": "jane.smith@example.com"
+              }
+            }
+          }
+        ],
+        "pageInfo": {
+          "hasNextPage": false,
+          "endCursor": null
+        }
+      }
+    }
+  }
+}

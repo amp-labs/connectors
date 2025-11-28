@@ -1,0 +1,42 @@
+query TransactionSearch {
+  search {
+    transactions(
+      input: {
+        {{if .FromDate}}
+        createdAt: {
+          greaterThanOrEqualTo: "{{.FromDate}}"
+          {{if .ToDate}}
+          lessThanOrEqualTo: "{{.ToDate}}"
+          {{end}}
+        }
+        {{end}}
+      }
+      first: {{.First}}
+      {{if .After}}
+      after: "{{.After}}"
+      {{end}}
+    ) {
+      edges {
+        node {
+          id
+          legacyId
+          createdAt
+          amount {
+            value
+            currencyCode
+          }
+          status
+          orderId
+          customer {
+            id
+            email
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
