@@ -1,16 +1,14 @@
 package main
 
 import (
-	"log/slog"
-
-	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
-	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers/klaviyo/metadata"
-	"github.com/amp-labs/connectors/providers/klaviyo/openapi"
-	"github.com/amp-labs/connectors/tools/fileconv/api3"
-	"github.com/amp-labs/connectors/tools/scrapper"
+	files "github.com/amp-labs/connectors/providers/klaviyo/openapi"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/filters"
+	mapping "github.com/amp-labs/connectors/scripts/openapi/internal/api/map"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/output"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/pipeline"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/reducers"
 )
 
 // nolint:gochecknoglobals
@@ -27,52 +25,34 @@ var (
 )
 
 func main() {
-	explorer, err := openapi.FileManager.GetExplorer(
-		api3.WithDisplayNamePostProcessors(
-			api3.CamelCaseToSpaceSeparated,
-			api3.CapitalizeFirstLetterEveryWord,
-		),
-		api3.WithMediaType("application/vnd.api+json"),
-		api3.WithPropertyFlattening(func(objectName, fieldName string) bool {
+	extractor, err := api.NewFile(files.File).Extractor()
+	goutils.MustBeNil(err)
+
+	getSchemas, err := extractor.ExtractListSchemas(api.GET,
+		api.List.WithMediaType("application/vnd.api+json"),
+		api.List.WithPropertyFlattener(func(objectName, fieldName string) bool {
 			// Nested attributes object holds most important fields.
 			return fieldName == "attributes"
 		}),
+		api.List.WithAutoSelectArrayItems(),
+		api.List.WithArrayLocator(api.ArrayLocationAtData),
 	)
 	goutils.MustBeNil(err)
 
-	objects, err := explorer.ReadObjectsGet(
-		api3.NewDenyPathStrategy(ignoreEndpoints),
-		nil, nil,
-		api3.DataObjectLocator,
-	)
-	goutils.MustBeNil(err)
+	pipe := pipeline.NewSchemaPipe(getSchemas).
+		Filter(filters.KeepWithPath(filters.AndPathMatcher{
+			filters.NoIDPath{},
+			filters.NewDenyPathStrategy(ignoreEndpoints),
+		})).
+		Map(mapping.RemoveURLPrefix("/api")).
+		Reduce(reducers.ShortestNameFromURL).
+		Map(mapping.DisplayNameFromObjectName).
+		Map(mapping.DisplayNameFormat(
+			mapping.CamelCaseToSpaceSeparated,
+			mapping.CapitalizeFirstLetterEveryWord,
+		))
 
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
-	registry := datautils.NamedLists[string]{}
-
-	for _, object := range objects {
-		if object.Problem != nil {
-			slog.Error("schema not extracted",
-				"objectName", object.ObjectName,
-				"error", object.Problem,
-			)
-		}
-
-		for _, field := range object.Fields {
-			schemas.Add(common.ModuleRoot,
-				object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
-				staticschema.FieldMetadataMapV1{
-					field.Name: field.Name,
-				}, nil, object.Custom)
-		}
-
-		for _, queryParam := range object.QueryParams {
-			registry.Add(queryParam, object.ObjectName)
-		}
-	}
-
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
-	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
-
-	slog.Info("Completed.")
+	goutils.MustBeNil(output.WriteMetadata(files.OutputDir, pipe))
+	goutils.MustBeNil(output.WriteQueryParamStats(files.OutputDir, pipe))
+	goutils.MustBeNil(output.WriteEndpoints(files.OutputDir, &pipe, nil, nil, nil))
 }
