@@ -1,0 +1,41 @@
+query DisputeSearch {
+  search {
+    disputes(
+      input: {
+        {{if .FromDate}}
+        createdAt: {
+          greaterThanOrEqualTo: "{{.FromDate}}"
+          {{if .ToDate}}
+          lessThanOrEqualTo: "{{.ToDate}}"
+          {{end}}
+        }
+        {{end}}
+      }
+      first: {{.First}}
+      {{if .After}}
+      after: "{{.After}}"
+      {{end}}
+    ) {
+      edges {
+        node {
+          id
+          legacyId
+          createdAt
+          amountDisputed {
+            value
+            currencyCode
+          }
+          status
+          type
+          caseNumber
+          referenceNumber
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+

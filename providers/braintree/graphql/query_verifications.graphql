@@ -1,0 +1,39 @@
+query VerificationSearch {
+  search {
+    verifications(
+      input: {
+        {{if .FromDate}}
+        createdAt: {
+          greaterThanOrEqualTo: "{{.FromDate}}"
+          {{if .ToDate}}
+          lessThanOrEqualTo: "{{.ToDate}}"
+          {{end}}
+        }
+        {{end}}
+      }
+      first: {{.First}}
+      {{if .After}}
+      after: "{{.After}}"
+      {{end}}
+    ) {
+      edges {
+        node {
+          id
+          legacyId
+          createdAt
+          status
+          merchantAccountId
+          processorResponse {
+            legacyCode
+            message
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+

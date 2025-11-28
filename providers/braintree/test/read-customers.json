@@ -1,0 +1,38 @@
+{
+  "data": {
+    "search": {
+      "customers": {
+        "edges": [
+          {
+            "node": {
+              "id": "customer_123",
+              "legacyId": "123456",
+              "createdAt": "2025-01-15T10:30:00Z",
+              "email": "john.doe@example.com",
+              "company": "Acme Corp",
+              "firstName": "John",
+              "lastName": "Doe",
+              "phoneNumber": "+1234567890"
+            }
+          },
+          {
+            "node": {
+              "id": "customer_456",
+              "legacyId": "456789",
+              "createdAt": "2025-01-16T14:20:00Z",
+              "email": "jane.smith@example.com",
+              "company": "Tech Inc",
+              "firstName": "Jane",
+              "lastName": "Smith",
+              "phoneNumber": "+0987654321"
+            }
+          }
+        ],
+        "pageInfo": {
+          "hasNextPage": false,
+          "endCursor": null
+        }
+      }
+    }
+  }
+}

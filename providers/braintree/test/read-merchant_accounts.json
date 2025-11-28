@@ -1,0 +1,31 @@
+{
+  "data": {
+    "viewer": {
+      "merchant": {
+        "merchantAccounts": {
+          "edges": [
+            {
+              "node": {
+                "id": "merchant_account_123",
+                "currencyCode": "USD",
+                "dbaName": "Acme Corp"
+              }
+            },
+            {
+              "node": {
+                "id": "merchant_account_456",
+                "currencyCode": "EUR",
+                "dbaName": "Acme Europe"
+              }
+            }
+          ],
+          "pageInfo": {
+            "hasNextPage": false,
+            "endCursor": null
+          }
+        }
+      }
+    }
+  }
+}
+

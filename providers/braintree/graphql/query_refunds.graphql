@@ -1,0 +1,41 @@
+query RefundSearch {
+  search {
+    refunds(
+      input: {
+        {{if .FromDate}}
+        createdAt: {
+          greaterThanOrEqualTo: "{{.FromDate}}"
+          {{if .ToDate}}
+          lessThanOrEqualTo: "{{.ToDate}}"
+          {{end}}
+        }
+        {{end}}
+      }
+      first: {{.First}}
+      {{if .After}}
+      after: "{{.After}}"
+      {{end}}
+    ) {
+      edges {
+        node {
+          id
+          legacyId
+          createdAt
+          amount {
+            value
+            currencyCode
+          }
+          status
+          orderId
+          refundedTransaction {
+            id
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}

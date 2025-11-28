@@ -1,0 +1,41 @@
+{
+  "data": {
+    "search": {
+      "verifications": {
+        "edges": [
+          {
+            "node": {
+              "id": "verification_123",
+              "legacyId": "vf123456",
+              "createdAt": "2025-01-20T09:15:00Z",
+              "status": "VERIFIED",
+              "merchantAccountId": "merchant_123",
+              "processorResponse": {
+                "legacyCode": "1000",
+                "message": "Approved"
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "verification_456",
+              "legacyId": "vf456789",
+              "createdAt": "2025-01-21T11:30:00Z",
+              "status": "GATEWAY_REJECTED",
+              "merchantAccountId": "merchant_456",
+              "processorResponse": {
+                "legacyCode": "2000",
+                "message": "Processor Declined"
+              }
+            }
+          }
+        ],
+        "pageInfo": {
+          "hasNextPage": false,
+          "endCursor": null
+        }
+      }
+    }
+  }
+}
+
