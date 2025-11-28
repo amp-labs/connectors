@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/aha"
+	"github.com/amp-labs/connectors/providers/aircall"
 	"github.com/amp-labs/connectors/providers/amplitude"
 	"github.com/amp-labs/connectors/providers/apollo"
 	"github.com/amp-labs/connectors/providers/asana"
@@ -115,6 +116,7 @@ func New(provider providers.Provider, params common.ConnectorParams) (connectors
 }
 
 var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nolint:gochecknoglobals
+	providers.Aircall:                 wrapper(newAircallConnector),
 	providers.AWS:                     wrapper(newAWSConnector),
 	providers.Aha:                     wrapper(newAhaConnector),
 	providers.Amplitude:               wrapper(newAmplitudeConnector),
@@ -860,4 +862,10 @@ func newOutplayConnector(params common.ConnectorParams,
 func newHappyFoxConnector(params common.ConnectorParams,
 ) (*happyfox.Connector, error) {
 	return happyfox.NewConnector(params)
+}
+
+func newAircallConnector(
+	params common.ConnectorParams,
+) (*aircall.Connector, error) {
+	return aircall.NewConnector(params)
 }
