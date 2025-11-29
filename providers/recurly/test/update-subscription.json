@@ -1,0 +1,21 @@
+{
+    "id": "sub_2x3y4z5a6b7c8901",
+    "object": "subscription",
+    "uuid": "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
+    "plan_code": "premium_plan",
+    "state": "active",
+    "created_at": "2025-11-20T08:15:30Z",
+    "updated_at": "2025-11-27T11:45:30Z",
+    "activated_at": "2025-11-20T08:15:30Z",
+    "canceled_at": null,
+    "expires_at": "2026-11-20T08:15:30Z",
+    "bank_account_authorized_at": null,
+    "gateway_code": "braintree",
+    "billing_info_id": "billing_premium_456",
+    "active_invoice_id": "inv_premium_789",
+    "business_entity_id": "be_67890",
+    "started_with_gift": false,
+    "converted_at": "2025-11-22T14:20:15Z",
+    "collection_method": "manual",
+    "net_terms": 30
+}

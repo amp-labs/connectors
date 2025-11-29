@@ -1,0 +1,20 @@
+{
+    "id": "ierqn34o3hoife",
+    "object": "subscription",
+    "code": "test_account_001",
+    "uuid": "550e8400-e29b-41d4-a716-446655440000",
+    "plan_code": "basic_plan",
+    "state": "active",
+    "created_at": "2025-11-27T10:30:45Z",
+    "updated_at": "2025-11-27T10:30:45Z",
+    "activated_at": "2025-11-27T10:30:45Z",
+    "canceled_at": null,
+    "expires_at": "2026-11-27T10:30:45Z",
+    "bank_account_authorized_at": null,
+    "gateway_code": "stripe",
+    "billing_info_id": "billing_9876543210",
+    "active_invoice_id": "inv_abc123def456",
+    "business_entity_id": "be_12345",
+    "started_with_gift": false,
+    "converted_at": null
+}
