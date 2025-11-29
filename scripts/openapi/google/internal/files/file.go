@@ -16,6 +16,8 @@ var (
 	calendarAPI []byte
 	//go:embed people.json
 	peopleAPI []byte
+	//go:embed mail.json
+	mailAPI []byte
 
 	InputCalendar  = api3.NewOpenapiFileManager[any](calendarAPI)
 	OutputCalendar = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
@@ -23,4 +25,7 @@ var (
 	InputContacts  = api3.NewOpenapiFileManager[any](peopleAPI)
 	OutputContacts = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
 		fileconv.NewPath("providers/google/internal/contacts"))
+	InputMail  = api3.NewOpenapiFileManager[any](mailAPI)
+	OutputMail = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
+		fileconv.NewPath("providers/google/internal/mail"))
 )
