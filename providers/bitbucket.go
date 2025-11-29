@@ -35,7 +35,7 @@ func init() {
 			Proxy:     true,
 			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
