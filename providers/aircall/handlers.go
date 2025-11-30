@@ -3,6 +3,7 @@ package aircall
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -18,7 +19,8 @@ const (
 	//   - minimum: 1
 	//   - default: 20
 	//   - maximum: 50
-	aircallMaxPerPage = "50"
+	aircallMaxPerPage     = "50"
+	aircallMaxPageSizeInt = 50
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -36,8 +38,33 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	// Default pagination
-	url.WithQueryParam("per_page", aircallMaxPerPage)
+	// Pagination
+	pageSize := aircallMaxPerPage
+
+	if params.PageSize > 0 {
+		// Aircall maximum is 50
+		if params.PageSize > aircallMaxPageSizeInt {
+			pageSize = "50"
+		} else {
+			pageSize = strconv.Itoa(params.PageSize)
+		}
+	}
+
+	url.WithQueryParam("per_page", pageSize)
+
+	// Incremental sync: Add date range filters if provided
+	// Aircall API uses Unix timestamps for 'from' and 'to' parameters
+	// https://developer.aircall.io/api-references/#list-all-calls
+	// Note: Not all objects support filtering by date (e.g. teams, tags).
+	if supportsDateFiltering(params.ObjectName) {
+		if !params.Since.IsZero() {
+			url.WithQueryParam("from", strconv.FormatInt(params.Since.Unix(), 10))
+		}
+
+		if !params.Until.IsZero() {
+			url.WithQueryParam("to", strconv.FormatInt(params.Until.Unix(), 10))
+		}
+	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
@@ -77,4 +104,16 @@ func (c *Connector) parseWriteResponse(
 ) (*common.WriteResult, error) {
 	// TODO: Implement write support
 	return nil, common.ErrNotImplemented
+}
+
+func supportsDateFiltering(objectName string) bool {
+	switch objectName {
+	case "calls", "users", "contacts", "numbers":
+		return true
+	case "teams", "tags":
+		return false
+	default:
+		// Default to false to be safe
+		return false
+	}
 }
