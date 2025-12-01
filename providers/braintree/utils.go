@@ -12,6 +12,10 @@ const (
 	// Braintree GraphQL API returns up to 50 results per page by default.
 	// See: https://developer.paypal.com/braintree/graphql/guides/connections/
 	defaultPageSize = 50
+
+	// Object name constants.
+	objectPaymentMethods   = "paymentMethods"
+	objectMerchantAccounts = "merchantAccounts"
 )
 
 // Braintree GraphQL API Documentation:
@@ -35,7 +39,7 @@ func makeNextRecordsURL(objName string) common.NextPageFunc {
 			err        error
 		)
 
-		if objName == "merchantAccounts" {
+		if objName == objectMerchantAccounts {
 			pagination, err = jsonquery.New(node, "data", "viewer", "merchant", objName).ObjectOptional("pageInfo")
 		} else {
 			pagination, err = jsonquery.New(node, "data", "search", objName).ObjectOptional("pageInfo")
