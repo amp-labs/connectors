@@ -94,6 +94,7 @@ import (
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/snapchatads"
+	"github.com/amp-labs/connectors/providers/snowflake"
 	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/xero"
@@ -202,6 +203,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.ServiceNow:              wrapper(newServiceNowConnector),
 	providers.Smartlead:               wrapper(newSmartleadConnector),
 	providers.SnapchatAds:             wrapper(newSnapchatAdsConnector),
+	providers.Snowflake:               wrapper(newSnowflakeConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
 	providers.Xero:                    wrapper(newXeroConnector),
@@ -860,4 +862,9 @@ func newOutplayConnector(params common.ConnectorParams,
 func newHappyFoxConnector(params common.ConnectorParams,
 ) (*happyfox.Connector, error) {
 	return happyfox.NewConnector(params)
+}
+
+func newSnowflakeConnector(params common.ConnectorParams,
+) (*snowflake.Connector, error) {
+	return snowflake.NewConnector(params)
 }
