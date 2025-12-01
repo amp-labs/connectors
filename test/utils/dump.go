@@ -63,6 +63,7 @@ func substituteErrorsToStrings(v any) any {
 			if field.PkgPath != "" { // unexported
 				continue
 			}
+
 			out[field.Name] = substituteErrorsToStrings(rv.Field(i).Interface())
 		}
 
