@@ -2,9 +2,11 @@ query TransactionSearch {
   search {
     transactions(
       input: {
-        {{if .FromDate}}
+        {{if or .FromDate .ToDate}}
         createdAt: {
+          {{if .FromDate}}
           greaterThanOrEqualTo: "{{.FromDate}}"
+          {{end}}
           {{if .ToDate}}
           lessThanOrEqualTo: "{{.ToDate}}"
           {{end}}

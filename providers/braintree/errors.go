@@ -9,6 +9,25 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
+// GraphQLError represents an error in the GraphQL response.
+type GraphQLError struct {
+	Message    string                 `json:"message"`
+	Locations  []GraphQLErrorLocation `json:"locations,omitempty"`
+	Path       []string               `json:"path,omitempty"`
+	Extensions map[string]any         `json:"extensions,omitempty"`
+}
+
+// GraphQLErrorLocation represents the location of an error in a GraphQL query.
+type GraphQLErrorLocation struct {
+	Line   int `json:"line"`
+	Column int `json:"column"`
+}
+
+// ResponseError represents the error structure in GraphQL responses.
+type ResponseError struct {
+	Errors []GraphQLError `json:"errors,omitempty"`
+}
+
 var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	[]interpreter.FormatTemplate{
 		{

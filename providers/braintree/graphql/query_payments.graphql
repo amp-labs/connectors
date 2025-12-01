@@ -1,6 +1,6 @@
-query CustomerSearch {
+query PaymentSearch {
   search {
-    customers(
+    payments(
       input: {
         {{if or .FromDate .ToDate}}
         createdAt: {
@@ -23,11 +23,12 @@ query CustomerSearch {
           id
           legacyId
           createdAt
-          email
-          company
-          firstName
-          lastName
-          phoneNumber
+          amount {
+            value
+            currencyCode
+          }
+          orderId
+          status
         }
       }
       pageInfo {

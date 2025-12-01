@@ -24,13 +24,13 @@ func main() {
 	conn := braintreeTest.GetBraintreeConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "merchant_accounts",
-		Fields:     connectors.Fields(""),
+		ObjectName: "merchantAccounts",
+		Fields:     connectors.Fields("id", "currencyCode", "dbaName"),
 	})
 	if err != nil {
-		utils.Fail("error reading merchant_accounts", "error", err)
+		utils.Fail("error reading merchantAccounts", "error", err)
 	}
 
-	slog.Info("Reading merchant_accounts...")
+	slog.Info("Reading merchantAccounts...")
 	utils.DumpJSON(res, os.Stdout)
 }

@@ -1,6 +1,7 @@
 package braintree
 
 import (
+	"errors"
 	"net/http"
 	"testing"
 
@@ -35,13 +36,29 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	transactionsResponse := testutils.DataFromFile(t, "read-transactions.json")
 	disputesResponse := testutils.DataFromFile(t, "read-disputes.json")
 	verificationsResponse := testutils.DataFromFile(t, "read-verifications.json")
-	merchantAccountsResponse := testutils.DataFromFile(t, "read-merchant_accounts.json")
+	merchantAccountsResponse := testutils.DataFromFile(t, "read-merchantAccounts.json")
+	errorValidationResponse := testutils.DataFromFile(t, "read-error-validation.json")
 
 	tests := []testroutines.Read{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name: "Validation error from GraphQL response",
+			Input: common.ReadParams{
+				ObjectName: "customers",
+				Fields:     connectors.Fields("id"),
+			},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, errorValidationResponse),
+			}.Server(),
+			ExpectedErrs: []error{
+				common.ErrBadRequest,
+				errors.New("Invalid search criteria provided"), // nolint:goerr113
+			},
 		},
 		{
 			Name: "Successful read of customers",
@@ -51,8 +68,13 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, customersResponse),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Header(http.Header{
+						"Braintree-Version": []string{"2019-01-01"},
+					}),
+				},
+				Then: mockserver.Response(http.StatusOK, customersResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 2,
@@ -107,8 +129,13 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, transactionsResponse),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Header(http.Header{
+						"Braintree-Version": []string{"2019-01-01"},
+					}),
+				},
+				Then: mockserver.Response(http.StatusOK, transactionsResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 2,
@@ -161,8 +188,13 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, disputesResponse),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Header(http.Header{
+						"Braintree-Version": []string{"2019-01-01"},
+					}),
+				},
+				Then: mockserver.Response(http.StatusOK, disputesResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 2,
@@ -217,8 +249,13 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, verificationsResponse),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Header(http.Header{
+						"Braintree-Version": []string{"2019-01-01"},
+					}),
+				},
+				Then: mockserver.Response(http.StatusOK, verificationsResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 2,
@@ -262,15 +299,20 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Successful read of merchant_accounts",
+			Name: "Successful read of merchantAccounts",
 			Input: common.ReadParams{
-				ObjectName: "merchant_accounts",
+				ObjectName: "merchantAccounts",
 				Fields:     connectors.Fields("id", "dbaName"),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, merchantAccountsResponse),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Header(http.Header{
+						"Braintree-Version": []string{"2019-01-01"},
+					}),
+				},
+				Then: mockserver.Response(http.StatusOK, merchantAccountsResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 2,

@@ -88,15 +88,12 @@ func (c *Connector) parseReadResponse(
 		}
 	}
 
-	// GraphQL responses use camelCase field names, so we need to map snake_case object names
-	graphqlFieldName := objectNameToGraphQLField.Get(params.ObjectName)
-
-	// merchant_accounts uses a different query path: viewer.merchant.merchantAccounts
+	// merchantAccounts uses a different query path: viewer.merchant.merchantAccounts
 	// All other objects use the standard search path: search.[objectName]
-	if params.ObjectName == "merchant_accounts" {
+	if params.ObjectName == "merchantAccounts" {
 		return common.ParseResult(
 			resp,
-			common.MakeRecordsFunc("edges", "data", "viewer", "merchant", graphqlFieldName),
+			common.MakeRecordsFunc("edges", "data", "viewer", "merchant", params.ObjectName),
 			makeNextRecordsURL(params.ObjectName),
 			common.MakeMarshaledDataFunc(common.FlattenNestedFields("node")),
 			params.Fields,
@@ -105,7 +102,7 @@ func (c *Connector) parseReadResponse(
 
 	return common.ParseResult(
 		resp,
-		common.MakeRecordsFunc("edges", "data", "search", graphqlFieldName),
+		common.MakeRecordsFunc("edges", "data", "search", params.ObjectName),
 		makeNextRecordsURL(params.ObjectName),
 		common.MakeMarshaledDataFunc(common.FlattenNestedFields("node")),
 		params.Fields,
