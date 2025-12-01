@@ -10,8 +10,12 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+const (
+	apiVersion = "api/v1"
+)
+
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName)
 	url.WithQueryParam("max", "1")
 
 	if err != nil {
