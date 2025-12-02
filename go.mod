@@ -5,7 +5,7 @@ go 1.24.0
 require (
 	github.com/PuerkitoBio/goquery v1.11.0
 	github.com/antchfx/xmlquery v1.5.0
-	github.com/aws/aws-sdk-go-v2 v1.40.0
+	github.com/aws/aws-sdk-go-v2 v1.40.1
 	github.com/aws/aws-sdk-go-v2/config v1.32.2
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.2
 	github.com/brianvoe/gofakeit/v6 v6.28.0
@@ -43,7 +43,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.30.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.10 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.41.2 // indirect
-	github.com/aws/smithy-go v1.23.2 // indirect
+	github.com/aws/smithy-go v1.24.0 // indirect
 	github.com/chromedp/cdproto v0.0.0-20250724212937-08a3db8b4327 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
 	github.com/go-json-experiment/json v0.0.0-20250725192818-e39067aee2d2 // indirect
