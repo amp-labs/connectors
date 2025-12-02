@@ -41,7 +41,8 @@ func main() {
 func readIncidents(ctx context.Context, conn *solarwinds.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "incidents",
-		Since:      time.Now().Add(-1 * time.Hour),
+		Since:      time.Now().Add(-1000 * time.Hour),
+		Until:      time.Now().Add(-1 * time.Hour),
 		Fields:     connectors.Fields("number", "name", "id"),
 	}
 

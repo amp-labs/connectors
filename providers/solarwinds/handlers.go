@@ -21,6 +21,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		url.WithQueryParam("updated_from", params.Since.Format(time.RFC3339))
 	}
 
+	if !params.Until.IsZero() && params.ObjectName == incidents {
+		url.WithQueryParam("updated_to", params.Until.Format(time.RFC3339))
+	}
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
 		return nil, err
