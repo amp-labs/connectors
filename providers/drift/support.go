@@ -39,6 +39,18 @@ func constructUpdateEndpoint(url *urlbuilder.URL, objectName, recordId string) *
 	return url
 }
 
+func constructCreateEndpoint(url *urlbuilder.URL, objectName string) *urlbuilder.URL {
+	if objectName == conversations {
+		url.AddPath("new")
+	}
+
+	if objectName == accounts {
+		url.AddPath("create")
+	}
+
+	return url
+}
+
 func responseSchema(objectName string) (string, string) {
 	switch objectName {
 	case "users", "conversations", "teams/org", "users/meetings/org":

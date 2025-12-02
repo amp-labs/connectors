@@ -85,13 +85,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 		url = constructUpdateEndpoint(url, params.ObjectName, params.RecordId)
 	} else {
-		if params.ObjectName == conversations {
-			url.AddPath("new")
-		}
-
-		if params.ObjectName == accounts {
-			url.AddPath("create")
-		}
+		url = constructCreateEndpoint(url, params.ObjectName)
 	}
 
 	if params.ObjectName == updateAccount {
