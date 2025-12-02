@@ -10,7 +10,7 @@ func init() { // nolint:funlen
 	SetInfo(Adyen, ProviderInfo{
 		DisplayName: "Adyen",
 		AuthType:    Oauth2,
-		BaseURL:     "https://{{.subdomain}}.adyen.com",
+		BaseURL:     "https://{{.workspace}}.adyen.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCodePKCE,
 			AuthURL:                   "https://ca-live.adyen.com/ca/ca/oauth/connect.shtml",
@@ -46,7 +46,7 @@ func init() { // nolint:funlen
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name:        "subdomain",
+					Name:        "workspace",
 					DisplayName: "Subdomain",
 				},
 			},
@@ -57,7 +57,7 @@ func init() { // nolint:funlen
 	SetInfo(AdyenTest, ProviderInfo{
 		DisplayName: "Adyen Test",
 		AuthType:    Oauth2,
-		BaseURL:     "https://{{.subdomain}}.adyen.com",
+		BaseURL:     "https://{{.workspace}}.adyen.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCodePKCE,
 			AuthURL:                   "https://ca-test.adyen.com/ca/ca/oauth/connect.shtml",
@@ -93,7 +93,7 @@ func init() { // nolint:funlen
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name:        "subdomain",
+					Name:        "workspace",
 					DisplayName: "Subdomain",
 				},
 			},
