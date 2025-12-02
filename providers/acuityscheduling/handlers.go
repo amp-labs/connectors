@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -60,4 +61,45 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("max", "100")
+
+	if supportObjectIncrementalRead.Has(params.ObjectName) {
+		if !params.Since.IsZero() {
+			url.WithQueryParam("minDate", params.Since.Format(time.RFC3339))
+		}
+
+		if !params.Until.IsZero() {
+			url.WithQueryParam("maxDate", params.Until.Format(time.RFC3339))
+		}
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath(""),
+		nextRecordsURL(),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
