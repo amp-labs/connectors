@@ -17,6 +17,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/graphql"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 //go:embed graphql/*.graphql
@@ -188,10 +189,74 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	return req, nil
 }
 
-// objectsWithoutNativeTimeFilter lists objects that don't support createdAt filtering in the API.
-// For these objects, we apply connector-side time filtering.
-var objectsWithoutNativeTimeFilter = map[string]bool{ //nolint:gochecknoglobals
-	objectMerchantAccounts: true,
+// connectorSideFilteredObjects lists objects that require connector-side time filtering
+// because the API doesn't support native createdAt filtering for them.
+// Note: merchantAccounts is excluded as it doesn't have a createdAt field in the schema.
+var connectorSideFilteredObjects = map[string]bool{ //nolint:gochecknoglobals
+	// Add objects here that have createdAt but don't support API-level time filtering.
+}
+
+// makeTimeFilterFuncWithZoom is similar to readhelper.MakeTimeFilterFunc but accepts zoom parameters
+// for navigating nested JSON structures before extracting the timestamp.
+//
+//nolint:cyclop
+func makeTimeFilterFuncWithZoom(
+	order readhelper.TimeOrder, boundary *readhelper.TimeBoundary,
+	timestampKey string, timestampFormat string,
+	nextPageFunc common.NextPageFunc,
+	zoom ...string,
+) common.RecordsFilterFunc {
+	return func(params common.ReadParams, body *ajson.Node, records []*ajson.Node) ([]*ajson.Node, string, error) {
+		if len(records) == 0 {
+			return nil, "", nil
+		}
+
+		var (
+			filtered []*ajson.Node
+			hasMore  bool
+		)
+
+		for idx, nodeRecord := range records {
+			timestamp, err := jsonquery.New(nodeRecord, zoom...).StringRequired(timestampKey)
+			if err != nil {
+				return nil, "", err
+			}
+
+			recordTimestamp, err := time.Parse(timestampFormat, timestamp)
+			if err != nil {
+				return nil, "", err
+			}
+
+			if boundary.Contains(params, recordTimestamp) {
+				filtered = append(filtered, nodeRecord)
+				hasMore = hasMore || hasNextPageForOrder(order, idx, len(records))
+			}
+		}
+
+		if !hasMore {
+			return filtered, "", nil
+		}
+
+		next, err := nextPageFunc(body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		return filtered, next, nil
+	}
+}
+
+func hasNextPageForOrder(order readhelper.TimeOrder, idx, recordsLen int) bool {
+	switch order {
+	case readhelper.Unordered:
+		return true
+	case readhelper.ChronologicalOrder:
+		return idx == recordsLen-1
+	case readhelper.ReverseOrder:
+		return idx == 0
+	default:
+		return false
+	}
 }
 
 // needsConnectorSideFiltering checks if time filtering should be done connector-side.
@@ -201,8 +266,8 @@ func needsConnectorSideFiltering(params common.ReadParams) bool {
 		return false
 	}
 
-	// Check if this object doesn't support native time filtering.
-	return objectsWithoutNativeTimeFilter[params.ObjectName]
+	// Check if this object requires connector-side filtering.
+	return connectorSideFilteredObjects[params.ObjectName]
 }
 
 func (c *Connector) parseReadResponse(
@@ -230,12 +295,13 @@ func (c *Connector) parseReadResponse(
 				params,
 				resp,
 				common.MakeRecordsFunc("edges", "data", "viewer", "merchant", params.ObjectName),
-				readhelper.MakeTimeFilterFunc(
+				makeTimeFilterFuncWithZoom(
 					readhelper.Unordered,
 					readhelper.NewTimeBoundary(),
-					"node.createdAt",
+					"createdAt",
 					time.RFC3339,
 					makeNextRecordsURL(params.ObjectName),
+					"node",
 				),
 				common.MakeMarshaledDataFunc(common.FlattenNestedFields("node")),
 				params.Fields,
@@ -267,26 +333,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	graphqlMutationName := params.ObjectName
-
-	// Determine if this is a create or update operation.
-	isUpdate := params.RecordId != ""
-
-	// Special case for paymentMethods: detect update by presence of billingAddress in input.
-	// The updateCreditCardBillingAddress mutation uses paymentMethodId in the input, not RecordId.
-	if params.ObjectName == objectPaymentMethods && !isUpdate {
-		if recordData, ok := params.RecordData.(map[string]any); ok {
-			if _, hasBillingAddress := recordData["billingAddress"]; hasBillingAddress {
-				isUpdate = true
-			}
-		}
-	}
-
-	if isUpdate {
-		graphqlMutationName += "Update"
-	} else {
-		graphqlMutationName += "Create"
-	}
+	graphqlMutationName := getGraphQLMutationName(params)
 
 	// Build GraphQL mutation with input.
 	mutation, err := graphql.Operation(queryFiles, "mutation", graphqlMutationName, nil)
@@ -302,15 +349,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		},
 	}
 
-	if params.RecordId != "" {
-		vars, ok := requestBody["variables"].(map[string]any)
-		if ok {
-			// For customers updates, the ID is passed as a separate customerId variable.
-			if params.ObjectName == "customers" {
-				vars["customerId"] = params.RecordId
-			}
-		}
-	}
+	injectRecordId(params, requestBody)
 
 	jsonBody, err := json.Marshal(requestBody)
 	if err != nil {
@@ -326,6 +365,56 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	req.Header.Add(braintreeVersionHeader, braintreeVersion)
 
 	return req, nil
+}
+
+// getGraphQLMutationName determines the GraphQL mutation name based on the operation type.
+// For paymentMethods, update is detected by presence of billingAddress in input.
+func getGraphQLMutationName(params common.WriteParams) string {
+	isUpdate := params.RecordId != ""
+
+	// Special case for paymentMethods: detect update by presence of billingAddress in input.
+	if params.ObjectName == objectPaymentMethods && !isUpdate {
+		if recordData, err := params.GetRecord(); err == nil {
+			if _, hasBillingAddress := recordData["billingAddress"]; hasBillingAddress {
+				isUpdate = true
+			}
+		}
+	}
+
+	if isUpdate {
+		return params.ObjectName + "Update"
+	}
+
+	return params.ObjectName + "Create"
+}
+
+// injectRecordId adds the RecordId to the appropriate location in the request body.
+// Each object type has different requirements for where the ID should be placed.
+func injectRecordId(params common.WriteParams, requestBody map[string]interface{}) {
+	if params.RecordId == "" {
+		return
+	}
+
+	vars, ok := requestBody["variables"].(map[string]any)
+	if !ok {
+		return
+	}
+
+	switch params.ObjectName {
+	case "customers":
+		// For customers updates, the ID is passed as a separate customerId variable.
+		vars["customerId"] = params.RecordId
+	case "transactions":
+		// For transactions (captureTransaction), inject transactionId into the input.
+		if input, ok := vars["input"].(map[string]any); ok {
+			input["transactionId"] = params.RecordId
+		}
+	case objectPaymentMethods:
+		// For paymentMethods (updateCreditCardBillingAddress), inject paymentMethodId into the input.
+		if input, ok := vars["input"].(map[string]any); ok {
+			input["paymentMethodId"] = params.RecordId
+		}
+	}
 }
 
 //nolint:cyclop,funlen
@@ -350,24 +439,7 @@ func (c *Connector) parseWriteResponse(
 		}
 	}
 
-	graphqlMutationName := params.ObjectName
-
-	// Determine if this is a create or update operation (same logic as buildWriteRequest).
-	isUpdate := params.RecordId != ""
-
-	if params.ObjectName == objectPaymentMethods && !isUpdate {
-		if recordData, ok := params.RecordData.(map[string]any); ok {
-			if _, hasBillingAddress := recordData["billingAddress"]; hasBillingAddress {
-				isUpdate = true
-			}
-		}
-	}
-
-	if isUpdate {
-		graphqlMutationName += "Update"
-	} else {
-		graphqlMutationName += "Create"
-	}
+	graphqlMutationName := getGraphQLMutationName(params)
 
 	jsonQuery := jsonquery.New(body, "data", graphqlMutationName)
 

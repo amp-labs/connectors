@@ -21,6 +21,10 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	createPaymentMethodResponse := testutils.DataFromFile(t, "write-create-payment-method.json")
 	updatePaymentMethodResponse := testutils.DataFromFile(t, "write-update-payment-method.json")
 
+	// Expected request bodies for GraphQL mutations (loaded from files due to long query strings).
+	createCustomerRequestBody := testutils.DataFromFile(t, "request-create-customer.json")
+	updateCustomerRequestBody := testutils.DataFromFile(t, "request-update-customer.json")
+
 	tests := []testroutines.Write{
 		{
 			Name:         "Write object must be included",
@@ -28,7 +32,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name: "Creating a customer with header validation",
+			Name: "Creating a customer with header and body validation",
 			Input: common.WriteParams{
 				ObjectName: "customers",
 				RecordData: map[string]any{
@@ -41,9 +45,11 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
+					mockcond.Path("/graphql"),
 					mockcond.Header(http.Header{
 						braintreeVersionHeader: []string{braintreeVersion},
 					}),
+					mockcond.BodyBytes(createCustomerRequestBody),
 				},
 				Then: mockserver.Response(http.StatusOK, createCustomerResponse),
 			}.Server(),
@@ -58,7 +64,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Updating a customer",
+			Name: "Updating a customer with body validation",
 			Input: common.WriteParams{
 				ObjectName: "customers",
 				RecordId:   "customer_123",
@@ -71,9 +77,11 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
+					mockcond.Path("/graphql"),
 					mockcond.Header(http.Header{
 						braintreeVersionHeader: []string{braintreeVersion},
 					}),
+					mockcond.BodyBytes(updateCustomerRequestBody),
 				},
 				Then: mockserver.Response(http.StatusOK, updateCustomerResponse),
 			}.Server(),
