@@ -37,83 +37,87 @@ var readEndpointsByObject = map[string]string{ //nolint: gochecknoglobals
 	"purchases":           "purchases/product_list ",
 }
 
-func constructWritePath(params common.WriteParams) (string, error) { //nolint: cyclop,funlen
-	recordData, ok := params.RecordData.(map[string]any)
+type pathConfig struct {
+	PrimaryKey string
+	CreatePath string
+	UpdatePath string
+
+	// GenericPath is only filled, incase it's the only path for such object,
+	// it's has either create, update or delete only, not both.
+	GenericPath string
+}
+
+var writePaths = map[string]pathConfig{ //nolint: gochecknoglobals
+	"templates/email": {
+		PrimaryKey: "email_template_id",
+		UpdatePath: "templates/email/update",
+		CreatePath: "templates/email/create",
+	},
+	"messages/schedules": {
+		PrimaryKey: "schedule_id",
+		UpdatePath: "messages/schedule/update",
+		CreatePath: "messages/schedule/update/create",
+	},
+	"content_blocks": {
+		PrimaryKey: "content_block_id",
+		UpdatePath: "content_blocks/update",
+		CreatePath: "content_blocks/create",
+	},
+	"campaigns/triggers/schedules": {
+		PrimaryKey: "schedule_id",
+		UpdatePath: "campaigns/trigger/schedule/update",
+		CreatePath: "campaigns/trigger/schedule/update",
+	},
+	"live_activities": {
+		PrimaryKey: "activity_id",
+		UpdatePath: "messages/live_activity/update",
+		CreatePath: "messages/live_activity/start",
+	},
+	"user/alias": {
+		PrimaryKey: "alias_updates",
+		CreatePath: "users/alias/update",
+		UpdatePath: "users/alias/new",
+	},
+	"canvas/triggers/schedules": {
+		PrimaryKey: "schedule_id",
+		UpdatePath: "canvas/trigger/schedule/update",
+		CreatePath: "canvas/trigger/schedule/create",
+	},
+	"email/bounce": {
+		GenericPath: "email/bounce/remove",
+	},
+	"subscription/status": {
+		GenericPath: "subscription/status/set",
+	},
+	"preference center": {
+		GenericPath: "preference_center/v1",
+	},
+	"send/id": {
+		GenericPath: "sends/id/create",
+	},
+	"messages": {
+		GenericPath: "messages/send",
+	},
+}
+
+func getPath(objectName string, recordData any) (string, error) {
+	paths, exists := writePaths[objectName]
+	if !exists {
+		return objectName, nil
+	}
+
+	if paths.GenericPath != "" {
+		return paths.GenericPath, nil
+	}
+
+	recordDataMap, ok := recordData.(map[string]any)
 	if !ok {
 		return "", ErrInvalidData
 	}
 
-	switch params.ObjectName {
-	case "content_blocks":
-		if _, exists := recordData["content_block_id"]; exists {
-			// this means we're updating so we append /update
-			return "content_blocks/update", nil
-		}
-
-		return "content_blocks/create", nil
-
-	case "templates/email":
-		if _, exists := recordData["email_template_id"]; exists {
-			// this means we're updating so we append /update
-			return "templates/email/update", nil
-		}
-
-		return "templates/email/create", nil
-
-	case "messages/schedules":
-		if _, exists := recordData["schedule_id"]; exists {
-			// this means we're updating so we append /update
-			return "messages/schedule/update", nil
-		}
-
-		return "messages/schedule/update/create", nil
-
-	case "campaigns/triggers/schedules":
-		if _, exists := recordData["schedule_id"]; exists {
-			// this means we're updating so we append /update
-			return "campaigns/trigger/schedule/update", nil
-		}
-
-		return "campaigns/trigger/schedule/create", nil
-	case "live activities":
-		if _, exists := recordData["activity_id"]; exists {
-			// this means we're updating so we append /update
-			return "messages/live_activity/update", nil
-		}
-
-		return "messages/live_activity/start", nil
-
-	case "user/alias":
-		if _, exists := recordData["alias_updates"]; exists {
-			// this means we're updating so we append /update
-			return "users/alias/update", nil
-		}
-
-		return "users/alias/new", nil
-
-	case "canvas/triggers/schedules":
-		if _, exists := recordData["schedule_id"]; exists {
-			return "canvas/trigger/schedule/update", nil
-		}
-
-		return "canvas/trigger/schedule/create", nil
-
-	case "bounced emails":
-		return "email/bounce/remove", nil
-
-	case "subscription/status":
-		return "subscription/status/set", nil
-
-	case "preference center":
-		return "preference_center/v1", nil
-
-	case "send ids":
-		return "sends/id/create", nil
-
-	case "messages":
-		return "sends/id/create", nil
-
-	default:
-		return params.ObjectName, nil
+	if _, exists := recordDataMap[paths.PrimaryKey]; exists {
+		return paths.UpdatePath, nil
 	}
+
+	return paths.CreatePath, nil
 }

@@ -190,7 +190,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	)
 
 	// map objectName to the braze APIs endpoints.
-	path, err := constructWritePath(params)
+	path, err := getPath(params.ObjectName, params.RecordData)
 	if err != nil {
 		return nil, err
 	}
