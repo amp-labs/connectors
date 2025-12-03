@@ -2,6 +2,7 @@ package salesforce
 
 import (
 	"context"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -10,6 +11,53 @@ import (
 )
 
 const defaultSOQLPageSize = 2000
+
+// This helps us identify if we can use a SOQL subquery to get an associated object, since SOQL subqueries
+// only work for child objects.
+func getParentFieldMap() map[string]map[string]string {
+	return map[string]map[string]string{
+		"opportunity": {
+			"account": "AccountId",
+		},
+	}
+}
+
+func isParentRelationship(objectName, associatedObject string) bool {
+	parentFieldMap := getParentFieldMap()
+
+	objMap, ok := parentFieldMap[strings.ToLower(objectName)]
+	if !ok {
+		return false
+	}
+
+	_, ok = objMap[strings.ToLower(associatedObject)]
+
+	return ok
+}
+
+func getParentFieldName(objectName, associatedObject string) string {
+	parentFieldMap := getParentFieldMap()
+
+	objMap, ok := parentFieldMap[strings.ToLower(objectName)]
+	if !ok {
+		return ""
+	}
+
+	return objMap[strings.ToLower(associatedObject)]
+}
+
+// containsField checks if a field exists in the fields list (case-insensitive).
+// e.g. containsField(["Id", "Name", "AccountId"], "accountid") -> true.
+func containsField(fields []string, fieldName string) bool {
+	fieldLower := strings.ToLower(fieldName)
+	for _, field := range fields {
+		if strings.ToLower(field) == fieldLower {
+			return true
+		}
+	}
+
+	return false
+}
 
 // Read reads data from Salesforce. By default, it will read all rows (backfill). However, if Since is set,
 // it will read only rows that have been updated since the specified time.
@@ -36,7 +84,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		rsp,
 		getRecords,
 		getNextRecordsURL,
-		getSalesforceDataMarshaller(config.AssociatedObjects),
+		getSalesforceDataMarshaller(config),
 		config.Fields,
 	)
 }
@@ -62,20 +110,49 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 
 // makeSOQL returns the SOQL query for the desired read operation.
 func makeSOQL(config common.ReadParams) *core.SOQLBuilder {
+	fields := addAssociationFields(config)
+	soql := (&core.SOQLBuilder{}).SelectFields(fields).From(config.ObjectName)
+	addWhereClauses(soql, config)
+
+	return soql
+}
+
+// addAssociationFields adds fields for associated objects to the fields list.
+func addAssociationFields(config common.ReadParams) []string {
 	fields := config.Fields.List()
 
-	// If AssociatedObjects is set, then we need to add a subquery for each requested association.
-	// Source: https://www.infallibletechie.com/2023/04/parent-child-records-in-salesforce-soql-using-rest-api.html
-	if config.AssociatedObjects != nil {
-		for _, obj := range config.AssociatedObjects {
-			// Generates subqueries like: (SELECT FIELDS(STANDARD) FROM Account)
-			// Just standard fields for now, because salesforce errors out > 200 fields on an object.
-			fields = append(fields, "(SELECT FIELDS(STANDARD) FROM "+obj+")")
-		}
+	if config.AssociatedObjects == nil {
+		return fields
 	}
 
-	soql := (&core.SOQLBuilder{}).SelectFields(fields).From(config.ObjectName)
+	for _, obj := range config.AssociatedObjects {
+		fields = addFieldForAssociation(fields, config.ObjectName, obj)
+	}
 
+	return fields
+}
+
+// addFieldForAssociation adds a field or subquery for an associated object.
+func addFieldForAssociation(fields []string, objectName, assocObj string) []string {
+	// Some objects cannot be queried using a subquery, such as when the associated object is a parent object.
+	// In that case, we fetch the associated object's ID as a field, and fetch the full object in the q
+	if isParentRelationship(objectName, assocObj) {
+		parentField := getParentFieldName(objectName, assocObj)
+		if parentField != "" && !containsField(fields, parentField) {
+			fields = append(fields, parentField)
+		}
+	} else {
+		// Generates subqueries like: (SELECT FIELDS(STANDARD) FROM Contacts)
+		// Just standard fields for now, because salesforce errors out > 200 fields on an object.
+		// Source: https://www.infallibletechie.com/2023/04/parent-child-records-in-salesforce-soql-using-rest-api.html
+		fields = append(fields, "(SELECT FIELDS(STANDARD) FROM "+assocObj+")")
+	}
+
+	return fields
+}
+
+// addWhereClauses adds WHERE clauses to the SOQL query based on the config.
+func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams) {
 	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 	if !config.Since.IsZero() {
 		soql.Where("SystemModstamp > " + datautils.Time.FormatRFC3339inUTC(config.Since))
@@ -98,8 +175,6 @@ func makeSOQL(config common.ReadParams) *core.SOQLBuilder {
 	if config.PageSize > 0 {
 		soql.Limit(config.PageSize)
 	}
-
-	return soql
 }
 
 func (c *Connector) DefaultPageSize() int {
