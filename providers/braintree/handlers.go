@@ -17,7 +17,6 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/graphql"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/spyzhov/ajson"
 )
 
 //go:embed graphql/*.graphql
@@ -280,69 +279,6 @@ var connectorSideFilteredObjects = map[string]bool{ //nolint:gochecknoglobals
 	// Add objects here that have createdAt but don't support API-level time filtering.
 }
 
-// makeTimeFilterFuncWithZoom is similar to readhelper.MakeTimeFilterFunc but accepts zoom parameters
-// for navigating nested JSON structures before extracting the timestamp.
-//
-//nolint:cyclop
-func makeTimeFilterFuncWithZoom(
-	order readhelper.TimeOrder, boundary *readhelper.TimeBoundary,
-	timestampKey string, timestampFormat string,
-	nextPageFunc common.NextPageFunc,
-	zoom ...string,
-) common.RecordsFilterFunc {
-	return func(params common.ReadParams, body *ajson.Node, records []*ajson.Node) ([]*ajson.Node, string, error) {
-		if len(records) == 0 {
-			return nil, "", nil
-		}
-
-		var (
-			filtered []*ajson.Node
-			hasMore  bool
-		)
-
-		for idx, nodeRecord := range records {
-			timestamp, err := jsonquery.New(nodeRecord, zoom...).StringRequired(timestampKey)
-			if err != nil {
-				return nil, "", err
-			}
-
-			recordTimestamp, err := time.Parse(timestampFormat, timestamp)
-			if err != nil {
-				return nil, "", err
-			}
-
-			if boundary.Contains(params, recordTimestamp) {
-				filtered = append(filtered, nodeRecord)
-				hasMore = hasMore || hasNextPageForOrder(order, idx, len(records))
-			}
-		}
-
-		if !hasMore {
-			return filtered, "", nil
-		}
-
-		next, err := nextPageFunc(body)
-		if err != nil {
-			return nil, "", err
-		}
-
-		return filtered, next, nil
-	}
-}
-
-func hasNextPageForOrder(order readhelper.TimeOrder, idx, recordsLen int) bool {
-	switch order {
-	case readhelper.Unordered:
-		return true
-	case readhelper.ChronologicalOrder:
-		return idx == recordsLen-1
-	case readhelper.ReverseOrder:
-		return idx == 0
-	default:
-		return false
-	}
-}
-
 // needsConnectorSideFiltering checks if time filtering should be done connector-side.
 func needsConnectorSideFiltering(params common.ReadParams) bool {
 	// If no time params, no filtering needed.
@@ -379,13 +315,13 @@ func (c *Connector) parseReadResponse(
 				params,
 				resp,
 				common.MakeRecordsFunc("edges", "data", "viewer", "merchant", params.ObjectName),
-				makeTimeFilterFuncWithZoom(
+				readhelper.MakeTimeFilterFuncWithZoom(
 					readhelper.Unordered,
 					readhelper.NewTimeBoundary(),
+					[]string{"node"},
 					"createdAt",
 					time.RFC3339,
 					makeNextRecordsURL(params.ObjectName),
-					"node",
 				),
 				common.MakeMarshaledDataFunc(common.FlattenNestedFields("node")),
 				params.Fields,
