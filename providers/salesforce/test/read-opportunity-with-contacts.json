@@ -1,0 +1,41 @@
+{
+  "totalSize": 1,
+  "done": true,
+  "records": [
+    {
+      "attributes": {
+        "type": "Opportunity",
+        "url": "/services/data/v60.0/sobjects/Opportunity/006ak00000OQ4RxAAL"
+      },
+      "Id": "006ak00000OQ4RxAAL",
+      "Name": "Test Opportunity",
+      "Amount": 50000.00,
+      "StageName": "Prospecting",
+      "OpportunityContactRoles": {
+        "totalSize": 2,
+        "done": true,
+        "records": [
+          {
+            "attributes": {
+              "type": "OpportunityContactRole",
+              "url": "/services/data/v60.0/sobjects/OpportunityContactRole/00kak00000OQ4RxAAL"
+            },
+            "Id": "00kak00000OQ4RxAAL",
+            "ContactId": "003ak000003dQCGAA2",
+            "Role": "Decision Maker"
+          },
+          {
+            "attributes": {
+              "type": "OpportunityContactRole",
+              "url": "/services/data/v60.0/sobjects/OpportunityContactRole/00kak00000OQ4RyAAL"
+            },
+            "Id": "00kak00000OQ4RyAAL",
+            "ContactId": "003ak000003dQCDAA2",
+            "Role": "Influencer"
+          }
+        ]
+      }
+    }
+  ]
+}
+

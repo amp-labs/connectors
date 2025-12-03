@@ -24,6 +24,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseLeadsFirstPage := testutils.DataFromFile(t, "read-list-leads.json")
 	responseListContacts := testutils.DataFromFile(t, "read-list-contacts.json")
 	responseOpportunityWithAccount := testutils.DataFromFile(t, "read-opportunity-with-account.json")
+	responseOpportunityWithContacts := testutils.DataFromFile(t, "read-opportunity-with-contacts.json")
 
 	tests := []testroutines.Read{
 		{
@@ -203,6 +204,98 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 							"AccountId": nil,
 							"Amount":    30000.00,
 							"StageName": "Qualification",
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read Opportunity with Contacts association via junction - " +
+				"OpportunityContactRoles subquery added and ContactIds extracted",
+			Input: common.ReadParams{
+				ObjectName:        "opportunity",
+				Fields:            connectors.Fields("Name", "Amount", "StageName"),
+				AssociatedObjects: []string{"contacts"},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/services/data/v60.0/query"),
+					mockcond.Or{
+						// OpportunityContactRoles subquery should be added to the query, order may vary
+						mockcond.QueryParam("q",
+							"SELECT Name,Amount,StageName,(SELECT FIELDS(STANDARD) FROM OpportunityContactRoles) FROM opportunity"),
+						mockcond.QueryParam("q",
+							"SELECT (SELECT FIELDS(STANDARD) FROM OpportunityContactRoles),Name,Amount,StageName FROM opportunity"),
+						mockcond.QueryParam("q",
+							"SELECT Name,(SELECT FIELDS(STANDARD) FROM OpportunityContactRoles),Amount,StageName FROM opportunity"),
+						mockcond.QueryParam("q",
+							"SELECT Amount,Name,StageName,(SELECT FIELDS(STANDARD) FROM OpportunityContactRoles) FROM opportunity"),
+						mockcond.QueryParam("q",
+							"SELECT StageName,Name,Amount,(SELECT FIELDS(STANDARD) FROM OpportunityContactRoles) FROM opportunity"),
+					},
+				},
+				Then: mockserver.Response(http.StatusOK, responseOpportunityWithContacts),
+			}.Server(),
+			Comparator: comparatorSubsetReadWithAssociations,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Id: "006ak00000OQ4RxAAL",
+						Fields: map[string]any{
+							"name":      "Test Opportunity",
+							"amount":    50000.00,
+							"stagename": "Prospecting",
+						},
+						Associations: map[string][]common.Association{
+							"contacts": {
+								{
+									ObjectId: "003ak000003dQCGAA2",
+									Raw:      nil, // Junction relationships have empty Raw - workflow layer will fetch Contact records
+								},
+								{
+									ObjectId: "003ak000003dQCDAA2",
+									Raw:      nil, // Junction relationships have empty Raw - workflow layer will fetch Contact records
+								},
+							},
+						},
+						Raw: map[string]any{
+							"Id":        "006ak00000OQ4RxAAL",
+							"Name":      "Test Opportunity",
+							"Amount":    50000.00,
+							"StageName": "Prospecting",
+							"attributes": map[string]any{
+								"type": "Opportunity",
+								"url":  "/services/data/v60.0/sobjects/Opportunity/006ak00000OQ4RxAAL",
+							},
+							"OpportunityContactRoles": map[string]any{
+								"totalSize": 2.0,
+								"done":      true,
+								"records": []any{
+									map[string]any{
+										"Id":        "00kak00000OQ4RxAAL",
+										"ContactId": "003ak000003dQCGAA2",
+										"Role":      "Decision Maker",
+										"attributes": map[string]any{
+											"type": "OpportunityContactRole",
+											"url":  "/services/data/v60.0/sobjects/OpportunityContactRole/00kak00000OQ4RxAAL",
+										},
+									},
+									map[string]any{
+										"Id":        "00kak00000OQ4RyAAL",
+										"ContactId": "003ak000003dQCDAA2",
+										"Role":      "Influencer",
+										"attributes": map[string]any{
+											"type": "OpportunityContactRole",
+											"url":  "/services/data/v60.0/sobjects/OpportunityContactRole/00kak00000OQ4RyAAL",
+										},
+									},
+								},
+							},
 						},
 					},
 				},

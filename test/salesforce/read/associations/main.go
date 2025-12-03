@@ -50,8 +50,8 @@ func main() {
 	res, err = conn.Read(ctx, connectors.ReadParams{
 		ObjectName: "Opportunity",
 		Fields:     connectors.Fields("Id", "Name", "Amount", "StageName", "CloseDate"),
-		// Test parent relationship (account)
-		AssociatedObjects: []string{"account"},
+		// Test both parent relationship (account) and junction relationship (contacts)
+		AssociatedObjects: []string{"account", "contacts"},
 	})
 	if err != nil {
 		utils.Fail("error reading Opportunity associations", "error", err)
