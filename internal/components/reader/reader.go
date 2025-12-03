@@ -17,6 +17,8 @@ type HTTPReader struct {
 	module    common.ModuleID
 }
 
+// Deprecated: use NewHTTPReader2.
+// NewHTTPReader returns provider API reader that can be used to compose read connectors.
 func NewHTTPReader(
 	client common.AuthenticatedHTTPClient,
 	registry *components.EndpointRegistry,
@@ -26,6 +28,19 @@ func NewHTTPReader(
 	return &HTTPReader{
 		operation: operations.NewHTTPOperation(client, list),
 		registry:  registry,
+		module:    module,
+	}
+}
+
+// NewHTTPReader2 returns provider API reader that can be used to compose read connectors.
+func NewHTTPReader2(
+	client common.AuthenticatedHTTPClient,
+	module common.ModuleID,
+	list operations.ReadHandlers,
+) *HTTPReader {
+	return &HTTPReader{
+		operation: operations.NewHTTPOperation(client, list),
+		registry:  components.NewEmptyEndpointRegistry(),
 		module:    module,
 	}
 }
