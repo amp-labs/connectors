@@ -32,6 +32,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
+					mockcond.Path("/graphql"),
 					mockcond.Header(http.Header{
 						"Braintree-Version": []string{"2019-01-01"},
 					}),
@@ -53,6 +54,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
+					mockcond.Path("/graphql"),
 					mockcond.Header(http.Header{
 						"Braintree-Version": []string{"2019-01-01"},
 					}),
