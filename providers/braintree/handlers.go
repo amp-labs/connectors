@@ -23,6 +23,8 @@ import (
 //go:embed graphql/*.graphql
 var queryFiles embed.FS
 
+// buildSingleObjectMetadataRequest builds a GraphQL introspection request to fetch field metadata.
+// See: https://developer.paypal.com/braintree/graphql/guides/#schema-and-types
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
 	if err != nil {
@@ -33,7 +35,8 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	// e.g., "customers" -> "Customer", "merchantAccounts" -> "MerchantAccount"
 	graphqlTypeName := naming.NewSingularString(naming.CapitalizeFirstLetter(objectName)).String()
 
-	// Use introspection query to get field information
+	// Use introspection query to get field information including enum values and required status.
+	// NON_NULL kind indicates a required field, enumValues provides possible values for enum types.
 	query := fmt.Sprintf(`{
 		__type(name: "%s") {
 			name
@@ -42,9 +45,16 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 				type {
 					name
 					kind
+					enumValues { name }
 					ofType {
 						name
 						kind
+						enumValues { name }
+						ofType {
+							name
+							kind
+							enumValues { name }
+						}
 					}
 				}
 			}
@@ -93,21 +103,95 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	// Process each field from the introspection result
 	for _, field := range metadataResp.Data.Type.Fields {
-		valueType := field.Type.Name
+		valueType, isRequired, enumValues := extractFieldInfo(field.Type)
 
-		if valueType == "" {
-			valueType = field.Type.OfType.Name
-		}
-
-		objectMetadata.Fields[field.Name] = common.FieldMetadata{
+		fieldMetadata := common.FieldMetadata{
 			DisplayName:  field.Name,
 			ValueType:    getFieldValueType(valueType),
 			ProviderType: valueType,
-			Values:       nil,
+			Values:       enumValues,
 		}
+
+		if isRequired {
+			fieldMetadata.IsRequired = &isRequired
+		}
+
+		objectMetadata.Fields[field.Name] = fieldMetadata
 	}
 
 	return &objectMetadata, nil
+}
+
+// extractFieldInfo extracts the type name, required status, and enum values from a GraphQL type.
+// It handles wrapped types like NON_NULL and LIST.
+func extractFieldInfo(typeInfo TypeInfo) (typeName string, isRequired bool, enumValues []common.FieldValue) {
+	// Check if the field is required (NON_NULL wrapper)
+	if typeInfo.Kind == KindNonNull {
+		isRequired = true
+
+		// Unwrap to get the actual type
+		if typeInfo.OfType != nil {
+			return extractFromOfType(*typeInfo.OfType, isRequired)
+		}
+	}
+
+	// Check for enum values at this level
+	if typeInfo.Kind == KindEnum && len(typeInfo.EnumValues) > 0 {
+		enumValues = make([]common.FieldValue, len(typeInfo.EnumValues))
+		for i, ev := range typeInfo.EnumValues {
+			enumValues[i] = common.FieldValue{Value: ev.Name, DisplayValue: ev.Name}
+		}
+
+		return typeInfo.Name, isRequired, enumValues
+	}
+
+	// Get type name
+	if typeInfo.Name != "" {
+		return typeInfo.Name, isRequired, nil
+	}
+
+	// Unwrap if needed
+	if typeInfo.OfType != nil {
+		typeName, _, enumValues = extractFromOfType(*typeInfo.OfType, isRequired)
+
+		return typeName, isRequired, enumValues
+	}
+
+	return "", isRequired, nil
+}
+
+// extractFromOfType extracts type info from nested OfType structures.
+func extractFromOfType(ofType OfTypeInfo, isRequired bool) (string, bool, []common.FieldValue) {
+	// Check for enum values
+	if ofType.Kind == KindEnum && len(ofType.EnumValues) > 0 {
+		enumValues := make([]common.FieldValue, len(ofType.EnumValues))
+		for i, ev := range ofType.EnumValues {
+			enumValues[i] = common.FieldValue{Value: ev.Name, DisplayValue: ev.Name}
+		}
+
+		return ofType.Name, isRequired, enumValues
+	}
+
+	// If this is NON_NULL, mark as required and continue unwrapping
+	if ofType.Kind == KindNonNull {
+		isRequired = true
+
+		if ofType.OfType != nil {
+			return extractFromOfType(*ofType.OfType, isRequired)
+		}
+	}
+
+	// Return the type name
+	if ofType.Name != "" {
+		return ofType.Name, isRequired, nil
+	}
+
+	// Continue unwrapping
+	if ofType.OfType != nil {
+		return extractFromOfType(*ofType.OfType, isRequired)
+	}
+
+	return "", isRequired, nil
 }
 
 func getFieldValueType(field string) common.ValueType {

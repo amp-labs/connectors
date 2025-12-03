@@ -11,17 +11,25 @@ const (
 	KindEnum    TypeKind = "ENUM"
 )
 
+// EnumValue represents a possible value for an enum type.
+type EnumValue struct {
+	Name string `json:"name"`
+}
+
 // TypeInfo represents the type information in the GraphQL schema.
 type TypeInfo struct {
-	Name   string     `json:"name"`
-	Kind   TypeKind   `json:"kind"`
-	OfType OfTypeInfo `json:"ofType"`
+	Name       string      `json:"name"`
+	Kind       TypeKind    `json:"kind"`
+	OfType     *OfTypeInfo `json:"ofType"`
+	EnumValues []EnumValue `json:"enumValues"`
 }
 
 // OfTypeInfo represents the nested type information for wrapped types.
 type OfTypeInfo struct {
-	Name string   `json:"name"`
-	Kind TypeKind `json:"kind"`
+	Name       string      `json:"name"`
+	Kind       TypeKind    `json:"kind"`
+	OfType     *OfTypeInfo `json:"ofType"`
+	EnumValues []EnumValue `json:"enumValues"`
 }
 
 // Field represents a field in the GraphQL schema.
