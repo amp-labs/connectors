@@ -68,6 +68,7 @@ func searchLeads(ctx context.Context, conn *closecrm.Connector) error {
 	// Test pagination if there's a next page
 	if len(result.NextPage) > 0 {
 		slog.Info("Testing pagination with next page token...")
+
 		nextPageConfig := closecrm.SearchParams{
 			ObjectName: "lead",
 			Since:      time.Now().Add(-72 * time.Hour),
