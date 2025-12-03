@@ -19,6 +19,8 @@ import (
 //go:embed graphql/*.graphql
 var queryFiles embed.FS
 
+// buildSingleObjectMetadataRequest builds a GraphQL introspection request to fetch field metadata.
+// See: https://developer.paypal.com/braintree/graphql/guides/#schema-and-types
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
 	if err != nil {
