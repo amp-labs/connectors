@@ -172,6 +172,6 @@ func (p *ObjectSchemaProvider) fetchSerial(
 	return result, nil
 }
 
-func (p *ObjectSchemaProvider) String() string {
+func (p *ObjectSchemaProvider) SchemaSource() string {
 	return "ObjectSchemaProvider." + p.fetchType
 }
