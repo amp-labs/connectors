@@ -22,22 +22,13 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.64.3
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
-      - name: Debug network context (before make)
+      - name: Clone
         run: |
-          echo "Step user: $(id)"
-          echo "Environment snapshot:"
-          printenv | sort
-          echo "Resolv.conf:"
-          cat /etc/resolv.conf || true
-          echo "Can resolve github.com?"
-          getent hosts github.com || nslookup github.com || dig +short github.com
-          echo "Can curl git endpoints?"
-          curl -v https://github.com/golangci/golangci-lint.git -I || true
+          git clone --branch v1.64.3 --single-branch --depth 1 -c advice.detachedHead=false -q https://github.com/golangci/golangci-lint.git
+          ls golangci-lint
 
       - name: Run make with tracing
-        run: |
-          echo "Running make under strace-like debug..."
-          GIT_TRACE=1 GIT_CURL_VERBOSE=1 make custom-gcl 2>&1 | tee make-debug.log
+        run: git --version
 
       - name: Build custom golangci-lint with custom linters
         run: make custom-gcl
