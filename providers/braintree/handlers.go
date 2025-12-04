@@ -8,11 +8,9 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
-	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/graphql"
@@ -272,24 +270,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	return req, nil
 }
 
-// connectorSideFilteredObjects lists objects that require connector-side time filtering
-// because the API doesn't support native createdAt filtering for them.
-// Note: merchantAccounts is excluded as it doesn't have a createdAt field in the schema.
-var connectorSideFilteredObjects = map[string]bool{ //nolint:gochecknoglobals
-	// Add objects here that have createdAt but don't support API-level time filtering.
-}
-
-// needsConnectorSideFiltering checks if time filtering should be done connector-side.
-func needsConnectorSideFiltering(params common.ReadParams) bool {
-	// If no time params, no filtering needed.
-	if params.Since.IsZero() && params.Until.IsZero() {
-		return false
-	}
-
-	// Check if this object requires connector-side filtering.
-	return connectorSideFilteredObjects[params.ObjectName]
-}
-
 func (c *Connector) parseReadResponse(
 	ctx context.Context,
 	params common.ReadParams,
@@ -308,26 +288,8 @@ func (c *Connector) parseReadResponse(
 
 	// merchantAccounts uses a different query path: viewer.merchant.merchantAccounts
 	// All other objects use the standard search path: search.[objectName]
+	// Note: merchantAccounts doesn't have a createdAt field in the schema, so no time filtering is applied.
 	if params.ObjectName == objectMerchantAccounts {
-		// Check if we need connector-side time filtering.
-		if needsConnectorSideFiltering(params) {
-			return common.ParseResultFiltered(
-				params,
-				resp,
-				common.MakeRecordsFunc("edges", "data", "viewer", "merchant", params.ObjectName),
-				readhelper.MakeTimeFilterFuncWithZoom(
-					readhelper.Unordered,
-					readhelper.NewTimeBoundary(),
-					[]string{"node"},
-					"createdAt",
-					time.RFC3339,
-					makeNextRecordsURL(params.ObjectName),
-				),
-				common.MakeMarshaledDataFunc(common.FlattenNestedFields("node")),
-				params.Fields,
-			)
-		}
-
 		return common.ParseResult(
 			resp,
 			common.MakeRecordsFunc("edges", "data", "viewer", "merchant", params.ObjectName),
@@ -362,7 +324,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	// Prepare request body with mutation & variables.
-	requestBody := map[string]interface{}{
+	requestBody := map[string]any{
 		"query": mutation,
 		"variables": map[string]any{
 			"input": params.RecordData,
@@ -410,7 +372,7 @@ func getGraphQLMutationName(params common.WriteParams) string {
 
 // injectRecordId adds the RecordId to the appropriate location in the request body.
 // Each object type has different requirements for where the ID should be placed.
-func injectRecordId(params common.WriteParams, requestBody map[string]interface{}) {
+func injectRecordId(params common.WriteParams, requestBody map[string]any) {
 	if params.RecordId == "" {
 		return
 	}
