@@ -17,6 +17,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 	bulkJobsResponse := testutils.DataFromFile(t, "read-bulk_send_job.json")
 	faxResponse := testutils.DataFromFile(t, "read-fax.json")
+	bulkJobsFirstPage := testutils.DataFromFile(t, "read-bulk_send_job-first-page.json")
+	bulkJobsLastPage := testutils.DataFromFile(t, "read-bulk_send_job-last-page.json")
 
 	tests := []testroutines.Read{
 		{
@@ -26,56 +28,136 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:         "At least one field is requested",
-			Input:        common.ReadParams{ObjectName: "customers"},
+			Input:        common.ReadParams{ObjectName: "bulk_send_job"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingFields},
 		},
 		{
-			Name:  "Successful read of customers with chosen fields",
-			Input: common.ReadParams{ObjectName: "customers", Fields: connectors.Fields("id", "name", "email", "status")},
+			Name:  "Successful read of bulk_send_job with chosen fields",
+			Input: common.ReadParams{ObjectName: "bulk_send_job", Fields: connectors.Fields("bulk_send_job_id", "total", "is_creator", "created_at")}, //nolint:lll
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/customers"),
+				If:    mockcond.Path("/v3/bulk_send_job/list"),
 				Then:  mockserver.Response(http.StatusOK, bulkJobsResponse),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"bulk_send_job_id": "fef03f144d9384737a98ff2ca6c1fd9d7bc2239a",
+							"total":            float64(250),
+							"is_creator":       false,
+							"created_at":       float64(1532740871),
+						},
+						Raw: map[string]any{
+							"bulk_send_job_id": "fef03f144d9384737a98ff2ca6c1fd9d7bc2239a",
+							"total":            float64(250),
+							"is_creator":       false,
+							"created_at":       float64(1532740871),
+						},
+					},
+					{
+						Fields: map[string]any{
+							"bulk_send_job_id": "6e683bc0369ba3d5b6f43c2c22a8031dbf6bd174",
+							"total":            float64(1),
+							"is_creator":       true,
+							"created_at":       float64(1532640962),
+						},
+						Raw: map[string]any{
+							"bulk_send_job_id": "6e683bc0369ba3d5b6f43c2c22a8031dbf6bd174",
+							"total":            float64(1),
+							"is_creator":       true,
+							"created_at":       float64(1532640962),
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Successful read of fax with chosen fields",
+			Input: common.ReadParams{
+				ObjectName: "fax",
+				Fields:     connectors.Fields("fax_id", "title", "subject", "sender"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v3/fax/list"),
+				Then:  mockserver.Response(http.StatusOK, faxResponse),
+			}.Server(),
+			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"id":     "ctm_01hv6y1jedq4p1n0yqn5ba3ky4",
-						"status": "active",
-						"name":   "Jo Brown-Anderson",
-						"email":  "jo@example.com",
+						"fax_id":  "c2e9691c85d9d6fa6ae773842e3680b2b8650f1d",
+						"title":   "example title",
+						"subject": "example subject",
+						"sender":  "me@dropboxsign.com",
 					},
 					Raw: map[string]any{
-						"id":                "ctm_01hv6y1jedq4p1n0yqn5ba3ky4",
-						"status":            "active",
-						"custom_data":       nil,
-						"name":              "Jo Brown-Anderson",
-						"email":             "jo@example.com",
-						"marketing_consent": false,
-						"locale":            "en",
-						"created_at":        "2024-04-11T15:57:24.813Z",
-						"updated_at":        "2024-04-11T15:59:56.658719Z",
-						"import_meta":       nil,
+						"fax_id":         "c2e9691c85d9d6fa6ae773842e3680b2b8650f1d",
+						"title":          "example title",
+						"original_title": "example original title",
+						"subject":        "example subject",
+						"message":        "example message",
+						"metadata":       []any{},
+						"created_at":     float64(1726774555),
+						"sender":         "me@dropboxsign.com",
+						"transmissions": []any{
+							map[string]any{
+								"recipient":   "recipient@dropboxsign.com",
+								"sender":      "me@dropboxsign.com",
+								"sent_at":     float64(1723231831),
+								"status_code": "success",
+							},
+						},
+						"files_url": "https://api.hellosign.com/v3/fax/files/2b388914e3ae3b738bd4e2ee2850c677e6dc53d2",
 					},
 				}},
-				NextPage: "https://api.paddle.com/customers?after=ctm_01h8441jn5pcwrfhwh78jqt8hk",
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read first page with pagination",
+			Input: common.ReadParams{
+				ObjectName: "bulk_send_job",
+				Fields:     connectors.Fields("bulk_send_job_id", "total"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v3/bulk_send_job/list"),
+				Then:  mockserver.Response(http.StatusOK, bulkJobsFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     2,
+				NextPage: "2",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Next page is the last page for customers",
+			Name: "Read last page with no more pages",
 			Input: common.ReadParams{
-				ObjectName: "customers",
-				Fields:     connectors.Fields("id", "name", "email", "status"),
+				ObjectName: "bulk_send_job",
+				Fields:     connectors.Fields("bulk_send_job_id", "total"),
+				NextPage:   "2",
 			},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/customers"),
-				Then:  mockserver.Response(http.StatusOK, faxResponse),
+				Cases: []mockserver.Case{{
+					If: mockcond.And{
+						mockcond.Path("/v3/bulk_send_job/list"),
+						mockcond.QueryParam("page", "2"),
+					},
+					Then: mockserver.Response(http.StatusOK, bulkJobsLastPage),
+				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
