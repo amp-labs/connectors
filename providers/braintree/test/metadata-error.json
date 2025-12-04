@@ -1,0 +1,19 @@
+{
+  "errors": [
+    {
+      "message": "Unknown type 'InvalidType'",
+      "locations": [
+        {
+          "line": 2,
+          "column": 15
+        }
+      ],
+      "extensions": {
+        "errorClass": "VALIDATION"
+      }
+    }
+  ],
+  "data": {
+    "__type": null
+  }
+}

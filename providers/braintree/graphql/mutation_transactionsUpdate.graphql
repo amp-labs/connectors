@@ -1,0 +1,15 @@
+mutation CaptureTransaction($input: CaptureTransactionInput!) {
+  transactionsUpdate: captureTransaction(input: $input) {
+    transaction {
+      id
+      legacyId
+      createdAt
+      amount {
+        value
+        currencyCode
+      }
+      status
+      orderId
+    }
+  }
+}

@@ -8,6 +8,8 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
+	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -19,7 +21,9 @@ type Connector struct {
 	common.RequireAuthenticatedClient
 
 	// Supported operations
+	components.SchemaProvider
 	components.Reader
+	components.Writer
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -30,6 +34,16 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
+	// Set the metadata provider using GraphQL introspection
+	connector.SchemaProvider = schema.NewObjectSchemaProvider(
+		connector.HTTPClient().Client,
+		schema.FetchModeParallel,
+		operations.SingleObjectMetadataHandlers{
+			BuildRequest:  connector.buildSingleObjectMetadataRequest,
+			ParseResponse: connector.parseSingleObjectMetadataResponse,
+		},
+	)
+
 	registry := components.NewEmptyEndpointRegistry()
 
 	connector.Reader = reader.NewHTTPReader(
@@ -39,6 +53,19 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
+			ErrorHandler: interpreter.ErrorHandler{
+				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+			}.Handle,
+		},
+	)
+
+	connector.Writer = writer.NewHTTPWriter(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
 			ErrorHandler: interpreter.ErrorHandler{
 				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 			}.Handle,
