@@ -16,7 +16,6 @@ const (
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName, listSuffix)
 	if err != nil {
 		return nil, err

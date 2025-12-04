@@ -19,7 +19,7 @@ func run() error {
 	ctx := context.Background()
 	connector := dropboxsign.GetDropboxSignConnector(ctx)
 
-	m, err := connector.ListObjectMetadata(ctx, []string{"template", "api_app", "fax"})
+	m, err := connector.ListObjectMetadata(ctx, []string{"template", "api_app"})
 	if err != nil {
 		log.Fatal(err)
 	}

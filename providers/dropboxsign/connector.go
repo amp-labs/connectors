@@ -21,7 +21,7 @@ type Connector struct {
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
-	return components.Initialize(providers.Fathom, params, constructor)
+	return components.Initialize(providers.DropboxSign, params, constructor)
 }
 
 func constructor(base *components.Connector) (*Connector, error) {

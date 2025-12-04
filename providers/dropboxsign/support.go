@@ -13,10 +13,11 @@ var (
 
 //nolint:gochecknoglobals
 var readObjectResponseKey = datautils.NewDefaultMap(map[string]string{
-	objectNameTemplate: "templates",
-	objectNameApiApp:   "api_apps",
-	objectNameFax:      "faxes",
-	objectNameFaxLine:  "fax_lines",
+	objectNameTemplate:     "templates",
+	objectNameApiApp:       "api_apps",
+	objectNameFax:          "faxes",
+	objectNameFaxLine:      "fax_lines",
+	objectNameBulkSendJobs: "bulk_send_jobs",
 }, func(objectName string) (fieldName string) {
 	return objectName
 },
