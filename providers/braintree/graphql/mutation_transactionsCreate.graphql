@@ -1,0 +1,15 @@
+mutation ChargePaymentMethod($input: ChargePaymentMethodInput!) {
+  transactionsCreate: chargePaymentMethod(input: $input) {
+    transaction {
+      id
+      legacyId
+      createdAt
+      amount {
+        value
+        currencyCode
+      }
+      status
+      orderId
+    }
+  }
+}

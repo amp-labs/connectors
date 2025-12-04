@@ -14,6 +14,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/graphql"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 //go:embed graphql/*.graphql
@@ -231,8 +232,14 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		toDate = datautils.Time.FormatRFC3339inUTC(params.Until)
 	}
 
+	// Use PageSize from params if provided, otherwise use default.
+	pageSize := defaultPageSize
+	if params.PageSize > 0 {
+		pageSize = params.PageSize
+	}
+
 	pagination := graphql.PaginationParameter{
-		First:    defaultPageSize,
+		First:    pageSize,
 		After:    after,
 		FromDate: fromDate,
 		ToDate:   toDate,
@@ -281,7 +288,8 @@ func (c *Connector) parseReadResponse(
 
 	// merchantAccounts uses a different query path: viewer.merchant.merchantAccounts
 	// All other objects use the standard search path: search.[objectName]
-	if params.ObjectName == "merchantAccounts" {
+	// Note: merchantAccounts doesn't have a createdAt field in the schema, so no time filtering is applied.
+	if params.ObjectName == objectMerchantAccounts {
 		return common.ParseResult(
 			resp,
 			common.MakeRecordsFunc("edges", "data", "viewer", "merchant", params.ObjectName),
@@ -298,4 +306,153 @@ func (c *Connector) parseReadResponse(
 		common.MakeMarshaledDataFunc(common.FlattenNestedFields("node")),
 		params.Fields,
 	)
+}
+
+//nolint:cyclop
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
+	if err != nil {
+		return nil, err
+	}
+
+	graphqlMutationName := getGraphQLMutationName(params)
+
+	// Build GraphQL mutation with input.
+	mutation, err := graphql.Operation(queryFiles, "mutation", graphqlMutationName, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Prepare request body with mutation & variables.
+	requestBody := map[string]any{
+		"query": mutation,
+		"variables": map[string]any{
+			"input": params.RecordData,
+		},
+	}
+
+	injectRecordId(params, requestBody)
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Add(braintreeVersionHeader, braintreeVersion)
+
+	return req, nil
+}
+
+// getGraphQLMutationName determines the GraphQL mutation name based on the operation type.
+// For paymentMethods, update is detected by presence of billingAddress in input.
+func getGraphQLMutationName(params common.WriteParams) string {
+	isUpdate := params.RecordId != ""
+
+	// Special case for paymentMethods: detect update by presence of billingAddress in input.
+	if params.ObjectName == objectPaymentMethods && !isUpdate {
+		if recordData, err := params.GetRecord(); err == nil {
+			if _, hasBillingAddress := recordData["billingAddress"]; hasBillingAddress {
+				isUpdate = true
+			}
+		}
+	}
+
+	if isUpdate {
+		return params.ObjectName + "Update"
+	}
+
+	return params.ObjectName + "Create"
+}
+
+// injectRecordId adds the RecordId to the appropriate location in the request body.
+// Each object type has different requirements for where the ID should be placed.
+func injectRecordId(params common.WriteParams, requestBody map[string]any) {
+	if params.RecordId == "" {
+		return
+	}
+
+	vars, ok := requestBody["variables"].(map[string]any)
+	if !ok {
+		return
+	}
+
+	switch params.ObjectName {
+	case "customers":
+		// For customers updates, the ID is passed as a separate customerId variable.
+		vars["customerId"] = params.RecordId
+	case "transactions":
+		// For transactions (captureTransaction), inject transactionId into the input.
+		if input, ok := vars["input"].(map[string]any); ok {
+			input["transactionId"] = params.RecordId
+		}
+	case objectPaymentMethods:
+		// For paymentMethods (updateCreditCardBillingAddress), inject paymentMethodId into the input.
+		if input, ok := vars["input"].(map[string]any); ok {
+			input["paymentMethodId"] = params.RecordId
+		}
+	}
+}
+
+//nolint:cyclop,funlen
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := resp.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	// Check for GraphQL errors.
+	errorResp, err := common.UnmarshalJSON[ResponseError](resp)
+	if err == nil && errorResp != nil {
+		if checkErr := checkErrorInResponse(errorResp); checkErr != nil {
+			return nil, checkErr
+		}
+	}
+
+	graphqlMutationName := getGraphQLMutationName(params)
+
+	jsonQuery := jsonquery.New(body, "data", graphqlMutationName)
+
+	// For paymentMethods, the response field is "paymentMethod" (singular, camelCase).
+	// For other objects, use singular form of the object name.
+	var responseFieldName string
+	if params.ObjectName == objectPaymentMethods {
+		responseFieldName = "paymentMethod"
+	} else {
+		responseFieldName = naming.NewSingularString(params.ObjectName).String()
+	}
+
+	objectResponse, err := jsonQuery.ObjectOptional(responseFieldName)
+	if err != nil {
+		return nil, err
+	}
+
+	recordID, err := jsonquery.New(objectResponse).StrWithDefault("id", "")
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := jsonquery.Convertor.ObjectToMap(objectResponse)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     response,
+	}, nil
 }
