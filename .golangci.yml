@@ -28,8 +28,6 @@ linters:
     - tenv
     # Disabled because it enforces strict struct tag formatting that may conflict with provider-specific requirements
     - tagliatelle
-    # Deprecated and no longer relevant since Go1.22.
-    - exportloopref
 linters-settings:
   # See https://golangci-lint.run/usage/linters#revive
   revive:
