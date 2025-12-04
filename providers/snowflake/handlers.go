@@ -32,7 +32,13 @@ func (c *Connector) listObjectMetadata(
 
 // getObjectMetadata retrieves metadata for a single object.
 func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
-	columns, err := c.getColumnMetadata(ctx, objectName)
+	// Resolve the actual table name from object config if available
+	tableName := objectName
+	if cfg, ok := c.objects[objectName]; ok && cfg.DynamicTableName != "" {
+		tableName = cfg.DynamicTableName
+	}
+
+	columns, err := c.getColumnMetadata(ctx, tableName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get column metadata for %s: %w", objectName, err)
 	}

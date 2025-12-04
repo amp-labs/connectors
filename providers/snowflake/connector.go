@@ -42,6 +42,10 @@ type Connector struct {
 	database  string
 	schema    string
 	role      string
+
+	// Per-object configurations parsed from metadata.
+	// Key is objectName (e.g., "contacts__stream").
+	objects map[string]*ObjectConfig
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -107,6 +111,9 @@ func (c *Connector) setup(params common.ConnectorParams) error {
 	if !ok {
 		return errMissingRole
 	}
+
+	// Parse per-object configurations from metadata
+	c.objects = parseObjectConfigs(params.Metadata)
 
 	return nil
 }

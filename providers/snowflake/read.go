@@ -4,20 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-)
-
-// Source keys expected in ReadParams.Source.
-const (
-	SourceKeyStreamName                  = "streamName"
-	SourceKeyDynamicTableName            = "dynamicTableName"
-	SourceKeyQuery                       = "query"
-	SourceKeyDynamicTableTimestampColumn = "dynamicTableTimestampColumn"
-	SourceKeyStreamOffsetTable           = "streamOffsetTable"
 )
 
 // CDC metadata columns from Snowflake streams.
@@ -25,11 +15,6 @@ const (
 	metadataAction   = "METADATA$ACTION"
 	metadataIsUpdate = "METADATA$ISUPDATE"
 	metadataRowID    = "METADATA$ROW_ID"
-)
-
-var (
-	errMissingStreamName       = errors.New("streamName is required in Source")
-	errMissingDynamicTableName = errors.New("dynamicTableName is required in Source")
 )
 
 // readMode represents the type of read operation to perform.
@@ -57,10 +42,6 @@ const (
 //   - Only Since set → Incremental read from Stream (CDC)
 //   - Only Until set → Time-bounded read from Dynamic Table
 //   - Both Since and Until set → Time range read from Dynamic Table
-//
-// TODO: Consider whether Since-only should use Dynamic Table + timestamp filter
-// instead of Stream, to honor the exact Since timestamp rather than relying on
-// Stream's "since last consumption" semantics.
 func determineReadMode(params common.ReadParams) readMode {
 	hasSince := !params.Since.IsZero()
 	hasUntil := !params.Until.IsZero()
@@ -99,10 +80,10 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 		return nil, err
 	}
 
-	// Extract source config
-	source, err := parseSourceConfig(params.Source)
-	if err != nil {
-		return nil, err
+	// Get object config from connector's parsed metadata
+	objConfig, ok := c.objects[params.ObjectName]
+	if !ok {
+		return nil, fmt.Errorf("object %q not found in connector configuration", params.ObjectName)
 	}
 
 	// Determine read mode based on Since/Until
@@ -111,64 +92,29 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 	switch mode {
 	case readModeIncremental:
 		// Incremental: read from Stream for CDC
-		return c.readFromStream(ctx, params, source)
+		return c.readFromStream(ctx, params, objConfig)
 
 	case readModeFullBackfill, readModeTimeRange:
 		// Full backfill or time range: read from Dynamic Table
-		return c.readFromDynamicTable(ctx, params, source)
+		return c.readFromDynamicTable(ctx, params, objConfig)
 
 	default:
 		// Should never reach here
-		return c.readFromDynamicTable(ctx, params, source)
+		return c.readFromDynamicTable(ctx, params, objConfig)
 	}
-}
-
-// sourceConfig holds parsed source configuration.
-type sourceConfig struct {
-	StreamName        string
-	DynamicTableName  string
-	TimestampColumn   string
-	StreamOffsetTable string
-}
-
-// parseSourceConfig extracts and validates source configuration.
-func parseSourceConfig(source map[string]any) (*sourceConfig, error) {
-	if source == nil {
-		return nil, errors.New("Source is required for Snowflake reads")
-	}
-
-	cfg := &sourceConfig{}
-
-	if v, ok := source[SourceKeyStreamName].(string); ok {
-		cfg.StreamName = v
-	}
-
-	if v, ok := source[SourceKeyDynamicTableName].(string); ok {
-		cfg.DynamicTableName = v
-	}
-
-	if v, ok := source[SourceKeyDynamicTableTimestampColumn].(string); ok {
-		cfg.TimestampColumn = v
-	}
-
-	if v, ok := source[SourceKeyStreamOffsetTable].(string); ok {
-		cfg.StreamOffsetTable = v
-	}
-
-	return cfg, nil
 }
 
 // readFromStream reads CDC data from a Snowflake Stream.
 func (c *Connector) readFromStream(
 	ctx context.Context,
 	params common.ReadParams,
-	source *sourceConfig,
+	objConfig *ObjectConfig,
 ) (*common.ReadResult, error) {
-	if source.StreamName == "" {
-		return nil, errMissingStreamName
+	if objConfig.StreamName == "" {
+		return nil, fmt.Errorf("streamName not configured for object %q", params.ObjectName)
 	}
 
-	streamName := c.getFullyQualifiedName(source.StreamName)
+	streamName := c.getFullyQualifiedName(objConfig.StreamName)
 
 	// Build the query to read from stream with CDC metadata
 	query := c.buildStreamQuery(streamName, params)
@@ -185,15 +131,6 @@ func (c *Connector) readFromStream(
 		return nil, err
 	}
 
-	// Advance the stream offset after successful read
-	if len(resultRows) > 0 && source.StreamOffsetTable != "" {
-		if err := c.advanceStreamOffset(ctx, streamName, source.StreamOffsetTable); err != nil {
-			// Log but don't fail - the read was successful
-			// The offset will be advanced on next successful read
-			_ = err
-		}
-	}
-
 	return &common.ReadResult{
 		Rows: int64(len(resultRows)),
 		Data: resultRows,
@@ -205,16 +142,16 @@ func (c *Connector) readFromStream(
 func (c *Connector) readFromDynamicTable(
 	ctx context.Context,
 	params common.ReadParams,
-	source *sourceConfig,
+	objConfig *ObjectConfig,
 ) (*common.ReadResult, error) {
-	if source.DynamicTableName == "" {
-		return nil, errMissingDynamicTableName
+	if objConfig.DynamicTableName == "" {
+		return nil, fmt.Errorf("dynamicTableName not configured for object %q", params.ObjectName)
 	}
 
-	tableName := c.getFullyQualifiedName(source.DynamicTableName)
+	tableName := c.getFullyQualifiedName(objConfig.DynamicTableName)
 
 	// Build SELECT query with time filtering
-	query := c.buildDynamicTableQuery(tableName, params, source)
+	query := c.buildDynamicTableQuery(tableName, params, objConfig)
 
 	rows, err := c.db.QueryContext(ctx, query)
 	if err != nil {
@@ -276,7 +213,7 @@ func (c *Connector) buildStreamQuery(streamName string, params common.ReadParams
 func (c *Connector) buildDynamicTableQuery(
 	tableName string,
 	params common.ReadParams,
-	source *sourceConfig,
+	objConfig *ObjectConfig,
 ) string {
 	var selectCols string
 
@@ -298,15 +235,15 @@ func (c *Connector) buildDynamicTableQuery(
 	// Add time filtering if timestamp column is specified
 	var conditions []string
 
-	if source.TimestampColumn != "" {
+	if objConfig.TimestampColumn != "" {
 		if !params.Since.IsZero() {
 			conditions = append(conditions,
-				fmt.Sprintf(`"%s" >= '%s'`, strings.ToUpper(source.TimestampColumn), params.Since.Format("2006-01-02 15:04:05")))
+				fmt.Sprintf(`"%s" >= '%s'`, strings.ToUpper(objConfig.TimestampColumn), params.Since.Format("2006-01-02 15:04:05")))
 		}
 
 		if !params.Until.IsZero() {
 			conditions = append(conditions,
-				fmt.Sprintf(`"%s" <= '%s'`, strings.ToUpper(source.TimestampColumn), params.Until.Format("2006-01-02 15:04:05")))
+				fmt.Sprintf(`"%s" <= '%s'`, strings.ToUpper(objConfig.TimestampColumn), params.Until.Format("2006-01-02 15:04:05")))
 		}
 	}
 
@@ -315,8 +252,8 @@ func (c *Connector) buildDynamicTableQuery(
 	}
 
 	// Add ordering by timestamp column if available
-	if source.TimestampColumn != "" {
-		query = fmt.Sprintf("%s ORDER BY \"%s\"", query, strings.ToUpper(source.TimestampColumn))
+	if objConfig.TimestampColumn != "" {
+		query = fmt.Sprintf("%s ORDER BY \"%s\"", query, strings.ToUpper(objConfig.TimestampColumn))
 	}
 
 	// Add LIMIT if PageSize is specified
@@ -329,7 +266,7 @@ func (c *Connector) buildDynamicTableQuery(
 
 // processRows converts SQL rows to ReadResultRows.
 func (c *Connector) processRows(
-	ctx context.Context,
+	_ context.Context,
 	rows *sql.Rows,
 ) ([]common.ReadResultRow, error) {
 	columns, err := rows.Columns()
@@ -405,22 +342,6 @@ func (c *Connector) scanRow(rows *sql.Rows, columns []string) (*common.ReadResul
 		Raw:    raw,
 		Id:     rowID,
 	}, nil
-}
-
-// advanceStreamOffset advances the stream offset by consuming the data.
-// Uses the efficient INSERT ... WHERE FALSE pattern.
-func (c *Connector) advanceStreamOffset(ctx context.Context, streamName, offsetTable string) error {
-	fqOffsetTable := c.getFullyQualifiedName(offsetTable)
-
-	// This advances the stream offset without actually inserting any data
-	query := fmt.Sprintf(`INSERT INTO %s SELECT * FROM %s WHERE FALSE`, fqOffsetTable, streamName)
-
-	_, err := c.db.ExecContext(ctx, query)
-	if err != nil {
-		return fmt.Errorf("failed to advance stream offset: %w", err)
-	}
-
-	return nil
 }
 
 // getFullyQualifiedName returns the fully qualified name for an object.
