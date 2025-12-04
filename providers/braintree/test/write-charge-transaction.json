@@ -1,0 +1,17 @@
+{
+  "data": {
+    "transactionsCreate": {
+      "transaction": {
+        "id": "txn_456",
+        "legacyId": "tx456789",
+        "createdAt": "2025-01-25T12:00:00Z",
+        "amount": {
+          "value": "10.00",
+          "currencyCode": "USD"
+        },
+        "status": "authorized",
+        "orderId": null
+      }
+    }
+  }
+}

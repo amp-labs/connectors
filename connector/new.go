@@ -20,6 +20,7 @@ import (
 	"github.com/amp-labs/connectors/providers/bitbucket"
 	"github.com/amp-labs/connectors/providers/blackbaud"
 	"github.com/amp-labs/connectors/providers/blueshift"
+	"github.com/amp-labs/connectors/providers/braintree"
 	"github.com/amp-labs/connectors/providers/braze"
 	"github.com/amp-labs/connectors/providers/breakcold"
 	"github.com/amp-labs/connectors/providers/brevo"
@@ -130,6 +131,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Bitbucket:               wrapper(newBitBucketConnector),
 	providers.Blackbaud:               wrapper(newBlackbaudConnector),
 	providers.Blueshift:               wrapper(newBlueshiftConnector),
+	providers.Braintree:               wrapper(newBraintreeConnector),
 	providers.Braze:                   wrapper(newBrazeConnector),
 	providers.Breakcold:               wrapper(newBreakcoldConnector),
 	providers.Brevo:                   wrapper(newBrevoConnector),
@@ -718,6 +720,12 @@ func newLeverConnector(
 	params common.ConnectorParams,
 ) (*lever.Connector, error) {
 	return lever.NewConnector(params)
+}
+
+func newBraintreeConnector(
+	params common.ConnectorParams,
+) (*braintree.Connector, error) {
+	return braintree.NewConnector(params)
 }
 
 func newBrazeConnector(
