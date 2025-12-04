@@ -121,6 +121,26 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 // extractFieldInfo extracts the type name, required status, and enum values from a GraphQL type.
 // It handles wrapped types like NON_NULL and LIST.
+//
+// Example introspection response for a field with an enum type (e.g., Verification.status):
+//
+//	{
+//	  "name": "status",
+//	  "type": {
+//	    "name": "VerificationStatus",
+//	    "kind": "ENUM",
+//	    "enumValues": [
+//	      { "name": "FAILED" },
+//	      { "name": "GATEWAY_REJECTED" },
+//	      { "name": "PENDING" },
+//	      { "name": "PROCESSOR_DECLINED" },
+//	      { "name": "VERIFIED" }
+//	    ],
+//	    "ofType": null
+//	  }
+//	}
+//
+// See: https://developer.paypal.com/braintree/graphql/reference#Enum--VerificationStatus
 func extractFieldInfo(typeInfo TypeInfo) (typeName string, isRequired bool, enumValues []common.FieldValue) {
 	// Check if the field is required (NON_NULL wrapper)
 	if typeInfo.Kind == KindNonNull {
