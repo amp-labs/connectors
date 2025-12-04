@@ -26,6 +26,9 @@ linters:
     - testpackage
     # Annoying and not useful. Disabling otherwise we have to have comment everywhere
     - wrapcheck
+    # Too strict on the white lines. It looks like all statements must have white lines in between.
+    # https://golangci-lint.run/docs/linters/configuration/#wsl_v5
+    - wsl_v5
   settings:
     # https://golangci-lint.run/docs/linters/configuration/#revive
     revive:
@@ -41,6 +44,7 @@ linters:
       checks:
         - all
         - -ST1003
+        - -QF1008
     # https://golangci-lint.run/docs/linters/configuration/#varnamelen
     varnamelen:
       # The longest distance, in source lines, that is being considered a "small scope" where it is ok to use short variable names.
