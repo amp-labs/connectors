@@ -59,6 +59,45 @@ func containsField(fields []string, fieldName string) bool {
 	return false
 }
 
+// junctionRelationshipMapping defines the relationship name and related ID field for junction relationships.
+type junctionRelationshipMapping struct {
+	RelationshipName string // e.g., "OpportunityContactRoles"
+	RelatedIdField   string // e.g., "ContactId"
+}
+
+// getJunctionRelationshipMap returns the junction relationship map.
+// This is used for junction objects where we query a child relationship but extract a related object ID.
+// e.g., For Opportunity -> contacts, we query OpportunityContactRoles but extract ContactId.
+func getJunctionRelationshipMap() map[string]map[string]junctionRelationshipMapping {
+	return map[string]map[string]junctionRelationshipMapping{
+		"opportunity": {
+			"contacts": {
+				RelationshipName: "OpportunityContactRoles",
+				RelatedIdField:   "ContactId",
+			},
+		},
+	}
+}
+
+// getJunctionRelationship returns the relationship name and related ID field for junction relationships.
+// Returns ok=false if this is not a junction relationship.
+func getJunctionRelationship(objectName, associatedObject string) (relationshipName, relatedIdField string, ok bool) {
+	junctionRelationshipMap := getJunctionRelationshipMap()
+
+	objMap, found := junctionRelationshipMap[strings.ToLower(objectName)]
+
+	if !found {
+		return "", "", false
+	}
+
+	mapping, found := objMap[strings.ToLower(associatedObject)]
+	if !found {
+		return "", "", false
+	}
+
+	return mapping.RelationshipName, mapping.RelatedIdField, true
+}
+
 // Read reads data from Salesforce. By default, it will read all rows (backfill). However, if Since is set,
 // it will read only rows that have been updated since the specified time.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -141,12 +180,25 @@ func addFieldForAssociation(fields []string, objectName, assocObj string) []stri
 		if parentField != "" && !containsField(fields, parentField) {
 			fields = append(fields, parentField)
 		}
-	} else {
-		// Generates subqueries like: (SELECT FIELDS(STANDARD) FROM Contacts)
-		// Just standard fields for now, because salesforce errors out > 200 fields on an object.
-		// Source: https://www.infallibletechie.com/2023/04/parent-child-records-in-salesforce-soql-using-rest-api.html
-		fields = append(fields, "(SELECT FIELDS(STANDARD) FROM "+assocObj+")")
+
+		return fields
 	}
+
+	// Check for junction relationship (child relationship that maps to a different object)
+	relationshipName, _, isJunction := getJunctionRelationship(objectName, assocObj)
+	if isJunction {
+		// Use the mapped relationship name for SOQL subquery
+		// e.g., (SELECT FIELDS(STANDARD) FROM OpportunityContactRoles)
+		fields = append(fields, "(SELECT FIELDS(STANDARD) FROM "+relationshipName+")")
+
+		return fields
+	}
+
+	// Standard child relationship
+	// Generates subqueries like: (SELECT FIELDS(STANDARD) FROM Contacts)
+	// Just standard fields for now, because salesforce errors out > 200 fields on an object.
+	// Source: https://www.infallibletechie.com/2023/04/parent-child-records-in-salesforce-soql-using-rest-api.html
+	fields = append(fields, "(SELECT FIELDS(STANDARD) FROM "+assocObj+")")
 
 	return fields
 }
