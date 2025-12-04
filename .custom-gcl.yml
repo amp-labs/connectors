@@ -1,4 +1,4 @@
-version: v1.64.3
+version: v2.7.1
 plugins:
   - module: 'github.com/amp-labs/connectors/tools/linters/nogoroutine'
     path: './tools/linters/nogoroutine'
