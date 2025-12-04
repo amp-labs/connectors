@@ -28,6 +28,16 @@ query CustomerSearch {
           firstName
           lastName
           phoneNumber
+          paymentMethods {
+            edges {
+              node {
+                id
+                legacyId
+                usage
+                createdAt
+              }
+            }
+          }
         }
       }
       pageInfo {
