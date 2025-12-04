@@ -1,0 +1,702 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "addresses": {
+          "displayName": "Addresses",
+          "path": "/addresses",
+          "responseKey": "",
+          "fields": {
+            "address1": "address1",
+            "address2": "address2",
+            "addressId": "addressId",
+            "city": "city",
+            "company": "company",
+            "countryCode": "countryCode",
+            "countryName": "countryName",
+            "createdOn": "createdOn",
+            "firstName": "firstName",
+            "href": "href",
+            "lastName": "lastName",
+            "name": "name",
+            "phone": "phone",
+            "province": "province",
+            "provinceCode": "provinceCode",
+            "updatedOn": "updatedOn",
+            "zip": "zip"
+          }
+        },
+        "autoresponders": {
+          "displayName": "Autoresponders",
+          "path": "/autoresponders",
+          "responseKey": "",
+          "fields": {
+            "autoresponderId": "autoresponderId",
+            "campaign": "campaign",
+            "campaignId": "campaignId",
+            "content": "content",
+            "createdOn": "createdOn",
+            "flags": "flags",
+            "fromField": "fromField",
+            "href": "href",
+            "name": "name",
+            "replyTo": "replyTo",
+            "sendSettings": "sendSettings",
+            "statistics": "statistics",
+            "status": "status",
+            "subject": "subject",
+            "triggerSettings": "triggerSettings"
+          }
+        },
+        "autoresponders/statistics": {
+          "displayName": "Autoresponders/Statistics",
+          "path": "/autoresponders/statistics",
+          "responseKey": "",
+          "fields": {
+            "bounced": "bounced",
+            "complaints": "complaints",
+            "forwarded": "forwarded",
+            "goals": "goals",
+            "sent": "sent",
+            "timeInterval": "timeInterval",
+            "totalClicked": "totalClicked",
+            "totalHumanClicked": "totalHumanClicked",
+            "totalHumanOpened": "totalHumanOpened",
+            "totalOpened": "totalOpened",
+            "uniqueClicked": "uniqueClicked",
+            "uniqueGoals": "uniqueGoals",
+            "uniqueHumanClicked": "uniqueHumanClicked",
+            "uniqueHumanOpened": "uniqueHumanOpened",
+            "uniqueOpened": "uniqueOpened",
+            "unsubscribed": "unsubscribed"
+          }
+        },
+        "campaigns": {
+          "displayName": "Campaigns",
+          "path": "/campaigns",
+          "responseKey": "",
+          "fields": {
+            "campaignId": "campaignId",
+            "createdOn": "createdOn",
+            "description": "description",
+            "href": "href",
+            "isDefault": "isDefault",
+            "languageCode": "languageCode",
+            "name": "name",
+            "techName": "techName"
+          }
+        },
+        "click-tracks": {
+          "displayName": "Click-Tracks",
+          "path": "/click-tracks",
+          "responseKey": "",
+          "fields": {
+            "clickTrackId": "clickTrackId",
+            "clicks": "clicks",
+            "href": "href",
+            "message": "message",
+            "name": "name",
+            "url": "url"
+          }
+        },
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/contacts",
+          "responseKey": "",
+          "fields": {
+            "activities": "activities",
+            "campaign": "campaign",
+            "changedOn": "changedOn",
+            "contactId": "contactId",
+            "createdOn": "createdOn",
+            "dayOfCycle": "dayOfCycle",
+            "email": "email",
+            "engagementScore": "engagementScore",
+            "href": "href",
+            "ipAddress": "ipAddress",
+            "name": "name",
+            "note": "note",
+            "origin": "origin",
+            "scoring": "scoring",
+            "timeZone": "timeZone"
+          }
+        },
+        "custom-events": {
+          "displayName": "Custom-Events",
+          "path": "/custom-events",
+          "responseKey": "",
+          "fields": {
+            "attributes": "attributes",
+            "createdOn": "createdOn",
+            "customEventId": "customEventId",
+            "href": "href",
+            "name": "name"
+          }
+        },
+        "custom-fields": {
+          "displayName": "Custom-Fields",
+          "path": "/custom-fields",
+          "responseKey": "",
+          "fields": {
+            "customFieldId": "customFieldId",
+            "fieldType": "fieldType",
+            "format": "format",
+            "hidden": "hidden",
+            "href": "href",
+            "name": "name",
+            "type": "type",
+            "valueType": "valueType",
+            "values": "values"
+          }
+        },
+        "custom-reports": {
+          "displayName": "Custom-Reports",
+          "path": "/custom-reports",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "customReportId": "customReportId",
+            "frequency": "frequency",
+            "generatedAt": "generatedAt",
+            "href": "href",
+            "name": "name"
+          }
+        },
+        "facebook-pixels": {
+          "displayName": "Facebook-Pixels",
+          "path": "/tracking/facebook-pixels",
+          "responseKey": "",
+          "fields": {
+            "name": "name",
+            "pixelId": "pixelId"
+          }
+        },
+        "files": {
+          "displayName": "Files",
+          "path": "/file-library/files",
+          "responseKey": "",
+          "fields": {
+            "createdOn": "createdOn",
+            "extension": "extension",
+            "fileId": "fileId",
+            "fileSize": "fileSize",
+            "folder": "folder",
+            "group": "group",
+            "href": "href",
+            "name": "name",
+            "properties": "properties",
+            "thumbnail": "thumbnail",
+            "url": "url"
+          }
+        },
+        "folders": {
+          "displayName": "Folders",
+          "path": "/file-library/folders",
+          "responseKey": "",
+          "fields": {
+            "createdOn": "createdOn",
+            "folderId": "folderId",
+            "name": "name",
+            "size": "size"
+          }
+        },
+        "forms": {
+          "displayName": "Forms",
+          "path": "/forms",
+          "responseKey": "",
+          "fields": {
+            "campaign": "campaign",
+            "createdOn": "createdOn",
+            "formId": "formId",
+            "hasVariants": "hasVariants",
+            "href": "href",
+            "name": "name",
+            "scriptUrl": "scriptUrl",
+            "statistics": "statistics",
+            "status": "status",
+            "webformId": "webformId"
+          }
+        },
+        "from-fields": {
+          "displayName": "From-Fields",
+          "path": "/from-fields",
+          "responseKey": "",
+          "fields": {
+            "createdOn": "createdOn",
+            "domain": "domain",
+            "email": "email",
+            "fromFieldId": "fromFieldId",
+            "href": "href",
+            "isActive": "isActive",
+            "isDefault": "isDefault",
+            "name": "name",
+            "rewrittenEmail": "rewrittenEmail"
+          }
+        },
+        "gdpr-fields": {
+          "displayName": "Gdpr-Fields",
+          "path": "/gdpr-fields",
+          "responseKey": "",
+          "fields": {
+            "createdOn": "createdOn",
+            "gdprFieldId": "gdprFieldId",
+            "href": "href",
+            "name": "name"
+          }
+        },
+        "imports": {
+          "displayName": "Imports",
+          "path": "/imports",
+          "responseKey": "",
+          "fields": {
+            "campaign": "campaign",
+            "createdOn": "createdOn",
+            "errorStatistics": "errorStatistics",
+            "finishedOn": "finishedOn",
+            "href": "href",
+            "importId": "importId",
+            "statistics": "statistics",
+            "status": "status"
+          }
+        },
+        "industries": {
+          "displayName": "Industries",
+          "path": "/accounts/industries",
+          "responseKey": "",
+          "fields": {
+            "description": "description",
+            "industryTagId": "industryTagId",
+            "name": "name"
+          }
+        },
+        "landing-pages": {
+          "displayName": "Landing-Pages",
+          "path": "/landing-pages",
+          "responseKey": "",
+          "fields": {
+            "campaign": "campaign",
+            "createdOn": "createdOn",
+            "domain": "domain",
+            "href": "href",
+            "landingPageId": "landingPageId",
+            "metaTitle": "metaTitle",
+            "status": "status",
+            "subdomain": "subdomain",
+            "testAB": "testAB",
+            "updatedOn": "updatedOn",
+            "userDomain": "userDomain",
+            "userDomainPath": "userDomainPath",
+            "userDomainStatus": "userDomainStatus"
+          }
+        },
+        "list-size": {
+          "displayName": "List-Size",
+          "path": "/campaigns/statistics/list-size",
+          "responseKey": "",
+          "fields": {
+            "addedSubscribers": "addedSubscribers",
+            "createdOn": "createdOn",
+            "removedSubscribers": "removedSubscribers",
+            "totalSubscribers": "totalSubscribers"
+          }
+        },
+        "login-history": {
+          "displayName": "Login-History",
+          "path": "/accounts/login-history",
+          "responseKey": "",
+          "fields": {
+            "ip": "ip",
+            "isSuccessful": "isSuccessful",
+            "loginTime": "loginTime",
+            "logoutTime": "logoutTime"
+          }
+        },
+        "lps": {
+          "displayName": "Lps",
+          "path": "/lps",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "domainUrl": "domainUrl",
+            "href": "href",
+            "isChatsEnabled": "isChatsEnabled",
+            "lpsId": "lpsId",
+            "name": "name",
+            "statistics": "statistics",
+            "status": "status",
+            "thumbnailUrl": "thumbnailUrl",
+            "updatedAt": "updatedAt"
+          }
+        },
+        "multimedia": {
+          "displayName": "Multimedia",
+          "path": "/multimedia",
+          "responseKey": "",
+          "fields": {
+            "extension": "extension",
+            "imageId": "imageId",
+            "name": "name",
+            "originalImageUrl": "originalImageUrl",
+            "size": "size",
+            "thumbnailUrl": "thumbnailUrl",
+            "url": "url"
+          }
+        },
+        "newsletters": {
+          "displayName": "Newsletters",
+          "path": "/newsletters",
+          "responseKey": "",
+          "fields": {
+            "campaign": "campaign",
+            "createdOn": "createdOn",
+            "editor": "editor",
+            "flags": "flags",
+            "href": "href",
+            "name": "name",
+            "newsletterId": "newsletterId",
+            "sendMetrics": "sendMetrics",
+            "sendOn": "sendOn",
+            "sendSettings": "sendSettings",
+            "status": "status",
+            "subject": "subject",
+            "type": "type"
+          }
+        },
+        "newsletters/statistics": {
+          "displayName": "Newsletters/Statistics",
+          "path": "/newsletters/statistics",
+          "responseKey": "",
+          "fields": {
+            "bounced": "bounced",
+            "complaints": "complaints",
+            "forwarded": "forwarded",
+            "goals": "goals",
+            "sent": "sent",
+            "timeInterval": "timeInterval",
+            "totalClicked": "totalClicked",
+            "totalHumanClicked": "totalHumanClicked",
+            "totalHumanOpened": "totalHumanOpened",
+            "totalOpened": "totalOpened",
+            "uniqueClicked": "uniqueClicked",
+            "uniqueGoals": "uniqueGoals",
+            "uniqueHumanClicked": "uniqueHumanClicked",
+            "uniqueHumanOpened": "uniqueHumanOpened",
+            "uniqueOpened": "uniqueOpened",
+            "unsubscribed": "unsubscribed"
+          }
+        },
+        "popups": {
+          "displayName": "Popups",
+          "path": "/popups",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "href": "href",
+            "name": "name",
+            "popupId": "popupId",
+            "statistics": "statistics",
+            "status": "status",
+            "type": "type",
+            "updatedAt": "updatedAt"
+          }
+        },
+        "predefined-fields": {
+          "displayName": "Predefined-Fields",
+          "path": "/predefined-fields",
+          "responseKey": "",
+          "fields": {
+            "campaign": "campaign",
+            "href": "href",
+            "name": "name",
+            "predefinedFieldId": "predefinedFieldId",
+            "value": "value"
+          }
+        },
+        "rss-newsletters": {
+          "displayName": "Rss-Newsletters",
+          "path": "/rss-newsletters",
+          "responseKey": "",
+          "fields": {
+            "content": "content",
+            "createdOn": "createdOn",
+            "editor": "editor",
+            "flags": "flags",
+            "fromField": "fromField",
+            "href": "href",
+            "name": "name",
+            "replyTo": "replyTo",
+            "rssFeedUrl": "rssFeedUrl",
+            "rssNewsletterId": "rssNewsletterId",
+            "sendSettings": "sendSettings",
+            "status": "status",
+            "subject": "subject"
+          }
+        },
+        "rss-newsletters/statistics": {
+          "displayName": "Rss-Newsletters/Statistics",
+          "path": "/rss-newsletters/statistics",
+          "responseKey": "",
+          "fields": {
+            "bounced": "bounced",
+            "complaints": "complaints",
+            "forwarded": "forwarded",
+            "goals": "goals",
+            "sent": "sent",
+            "timeInterval": "timeInterval",
+            "totalClicked": "totalClicked",
+            "totalHumanClicked": "totalHumanClicked",
+            "totalHumanOpened": "totalHumanOpened",
+            "totalOpened": "totalOpened",
+            "uniqueClicked": "uniqueClicked",
+            "uniqueGoals": "uniqueGoals",
+            "uniqueHumanClicked": "uniqueHumanClicked",
+            "uniqueHumanOpened": "uniqueHumanOpened",
+            "uniqueOpened": "uniqueOpened",
+            "unsubscribed": "unsubscribed"
+          }
+        },
+        "search-contacts": {
+          "displayName": "Search-Contacts",
+          "path": "/search-contacts",
+          "responseKey": "",
+          "fields": {
+            "createdOn": "createdOn",
+            "href": "href",
+            "name": "name",
+            "searchContactId": "searchContactId"
+          }
+        },
+        "sender-names": {
+          "displayName": "Sender-Names",
+          "path": "/sms/sender-names",
+          "responseKey": "",
+          "fields": {
+            "isDefault": "isDefault",
+            "name": "name",
+            "senderNameId": "senderNameId",
+            "status": "status"
+          }
+        },
+        "sending-limits": {
+          "displayName": "Sending-Limits",
+          "path": "/accounts/sending-limits",
+          "responseKey": "",
+          "fields": {
+            "limit": "limit",
+            "timeFrame": "timeFrame",
+            "used": "used"
+          }
+        },
+        "shops": {
+          "displayName": "Shops",
+          "path": "/shops",
+          "responseKey": "",
+          "fields": {
+            "createdOn": "createdOn",
+            "currency": "currency",
+            "href": "href",
+            "locale": "locale",
+            "name": "name",
+            "shopId": "shopId",
+            "updatedOn": "updatedOn"
+          }
+        },
+        "splittests": {
+          "displayName": "Splittests",
+          "path": "/splittests",
+          "responseKey": "",
+          "fields": {
+            "campaign": "campaign",
+            "canceledOn": "canceledOn",
+            "chooseWinning": "chooseWinning",
+            "createdOn": "createdOn",
+            "evaluationSkippedOn": "evaluationSkippedOn",
+            "href": "href",
+            "name": "name",
+            "newsletters": "newsletters",
+            "nextStepOn": "nextStepOn",
+            "samplingPercentage": "samplingPercentage",
+            "samplingTime": "samplingTime",
+            "sendSettings": "sendSettings",
+            "splittestId": "splittestId",
+            "stage": "stage",
+            "status": "status",
+            "type": "type",
+            "winningCriteria": "winningCriteria",
+            "winningDelivered": "winningDelivered",
+            "winningScheduleOn": "winningScheduleOn",
+            "winningScoreClicks": "winningScoreClicks",
+            "winningScoreOpens": "winningScoreOpens",
+            "winningTarget": "winningTarget"
+          }
+        },
+        "subject": {
+          "displayName": "Subject",
+          "path": "/ab-tests/subject",
+          "responseKey": "",
+          "fields": {
+            "abTestId": "abTestId",
+            "campaign": "campaign",
+            "createdOn": "createdOn",
+            "deliverySettings": "deliverySettings",
+            "flags": "flags",
+            "fromField": "fromField",
+            "href": "href",
+            "name": "name",
+            "replyTo": "replyTo",
+            "stage": "stage",
+            "status": "status",
+            "updatedOn": "updatedOn"
+          }
+        },
+        "suppressions": {
+          "displayName": "Suppressions",
+          "path": "/suppressions",
+          "responseKey": "",
+          "fields": {
+            "createdOn": "createdOn",
+            "href": "href",
+            "name": "name",
+            "suppressionId": "suppressionId"
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags",
+          "responseKey": "",
+          "fields": {
+            "color": "color",
+            "createdAt": "createdAt",
+            "href": "href",
+            "name": "name",
+            "tagId": "tagId"
+          }
+        },
+        "templates": {
+          "displayName": "Templates",
+          "path": "/transactional-emails/templates",
+          "responseKey": "",
+          "fields": {
+            "createdOn": "createdOn",
+            "editor": "editor",
+            "href": "href",
+            "subject": "subject",
+            "templateId": "templateId",
+            "updatedOn": "updatedOn"
+          }
+        },
+        "timezones": {
+          "displayName": "Timezones",
+          "path": "/accounts/timezones",
+          "responseKey": "",
+          "fields": {
+            "country": "country",
+            "name": "name",
+            "offset": "offset",
+            "timezoneId": "timezoneId"
+          }
+        },
+        "tracking": {
+          "displayName": "Tracking",
+          "path": "/tracking",
+          "responseKey": "",
+          "fields": {
+            "grid": "grid",
+            "snippet": "snippet",
+            "snippetV2": "snippetV2"
+          }
+        },
+        "transactional-emails": {
+          "displayName": "Transactional-Emails",
+          "path": "/transactional-emails",
+          "responseKey": "",
+          "fields": {
+            "fromField": "fromField",
+            "href": "href",
+            "recipients": "recipients",
+            "subject": "subject",
+            "tag": "tag",
+            "transactionalEmailId": "transactionalEmailId"
+          }
+        },
+        "transactional-emails/statistics": {
+          "displayName": "Transactional-Emails/Statistics",
+          "path": "/transactional-emails/statistics",
+          "responseKey": "",
+          "fields": {
+            "bounced": "bounced",
+            "clicks": "clicks",
+            "complaint": "complaint",
+            "opened": "opened",
+            "sent": "sent",
+            "timeFrame": "timeFrame"
+          }
+        },
+        "webforms": {
+          "displayName": "Webforms",
+          "path": "/webforms",
+          "responseKey": "",
+          "fields": {
+            "campaign": "campaign",
+            "href": "href",
+            "modifiedOn": "modifiedOn",
+            "name": "name",
+            "scriptUrl": "scriptUrl",
+            "statistics": "statistics",
+            "status": "status",
+            "webformId": "webformId"
+          }
+        },
+        "webinars": {
+          "displayName": "Webinars",
+          "path": "/webinars",
+          "responseKey": "",
+          "fields": {
+            "campaigns": "campaigns",
+            "createdOn": "createdOn",
+            "href": "href",
+            "newsletters": "newsletters",
+            "startsOn": "startsOn",
+            "statistics": "statistics",
+            "status": "status",
+            "type": "type",
+            "webinarId": "webinarId",
+            "webinarUrl": "webinarUrl"
+          }
+        },
+        "websites": {
+          "displayName": "Websites",
+          "path": "/websites",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "domainUrl": "domainUrl",
+            "href": "href",
+            "isChatsEnabled": "isChatsEnabled",
+            "name": "name",
+            "statistics": "statistics",
+            "status": "status",
+            "thumbnailUrl": "thumbnailUrl",
+            "updatedAt": "updatedAt",
+            "websiteId": "websiteId"
+          }
+        },
+        "workflow": {
+          "displayName": "Workflow",
+          "path": "/workflow",
+          "responseKey": "",
+          "fields": {
+            "dateStart": "dateStart",
+            "dateStop": "dateStop",
+            "name": "name",
+            "status": "status",
+            "subscriberStatistics": "subscriberStatistics",
+            "workflowId": "workflowId"
+          }
+        }
+      }
+    }
+  }
+}
