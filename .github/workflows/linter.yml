@@ -23,12 +23,7 @@ jobs:
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
       - name: Build custom golangci-lint
-        run: |
-          git clone --branch v2.7.1 --single-branch --depth 1 -c advice.detachedHead=false -q https://github.com/golangci/golangci-lint.git
-          echo OK_1
-          rm -rf ./golangci-lint
-          echo OK_2
-          make custom-gcl
+        run: make custom-gcl
 
       - name: Lint Go code
         run: make lint
