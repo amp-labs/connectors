@@ -95,6 +95,7 @@ import (
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/snapchatads"
+	"github.com/amp-labs/connectors/providers/solarwinds"
 	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/xero"
@@ -204,6 +205,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.ServiceNow:              wrapper(newServiceNowConnector),
 	providers.Smartlead:               wrapper(newSmartleadConnector),
 	providers.SnapchatAds:             wrapper(newSnapchatAdsConnector),
+	providers.SolarWindsServiceDesk:   wrapper(newSolarWindsConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
 	providers.Xero:                    wrapper(newXeroConnector),
@@ -868,4 +870,8 @@ func newAircallConnector(
 	params common.ConnectorParams,
 ) (*aircall.Connector, error) {
 	return aircall.NewConnector(params)
+}
+
+func newSolarWindsConnector(params common.ConnectorParams) (*solarwinds.Connector, error) {
+	return solarwinds.NewConnector(params)
 }
