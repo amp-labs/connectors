@@ -88,7 +88,7 @@ func buildReadBody(config common.ReadParams) map[string]any {
 			"context": "Extended",
 			"exposedFields": map[string]any{
 				"parties": true,
-				"media": true,
+				"media":   true,
 			},
 		}
 	}
