@@ -23,7 +23,10 @@ jobs:
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
       - name: Build custom golangci-lint with custom linters
-        run: make custom-gcl
+        run: |
+          # turn the detached message off
+          git config --global advice.detachedHead false
+          make custom-gcl
 
       - name: Lint Go code
         run: make lint
