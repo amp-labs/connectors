@@ -1,4 +1,4 @@
-// nolint:lll,tagliatelle
+// nolint:lll,tagliatelle,godoclint
 package salesforce
 
 import (
@@ -35,7 +35,7 @@ func (*Connector) VerifyWebhookMessage(
 
 var _ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 
-// ChangeEvent represents data received from a subscription.
+// CollapsedSubscriptionEvent represents data received from a subscription.
 // A single event may contain multiple record identifiers and can be expanded into multiple SubscriptionEvent instances.
 //
 // Structure reference:
@@ -46,7 +46,7 @@ func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
 	return maps.Clone(e), nil
 }
 
-// ToRecordList splits bundled event into per record event.
+// SubscriptionEventList splits bundled event into per record event.
 // Every property is duplicated across SubscriptionEvent. RecordIds is spread as RecordId.
 func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.SubscriptionEvent, error) {
 	eventHeaderMap, err := extractChangeEventHeader(e)

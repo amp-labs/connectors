@@ -1,4 +1,4 @@
-// nolint:revive
+// nolint:revive,godoclint
 package common
 
 import "fmt"

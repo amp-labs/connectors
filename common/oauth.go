@@ -1,4 +1,4 @@
-// nolint:revive
+// nolint:revive,godoclint
 package common
 
 import (
@@ -109,7 +109,7 @@ func WithOAuthIsUnauthorizedHandler(
 	}
 }
 
-// This is useful for persisting the refreshed tokens somewhere, so that it can be
+// WithTokenUpdated this is useful for persisting the refreshed tokens somewhere, so that it can be
 // used later. It's optional.
 func WithTokenUpdated(onTokenUpdated func(oldToken, newToken *oauth2.Token) error) OAuthOption {
 	return func(params *oauthClientParams) {

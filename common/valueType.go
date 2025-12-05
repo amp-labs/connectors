@@ -1,4 +1,4 @@
-// nolint:revive
+// nolint:revive,godoclint
 package common
 
 type ValueType string

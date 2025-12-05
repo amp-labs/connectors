@@ -31,7 +31,7 @@ const (
 	// DefaultPageSize is number of elements per page.
 	// The Page size for standard/custom objects, tasks.
 	DefaultPageSize = 500
-	// The Page size for only notes object.
+	// DefaultPageSizeForNotesObj the page size only for the notes object.
 	DefaultPageSizeForNotesObj = 50
 )
 

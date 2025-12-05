@@ -20,6 +20,7 @@ func (c *Connector) Limits(ctx context.Context) (*LimitsResponse, error) {
 	return common.UnmarshalJSON[LimitsResponse](response)
 }
 
+// LimitsResponse .
 // nolint:tagliatelle
 type LimitsResponse struct {
 	ActiveScratchOrgs struct {

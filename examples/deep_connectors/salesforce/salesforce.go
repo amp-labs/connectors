@@ -13,8 +13,8 @@ import (
 	"github.com/amp-labs/connectors/providers/salesforce"
 )
 
+// Replace these with your own values.
 const (
-	// Replace these with your own values.
 	Workspace          = "<workspace>"
 	OAuth2ClientId     = "<client id>"
 	OAuth2ClientSecret = "<client secret>"

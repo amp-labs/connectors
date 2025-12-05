@@ -33,7 +33,6 @@ linters:
     - wrapcheck
     # Deprecated (since v2.2.0) due to: new major version. Replaced by wsl_v5.
     - wsl
-    - godoclint # TODO MUST KEEP IT!
   settings:
     # https://golangci-lint.run/docs/linters/configuration/#revive
     revive:

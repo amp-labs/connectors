@@ -11,8 +11,8 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
+// Replace these with your own values.
 const (
-	// Replace these with your own values.
 	OAuth2ClientId     = "<client id>"
 	OAuth2ClientSecret = "<client secret>"
 )
