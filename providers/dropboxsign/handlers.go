@@ -13,8 +13,8 @@ import (
 const (
 	apiVersion  = "v3"
 	listSuffix  = "list"
-	PageSizeKey = "page_size"
-	PageSize    = "100"
+	pageSizeKey = "page_size"
+	pageSize    = "100"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -86,7 +86,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		url.WithQueryParam("page", "1")
 	}
 
-	url.WithQueryParam(PageSizeKey, PageSize)
+	url.WithQueryParam(pageSizeKey, pageSize)
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
