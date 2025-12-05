@@ -12,8 +12,6 @@ func init() {
 }
 
 // Clone uses gob to deep copy objects.
-//
-// nolint:ireturn
 func Clone[T any](input T) (T, error) {
 	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)

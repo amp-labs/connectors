@@ -38,12 +38,12 @@ func adobeAuthExample(ctx context.Context) error {
 
 	// Check the response status code
 	if response.Code != http.StatusOK {
-		return fmt.Errorf("unexpected status code: %d", response.Code)
+		return fmt.Errorf("unexpected status code: %d", response.Code) // nolint:err113
 	}
 
 	body, ok := response.Body()
 	if !ok {
-		return fmt.Errorf("empty response: %w", common.ErrEmptyJSONHTTPResponse)
+		return fmt.Errorf("empty response: %w", common.ErrEmptyJSONHTTPResponse) // nolint:err113
 	}
 
 	// The response body is already parsed (as JSON). You can access it like this:
@@ -63,7 +63,7 @@ func adobeAuthExample(ctx context.Context) error {
 // Create an auth connector with the Adobe provider.
 func createAuthConnector(ctx context.Context) *generic.Connector {
 	conn, err := generic.NewConnector(providers.Adobe,
-		generic.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
+		generic.WithAuthenticatedClient(createAuthenticatedHTTPClient(ctx)))
 	if err != nil {
 		panic(err)
 	}
@@ -72,7 +72,7 @@ func createAuthConnector(ctx context.Context) *generic.Connector {
 }
 
 // Create an OAuth2 authenticated HTTP client for Adobe.
-func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTPClient {
+func createAuthenticatedHTTPClient(ctx context.Context) common.AuthenticatedHTTPClient {
 	info, err := providers.ReadInfo(providers.Adobe, nil)
 	if err != nil {
 		panic(err)

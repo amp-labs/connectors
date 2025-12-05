@@ -1,4 +1,3 @@
-// nolint:ireturn
 package interpreter
 
 import (
@@ -145,6 +144,6 @@ func (d defaultErrorDescriptor) CombineErr(base error) error {
 	return errors.Join(
 		base,
 		ErrUnknownResponseFormat,
-		errors.New(string(d.responseData)), // nolint:goerr113
+		errors.New(string(d.responseData)), // nolint:err113
 	)
 }

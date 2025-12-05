@@ -1,3 +1,4 @@
+// nolint:revive
 package common
 
 type ValueType string

@@ -8,6 +8,7 @@ import (
 // TODO: Add support for XML, CSV, etc.
 type Transport struct {
 	ProviderContext
+
 	json *common.JSONHTTPClient
 }
 

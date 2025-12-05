@@ -14,8 +14,13 @@ linters:
     - gochecknoinits
     # Marks [TODO, FIXME, BUG] comments as errors. We use these, so this is not helpful - unless we decide this is a good policy.
     - godox
+    # Connectors library sometimes returns interfaces. Overall, this should be enforced by reviewers.
+    # https://golangci-lint.run/docs/linters/configuration/#ireturn
+    - ireturn
     # There are many legitimate cases for pre-allocating the length of a slice, so this is not helpful.
     - makezero
+    # Error inlining where method returns one error variable is still appropriate.
+    - noinlineerr
     # Buggy, it complains about unused nolint rules, when those nolint rules are actually used (and removing them cause other lint errors)
     - nolintlint
     # Named returns are helpful if there are multiple return values of the same type, and acts as self-documentation of the function.
@@ -29,6 +34,7 @@ linters:
     # Too strict on the white lines. It looks like all statements must have white lines in between.
     # https://golangci-lint.run/docs/linters/configuration/#wsl_v5
     - wsl_v5
+    - godoclint # TODO MUST KEEP IT!
   settings:
     # https://golangci-lint.run/docs/linters/configuration/#revive
     revive:
@@ -43,8 +49,9 @@ linters:
     staticcheck:
       checks:
         - all
-        - -ST1003
-        - -QF1008
+        - -ST1003 # Poorly chosen identifier.
+        - -QF1002 # Convert untagged switch to tagged switch.
+        - -QF1008 # Omit embedded fields from selector expression.
     # https://golangci-lint.run/docs/linters/configuration/#varnamelen
     varnamelen:
       # The longest distance, in source lines, that is being considered a "small scope" where it is ok to use short variable names.

@@ -11,9 +11,9 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const ApiKey = "<your-api-key>"
+const ApiKey = "<your-api-key>" // nolint:gosec
 
-// Run this example with `go run anthropic.go`
+// Run this example with `go run anthropic.go`.
 func main() {
 	utils.Run(mondayAuthExample)
 }
@@ -40,7 +40,7 @@ func mondayAuthExample(ctx context.Context) error {
 
 	// Check the response status code
 	if response.Code != http.StatusOK {
-		return fmt.Errorf("unexpected status code: %d", response.Code)
+		return fmt.Errorf("unexpected status code: %d", response.Code) // nolint:err113
 	}
 
 	body, ok := response.Body()
@@ -63,7 +63,7 @@ func mondayAuthExample(ctx context.Context) error {
 // Create an auth connector with the Monday provider.
 func createAuthConnector(ctx context.Context) *generic.Connector {
 	conn, err := generic.NewConnector(providers.Monday,
-		generic.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
+		generic.WithAuthenticatedClient(createAuthenticatedHTTPClient(ctx)))
 	if err != nil {
 		panic(err)
 	}
@@ -72,7 +72,7 @@ func createAuthConnector(ctx context.Context) *generic.Connector {
 }
 
 // Create an api-key authenticated HTTP client for Monday.
-func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTPClient {
+func createAuthenticatedHTTPClient(ctx context.Context) common.AuthenticatedHTTPClient {
 	info, err := providers.ReadInfo(providers.Monday, nil)
 	if err != nil {
 		panic(err)

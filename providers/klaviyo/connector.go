@@ -63,6 +63,14 @@ func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, path)
 }
 
+func (c *Connector) Provider() providers.Provider {
+	return providers.Klaviyo
+}
+
+func (c *Connector) String() string {
+	return c.Provider() + ".Connector"
+}
+
 func (c *Connector) getDeleteURL(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, "api", objectName)
 }
@@ -77,12 +85,4 @@ func (c *Connector) revisionHeader() common.Header {
 func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
-}
-
-func (c *Connector) Provider() providers.Provider {
-	return providers.Klaviyo
-}
-
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
 }

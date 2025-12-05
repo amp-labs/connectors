@@ -13,7 +13,7 @@ import (
 
 const ApiKey = "<api key>"
 
-// Run this example with `go run blueshift.go`
+// Run this example with `go run blueshift.go`.
 func main() {
 	utils.Run(blueshiftAuthExample)
 }
@@ -34,12 +34,12 @@ func blueshiftAuthExample(ctx context.Context) error {
 
 	// Check the response status code
 	if response.Code != http.StatusOK {
-		return fmt.Errorf("unexpected status code: %d", response.Code)
+		return fmt.Errorf("unexpected status code: %d", response.Code) // nolint:err113
 	}
 
 	body, ok := response.Body()
 	if !ok {
-		return fmt.Errorf("cannot get campaigns %w", common.ErrEmptyJSONHTTPResponse)
+		return fmt.Errorf("cannot get campaigns %w", common.ErrEmptyJSONHTTPResponse) // nolint:err113
 	}
 
 	// The response body is already parsed (as JSON). You can access it like this:
@@ -57,7 +57,7 @@ func blueshiftAuthExample(ctx context.Context) error {
 // Create an auth connector with the Blueshift provider.
 func createAuthConnector(ctx context.Context) *generic.Connector {
 	conn, err := generic.NewConnector(providers.Blueshift,
-		generic.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
+		generic.WithAuthenticatedClient(createAuthenticatedHTTPClient(ctx)))
 	if err != nil {
 		panic(err)
 	}
@@ -66,7 +66,7 @@ func createAuthConnector(ctx context.Context) *generic.Connector {
 }
 
 // Create a basic-auth authenticated HTTP client for Blueshift.
-func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTPClient {
+func createAuthenticatedHTTPClient(ctx context.Context) common.AuthenticatedHTTPClient {
 	info, err := providers.ReadInfo(providers.Blueshift, nil)
 	if err != nil {
 		panic(err)

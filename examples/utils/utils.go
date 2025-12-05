@@ -1,3 +1,4 @@
+// nolint:revive
 package utils
 
 import (
@@ -20,7 +21,7 @@ func Run(f func(ctx context.Context) error) {
 	if err := runHandler(ctx, f); err != nil {
 		slog.Error("error encountered", "err", err)
 
-		os.Exit(1)
+		os.Exit(1) // nolint:gocritic
 	}
 }
 
@@ -33,5 +34,5 @@ func runHandler(ctx context.Context, f func(ctx context.Context) error) (err err
 
 	err = f(ctx)
 
-	return
+	return err
 }

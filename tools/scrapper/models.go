@@ -167,7 +167,7 @@ func (s *DateTime) UnmarshalJSON(bytes []byte) error {
 	str := string(bytes)
 	// remove string quotes
 	if len(str) < 2 { // nolint:gomnd,mnd
-		return errors.New("date time has no quotes") // nolint:goerr113
+		return errors.New("date time has no quotes") // nolint:err113
 	}
 
 	format := str[1 : len(str)-1]
