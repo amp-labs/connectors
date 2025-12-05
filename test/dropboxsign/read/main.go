@@ -28,7 +28,7 @@ func main() {
 		Fields:     connectors.Fields("title", "accounts", "is_creator"),
 	})
 	if err != nil {
-		utils.Fail("error reading from pylon", "error", err)
+		utils.Fail("error reading from DropboxSign", "error", err)
 	}
 
 	slog.Info("Reading templates..")
@@ -39,7 +39,7 @@ func main() {
 		Fields:     connectors.Fields("created_at", "callback_url", "name"),
 	})
 	if err != nil {
-		utils.Fail("error reading from pylon", "error", err)
+		utils.Fail("error reading from DropboxSign", "error", err)
 	}
 
 	slog.Info("Reading api_apps..")
