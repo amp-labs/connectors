@@ -1,0 +1,29 @@
+{
+  "list_info": {
+    "num_pages": 1,
+    "num_results": 1,
+    "page": 1,
+    "page_size": 1
+  },
+  "faxes": [
+    {
+      "fax_id": "c2e9691c85d9d6fa6ae773842e3680b2b8650f1d",
+      "title": "example title",
+      "original_title": "example original title",
+      "subject": "example subject",
+      "message": "example message",
+      "metadata": [],
+      "created_at": 1726774555,
+      "sender": "me@dropboxsign.com",
+      "transmissions": [
+        {
+          "recipient": "recipient@dropboxsign.com",
+          "sender": "me@dropboxsign.com",
+          "sent_at": 1723231831,
+          "status_code": "success"
+        }
+      ],
+      "files_url": "https://api.hellosign.com/v3/fax/files/2b388914e3ae3b738bd4e2ee2850c677e6dc53d2"
+    }
+  ]
+}
