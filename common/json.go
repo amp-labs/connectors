@@ -89,7 +89,12 @@ func (j *JSONHTTPClient) Post(ctx context.Context,
 func (j *JSONHTTPClient) Put(ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*JSONHTTPResponse, error) {
-	res, body, err := j.HTTPClient.Put(ctx, url, reqBody, addAcceptJSONHeader(headers)...) //nolint:bodyclose
+	data, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("request body is not valid JSON, body is %v:\n%w", reqBody, err)
+	}
+
+	res, body, err := j.HTTPClient.Put(ctx, url, data, addAcceptJSONHeader(headers)...) //nolint:bodyclose
 	if err != nil {
 		return nil, j.ErrorPostProcessor.handleError(err)
 	}
@@ -100,7 +105,12 @@ func (j *JSONHTTPClient) Put(ctx context.Context,
 func (j *JSONHTTPClient) Patch(ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*JSONHTTPResponse, error) {
-	res, body, err := j.HTTPClient.Patch(ctx, url, reqBody, addAcceptJSONHeader(headers)...) //nolint:bodyclose
+	data, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("request body is not valid JSON, body is %v:\n%w", reqBody, err)
+	}
+
+	res, body, err := j.HTTPClient.Patch(ctx, url, data, addAcceptJSONHeader(headers)...) //nolint:bodyclose
 	if err != nil {
 		return nil, j.ErrorPostProcessor.handleError(err)
 	}
