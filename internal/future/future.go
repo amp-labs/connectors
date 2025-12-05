@@ -34,9 +34,10 @@ import (
 	"errors"
 	"sync"
 
+	"go.uber.org/atomic"
+
 	"github.com/amp-labs/connectors/common/contexts"
 	"github.com/amp-labs/connectors/common/try"
-	"go.uber.org/atomic"
 )
 
 var (
@@ -307,6 +308,7 @@ func (f *Future[T]) ToChannel() <-chan try.Try[T] {
 	go func() {
 		val, err := f.Await()
 		ch <- try.Try[T]{Value: val, Error: err}
+
 		close(ch)
 	}()
 

@@ -30,8 +30,9 @@ func (c *Connector) GetPostAuthInfo(
 		return nil, errors.Join(ErrNoAccounts, common.ErrEmptyJSONHTTPResponse)
 	}
 
-	var postAuthInfo common.PostAuthInfo
-	postAuthInfo.RawResponse = resp
+	postAuthInfo := common.PostAuthInfo{
+		RawResponse: resp,
+	}
 
 	accounts, err := body.GetKey("accounts")
 	if err != nil {

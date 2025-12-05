@@ -31,9 +31,8 @@ linters:
     - testpackage
     # Annoying and not useful. Disabling otherwise we have to have comment everywhere
     - wrapcheck
-    # Too strict on the white lines. It looks like all statements must have white lines in between.
-    # https://golangci-lint.run/docs/linters/configuration/#wsl_v5
-    - wsl_v5
+    # Deprecated (since v2.2.0) due to: new major version. Replaced by wsl_v5.
+    - wsl
     - godoclint # TODO MUST KEEP IT!
   settings:
     # https://golangci-lint.run/docs/linters/configuration/#revive
@@ -57,6 +56,15 @@ linters:
       # The longest distance, in source lines, that is being considered a "small scope" where it is ok to use short variable names.
       # The default is 5, which is quite strict.
       max-distance: 10
+    wsl_v5:
+      allow-first-in-block: true
+      allow-whole-block: false
+      branch-max-lines: 2
+      disable:
+        - expr
+        - go
+        - send
+        - defer
     # Custom linters
     custom:
       modulelinter:

@@ -10,7 +10,8 @@ import (
 	"github.com/amp-labs/connectors/internal/simultaneously"
 )
 
-func (a *Adapter) ListObjectMetadata(ctx context.Context,
+func (a *Adapter) ListObjectMetadata(
+	ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
 	var mu sync.Mutex //nolint: varnamelen
@@ -33,14 +34,14 @@ func (a *Adapter) ListObjectMetadata(ctx context.Context,
 			metadata, err := a.retrieveSampleResponse(ctx, obj)
 			if err != nil {
 				mu.Lock()
-				objectMetadata.Errors[obj] = err
+				objectMetadata.Errors[obj] = err // nolint:wsl_v5
 				mu.Unlock()
 
 				return nil //nolint:nilerr // intentionally collecting errors in map, not failing fast
 			}
 
 			mu.Lock()
-			objectMetadata.Result[object] = *metadata
+			objectMetadata.Result[object] = *metadata // nolint:wsl_v5
 			mu.Unlock()
 
 			return nil
