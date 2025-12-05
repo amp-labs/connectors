@@ -122,10 +122,6 @@ type listErrorDescriptor struct {
 	list []ErrorDescriptor
 }
 
-func (d *listErrorDescriptor) addErr(descriptor ErrorDescriptor) {
-	d.list = append(d.list, descriptor)
-}
-
 func (d *listErrorDescriptor) CombineErr(base error) error {
 	list := make([]error, len(d.list))
 
@@ -134,6 +130,10 @@ func (d *listErrorDescriptor) CombineErr(base error) error {
 	}
 
 	return errors.Join(list...)
+}
+
+func (d *listErrorDescriptor) addErr(descriptor ErrorDescriptor) {
+	d.list = append(d.list, descriptor)
 }
 
 type defaultErrorDescriptor struct {

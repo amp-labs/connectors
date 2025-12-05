@@ -136,7 +136,7 @@ func (u *URL) String() string {
 
 // URL may have special encoding rules.
 // Those can be set via AddEncodingExceptions.
-func (u *URL) queryValuesToString() string {
+func (u *URL) queryValuesToString() string { // nolint:funcorder
 	// Encode the query params
 	result := u.queryParams.Encode()
 	if len(result) == 0 {

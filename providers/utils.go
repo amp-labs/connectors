@@ -54,7 +54,7 @@ func NewCustomCatalog(opts ...CatalogOption) CustomCatalog {
 	return CustomCatalog{custom: params.catalog}
 }
 
-func (c CustomCatalog) catalog() (*CatalogWrapper, error) {
+func (c CustomCatalog) catalog() (*CatalogWrapper, error) { // nolint:funcorder
 	if c.custom == nil {
 		// Null catalog was probably set via options.
 		// This is not allowed.

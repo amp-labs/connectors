@@ -104,7 +104,7 @@ var (
 // https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_field_conversion_single_event.htm.
 type SubscriptionEvent map[string]any
 
-func (s SubscriptionEvent) asMap() (common.StringMap, error) {
+func (s SubscriptionEvent) asMap() (common.StringMap, error) { // nolint:funcorder
 	return extractChangeEventHeader(s)
 }
 
@@ -308,7 +308,7 @@ func isStandardCompoundField(obj, field string) bool {
 	return ok
 }
 
-func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) (string, error) {
+func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) (string, error) { // nolint:funcorder
 	if !strings.Contains(name, ".") {
 		return name, nil
 	}

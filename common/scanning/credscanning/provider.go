@@ -99,7 +99,7 @@ func selectReader(field Field, filePath string, providerName string) scanning.Re
 	return field.GetENVReader(providerName)
 }
 
-func (r ProviderCredentials) loadValues(readers datautils.NamedLists[scanning.Reader]) error {
+func (r ProviderCredentials) loadValues(readers datautils.NamedLists[scanning.Reader]) error { // nolint:funcorder
 	// validate JSON file or ENV has all Required variables
 	missingKeys := make([]string, 0)
 

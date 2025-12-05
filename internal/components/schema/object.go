@@ -74,7 +74,7 @@ type objectMetadataError struct {
 }
 
 // nolint:funlen // refactoring would not improve readability
-func (p *ObjectSchemaProvider) fetchParallel(
+func (p *ObjectSchemaProvider) fetchParallel( // nolint:funcorder
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
@@ -149,7 +149,7 @@ func (p *ObjectSchemaProvider) fetchParallel(
 	return result, nil
 }
 
-func (p *ObjectSchemaProvider) fetchSerial(
+func (p *ObjectSchemaProvider) fetchSerial( // nolint:funcorder
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
