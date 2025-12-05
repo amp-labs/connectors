@@ -34,10 +34,9 @@ import (
 	"errors"
 	"sync"
 
-	"go.uber.org/atomic"
-
 	"github.com/amp-labs/connectors/common/contexts"
 	"github.com/amp-labs/connectors/common/try"
+	"go.uber.org/atomic"
 )
 
 var (

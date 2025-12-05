@@ -317,8 +317,8 @@ func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) (string, error
 	// We're interested in the rightmost part, but to validate
 	// that indeed it's a compound field, we have to consider the
 	// leftmost part first.
-	parts := strings.SplitN(name, ".", 2) //nolint:mnd,gomnd
-	if len(parts) < 2 {                   //nolint:mnd,gomnd
+	parts := strings.SplitN(name, ".", 2) //nolint:mnd
+	if len(parts) < 2 {                   //nolint:mnd
 		return parts[0], nil
 	}
 
