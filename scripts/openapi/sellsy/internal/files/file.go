@@ -4,6 +4,7 @@ import (
 	_ "embed"
 
 	"github.com/amp-labs/connectors/internal/staticschema"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api"
 	"github.com/amp-labs/connectors/tools/fileconv"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
@@ -18,4 +19,7 @@ var (
 	InputSellsy  = api3.NewOpenapiFileManager[any](apiFile)
 	OutputSellsy = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
 		fileconv.NewPath("providers/sellsy/internal/metadata"))
+
+	OpenAPIFile     = api.NewFile(apiFile)
+	OutputSellsyDir = "providers/sellsy/internal/metadata"
 )
