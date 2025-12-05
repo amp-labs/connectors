@@ -162,13 +162,12 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
-	// Extract ID
-	// Aircall IDs are integers, but we return string
-	idInt, err := jsonquery.New(node).IntegerRequired("id")
+	// Extract ID - Aircall IDs are integers in JSON, but we need strings
+	// Use TextWithDefault to convert automatically and fallback to the request ID if needed
+	recordID, err := jsonquery.New(node).TextWithDefault("id", params.RecordId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract record ID: %w", err)
 	}
-	recordID := strconv.FormatInt(idInt, 10)
 
 	// Extract data
 	dataMap, err := jsonquery.Convertor.ObjectToMap(node)
