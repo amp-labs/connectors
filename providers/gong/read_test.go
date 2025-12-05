@@ -66,7 +66,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				}`),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("Failed to verify cursor"), // nolint:goerr113
+				common.ErrBadRequest, errors.New("Failed to verify cursor"),
 			},
 		},
 		{

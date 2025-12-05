@@ -89,7 +89,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Leads array is empty"), // nolint:goerr113
+				errors.New("Leads array is empty"),
 			},
 		},
 		{
@@ -117,7 +117,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Bad Request"), // nolint:goerr113
+				errors.New("Bad Request"),
 			},
 		},
 		{

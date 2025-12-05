@@ -45,7 +45,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				}`),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("Resource not found for the segment 'conacs'"), // nolint:goerr113
+				common.ErrBadRequest, errors.New("Resource not found for the segment 'conacs'"),
 			},
 		},
 		{

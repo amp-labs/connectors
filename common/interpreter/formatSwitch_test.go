@@ -102,7 +102,7 @@ func TestFormatSwitchParseJSON(t *testing.T) { //nolint:funlen
 
 			descriptor := tt.selector.ParseJSON([]byte(tt.input))
 
-			output := descriptor.CombineErr(errors.New("base-from-test")) // nolint:goerr113
+			output := descriptor.CombineErr(errors.New("base-from-test"))
 
 			testutils.CheckErrors(t, tt.name, tt.expected, output)
 		})

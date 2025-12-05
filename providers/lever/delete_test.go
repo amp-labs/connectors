@@ -62,7 +62,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrNotFound,
-				errors.New( // nolint:goerr113
+				errors.New(
 					"That requisition field doesn't exist on your account",
 				),
 			},
