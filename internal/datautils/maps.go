@@ -109,6 +109,7 @@ type DefaultMap[K comparable, V any] struct {
 	// Map is a delegate.
 	// All methods are embedded which grants the same capabilities, plus default value.
 	Map[K, V]
+
 	// When key is not found this callback will be used to provide default value.
 	fallback func(key K) V
 }

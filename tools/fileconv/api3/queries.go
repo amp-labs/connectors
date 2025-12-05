@@ -12,8 +12,9 @@ import (
 // Explorer allows to traverse schema in most common ways
 // relevant for connectors metadata extraction.
 type Explorer[C any] struct {
-	schema *Document
 	*parameters
+
+	schema *Document
 }
 
 // NewExplorer creates explorer on openAPI v3 file.

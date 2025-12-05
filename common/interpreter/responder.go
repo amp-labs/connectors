@@ -15,6 +15,7 @@ var ErrCannotParseErrorResponse = errors.New("implementation cannot process erro
 // It uses common techniques to handle error response returned by provider.
 type FaultyResponder struct {
 	StatusCodeMapper
+
 	errorSwitch *FormatSwitch
 }
 
