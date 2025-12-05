@@ -25,14 +25,19 @@ func Run(f func(ctx context.Context) error) {
 	}
 }
 
-func runHandler(ctx context.Context, f func(ctx context.Context) error) (err error) {
+func runHandler(ctx context.Context, function func(ctx context.Context) error) (err error) {
 	defer func() {
-		if r := recover(); r != nil {
-			err = r.(error)
+		if re := recover(); re != nil {
+			var ok bool
+
+			err, ok = re.(error)
+			if !ok {
+				panic(re)
+			}
 		}
 	}()
 
-	err = f(ctx)
+	err = function(ctx)
 
 	return err
 }

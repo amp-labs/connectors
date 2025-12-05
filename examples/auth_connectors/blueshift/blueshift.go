@@ -49,7 +49,7 @@ func blueshiftAuthExample(ctx context.Context) error {
 	}
 
 	// Print out the model field
-	fmt.Printf("first campaign name: %s\n", nodes[0].MustString())
+	fmt.Printf("first campaign name: %s\n", nodes[0].MustString()) // nolint:forbidigo
 
 	return nil
 }

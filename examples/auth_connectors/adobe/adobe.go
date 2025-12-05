@@ -54,7 +54,7 @@ func adobeAuthExample(ctx context.Context) error {
 
 	// Print out the names of the data sets
 	for _, node := range nodes {
-		fmt.Printf("DataSet.Name: %s\n", node.MustString())
+		fmt.Printf("DataSet.Name: %s\n", node.MustString()) // nolint:forbidigo
 	}
 
 	return nil

@@ -55,7 +55,7 @@ func mondayAuthExample(ctx context.Context) error {
 	}
 
 	// Print out the model field
-	fmt.Printf("model: %s\n", nodes[0].MustString())
+	fmt.Printf("model: %s\n", nodes[0].MustString()) // nolint:forbidigo
 
 	return nil
 }

@@ -69,7 +69,7 @@ func salesforceDeepExample(ctx context.Context) error {
 		allRows = append(allRows, result.Data...)
 	}
 
-	fmt.Printf("Result is %v\n", allRows)
+	fmt.Printf("Result is %v\n", allRows) // nolint:forbidigo
 
 	return nil
 }

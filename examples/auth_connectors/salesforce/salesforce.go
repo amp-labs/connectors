@@ -65,7 +65,7 @@ func salesforceAuthExample(ctx context.Context) error {
 	}
 
 	// Print out the mass email limit
-	fmt.Printf("MassEmail.Max: %f\n", nodes[0].MustNumeric())
+	fmt.Printf("MassEmail.Max: %f\n", nodes[0].MustNumeric()) // nolint:forbidigo
 
 	return nil
 }
