@@ -40,7 +40,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Always: mockserver.Response(http.StatusBadRequest, errorUnknownResource),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("Resource not found for the segment 'user'."), // nolint:goerr113
+				common.ErrBadRequest, errors.New("Resource not found for the segment 'user'."),
 			},
 		},
 		{

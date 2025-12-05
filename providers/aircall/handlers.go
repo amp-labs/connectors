@@ -27,6 +27,14 @@ const (
 	aircallMaxPageSizeInt = 50
 )
 
+const (
+	objectNameContacts = "contacts"
+	objectNameNumbers  = "numbers"
+	objectNameTags     = "tags"
+	objectNameTeams    = "teams"
+	objectNameUsers    = "users"
+)
+
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if params.NextPage != "" {
 		url, err := urlbuilder.New(params.NextPage.String())
@@ -102,8 +110,10 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	var url *urlbuilder.URL
-	var method string
+	var (
+		url    *urlbuilder.URL
+		method string
+	)
 
 	if params.RecordId != "" {
 		// Update
@@ -113,15 +123,16 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		}
 
 		switch params.ObjectName {
-		case "contacts":
+		case objectNameContacts:
 			// Aircall specific: POST for updates on contacts
 			// https://developer.aircall.io/api-references/#update-a-contact
 			method = http.MethodPost
-		case "users", "tags", "numbers", "teams":
+		case objectNameUsers, objectNameTags, objectNameNumbers, objectNameTeams:
 			// Standard PUT for updates
 			method = http.MethodPut
 		default:
-			return nil, fmt.Errorf("%w: %s", common.ErrOperationNotSupportedForObject, "update not supported for "+params.ObjectName)
+			return nil, fmt.Errorf("%w: %s",
+				common.ErrOperationNotSupportedForObject, "update not supported for "+params.ObjectName)
 		}
 	} else {
 		// Create
@@ -134,7 +145,8 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		case "contacts", "users", "tags", "teams", "numbers", "calls":
 			method = http.MethodPost
 		default:
-			return nil, fmt.Errorf("%w: %s", common.ErrOperationNotSupportedForObject, "create not supported for "+params.ObjectName)
+			return nil, fmt.Errorf("%w: %s",
+				common.ErrOperationNotSupportedForObject, "create not supported for "+params.ObjectName)
 		}
 	}
 
@@ -184,9 +196,9 @@ func (c *Connector) parseWriteResponse(
 
 func supportsDateFiltering(objectName string) bool {
 	switch objectName {
-	case "calls", "users", "contacts", "numbers":
+	case "calls", objectNameUsers, objectNameContacts, objectNameNumbers:
 		return true
-	case "teams", "tags":
+	case objectNameTeams, objectNameTags:
 		return false
 	default:
 		// Default to false to be safe
@@ -202,7 +214,8 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 	case "contacts", "users", "tags", "teams":
 		// Supported
 	default:
-		return nil, fmt.Errorf("%w: %s", common.ErrOperationNotSupportedForObject, "delete not supported for "+params.ObjectName)
+		return nil, fmt.Errorf("%w: %s",
+			common.ErrOperationNotSupportedForObject, "delete not supported for "+params.ObjectName)
 	}
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName, params.RecordId)

@@ -27,8 +27,8 @@ type Connector struct {
 	SuiteQL *suiteql.Adapter
 }
 
+// NewConnector is a connector constructor.
 // API Reference: https://td2972271.app.netsuite.com/app/help/helpcenter.nl?fid=section_158151234003.html
-// NewConnector.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	connector, err := components.Initialize(providers.Netsuite, params,
 		func(base *components.Connector) (*Connector, error) {

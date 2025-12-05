@@ -1,70 +1,110 @@
-run:
-  timeout: 10m
+version: "2"
 output:
   formats:
-    - format: colored-line-number
+    text:
       path: stdout
 linters:
-  enable-all: true
+  default: all
   disable:
-    # Disabled because we use inits all over the place
-    - gochecknoinits
     # Highly annoying. We'd need to whitelist all packages we import, which is a lot of work and adds very little value.
     - depguard
     # Annoying and unhelpful. Assumes uninitialized (zero-valued) fields are always a bug, which is plain wrong.
     - exhaustruct
+    # Disabled because we use inits all over the place
+    - gochecknoinits
     # Marks [TODO, FIXME, BUG] comments as errors. We use these, so this is not helpful - unless we decide this is a good policy.
     - godox
-    # We're not doing black-box testing, so enabling this would be counterproductive. We might want to discuss this though, it's a good practice.
-    - testpackage
-    # Annoying and not useful. Disabling otherwise we have to have comment everywhere
-    - wrapcheck
+    # Connectors library sometimes returns interfaces. Overall, this should be enforced by reviewers.
+    # https://golangci-lint.run/docs/linters/configuration/#ireturn
+    - ireturn
+    # There are many legitimate cases for pre-allocating the length of a slice, so this is not helpful.
+    - makezero
+    # Error inlining where method returns one error variable is still appropriate.
+    - noinlineerr
     # Buggy, it complains about unused nolint rules, when those nolint rules are actually used (and removing them cause other lint errors)
     - nolintlint
     # Named returns are helpful if there are multiple return values of the same type, and acts as self-documentation of the function.
     - nonamedreturns
-    # There are many legitimate cases for preallocating the length of a slice, so this is not helpful.
-    - makezero
-    - tenv
     # Disabled because it enforces strict struct tag formatting that may conflict with provider-specific requirements
     - tagliatelle
-    # Deprecated and no longer relevant since Go1.22.
-    - exportloopref
-linters-settings:
-  # See https://golangci-lint.run/usage/linters#revive
-  revive:
+    # We're not doing black-box testing, so enabling this would be counterproductive. We might want to discuss this though, it's a good practice.
+    - testpackage
+    # Annoying and not useful. Disabling otherwise we have to have comment everywhere
+    - wrapcheck
+    # Deprecated (since v2.2.0) due to: new major version. Replaced by wsl_v5.
+    - wsl
+  settings:
+    # https://golangci-lint.run/docs/linters/configuration/#revive
+    revive:
+      rules:
+        # Use var-naming, but add a special rule to accept "Id" rather than forcing "ID"
+        - name: var-naming
+          arguments:
+            - - ID
+              - API
+          disabled: false
+    # https://golangci-lint.run/docs/linters/configuration/#staticcheck
+    staticcheck:
+      checks:
+        - all
+        - -ST1003 # Poorly chosen identifier.
+        - -QF1002 # Convert untagged switch to tagged switch.
+        - -QF1008 # Omit embedded fields from selector expression.
+    # https://golangci-lint.run/docs/linters/configuration/#varnamelen
+    varnamelen:
+      # The longest distance, in source lines, that is being considered a "small scope" where it is ok to use short variable names.
+      # The default is 5, which is quite strict.
+      max-distance: 10
+    wsl_v5:
+      allow-first-in-block: true
+      allow-whole-block: false
+      branch-max-lines: 2
+      disable:
+        - expr
+        - go
+        - send
+        - defer
+    # Custom linters
+    custom:
+      modulelinter:
+        type: module
+        description: 'Checks module-related rules: DefaultModule, ModuleDependencies, and module constant naming (Module<ProviderName><ModuleName>)'
+        settings: {}
+      nogoroutine:
+        type: module
+        description: Detects bare 'go' keyword usage - use future.Go() or simultaneously.Do() instead
+        settings:
+          exclude-paths:
+            - internal/future
+            - internal/simultaneously
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
     rules:
-      # Use var-naming, but add a special rule to accept "Id" rather than forcing "ID"
-      - name: var-naming
-        disabled: false
-        arguments:
-          - ["ID", "API"]
-  # See https://staticcheck.io/docs/configuration/options/#checks
-  stylecheck:
-    checks: ["all", "-ST1003"]
-  varnamelen:
-    # The longest distance, in source lines, that is being considered a "small scope" where it is ok to use short variable names.
-    # The default is 5, which is quite strict.
-    max-distance: 10
-  # Custom linters
-  custom:
-    nogoroutine:
-      type: "module"
-      description: "Detects bare 'go' keyword usage - use future.Go() or simultaneously.Do() instead"
-      settings:
-        exclude-paths:
-          - "internal/future"
-          - "internal/simultaneously"
-    modulelinter:
-      type: "module"
-      description: "Checks module-related rules: DefaultModule, ModuleDependencies, and module constant naming (Module<ProviderName><ModuleName>)"
-      settings: {}
-
-issues:
-  exclude-dirs:
-    - "playground"
-    - "test"
-  exclude-rules:
-    - text: "don't use ALL_CAPS in Go names"
-      linters:
-        - revive
+      - linters:
+          - revive
+        text: don't use ALL_CAPS in Go names
+    paths:
+      - playground
+      - test
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - playground
+      - test
+      - third_party$
+      - builtin$
+      - examples$

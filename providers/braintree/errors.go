@@ -80,5 +80,5 @@ func checkErrorInResponse(resp *ResponseError) error {
 		errorMsg.WriteString(err.Message + "; ")
 	}
 
-	return errors.New(strings.TrimSuffix(errorMsg.String(), "; ")) // nolint:goerr113
+	return errors.New(strings.TrimSuffix(errorMsg.String(), "; ")) // nolint:err113
 }

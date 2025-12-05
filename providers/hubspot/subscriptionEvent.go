@@ -169,7 +169,7 @@ func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
 	return time.UnixMilli(ts).UnixNano(), nil
 }
 
-func (evt SubscriptionEvent) asMap() common.StringMap {
+func (evt SubscriptionEvent) asMap() common.StringMap { // nolint:funcorder
 	return common.StringMap(evt)
 }
 

@@ -118,7 +118,7 @@ func extractListFieldName(node *ajson.Node) (string, error) {
 	//		event.summary => events
 
 	parts := strings.Split(name, ".")
-	if len(parts) == 2 { // nolint:gomnd,mnd
+	if len(parts) == 2 { // nolint:mnd
 		// custom name is used when it has 2 parts
 		return applyPluralForm(parts[0]), nil
 	}

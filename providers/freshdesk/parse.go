@@ -15,7 +15,7 @@ func nextRecordsURL(link string) common.NextPageFunc {
 	}
 }
 
-// ParseLinkHeader extracts the next page URL from the Link Header response.
+// ParseNexPageLinkHeader extracts the next page URL from the Link Header response.
 func ParseNexPageLinkHeader(linkHeader string) string {
 	var url string
 

@@ -1,4 +1,3 @@
-// nolint:ireturn
 package connector
 
 import (
