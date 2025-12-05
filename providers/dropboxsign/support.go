@@ -1,6 +1,13 @@
 package dropboxsign
 
-import "github.com/amp-labs/connectors/internal/datautils"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/datautils"
+)
 
 //nolint:gochecknoglobals
 var (
@@ -22,3 +29,22 @@ var readObjectResponseKey = datautils.NewDefaultMap(map[string]string{
 	return objectName
 },
 )
+
+func supportedOperations() components.EndpointRegistryInput {
+	readSupport := []string{
+		objectNameTemplate,
+		objectNameApiApp,
+		objectNameFax,
+		objectNameFaxLine,
+		objectNameBulkSendJobs,
+	}
+
+	return components.EndpointRegistryInput{
+		common.ModuleRoot: {
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
+				Support:  components.ReadSupport,
+			},
+		},
+	}
+}
