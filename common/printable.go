@@ -70,6 +70,7 @@ func logResponseWithoutBody(logger *slog.Logger, res *http.Response, method, id,
 			"url":           fullURL,
 			"correlationId": id,
 			"headers":       headers,
+			"status":        res.StatusCode,
 		},
 	)
 
@@ -85,6 +86,7 @@ func logResponseWithBody(logger *slog.Logger, res *http.Response, method, id, fu
 			"url":           fullURL,
 			"correlationId": id,
 			"headers":       headers,
+			"status":        res.StatusCode,
 		},
 	)
 
