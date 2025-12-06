@@ -182,8 +182,6 @@ func (c *Connector) constructCatalogPayload(recordData any) ([]byte, error) {
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	path := params.ObjectName
-
 	var (
 		jsonData []byte
 		err      error
@@ -192,8 +190,9 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	)
 
 	// map objectName to the braze APIs endpoints.
-	if objectName, exists := writeEndpointsByObject[params.ObjectName]; exists {
-		path = objectName
+	path, err := getPath(params.ObjectName, params.RecordData)
+	if err != nil {
+		return nil, err
 	}
 
 	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, path)
