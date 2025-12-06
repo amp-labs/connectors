@@ -35,13 +35,39 @@ var (
 
 // NewConnector creates a new deepmock connector instance.
 func NewConnector(schemas map[string][]byte, opts ...Option) (*Connector, error) {
-	// Validate schemas parameter
-	if schemas == nil || len(schemas) == 0 {
-		return nil, fmt.Errorf("%w: schemas", ErrMissingParam)
+	// Apply options without pre-populated schemas/storage
+	params, err := paramsbuilder.Apply(parameters{}, opts, WithClient(http.DefaultClient))
+	if err != nil {
+		return nil, err
 	}
 
-	// Parse schemas before applying options
-	parsedSchemas, err := parseSchemas(schemas)
+	// Determine which schemas to use (raw vs struct-derived)
+	var finalSchemas map[string][]byte
+
+	if schemas != nil && len(schemas) > 0 {
+		// Raw schemas provided
+		finalSchemas = schemas
+
+		// Warn if both raw and struct schemas are provided
+		if params.structSchemas != nil && len(params.structSchemas) > 0 {
+			slog.Warn("both raw schemas and struct schemas provided; using raw schemas",
+				"rawSchemaCount", len(schemas),
+				"structSchemaCount", len(params.structSchemas))
+		}
+	} else if params.structSchemas != nil && len(params.structSchemas) > 0 {
+		// Derive schemas from structs
+		var err error
+		finalSchemas, err = DeriveSchemasFromStructs(params.structSchemas)
+		if err != nil {
+			return nil, fmt.Errorf("failed to derive schemas from structs: %w", err)
+		}
+	} else {
+		// Neither provided
+		return nil, fmt.Errorf("%w: must provide either raw schemas or use WithStructSchemas option", ErrMissingParam)
+	}
+
+	// Parse schemas
+	parsedSchemas, err := parseSchemas(finalSchemas)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse schemas: %w", err)
 	}
@@ -49,14 +75,9 @@ func NewConnector(schemas map[string][]byte, opts ...Option) (*Connector, error)
 	// Initialize storage with parsed schemas
 	storage := NewStorage(parsedSchemas)
 
-	// Apply options with pre-populated schemas and storage
-	params, err := paramsbuilder.Apply(parameters{
-		schemas: parsedSchemas,
-		storage: storage,
-	}, opts, WithClient(http.DefaultClient))
-	if err != nil {
-		return nil, err
-	}
+	// Update params with parsed schemas and storage
+	params.schemas = parsedSchemas
+	params.storage = storage
 
 	return &Connector{
 		client: &common.JSONHTTPClient{
