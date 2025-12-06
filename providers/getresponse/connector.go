@@ -14,10 +14,6 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	if params.Module == "" {
-		params.Module = common.ModuleRoot
-	}
-
 	return components.Initialize(providers.GetResponse, params, constructor)
 }
 
