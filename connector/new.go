@@ -32,6 +32,7 @@ import (
 	"github.com/amp-labs/connectors/providers/claricopilot"
 	"github.com/amp-labs/connectors/providers/clickup"
 	"github.com/amp-labs/connectors/providers/closecrm"
+	"github.com/amp-labs/connectors/providers/cloudtalk"
 	"github.com/amp-labs/connectors/providers/constantcontact"
 	"github.com/amp-labs/connectors/providers/copper"
 	"github.com/amp-labs/connectors/providers/customerapp"
@@ -142,6 +143,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Chorus:                  wrapper(newChorusConnector),
 	providers.ClariCopilot:            wrapper(newClariCopilotConnector),
 	providers.ClickUp:                 wrapper(newClickUpConnector),
+	providers.CloudTalk:               wrapper(newCloudTalkConnector),
 	providers.Close:                   wrapper(newCloseConnector),
 	providers.ConstantContact:         wrapper(newConstantContactConnector),
 	providers.Copper:                  wrapper(newCopperConnector),
@@ -881,4 +883,8 @@ func newAircallConnector(
 
 func newSolarWindsConnector(params common.ConnectorParams) (*solarwinds.Connector, error) {
 	return solarwinds.NewConnector(params)
+}
+
+func newCloudTalkConnector(params common.ConnectorParams) (*cloudtalk.Connector, error) {
+	return cloudtalk.NewConnector(params)
 }
