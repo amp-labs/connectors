@@ -3,7 +3,6 @@ package main
 import (
 	"testing"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/getresponse/metadata"
 )
 
@@ -22,15 +21,7 @@ func TestSchemasContainsCampaigns(t *testing.T) {
 		t.Skip("GetResponse embedded schemas are empty (metadata.Schemas.Modules has length 0) – likely schemas.json is not wired or has incompatible format")
 	}
 
-	// Discover actual module IDs present in the embedded schemas to avoid
-	// hard-coding assumptions about the module name (e.g. \"root\").
-	var moduleID common.ModuleID
-	for id := range metadata.Schemas.Modules {
-		moduleID = id
-		break
-	}
-
-	result, err := metadata.Schemas.Select(moduleID, []string{objectName})
+	result, err := metadata.Schemas.Select("root", []string{objectName})
 	if err != nil {
 		t.Fatalf("Schemas.Select returned error: %v", err)
 	}
