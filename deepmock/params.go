@@ -11,12 +11,16 @@ import (
 // parameters holds the configuration for the deepmock connector.
 type parameters struct {
 	paramsbuilder.AuthClient
-	schemas schemaRegistry
-	storage *Storage
-	err     error
+	schemas       schemaRegistry
+	storage       *Storage
+	structSchemas map[string]interface{}
+	err           error
 }
 
 // ValidateParams checks that all required parameters are present and valid.
+// Note: This method is not part of the NewConnector construction path.
+// NewConnector initializes schemas and storage directly and does not call ValidateParams.
+// This method should only be used in contexts where schemas and storage are already initialized.
 func (p parameters) ValidateParams() error {
 	if p.err != nil {
 		return fmt.Errorf("%w: %w", ErrInvalidSchema, p.err)
@@ -51,5 +55,14 @@ func WithClient(client *http.Client) Option {
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 	return func(params *parameters) {
 		params.AuthClient.WithAuthenticatedClient(client)
+	}
+}
+
+// WithStructSchemas configures the connector to derive schemas from Go structs.
+// This is an alternative to providing raw JSON schemas in NewConnector.
+// If both raw schemas and struct schemas are provided, raw schemas take priority.
+func WithStructSchemas(schemas map[string]interface{}) Option {
+	return func(params *parameters) {
+		params.structSchemas = schemas
 	}
 }

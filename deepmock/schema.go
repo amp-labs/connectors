@@ -3,14 +3,136 @@ package deepmock
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 
 	"github.com/amp-labs/connectors/common"
+	invopopschema "github.com/invopop/jsonschema"
 	"github.com/kaptinlin/jsonschema"
 )
 
 // boolPtr returns a pointer to a boolean value.
 func boolPtr(b bool) *bool {
 	return &b
+}
+
+// DeriveSchemasFromStructs converts Go structs to JSON Schema bytes for use with NewConnector.
+//
+// This function provides a developer-friendly API for defining schemas using Go types with
+// struct tags, as an alternative to writing raw JSON schemas. The generated schemas are
+// compatible with the Draft 2020-12 specification and can be used directly with NewConnector.
+//
+// Parameters:
+//   - schemas: Map of object names to struct instances (e.g., &User{}, &Contact{})
+//
+// Returns:
+//   - Map of object names to JSON Schema bytes (Draft 2020-12 format)
+//   - Error if any struct is invalid or schema generation fails
+//
+// Custom Extensions:
+//
+// Use the jsonschema_extras struct tag to add custom x-amp-* extensions:
+//   - x-amp-id-field: Marks a field as the unique identifier
+//   - x-amp-updated-field: Marks a field as the last updated timestamp
+//
+// Standard jsonschema tags are also supported:
+//   - required: Mark field as required
+//   - enum: Define allowed values
+//   - format: Specify format (email, date, date-time, etc.)
+//   - minLength, maxLength: String length constraints
+//   - minimum, maximum: Numeric constraints
+//   - title: Display name for field
+//   - description: Field description
+//
+// Example:
+//
+//	type Contact struct {
+//	    ID        string    `json:"id" jsonschema_extras:"x-amp-id-field=true"`
+//	    UpdatedAt time.Time `json:"updated_at" jsonschema_extras:"x-amp-updated-field=true"`
+//	    Name      string    `json:"name" jsonschema:"required,title=Full Name"`
+//	    Email     string    `json:"email" jsonschema:"required,format=email"`
+//	    Status    string    `json:"status" jsonschema:"enum=active,enum=inactive"`
+//	}
+//
+//	type Company struct {
+//	    ID        int64  `json:"id" jsonschema_extras:"x-amp-id-field=true"`
+//	    UpdatedAt int64  `json:"updated_at" jsonschema_extras:"x-amp-updated-field=true"`
+//	    Name      string `json:"name" jsonschema:"required,minLength=1,maxLength=100"`
+//	}
+//
+//	schemas, err := DeriveSchemasFromStructs(map[string]interface{}{
+//	    "contacts":  &Contact{},
+//	    "companies": &Company{},
+//	})
+//	if err != nil {
+//	    // handle error
+//	}
+//
+//	connector, err := NewConnector(schemas)
+//	if err != nil {
+//	    // handle error
+//	}
+//
+// Error Handling:
+//
+// The function returns an error if:
+//   - Input map is nil or empty
+//   - Any value is not a struct or pointer to struct
+//   - Schema generation fails for any struct
+//   - JSON marshaling fails
+func DeriveSchemasFromStructs(schemas map[string]interface{}) (map[string][]byte, error) {
+	// Validate input
+	if schemas == nil || len(schemas) == 0 {
+		return nil, fmt.Errorf("schemas map cannot be nil or empty")
+	}
+
+	result := make(map[string][]byte)
+
+	for objectName, structInstance := range schemas {
+		// Validate that the value is a struct or pointer to struct
+		val := reflect.ValueOf(structInstance)
+
+		// Check if the value is valid (i.e., not nil)
+		if !val.IsValid() {
+			return nil, fmt.Errorf("object %s: struct instance cannot be nil", objectName)
+		}
+
+		// Check for typed nil pointers (e.g., (*MyStruct)(nil))
+		if val.Kind() == reflect.Ptr && val.IsNil() {
+			return nil, fmt.Errorf("object %s: struct instance cannot be nil", objectName)
+		}
+
+		typ := val.Type()
+
+		// Dereference pointer if needed
+		if typ.Kind() == reflect.Ptr {
+			typ = typ.Elem()
+		}
+
+		// Validate it's a struct
+		if typ.Kind() != reflect.Struct {
+			return nil, fmt.Errorf("object %s: expected struct or pointer to struct, got %s", objectName, typ.Kind())
+		}
+
+		// Create a new Reflector instance for this struct
+		reflector := new(invopopschema.Reflector)
+
+		// Generate the schema
+		schema := reflector.Reflect(structInstance)
+		if schema == nil {
+			return nil, fmt.Errorf("object %s: failed to generate schema (reflector returned nil)", objectName)
+		}
+
+		// Marshal schema to JSON bytes
+		schemaBytes, err := json.Marshal(schema)
+		if err != nil {
+			return nil, fmt.Errorf("object %s: failed to marshal schema to JSON: %w", objectName, err)
+		}
+
+		// Store in result map
+		result[objectName] = schemaBytes
+	}
+
+	return result, nil
 }
 
 // schemaRegistry is a registry of compiled JSON schemas by object name.
@@ -46,6 +168,28 @@ func parseSchemas(rawSchemas map[string][]byte) (schemaRegistry, error) {
 	return parsed, nil
 }
 
+// isTrueValue checks if a value represents a "true" boolean or string.
+// Returns true for:
+//   - boolean true
+//   - string "true" (case-insensitive, trimmed)
+func isTrueValue(val any) bool {
+	switch v := val.(type) {
+	case bool:
+		return v
+	case string:
+		// Trim spaces and check case-insensitive
+		trimmed := ""
+		for _, r := range v {
+			if r != ' ' && r != '\t' && r != '\n' && r != '\r' {
+				trimmed += string(r)
+			}
+		}
+		return trimmed == "true" || trimmed == "TRUE" || trimmed == "True"
+	default:
+		return false
+	}
+}
+
 // extractSpecialFields extracts ID and updated timestamp field names from schema extensions.
 func extractSpecialFields(schema *jsonschema.Schema) (idField, updatedField string) {
 	if schema == nil {
@@ -74,13 +218,13 @@ func extractSpecialFields(schema *jsonschema.Schema) (idField, updatedField stri
 			continue
 		}
 
-		// Check for x-amp-id-field extension
-		if isIDField, ok := fieldMap["x-amp-id-field"].(bool); ok && isIDField {
+		// Check for x-amp-id-field extension (supports both boolean and string "true")
+		if val, exists := fieldMap["x-amp-id-field"]; exists && isTrueValue(val) {
 			idField = fieldName
 		}
 
-		// Check for x-amp-updated-field extension
-		if isUpdatedField, ok := fieldMap["x-amp-updated-field"].(bool); ok && isUpdatedField {
+		// Check for x-amp-updated-field extension (supports both boolean and string "true")
+		if val, exists := fieldMap["x-amp-updated-field"]; exists && isTrueValue(val) {
 			updatedField = fieldName
 		}
 	}

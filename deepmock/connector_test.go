@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -70,6 +71,806 @@ var (
 		"required": ["code"]
 	}`)
 )
+
+// ============================================================================
+// Struct-Based Schema Tests
+// ============================================================================
+//
+// The following tests demonstrate using Go structs with tags to define schemas
+// instead of writing raw JSON schemas. This approach provides:
+//
+// 1. Type safety at compile time
+// 2. IDE autocomplete and refactoring support
+// 3. Easier maintenance and readability
+// 4. Automatic schema generation from existing Go types
+//
+// Example Usage:
+//
+//   // Define your data model with tags
+//   type User struct {
+//       ID        string    `json:"id" jsonschema_extras:"x-amp-id-field=true"`
+//       Email     string    `json:"email" jsonschema:"required,format=email"`
+//       Name      string    `json:"name" jsonschema:"required,minLength=1,maxLength=100"`
+//       Role      string    `json:"role" jsonschema:"enum=admin,enum=user,enum=guest"`
+//       CreatedAt time.Time `json:"created_at" jsonschema_extras:"x-amp-updated-field=true" jsonschema:"format=date-time"`
+//       Age       int       `json:"age" jsonschema:"minimum=18,maximum=120"`
+//       Active    bool      `json:"active"`
+//   }
+//
+//   // Create connector with struct schemas
+//   conn, err := deepmock.NewConnector(nil, deepmock.WithStructSchemas(map[string]interface{}{
+//       "users": &User{},
+//   }))
+//
+//   // Use connector normally
+//   record, _ := conn.GenerateRandomRecord("users")
+//   result, _ := conn.Write(ctx, common.WriteParams{
+//       ObjectName: "users",
+//       RecordData: record,
+//   })
+//
+// Supported Tags:
+//
+// jsonschema_extras:
+//   - x-amp-id-field=true       : Marks field as unique identifier
+//   - x-amp-updated-field=true  : Marks field as last updated timestamp
+//
+// jsonschema:
+//   - required                  : Field is required
+//   - enum=val1,enum=val2       : Allowed values (creates SingleSelect)
+//   - format=email|uuid|date|date-time|phone|uri
+//   - minLength=N, maxLength=N  : String length constraints
+//   - minimum=N, maximum=N      : Numeric constraints
+//   - title=Display Name        : Human-readable field name
+//   - description=...           : Field description
+//
+// Field Type Mapping:
+//   - string       → ValueTypeString
+//   - int, int64   → ValueTypeInt
+//   - float64      → ValueTypeFloat
+//   - bool         → ValueTypeBoolean
+//   - []T          → ValueTypeOther (array)
+//   - struct       → ValueTypeOther (object)
+//   - time.Time    → ValueTypeDateTime (with format=date-time)
+//
+// ============================================================================
+
+// Test structs for struct-based schema derivation
+// These demonstrate the full range of jsonschema tags and custom extensions
+
+type TestContact struct {
+	ID        string   `json:"id" jsonschema_extras:"x-amp-id-field=true"`
+	Email     string   `json:"email" jsonschema:"required,format=email,title=Email Address"`
+	FirstName string   `json:"firstName" jsonschema:"minLength=1,maxLength=50,title=First Name"`
+	LastName  string   `json:"lastName" jsonschema:"minLength=1,maxLength=50"`
+	Phone     string   `json:"phone" jsonschema:"format=phone"`
+	Status    string   `json:"status" jsonschema:"enum=active,enum=inactive,enum=pending"`
+	CreatedAt int64    `json:"createdAt" jsonschema_extras:"x-amp-updated-field=true"`
+	Tags      []string `json:"tags" jsonschema:"uniqueItems=true"`
+}
+
+type TestCompany struct {
+	ID            int64  `json:"id" jsonschema_extras:"x-amp-id-field=true"`
+	Name          string `json:"name" jsonschema:"required,minLength=1,maxLength=200"`
+	Industry      string `json:"industry" jsonschema:"enum=technology,enum=finance,enum=healthcare"`
+	EmployeeCount int    `json:"employeeCount" jsonschema:"minimum=1,maximum=1000000"`
+	Website       string `json:"website" jsonschema:"format=uri"`
+	UpdatedAt     string `json:"updatedAt" jsonschema_extras:"x-amp-updated-field=true" jsonschema:"format=date-time"`
+}
+
+type TestDeal struct {
+	ID           string  `json:"id" jsonschema_extras:"x-amp-id-field=true"`
+	Title        string  `json:"title" jsonschema:"required,minLength=1"`
+	Amount       float64 `json:"amount" jsonschema:"minimum=0,maximum=10000000"`
+	Stage        string  `json:"stage" jsonschema:"enum=prospecting,enum=qualification,enum=proposal,enum=closed"`
+	ContactID    string  `json:"contactId"`
+	CompanyID    int64   `json:"companyId"`
+	CloseDate    string  `json:"closeDate" jsonschema:"format=date"`
+	LastModified int64   `json:"lastModified" jsonschema_extras:"x-amp-updated-field=true"`
+}
+
+func TestDeriveSchemasFromStructs(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name        string
+		input       map[string]interface{}
+		expectError bool
+		errorMsg    string
+		validate    func(t *testing.T, schemas map[string][]byte)
+	}{
+		{
+			name: "valid structs with all tag types",
+			input: map[string]interface{}{
+				"contacts":  &TestContact{},
+				"companies": &TestCompany{},
+				"deals":     &TestDeal{},
+			},
+			expectError: false,
+			validate: func(t *testing.T, schemas map[string][]byte) {
+				// Verify all objects present
+				if len(schemas) != 3 {
+					t.Errorf("expected 3 schemas, got %d", len(schemas))
+				}
+
+				// Verify each schema is valid JSON
+				for objName, schemaBytes := range schemas {
+					var schemaMap map[string]any
+					if err := json.Unmarshal(schemaBytes, &schemaMap); err != nil {
+						t.Errorf("schema %s is not valid JSON: %v", objName, err)
+					}
+
+					// Verify $schema field
+					if schema, ok := schemaMap["$schema"].(string); !ok || schema == "" {
+						t.Errorf("schema %s missing $schema field", objName)
+					}
+
+					// Verify properties exist
+					if _, ok := schemaMap["properties"]; !ok {
+						t.Errorf("schema %s missing properties", objName)
+					}
+				}
+
+				// Verify custom extensions for contacts
+				var contactSchema map[string]any
+				json.Unmarshal(schemas["contacts"], &contactSchema)
+				props := contactSchema["properties"].(map[string]any)
+				idField := props["id"].(map[string]any)
+				if idExt, ok := idField["x-amp-id-field"]; !ok || idExt != true {
+					t.Errorf("contacts.id missing x-amp-id-field extension")
+				}
+				createdAtField := props["createdAt"].(map[string]any)
+				if updatedExt, ok := createdAtField["x-amp-updated-field"]; !ok || updatedExt != true {
+					t.Errorf("contacts.createdAt missing x-amp-updated-field extension")
+				}
+
+				// Verify required fields
+				if required, ok := contactSchema["required"].([]any); !ok || len(required) == 0 {
+					t.Errorf("contacts schema missing required fields")
+				}
+			},
+		},
+		{
+			name:        "nil input",
+			input:       nil,
+			expectError: true,
+			errorMsg:    "cannot be nil or empty",
+		},
+		{
+			name:        "empty map",
+			input:       map[string]interface{}{},
+			expectError: true,
+			errorMsg:    "cannot be nil or empty",
+		},
+		{
+			name: "non-struct value",
+			input: map[string]interface{}{
+				"invalid": "not a struct",
+			},
+			expectError: true,
+			errorMsg:    "expected struct or pointer to struct",
+		},
+		{
+			name: "nil struct pointer",
+			input: map[string]interface{}{
+				"contacts": (*TestContact)(nil),
+			},
+			expectError: true,
+			errorMsg:    "cannot be nil",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			schemas, err := DeriveSchemasFromStructs(tt.input)
+
+			if tt.expectError {
+				if err == nil {
+					t.Errorf("expected error containing %q, got nil", tt.errorMsg)
+				} else if !strings.Contains(err.Error(), tt.errorMsg) {
+					t.Errorf("expected error containing %q, got %q", tt.errorMsg, err.Error())
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if tt.validate != nil {
+				tt.validate(t, schemas)
+			}
+		})
+	}
+}
+
+func TestNewConnectorWithStructSchemas(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name        string
+		rawSchemas  map[string][]byte
+		structOpts  []Option
+		expectError bool
+		errorMsg    string
+		validate    func(t *testing.T, conn *Connector)
+	}{
+		{
+			name:       "struct schemas only",
+			rawSchemas: nil,
+			structOpts: []Option{
+				WithStructSchemas(map[string]interface{}{
+					"contacts":  &TestContact{},
+					"companies": &TestCompany{},
+				}),
+			},
+			expectError: false,
+			validate: func(t *testing.T, conn *Connector) {
+				// Verify schemas are loaded
+				if len(conn.params.schemas) != 2 {
+					t.Errorf("expected 2 schemas, got %d", len(conn.params.schemas))
+				}
+
+				// Verify storage is initialized
+				if conn.params.storage == nil {
+					t.Error("storage not initialized")
+				}
+
+				// Verify ID fields are detected
+				if idField := conn.params.storage.idFields["contacts"]; idField != "id" {
+					t.Errorf("expected contacts ID field 'id', got %q", idField)
+				}
+				if idField := conn.params.storage.idFields["companies"]; idField != "id" {
+					t.Errorf("expected companies ID field 'id', got %q", idField)
+				}
+
+				// Verify updated fields are detected
+				if updatedField := conn.params.storage.updatedFields["contacts"]; updatedField != "createdAt" {
+					t.Errorf("expected contacts updated field 'createdAt', got %q", updatedField)
+				}
+				if updatedField := conn.params.storage.updatedFields["companies"]; updatedField != "updatedAt" {
+					t.Errorf("expected companies updated field 'updatedAt', got %q", updatedField)
+				}
+			},
+		},
+		{
+			name:        "neither raw nor struct schemas",
+			rawSchemas:  nil,
+			structOpts:  []Option{},
+			expectError: true,
+			errorMsg:    "must provide either raw schemas or use WithStructSchemas",
+		},
+		{
+			name:       "invalid struct schemas",
+			rawSchemas: nil,
+			structOpts: []Option{
+				WithStructSchemas(map[string]interface{}{
+					"invalid": "not a struct",
+				}),
+			},
+			expectError: true,
+			errorMsg:    "failed to derive schemas from structs",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			conn, err := NewConnector(tt.rawSchemas, tt.structOpts...)
+
+			if tt.expectError {
+				if err == nil {
+					t.Errorf("expected error containing %q, got nil", tt.errorMsg)
+				} else if !strings.Contains(err.Error(), tt.errorMsg) {
+					t.Errorf("expected error containing %q, got %q", tt.errorMsg, err.Error())
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if tt.validate != nil {
+				tt.validate(t, conn)
+			}
+		})
+	}
+}
+
+func TestSchemasPriority(t *testing.T) {
+	t.Parallel()
+
+	// Define a raw schema with different field names
+	rawContactSchema := []byte(`{
+		"$schema": "https://json-schema.org/draft/2020-12/schema",
+		"type": "object",
+		"properties": {
+			"rawId": {"type": "string", "x-amp-id-field": true},
+			"rawEmail": {"type": "string", "format": "email"}
+		},
+		"required": ["rawEmail"]
+	}`)
+
+	rawSchemas := map[string][]byte{
+		"contacts": rawContactSchema,
+	}
+
+	structSchemas := map[string]interface{}{
+		"contacts": &TestContact{},
+	}
+
+	// Create connector with both raw and struct schemas
+	conn, err := NewConnector(rawSchemas, WithStructSchemas(structSchemas))
+	if err != nil {
+		t.Fatalf("failed to create connector: %v", err)
+	}
+
+	// Verify raw schemas take priority
+	schema, exists := conn.params.schemas.Get("contacts")
+	if !exists {
+		t.Fatal("contacts schema not found")
+	}
+
+	// Extract schema to verify it's the raw one (has rawId, not id)
+	schemaJSON, _ := json.Marshal(schema)
+	var schemaMap map[string]any
+	json.Unmarshal(schemaJSON, &schemaMap)
+
+	props := schemaMap["properties"].(map[string]any)
+	if _, hasRawId := props["rawId"]; !hasRawId {
+		t.Error("expected raw schema (with rawId field), but got struct-derived schema")
+	}
+	if _, hasId := props["id"]; hasId {
+		t.Error("expected raw schema (without id field), but got struct-derived schema")
+	}
+
+	// Verify ID field is from raw schema
+	if idField := conn.params.storage.idFields["contacts"]; idField != "rawId" {
+		t.Errorf("expected ID field 'rawId' from raw schema, got %q", idField)
+	}
+}
+
+func TestCRUDWithStructSchemas(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	// Create connector with struct schemas
+	conn, err := NewConnector(nil, WithStructSchemas(map[string]interface{}{
+		"contacts":  &TestContact{},
+		"companies": &TestCompany{},
+	}))
+	if err != nil {
+		t.Fatalf("failed to create connector: %v", err)
+	}
+
+	t.Run("write and read contact", func(t *testing.T) {
+		// Write a contact
+		contactData := map[string]any{
+			"email":     "test@example.com",
+			"firstName": "John",
+			"lastName":  "Doe",
+			"status":    "active",
+			"tags":      []string{"vip", "customer"},
+		}
+
+		writeResult, err := conn.Write(ctx, common.WriteParams{
+			ObjectName: "contacts",
+			RecordData: contactData,
+		})
+		if err != nil {
+			t.Fatalf("write failed: %v", err)
+		}
+
+		if writeResult.RecordId == "" {
+			t.Error("expected record ID to be generated")
+		}
+
+		// Verify ID field was auto-generated
+		if _, hasId := writeResult.Data["id"]; !hasId {
+			t.Error("expected 'id' field to be auto-generated")
+		}
+
+		// Verify updated field was auto-generated
+		if _, hasCreatedAt := writeResult.Data["createdAt"]; !hasCreatedAt {
+			t.Error("expected 'createdAt' field to be auto-generated")
+		}
+
+		// Read the contact back
+		readResult, err := conn.Read(ctx, common.ReadParams{
+			ObjectName: "contacts",
+		})
+		if err != nil {
+			t.Fatalf("read failed: %v", err)
+		}
+
+		if readResult.Rows != 1 {
+			t.Errorf("expected 1 row, got %d", readResult.Rows)
+		}
+
+		if len(readResult.Data) != 1 {
+			t.Fatalf("expected 1 record, got %d", len(readResult.Data))
+		}
+
+		record := readResult.Data[0]
+		if email := record.Fields["email"]; email != "test@example.com" {
+			t.Errorf("expected email 'test@example.com', got %v", email)
+		}
+	})
+
+	t.Run("write company with integer ID", func(t *testing.T) {
+		companyData := map[string]any{
+			"name":          "Acme Corp",
+			"industry":      "technology",
+			"employeeCount": 100,
+			"website":       "https://acme.example.com",
+		}
+
+		writeResult, err := conn.Write(ctx, common.WriteParams{
+			ObjectName: "companies",
+			RecordData: companyData,
+		})
+		if err != nil {
+			t.Fatalf("write failed: %v", err)
+		}
+
+		// Verify integer ID was generated
+		idVal, hasId := writeResult.Data["id"]
+		if !hasId {
+			t.Error("expected 'id' field to be auto-generated")
+		}
+
+		// Check ID is numeric (int or int64)
+		switch idVal.(type) {
+		case int, int64:
+			// OK
+		default:
+			t.Errorf("expected integer ID, got %T", idVal)
+		}
+	})
+
+	t.Run("validation with struct-derived schema", func(t *testing.T) {
+		// Try to write invalid data (missing required field)
+		invalidData := map[string]any{
+			"firstName": "Jane",
+			// Missing required "email" field
+		}
+
+		_, err := conn.Write(ctx, common.WriteParams{
+			ObjectName: "contacts",
+			RecordData: invalidData,
+		})
+		if err == nil {
+			t.Error("expected validation error for missing required field")
+		}
+		if !strings.Contains(err.Error(), "validation failed") {
+			t.Errorf("expected validation error, got: %v", err)
+		}
+	})
+
+	t.Run("enum validation", func(t *testing.T) {
+		// Try to write invalid enum value
+		invalidData := map[string]any{
+			"email":  "test2@example.com",
+			"status": "invalid_status", // Not in enum
+		}
+
+		_, err := conn.Write(ctx, common.WriteParams{
+			ObjectName: "contacts",
+			RecordData: invalidData,
+		})
+		if err == nil {
+			t.Error("expected validation error for invalid enum value")
+		}
+	})
+}
+
+func TestGenerateRandomRecordWithStructSchemas(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	conn, err := NewConnector(nil, WithStructSchemas(map[string]interface{}{
+		"contacts":  &TestContact{},
+		"companies": &TestCompany{},
+		"deals":     &TestDeal{},
+	}))
+	if err != nil {
+		t.Fatalf("failed to create connector: %v", err)
+	}
+
+	tests := []struct {
+		objectName string
+		validate   func(t *testing.T, record map[string]any)
+	}{
+		{
+			objectName: "contacts",
+			validate: func(t *testing.T, record map[string]any) {
+				// Verify required fields
+				if _, hasEmail := record["email"]; !hasEmail {
+					t.Error("expected 'email' field")
+				}
+
+				// Verify ID field
+				if id, hasId := record["id"]; !hasId {
+					t.Error("expected 'id' field")
+				} else if idStr, ok := id.(string); !ok || idStr == "" {
+					t.Error("expected non-empty string ID")
+				}
+
+				// Verify updated field
+				if createdAt, hasCreatedAt := record["createdAt"]; !hasCreatedAt {
+					t.Error("expected 'createdAt' field")
+				} else if _, ok := createdAt.(int64); !ok {
+					t.Errorf("expected int64 createdAt, got %T", createdAt)
+				}
+
+				// Verify enum field
+				if status, hasStatus := record["status"]; hasStatus {
+					statusStr := status.(string)
+					validStatuses := []string{"active", "inactive", "pending"}
+					found := false
+					for _, valid := range validStatuses {
+						if statusStr == valid {
+							found = true
+							break
+						}
+					}
+					if !found {
+						t.Errorf("status %q not in valid enum values", statusStr)
+					}
+				}
+
+				// Verify email format
+				if email, hasEmail := record["email"]; hasEmail {
+					emailStr := email.(string)
+					if !strings.Contains(emailStr, "@") {
+						t.Errorf("expected valid email format, got %q", emailStr)
+					}
+				}
+			},
+		},
+		{
+			objectName: "companies",
+			validate: func(t *testing.T, record map[string]any) {
+				// Verify integer ID
+				if id, hasId := record["id"]; !hasId {
+					t.Error("expected 'id' field")
+				} else {
+					switch id.(type) {
+					case int, int64:
+						// OK
+					default:
+						t.Errorf("expected integer ID, got %T", id)
+					}
+				}
+
+				// Verify required name field
+				if _, hasName := record["name"]; !hasName {
+					t.Error("expected 'name' field")
+				}
+
+				// Verify updated field is date-time string
+				if updatedAt, hasUpdatedAt := record["updatedAt"]; !hasUpdatedAt {
+					t.Error("expected 'updatedAt' field")
+				} else if updatedStr, ok := updatedAt.(string); !ok {
+					t.Errorf("expected string updatedAt, got %T", updatedAt)
+				} else if !strings.Contains(updatedStr, "T") {
+					t.Errorf("expected ISO 8601 date-time format, got %q", updatedStr)
+				}
+
+				// Verify numeric constraints
+				if empCount, hasEmpCount := record["employeeCount"]; hasEmpCount {
+					count := empCount.(int)
+					if count < 1 {
+						t.Errorf("employeeCount %d violates minimum constraint (1)", count)
+					}
+				}
+			},
+		},
+		{
+			objectName: "deals",
+			validate: func(t *testing.T, record map[string]any) {
+				// Verify required title
+				if _, hasTitle := record["title"]; !hasTitle {
+					t.Error("expected 'title' field")
+				}
+
+				// Verify amount constraints
+				if amount, hasAmount := record["amount"]; hasAmount {
+					amountVal := amount.(float64)
+					if amountVal < 0 {
+						t.Errorf("amount %f violates minimum constraint (0)", amountVal)
+					}
+				}
+
+				// Verify date format
+				if closeDate, hasCloseDate := record["closeDate"]; hasCloseDate {
+					dateStr := closeDate.(string)
+					// Should be YYYY-MM-DD format
+					if len(dateStr) != 10 || dateStr[4] != '-' || dateStr[7] != '-' {
+						t.Errorf("expected YYYY-MM-DD date format, got %q", dateStr)
+					}
+				}
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.objectName, func(t *testing.T) {
+			t.Parallel()
+
+			// Generate multiple records to test consistency
+			for i := 0; i < 5; i++ {
+				record, err := conn.GenerateRandomRecord(tt.objectName)
+				if err != nil {
+					t.Fatalf("GenerateRandomRecord failed: %v", err)
+				}
+
+				if record == nil {
+					t.Fatal("expected non-nil record")
+				}
+
+				// Validate record structure
+				tt.validate(t, record)
+
+				// Verify record can be written (validates against schema)
+				_, err = conn.Write(ctx, common.WriteParams{
+					ObjectName: tt.objectName,
+					RecordData: record,
+				})
+				if err != nil {
+					t.Errorf("generated record failed validation: %v", err)
+				}
+			}
+		})
+	}
+}
+
+func TestListObjectMetadataWithStructSchemas(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	conn, err := NewConnector(nil, WithStructSchemas(map[string]interface{}{
+		"contacts":  &TestContact{},
+		"companies": &TestCompany{},
+	}))
+	if err != nil {
+		t.Fatalf("failed to create connector: %v", err)
+	}
+
+	result, err := conn.ListObjectMetadata(ctx, []string{"contacts", "companies"})
+	if err != nil {
+		t.Fatalf("ListObjectMetadata failed: %v", err)
+	}
+
+	t.Run("contacts metadata", func(t *testing.T) {
+		metadata, exists := result.Result["contacts"]
+		if !exists {
+			t.Fatal("contacts metadata not found")
+		}
+
+		// Verify display name
+		if metadata.DisplayName == "" {
+			t.Error("expected non-empty display name")
+		}
+
+		// Verify fields
+		if len(metadata.FieldsMap) == 0 {
+			t.Fatal("expected fields in metadata")
+		}
+
+		// Check email field (required, format)
+		emailField, hasEmail := metadata.FieldsMap["email"]
+		if !hasEmail {
+			t.Fatal("expected 'email' field in metadata")
+		}
+		if emailField.ValueType != common.ValueTypeString {
+			t.Errorf("expected email ValueType String, got %v", emailField.ValueType)
+		}
+		if emailField.IsRequired == nil || !*emailField.IsRequired {
+			t.Error("expected email to be marked as required")
+		}
+		if emailField.DisplayName == "" {
+			t.Error("expected email to have display name")
+		}
+
+		// Check status field (enum -> SingleSelect)
+		statusField, hasStatus := metadata.FieldsMap["status"]
+		if !hasStatus {
+			t.Fatal("expected 'status' field in metadata")
+		}
+		if statusField.ValueType != common.ValueTypeSingleSelect {
+			t.Errorf("expected status ValueType SingleSelect, got %v", statusField.ValueType)
+		}
+		if len(statusField.Values) == 0 {
+			t.Error("expected status to have enum values")
+		}
+		// Verify enum values
+		expectedValues := []string{"active", "inactive", "pending"}
+		if len(statusField.Values) != len(expectedValues) {
+			t.Errorf("expected %d enum values, got %d", len(expectedValues), len(statusField.Values))
+		}
+
+		// Check tags field (array)
+		tagsField, hasTags := metadata.FieldsMap["tags"]
+		if !hasTags {
+			t.Fatal("expected 'tags' field in metadata")
+		}
+		if tagsField.ValueType != common.ValueTypeOther {
+			t.Errorf("expected tags ValueType Other (array), got %v", tagsField.ValueType)
+		}
+
+		// Check firstName field (with title)
+		firstNameField, hasFirstName := metadata.FieldsMap["firstName"]
+		if !hasFirstName {
+			t.Fatal("expected 'firstName' field in metadata")
+		}
+		if firstNameField.DisplayName != "First Name" {
+			t.Errorf("expected display name 'First Name', got %q", firstNameField.DisplayName)
+		}
+	})
+
+	t.Run("companies metadata", func(t *testing.T) {
+		metadata, exists := result.Result["companies"]
+		if !exists {
+			t.Fatal("companies metadata not found")
+		}
+
+		// Check ID field (integer)
+		idField, hasId := metadata.FieldsMap["id"]
+		if !hasId {
+			t.Fatal("expected 'id' field in metadata")
+		}
+		if idField.ValueType != common.ValueTypeInt {
+			t.Errorf("expected id ValueType Int, got %v", idField.ValueType)
+		}
+
+		// Check updatedAt field (date-time format -> DateTime type)
+		updatedAtField, hasUpdatedAt := metadata.FieldsMap["updatedAt"]
+		if !hasUpdatedAt {
+			t.Fatal("expected 'updatedAt' field in metadata")
+		}
+		if updatedAtField.ValueType != common.ValueTypeDateTime {
+			t.Errorf("expected updatedAt ValueType DateTime, got %v", updatedAtField.ValueType)
+		}
+
+		// Check industry field (enum)
+		industryField, hasIndustry := metadata.FieldsMap["industry"]
+		if !hasIndustry {
+			t.Fatal("expected 'industry' field in metadata")
+		}
+		if industryField.ValueType != common.ValueTypeSingleSelect {
+			t.Errorf("expected industry ValueType SingleSelect, got %v", industryField.ValueType)
+		}
+
+		// Check employeeCount field (integer with constraints)
+		empCountField, hasEmpCount := metadata.FieldsMap["employeeCount"]
+		if !hasEmpCount {
+			t.Fatal("expected 'employeeCount' field in metadata")
+		}
+		if empCountField.ValueType != common.ValueTypeInt {
+			t.Errorf("expected employeeCount ValueType Int, got %v", empCountField.ValueType)
+		}
+
+		// Check website field (URI format)
+		websiteField, hasWebsite := metadata.FieldsMap["website"]
+		if !hasWebsite {
+			t.Fatal("expected 'website' field in metadata")
+		}
+		if websiteField.ValueType != common.ValueTypeString {
+			t.Errorf("expected website ValueType String, got %v", websiteField.ValueType)
+		}
+	})
+}
 
 // ============================================================================
 // Constructor and Setup Tests
