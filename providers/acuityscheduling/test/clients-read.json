@@ -1,0 +1,16 @@
+[
+    {
+        "firstName": "Dipu",
+        "lastName": "Chaurasiya",
+        "email": "dipu.chaurasiya91@gmail.com",
+        "phone": "+9779807202692",
+        "notes": ""
+    },
+    {
+        "firstName": "Jane",
+        "lastName": "McTest",
+        "email": "jane.mctest@example.com",
+        "phone": "(123) 555-0101",
+        "notes": ""
+    }
+]
