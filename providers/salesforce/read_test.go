@@ -3,6 +3,7 @@ package salesforce
 import (
 	"errors"
 	"net/http"
+	"reflect"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -22,6 +23,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseUnknownObject := testutils.DataFromFile(t, "unknown-object.json")
 	responseLeadsFirstPage := testutils.DataFromFile(t, "read-list-leads.json")
 	responseListContacts := testutils.DataFromFile(t, "read-list-contacts.json")
+	responseOpportunityWithAccount := testutils.DataFromFile(t, "read-opportunity-with-account.json")
 
 	tests := []testroutines.Read{
 		{
@@ -137,6 +139,78 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Read Opportunity with Account association - AccountId added to SOQL and association extracted",
+			Input: common.ReadParams{
+				ObjectName:        "opportunity",
+				Fields:            connectors.Fields("Name", "Amount", "StageName"),
+				AssociatedObjects: []string{"account"},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/services/data/v60.0/query"),
+					mockcond.Or{
+						// AccountId should be added to the query, order may vary
+						mockcond.QueryParam("q", "SELECT Name,Amount,StageName,AccountId FROM opportunity"),
+						mockcond.QueryParam("q", "SELECT AccountId,Name,Amount,StageName FROM opportunity"),
+						mockcond.QueryParam("q", "SELECT Name,AccountId,Amount,StageName FROM opportunity"),
+						mockcond.QueryParam("q", "SELECT Amount,Name,AccountId,StageName FROM opportunity"),
+						mockcond.QueryParam("q", "SELECT StageName,Name,Amount,AccountId FROM opportunity"),
+					},
+				},
+				Then: mockserver.Response(http.StatusOK, responseOpportunityWithAccount),
+			}.Server(),
+			Comparator: comparatorSubsetReadWithAssociations,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Id: "006ak00000OQ4RxAAL",
+						Fields: map[string]any{
+							"name":      "Test Opportunity 1",
+							"amount":    50000.00,
+							"stagename": "Prospecting",
+						},
+						Associations: map[string][]common.Association{
+							"account": {
+								{
+									ObjectId: "001ak00000OKNPHAA5",
+									Raw:      nil, // Parent relationships have empty Raw - workflow layer will fetch
+								},
+							},
+						},
+						Raw: map[string]any{
+							"Id":        "006ak00000OQ4RxAAL",
+							"Name":      "Test Opportunity 1",
+							"AccountId": "001ak00000OKNPHAA5",
+							"Amount":    50000.00,
+							"StageName": "Prospecting",
+						},
+					},
+					{
+						Id: "006ak00000OQ4RyAAL",
+						Fields: map[string]any{
+							"name":      "Test Opportunity 2",
+							"amount":    30000.00,
+							"stagename": "Qualification",
+						},
+						// No association when AccountId is null
+						Associations: nil,
+						Raw: map[string]any{
+							"Id":        "006ak00000OQ4RyAAL",
+							"Name":      "Test Opportunity 2",
+							"AccountId": nil,
+							"Amount":    30000.00,
+							"StageName": "Qualification",
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {
@@ -149,6 +223,95 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			})
 		})
 	}
+}
+
+// comparatorSubsetReadWithAssociations extends ComparatorSubsetRead to also validate associations.
+func comparatorSubsetReadWithAssociations(serverURL string, actual, expected *common.ReadResult) bool {
+	// First check fields, raw, and pagination using the standard comparator
+	if !testroutines.ComparatorSubsetRead(serverURL, actual, expected) {
+		return false
+	}
+
+	// Then check associations
+	if len(actual.Data) < len(expected.Data) {
+		return false
+	}
+
+	for i := range expected.Data {
+		if !validateAssociationsForRow(actual.Data[i].Associations, expected.Data[i].Associations) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// validateAssociationsForRow validates associations for a single row.
+func validateAssociationsForRow(actualAssoc, expectedAssoc map[string][]common.Association) bool {
+	// If expected has no associations, actual can have none or some (we don't care)
+	if len(expectedAssoc) == 0 {
+		return true
+	}
+
+	// If expected has associations but actual doesn't, that's a failure
+	if len(actualAssoc) == 0 {
+		return false
+	}
+
+	// Check each expected association type
+	for assocType, expectedAssociations := range expectedAssoc {
+		actualAssociations, ok := actualAssoc[assocType]
+		if !ok {
+			return false
+		}
+
+		if !validateAssociationsList(actualAssociations, expectedAssociations) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// validateAssociationsList validates a list of associations.
+func validateAssociationsList(actualAssociations, expectedAssociations []common.Association) bool {
+	// Check that we have at least as many associations as expected
+	if len(actualAssociations) < len(expectedAssociations) {
+		return false
+	}
+
+	// Check each expected association
+	for j, expectedAssoc := range expectedAssociations {
+		actualAssoc := actualAssociations[j]
+
+		if !validateSingleAssociation(actualAssoc, expectedAssoc) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// validateSingleAssociation validates a single association.
+func validateSingleAssociation(actualAssoc, expectedAssoc common.Association) bool {
+	// Check ObjectId
+	if expectedAssoc.ObjectId != "" && actualAssoc.ObjectId != expectedAssoc.ObjectId {
+		return false
+	}
+
+	// Check Raw - if expected is nil, actual should be nil
+	if expectedAssoc.Raw == nil && actualAssoc.Raw != nil {
+		return false
+	}
+
+	// If expected has Raw data, check it matches
+	if expectedAssoc.Raw != nil {
+		if !reflect.DeepEqual(actualAssoc.Raw, expectedAssoc.Raw) {
+			return false
+		}
+	}
+
+	return true
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
