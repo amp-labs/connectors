@@ -2,8 +2,16 @@ package chilipiper
 
 import (
 	"context"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
+)
+
+const (
+	weekHours = 167
+	start     = "start"
+	end       = "end"
 )
 
 func (conn *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -16,20 +24,31 @@ func (conn *Connector) Read(ctx context.Context, config common.ReadParams) (*com
 		return nil, err
 	}
 
-	// Check if we're reading Next Page of Records.
-	if len(config.NextPage) > 0 {
-		url = config.NextPage.String()
+	if !config.Since.IsZero() && config.ObjectName == meetings {
+		url.WithQueryParam(start, config.Since.Format(time.RFC3339))
+		// Adds 7 days from the since given time, and use it as ed value.
+		// timestamp above this is ot supported.
+		// nolint: mnd
+		url.WithQueryParam(end, config.Since.Add(weekHours*time.Hour).Format(time.RFC3339))
 	}
 
-	resp, err := conn.Client.Get(ctx, url)
+	// Check if we're reading Next Page of Records.
+	if len(config.NextPage) > 0 {
+		url, err = urlbuilder.New(config.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	resp, err := conn.Client.Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
 
 	return common.ParseResult(
 		resp,
-		common.ExtractRecordsFromPath("results"),
-		nextRecordsURL(url),
+		extractRecords(config.ObjectName),
+		nextRecordsURL(url, config.ObjectName),
 		common.GetMarshaledData,
 		config.Fields,
 	)
