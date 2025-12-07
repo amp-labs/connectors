@@ -46,10 +46,16 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// begin fetching objects at provided start date
-	// Supporting objects are: Activities & Notes only.
+	// Supporting objects are: [Notes].
+	// https://developers.pipedrive.com/docs/api/v1/Notes#getNotes
 	if !config.Since.IsZero() {
 		since := config.Since.UTC().Format(time.DateTime)
 		url.WithQueryParam("start_date", since)
+	}
+
+	if !config.Until.IsZero() {
+		until := config.Until.UTC().Format(time.DateTime)
+		url.WithQueryParam("end_date", until)
 	}
 
 	return url, nil
