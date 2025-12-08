@@ -113,21 +113,14 @@ func (c *Connector) parseReadResponse(
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	method := http.MethodPost
-	var urlSuffix string
 
-	if params.RecordId == "" {
-		urlSuffix = "create"
-	}
-
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName, urlSuffix)
+	url, err := buildWriteURL(c.ProviderInfo().BaseURL, params.ObjectName, params.RecordId)
 	if err != nil {
 		return nil, err
 	}
 
 	if params.RecordId != "" {
 		method = http.MethodPut
-
-		url.AddPath(params.RecordId)
 	}
 
 	jsonData, err := json.Marshal(params.RecordData)
@@ -135,7 +128,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+	req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewReader(jsonData))
 	if err != nil {
 		return nil, err
 	}
@@ -174,4 +167,27 @@ func (c *Connector) parseWriteResponse(
 		Errors:   nil,
 		Data:     resp,
 	}, nil
+}
+
+func buildWriteURL(baseURL, objectName, recordId string) (string, error) {
+	var urlSuffix string
+
+	// For objects that do not require 'create' suffix on write without record ID
+	// e.g., ApiApp, we skip adding the 'create' suffix.
+	if recordId == "" && !writeObjectWithoutCreateSuffix.Has(objectName) {
+		urlSuffix = "create"
+	}
+
+	url, err := urlbuilder.New(baseURL, apiVersion, objectName, urlSuffix)
+	if err != nil {
+		return "", err
+	}
+
+	// For objects that require update by ID on write with record ID
+	// e.g., ApiApp, we append the record ID to the URL.
+	if recordId != "" && writeObjectUpdateById.Has(objectName) {
+		url.AddPath(recordId)
+	}
+
+	return url.String(), nil
 }

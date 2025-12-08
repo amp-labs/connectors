@@ -35,6 +35,16 @@ var readObjectResponseKey = datautils.NewDefaultMap(map[string]string{
 },
 )
 
+// set of objects that do not require 'create' suffix on write operations.
+var writeObjectWithoutCreateSuffix = datautils.NewSet( //nolint:gochecknoglobals
+	objectNameApiApp,
+)
+
+// set of objects that require update by ID on write operations.
+var writeObjectUpdateById = datautils.NewSet( //nolint:gochecknoglobals
+	objectNameApiApp,
+)
+
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
 		objectNameTemplate,
