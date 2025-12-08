@@ -4,490 +4,345 @@
       "id": "root",
       "path": "",
       "objects": {
-        "users": {
-          "displayName": "Users",
-          "path": "/v2.1/users",
-          "fields": {
-            "id": {
-              "displayName": "ID",
-              "valueType": "integer",
-              "providerType": "integer"
-            },
-            "role": {
-              "displayName": "Role",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "name": {
-              "displayName": "Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "email": {
-              "displayName": "Email",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "extension": {
-              "displayName": "Extension",
-              "valueType": "integer",
-              "providerType": "integer"
-            },
-            "groups": {
-              "displayName": "Groups",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "owned_numbers": {
-              "displayName": "Owned Numbers",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "shared_numbers": {
-              "displayName": "Shared Numbers",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "created_at": {
-              "displayName": "Created At",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "last_login_timestamp": {
-              "displayName": "Last Login Timestamp",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "timezone": {
-              "displayName": "Timezone",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "working_hours_type": {
-              "displayName": "Working Hours Type",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "available": {
-              "displayName": "Available",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "unavailability_reason": {
-              "displayName": "Unavailability Reason",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "on_call": {
-              "displayName": "On Call",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "calls": {
           "displayName": "Calls",
           "path": "/v2.1/calls",
+          "responseKey": "data",
           "fields": {
-            "id": {
-              "displayName": "ID",
-              "valueType": "integer",
-              "providerType": "integer"
-            },
-            "call_id": {
-              "displayName": "Call ID",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "contact_name": {
-              "displayName": "Contact Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "contact_number": {
-              "displayName": "Contact Number",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "contact_email": {
-              "displayName": "Contact Email",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "justcall_number": {
-              "displayName": "JustCall Number",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "justcall_line_name": {
-              "displayName": "JustCall Line Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "type": {
-              "displayName": "Type",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "direction": {
-              "displayName": "Direction",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "status": {
-              "displayName": "Status",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "duration": {
-              "displayName": "Duration",
-              "valueType": "integer",
-              "providerType": "integer"
-            },
-            "datetime": {
-              "displayName": "Datetime",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "recording": {
-              "displayName": "Recording",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "recording_url": {
-              "displayName": "Recording URL",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "notes": {
-              "displayName": "Notes",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "rating": {
-              "displayName": "Rating",
-              "valueType": "integer",
-              "providerType": "integer"
-            },
-            "disposition": {
-              "displayName": "Disposition",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "agent_id": {
-              "displayName": "Agent ID",
-              "valueType": "integer",
-              "providerType": "integer"
-            },
-            "agent_name": {
-              "displayName": "Agent Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "agent_email": {
-              "displayName": "Agent Email",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "ivr_digit": {
-              "displayName": "IVR Digit",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "queue": {
-              "displayName": "Queue",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "is_deleted": {
-              "displayName": "Is Deleted",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            }
-          }
-        },
-        "contacts": {
-          "displayName": "Contacts",
-          "path": "/v2.1/contacts",
-          "fields": {
-            "id": {
-              "displayName": "ID",
-              "valueType": "integer",
-              "providerType": "integer"
-            },
-            "parent_contact_id": {
-              "displayName": "Parent Contact ID",
-              "valueType": "integer",
-              "providerType": "integer"
-            },
-            "name": {
-              "displayName": "Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "first_name": {
-              "displayName": "First Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "last_name": {
-              "displayName": "Last Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "contact_number": {
-              "displayName": "Contact Number",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "other_numbers": {
-              "displayName": "Other Numbers",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "email": {
-              "displayName": "Email",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "extension": {
-              "displayName": "Extension",
-              "valueType": "integer",
-              "providerType": "integer"
-            },
-            "company": {
-              "displayName": "Company",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "address": {
-              "displayName": "Address",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "notes": {
-              "displayName": "Notes",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "status": {
-              "displayName": "Status",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "status_updated_at": {
-              "displayName": "Status Updated At",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "created_at": {
-              "displayName": "Created At",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "last_updated_at": {
-              "displayName": "Last Updated At",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "agent_id": {
-              "displayName": "Agent ID",
-              "valueType": "integer",
-              "providerType": "integer"
-            }
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "call_id": {"displayName": "Call ID", "valueType": "string", "providerType": "string"},
+            "contact_name": {"displayName": "Contact Name", "valueType": "string", "providerType": "string"},
+            "contact_number": {"displayName": "Contact Number", "valueType": "string", "providerType": "string"},
+            "contact_email": {"displayName": "Contact Email", "valueType": "string", "providerType": "string"},
+            "justcall_number": {"displayName": "JustCall Number", "valueType": "string", "providerType": "string"},
+            "justcall_line_name": {"displayName": "JustCall Line Name", "valueType": "string", "providerType": "string"},
+            "type": {"displayName": "Type", "valueType": "string", "providerType": "string"},
+            "direction": {"displayName": "Direction", "valueType": "string", "providerType": "string"},
+            "status": {"displayName": "Status", "valueType": "string", "providerType": "string"},
+            "duration": {"displayName": "Duration", "valueType": "integer", "providerType": "integer"},
+            "datetime": {"displayName": "Datetime", "valueType": "string", "providerType": "string"},
+            "recording": {"displayName": "Recording", "valueType": "string", "providerType": "string"},
+            "recording_url": {"displayName": "Recording URL", "valueType": "string", "providerType": "string"},
+            "notes": {"displayName": "Notes", "valueType": "string", "providerType": "string"},
+            "rating": {"displayName": "Rating", "valueType": "integer", "providerType": "integer"},
+            "disposition": {"displayName": "Disposition", "valueType": "string", "providerType": "string"},
+            "agent_id": {"displayName": "Agent ID", "valueType": "integer", "providerType": "integer"},
+            "agent_name": {"displayName": "Agent Name", "valueType": "string", "providerType": "string"},
+            "agent_email": {"displayName": "Agent Email", "valueType": "string", "providerType": "string"},
+            "ivr_digit": {"displayName": "IVR Digit", "valueType": "string", "providerType": "string"},
+            "queue": {"displayName": "Queue", "valueType": "string", "providerType": "string"},
+            "is_deleted": {"displayName": "Is Deleted", "valueType": "boolean", "providerType": "boolean"}
           }
         },
         "texts": {
           "displayName": "Texts",
           "path": "/v2.1/texts",
+          "responseKey": "data",
           "fields": {
-            "id": {
-              "displayName": "ID",
-              "valueType": "integer",
-              "providerType": "integer"
-            },
-            "message_id": {
-              "displayName": "Message ID",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "contact_name": {
-              "displayName": "Contact Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "contact_number": {
-              "displayName": "Contact Number",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "justcall_number": {
-              "displayName": "JustCall Number",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "justcall_line_name": {
-              "displayName": "JustCall Line Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "direction": {
-              "displayName": "Direction",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "type": {
-              "displayName": "Type",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "status": {
-              "displayName": "Status",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "body": {
-              "displayName": "Body",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "medium": {
-              "displayName": "Medium",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "media_urls": {
-              "displayName": "Media URLs",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "datetime": {
-              "displayName": "Datetime",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "agent_id": {
-              "displayName": "Agent ID",
-              "valueType": "integer",
-              "providerType": "integer"
-            },
-            "agent_name": {
-              "displayName": "Agent Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "agent_email": {
-              "displayName": "Agent Email",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "is_deleted": {
-              "displayName": "Is Deleted",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            }
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "message_id": {"displayName": "Message ID", "valueType": "string", "providerType": "string"},
+            "contact_name": {"displayName": "Contact Name", "valueType": "string", "providerType": "string"},
+            "contact_number": {"displayName": "Contact Number", "valueType": "string", "providerType": "string"},
+            "justcall_number": {"displayName": "JustCall Number", "valueType": "string", "providerType": "string"},
+            "justcall_line_name": {"displayName": "JustCall Line Name", "valueType": "string", "providerType": "string"},
+            "direction": {"displayName": "Direction", "valueType": "string", "providerType": "string"},
+            "type": {"displayName": "Type", "valueType": "string", "providerType": "string"},
+            "status": {"displayName": "Status", "valueType": "string", "providerType": "string"},
+            "body": {"displayName": "Body", "valueType": "string", "providerType": "string"},
+            "medium": {"displayName": "Medium", "valueType": "string", "providerType": "string"},
+            "media_urls": {"displayName": "Media URLs", "valueType": "other", "providerType": "array"},
+            "datetime": {"displayName": "Datetime", "valueType": "string", "providerType": "string"},
+            "agent_id": {"displayName": "Agent ID", "valueType": "integer", "providerType": "integer"},
+            "agent_name": {"displayName": "Agent Name", "valueType": "string", "providerType": "string"},
+            "agent_email": {"displayName": "Agent Email", "valueType": "string", "providerType": "string"},
+            "is_deleted": {"displayName": "Is Deleted", "valueType": "boolean", "providerType": "boolean"}
+          }
+        },
+        "texts/tags": {
+          "displayName": "SMS Tags",
+          "path": "/v2.1/texts/tags",
+          "responseKey": "data",
+          "fields": {
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "name": {"displayName": "Name", "valueType": "string", "providerType": "string"},
+            "color": {"displayName": "Color", "valueType": "string", "providerType": "string"},
+            "created_at": {"displayName": "Created At", "valueType": "string", "providerType": "string"}
+          }
+        },
+        "whatsapp/messages": {
+          "displayName": "WhatsApp Messages",
+          "path": "/v2.1/whatsapp/messages",
+          "responseKey": "data",
+          "fields": {
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "message_id": {"displayName": "Message ID", "valueType": "string", "providerType": "string"},
+            "contact_name": {"displayName": "Contact Name", "valueType": "string", "providerType": "string"},
+            "contact_number": {"displayName": "Contact Number", "valueType": "string", "providerType": "string"},
+            "direction": {"displayName": "Direction", "valueType": "string", "providerType": "string"},
+            "status": {"displayName": "Status", "valueType": "string", "providerType": "string"},
+            "body": {"displayName": "Body", "valueType": "string", "providerType": "string"},
+            "datetime": {"displayName": "Datetime", "valueType": "string", "providerType": "string"}
+          }
+        },
+        "whatsapp/templates": {
+          "displayName": "WhatsApp Templates",
+          "path": "/v2.1/whatsapp/templates",
+          "responseKey": "data",
+          "fields": {
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "name": {"displayName": "Name", "valueType": "string", "providerType": "string"},
+            "category": {"displayName": "Category", "valueType": "string", "providerType": "string"},
+            "status": {"displayName": "Status", "valueType": "string", "providerType": "string"},
+            "language": {"displayName": "Language", "valueType": "string", "providerType": "string"}
+          }
+        },
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/v2.1/contacts",
+          "responseKey": "data",
+          "fields": {
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "parent_contact_id": {"displayName": "Parent Contact ID", "valueType": "integer", "providerType": "integer"},
+            "name": {"displayName": "Name", "valueType": "string", "providerType": "string"},
+            "first_name": {"displayName": "First Name", "valueType": "string", "providerType": "string"},
+            "last_name": {"displayName": "Last Name", "valueType": "string", "providerType": "string"},
+            "contact_number": {"displayName": "Contact Number", "valueType": "string", "providerType": "string"},
+            "other_numbers": {"displayName": "Other Numbers", "valueType": "other", "providerType": "array"},
+            "email": {"displayName": "Email", "valueType": "string", "providerType": "string"},
+            "extension": {"displayName": "Extension", "valueType": "integer", "providerType": "integer"},
+            "company": {"displayName": "Company", "valueType": "string", "providerType": "string"},
+            "address": {"displayName": "Address", "valueType": "string", "providerType": "string"},
+            "notes": {"displayName": "Notes", "valueType": "other", "providerType": "array"},
+            "status": {"displayName": "Status", "valueType": "other", "providerType": "object"},
+            "status_updated_at": {"displayName": "Status Updated At", "valueType": "string", "providerType": "string"},
+            "created_at": {"displayName": "Created At", "valueType": "string", "providerType": "string"},
+            "last_updated_at": {"displayName": "Last Updated At", "valueType": "string", "providerType": "string"},
+            "agent_id": {"displayName": "Agent ID", "valueType": "integer", "providerType": "integer"}
+          }
+        },
+        "blacklisted-contacts": {
+          "displayName": "Blacklisted Contacts",
+          "path": "/v2.1/contacts/blacklist",
+          "responseKey": "data",
+          "fields": {
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "contact_number": {"displayName": "Contact Number", "valueType": "string", "providerType": "string"},
+            "name": {"displayName": "Name", "valueType": "string", "providerType": "string"},
+            "created_at": {"displayName": "Created At", "valueType": "string", "providerType": "string"}
           }
         },
         "phone-numbers": {
           "displayName": "Phone Numbers",
           "path": "/v2.1/phone-numbers",
+          "responseKey": "data",
           "fields": {
-            "id": {
-              "displayName": "ID",
-              "valueType": "integer",
-              "providerType": "integer"
-            },
-            "justcall_number": {
-              "displayName": "JustCall Number",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "friendly_number": {
-              "displayName": "Friendly Number",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "justcall_line_name": {
-              "displayName": "JustCall Line Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "availability_setting": {
-              "displayName": "Availability Setting",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "current_status": {
-              "displayName": "Current Status",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "number_type": {
-              "displayName": "Number Type",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "sms_compliance": {
-              "displayName": "SMS Compliance",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "number_owner": {
-              "displayName": "Number Owner",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "shared_with": {
-              "displayName": "Shared With",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "capabilities": {
-              "displayName": "Capabilities",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "business_registration": {
-              "displayName": "Business Registration",
-              "valueType": "string",
-              "providerType": "string"
-            }
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "justcall_number": {"displayName": "JustCall Number", "valueType": "string", "providerType": "string"},
+            "friendly_number": {"displayName": "Friendly Number", "valueType": "string", "providerType": "string"},
+            "justcall_line_name": {"displayName": "JustCall Line Name", "valueType": "string", "providerType": "string"},
+            "availability_setting": {"displayName": "Availability Setting", "valueType": "string", "providerType": "string"},
+            "current_status": {"displayName": "Current Status", "valueType": "string", "providerType": "string"},
+            "number_type": {"displayName": "Number Type", "valueType": "string", "providerType": "string"},
+            "sms_compliance": {"displayName": "SMS Compliance", "valueType": "string", "providerType": "string"},
+            "number_owner": {"displayName": "Number Owner", "valueType": "other", "providerType": "object"},
+            "shared_with": {"displayName": "Shared With", "valueType": "other", "providerType": "object"},
+            "capabilities": {"displayName": "Capabilities", "valueType": "other", "providerType": "object"},
+            "business_registration": {"displayName": "Business Registration", "valueType": "string", "providerType": "string"}
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/v2.1/users",
+          "responseKey": "data",
+          "fields": {
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "role": {"displayName": "Role", "valueType": "string", "providerType": "string"},
+            "name": {"displayName": "Name", "valueType": "string", "providerType": "string"},
+            "email": {"displayName": "Email", "valueType": "string", "providerType": "string"},
+            "extension": {"displayName": "Extension", "valueType": "integer", "providerType": "integer"},
+            "groups": {"displayName": "Groups", "valueType": "other", "providerType": "array"},
+            "owned_numbers": {"displayName": "Owned Numbers", "valueType": "other", "providerType": "array"},
+            "shared_numbers": {"displayName": "Shared Numbers", "valueType": "other", "providerType": "array"},
+            "created_at": {"displayName": "Created At", "valueType": "string", "providerType": "string"},
+            "last_login_timestamp": {"displayName": "Last Login Timestamp", "valueType": "string", "providerType": "string"},
+            "timezone": {"displayName": "Timezone", "valueType": "string", "providerType": "string"},
+            "working_hours_type": {"displayName": "Working Hours Type", "valueType": "string", "providerType": "string"},
+            "available": {"displayName": "Available", "valueType": "string", "providerType": "string"},
+            "unavailability_reason": {"displayName": "Unavailability Reason", "valueType": "string", "providerType": "string"},
+            "on_call": {"displayName": "On Call", "valueType": "string", "providerType": "string"}
+          }
+        },
+        "analytics/calls/account": {
+          "displayName": "Account Call Analytics",
+          "path": "/v2.1/analytics/calls/account",
+          "responseKey": "data",
+          "fields": {
+            "total_calls": {"displayName": "Total Calls", "valueType": "integer", "providerType": "integer"},
+            "incoming_calls": {"displayName": "Incoming Calls", "valueType": "integer", "providerType": "integer"},
+            "outgoing_calls": {"displayName": "Outgoing Calls", "valueType": "integer", "providerType": "integer"},
+            "missed_calls": {"displayName": "Missed Calls", "valueType": "integer", "providerType": "integer"},
+            "answered_calls": {"displayName": "Answered Calls", "valueType": "integer", "providerType": "integer"}
+          }
+        },
+        "analytics/calls/agent": {
+          "displayName": "Agent Call Analytics",
+          "path": "/v2.1/analytics/calls/agent",
+          "responseKey": "data",
+          "fields": {
+            "agent_id": {"displayName": "Agent ID", "valueType": "integer", "providerType": "integer"},
+            "agent_name": {"displayName": "Agent Name", "valueType": "string", "providerType": "string"},
+            "total_calls": {"displayName": "Total Calls", "valueType": "integer", "providerType": "integer"},
+            "incoming_calls": {"displayName": "Incoming Calls", "valueType": "integer", "providerType": "integer"},
+            "outgoing_calls": {"displayName": "Outgoing Calls", "valueType": "integer", "providerType": "integer"}
+          }
+        },
+        "analytics/calls/number": {
+          "displayName": "Number Call Analytics",
+          "path": "/v2.1/analytics/calls/number",
+          "responseKey": "data",
+          "fields": {
+            "justcall_number": {"displayName": "JustCall Number", "valueType": "string", "providerType": "string"},
+            "total_calls": {"displayName": "Total Calls", "valueType": "integer", "providerType": "integer"},
+            "incoming_calls": {"displayName": "Incoming Calls", "valueType": "integer", "providerType": "integer"},
+            "outgoing_calls": {"displayName": "Outgoing Calls", "valueType": "integer", "providerType": "integer"}
+          }
+        },
+        "voice-agents": {
+          "displayName": "AI Voice Agents",
+          "path": "/v2.1/voice-agents",
+          "responseKey": "data",
+          "fields": {
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "name": {"displayName": "Name", "valueType": "string", "providerType": "string"},
+            "status": {"displayName": "Status", "valueType": "string", "providerType": "string"},
+            "created_at": {"displayName": "Created At", "valueType": "string", "providerType": "string"}
           }
         },
         "webhooks": {
           "displayName": "Webhooks",
           "path": "/v2.1/webhooks",
+          "responseKey": "data",
           "fields": {
-            "id": {
-              "displayName": "ID",
-              "valueType": "integer",
-              "providerType": "integer"
-            },
-            "event": {
-              "displayName": "Event",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "url": {
-              "displayName": "URL",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "created_at": {
-              "displayName": "Created At",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "updated_at": {
-              "displayName": "Updated At",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "status": {
-              "displayName": "Status",
-              "valueType": "string",
-              "providerType": "string"
-            }
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "event": {"displayName": "Event", "valueType": "string", "providerType": "string"},
+            "url": {"displayName": "URL", "valueType": "string", "providerType": "string"},
+            "created_at": {"displayName": "Created At", "valueType": "string", "providerType": "string"},
+            "updated_at": {"displayName": "Updated At", "valueType": "string", "providerType": "string"},
+            "status": {"displayName": "Status", "valueType": "string", "providerType": "string"}
+          }
+        },
+        "sales-dialer/calls": {
+          "displayName": "Sales Dialer Calls",
+          "path": "/v2.1/sales-dialer/calls",
+          "responseKey": "data",
+          "fields": {
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "call_id": {"displayName": "Call ID", "valueType": "string", "providerType": "string"},
+            "contact_name": {"displayName": "Contact Name", "valueType": "string", "providerType": "string"},
+            "contact_number": {"displayName": "Contact Number", "valueType": "string", "providerType": "string"},
+            "status": {"displayName": "Status", "valueType": "string", "providerType": "string"},
+            "duration": {"displayName": "Duration", "valueType": "integer", "providerType": "integer"},
+            "datetime": {"displayName": "Datetime", "valueType": "string", "providerType": "string"},
+            "campaign_id": {"displayName": "Campaign ID", "valueType": "integer", "providerType": "integer"}
+          }
+        },
+        "sales-dialer/campaigns": {
+          "displayName": "Sales Dialer Campaigns",
+          "path": "/v2.1/sales-dialer/campaigns",
+          "responseKey": "data",
+          "fields": {
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "name": {"displayName": "Name", "valueType": "string", "providerType": "string"},
+            "status": {"displayName": "Status", "valueType": "string", "providerType": "string"},
+            "type": {"displayName": "Type", "valueType": "string", "providerType": "string"},
+            "created_at": {"displayName": "Created At", "valueType": "string", "providerType": "string"},
+            "total_contacts": {"displayName": "Total Contacts", "valueType": "integer", "providerType": "integer"}
+          }
+        },
+        "sales-dialer/contacts": {
+          "displayName": "Sales Dialer Contacts",
+          "path": "/v2.1/sales-dialer/contacts",
+          "responseKey": "data",
+          "fields": {
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "name": {"displayName": "Name", "valueType": "string", "providerType": "string"},
+            "contact_number": {"displayName": "Contact Number", "valueType": "string", "providerType": "string"},
+            "email": {"displayName": "Email", "valueType": "string", "providerType": "string"},
+            "campaign_id": {"displayName": "Campaign ID", "valueType": "integer", "providerType": "integer"},
+            "status": {"displayName": "Status", "valueType": "string", "providerType": "string"},
+            "created_at": {"displayName": "Created At", "valueType": "string", "providerType": "string"}
+          }
+        },
+        "sales-dialer/contact-custom-fields": {
+          "displayName": "Sales Dialer Contact Custom Fields",
+          "path": "/v2.1/sales-dialer/contact-custom-fields",
+          "responseKey": "data",
+          "fields": {
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "name": {"displayName": "Name", "valueType": "string", "providerType": "string"},
+            "type": {"displayName": "Type", "valueType": "string", "providerType": "string"}
+          }
+        },
+        "sales-dialer/analytics/agent": {
+          "displayName": "Sales Dialer Agent Analytics",
+          "path": "/v2.1/sales-dialer/analytics/agent",
+          "responseKey": "data",
+          "fields": {
+            "agent_id": {"displayName": "Agent ID", "valueType": "integer", "providerType": "integer"},
+            "agent_name": {"displayName": "Agent Name", "valueType": "string", "providerType": "string"},
+            "total_calls": {"displayName": "Total Calls", "valueType": "integer", "providerType": "integer"},
+            "calls_connected": {"displayName": "Calls Connected", "valueType": "integer", "providerType": "integer"}
+          }
+        },
+        "ai/calls": {
+          "displayName": "AI Call Data",
+          "path": "/v2.1/ai/calls",
+          "responseKey": "data",
+          "fields": {
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "call_id": {"displayName": "Call ID", "valueType": "string", "providerType": "string"},
+            "transcript": {"displayName": "Transcript", "valueType": "string", "providerType": "string"},
+            "summary": {"displayName": "Summary", "valueType": "string", "providerType": "string"},
+            "sentiment": {"displayName": "Sentiment", "valueType": "string", "providerType": "string"},
+            "call_score": {"displayName": "Call Score", "valueType": "integer", "providerType": "integer"},
+            "action_items": {"displayName": "Action Items", "valueType": "other", "providerType": "array"}
+          }
+        },
+        "ai/meetings": {
+          "displayName": "AI Meeting Data",
+          "path": "/v2.1/ai/meetings",
+          "responseKey": "data",
+          "fields": {
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "meeting_id": {"displayName": "Meeting ID", "valueType": "string", "providerType": "string"},
+            "transcript": {"displayName": "Transcript", "valueType": "string", "providerType": "string"},
+            "summary": {"displayName": "Summary", "valueType": "string", "providerType": "string"},
+            "action_items": {"displayName": "Action Items", "valueType": "other", "providerType": "array"}
+          }
+        },
+        "appointments": {
+          "displayName": "Appointments",
+          "path": "/v2.1/appointments",
+          "responseKey": "data",
+          "fields": {
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "title": {"displayName": "Title", "valueType": "string", "providerType": "string"},
+            "start_time": {"displayName": "Start Time", "valueType": "string", "providerType": "string"},
+            "end_time": {"displayName": "End Time", "valueType": "string", "providerType": "string"},
+            "status": {"displayName": "Status", "valueType": "string", "providerType": "string"},
+            "contact_name": {"displayName": "Contact Name", "valueType": "string", "providerType": "string"},
+            "contact_number": {"displayName": "Contact Number", "valueType": "string", "providerType": "string"}
+          }
+        },
+        "appointment-slots": {
+          "displayName": "Appointment Slots",
+          "path": "/v2.1/appointments/slots",
+          "responseKey": "data",
+          "fields": {
+            "id": {"displayName": "ID", "valueType": "integer", "providerType": "integer"},
+            "start_time": {"displayName": "Start Time", "valueType": "string", "providerType": "string"},
+            "end_time": {"displayName": "End Time", "valueType": "string", "providerType": "string"},
+            "available": {"displayName": "Available", "valueType": "boolean", "providerType": "boolean"}
           }
         }
       }
