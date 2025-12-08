@@ -1,6 +1,7 @@
 package chorus
 
 import (
+	"maps"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -139,9 +140,7 @@ func flattenRecord(arr *ajson.Node) (map[string]any, error) {
 	delete(original, keyValuesObject)
 
 	// Fields from values are moved to the top level.
-	for key, value := range nested {
-		original[key] = value
-	}
+	maps.Copy(original, nested)
 
 	return original, nil
 }

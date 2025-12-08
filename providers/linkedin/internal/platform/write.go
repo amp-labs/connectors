@@ -9,7 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/providers/linkedin/internal/shared"
+	liinternal "github.com/amp-labs/connectors/providers/linkedin/internal/linkedininternal"
 )
 
 func (c *Adapter) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
@@ -36,8 +36,8 @@ func (c *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 		req.Header.Add("X-Restli-Method", "PARTIAL_UPDATE")
 	}
 
-	req.Header.Add("LinkedIn-Version", shared.LinkedInVersion) // nolint:canonicalheader
-	req.Header.Add("X-Restli-Protocol-Version", shared.ProtocolVersion)
+	req.Header.Add("LinkedIn-Version", liinternal.LinkedInVersion) // nolint:canonicalheader
+	req.Header.Add("X-Restli-Protocol-Version", liinternal.ProtocolVersion)
 
 	return req, nil
 }

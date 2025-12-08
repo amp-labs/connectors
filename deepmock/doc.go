@@ -71,7 +71,7 @@
 //
 // # Usage Example
 //
-//	// Define schemas
+//	// Define schema map
 //	schemas := map[string][]byte{
 //	    "user": []byte(`{
 //	        "type": "object",

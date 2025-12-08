@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/linkedin/internal/shared"
+	liinternal "github.com/amp-labs/connectors/providers/linkedin/internal/linkedininternal"
 )
 
 func (c *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -19,8 +19,8 @@ func (c *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 		return nil, err
 	}
 
-	req.Header.Add("LinkedIn-Version", shared.LinkedInVersion) // nolint:canonicalheader
-	req.Header.Add("X-Restli-Protocol-Version", shared.ProtocolVersion)
+	req.Header.Add("LinkedIn-Version", liinternal.LinkedInVersion) // nolint:canonicalheader
+	req.Header.Add("X-Restli-Protocol-Version", liinternal.ProtocolVersion)
 
 	return req, nil
 }

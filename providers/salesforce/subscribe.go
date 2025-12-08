@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/go-playground/validator"
@@ -259,9 +260,7 @@ func (c *Connector) UpdateSubscription(
 
 	//nolint:forcetypeassert
 	// update the previous result with the new subscription result
-	for objName, objectMembership := range createRes.Result.(*SubscribeResult).EventChannelMembers {
-		newState.EventChannelMembers[objName] = objectMembership
-	}
+	maps.Copy(newState.EventChannelMembers, createRes.Result.(*SubscribeResult).EventChannelMembers)
 
 	// remove delete objects from the previous result to return
 	for _, objName := range objectsToDelete {

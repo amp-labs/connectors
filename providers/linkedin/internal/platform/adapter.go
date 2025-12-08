@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/linkedin/internal/shared"
+	liinternal "github.com/amp-labs/connectors/providers/linkedin/internal/linkedininternal"
 )
 
 type Adapter struct {
@@ -34,7 +34,7 @@ func constructor(base *components.Connector) (*Adapter, error) {
 			BuildRequest:  adapter.buildWriteRequest,
 			ParseResponse: adapter.parseWriteResponse,
 			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(shared.ErrorFormats, nil),
+				JSON: interpreter.NewFaultyResponder(liinternal.ErrorFormats, nil),
 			}.Handle,
 		},
 	)
@@ -47,7 +47,7 @@ func constructor(base *components.Connector) (*Adapter, error) {
 			BuildRequest:  adapter.buildDeleteRequest,
 			ParseResponse: adapter.parseDeleteResponse,
 			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(shared.ErrorFormats, nil),
+				JSON: interpreter.NewFaultyResponder(liinternal.ErrorFormats, nil),
 			}.Handle,
 		},
 	)

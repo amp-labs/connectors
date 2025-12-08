@@ -183,7 +183,7 @@ type timeFieldSpec struct {
 
 // readSearchPayload represents the JSON payload for a Sellsy search request.
 type readSearchPayload struct {
-	Filters readSearchFilters `json:"filters,omitempty"`
+	Filters readSearchFilters `json:"filters"`
 }
 
 // readSearchFilters defines the supported time-based filters accepted in Sellsy

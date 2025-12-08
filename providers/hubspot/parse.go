@@ -97,7 +97,7 @@ func parsePagingNext(node *ajson.Node) (*ajson.Node, error) {
 }
 
 // getRecords returns the records from the response.
-func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
+func getRecords(node *ajson.Node) ([]map[string]any, error) {
 	records, err := node.GetKey("results")
 	if err != nil {
 		return nil, err
@@ -109,7 +109,7 @@ func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 
 	arr := records.MustArray()
 
-	out := make([]map[string]interface{}, 0, len(arr))
+	out := make([]map[string]any, 0, len(arr))
 
 	for _, v := range arr {
 		if !v.IsObject() {
@@ -121,7 +121,7 @@ func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 			return nil, err
 		}
 
-		m, ok := data.(map[string]interface{})
+		m, ok := data.(map[string]any)
 		if !ok {
 			return nil, ErrNotObject
 		}
@@ -138,8 +138,8 @@ func (c *Connector) getDataMarshaller(
 	ctx context.Context,
 	objName string,
 	associatedObjects []string,
-) func(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
-	return func(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
+) func(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
+	return func(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
 		data := make([]common.ReadResultRow, len(records))
 
 		//nolint:varnamelen
@@ -155,7 +155,7 @@ func (c *Connector) getDataMarshaller(
 			}
 
 			if len(fields) != 0 {
-				recordProperties, ok := record["properties"].(map[string]interface{})
+				recordProperties, ok := record["properties"].(map[string]any)
 				if !ok {
 					return nil, ErrNotObject
 				}

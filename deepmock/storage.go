@@ -2,6 +2,7 @@ package deepmock
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -34,10 +35,12 @@ func NewStorage(schemas schemaRegistry, idFields, updatedFields map[string]strin
 	return storage
 }
 
+var errNilRecord = errors.New("record is nil")
+
 // deepCopyRecord creates an independent copy of a record.
 func deepCopyRecord(record map[string]any) (map[string]any, error) {
 	if record == nil {
-		return nil, nil
+		return nil, errNilRecord
 	}
 
 	// Use JSON marshal/unmarshal for deep copy
@@ -46,27 +49,29 @@ func deepCopyRecord(record map[string]any) (map[string]any, error) {
 		return nil, fmt.Errorf("failed to marshal record: %w", err)
 	}
 
-	var copy map[string]any
-	if err := json.Unmarshal(data, &copy); err != nil {
+	var recordCopy map[string]any
+	if err := json.Unmarshal(data, &recordCopy); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal record: %w", err)
 	}
 
-	return copy, nil
+	return recordCopy, nil
 }
 
 // deepCopyRecords creates independent copies of a slice of records.
 func deepCopyRecords(records []map[string]any) ([]map[string]any, error) {
 	if records == nil {
-		return nil, nil
+		return nil, errNilRecord
 	}
 
 	copies := make([]map[string]any, len(records))
+
 	for i, record := range records {
-		copy, err := deepCopyRecord(record)
+		recordCopy, err := deepCopyRecord(record)
 		if err != nil {
 			return nil, fmt.Errorf("failed to copy record at index %d: %w", i, err)
 		}
-		copies[i] = copy
+
+		copies[i] = recordCopy
 	}
 
 	return copies, nil
@@ -89,6 +94,7 @@ func (s *Storage) Store(objectName, recordID string, record map[string]any) erro
 	}
 
 	s.data[objectName][recordID] = recordCopy
+
 	return nil
 }
 
@@ -155,10 +161,13 @@ func (s *Storage) Delete(objectName, recordID string) error {
 	}
 
 	delete(objectData, recordID)
+
 	return nil
 }
 
 // List retrieves records filtered by time range.
+//
+//nolint:cyclop,funlen,gocognit // Complex timestamp parsing and time range filtering
 func (s *Storage) List(objectName string, since, until time.Time) ([]map[string]any, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -172,41 +181,45 @@ func (s *Storage) List(objectName string, since, until time.Time) ([]map[string]
 	updatedField := s.updatedFields[objectName]
 
 	records := make([]map[string]any, 0)
+
 	for _, record := range objectData {
 		// If no updated field, include all records
 		if updatedField == "" {
 			records = append(records, record)
+
 			continue
 		}
 
 		// Filter by timestamp if updated field exists
+		//nolint:nestif // Complexity from timestamp type checking and time range filtering
 		if updatedValue, exists := record[updatedField]; exists {
 			var recordTime time.Time
+
 			hasValidTimestamp := false
 
-			switch v := updatedValue.(type) {
+			switch updatedVal := updatedValue.(type) {
 			case string:
 				// Try parsing as RFC3339
-				if t, err := time.Parse(time.RFC3339, v); err == nil {
-					recordTime = t
+				if parsedTime, err := time.Parse(time.RFC3339, updatedVal); err == nil {
+					recordTime = parsedTime
 					hasValidTimestamp = true
 				}
 			case int64:
 				// Unix timestamp
-				recordTime = time.Unix(v, 0)
+				recordTime = time.Unix(updatedVal, 0)
 				hasValidTimestamp = true
 			case int:
 				// Unix timestamp as int
-				recordTime = time.Unix(int64(v), 0)
+				recordTime = time.Unix(int64(updatedVal), 0)
 				hasValidTimestamp = true
 			case float64:
 				// Unix timestamp as float
-				recordTime = time.Unix(int64(v), 0)
+				recordTime = time.Unix(int64(updatedVal), 0)
 				hasValidTimestamp = true
 			case json.Number:
 				// Handle json.Number type
-				if i, err := v.Int64(); err == nil {
-					recordTime = time.Unix(i, 0)
+				if intVal, err := updatedVal.Int64(); err == nil {
+					recordTime = time.Unix(intVal, 0)
 					hasValidTimestamp = true
 				}
 			}
@@ -221,15 +234,14 @@ func (s *Storage) List(objectName string, since, until time.Time) ([]map[string]
 				if !since.IsZero() && recordTime.Before(since) {
 					continue
 				}
+
 				if !until.IsZero() && recordTime.After(until) {
 					continue
 				}
 			}
-		} else {
+		} else if !since.IsZero() || !until.IsZero() {
 			// If updated field doesn't exist and time filtering is active, skip the record
-			if !since.IsZero() || !until.IsZero() {
-				continue
-			}
+			continue
 		}
 
 		records = append(records, record)
@@ -246,8 +258,8 @@ func (s *Storage) List(objectName string, since, until time.Time) ([]map[string]
 
 // generateID generates an ID based on the schema's ID field type.
 //
-// IMPORTANT: This function must be used in the Write logic to auto-generate IDs for create operations.
-// When implementing the connector's Write method:
+// IMPORTANT: This function must be used in the Write logic to auto-generate IDs for
+// create operations. When implementing the connector's Write method:
 //   - Detect create operations by checking if the RecordId is missing in the incoming record
 //   - Before calling Storage.Store, compute an ID using generateID with the correct schema and idField
 //   - The idField should be looked up from storage.idFields[objectName]
@@ -255,6 +267,8 @@ func (s *Storage) List(objectName string, since, until time.Time) ([]map[string]
 //
 // This ensures that auto-generated IDs are always populated according to the schema metadata,
 // making the behavior observable to API consumers.
+//
+//nolint:cyclop // Complexity from schema marshaling/unmarshaling and nested map traversal to extract type
 func generateID(schema *jsonschema.Schema, idField string) any {
 	if schema == nil || idField == "" {
 		return uuid.New().String()
@@ -271,25 +285,25 @@ func generateID(schema *jsonschema.Schema, idField string) any {
 		return uuid.New().String()
 	}
 
-	properties, ok := schemaMap["properties"].(map[string]any)
-	if !ok {
+	properties, hasProperties := schemaMap["properties"].(map[string]any)
+	if !hasProperties {
 		return uuid.New().String()
 	}
 
-	fieldDef, ok := properties[idField].(map[string]any)
-	if !ok {
+	fieldDef, hasFieldDef := properties[idField].(map[string]any)
+	if !hasFieldDef {
 		return uuid.New().String()
 	}
 
-	fieldType, ok := fieldDef["type"].(string)
-	if !ok {
+	fieldType, hasType := fieldDef["type"].(string)
+	if !hasType {
 		return uuid.New().String()
 	}
 
 	switch fieldType {
-	case "integer":
+	case typeInteger:
 		return time.Now().UnixNano()
-	case "string":
+	case typeString:
 		return uuid.New().String()
 	default:
 		return uuid.New().String()
@@ -298,15 +312,17 @@ func generateID(schema *jsonschema.Schema, idField string) any {
 
 // generateTimestamp generates a timestamp based on the schema's updated field type.
 //
-// IMPORTANT: This function must be used in the Write logic to auto-generate timestamps for both create and update operations.
-// When implementing the connector's Write method:
+// IMPORTANT: This function must be used in the Write logic to auto-generate timestamps for
+// both create and update operations. When implementing the connector's Write method:
 //   - For both create and update operations, compute an updated timestamp using generateTimestamp
 //   - The updatedField should be looked up from storage.updatedFields[objectName]
 //   - Assign the generated timestamp to the record at the field named by updatedField
 //   - This should happen before calling Storage.Store
 //
-// This ensures that the updated timestamp is always current and properly formatted according to the schema metadata,
-// making the auto-generation behavior observable to API consumers.
+// This ensures that the updated timestamp is always current and properly formatted according to
+// the schema metadata, making the auto-generation behavior observable to API consumers.
+//
+//nolint:cyclop // Complexity from schema marshaling/unmarshaling and nested map traversal to extract type
 func generateTimestamp(schema *jsonschema.Schema, updatedField string) any {
 	if schema == nil || updatedField == "" {
 		return time.Now().Unix()
@@ -323,25 +339,25 @@ func generateTimestamp(schema *jsonschema.Schema, updatedField string) any {
 		return time.Now().Unix()
 	}
 
-	properties, ok := schemaMap["properties"].(map[string]any)
-	if !ok {
+	properties, hasProperties := schemaMap["properties"].(map[string]any)
+	if !hasProperties {
 		return time.Now().Unix()
 	}
 
-	fieldDef, ok := properties[updatedField].(map[string]any)
-	if !ok {
+	fieldDef, hasFieldDef := properties[updatedField].(map[string]any)
+	if !hasFieldDef {
 		return time.Now().Unix()
 	}
 
-	fieldType, ok := fieldDef["type"].(string)
-	if !ok {
+	fieldType, hasType := fieldDef["type"].(string)
+	if !hasType {
 		return time.Now().Unix()
 	}
 
 	switch fieldType {
-	case "integer":
+	case typeInteger:
 		return time.Now().Unix()
-	case "string":
+	case typeString:
 		return time.Now().Format(time.RFC3339)
 	default:
 		return time.Now().Unix()

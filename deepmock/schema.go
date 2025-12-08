@@ -18,14 +18,15 @@ func boolPtr(b bool) *bool {
 
 // injectExtrasIntoSchemaMap reads jsonschema_extras tags from a struct and injects them into the schema map.
 // This is needed because the invopop library doesn't always include these custom extensions.
-func injectExtrasIntoSchemaMap(schemaMap map[string]interface{}, structType reflect.Type) error {
+func injectExtrasIntoSchemaMap(schemaMap map[string]any, structType reflect.Type) error {
 	// Find the properties in the schema
-	properties, ok := schemaMap["properties"].(map[string]interface{})
+	properties, ok := schemaMap["properties"].(map[string]any)
 	if !ok {
-		return fmt.Errorf("schema has no properties to inject extras into")
+		return ErrNoProperties
 	}
 
 	// Iterate over struct fields and extract jsonschema_extras tags
+	//nolint:intrange // NumField() is a method call with potential side effects
 	for i := 0; i < structType.NumField(); i++ {
 		field := structType.Field(i)
 
@@ -47,7 +48,8 @@ func injectExtrasIntoSchemaMap(schemaMap map[string]interface{}, structType refl
 		extras := parseExtrasTag(extrasTag)
 
 		// Find the property in the schema and add the extras
-		if propMap, ok := properties[jsonName].(map[string]interface{}); ok {
+		if propMap, ok := properties[jsonName].(map[string]any); ok {
+			//nolint:modernize // Manual merge to add custom schema extensions
 			for key, value := range extras {
 				propMap[key] = value
 			}
@@ -58,16 +60,17 @@ func injectExtrasIntoSchemaMap(schemaMap map[string]interface{}, structType refl
 }
 
 // parseExtrasTag parses a jsonschema_extras tag value into a map of key-value pairs.
-// Format: "key1=value1,key2=value2,..."
-func parseExtrasTag(tag string) map[string]interface{} {
-	result := make(map[string]interface{})
+// Format: "key1=value1,key2=value2,...".
+func parseExtrasTag(tag string) map[string]any {
+	result := make(map[string]any)
 
 	// Split by comma to get individual key=value pairs
+	//nolint:modernize // strings.Split is clearer than SplitSeq for simple parsing
 	pairs := strings.Split(tag, ",")
 	for _, pair := range pairs {
 		// Split by = to get key and value
-		parts := strings.SplitN(strings.TrimSpace(pair), "=", 2)
-		if len(parts) != 2 {
+		parts := strings.SplitN(strings.TrimSpace(pair), "=", splitLimit)
+		if len(parts) != splitLimit {
 			continue
 		}
 
@@ -75,11 +78,12 @@ func parseExtrasTag(tag string) map[string]interface{} {
 		value := strings.TrimSpace(parts[1])
 
 		// Convert "true"/"false" strings to boolean
-		if value == "true" {
+		switch value {
+		case "true":
 			result[key] = true
-		} else if value == "false" {
+		case "false":
 			result[key] = false
-		} else {
+		default:
 			result[key] = value
 		}
 	}
@@ -90,10 +94,11 @@ func parseExtrasTag(tag string) map[string]interface{} {
 // filterRequiredFields filters the required array in a schema based on struct tags.
 // The invopop/jsonschema library marks all fields as required by default, but we only
 // want fields with the "jsonschema:required" tag to be required.
-func filterRequiredFields(schemaMap map[string]interface{}, structType reflect.Type) error {
+func filterRequiredFields(schemaMap map[string]any, structType reflect.Type) {
 	// Build a set of fields that have the "required" tag
 	requiredFields := make(map[string]bool)
 
+	//nolint:intrange // NumField() is a method call with potential side effects
 	for i := 0; i < structType.NumField(); i++ {
 		field := structType.Field(i)
 
@@ -109,10 +114,12 @@ func filterRequiredFields(schemaMap map[string]interface{}, structType reflect.T
 		jsonschemaTag := field.Tag.Get("jsonschema")
 		if jsonschemaTag != "" {
 			// Parse comma-separated tag values
+			//nolint:modernize // strings.Split is clearer than SplitSeq for simple parsing
 			tagValues := strings.Split(jsonschemaTag, ",")
 			for _, tagValue := range tagValues {
 				if strings.TrimSpace(tagValue) == "required" {
 					requiredFields[jsonName] = true
+
 					break
 				}
 			}
@@ -121,17 +128,16 @@ func filterRequiredFields(schemaMap map[string]interface{}, structType reflect.T
 
 	// Replace the required array with only explicitly required fields
 	if len(requiredFields) > 0 {
-		required := make([]interface{}, 0, len(requiredFields))
+		required := make([]any, 0, len(requiredFields))
 		for fieldName := range requiredFields {
 			required = append(required, fieldName)
 		}
+
 		schemaMap["required"] = required
 	} else {
 		// No required fields - remove the required array entirely
 		delete(schemaMap, "required")
 	}
-
-	return nil
 }
 
 // DeriveSchemasFromStructs converts Go structs to JSON Schema bytes for use with NewConnector.
@@ -178,7 +184,7 @@ func filterRequiredFields(schemaMap map[string]interface{}, structType reflect.T
 //	    Name      string `json:"name" jsonschema:"required,minLength=1,maxLength=100"`
 //	}
 //
-//	schemas, err := DeriveSchemasFromStructs(map[string]interface{}{
+//	schemas, err := DeriveSchemasFromStructs(map[string]any{
 //	    "contacts":  &Contact{},
 //	    "companies": &Company{},
 //	})
@@ -198,10 +204,12 @@ func filterRequiredFields(schemaMap map[string]interface{}, structType reflect.T
 //   - Any value is not a struct or pointer to struct
 //   - Schema generation fails for any struct
 //   - JSON marshaling fails
-func DeriveSchemasFromStructs(schemas map[string]interface{}) (map[string][]byte, error) {
+//
+//nolint:cyclop,funlen,gocognit // Complex struct validation, schema generation, and tag parsing
+func DeriveSchemasFromStructs(schemas map[string]any) (map[string][]byte, error) {
 	// Validate input
-	if schemas == nil || len(schemas) == 0 {
-		return nil, fmt.Errorf("schemas map cannot be nil or empty")
+	if len(schemas) == 0 {
+		return nil, ErrEmptySchemas
 	}
 
 	result := make(map[string][]byte)
@@ -212,12 +220,12 @@ func DeriveSchemasFromStructs(schemas map[string]interface{}) (map[string][]byte
 
 		// Check if the value is valid (i.e., not nil)
 		if !val.IsValid() {
-			return nil, fmt.Errorf("object %s: struct instance cannot be nil", objectName)
+			return nil, fmt.Errorf("object %s: %w", objectName, ErrNilStruct)
 		}
 
 		// Check for typed nil pointers (e.g., (*MyStruct)(nil))
 		if val.Kind() == reflect.Ptr && val.IsNil() {
-			return nil, fmt.Errorf("object %s: struct instance cannot be nil", objectName)
+			return nil, fmt.Errorf("object %s: %w", objectName, ErrNilStruct)
 		}
 
 		typ := val.Type()
@@ -229,7 +237,7 @@ func DeriveSchemasFromStructs(schemas map[string]interface{}) (map[string][]byte
 
 		// Validate it's a struct
 		if typ.Kind() != reflect.Struct {
-			return nil, fmt.Errorf("object %s: expected struct or pointer to struct, got %s", objectName, typ.Kind())
+			return nil, fmt.Errorf("object %s: %w, got %s", objectName, ErrInvalidType, typ.Kind())
 		}
 
 		// Create a new Reflector instance for this struct
@@ -238,7 +246,7 @@ func DeriveSchemasFromStructs(schemas map[string]interface{}) (map[string][]byte
 		// Generate the schema
 		schema := reflector.Reflect(structInstance)
 		if schema == nil {
-			return nil, fmt.Errorf("object %s: failed to generate schema (reflector returned nil)", objectName)
+			return nil, fmt.Errorf("object %s: %w (reflector returned nil)", objectName, ErrSchemaGeneration)
 		}
 
 		// Marshal schema to JSON bytes
@@ -248,19 +256,20 @@ func DeriveSchemasFromStructs(schemas map[string]interface{}) (map[string][]byte
 		}
 
 		// Check if schema uses $ref and extract from $defs if needed
-		var schemaMap map[string]interface{}
+		var schemaMap map[string]any
 		if err := json.Unmarshal(schemaBytes, &schemaMap); err != nil {
 			return nil, fmt.Errorf("object %s: failed to unmarshal schema: %w", objectName, err)
 		}
 
 		// If schema has $ref, extract the actual schema from $defs
+		//nolint:nestif // Complexity from nested $ref resolution and validation
 		if ref, hasRef := schemaMap["$ref"].(string); hasRef {
 			// Parse $ref to get the definition name (format: "#/$defs/TypeName")
 			parts := strings.Split(ref, "/")
 			if len(parts) == 3 && parts[0] == "#" && parts[1] == "$defs" {
 				defName := parts[2]
-				if defs, hasDefs := schemaMap["$defs"].(map[string]interface{}); hasDefs {
-					if def, hasDef := defs[defName].(map[string]interface{}); hasDef {
+				if defs, hasDefs := schemaMap["$defs"].(map[string]any); hasDefs {
+					if def, hasDef := defs[defName].(map[string]any); hasDef {
 						// Preserve the $schema field from the root
 						schemaVersion := schemaMap["$schema"]
 
@@ -274,19 +283,20 @@ func DeriveSchemasFromStructs(schemas map[string]interface{}) (map[string][]byte
 
 						// Validate the extracted schema has required fields
 						if _, hasType := schemaMap["type"]; !hasType {
-							return nil, fmt.Errorf("object %s: extracted schema missing 'type' field", objectName)
+							return nil, fmt.Errorf("object %s: %w 'type'", objectName, ErrMissingField)
 						}
+
 						if _, hasProps := schemaMap["properties"]; !hasProps {
-							return nil, fmt.Errorf("object %s: extracted schema missing 'properties' field", objectName)
+							return nil, fmt.Errorf("object %s: %w 'properties'", objectName, ErrMissingField)
 						}
 					} else {
-						return nil, fmt.Errorf("object %s: $ref points to non-existent definition %s", objectName, defName)
+						return nil, fmt.Errorf("object %s: %w %s", objectName, ErrMissingDef, defName)
 					}
 				} else {
-					return nil, fmt.Errorf("object %s: schema has $ref but no $defs", objectName)
+					return nil, fmt.Errorf("object %s: %w", objectName, ErrMissingDefs)
 				}
 			} else {
-				return nil, fmt.Errorf("object %s: invalid $ref format: %s", objectName, ref)
+				return nil, fmt.Errorf("object %s: %w: %s", objectName, ErrInvalidRef, ref)
 			}
 		}
 
@@ -299,9 +309,7 @@ func DeriveSchemasFromStructs(schemas map[string]interface{}) (map[string][]byte
 		// Filter required fields based on struct tags
 		// The invopop library marks all fields as required by default, but we only
 		// want fields with the "jsonschema:required" tag to be required
-		if err := filterRequiredFields(schemaMap, typ); err != nil {
-			return nil, fmt.Errorf("object %s: failed to filter required fields: %w", objectName, err)
-		}
+		filterRequiredFields(schemaMap, typ)
 
 		// Remove additionalProperties constraint
 		// The invopop library adds "additionalProperties": false by default, which can
@@ -327,6 +335,7 @@ type schemaRegistry map[string]*jsonschema.Schema
 // Get retrieves a schema by object name.
 func (r schemaRegistry) Get(objectName string) (*jsonschema.Schema, bool) {
 	schema, exists := r[objectName]
+
 	return schema, exists
 }
 
@@ -342,7 +351,8 @@ func parseSchemas(rawSchemas map[string][]byte) (schemaRegistry, error) {
 
 	for objectName, rawSchema := range rawSchemas {
 		// Compile the schema with a unique URI
-		uri := fmt.Sprintf("http://deepmock.memory.store/%s", objectName)
+		uri := "http://deepmock.memory.store/" + objectName
+
 		schema, err := compiler.Compile(rawSchema, uri)
 		if err != nil {
 			return nil, fmt.Errorf("%w: failed to compile schema for %s: %w", ErrInvalidSchema, objectName, err)
@@ -391,64 +401,28 @@ func extractSpecialFieldsFromRaw(rawSchema []byte) (idField, updatedField string
 // Returns true for:
 //   - boolean true
 //   - string "true" (case-insensitive, trimmed)
+//
+//nolint:cyclop // Complexity from manual string trimming/comparison to avoid regex dependency
 func isTrueValue(val any) bool {
 	switch v := val.(type) {
 	case bool:
 		return v
 	case string:
 		// Trim spaces and check case-insensitive
-		trimmed := ""
+		var builder strings.Builder
+
 		for _, r := range v {
 			if r != ' ' && r != '\t' && r != '\n' && r != '\r' {
-				trimmed += string(r)
+				builder.WriteRune(r)
 			}
 		}
+
+		trimmed := builder.String()
+
 		return trimmed == "true" || trimmed == "TRUE" || trimmed == "True"
 	default:
 		return false
 	}
-}
-
-// extractSpecialFields extracts ID and updated timestamp field names from schema extensions.
-func extractSpecialFields(schema *jsonschema.Schema) (idField, updatedField string) {
-	if schema == nil {
-		return "", ""
-	}
-
-	// Access the raw schema structure
-	schemaJSON, err := json.Marshal(schema)
-	if err != nil {
-		return "", ""
-	}
-
-	var schemaMap map[string]any
-	if err := json.Unmarshal(schemaJSON, &schemaMap); err != nil {
-		return "", ""
-	}
-
-	properties, ok := schemaMap["properties"].(map[string]any)
-	if !ok {
-		return "", ""
-	}
-
-	for fieldName, fieldDef := range properties {
-		fieldMap, ok := fieldDef.(map[string]any)
-		if !ok {
-			continue
-		}
-
-		// Check for x-amp-id-field extension (supports both boolean and string "true")
-		if val, exists := fieldMap["x-amp-id-field"]; exists && isTrueValue(val) {
-			idField = fieldName
-		}
-
-		// Check for x-amp-updated-field extension (supports both boolean and string "true")
-		if val, exists := fieldMap["x-amp-updated-field"]; exists && isTrueValue(val) {
-			updatedField = fieldName
-		}
-	}
-
-	return idField, updatedField
 }
 
 // validateRecord validates a record against a schema.
@@ -464,6 +438,7 @@ func validateRecord(schema *jsonschema.Schema, record map[string]any) error {
 		for _, err := range result.Errors {
 			errMessages = append(errMessages, err.Message)
 		}
+
 		return fmt.Errorf("%w: %v", ErrValidationFailed, errMessages)
 	}
 
@@ -471,6 +446,8 @@ func validateRecord(schema *jsonschema.Schema, record map[string]any) error {
 }
 
 // schemaToObjectMetadata converts a JSON schema to ObjectMetadata.
+//
+//nolint:cyclop,funlen,gocognit // Complex schema traversal, type mapping, and field extraction
 func schemaToObjectMetadata(objectName string, schema *jsonschema.Schema) *common.ObjectMetadata {
 	if schema == nil {
 		return nil
@@ -501,6 +478,7 @@ func schemaToObjectMetadata(objectName string, schema *jsonschema.Schema) *commo
 
 	// Extract required fields
 	requiredFields := make(map[string]bool)
+
 	if required, ok := schemaMap["required"].([]any); ok {
 		for _, field := range required {
 			if fieldName, ok := field.(string); ok {
@@ -511,6 +489,7 @@ func schemaToObjectMetadata(objectName string, schema *jsonschema.Schema) *commo
 
 	// Build fields metadata
 	fields := make(common.FieldsMetadata)
+
 	for fieldName, fieldDef := range properties {
 		fieldMap, ok := fieldDef.(map[string]any)
 		if !ok {
@@ -519,6 +498,7 @@ func schemaToObjectMetadata(objectName string, schema *jsonschema.Schema) *commo
 
 		// Map JSON schema type to ValueType
 		var valueType common.ValueType
+
 		if typeVal, ok := fieldMap["type"].(string); ok {
 			switch typeVal {
 			case "string":

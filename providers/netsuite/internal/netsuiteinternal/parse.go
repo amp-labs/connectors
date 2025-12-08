@@ -1,4 +1,4 @@
-package shared
+package netsuiteinternal
 
 import (
 	"github.com/amp-labs/connectors/common"

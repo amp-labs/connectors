@@ -11,7 +11,8 @@ import (
 // parameters holds the configuration for the deepmock connector.
 type parameters struct {
 	paramsbuilder.AuthClient
-	structSchemas map[string]interface{}
+
+	structSchemas map[string]any
 	err           error
 }
 
@@ -51,7 +52,7 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 // WithStructSchemas configures the connector to derive schemas from Go structs.
 // This is an alternative to providing raw JSON schemas in NewConnector.
 // If both raw schemas and struct schemas are provided, raw schemas take priority.
-func WithStructSchemas(schemas map[string]interface{}) Option {
+func WithStructSchemas(schemas map[string]any) Option {
 	return func(params *parameters) {
 		params.structSchemas = schemas
 	}

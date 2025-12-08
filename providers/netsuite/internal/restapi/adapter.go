@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/netsuite/internal/shared"
+	nsinternal "github.com/amp-labs/connectors/providers/netsuite/internal/netsuiteinternal"
 )
 
 const apiVersion = "v1"
@@ -33,7 +33,7 @@ func constructor(base *components.Connector) (*Adapter, error) {
 	}
 
 	errorHandler := interpreter.ErrorHandler{
-		JSON: interpreter.NewFaultyResponder(shared.ErrorFormats, shared.StatusCodeMapping),
+		JSON: interpreter.NewFaultyResponder(nsinternal.ErrorFormats, nsinternal.StatusCodeMapping),
 	}.Handle
 
 	// Set the metadata provider for the connector

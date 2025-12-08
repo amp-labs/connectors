@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/providers/linkedin/internal/shared"
+	liinternal "github.com/amp-labs/connectors/providers/linkedin/internal/linkedininternal"
 	"github.com/spyzhov/ajson"
 )
 
@@ -42,11 +42,11 @@ var normalPaginationObject = datautils.NewSet( //nolint:gochecknoglobals
 func makeNextRecord(objName string) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		if cursorPaginationObject.Has(objName) {
-			return shared.HandleCursorPagination(node)
+			return liinternal.HandleCursorPagination(node)
 		}
 
 		if normalPaginationObject.Has(objName) {
-			return shared.HandleOffsetPagination(node)
+			return liinternal.HandleOffsetPagination(node)
 		}
 
 		return "", nil
@@ -69,7 +69,7 @@ func (c *Adapter) buildReadURL(params common.ReadParams) (string, error) {
 
 			url.WithQueryParam("start", "0")
 
-			url.WithQueryParam("count", strconv.Itoa(shared.CountSize))
+			url.WithQueryParam("count", strconv.Itoa(liinternal.CountSize))
 
 			accountsValue := fmt.Sprintf("urn%%3Ali%%3AsponsoredAccount%%3A%s", c.AdAccountId) //nolint:perfsprint
 
@@ -109,7 +109,7 @@ func (c *Adapter) buildReadURL(params common.ReadParams) (string, error) {
 		default:
 			url.WithQueryParam("q", "search")
 
-			url.WithQueryParam("pageSize", strconv.Itoa(shared.PageSize))
+			url.WithQueryParam("pageSize", strconv.Itoa(liinternal.PageSize))
 		}
 	}
 

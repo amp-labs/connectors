@@ -18,6 +18,37 @@ import (
 	"github.com/google/uuid"
 )
 
+// JSON Schema type constants.
+const (
+	typeString  = "string"
+	typeInteger = "integer"
+	typeNumber  = "number"
+	typeBoolean = "boolean"
+	typeArray   = "array"
+	typeObject  = "object"
+)
+
+// Generation constants.
+const (
+	maxDepth                 = 5
+	maxRetries               = 100
+	maxAttempts              = 3
+	defaultPageSize          = 100
+	defaultMinStringLength   = 1
+	defaultMaxStringLength   = 50
+	shortStringThreshold     = 20
+	sentenceWordCount        = 5
+	defaultMinNumber         = -1000.0
+	defaultMaxNumber         = 1000.0
+	defaultMinItems          = 1
+	defaultMaxItems          = 3
+	exclusiveAdjustmentInt   = 1
+	exclusiveAdjustmentFloat = 0.001
+	uniqueRetryLimit         = 10
+	stringFormatChoices      = 2
+	splitLimit               = 2
+)
+
 // Connector is an in-memory mock connector with JSON schema validation.
 type Connector struct {
 	client  *common.JSONHTTPClient
@@ -36,6 +67,8 @@ var (
 )
 
 // NewConnector creates a new deepmock connector instance.
+//
+//nolint:cyclop // Complexity inherent to initialization logic with multiple configuration paths
 func NewConnector(schemas map[string][]byte, opts ...Option) (*Connector, error) {
 	// Apply options without pre-populated schemas/storage
 	params, err := paramsbuilder.Apply(parameters{}, opts, WithClient(http.DefaultClient))
@@ -46,24 +79,26 @@ func NewConnector(schemas map[string][]byte, opts ...Option) (*Connector, error)
 	// Determine which schemas to use (raw vs struct-derived)
 	var finalSchemas map[string][]byte
 
-	if schemas != nil && len(schemas) > 0 {
+	switch {
+	case len(schemas) > 0:
 		// Raw schemas provided
 		finalSchemas = schemas
 
 		// Warn if both raw and struct schemas are provided
-		if params.structSchemas != nil && len(params.structSchemas) > 0 {
+		if len(params.structSchemas) > 0 {
 			slog.Warn("both raw schemas and struct schemas provided; using raw schemas",
 				"rawSchemaCount", len(schemas),
 				"structSchemaCount", len(params.structSchemas))
 		}
-	} else if params.structSchemas != nil && len(params.structSchemas) > 0 {
+	case len(params.structSchemas) > 0:
 		// Derive schemas from structs
 		var err error
+
 		finalSchemas, err = DeriveSchemasFromStructs(params.structSchemas)
 		if err != nil {
 			return nil, fmt.Errorf("failed to derive schemas from structs: %w", err)
 		}
-	} else {
+	default:
 		// Neither provided
 		return nil, fmt.Errorf("%w: must provide either raw schemas or use WithStructSchemas option", ErrMissingParam)
 	}
@@ -72,11 +107,13 @@ func NewConnector(schemas map[string][]byte, opts ...Option) (*Connector, error)
 	// (compilation may not preserve custom x-amp extensions)
 	idFields := make(map[string]string)
 	updatedFields := make(map[string]string)
+
 	for objectName, rawSchema := range finalSchemas {
 		idField, updatedField := extractSpecialFieldsFromRaw(rawSchema)
 		if idField != "" {
 			idFields[objectName] = idField
 		}
+
 		if updatedField != "" {
 			updatedFields[objectName] = updatedField
 		}
@@ -122,6 +159,8 @@ func (c *Connector) Provider() providers.Provider {
 }
 
 // Read retrieves records for an object with pagination and filtering.
+//
+//nolint:cyclop,funlen // Complexity from pagination, filtering, field selection logic
 func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
 	// Validate parameters
 	if err := params.ValidateParams(true); err != nil {
@@ -142,29 +181,35 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 	// Apply field filtering if specified
 	if len(params.Fields) > 0 {
 		filteredRecords := make([]map[string]any, len(records))
+
 		for i, record := range records {
 			filtered := make(map[string]any)
+
 			for field := range params.Fields {
 				if value, exists := record[field]; exists {
 					filtered[field] = value
 				}
 			}
+
 			filteredRecords[i] = filtered
 		}
+
 		records = filteredRecords
 	}
 
 	// Parse pagination parameters
 	offset := 0
+
 	if params.NextPage != "" {
 		var err error
+
 		offset, err = strconv.Atoi(string(params.NextPage))
 		if err != nil {
 			offset = 0
 		}
 	}
 
-	pageSize := 100
+	pageSize := defaultPageSize
 	if params.PageSize > 0 {
 		pageSize = params.PageSize
 	}
@@ -172,9 +217,11 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 	// Apply pagination
 	start := offset
 	end := offset + pageSize
+
 	if start > len(records) {
 		start = len(records)
 	}
+
 	if end > len(records) {
 		end = len(records)
 	}
@@ -197,8 +244,11 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 	}
 
 	// Calculate next page token
-	var nextPage common.NextPageToken
-	done := true
+	var (
+		nextPage common.NextPageToken
+		done     = true
+	)
+
 	if end < len(records) {
 		nextPage = common.NextPageToken(strconv.Itoa(end))
 		done = false
@@ -213,6 +263,8 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 }
 
 // Write creates or updates a record.
+//
+//nolint:cyclop,funlen,nestif // Complexity from create/update branching and ID/timestamp generation logic
 func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*common.WriteResult, error) {
 	// Validate parameters
 	if err := params.ValidateParams(); err != nil {
@@ -231,8 +283,10 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 		return nil, fmt.Errorf("failed to convert record data: %w", err)
 	}
 
-	var recordID string
-	var finalRecord map[string]any
+	var (
+		recordID    string
+		finalRecord map[string]any
+	)
 
 	// Determine operation (create vs update)
 	if params.RecordId == "" {
@@ -271,6 +325,7 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 		}
 
 		// Merge new data with existing
+		//nolint:modernize // Manual merge to preserve existing fields not in recordMap
 		for key, value := range recordMap {
 			existing[key] = value
 		}
@@ -328,7 +383,10 @@ func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) 
 }
 
 // ListObjectMetadata returns metadata for specified objects.
-func (c *Connector) ListObjectMetadata(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error) {
+func (c *Connector) ListObjectMetadata(
+	ctx context.Context,
+	objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
 	if len(objectNames) == 0 {
 		return nil, fmt.Errorf("%w: objectNames", ErrMissingParam)
 	}
@@ -339,12 +397,14 @@ func (c *Connector) ListObjectMetadata(ctx context.Context, objectNames []string
 		schema, exists := c.schemas.Get(objectName)
 		if !exists {
 			result.AppendError(objectName, fmt.Errorf("%w: %s", ErrSchemaNotFound, objectName))
+
 			continue
 		}
 
 		metadata := schemaToObjectMetadata(objectName, schema)
 		if metadata == nil {
-			result.AppendError(objectName, fmt.Errorf("failed to convert schema to metadata for %s", objectName))
+			result.AppendError(objectName, fmt.Errorf("%w for %s", ErrSchemaConversion, objectName))
+
 			continue
 		}
 
@@ -360,10 +420,9 @@ func (c *Connector) GenerateRandomRecord(objectName string) (map[string]any, err
 }
 
 // generateRandomRecordWithDepth generates a random record with depth limiting for recursion.
+//
+//nolint:cyclop,funlen // Complexity from validation retry logic and field generation for all property types
 func (c *Connector) generateRandomRecordWithDepth(objectName string, depth int) (map[string]any, error) {
-	const maxDepth = 5
-	const maxRetries = 100
-
 	schema, exists := c.schemas.Get(objectName)
 	if !exists {
 		return nil, fmt.Errorf("%w: %s", ErrSchemaNotFound, objectName)
@@ -390,10 +449,12 @@ func (c *Connector) generateRandomRecordWithDepth(objectName string, depth int) 
 	updatedField := c.storage.updatedFields[objectName]
 
 	// Retry logic for validation failures
-	var record map[string]any
-	var validationErr error
+	var (
+		record        map[string]any
+		validationErr error
+	)
 
-	for attempt := 0; attempt < maxRetries; attempt++ {
+	for attempt := range maxRetries {
 		record = make(map[string]any)
 
 		// Generate values for each property
@@ -406,10 +467,13 @@ func (c *Connector) generateRandomRecordWithDepth(objectName string, depth int) 
 			// Handle special fields
 			if fieldName == idField {
 				record[fieldName] = generateID(schema, idField)
+
 				continue
 			}
+
 			if fieldName == updatedField {
 				record[fieldName] = generateTimestamp(schema, updatedField)
+
 				continue
 			}
 
@@ -417,7 +481,11 @@ func (c *Connector) generateRandomRecordWithDepth(objectName string, depth int) 
 			value, err := c.generateFieldValue(fieldMap, depth, maxDepth)
 			if err != nil {
 				// Log error with field name and schema details
-				fieldSchemaJSON, _ := json.Marshal(fieldMap)
+				fieldSchemaJSON, marshalErr := json.Marshal(fieldMap)
+				if marshalErr != nil {
+					fieldSchemaJSON = []byte("{}")
+				}
+
 				slog.Error("field value generation failed, using fallback",
 					"objectName", objectName,
 					"fieldName", fieldName,
@@ -426,8 +494,10 @@ func (c *Connector) generateRandomRecordWithDepth(objectName string, depth int) 
 					"attempt", attempt+1,
 				)
 				record[fieldName] = gofakeit.Word()
+
 				continue
 			}
+
 			record[fieldName] = value
 		}
 
@@ -453,17 +523,17 @@ func (c *Connector) generateFieldValue(fieldMap map[string]any, depth, maxDepth 
 	}
 
 	switch fieldType {
-	case "string":
-		return c.generateStringValue(fieldMap, format)
-	case "integer":
-		return c.generateIntegerValue(fieldMap)
-	case "number":
-		return c.generateNumberValue(fieldMap)
-	case "boolean":
+	case typeString:
+		return c.generateStringValue(fieldMap, format), nil
+	case typeInteger:
+		return c.generateIntegerValue(fieldMap), nil
+	case typeNumber:
+		return c.generateNumberValue(fieldMap), nil
+	case typeBoolean:
 		return gofakeit.Bool(), nil
-	case "array":
+	case typeArray:
 		return c.generateArrayValue(fieldMap, depth, maxDepth)
-	case "object":
+	case typeObject:
 		return c.generateObjectValue(fieldMap, depth, maxDepth)
 	default:
 		return gofakeit.Word(), nil
@@ -471,42 +541,46 @@ func (c *Connector) generateFieldValue(fieldMap map[string]any, depth, maxDepth 
 }
 
 // generateStringValue generates a string value with pattern and length constraints.
-func (c *Connector) generateStringValue(fieldMap map[string]any, format string) (string, error) {
-	const maxAttempts = 3
-
+func (c *Connector) generateStringValue(fieldMap map[string]any, format string) string {
 	// Check for pattern
 	if pattern, ok := fieldMap["pattern"].(string); ok && pattern != "" {
 		// Use regex pattern to generate matching string
-		for attempt := 0; attempt < maxAttempts; attempt++ {
+		for attempt := range maxAttempts {
 			value := gofakeit.Regex(pattern)
 			if c.validateStringConstraints(value, fieldMap) {
-				return value, nil
+				return value
 			}
+
+			_ = attempt // Use the variable to satisfy linter
 		}
 		// If pattern generation fails, fall through to format/length-based generation
 	}
 
 	// Extract length constraints
 	var minLength, maxLength *int
+
 	if ml, ok := fieldMap["minLength"].(float64); ok {
 		minLen := int(ml)
 		minLength = &minLen
 	}
+
 	if ml, ok := fieldMap["maxLength"].(float64); ok {
 		maxLen := int(ml)
 		maxLength = &maxLen
 	}
 
 	// Generate by format
-	for attempt := 0; attempt < maxAttempts; attempt++ {
+	for attempt := range maxAttempts {
 		value := generateStringByFormat(format, minLength, maxLength)
 		if c.validateStringConstraints(value, fieldMap) {
-			return value, nil
+			return value
 		}
+
+		_ = attempt // Use the variable to satisfy linter
 	}
 
 	// Fallback: generate string with length constraints
-	return c.generateStringWithLength(minLength, maxLength), nil
+	return c.generateStringWithLength(minLength, maxLength)
 }
 
 // validateStringConstraints checks if a string meets length constraints.
@@ -516,68 +590,79 @@ func (c *Connector) validateStringConstraints(value string, fieldMap map[string]
 			return false
 		}
 	}
+
 	if maxLength, ok := fieldMap["maxLength"].(float64); ok {
 		if len(value) > int(maxLength) {
 			return false
 		}
 	}
+
 	return true
 }
 
 // generateStringWithLength generates a string meeting length constraints.
 func (c *Connector) generateStringWithLength(minLength, maxLength *int) string {
-	min := 1
-	max := 50
+	minLen := defaultMinStringLength
+	maxLen := defaultMaxStringLength
+
 	if minLength != nil && *minLength > 0 {
-		min = *minLength
+		minLen = *minLength
 	}
+
 	if maxLength != nil && *maxLength > 0 {
-		max = *maxLength
+		maxLen = *maxLength
 	}
-	if max < min {
-		max = min
+
+	if maxLen < minLen {
+		maxLen = minLen
 	}
 
 	// Generate target length
-	targetLength := gofakeit.Number(min, max)
+	targetLength := gofakeit.Number(minLen, maxLen)
 
 	// Generate string of appropriate length
-	if targetLength <= 20 {
+	if targetLength <= shortStringThreshold {
 		return gofakeit.LetterN(uint(targetLength))
 	}
 
 	// For longer strings, use sentence and trim/pad as needed
-	sentence := gofakeit.Sentence(targetLength / 5)
+	sentence := gofakeit.Sentence(targetLength / sentenceWordCount)
 	if len(sentence) > targetLength {
 		return sentence[:targetLength]
 	}
+
 	if len(sentence) < targetLength {
 		return sentence + gofakeit.LetterN(uint(targetLength-len(sentence)))
 	}
+
 	return sentence
 }
 
 // generateIntegerValue generates an integer with min/max and exclusive bounds.
-func (c *Connector) generateIntegerValue(fieldMap map[string]any) (int, error) {
-	min := -1000.0
-	max := 1000.0
+//
+//nolint:cyclop,nestif // Complexity from multipleOf constraint handling with positive/negative edge cases
+func (c *Connector) generateIntegerValue(fieldMap map[string]any) int {
+	minValue := defaultMinNumber
+	maxValue := defaultMaxNumber
 
 	// Extract minimum
 	if minVal, ok := fieldMap["minimum"].(float64); ok {
-		min = minVal
+		minValue = minVal
 	}
+
 	// Check for exclusive minimum
 	if exclusive, ok := fieldMap["exclusiveMinimum"].(bool); ok && exclusive {
-		min = min + 1
+		minValue += exclusiveAdjustmentInt
 	}
 
 	// Extract maximum
 	if maxVal, ok := fieldMap["maximum"].(float64); ok {
-		max = maxVal
+		maxValue = maxVal
 	}
+
 	// Check for exclusive maximum
 	if exclusive, ok := fieldMap["exclusiveMaximum"].(bool); ok && exclusive {
-		max = max - 1
+		maxValue -= exclusiveAdjustmentInt
 	}
 
 	// Check for multipleOf constraint and adjust bounds accordingly
@@ -586,7 +671,7 @@ func (c *Connector) generateIntegerValue(fieldMap map[string]any) (int, error) {
 		// Validate that multipleOf is a valid non-zero integer
 		if multiple > 0 && float64(multiple) == multipleOf {
 			// Compute the smallest multiple of multipleOf that is >= minimum
-			intMin := int(min)
+			intMin := int(minValue)
 			if intMin%multiple != 0 {
 				if intMin >= 0 {
 					// For positive numbers, round up
@@ -598,7 +683,7 @@ func (c *Connector) generateIntegerValue(fieldMap map[string]any) (int, error) {
 			}
 
 			// Compute the largest multiple of multipleOf that is <= maximum
-			intMax := int(max)
+			intMax := int(maxValue)
 			if intMax%multiple != 0 {
 				if intMax >= 0 {
 					// For positive numbers, round down (floor)
@@ -610,58 +695,65 @@ func (c *Connector) generateIntegerValue(fieldMap map[string]any) (int, error) {
 			}
 
 			// Use adjusted bounds
-			return gofakeit.Number(intMin, intMax), nil
+			return gofakeit.Number(intMin, intMax)
 		}
 		// If validation fails, skip applying multipleOf adjustment
 	}
 
-	return gofakeit.Number(int(min), int(max)), nil
+	return gofakeit.Number(int(minValue), int(maxValue))
 }
 
 // generateNumberValue generates a float with min/max and exclusive bounds.
-func (c *Connector) generateNumberValue(fieldMap map[string]any) (float64, error) {
-	min := -1000.0
-	max := 1000.0
+func (c *Connector) generateNumberValue(fieldMap map[string]any) float64 {
+	minValue := defaultMinNumber
+	maxValue := defaultMaxNumber
 
 	// Extract minimum
 	if minVal, ok := fieldMap["minimum"].(float64); ok {
-		min = minVal
+		minValue = minVal
 	}
+
 	// Check for exclusive minimum
 	if exclusive, ok := fieldMap["exclusiveMinimum"].(bool); ok && exclusive {
-		min = min + 0.001
+		minValue += exclusiveAdjustmentFloat
 	}
 
 	// Extract maximum
 	if maxVal, ok := fieldMap["maximum"].(float64); ok {
-		max = maxVal
-	}
-	// Check for exclusive maximum
-	if exclusive, ok := fieldMap["exclusiveMaximum"].(bool); ok && exclusive {
-		max = max - 0.001
+		maxValue = maxVal
 	}
 
-	value := generateNumberInRange(&min, &max)
+	// Check for exclusive maximum
+	if exclusive, ok := fieldMap["exclusiveMaximum"].(bool); ok && exclusive {
+		maxValue -= exclusiveAdjustmentFloat
+	}
+
+	value := generateNumberInRange(&minValue, &maxValue)
 
 	// Check for multipleOf constraint
 	if multipleOf, ok := fieldMap["multipleOf"].(float64); ok && multipleOf > 0 {
 		value = float64(int(value/multipleOf)) * multipleOf
 	}
 
-	return value, nil
+	return value
 }
 
 // generateArrayValue generates an array with items schema and size constraints.
+//
+//nolint:cyclop,funlen,gocognit,nestif // Complex logic for uniqueItems, enums, and recursion
 func (c *Connector) generateArrayValue(fieldMap map[string]any, depth, maxDepth int) ([]any, error) {
 	// Extract size constraints
-	minItems := 1
-	maxItems := 3
+	minItems := defaultMinItems
+	maxItems := defaultMaxItems
+
 	if mi, ok := fieldMap["minItems"].(float64); ok {
 		minItems = int(mi)
 	}
+
 	if mi, ok := fieldMap["maxItems"].(float64); ok {
 		maxItems = int(mi)
 	}
+
 	if maxItems < minItems {
 		maxItems = minItems
 	}
@@ -676,7 +768,8 @@ func (c *Connector) generateArrayValue(fieldMap map[string]any, depth, maxDepth 
 		if enumValues, hasEnum := items["enum"].([]any); hasEnum {
 			maxUniqueValues := len(enumValues)
 			if minItems > maxUniqueValues {
-				return nil, fmt.Errorf("uniqueItems constraint cannot be satisfied: minItems (%d) exceeds number of enum values (%d)", minItems, maxUniqueValues)
+				return nil, fmt.Errorf("%w: minItems (%d) exceeds number of enum values (%d)",
+					ErrUniqueConstraint, minItems, maxUniqueValues)
 			}
 			// Adjust maxItems to not exceed available unique values
 			if maxItems > maxUniqueValues {
@@ -694,20 +787,24 @@ func (c *Connector) generateArrayValue(fieldMap map[string]any, depth, maxDepth 
 	// Track unique values if needed
 	uniqueMap := make(map[string]bool)
 
+	//nolint:intrange,modernize,varnamelen // Using index for array assignment
 	for i := 0; i < arraySize; i++ {
-		var value any
-		var err error
+		var (
+			value any
+			err   error
+		)
 
-		if hasItems && depth < maxDepth {
+		switch {
+		case hasItems && depth < maxDepth:
 			// Generate according to items schema
 			value, err = c.generateValueFromSchema(items, depth+1, maxDepth)
 			if err != nil {
 				value = gofakeit.Word()
 			}
-		} else if depth >= maxDepth {
+		case depth >= maxDepth:
 			// Hit depth limit, use placeholder
-			value = generatePlaceholderValue("string")
-		} else {
+			value = generatePlaceholderValue(typeString)
+		default:
 			// No items schema, use random words
 			value = gofakeit.Word()
 		}
@@ -716,19 +813,23 @@ func (c *Connector) generateArrayValue(fieldMap map[string]any, depth, maxDepth 
 		if uniqueItems {
 			valueStr := fmt.Sprintf("%v", value)
 			attempts := 0
-			for uniqueMap[valueStr] && attempts < 10 {
+
+			for uniqueMap[valueStr] && attempts < uniqueRetryLimit {
 				if hasItems && depth < maxDepth {
 					value, _ = c.generateValueFromSchema(items, depth+1, maxDepth)
 				} else {
 					value = gofakeit.Word()
 				}
+
 				valueStr = fmt.Sprintf("%v", value)
 				attempts++
 			}
 			// If we exhausted retries without finding a unique value, return error
 			if uniqueMap[valueStr] {
-				return nil, fmt.Errorf("failed to generate unique value for array element %d after %d attempts", i, attempts)
+				return nil, fmt.Errorf("%w for array element %d after %d attempts",
+					ErrUniqueValue, i, attempts)
 			}
+
 			uniqueMap[valueStr] = true
 		}
 
@@ -743,7 +844,7 @@ func (c *Connector) generateObjectValue(fieldMap map[string]any, depth, maxDepth
 	// Check if we've hit depth limit
 	if depth >= maxDepth {
 		return map[string]any{
-			"key": generatePlaceholderValue("string"),
+			"key": generatePlaceholderValue(typeString),
 		}, nil
 	}
 
@@ -758,6 +859,7 @@ func (c *Connector) generateObjectValue(fieldMap map[string]any, depth, maxDepth
 
 	// Extract required fields
 	requiredFields := make(map[string]bool)
+
 	if reqArray, ok := fieldMap["required"].([]any); ok {
 		for _, req := range reqArray {
 			if reqStr, ok := req.(string); ok {
@@ -770,7 +872,12 @@ func (c *Connector) generateObjectValue(fieldMap map[string]any, depth, maxDepth
 }
 
 // generateNestedObject recursively generates a nested object from properties schema.
-func (c *Connector) generateNestedObject(properties map[string]any, required map[string]bool, depth, maxDepth int) (map[string]any, error) {
+func (c *Connector) generateNestedObject(
+	properties map[string]any,
+	required map[string]bool,
+	depth,
+	maxDepth int,
+) (map[string]any, error) {
 	obj := make(map[string]any)
 
 	for propName, propDef := range properties {
@@ -786,7 +893,11 @@ func (c *Connector) generateNestedObject(properties map[string]any, required map
 		value, err := c.generateValueFromSchema(propMap, depth, maxDepth)
 		if err != nil {
 			// Log error with property name and schema details
-			propSchemaJSON, _ := json.Marshal(propMap)
+			propSchemaJSON, marshalErr := json.Marshal(propMap)
+			if marshalErr != nil {
+				propSchemaJSON = []byte("{}")
+			}
+
 			slog.Error("nested property value generation failed, using fallback",
 				"propertyName", propName,
 				"error", err,
@@ -795,8 +906,10 @@ func (c *Connector) generateNestedObject(properties map[string]any, required map
 				"required", required[propName],
 			)
 			obj[propName] = gofakeit.Word()
+
 			continue
 		}
+
 		obj[propName] = value
 	}
 
@@ -808,6 +921,7 @@ func (c *Connector) generateValueFromSchema(schema map[string]any, depth, maxDep
 	// Check depth limit
 	if depth >= maxDepth {
 		fieldType, _ := schema["type"].(string)
+
 		return generatePlaceholderValue(fieldType), nil
 	}
 
@@ -817,17 +931,17 @@ func (c *Connector) generateValueFromSchema(schema map[string]any, depth, maxDep
 // generatePlaceholderValue generates a simple placeholder value when depth limit is reached.
 func generatePlaceholderValue(fieldType string) any {
 	switch fieldType {
-	case "string":
+	case typeString:
 		return "placeholder"
-	case "integer":
+	case typeInteger:
 		return 0
-	case "number":
+	case typeNumber:
 		return 0.0
-	case "boolean":
+	case typeBoolean:
 		return false
-	case "array":
+	case typeArray:
 		return []any{}
-	case "object":
+	case typeObject:
 		return map[string]any{}
 	default:
 		return "placeholder"
@@ -835,6 +949,8 @@ func generatePlaceholderValue(fieldType string) any {
 }
 
 // generateStringByFormat generates a string value based on the format hint.
+//
+//nolint:cyclop,funlen // Complexity from extensive format handling for diverse string types (email, date, UUID, etc.)
 func generateStringByFormat(format string, minLength, maxLength *int) string {
 	var value string
 
@@ -871,21 +987,22 @@ func generateStringByFormat(format string, minLength, maxLength *int) string {
 		value = gofakeit.Zip()
 	default:
 		// Randomly choose between different string types
-		switch gofakeit.Number(0, 2) {
+		switch gofakeit.Number(0, stringFormatChoices) {
 		case 0:
 			value = gofakeit.Name()
 		case 1:
 			value = gofakeit.Word()
 		default:
-			value = gofakeit.Sentence(5)
+			value = gofakeit.Sentence(sentenceWordCount)
 		}
 	}
 
 	// Apply length constraints if specified
 	if minLength != nil && len(value) < *minLength {
 		// Pad with letters to meet minimum length
-		value = value + gofakeit.LetterN(uint(*minLength-len(value)))
+		value += gofakeit.LetterN(uint(*minLength - len(value)))
 	}
+
 	if maxLength != nil && len(value) > *maxLength {
 		// Truncate to meet maximum length
 		value = value[:*maxLength]
@@ -895,15 +1012,16 @@ func generateStringByFormat(format string, minLength, maxLength *int) string {
 }
 
 // generateNumberInRange generates a number within the specified range.
-func generateNumberInRange(min, max *float64) float64 {
+func generateNumberInRange(minValue, maxValue *float64) float64 {
 	minVal := 0.0
-	maxVal := 1000.0
+	maxVal := defaultMaxNumber
 
-	if min != nil {
-		minVal = *min
+	if minValue != nil {
+		minVal = *minValue
 	}
-	if max != nil {
-		maxVal = *max
+
+	if maxValue != nil {
+		maxVal = *maxValue
 	}
 
 	return gofakeit.Float64Range(minVal, maxVal)
