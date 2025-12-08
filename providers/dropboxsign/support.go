@@ -11,15 +11,16 @@ import (
 
 //nolint:gochecknoglobals
 var (
-	objectNameTemplate       = "template"
-	objectNameBulkSendJobs   = "bulk_send_job"
-	objectNameApiApp         = "api_app"
-	objectNameFax            = "fax"
-	objectNameFaxLine        = "fax_line"
-	objectNameAccount        = "account"
-	objectNameReport         = "report"
-	objectNameTeam           = "team"
-	objectNameUnclaimedDraft = "unclaimed_draft"
+	objectNameTemplate         = "template"
+	objectNameBulkSendJobs     = "bulk_send_job"
+	objectNameApiApp           = "api_app"
+	objectNameFax              = "fax"
+	objectNameFaxLine          = "fax_line"
+	objectNameAccount          = "account"
+	objectNameReport           = "report"
+	objectNameTeam             = "team"
+	objectNameUnclaimedDraft   = "unclaimed_draft"
+	objectNameSignatureRequest = "signature_request"
 )
 
 //nolint:gochecknoglobals
@@ -41,6 +42,7 @@ func supportedOperations() components.EndpointRegistryInput {
 		objectNameFax,
 		objectNameFaxLine,
 		objectNameBulkSendJobs,
+		objectNameSignatureRequest,
 	}
 
 	writeSupport := []string{
