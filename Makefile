@@ -22,7 +22,7 @@ lint: custom-gcl
 custom-gcl:
 	@if [ ! -f custom-gcl ]; then \
 		echo "Building custom golangci-lint binary with nogoroutine & module linter..."; \
-		golangci-lint custom --verbose; \
+		golangci-lint custom --verbose || exit 1
 	fi
 
 # Builds custom golangci-lint binary printing the details.

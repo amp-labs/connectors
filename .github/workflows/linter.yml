@@ -15,6 +15,9 @@ jobs:
       - name: Generate go code
         run: go generate ./...
 
+      - name: Install dependencies
+        run: go install github.com/daixiang0/gci@latest
+
         # Ensure that the linter version matches with ".custom-gcl.yml".
       - name: Install golangci-lint
         run: |
