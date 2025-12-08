@@ -78,6 +78,17 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								IsRequired:   goutils.Pointer(false),
 								Values:       nil,
 							},
+							// Nested field: Latitude is a component of the Address compound field.
+							// It appears both as a flat field ("latitude") and as a nested field.
+							"$['address']['latitude']": {
+								DisplayName:  "Latitude",
+								ValueType:    "float",
+								ProviderType: "double",
+								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(false),
+								Values:       nil,
+							},
 							"monthlypageviewsused": {
 								DisplayName:  "Monthly Page Views Used",
 								ValueType:    "int",

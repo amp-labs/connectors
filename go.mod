@@ -1,9 +1,12 @@
 module github.com/amp-labs/connectors
 
-go 1.24.0
+go 1.24.6
+
+toolchain go1.24.11
 
 require (
 	github.com/PuerkitoBio/goquery v1.10.3
+	github.com/amp-labs/amp-common v0.0.0-20251208224147-7dc8b73a6f4e
 	github.com/antchfx/xmlquery v1.5.0
 	github.com/aws/aws-sdk-go-v2 v1.39.6
 	github.com/aws/aws-sdk-go-v2/config v1.31.20

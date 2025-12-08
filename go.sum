@@ -1,5 +1,9 @@
 github.com/PuerkitoBio/goquery v1.10.3 h1:pFYcNSqHxBD06Fpj/KsbStFRsgRATgnf3LeXiUkhzPo=
 github.com/PuerkitoBio/goquery v1.10.3/go.mod h1:tMUX0zDMHXYlAQk6p35XxQMqMweEKB7iK7iLNd4RH4Y=
+github.com/amp-labs/amp-common v0.0.0-20251208223454-e3e462792ad0 h1:bo8oXDjPj3jcnUO++uouNI5BigmHCz99lKIh5AdEm1o=
+github.com/amp-labs/amp-common v0.0.0-20251208223454-e3e462792ad0/go.mod h1:lhNrTfCkeNu/N27tG6BwYaZ9xieLjjPQCJZIxlQMc2A=
+github.com/amp-labs/amp-common v0.0.0-20251208224147-7dc8b73a6f4e h1:5Uh4AYbgt5OPnGrqr7V30A1ICBtI/WUpVX0kc2i4Keg=
+github.com/amp-labs/amp-common v0.0.0-20251208224147-7dc8b73a6f4e/go.mod h1:lhNrTfCkeNu/N27tG6BwYaZ9xieLjjPQCJZIxlQMc2A=
 github.com/andybalholm/cascadia v1.3.3 h1:AG2YHrzJIm4BZ19iwJ/DAua6Btl3IwJX+VI4kktS1LM=
 github.com/andybalholm/cascadia v1.3.3/go.mod h1:xNd9bqTn98Ln4DwST8/nG+H0yuB8Hmgu1YHNnWw0GeA=
 github.com/antchfx/xmlquery v1.5.0 h1:uAi+mO40ZWfyU6mlUBxRVvL6uBNZ6LMU4M3+mQIBV4c=
