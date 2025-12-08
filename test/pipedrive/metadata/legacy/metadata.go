@@ -22,7 +22,7 @@ func main() {
 
 	conn := pipedrive.GetPipedriveConnector(ctx, providers.ModulePipedriveLegacy)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"activities", "stages", "deals"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"activities", "stages", "currencies", "deals", "leadLabels"})
 	if err != nil {
 		utils.Fail("error listing metadata for Pipedrive", "error", err)
 	}
