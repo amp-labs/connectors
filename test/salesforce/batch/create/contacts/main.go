@@ -30,11 +30,13 @@ func main() {
 			Record: map[string]any{
 				"LastName":  "Dyer",
 				"FirstName": "Siena",
-			}}, {
+			},
+		}, {
 			Record: map[string]any{
 				"LastName":  "Blevins",
 				"FirstName": "Markus",
-			}}},
+			},
+		}},
 	})
 	if err != nil {
 		utils.Fail("error reading", "error", err)

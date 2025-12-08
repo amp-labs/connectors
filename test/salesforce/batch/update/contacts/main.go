@@ -31,12 +31,14 @@ func main() {
 				"id":        "003ak00000jvIfpAAE",
 				"LastName":  "Dyer (updated)",
 				"FirstName": "Siena (updated)",
-			}}, {
+			},
+		}, {
 			Record: map[string]any{
 				"id":        "003ak00000jvIfqAAE",
 				"LastName":  "Blevins (updated)",
 				"FirstName": "Markus (updated)",
-			}}},
+			},
+		}},
 	})
 	if err != nil {
 		utils.Fail("error reading", "error", err)
