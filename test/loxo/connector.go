@@ -12,7 +12,7 @@ import (
 
 var fieldWorkspace = credscanning.Field{ //nolint:gochecknoglobals
 	Name:      "workspace",
-	PathJSON:  "substitutions.workspace",
+	PathJSON:  "metadata.workspace",
 	SuffixENV: "WORKSPACE",
 }
 

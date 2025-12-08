@@ -66,7 +66,7 @@ type FieldMetadata struct {
 	DisplayName  string           `json:"displayName,omitempty"`
 	ValueType    common.ValueType `json:"valueType,omitempty"`
 	ProviderType string           `json:"providerType,omitempty"`
-	ReadOnly     bool             `json:"readOnly,omitempty"`
+	ReadOnly     *bool            `json:"readOnly,omitempty"`
 	Values       FieldValues      `json:"values,omitempty"`
 }
 

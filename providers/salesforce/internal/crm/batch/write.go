@@ -2,6 +2,7 @@ package batch
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -11,7 +12,6 @@ import (
 	"github.com/amp-labs/connectors/internal/goutils"
 )
 
-// nolint:lll
 // BatchWrite executes a Salesforce composite create or update request.
 // It validates the input, builds the appropriate payload, sends the API call,
 // and parses the response into a BatchWriteResult.
@@ -19,6 +19,7 @@ import (
 // The payload formats for Create and Update endpoints are nearly identical.
 // The only notable difference—unused in this implementation—is the optional
 // "allOrNone" flag supported by the Update API (default is false).
+// nolint:lll
 // See: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_update.htm
 //
 // Response schemas differ slightly: Create responses wrap records in an
@@ -45,7 +46,9 @@ func (a *Adapter) BatchWrite(ctx context.Context, params *common.BatchWriteParam
 		write = a.Client.Patch
 	}
 
-	rsp, err := write(ctx, url.String(), payload)
+	headers := common.TransformWriteHeaders(params.Headers, common.HeaderModeOverwrite)
+
+	rsp, err := write(ctx, url.String(), payload, headers...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +60,7 @@ func (a *Adapter) BatchWrite(ctx context.Context, params *common.BatchWriteParam
 	}
 
 	if response == nil || len(*response) == 0 {
-		return a.handleEmptyResponse(rsp)
+		return a.handleEmptyResponse(rsp, len(payload.Records))
 	}
 
 	// nolint:lll
@@ -105,23 +108,17 @@ func resultBuilder(_ PayloadItem, respItem *Item) (*common.WriteResult, error) {
 	return respItem.ToWriteResult()
 }
 
-func (a *Adapter) handleEmptyResponse(rsp *common.JSONHTTPResponse) (*common.BatchWriteResult, error) {
-	status := common.BatchStatusSuccess
-	errors := make([]any, 0)
-
+func (a *Adapter) handleEmptyResponse(
+	rsp *common.JSONHTTPResponse, totalNumRecords int,
+) (*common.BatchWriteResult, error) {
 	if rsp.Code == http.StatusBadRequest {
 		// A 400 Bad Request is allowed by implementation, but we always expect a response body.
 		// Since there is no data, and non-2xx response we cannot determine per-record results,
 		// so the batch is treated as failed.
-		status = common.BatchStatusFailure
-		errors = append(errors, common.ErrEmptyJSONHTTPResponse)
+		return common.NewBatchWriteResultFailed(nil, totalNumRecords, []any{common.ErrEmptyJSONHTTPResponse})
 	}
 
-	return &common.BatchWriteResult{
-		Status:  status,
-		Errors:  errors,
-		Results: nil,
-	}, nil
+	return common.NewBatchWriteResult(nil, totalNumRecords, totalNumRecords, nil)
 }
 
 func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilder.URL, error) {
@@ -191,6 +188,11 @@ type Item struct {
 	Success bool        `json:"success"`
 	ID      string      `json:"id,omitempty"`
 	Errors  []ItemError `json:"errors"`
+
+	// These properties can come up during 400 BadRequest.
+	// Ex: no records sent to the endpoint.
+	Message   *string `json:"message,omitempty"`
+	ErrorCode *string `json:"errorCode,omitempty"`
 }
 
 type ItemError struct {
@@ -202,17 +204,28 @@ type ItemError struct {
 func (i Item) ToWriteResult() (*common.WriteResult, error) {
 	success := len(i.Errors) == 0
 
-	if success {
-		data, err := common.RecordDataToMap(i)
-		if err != nil {
-			return nil, err
+	if success && !i.Success {
+		// Success status is missing in response.
+		// At the same time there are no error objects.
+		// This means the format and structure we expected is not present.
+		switch {
+		case i.Message != nil && i.ErrorCode != nil:
+			return nil, fmt.Errorf("%w: error %s: %s", common.ErrBatchUnprocessedRecord, *i.ErrorCode, *i.Message)
+		case i.Message != nil:
+			return nil, fmt.Errorf("%w: %v", common.ErrBatchUnprocessedRecord, *i.Message)
+		case i.ErrorCode != nil:
+			return nil, fmt.Errorf("%w: error code: %s", common.ErrBatchUnprocessedRecord, *i.ErrorCode)
+		default:
+			return nil, fmt.Errorf("%w: unexpected response format", common.ErrBatchUnprocessedRecord)
 		}
+	}
 
+	if success {
 		return &common.WriteResult{
 			Success:  true,
 			RecordId: i.ID,
 			Errors:   nil,
-			Data:     data,
+			Data:     nil,
 		}, nil
 	}
 

@@ -6,6 +6,19 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
+// StarRulePathResolver will report if path matches endpoint rule.
+// Match can occur in 3 different ways,
+// * exact value is inside the registry
+// * or using star rule for
+//   - prefix matching,
+//   - suffix matching.
+type StarRulePathResolver struct {
+	endpoints            datautils.StringSet
+	prefixes             []string
+	suffixes             []string
+	pathMatchingCallback func(hasMatched bool) bool
+}
+
 // NewAllowPathStrategy produces a path matching strategy that will accept only those paths that matched the list.
 // Others will be denied.
 // You can use star symbol to create a wild matcher.
@@ -81,19 +94,6 @@ func (m OrPathMatcher) IsPathMatching(path string) bool {
 	}
 
 	return false
-}
-
-// StarRulePathResolver will report if path matches endpoint rule.
-// Match can occur in 3 different ways,
-// * exact value is inside the registry
-// * or using star rule for
-//   - prefix matching,
-//   - suffix matching.
-type StarRulePathResolver struct {
-	endpoints            datautils.StringSet
-	prefixes             []string
-	suffixes             []string
-	pathMatchingCallback func(hasMatched bool) bool
 }
 
 func newStarRulePathResolver(

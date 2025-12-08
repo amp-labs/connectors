@@ -41,7 +41,7 @@ func TestCalendarWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New( // nolint:goerr113
+				errors.New(
 					"Missing foreground color.",
 				),
 			},

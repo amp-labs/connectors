@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package common
 
 import (
@@ -177,6 +178,11 @@ type ReadParams struct {
 	PageSize int // optional
 }
 
+type WriteHeader struct {
+	Key   string
+	Value string
+}
+
 // WriteParams defines how we are writing data to a SaaS API.
 type WriteParams struct {
 	// The name of the object we are writing, e.g. "Account"
@@ -191,6 +197,8 @@ type WriteParams struct {
 
 	// Associations contains associations between the object and other objects.
 	Associations any // optional
+
+	Headers []WriteHeader // optional
 }
 
 func (p WriteParams) GetRecord() (Record, error) {
@@ -321,9 +329,35 @@ type BatchWriteParam struct {
 	ObjectName ObjectName
 	// Type defines how the records should be processed: create, update, or upsert.
 	Type BatchWriteType
-	// Records contains the collection of record payloads to be written.
-	Records []any
+	// Batch contains the collection of record payloads to be written.
+	Batch BatchItems
+	// Headers contains additional headers to be added to the request.
+	Headers []WriteHeader // optional
 }
+
+func TransformWriteHeaders(headers []WriteHeader, mode HeaderMode) []Header {
+	transformedHeaders := []Header{}
+	for _, header := range headers {
+		transformedHeaders = append(transformedHeaders, Header{
+			Key:   header.Key,
+			Value: header.Value,
+			Mode:  mode,
+		})
+	}
+
+	return transformedHeaders
+}
+
+type BatchItem struct {
+	Record       map[string]any
+	Associations any
+}
+
+func (i BatchItem) GetRecord() (Record, error) {
+	return RecordDataToMap(i.Record)
+}
+
+type BatchItems []BatchItem
 
 func (p BatchWriteParam) IsCreate() bool {
 	return p.Type == BatchWriteTypeCreate
@@ -336,8 +370,8 @@ func (p BatchWriteParam) IsUpdate() bool {
 type Record map[string]any
 
 func (p BatchWriteParam) GetRecords() ([]Record, error) {
-	return datautils.ForEachWithErr(p.Records, func(record any) (Record, error) {
-		return RecordDataToMap(record)
+	return datautils.ForEachWithErr(p.Batch, func(batchItem BatchItem) (Record, error) {
+		return RecordDataToMap(batchItem.Record)
 	})
 }
 
@@ -462,12 +496,6 @@ type ObjectMetadata struct {
 	FieldsMap map[string]string
 }
 
-// AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
-func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
-	m.Fields[fieldName] = fieldMetadata
-	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
-}
-
 // NewObjectMetadata constructs ObjectMetadata.
 // This will automatically infer fields map from field metadata map. This construct exists for such convenience.
 func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadata {
@@ -476,6 +504,12 @@ func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadat
 		Fields:      fields,
 		FieldsMap:   inferDeprecatedFieldsMap(fields),
 	}
+}
+
+// AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
+func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
+	m.Fields[fieldName] = fieldMetadata
+	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
 }
 
 type FieldMetadata struct {
@@ -490,7 +524,7 @@ type FieldMetadata struct {
 	ProviderType string
 
 	// ReadOnly would indicate if field can be modified or only read.
-	ReadOnly bool
+	ReadOnly *bool
 
 	// IsCustom indicates whether the field is user-defined or custom.
 	// True means the field was added by the user, false means it is native to the provider.
@@ -513,7 +547,6 @@ func (f FieldsMetadata) AddFieldWithDisplayOnly(fieldName string, displayName st
 		DisplayName:  displayName,
 		ValueType:    "",
 		ProviderType: "",
-		ReadOnly:     false,
 		Values:       nil,
 	}
 }
@@ -559,7 +592,7 @@ type SubscriptionUpdateEvent interface {
 	UpdatedFields() ([]string, error)
 }
 
-// Some providers send multiple events in a single webhook payload.
+// CollapsedSubscriptionEvent some providers send multiple events in a single webhook payload.
 // This interface is used to extract individual events to SubscriptionEvent type
 // from a collapsed event for webhook parsing and processing.
 type CollapsedSubscriptionEvent interface {
@@ -599,13 +632,13 @@ type RegistrationResult struct {
 type RegistrationStatus string
 
 const (
-	// registration is pending and not yet complete.
+	// RegistrationStatusPending registration is pending and not yet complete.
 	RegistrationStatusPending RegistrationStatus = "pending"
-	// registration returned error, and all intermittent steps are rolled back.
+	// RegistrationStatusFailed registration returned error, and all intermittent steps are rolled back.
 	RegistrationStatusFailed RegistrationStatus = "failed"
-	// successful registration.
+	// RegistrationStatusSuccess successful registration.
 	RegistrationStatusSuccess RegistrationStatus = "success"
-	// registration returned error, and failed to rollback some intermittent steps.
+	// RegistrationStatusFailedToRollback registration returned error, and failed to rollback some intermittent steps.
 	RegistrationStatusFailedToRollback RegistrationStatus = "failed_to_rollback"
 )
 
@@ -664,12 +697,12 @@ type SubscriptionResult struct { // this corresponds to each API call.
 type SubscriptionStatus string
 
 const (
-	// registration is pending and not yet complete.
+	// SubscriptionStatusPending registration is pending and not yet complete.
 	SubscriptionStatusPending SubscriptionStatus = "pending"
-	// registration returned error, and all intermittent steps are rolled back.
+	// SubscriptionStatusFailed registration returned error, and all intermittent steps are rolled back.
 	SubscriptionStatusFailed SubscriptionStatus = "failed"
-	// successful registration.
+	// SubscriptionStatusSuccess successful registration.
 	SubscriptionStatusSuccess SubscriptionStatus = "success"
-	// registration returned error, and failed to rollback some intermittent steps.
+	// SubscriptionStatusFailedToRollback registration returned error, and failed to rollback some intermittent steps.
 	SubscriptionStatusFailedToRollback SubscriptionStatus = "failed_to_rollback"
 )

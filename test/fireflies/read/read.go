@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -26,23 +26,37 @@ func main() {
 
 	conn := fireflies.GetFirefliesConnector(ctx)
 
-	if err := testRead(ctx, conn, "users"); err != nil {
+	if err := testRead(ctx, conn, "users", []string{"user_id"}, time.Time{}, time.Time{}); err != nil {
 		slog.Error(err.Error())
 	}
 
-	if err := testRead(ctx, conn, "transcripts"); err != nil {
+	if err := testRead(ctx, conn, "transcripts", []string{"id", "title"}, time.Date(2025, 11, 1, 0, 0, 0, 0, time.Local), time.Date(2025, 11, 14, 0, 0, 0, 0, time.Local)); err != nil {
 		slog.Error(err.Error())
 	}
 
-	if err := testRead(ctx, conn, "bites"); err != nil {
+	if err := testRead(ctx, conn, "bites", []string{"id", "name"}, time.Time{}, time.Time{}); err != nil {
+		slog.Error(err.Error())
+	}
+
+	if err := testRead(ctx, conn, "activeMeetings", []string{"id", "title"}, time.Time{}, time.Time{}); err != nil {
+		slog.Error(err.Error())
+	}
+
+	if err := testRead(ctx, conn, "userGroups", []string{""}, time.Time{}, time.Time{}); err != nil {
+		slog.Error(err.Error())
+	}
+
+	if err := testRead(ctx, conn, "analytics", []string{""}, time.Time{}, time.Time{}); err != nil {
 		slog.Error(err.Error())
 	}
 }
 
-func testRead(ctx context.Context, conn *ap.Connector, objectName string) error {
+func testRead(ctx context.Context, conn *ap.Connector, objectName string, fields []string, since, until time.Time) error {
 	params := common.ReadParams{
 		ObjectName: objectName,
-		Fields:     connectors.Fields(""),
+		Fields:     connectors.Fields(fields...),
+		Since:      since,
+		Until:      until,
 	}
 
 	res, err := conn.Read(ctx, params)
@@ -51,18 +65,7 @@ func testRead(ctx context.Context, conn *ap.Connector, objectName string) error 
 	}
 
 	// Print the results.
-	jsonStr, err := json.MarshalIndent(res, "", "  ")
-	if err != nil {
-		return fmt.Errorf("error marshalling JSON: %w", err)
-	}
-
-	if _, err := os.Stdout.Write(jsonStr); err != nil {
-		return fmt.Errorf("error writing JSON: %w", err)
-	}
-
-	if _, err := os.Stdout.WriteString("\n"); err != nil {
-		return fmt.Errorf("error writing newline: %w", err)
-	}
+	utils.DumpJSON(res, os.Stdout)
 
 	return nil
 }

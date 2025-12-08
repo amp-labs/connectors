@@ -1,0 +1,13 @@
+query {
+  user_groups(mine: false) {
+    id
+    name
+    handle
+    members {
+      user_id
+      first_name
+      last_name
+      email
+    }
+  }
+}

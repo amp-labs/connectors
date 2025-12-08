@@ -61,7 +61,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New( // nolint:goerr113
+				errors.New(
 					"not found (reference 01JCGC85CF663RT1V3FA04ZBNK)",
 				),
 			},

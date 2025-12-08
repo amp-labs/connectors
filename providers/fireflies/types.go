@@ -41,14 +41,3 @@ type MetadataResponse struct {
 		Type TypeMetadata `json:"__type"`
 	} `json:"data"`
 }
-
-type Response struct {
-	Errors any          `json:"errors"`
-	Data   ResponseData `json:"data"`
-}
-
-type ResponseData struct {
-	Users       []map[string]any `json:"users,omitempty"`
-	Transcripts []map[string]any `json:"transcripts,omitempty"`
-	Bites       []map[string]any `json:"bites,omitempty"`
-}

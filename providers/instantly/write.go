@@ -36,7 +36,7 @@ func (c *Connector) Write(
 	if len(config.RecordId) == 0 {
 		write = c.Client.Post
 
-		constructURLPathCreate(config, url) // nolint:wsl
+		constructURLPathCreate(config, url)
 	} else {
 		write = c.Client.Patch
 

@@ -89,14 +89,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Age",
 								ValueType:    "int",
 								ProviderType: "numeric",
-								ReadOnly:     false,
 								Values:       nil,
 							},
 							"fruits": {
 								DisplayName:  "Fruits",
 								ValueType:    "singleSelect",
 								ProviderType: "radio",
-								ReadOnly:     false,
 								Values: common.FieldValues{{
 									Value:        "9",
 									DisplayValue: "Orange",
@@ -112,7 +110,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Hobbies",
 								ValueType:    "multiSelect",
 								ProviderType: "checkbox",
-								ReadOnly:     false,
 								Values: common.FieldValues{{
 									Value:        "12",
 									DisplayValue: "Art",

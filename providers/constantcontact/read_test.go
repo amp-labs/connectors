@@ -52,7 +52,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Always: mockserver.Response(http.StatusBadRequest, responseContactIDsError),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New("Descriptive error message."), // nolint:goerr113
+				errors.New("Descriptive error message."),
 				common.ErrBadRequest,
 			},
 		},

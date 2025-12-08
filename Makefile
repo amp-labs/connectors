@@ -22,7 +22,7 @@ lint: custom-gcl
 custom-gcl:
 	@if [ ! -f custom-gcl ]; then \
 		echo "Building custom golangci-lint binary with nogoroutine & module linter..."; \
-		golangci-lint custom; \
+		golangci-lint custom --verbose; \
 	fi
 
 # Builds custom golangci-lint binary printing the details.
@@ -60,6 +60,10 @@ test:
 .PHONY: test-parallel
 test-parallel:
 	go test -v ./... -parallel=8 -count=3
+
+.PHONY: test-pretty
+test-pretty:
+	go run gotest.tools/gotestsum@latest
 
 # Creates PR URLs for each template
 # Click on one of them or manually add ?template=<file.md> to the URL if you are creating a PR via the Github website

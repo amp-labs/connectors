@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package common
 
 import (
@@ -23,6 +24,9 @@ var (
 
 	// ErrSinceUntilChronOrder is returned when the 'since' timestamp is after the 'until' timestamp in ReadParams.
 	ErrSinceUntilChronOrder = errors.New("since cannot come after until")
+
+	// ErrMissingFieldsMetadata is returned when the list of fields to create via UpsertMetadata is empty.
+	ErrMissingFieldsMetadata = errors.New("no fields metadata provided in UpsertMetadata")
 )
 
 func (p ReadParams) ValidateParams(withRequiredFields bool) error {
@@ -86,8 +90,20 @@ func (p BatchWriteParam) ValidateParams() error {
 		return ErrUnknownBatchWriteType
 	}
 
-	if len(p.Records) == 0 {
+	if len(p.Batch) == 0 {
 		return ErrMissingRecordData
+	}
+
+	return nil
+}
+
+func (p *UpsertMetadataParams) ValidateParams() error {
+	if p == nil {
+		return ErrMissingFieldsMetadata
+	}
+
+	if len(p.Fields) == 0 {
+		return ErrMissingFieldsMetadata
 	}
 
 	return nil

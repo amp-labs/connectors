@@ -37,7 +37,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 	payload, ok := config.RecordData.(map[string]any) //nolint:varnamelen
 	if !ok {
-		return nil, errors.New("invalid record data") //nolint:goerr113
+		return nil, errors.New("invalid record data") // nolint:err113
 	}
 
 	// Asana API expects the payload to be wrapped in a "data" object.

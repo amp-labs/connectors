@@ -1,0 +1,25 @@
+query MerchantAccountList {
+  viewer {
+    merchant {
+      merchantAccounts(
+        first: {{.First}}
+        {{if .After}}
+        after: "{{.After}}"
+        {{end}}
+      ) {
+        edges {
+          node {
+            id
+            currencyCode
+            dbaName
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  }
+}
+

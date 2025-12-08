@@ -17,6 +17,7 @@ const (
 	Mime = "application/x-amz-json-1.1"
 )
 
+// ReadPayload
 // nolint:tagliatelle
 type ReadPayload struct {
 	MaxResults *int    `json:"MaxResults,omitempty"`

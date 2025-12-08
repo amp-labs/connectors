@@ -108,20 +108,51 @@ err := simultaneously.DoCtx(ctx, maxConcurrent, callbacks...)
 
 **Why?** These primitives automatically handle panic recovery and prevent unbounded goroutine spawning, protecting against production outages.
 
-## Linter Enforcement
+# Linter
 
-This restriction is enforced via a custom `nogoroutine` linter built into the project's golangci-lint configuration.
+## One-time Setup
 
-To use the linter:
+Build the custom linters:
 ```bash
-# Build the custom golangci-lint binary (includes the nogoroutine linter)
-golangci-lint custom
-
-# Run linting (using the custom binary)
-./custom-gcl run
+make custom-gcl
 ```
 
-The linter automatically excludes the `future` and `simultaneously` packages themselves, which need to use the `go` keyword internally.
+Rebuild the linters from scratch. This is useful when the linter has been expanded with new plugins:
+```bash
+make linter-rebuild
+```
+
+## Day-to-Day Usage
+
+Run all linters:
+```bash
+make lint
+```
+
+Automatically apply formatting fixes:
+```bash
+make fix
+```
+
+# Tests
+
+Run the full test suite:
+```bash
+make test
+```
+
+Run tests with prettier, more readable output:
+```bash
+make test-pretty
+```
+
+Run tests in parallel to verify test isolation and correctness:
+```bash
+make test-parallel
+```
+Notes on parallelized tests:
+  * `-parallel=N`: Runs up to `N` (ex:8) test functions concurrently. Useful for speeding up large test suites and for catching concurrency-related bugs.
+  * `-count=M`: Runs the test `M` (ex:3) times. This helps catch flakiness or non-deterministic behavior in tests.
 
 # Contributors
 

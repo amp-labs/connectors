@@ -1,4 +1,3 @@
-// nolint:forbidigo,ireturn
 package proxyserv
 
 import (
@@ -17,6 +16,7 @@ import (
 
 type Proxy struct {
 	*httputil.ReverseProxy
+
 	target *url.URL
 }
 
@@ -35,14 +35,14 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	r.Host = p.target.Host
 	r.RequestURI = "" // Must be cleared
 
-	fmt.Printf("Proxying request: %s %s%s\n", r.Method, r.URL.Host, r.URL.Path)
+	fmt.Printf("Proxying request: %s %s%s\n", r.Method, r.URL.Host, r.URL.Path) // nolint:forbidigo
 	p.ReverseProxy.ServeHTTP(w, r)
 }
 
 func (p *Proxy) Start(ctx context.Context, port int) {
 	http.Handle("/", p)
 
-	fmt.Printf("\nProxy server listening on :%d\n", port)
+	fmt.Printf("\nProxy server listening on :%d\n", port) // nolint:forbidigo
 
 	if err := listen(ctx, port); err != nil {
 		panic(err)
@@ -83,7 +83,7 @@ func listen(ctx context.Context, port int) error {
 
 	if err := server.Serve(listener); err != nil {
 		if errors.Is(err, http.ErrServerClosed) {
-			fmt.Println("HTTP server stopped")
+			fmt.Println("HTTP server stopped") // nolint:forbidigo
 
 			return nil
 		}

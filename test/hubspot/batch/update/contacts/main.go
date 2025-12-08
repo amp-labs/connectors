@@ -8,14 +8,10 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/hubspot"
 	"github.com/amp-labs/connectors/test/utils"
 )
-
-type record struct {
-	ID         string         `json:"id"`
-	Properties map[string]any `json:"properties"`
-}
 
 func main() {
 	// Handle Ctrl-C gracefully.
@@ -29,80 +25,70 @@ func main() {
 
 	tests := []struct {
 		name    string
-		records []any
+		records common.BatchItems
 	}{
 		{
 			name: "Duplicate identifiers for both records",
-			records: []any{
-				record{
-					ID: "123456",
-					Properties: map[string]any{
-						"lastname":  "Dyer (updated)",
-						"firstname": "Siena (updated)",
-					},
+			records: common.BatchItems{{
+				Record: map[string]any{
+					"id":        "123456",
+					"lastname":  "Dyer (updated)",
+					"firstname": "Siena (updated)",
 				},
-				record{
-					ID: "123456",
-					Properties: map[string]any{
-						"lastname":  "Blevins (updated)",
-						"firstname": "Markus (updated)",
-					},
+			}, {
+				Record: map[string]any{
+					"id":        "123456",
+					"lastname":  "Blevins (updated)",
+					"firstname": "Markus (updated)",
 				},
-			},
+			}},
 		},
 		{
 			name: "Missing identifier for one record",
-			records: []any{
-				record{
-					ID: "171591000199",
-					Properties: map[string]any{
-						"lastname":  "Dyer (updated)",
-						"firstname": "Siena (updated)",
-					},
+			records: common.BatchItems{{
+				Record: map[string]any{
+					"id":        "171591000199",
+					"lastname":  "Dyer (updated)",
+					"firstname": "Siena (updated)",
 				},
-				record{Properties: map[string]any{
+			}, {
+				Record: map[string]any{
 					"lastname":  "Blevins (updated)",
 					"firstname": "Markus (updated)",
-				}},
-			},
+				},
+			}},
 		},
 		{
 			name: "Invalid fields but has identifiers",
-			records: []any{
-				record{
-					ID: "171591000199",
-					Properties: map[string]any{
-						"last000name":  "Dyer (updated)",
-						"first000name": "Siena (updated)",
-					},
+			records: common.BatchItems{{
+				Record: map[string]any{
+					"id":           "171591000199",
+					"last000name":  "Dyer (updated)",
+					"first000name": "Siena (updated)",
 				},
-				record{
-					ID: "171591000198",
-					Properties: map[string]any{
-						"last000name":  "Blevins (updated)",
-						"first000name": "Markus (updated)",
-					},
+			}, {
+				Record: map[string]any{
+					"id":           "171591000198",
+					"last000name":  "Blevins (updated)",
+					"first000name": "Markus (updated)",
 				},
-			},
+			}},
 		},
 		{
 			name: "Both records are valid",
-			records: []any{
-				record{
-					ID: "171591000199",
-					Properties: map[string]any{
-						"lastname":  "Dyer (updated)",
-						"firstname": "Siena (updated)",
-					},
+			records: common.BatchItems{{
+				Record: map[string]any{
+					"id":        "171591000199",
+					"lastname":  "Dyer (updated)",
+					"firstname": "Siena (updated)",
 				},
-				record{
-					ID: "171591000198",
-					Properties: map[string]any{
-						"lastname":  "Blevins (updated)",
-						"firstname": "Markus (updated)",
-					},
+			}, {
+				Record: map[string]any{
+					"id":        "171591000198",
+					"lastname":  "Blevins (updated)",
+					"firstname": "Markus (updated)",
 				},
-			},
+			}},
 		},
 	}
 
@@ -110,7 +96,7 @@ func main() {
 		res, err := conn.BatchWrite(ctx, &connectors.BatchWriteParam{
 			ObjectName: "contacts",
 			Type:       connectors.BatchWriteTypeUpdate,
-			Records:    tt.records,
+			Batch:      tt.records,
 		})
 		if err != nil {
 			utils.Fail("error reading", "error", err)

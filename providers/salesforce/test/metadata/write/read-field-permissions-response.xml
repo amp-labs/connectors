@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Body>
+        <readMetadataResponse>
+            <result>
+                <records xsi:type="PermissionSet">
+                    <fullName>IntegrationCustomFieldVisibility</fullName>
+                    <fieldPermissions>
+                        <editable>true</editable>
+                        <field>TestObject15__c.Hobby__c</field>
+                        <readable>true</readable>
+                    </fieldPermissions>
+                    <hasActivationRequired>false</hasActivationRequired>
+                    <label>Permissions for optional Custom Fields created by Ampersand connector</label>
+                </records>
+            </result>
+        </readMetadataResponse>
+    </soapenv:Body>
+</soapenv:Envelope>

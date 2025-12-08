@@ -8,13 +8,10 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/hubspot"
 	"github.com/amp-labs/connectors/test/utils"
 )
-
-type record struct {
-	Properties map[string]any `json:"properties"`
-}
 
 func main() {
 	// Handle Ctrl-C gracefully.
@@ -28,48 +25,51 @@ func main() {
 
 	tests := []struct {
 		name    string
-		records []any
+		records common.BatchItems
 	}{
 		{
 			name: "Both records use conflicting emails",
-			records: []any{
-				record{Properties: map[string]any{
+			records: common.BatchItems{{
+				Record: map[string]any{
 					"email":     "MarleyFleming@hubspot.com",
 					"lastname":  "Dyer",
 					"firstname": "Siena",
-				}},
-				record{Properties: map[string]any{
+				},
+			}, {
+				Record: map[string]any{
 					"email":     "MarleyFleming@hubspot.com",
 					"lastname":  "Blevins",
 					"firstname": "Markus",
-				}},
-			},
+				},
+			}},
 		},
 		{
 			name: "One record uses unknown field",
-			records: []any{
-				record{Properties: map[string]any{
+			records: common.BatchItems{{
+				Record: map[string]any{
 					"lastname":  "Dyer003",
 					"firstname": "Siena003",
-				}},
-				record{Properties: map[string]any{
+				},
+			}, {
+				Record: map[string]any{
 					"last5555name": "Blevins003",
 					"firstname":    "Markus003",
-				}},
-			},
+				},
+			}},
 		},
 		{
 			name: "Both records are valid",
-			records: []any{
-				record{Properties: map[string]any{
+			records: common.BatchItems{{
+				Record: map[string]any{
 					"lastname":  "Dyer",
 					"firstname": "Siena",
-				}},
-				record{Properties: map[string]any{
+				},
+			}, {
+				Record: map[string]any{
 					"lastname":  "Blevins",
 					"firstname": "Markus",
-				}},
-			},
+				},
+			}},
 		},
 	}
 
@@ -77,7 +77,7 @@ func main() {
 		res, err := conn.BatchWrite(ctx, &connectors.BatchWriteParam{
 			ObjectName: "contacts",
 			Type:       connectors.BatchWriteTypeCreate,
-			Records:    tt.records,
+			Batch:      tt.records,
 		})
 		if err != nil {
 			utils.Fail("error reading", "error", err)

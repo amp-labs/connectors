@@ -245,7 +245,7 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
 		DisplayName:  f.DisplayName,
 		ValueType:    valueType,
 		ProviderType: f.Type,
-		ReadOnly:     f.isReadOnly(),
+		ReadOnly:     goutils.Pointer(f.isReadOnly()),
 		IsCustom:     f.Custom,
 		IsRequired:   f.isRequired(),
 		Values:       values,

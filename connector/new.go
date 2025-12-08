@@ -1,4 +1,3 @@
-// nolint:ireturn
 package connector
 
 import (
@@ -8,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/aha"
+	"github.com/amp-labs/connectors/providers/aircall"
 	"github.com/amp-labs/connectors/providers/amplitude"
 	"github.com/amp-labs/connectors/providers/apollo"
 	"github.com/amp-labs/connectors/providers/asana"
@@ -19,6 +19,7 @@ import (
 	"github.com/amp-labs/connectors/providers/bitbucket"
 	"github.com/amp-labs/connectors/providers/blackbaud"
 	"github.com/amp-labs/connectors/providers/blueshift"
+	"github.com/amp-labs/connectors/providers/braintree"
 	"github.com/amp-labs/connectors/providers/braze"
 	"github.com/amp-labs/connectors/providers/breakcold"
 	"github.com/amp-labs/connectors/providers/brevo"
@@ -94,6 +95,7 @@ import (
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/snapchatads"
+	"github.com/amp-labs/connectors/providers/solarwinds"
 	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/xero"
@@ -115,6 +117,7 @@ func New(provider providers.Provider, params common.ConnectorParams) (connectors
 }
 
 var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nolint:gochecknoglobals
+	providers.Aircall:                 wrapper(newAircallConnector),
 	providers.AWS:                     wrapper(newAWSConnector),
 	providers.Aha:                     wrapper(newAhaConnector),
 	providers.Amplitude:               wrapper(newAmplitudeConnector),
@@ -127,6 +130,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Bitbucket:               wrapper(newBitBucketConnector),
 	providers.Blackbaud:               wrapper(newBlackbaudConnector),
 	providers.Blueshift:               wrapper(newBlueshiftConnector),
+	providers.Braintree:               wrapper(newBraintreeConnector),
 	providers.Braze:                   wrapper(newBrazeConnector),
 	providers.Breakcold:               wrapper(newBreakcoldConnector),
 	providers.Brevo:                   wrapper(newBrevoConnector),
@@ -202,6 +206,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.ServiceNow:              wrapper(newServiceNowConnector),
 	providers.Smartlead:               wrapper(newSmartleadConnector),
 	providers.SnapchatAds:             wrapper(newSnapchatAdsConnector),
+	providers.SolarWindsServiceDesk:   wrapper(newSolarWindsConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
 	providers.Xero:                    wrapper(newXeroConnector),
@@ -716,6 +721,12 @@ func newLeverConnector(
 	return lever.NewConnector(params)
 }
 
+func newBraintreeConnector(
+	params common.ConnectorParams,
+) (*braintree.Connector, error) {
+	return braintree.NewConnector(params)
+}
+
 func newBrazeConnector(
 	params common.ConnectorParams,
 ) (*braze.Connector, error) {
@@ -860,4 +871,14 @@ func newOutplayConnector(params common.ConnectorParams,
 func newHappyFoxConnector(params common.ConnectorParams,
 ) (*happyfox.Connector, error) {
 	return happyfox.NewConnector(params)
+}
+
+func newAircallConnector(
+	params common.ConnectorParams,
+) (*aircall.Connector, error) {
+	return aircall.NewConnector(params)
+}
+
+func newSolarWindsConnector(params common.ConnectorParams) (*solarwinds.Connector, error) {
+	return solarwinds.NewConnector(params)
 }
