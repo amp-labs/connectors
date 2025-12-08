@@ -47,7 +47,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	conn.SetBaseURL(conn.moduleInfo.BaseURL)
 
-	conn.moduleID = params.Selection.ID
+	conn.moduleID = params.Module
 
 	if conn.moduleID == providers.ModulePipedriveCRM {
 		conn.crmAdapter = crm.NewAdapter(conn.Client, conn.moduleInfo)

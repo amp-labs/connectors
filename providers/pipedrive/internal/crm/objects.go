@@ -20,12 +20,12 @@ type records struct {
 }
 
 type fieldResults struct {
-	Code      string    `json:"field_code"`
-	Name      string    `json:"field_name"`
-	FieldType string    `json:"field_type"` //nolint:tagliatelle
-	Custom    bool      `json:"is_custom_field"`
-	Required  bool      `json:"is_optional_response_field"`
-	Options   []options `json:"options"`
+	Code       string    `json:"field_code"`
+	Name       string    `json:"field_name"`
+	FieldType  string    `json:"field_type"` //nolint:tagliatelle
+	IsCustom   bool      `json:"is_custom_field"`
+	IsOptional bool      `json:"is_optional_response_field"`
+	Options    []options `json:"options"`
 }
 
 // options represents the set of values one can use for enum, sets data Types.

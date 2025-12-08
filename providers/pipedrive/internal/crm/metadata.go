@@ -106,8 +106,12 @@ func (a *Adapter) parseMetadata( // nolint: gocognit,gocyclo,cyclop,funlen
 	}
 
 	for _, fldRcd := range response.Data {
+		req := !fldRcd.IsOptional
+
 		mdtFlds := &common.FieldMetadata{
 			DisplayName:  fldRcd.Name,
+			IsCustom:     &fldRcd.IsCustom,
+			IsRequired:   &(req),
 			ProviderType: fldRcd.FieldType,
 			ValueType:    nativeValueType(fldRcd.FieldType),
 		}

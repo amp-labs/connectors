@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
 )
 
@@ -15,7 +14,7 @@ type Option = func(params *parameters)
 
 type parameters struct {
 	paramsbuilder.Client
-	paramsbuilder.Module
+	Module common.ModuleID
 }
 
 func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
@@ -51,15 +50,6 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 
 func WithModule(module common.ModuleID) Option {
 	return func(params *parameters) {
-		params.WithModule(module, supportedModules, providers.ModulePipedriveLegacy)
+		params.Module = module
 	}
-}
-
-var supportedModules = common.Modules{ // nolint:gochecknoglobals
-	providers.ModulePipedriveLegacy: common.Module{
-		ID: providers.ModulePipedriveLegacy,
-	},
-	providers.ModulePipedriveCRM: common.Module{
-		ID: providers.ModulePipedriveCRM,
-	},
 }
