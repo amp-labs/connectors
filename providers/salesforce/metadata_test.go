@@ -79,17 +79,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								IsRequired:   goutils.Pointer(false),
 								Values:       nil,
 							},
-							// Nested field: Latitude is a component of the Address compound field.
-							// It appears both as a flat field ("latitude") and as a nested field.
-							"$['address']['latitude']": {
-								DisplayName:  "Latitude",
-								ValueType:    "float",
-								ProviderType: "double",
-								ReadOnly:     false,
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
-								Values:       nil,
-							},
 							"monthlypageviewsused": {
 								DisplayName:  "Monthly Page Views Used",
 								ValueType:    "int",
@@ -200,6 +189,52 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 									Value:        "travel",
 									DisplayValue: "travel",
 								}},
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Compound fields appear as both flat and nested bracket notation fields",
+			Input: []string{"Organization"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.Body(`{"allOrNone":false,"compositeRequest":[{
+					"referenceId":"Organization",
+					"method":"GET",
+					"url":"/services/data/v60.0/sobjects/Organization/describe"
+				}]}`),
+				Then: mockserver.Response(http.StatusOK, responseOrgMeta),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"organization": {
+						DisplayName: "Organization",
+						Fields: map[string]common.FieldMetadata{
+							// Flat field: Latitude appears as a top-level field.
+							"latitude": {
+								DisplayName:  "Latitude",
+								ValueType:    "float",
+								ProviderType: "double",
+								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(false),
+								Values:       nil,
+							},
+							// Nested field: Latitude is also a component of the Address compound field.
+							// It appears in bracket notation alongside the flat field.
+							"$['address']['latitude']": {
+								DisplayName:  "Latitude",
+								ValueType:    "float",
+								ProviderType: "double",
+								ReadOnly:     false,
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(false),
+								Values:       nil,
 							},
 						},
 					},
