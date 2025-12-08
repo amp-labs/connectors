@@ -517,12 +517,6 @@ func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadat
 	}
 }
 
-// AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
-func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
-	m.Fields[fieldName] = fieldMetadata
-	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
-}
-
 type FieldMetadata struct {
 	// DisplayName is a human-readable field name.
 	DisplayName string
