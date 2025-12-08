@@ -1,13 +1,16 @@
 package dropboxsign
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 const (
@@ -106,4 +109,92 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	method := http.MethodPost
+
+	url, err := buildWriteURL(c.ProviderInfo().BaseURL, params.ObjectName, params.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		method = http.MethodPut
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	dataNode, err := jsonquery.New(body).ObjectOptional(params.ObjectName)
+	if err != nil || dataNode == nil {
+		return nil, err
+	}
+
+	responseKey := writeResponseKey.Get(params.ObjectName)
+
+	recordId, err := jsonquery.New(dataNode).StrWithDefault(responseKey, "")
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := jsonquery.Convertor.ObjectToMap(dataNode)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordId,
+		Errors:   nil,
+		Data:     resp,
+	}, nil
+}
+
+func buildWriteURL(baseURL, objectName, recordId string) (string, error) {
+	var urlSuffix string
+
+	// For objects that do not require 'create' suffix on write without record ID
+	// e.g., ApiApp, we skip adding the 'create' suffix.
+	if recordId == "" && !writeObjectWithoutCreateSuffix.Has(objectName) {
+		urlSuffix = "create"
+	}
+
+	url, err := urlbuilder.New(baseURL, apiVersion, objectName, urlSuffix)
+	if err != nil {
+		return "", err
+	}
+
+	// For objects that require update by ID on write with record ID
+	// e.g., ApiApp, we append the record ID to the URL.
+	if recordId != "" && writeObjectUpdateById.Has(objectName) {
+		url.AddPath(recordId)
+	}
+
+	return url.String(), nil
 }
