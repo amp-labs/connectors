@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 	"sync"
 	"testing"
@@ -1995,6 +1996,12 @@ func TestMutationProtection_GetAll(t *testing.T) {
 	})
 	require.NoError(t, err)
 	assert.Equal(t, 3, len(readResult2.Data))
+
+	sort.Slice(readResult2.Data, func(i, j int) bool {
+		return readResult2.Data[i].Fields["name"].(string) <
+			readResult2.Data[j].Fields["name"].(string)
+	})
+
 	assert.Equal(t, "Person 0", readResult2.Data[0].Fields["name"])
 }
 
