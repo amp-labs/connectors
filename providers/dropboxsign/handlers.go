@@ -156,6 +156,13 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
+	responseKey := writeResponseKey.Get(params.ObjectName)
+
+	recordId, err := jsonquery.New(dataNode).StrWithDefault(responseKey, "")
+	if err != nil {
+		return nil, err
+	}
+
 	resp, err := jsonquery.Convertor.ObjectToMap(dataNode)
 	if err != nil {
 		return nil, err
@@ -163,7 +170,7 @@ func (c *Connector) parseWriteResponse(
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: "",
+		RecordId: recordId,
 		Errors:   nil,
 		Data:     resp,
 	}, nil

@@ -29,6 +29,16 @@ func run() error {
 		return err
 	}
 
+	apiAppId, err := testCreateApiApp(ctx, conn)
+	if err != nil {
+		return err
+	}
+
+	err = testUpdateApiApp(ctx, conn, apiAppId)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -57,4 +67,65 @@ func testCreatingAccount(ctx context.Context, conn *cc.Connector) (string, error
 	_, _ = os.Stdout.WriteString("\n")
 
 	return res.RecordId, nil
+}
+
+func testCreateApiApp(ctx context.Context, conn *cc.Connector) (string, error) {
+	params := common.WriteParams{
+		ObjectName: "api_app",
+		RecordData: map[string]any{
+			"name": gofakeit.Company(),
+			"domains": []string{
+				gofakeit.DomainName(),
+			},
+		},
+	}
+
+	slog.Info("Creating API App...")
+
+	res, err := conn.Write(ctx, params)
+	if err != nil {
+		return "", err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return "", fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return res.RecordId, nil
+}
+
+func testUpdateApiApp(ctx context.Context, conn *cc.Connector, recordId string) error {
+	params := common.WriteParams{
+		ObjectName: "api_app",
+		RecordId:   recordId,
+		RecordData: map[string]any{
+			"name": "Updated " + gofakeit.Company(),
+			"domains": []string{
+				gofakeit.DomainName(),
+			},
+		},
+	}
+
+	slog.Info("Updating API App...")
+
+	res, err := conn.Write(ctx, params)
+	if err != nil {
+		return err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
 }

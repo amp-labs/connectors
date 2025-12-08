@@ -11,16 +11,18 @@ import (
 
 //nolint:gochecknoglobals
 var (
-	objectNameTemplate         = "template"
-	objectNameBulkSendJobs     = "bulk_send_job"
-	objectNameApiApp           = "api_app"
-	objectNameFax              = "fax"
-	objectNameFaxLine          = "fax_line"
-	objectNameAccount          = "account"
-	objectNameReport           = "report"
-	objectNameTeam             = "team"
-	objectNameUnclaimedDraft   = "unclaimed_draft"
-	objectNameSignatureRequest = "signature_request"
+	objectNameTemplate                             = "template"
+	objectNameBulkSendJobs                         = "bulk_send_job"
+	objectNameApiApp                               = "api_app"
+	objectNameFax                                  = "fax"
+	objectNameFaxLine                              = "fax_line"
+	objectNameAccount                              = "account"
+	objectNameReport                               = "report"
+	objectNameTeam                                 = "team"
+	objectNameUnclaimedDraft                       = "unclaimed_draft"
+	objectNameSignatureRequest                     = "signature_request"
+	objectNameSignatureRequestEmbedded             = "signature_request/create_embedded"
+	objectNameSignatureRequestEmbeddedWithTemplate = "signature_request/create_embedded_with_template"
 )
 
 //nolint:gochecknoglobals
@@ -45,6 +47,16 @@ var writeObjectUpdateById = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameApiApp,
 )
 
+//nolint:gochecknoglobals
+var writeResponseKey = datautils.NewDefaultMap(map[string]string{
+	objectNameAccount:  "account_id",
+	objectNameTemplate: "template_id",
+	objectNameApiApp:   "client_id",
+}, func(objectName string) (fieldName string) {
+	return objectName
+},
+)
+
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
 		objectNameTemplate,
@@ -63,6 +75,8 @@ func supportedOperations() components.EndpointRegistryInput {
 		objectNameUnclaimedDraft,
 		objectNameApiApp,
 		objectNameFaxLine,
+		objectNameSignatureRequestEmbedded,
+		objectNameSignatureRequestEmbeddedWithTemplate,
 	}
 
 	return components.EndpointRegistryInput{
