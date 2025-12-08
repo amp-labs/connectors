@@ -52,6 +52,7 @@ var writeResponseKey = datautils.NewDefaultMap(map[string]string{
 	objectNameAccount:  "account_id",
 	objectNameTemplate: "template_id",
 	objectNameApiApp:   "client_id",
+	objectNameTeam:     "name",
 }, func(objectName string) (fieldName string) {
 	return objectName
 },
