@@ -11,11 +11,15 @@ import (
 
 //nolint:gochecknoglobals
 var (
-	objectNameTemplate     = "template"
-	objectNameBulkSendJobs = "bulk_send_job"
-	objectNameApiApp       = "api_app"
-	objectNameFax          = "fax"
-	objectNameFaxLine      = "fax_line"
+	objectNameTemplate       = "template"
+	objectNameBulkSendJobs   = "bulk_send_job"
+	objectNameApiApp         = "api_app"
+	objectNameFax            = "fax"
+	objectNameFaxLine        = "fax_line"
+	objectNameAccount        = "account"
+	objectNameReport         = "report"
+	objectNameTeam           = "team"
+	objectNameUnclaimedDraft = "unclaimed_draft"
 )
 
 //nolint:gochecknoglobals
@@ -39,11 +43,25 @@ func supportedOperations() components.EndpointRegistryInput {
 		objectNameBulkSendJobs,
 	}
 
+	writeSupport := []string{
+		objectNameAccount,
+		objectNameTemplate,
+		objectNameReport,
+		objectNameTeam,
+		objectNameUnclaimedDraft,
+		objectNameApiApp,
+		objectNameFaxLine,
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
