@@ -496,6 +496,16 @@ type ObjectMetadata struct {
 	FieldsMap map[string]string
 }
 
+// NewObjectMetadata constructs ObjectMetadata.
+// This will automatically infer fields map from field metadata map. This construct exists for such convenience.
+func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadata {
+	return &ObjectMetadata{
+		DisplayName: displayName,
+		Fields:      fields,
+		FieldsMap:   inferDeprecatedFieldsMap(fields),
+	}
+}
+
 // AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
 func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
 	m.Fields[fieldName] = fieldMetadata
@@ -505,16 +515,6 @@ func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldM
 func (m *ObjectMetadata) RemoveFieldMetadata(fieldName string) {
 	delete(m.Fields, fieldName)
 	delete(m.FieldsMap, fieldName)
-}
-
-// NewObjectMetadata constructs ObjectMetadata.
-// This will automatically infer fields map from field metadata map. This construct exists for such convenience.
-func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadata {
-	return &ObjectMetadata{
-		DisplayName: displayName,
-		Fields:      fields,
-		FieldsMap:   inferDeprecatedFieldsMap(fields),
-	}
 }
 
 type FieldMetadata struct {
