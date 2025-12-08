@@ -14,6 +14,7 @@ type Option = func(params *parameters)
 
 type parameters struct {
 	paramsbuilder.Client
+
 	Module common.ModuleID
 }
 
