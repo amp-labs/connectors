@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/pipedrive"
@@ -11,13 +12,13 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func GetPipedriveConnector(ctx context.Context) *pipedrive.Connector {
+func GetPipedriveConnector(ctx context.Context, module common.ModuleID) *pipedrive.Connector {
 	filePath := credscanning.LoadPath(providers.Pipedrive)
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := pipedrive.NewConnector(
 		pipedrive.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		pipedrive.WithModule(providers.ModulePipedriveCRM),
+		pipedrive.WithModule(module),
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

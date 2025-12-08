@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/pipedrive"
 	testConn "github.com/amp-labs/connectors/test/pipedrive"
 	"github.com/amp-labs/connectors/test/utils"
@@ -23,7 +24,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := testConn.GetPipedriveConnector(ctx)
+	conn := testConn.GetPipedriveConnector(ctx, providers.ModulePipedriveLegacy)
 
 	if err := readActivities(ctx, conn); err != nil {
 		slog.Error(err.Error())

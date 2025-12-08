@@ -3,19 +3,12 @@ package crm
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/providers"
 )
 
 const (
 	enum               = "enum"
 	set                = "set"
-	notes              = "notes"
-	activities         = "activities"
-	deals              = "deals"
-	products           = "products"
-	organizations      = "organizations"
-	persons            = "persons"
-	pipelines          = "pipelines"
-	stages             = "stages"
 	metadataAPIVersion = "api/v2"
 	metadataPageSize   = 500
 )
@@ -26,11 +19,11 @@ type Adapter struct {
 }
 
 func NewAdapter(
-	client *common.JSONHTTPClient, baseURL string,
+	client *common.JSONHTTPClient, info *providers.ModuleInfo,
 ) *Adapter {
 	return &Adapter{
 		Client:  client,
-		BaseURL: baseURL,
+		BaseURL: info.BaseURL,
 	}
 }
 

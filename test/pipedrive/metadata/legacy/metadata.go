@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/pipedrive"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -19,9 +20,9 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := pipedrive.GetPipedriveConnector(ctx)
+	conn := pipedrive.GetPipedriveConnector(ctx, providers.ModulePipedriveLegacy)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"activities", "stages", "deals"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"activities", "stages", "currencies", "deals", "leadLabels"})
 	if err != nil {
 		utils.Fail("error listing metadata for Pipedrive", "error", err)
 	}
