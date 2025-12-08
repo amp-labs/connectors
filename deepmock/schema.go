@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	invopopschema "github.com/invopop/jsonschema"
@@ -13,6 +14,124 @@ import (
 // boolPtr returns a pointer to a boolean value.
 func boolPtr(b bool) *bool {
 	return &b
+}
+
+// injectExtrasIntoSchemaMap reads jsonschema_extras tags from a struct and injects them into the schema map.
+// This is needed because the invopop library doesn't always include these custom extensions.
+func injectExtrasIntoSchemaMap(schemaMap map[string]interface{}, structType reflect.Type) error {
+	// Find the properties in the schema
+	properties, ok := schemaMap["properties"].(map[string]interface{})
+	if !ok {
+		return fmt.Errorf("schema has no properties to inject extras into")
+	}
+
+	// Iterate over struct fields and extract jsonschema_extras tags
+	for i := 0; i < structType.NumField(); i++ {
+		field := structType.Field(i)
+
+		// Get the JSON name for the field
+		jsonTag := field.Tag.Get("json")
+		if jsonTag == "" || jsonTag == "-" {
+			continue
+		}
+		// Extract just the field name (before any options like omitempty)
+		jsonName := strings.Split(jsonTag, ",")[0]
+
+		// Get jsonschema_extras tag
+		extrasTag := field.Tag.Get("jsonschema_extras")
+		if extrasTag == "" {
+			continue
+		}
+
+		// Parse the extras tag (format: "key1=value1,key2=value2,...")
+		extras := parseExtrasTag(extrasTag)
+
+		// Find the property in the schema and add the extras
+		if propMap, ok := properties[jsonName].(map[string]interface{}); ok {
+			for key, value := range extras {
+				propMap[key] = value
+			}
+		}
+	}
+
+	return nil
+}
+
+// parseExtrasTag parses a jsonschema_extras tag value into a map of key-value pairs.
+// Format: "key1=value1,key2=value2,..."
+func parseExtrasTag(tag string) map[string]interface{} {
+	result := make(map[string]interface{})
+
+	// Split by comma to get individual key=value pairs
+	pairs := strings.Split(tag, ",")
+	for _, pair := range pairs {
+		// Split by = to get key and value
+		parts := strings.SplitN(strings.TrimSpace(pair), "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		key := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+
+		// Convert "true"/"false" strings to boolean
+		if value == "true" {
+			result[key] = true
+		} else if value == "false" {
+			result[key] = false
+		} else {
+			result[key] = value
+		}
+	}
+
+	return result
+}
+
+// filterRequiredFields filters the required array in a schema based on struct tags.
+// The invopop/jsonschema library marks all fields as required by default, but we only
+// want fields with the "jsonschema:required" tag to be required.
+func filterRequiredFields(schemaMap map[string]interface{}, structType reflect.Type) error {
+	// Build a set of fields that have the "required" tag
+	requiredFields := make(map[string]bool)
+
+	for i := 0; i < structType.NumField(); i++ {
+		field := structType.Field(i)
+
+		// Get the JSON name for the field
+		jsonTag := field.Tag.Get("json")
+		if jsonTag == "" || jsonTag == "-" {
+			continue
+		}
+		// Extract just the field name (before any options like omitempty)
+		jsonName := strings.Split(jsonTag, ",")[0]
+
+		// Check for "required" in jsonschema tag
+		jsonschemaTag := field.Tag.Get("jsonschema")
+		if jsonschemaTag != "" {
+			// Parse comma-separated tag values
+			tagValues := strings.Split(jsonschemaTag, ",")
+			for _, tagValue := range tagValues {
+				if strings.TrimSpace(tagValue) == "required" {
+					requiredFields[jsonName] = true
+					break
+				}
+			}
+		}
+	}
+
+	// Replace the required array with only explicitly required fields
+	if len(requiredFields) > 0 {
+		required := make([]interface{}, 0, len(requiredFields))
+		for fieldName := range requiredFields {
+			required = append(required, fieldName)
+		}
+		schemaMap["required"] = required
+	} else {
+		// No required fields - remove the required array entirely
+		delete(schemaMap, "required")
+	}
+
+	return nil
 }
 
 // DeriveSchemasFromStructs converts Go structs to JSON Schema bytes for use with NewConnector.
@@ -128,6 +247,73 @@ func DeriveSchemasFromStructs(schemas map[string]interface{}) (map[string][]byte
 			return nil, fmt.Errorf("object %s: failed to marshal schema to JSON: %w", objectName, err)
 		}
 
+		// Check if schema uses $ref and extract from $defs if needed
+		var schemaMap map[string]interface{}
+		if err := json.Unmarshal(schemaBytes, &schemaMap); err != nil {
+			return nil, fmt.Errorf("object %s: failed to unmarshal schema: %w", objectName, err)
+		}
+
+		// If schema has $ref, extract the actual schema from $defs
+		if ref, hasRef := schemaMap["$ref"].(string); hasRef {
+			// Parse $ref to get the definition name (format: "#/$defs/TypeName")
+			parts := strings.Split(ref, "/")
+			if len(parts) == 3 && parts[0] == "#" && parts[1] == "$defs" {
+				defName := parts[2]
+				if defs, hasDefs := schemaMap["$defs"].(map[string]interface{}); hasDefs {
+					if def, hasDef := defs[defName].(map[string]interface{}); hasDef {
+						// Preserve the $schema field from the root
+						schemaVersion := schemaMap["$schema"]
+
+						// Use this definition as the schema
+						schemaMap = def
+
+						// Restore the $schema field if it was present
+						if schemaVersion != nil {
+							schemaMap["$schema"] = schemaVersion
+						}
+
+						// Validate the extracted schema has required fields
+						if _, hasType := schemaMap["type"]; !hasType {
+							return nil, fmt.Errorf("object %s: extracted schema missing 'type' field", objectName)
+						}
+						if _, hasProps := schemaMap["properties"]; !hasProps {
+							return nil, fmt.Errorf("object %s: extracted schema missing 'properties' field", objectName)
+						}
+					} else {
+						return nil, fmt.Errorf("object %s: $ref points to non-existent definition %s", objectName, defName)
+					}
+				} else {
+					return nil, fmt.Errorf("object %s: schema has $ref but no $defs", objectName)
+				}
+			} else {
+				return nil, fmt.Errorf("object %s: invalid $ref format: %s", objectName, ref)
+			}
+		}
+
+		// Manually inject jsonschema_extras tags into the schema map
+		// This must be done after $ref extraction
+		if err := injectExtrasIntoSchemaMap(schemaMap, typ); err != nil {
+			return nil, fmt.Errorf("object %s: failed to inject extras: %w", objectName, err)
+		}
+
+		// Filter required fields based on struct tags
+		// The invopop library marks all fields as required by default, but we only
+		// want fields with the "jsonschema:required" tag to be required
+		if err := filterRequiredFields(schemaMap, typ); err != nil {
+			return nil, fmt.Errorf("object %s: failed to filter required fields: %w", objectName, err)
+		}
+
+		// Remove additionalProperties constraint
+		// The invopop library adds "additionalProperties": false by default, which can
+		// cause validation issues. We want to be lenient and allow extra properties.
+		delete(schemaMap, "additionalProperties")
+
+		// Re-marshal the processed schema
+		schemaBytes, err = json.Marshal(schemaMap)
+		if err != nil {
+			return nil, fmt.Errorf("object %s: failed to re-marshal schema: %w", objectName, err)
+		}
+
 		// Store in result map
 		result[objectName] = schemaBytes
 	}
@@ -166,6 +352,39 @@ func parseSchemas(rawSchemas map[string][]byte) (schemaRegistry, error) {
 	}
 
 	return parsed, nil
+}
+
+// extractSpecialFieldsFromRaw extracts ID and updated timestamp field names from raw JSON schema.
+// This is used before compilation since the compiler may not preserve custom x-amp extensions.
+func extractSpecialFieldsFromRaw(rawSchema []byte) (idField, updatedField string) {
+	var schemaMap map[string]any
+	if err := json.Unmarshal(rawSchema, &schemaMap); err != nil {
+		return "", ""
+	}
+
+	properties, ok := schemaMap["properties"].(map[string]any)
+	if !ok {
+		return "", ""
+	}
+
+	for fieldName, fieldDef := range properties {
+		fieldMap, ok := fieldDef.(map[string]any)
+		if !ok {
+			continue
+		}
+
+		// Check for x-amp-id-field extension
+		if val, exists := fieldMap["x-amp-id-field"]; exists && isTrueValue(val) {
+			idField = fieldName
+		}
+
+		// Check for x-amp-updated-field extension
+		if val, exists := fieldMap["x-amp-updated-field"]; exists && isTrueValue(val) {
+			updatedField = fieldName
+		}
+	}
+
+	return idField, updatedField
 }
 
 // isTrueValue checks if a value represents a "true" boolean or string.

@@ -19,23 +19,15 @@ type Storage struct {
 }
 
 // NewStorage creates a new Storage instance.
-func NewStorage(schemas schemaRegistry) *Storage {
+func NewStorage(schemas schemaRegistry, idFields, updatedFields map[string]string) *Storage {
 	storage := &Storage{
 		data:          make(map[string]map[string]map[string]any),
-		idFields:      make(map[string]string),
-		updatedFields: make(map[string]string),
+		idFields:      idFields,
+		updatedFields: updatedFields,
 	}
 
-	// Extract and store ID/updated field names for each object
-	for objectName, schema := range schemas {
-		idField, updatedField := extractSpecialFields(schema)
-		if idField != "" {
-			storage.idFields[objectName] = idField
-		}
-		if updatedField != "" {
-			storage.updatedFields[objectName] = updatedField
-		}
-		// Initialize object map
+	// Initialize object maps
+	for objectName := range schemas {
 		storage.data[objectName] = make(map[string]map[string]any)
 	}
 

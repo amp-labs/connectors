@@ -20,8 +20,10 @@ import (
 
 // Connector is an in-memory mock connector with JSON schema validation.
 type Connector struct {
-	client *common.JSONHTTPClient
-	params *parameters
+	client  *common.JSONHTTPClient
+	params  *parameters
+	schemas schemaRegistry
+	storage *Storage
 }
 
 // Compile-time interface checks.
@@ -66,24 +68,36 @@ func NewConnector(schemas map[string][]byte, opts ...Option) (*Connector, error)
 		return nil, fmt.Errorf("%w: must provide either raw schemas or use WithStructSchemas option", ErrMissingParam)
 	}
 
+	// Extract special fields from raw schemas before compilation
+	// (compilation may not preserve custom x-amp extensions)
+	idFields := make(map[string]string)
+	updatedFields := make(map[string]string)
+	for objectName, rawSchema := range finalSchemas {
+		idField, updatedField := extractSpecialFieldsFromRaw(rawSchema)
+		if idField != "" {
+			idFields[objectName] = idField
+		}
+		if updatedField != "" {
+			updatedFields[objectName] = updatedField
+		}
+	}
+
 	// Parse schemas
 	parsedSchemas, err := parseSchemas(finalSchemas)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse schemas: %w", err)
 	}
 
-	// Initialize storage with parsed schemas
-	storage := NewStorage(parsedSchemas)
-
-	// Update params with parsed schemas and storage
-	params.schemas = parsedSchemas
-	params.storage = storage
+	// Initialize storage with parsed schemas and special fields
+	storage := NewStorage(parsedSchemas, idFields, updatedFields)
 
 	return &Connector{
 		client: &common.JSONHTTPClient{
 			HTTPClient: params.Caller,
 		},
-		params: params,
+		params:  params,
+		schemas: parsedSchemas,
+		storage: storage,
 	}, nil
 }
 
@@ -115,12 +129,12 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 	}
 
 	// Check if object schema exists
-	if _, exists := c.params.schemas.Get(params.ObjectName); !exists {
+	if _, exists := c.schemas.Get(params.ObjectName); !exists {
 		return nil, fmt.Errorf("%w: %s", ErrSchemaNotFound, params.ObjectName)
 	}
 
 	// Get records from storage with time filtering
-	records, err := c.params.storage.List(params.ObjectName, params.Since, params.Until)
+	records, err := c.storage.List(params.ObjectName, params.Since, params.Until)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list records: %w", err)
 	}
@@ -206,7 +220,7 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 	}
 
 	// Check if object schema exists
-	schema, exists := c.params.schemas.Get(params.ObjectName)
+	schema, exists := c.schemas.Get(params.ObjectName)
 	if !exists {
 		return nil, fmt.Errorf("%w: %s", ErrSchemaNotFound, params.ObjectName)
 	}
@@ -223,8 +237,8 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 	// Determine operation (create vs update)
 	if params.RecordId == "" {
 		// CREATE operation
-		idField := c.params.storage.idFields[params.ObjectName]
-		updatedField := c.params.storage.updatedFields[params.ObjectName]
+		idField := c.storage.idFields[params.ObjectName]
+		updatedField := c.storage.updatedFields[params.ObjectName]
 
 		// Generate ID if field exists and not provided
 		if idField != "" {
@@ -238,9 +252,11 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 			recordID = uuid.New().String()
 		}
 
-		// Generate timestamp for updated field
+		// Generate timestamp for updated field if not provided
 		if updatedField != "" {
-			recordMap[updatedField] = generateTimestamp(schema, updatedField)
+			if _, exists := recordMap[updatedField]; !exists {
+				recordMap[updatedField] = generateTimestamp(schema, updatedField)
+			}
 		}
 
 		finalRecord = recordMap
@@ -249,7 +265,7 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 		recordID = params.RecordId
 
 		// Retrieve existing record
-		existing, err := c.params.storage.Get(params.ObjectName, recordID)
+		existing, err := c.storage.Get(params.ObjectName, recordID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to retrieve existing record: %w", err)
 		}
@@ -259,10 +275,13 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 			existing[key] = value
 		}
 
-		// Update timestamp field
-		updatedField := c.params.storage.updatedFields[params.ObjectName]
+		// Update timestamp field if not explicitly provided in the update
+		updatedField := c.storage.updatedFields[params.ObjectName]
 		if updatedField != "" {
-			existing[updatedField] = generateTimestamp(schema, updatedField)
+			// Only auto-generate if not explicitly provided in the update data
+			if _, providedInUpdate := recordMap[updatedField]; !providedInUpdate {
+				existing[updatedField] = generateTimestamp(schema, updatedField)
+			}
 		}
 
 		finalRecord = existing
@@ -274,7 +293,7 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 	}
 
 	// Store record
-	if err := c.params.storage.Store(params.ObjectName, recordID, finalRecord); err != nil {
+	if err := c.storage.Store(params.ObjectName, recordID, finalRecord); err != nil {
 		return nil, fmt.Errorf("failed to store record: %w", err)
 	}
 
@@ -293,12 +312,12 @@ func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) 
 	}
 
 	// Check if object schema exists
-	if _, exists := c.params.schemas.Get(params.ObjectName); !exists {
+	if _, exists := c.schemas.Get(params.ObjectName); !exists {
 		return nil, fmt.Errorf("%w: %s", ErrSchemaNotFound, params.ObjectName)
 	}
 
 	// Delete record from storage
-	err := c.params.storage.Delete(params.ObjectName, params.RecordId)
+	err := c.storage.Delete(params.ObjectName, params.RecordId)
 	if err != nil {
 		return nil, err
 	}
@@ -317,7 +336,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context, objectNames []string
 	result := common.NewListObjectMetadataResult()
 
 	for _, objectName := range objectNames {
-		schema, exists := c.params.schemas.Get(objectName)
+		schema, exists := c.schemas.Get(objectName)
 		if !exists {
 			result.AppendError(objectName, fmt.Errorf("%w: %s", ErrSchemaNotFound, objectName))
 			continue
@@ -343,9 +362,9 @@ func (c *Connector) GenerateRandomRecord(objectName string) (map[string]any, err
 // generateRandomRecordWithDepth generates a random record with depth limiting for recursion.
 func (c *Connector) generateRandomRecordWithDepth(objectName string, depth int) (map[string]any, error) {
 	const maxDepth = 5
-	const maxRetries = 3
+	const maxRetries = 100
 
-	schema, exists := c.params.schemas.Get(objectName)
+	schema, exists := c.schemas.Get(objectName)
 	if !exists {
 		return nil, fmt.Errorf("%w: %s", ErrSchemaNotFound, objectName)
 	}
@@ -367,8 +386,8 @@ func (c *Connector) generateRandomRecordWithDepth(objectName string, depth int) 
 	}
 
 	// Get special fields
-	idField := c.params.storage.idFields[objectName]
-	updatedField := c.params.storage.updatedFields[objectName]
+	idField := c.storage.idFields[objectName]
+	updatedField := c.storage.updatedFields[objectName]
 
 	// Retry logic for validation failures
 	var record map[string]any
@@ -760,10 +779,9 @@ func (c *Connector) generateNestedObject(properties map[string]any, required map
 			continue
 		}
 
-		// Only generate required fields or randomly include optional fields
-		if !required[propName] && gofakeit.Bool() {
-			continue
-		}
+		// Generate all fields (both required and optional) for better validation success rate
+		// Randomly omitting optional fields can trigger edge cases in the jsonschema library
+		// that result in template error messages like "{property} does not match schema"
 
 		value, err := c.generateValueFromSchema(propMap, depth, maxDepth)
 		if err != nil {
