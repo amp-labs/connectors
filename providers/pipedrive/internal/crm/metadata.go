@@ -4,38 +4,24 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"reflect"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/tools/fileconv"
-	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
-var (
-	// Static file containing a list of object metadata is embedded and can be served.
-	//
-	//go:embed schemas.json
-	schemas []byte
-
-	FileManager = scrapper.NewExtendedMetadataFileManager[staticschema.FieldMetadataMapV2, any]( // nolint:gochecknoglobals,lll
-		schemas, fileconv.NewSiblingFileLocator())
-
-	// Schemas is cached Object schemas.
-	Schemas = Schema{ // nolint:gochecknoglobals
-		Metadata: FileManager.MustLoadSchemas(),
-	}
-)
-
-type Schema struct {
-	*staticschema.Metadata[staticschema.FieldMetadataMapV2, any]
-}
-
-func (s *Schema) Select(objectNames []string) (*common.ListObjectMetadataResult, error) {
-	return s.Metadata.Select(providers.ModulePipedriveCRM, objectNames)
-}
+/*
+Currently supported v2 objects:
+ - Activities
+ - Deals
+ - ItemSearch
+ - Organizations
+ - Persons
+ - Pipelines
+ - Products
+ - Stages
+*/
 
 var metadataDiscoveryEndpoints = datautils.Map[string, string]{ // nolint: gochecknoglobals
 	"activities":    "activityFields",
@@ -43,7 +29,7 @@ var metadataDiscoveryEndpoints = datautils.Map[string, string]{ // nolint: goche
 	"products":      "productFields",
 	"persons":       "personFields",
 	"organizations": "organizationFields",
-	"notes":         "noteFields",
+	// leadFields, NoteFields still uses v1fields.
 }
 
 func (a *Adapter) ListObjectMetadata(
@@ -64,35 +50,19 @@ func (a *Adapter) ListObjectMetadata(
 			return nil, err
 		}
 
-		// we only add this limit incase we're sampling fields from actual data.
-		if !metadataDiscoveryEndpoints.Has(obj) {
-			mdt, err := Schemas.SelectOne(providers.ModulePipedriveCRM, obj)
-			if err != nil {
-				objectMetadata.Errors[obj] = err
-
-				continue
-			}
-
-			objectMetadata.Result[obj] = *mdt
-
-			continue
-		}
-
-		res, err := a.Client.Get(ctx, url.String())
+		response, err := a.Client.Get(ctx, url.String())
 		if err != nil {
 			objectMetadata.Errors[obj] = err
 
 			continue
 		}
 
-		data, err := a.parseMetadata(res, obj)
+		metadata, err := a.parseMetadata(response, obj)
 		if err != nil {
 			objectMetadata.Errors[obj] = err
 		}
 
-		if data != nil {
-			objectMetadata.Result[obj] = *data
-		}
+		objectMetadata.Result[obj] = metadata
 	}
 
 	return objectMetadata, nil
@@ -102,16 +72,37 @@ func (a *Adapter) ListObjectMetadata(
 // Returns an error if it faces any in unmarshalling the response.
 func (a *Adapter) parseMetadata( // nolint: gocognit,gocyclo,cyclop,funlen
 	resp *common.JSONHTTPResponse, obj string,
-) (*common.ObjectMetadata, error) {
-	mdt := &common.ObjectMetadata{
+) (common.ObjectMetadata, error) {
+	mdt := common.ObjectMetadata{
 		DisplayName: naming.CapitalizeFirstLetter(obj),
 		FieldsMap:   make(map[string]string),
 		Fields:      make(common.FieldsMetadata),
 	}
 
+	if !metadataDiscoveryEndpoints.Has(obj) {
+		response, err := common.UnmarshalJSON[records](resp)
+		if err != nil {
+			return common.ObjectMetadata{}, err
+		}
+
+		if len(response.Data) == 0 {
+			return common.ObjectMetadata{}, common.ErrMissingExpectedValues
+		}
+
+		firstRecord := response.Data[0]
+		for fld, val := range firstRecord {
+			mdt.Fields[fld] = common.FieldMetadata{
+				DisplayName: fld,
+				ValueType:   inferValue(val),
+			}
+		}
+
+		return mdt, nil
+	}
+
 	response, err := common.UnmarshalJSON[metadataFields](resp)
 	if err != nil {
-		return nil, err
+		return common.ObjectMetadata{}, err
 	}
 
 	for _, fldRcd := range response.Data {
@@ -119,136 +110,27 @@ func (a *Adapter) parseMetadata( // nolint: gocognit,gocyclo,cyclop,funlen
 			DisplayName:  fldRcd.Name,
 			ProviderType: fldRcd.FieldType,
 			ValueType:    nativeValueType(fldRcd.FieldType),
-			// All editable fields can be edited together in bulky edit dashboard.
-			ReadOnly: !fldRcd.BulkEditAllowed,
 		}
 
 		// process enums and sets fields
-		processFieldOptions(mdtFlds, fldRcd, obj)
+		processFieldOptions(mdtFlds, fldRcd)
 
 		// Add it to the objects metadatas
-		mdt.AddFieldMetadata(fldRcd.Key, *mdtFlds)
+		mdt.AddFieldMetadata(fldRcd.Code, *mdtFlds)
 	}
 
 	// Ensure the response data array, has at least 1 record.
-	// If there is no data, we use only the static schema file.
+	// If there is no data, we return.
 	if len(response.Data) == 0 {
 		return mdt, nil
-	}
-
-	// For now we need to manually add & remove the v1 fields since the user is using v2 APIs.
-	switch obj {
-	case activities:
-		for _, fld := range activityRemovedFields.List() {
-			mdt.RemoveFieldMetadata(fld)
-		}
-
-		for prvFld, newFld := range activityRenamedFields {
-			mdt.Fields[newFld] = mdt.Fields[prvFld]
-			mdt.RemoveFieldMetadata(prvFld)
-		}
-
-	case deals:
-		for _, fld := range dealRemovedFields.List() {
-			mdt.RemoveFieldMetadata(fld)
-		}
-
-		for prvFld, newFld := range dealRenamedFields {
-			mdt.Fields[newFld] = mdt.Fields[prvFld]
-			mdt.RemoveFieldMetadata(prvFld)
-		}
-
-		for fld, typ := range dealAddedFields {
-			mdt.AddFieldMetadata(fld, common.FieldMetadata{
-				DisplayName: fld,
-				ValueType:   typ,
-			})
-		}
-
-	case persons:
-		for _, fld := range personRemovedFields.List() {
-			mdt.RemoveFieldMetadata(fld)
-		}
-
-		for prvFld, newFld := range personRenamedFields {
-			mdt.Fields[newFld] = mdt.Fields[prvFld]
-			mdt.RemoveFieldMetadata(prvFld)
-		}
-
-		for fld, typ := range personAddedFields {
-			mdt.AddFieldMetadata(fld, common.FieldMetadata{
-				DisplayName: fld,
-				ValueType:   typ,
-			})
-		}
-	case stages:
-		for _, fld := range stageRemovedFields.List() {
-			mdt.RemoveFieldMetadata(fld)
-		}
-
-		for prvFld, newFld := range stageRenamedFields {
-			mdt.Fields[newFld] = mdt.Fields[prvFld]
-			mdt.RemoveFieldMetadata(prvFld)
-		}
-	case pipelines:
-		for _, fld := range pipelineRemovedFields.List() {
-			mdt.RemoveFieldMetadata(fld)
-		}
-
-		for prvFld, newFld := range pipelineRenamedFields {
-			mdt.Fields[newFld] = mdt.Fields[prvFld]
-			mdt.RemoveFieldMetadata(prvFld)
-		}
-	case organizations:
-		for _, fld := range organizationRemovedFields.List() {
-			mdt.RemoveFieldMetadata(fld)
-		}
-
-		for prvFld, newFld := range organizationRenamedFields {
-			mdt.Fields[newFld] = mdt.Fields[prvFld]
-			mdt.RemoveFieldMetadata(prvFld)
-		}
-
-		for fld, typ := range organizationAddedFields {
-			mdt.AddFieldMetadata(fld, common.FieldMetadata{
-				DisplayName: fld,
-				ValueType:   typ,
-			})
-		}
-
-	case products:
-		for _, fld := range productRemovedFields.List() {
-			mdt.RemoveFieldMetadata(fld)
-		}
-
-		for prvFld, newFld := range productRenamedFields {
-			mdt.Fields[newFld] = mdt.Fields[prvFld]
-			mdt.RemoveFieldMetadata(prvFld)
-		}
-
-		for fld, typ := range productAddedFields {
-			mdt.AddFieldMetadata(fld, common.FieldMetadata{
-				DisplayName: fld,
-				ValueType:   typ,
-			})
-		}
 	}
 
 	return mdt, nil
 }
 
-func processFieldOptions(mdtFlds *common.FieldMetadata, fldRcd fieldResults, obj string) {
+func processFieldOptions(mdtFlds *common.FieldMetadata, fldRcd fieldResults) {
 	if fldRcd.FieldType == enum || fldRcd.FieldType == set {
 		for _, opt := range fldRcd.Options {
-			if obj == notes && notesFlagFields.Has(fldRcd.Key) {
-				mdtFlds.Values = append(mdtFlds.Values, common.FieldValue{
-					Value:        opt.Label,
-					DisplayValue: opt.Label,
-				})
-
-				continue
-			}
-
 			mdtFlds.Values = append(mdtFlds.Values, common.FieldValue{
 				Value:        fmt.Sprint(opt.ID),
 				DisplayValue: opt.Label,
@@ -273,6 +155,25 @@ func nativeValueType(providerTyp string) common.ValueType {
 		return common.ValueTypeDate
 	case "time":
 		return common.ValueTypeDateTime
+	default:
+		return common.ValueTypeOther
+	}
+}
+
+func inferValue(value any) common.ValueType {
+	v := reflect.ValueOf(value)
+
+	switch v.Kind() { //nolint: exhaustive
+	case reflect.String:
+		return common.ValueTypeString
+	case reflect.Float64:
+		return common.ValueTypeFloat
+	case reflect.Bool:
+		return common.ValueTypeBoolean
+	case reflect.Slice:
+		return common.ValueTypeOther
+	case reflect.Map:
+		return common.ValueTypeOther
 	default:
 		return common.ValueTypeOther
 	}

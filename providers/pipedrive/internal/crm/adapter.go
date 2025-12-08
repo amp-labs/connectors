@@ -16,7 +16,8 @@ const (
 	persons            = "persons"
 	pipelines          = "pipelines"
 	stages             = "stages"
-	metadataAPIVersion = "v1"
+	metadataAPIVersion = "api/v2"
+	metadataPageSize   = 500
 )
 
 type Adapter struct {
@@ -37,10 +38,10 @@ func (a *Adapter) getAPIURL(apiVersion, object string) (*urlbuilder.URL, error) 
 	return urlbuilder.New(a.BaseURL, apiVersion, object)
 }
 
-func (a *Adapter) constructMetadataURL(obj string) (*urlbuilder.URL, error) {
-	if metadataDiscoveryEndpoints.Has(obj) {
-		obj = metadataDiscoveryEndpoints[obj]
+func (a *Adapter) constructMetadataURL(objectName string) (*urlbuilder.URL, error) {
+	if metadataDiscoveryEndpoints.Has(objectName) {
+		objectName = metadataDiscoveryEndpoints[objectName]
 	}
 
-	return a.getAPIURL(metadataAPIVersion, obj)
+	return a.getAPIURL(metadataAPIVersion, objectName)
 }
