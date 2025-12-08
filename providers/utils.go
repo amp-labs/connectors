@@ -270,6 +270,26 @@ func (i *ProviderInfo) defaultModuleOrRoot() common.ModuleID {
 	return i.DefaultModule
 }
 
+func (i *ProviderInfo) GetModules() common.Modules {
+	modules := make(common.Modules)
+
+	if !i.hasModules() {
+		modules[common.ModuleRoot] = common.Module{
+			ID: common.ModuleRoot,
+		}
+
+		return modules
+	}
+
+	for moduleId := range *i.Modules {
+		modules[moduleId] = common.Module{
+			ID: moduleId,
+		}
+	}
+
+	return modules
+}
+
 // UnauthorizedHandler is a function that is called when an unauthorized response is received.
 // The handler can be used to refresh the token or to perform other actions. The client is
 // included so you can make additional requests if needed, but be careful not to create an
