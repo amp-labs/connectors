@@ -77,6 +77,9 @@ func supportedOperations() components.EndpointRegistryInput {
 	}
 }
 
+// https://api.vsax.net/#get-all-workflows
+// https://api.vsax.net/#get-all-tasks
+// https://api.vsax.net/#get-all-scopes
 var objectsWithUpdateAtFields = datautils.NewStringSet("automation/workflows", //nolint:gochecknoglobals
 	"automation/tasks", "scopes")
 
