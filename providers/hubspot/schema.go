@@ -1,9 +1,8 @@
 package hubspot
 
+// KnownObjectTypes
 // https://developers.hubspot.com/docs/guides/api/crm/understanding-the-crm#object-type-ids
-//
-//nolint:gochecknoglobals
-var KnownObjectTypes = map[string]string{
+var KnownObjectTypes = map[string]string{ // nolint:gochecknoglobals
 	"0-2":   "companies",
 	"0-1":   "contacts",
 	"0-3":   "deals",

@@ -265,7 +265,7 @@ func openBrowser(url string) {
 	case "darwin":
 		err = exec.Command("open", url).Start()
 	default:
-		err = fmt.Errorf("unsupported platform: %s", runtime.GOOS) //nolint:goerr113
+		err = fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 	}
 
 	if err != nil {

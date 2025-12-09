@@ -40,7 +40,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New( // nolint:goerr113
+				errors.New(
 					`"value" must contain at least one of [name, email, prefix, firstname, middle, lastname, suffix]`,
 				),
 			},

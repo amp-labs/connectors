@@ -30,8 +30,9 @@ func (c *Connector) GetPostAuthInfo(
 		return nil, errors.Join(ErrNoAccounts, common.ErrEmptyJSONHTTPResponse)
 	}
 
-	var postAuthInfo common.PostAuthInfo
-	postAuthInfo.RawResponse = resp
+	postAuthInfo := common.PostAuthInfo{
+		RawResponse: resp,
+	}
 
 	accounts, err := body.GetKey("accounts")
 	if err != nil {
@@ -73,7 +74,7 @@ func (c *Connector) GetPostAuthInfo(
 		}
 
 		if baseURLWithoutHTTPS := strings.TrimPrefix(baseURIString, "https://"); baseURLWithoutHTTPS != baseURIString {
-			if parts := strings.SplitN(baseURLWithoutHTTPS, ".", 2); len(parts) > 1 { // nolint:gomnd,mnd
+			if parts := strings.SplitN(baseURLWithoutHTTPS, ".", 2); len(parts) > 1 { // nolint:mnd
 				postAuthInfo.CatalogVars = AuthMetadataVars{
 					Server: parts[0],
 				}.AsMap()

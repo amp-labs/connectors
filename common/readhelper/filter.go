@@ -136,6 +136,28 @@ func MakeTimeFilterFunc(
 	timestampKey string, timestampFormat string,
 	nextPageFunc common.NextPageFunc,
 ) common.RecordsFilterFunc {
+	return MakeTimeFilterFuncWithZoom(order, boundary, nil, timestampKey, timestampFormat, nextPageFunc)
+}
+
+// MakeTimeFilterFuncWithZoom is similar to MakeTimeFilterFunc, but allows
+// the timestamp field to be nested within the JSON record.
+//
+// Use `zoom` to specify the path to the nested object that contains the
+// timestamp. Each element in `zoom` represents a key to traverse in order.
+// Once the zoom path is resolved, `timestampKey` is read from that object
+// and parsed using `timestampFormat`.
+//
+// Example:
+//
+//	If the timestamp is located at:
+//	    {"meta": {"info": {"created_at": "..."} }}
+//	Then zoom should be: []string{"meta", "info"}
+//	And timestampKey: "created_at"
+func MakeTimeFilterFuncWithZoom(
+	order TimeOrder, boundary *TimeBoundary,
+	zoom []string, timestampKey string, timestampFormat string,
+	nextPageFunc common.NextPageFunc,
+) common.RecordsFilterFunc {
 	return func(params common.ReadParams, body *ajson.Node, records []*ajson.Node) ([]*ajson.Node, string, error) {
 		if len(records) == 0 {
 			// Nothing to process on this page.
@@ -148,7 +170,7 @@ func MakeTimeFilterFunc(
 		)
 
 		for idx, nodeRecord := range records {
-			recordTimestamp, err := extractTimestamp(nodeRecord, timestampKey, timestampFormat)
+			recordTimestamp, err := extractTimestamp(nodeRecord, timestampKey, timestampFormat, zoom...)
 			if err != nil {
 				return nil, "", err
 			}

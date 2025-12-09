@@ -1,0 +1,13 @@
+mutation UpdateCreditCardBillingAddress($input: UpdateCreditCardBillingAddressInput!) {
+  paymentMethodsUpdate: updateCreditCardBillingAddress(input: $input) {
+    paymentMethod {
+      id
+      legacyId
+      createdAt
+      customer {
+        id
+        email
+      }
+    }
+  }
+}

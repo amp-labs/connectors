@@ -1,0 +1,27 @@
+query BusinessAccountCreationRequestSearch {
+  search {
+    businessAccountCreationRequests(
+      input: {}
+      first: {{.First}}
+      {{if .After}}
+      after: "{{.After}}"
+      {{end}}
+    ) {
+      edges {
+        node {
+          id
+          creationStatus
+          merchantAccount {
+            id
+            legacyId
+            status
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}

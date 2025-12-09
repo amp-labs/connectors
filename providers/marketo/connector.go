@@ -38,14 +38,18 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	return conn, nil
 }
 
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
-}
-
 // Provider returns the connector provider.
 func (c *Connector) Provider() providers.Provider {
 	return providers.Marketo
+}
+
+func (c *Connector) String() string {
+	return c.Provider() + ".Connector"
+}
+
+func (c *Connector) setBaseURL(newURL string) {
+	c.BaseURL = newURL
+	c.Client.HTTPClient.Base = newURL
 }
 
 func (c *Connector) getAPIURL(objName string) (*urlbuilder.URL, error) {
@@ -54,8 +58,4 @@ func (c *Connector) getAPIURL(objName string) (*urlbuilder.URL, error) {
 	objName = common.AddSuffixIfNotExists(objName, ".json")
 
 	return urlbuilder.New(c.BaseURL, restAPIPrefix, objName)
-}
-
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
 }

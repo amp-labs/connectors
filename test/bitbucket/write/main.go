@@ -100,7 +100,8 @@ func createSnippet(ctx context.Context, conn *br.Connector) error {
 				"issue:created",
 				"issue:updated",
 			},
-		}}
+		},
+	}
 
 	result, err := conn.Write(ctx, prms)
 	if err != nil {

@@ -53,16 +53,6 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return connector, nil
 }
 
-func (c Connector) setUnitTestBaseURL(url string) {
-	if c.Calendar != nil {
-		c.Calendar.SetUnitTestBaseURL(url)
-	}
-
-	if c.Contacts != nil {
-		c.Contacts.SetUnitTestBaseURL(url)
-	}
-}
-
 func (c Connector) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
 ) (*connectors.ListObjectMetadataResult, error) {
@@ -111,4 +101,14 @@ func (c Connector) Delete(ctx context.Context, params connectors.DeleteParams) (
 	}
 
 	return nil, common.ErrNotImplemented
+}
+
+func (c Connector) setUnitTestBaseURL(url string) {
+	if c.Calendar != nil {
+		c.Calendar.SetUnitTestBaseURL(url)
+	}
+
+	if c.Contacts != nil {
+		c.Contacts.SetUnitTestBaseURL(url)
+	}
 }

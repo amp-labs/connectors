@@ -1,0 +1,49 @@
+query CustomerSearch {
+  search {
+    customers(
+      input: {
+        {{if or .FromDate .ToDate}}
+        createdAt: {
+          {{if .FromDate}}
+          greaterThanOrEqualTo: "{{.FromDate}}"
+          {{end}}
+          {{if .ToDate}}
+          lessThanOrEqualTo: "{{.ToDate}}"
+          {{end}}
+        }
+        {{end}}
+      }
+      first: {{.First}}
+      {{if .After}}
+      after: "{{.After}}"
+      {{end}}
+    ) {
+      edges {
+        node {
+          id
+          legacyId
+          createdAt
+          email
+          company
+          firstName
+          lastName
+          phoneNumber
+          paymentMethods {
+            edges {
+              node {
+                id
+                legacyId
+                usage
+                createdAt
+              }
+            }
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}

@@ -1,4 +1,3 @@
-// nolint:gochecknoglobals
 package identitystore
 
 import (
@@ -11,7 +10,7 @@ const (
 	ServiceSigningName = "identitystore"
 )
 
-var Registry = core.Registry{
+var Registry = core.Registry{ // nolint:gochecknoglobals
 	"Users": {
 		Commands: core.ObjectCommands{
 			Read:   "ListUsers",

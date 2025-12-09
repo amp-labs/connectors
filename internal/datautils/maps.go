@@ -1,4 +1,3 @@
-// nolint:ireturn
 package datautils
 
 import (
@@ -74,7 +73,7 @@ func (m Map[K, V]) Has(key K) bool {
 func (m Map[K, V]) Values() []V {
 	values := make([]V, 0, len(m))
 
-	for key := range m { // nolint:ireturn
+	for key := range m {
 		values = append(values, m[key])
 	}
 
@@ -110,6 +109,7 @@ type DefaultMap[K comparable, V any] struct {
 	// Map is a delegate.
 	// All methods are embedded which grants the same capabilities, plus default value.
 	Map[K, V]
+
 	// When key is not found this callback will be used to provide default value.
 	fallback func(key K) V
 }
@@ -122,7 +122,6 @@ func NewDefaultMap[K comparable, V any](dict Map[K, V], fallback func(K) V) Defa
 }
 
 // Get method uses map with a fallback value.
-// nolint:ireturn
 func (m DefaultMap[K, V]) Get(key K) V {
 	value, ok := m.Map[key]
 	if ok {

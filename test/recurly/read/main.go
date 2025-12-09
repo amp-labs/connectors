@@ -29,7 +29,6 @@ func main() {
 		Fields:     connectors.Fields("id", "company", "parent_account_id"),
 		Since:      time.Date(2025, 11, 17, 12, 58, 12, 12, time.UTC),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from recurly", "error", err)
 	}
@@ -41,7 +40,6 @@ func main() {
 		ObjectName: "plans",
 		Fields:     connectors.Fields("id", "code", "state"),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from recurly", "error", err)
 	}
@@ -53,7 +51,6 @@ func main() {
 		ObjectName: "items",
 		Fields:     connectors.Fields("id", "code", "name"),
 	})
-
 	if err != nil {
 		utils.Fail("error reading from recurly", "error", err)
 	}

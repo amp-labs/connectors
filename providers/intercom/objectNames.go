@@ -39,7 +39,7 @@ var objectNameToURLPath = datautils.NewDefaultMap(map[string]string{ //nolint:go
 	return obj
 })
 
-// nolint:gomnd,mnd
+// nolint:mnd
 var incrementalSearchObjectPagination = datautils.NewDefaultMap(map[string]int{ //nolint:gochecknoglobals
 	// https://developers.intercom.com/docs/references/rest-api/api.intercom.io/conversations/searchconversations
 	"conversations": 150,

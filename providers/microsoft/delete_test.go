@@ -39,7 +39,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New( // nolint:goerr113
+				errors.New(
 					"Resource '8ee4c8fb-72eb-4228-a6da-72734c6f933f' " +
 						"does not exist or one of its queried reference-property objects are not present.",
 				),
