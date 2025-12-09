@@ -1,6 +1,6 @@
 package providers
 
-const CiscoWebex Provider = "ciscowebex"
+const CiscoWebex Provider = "ciscoWebex"
 
 func init() {
 	SetInfo(CiscoWebex, ProviderInfo{
@@ -36,7 +36,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     true,
+			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
