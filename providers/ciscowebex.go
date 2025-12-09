@@ -1,6 +1,6 @@
 package providers
 
-const CiscoWebex Provider = "ciscoWebex"
+const CiscoWebex Provider = "ciscowebex"
 
 func init() {
 	SetInfo(CiscoWebex, ProviderInfo{
@@ -19,7 +19,16 @@ func init() {
 			DocsURL: "https://developer.webex.com/docs/run-an-oauth-integration",
 		},
 
-		// Media: Media assets (logos/icons) will be added in a follow-up PR
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1765316683/media/webex.com_1765316683.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1765316535/media/webex.com_1765316534.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1765316683/media/webex.com_1765316683.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1765316535/media/webex.com_1765316534.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
