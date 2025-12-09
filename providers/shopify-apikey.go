@@ -1,34 +1,27 @@
 package providers
 
-const Shopify Provider = "shopify"
+const ShopifyApiKey Provider = "shopify-apikey"
 
 func init() {
 	// Shopify GraphQL Admin API Configuration
 	//
-	// AUTHENTICATION MODEL:
-	// Shopify supports two token types via OAuth2:
-	//   1. OFFLINE TOKENS (default) - Never expire, no refresh needed, for backend integrations
-	//   2. ONLINE TOKENS - Expire in 24h, require refresh, for user-specific actions
-	//
-	// This connector uses OFFLINE TOKENS because:
-	//   - Data sync runs server-to-server without user interaction
-	//   - Tokens persist indefinitely without re-authentication
-	//   - No refresh token mechanism needed
+	// IMPORTANT: Shopify OAuth2 Quirk
+	// - Shopify uses OAuth2 to OBTAIN tokens (via AuthURL/TokenURL)
+	// - However, tokens are "offline access tokens" that NEVER expire
+	// - There is NO refresh token mechanism
+	// - Once obtained, tokens act like permanent API keys
 
 	// Docs: https://shopify.dev/docs/apps/build/authentication-authorization/access-tokens
-	SetInfo(Shopify, ProviderInfo{
+	SetInfo(ShopifyApiKey, ProviderInfo{
 		DisplayName: "Shopify",
-		AuthType:    Oauth2,
+		AuthType:    ApiKey,
 		BaseURL:     "https://{{.workspace}}.myshopify.com/admin/api/2025-10/graphql.json",
-		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://{{.workspace}}.myshopify.com/admin/oauth/authorize",
-			TokenURL:                  "https://{{.workspace}}.myshopify.com/admin/oauth/access_token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: true,
-			TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
+		ApiKeyOpts: &ApiKeyOpts{
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name: "X-Shopify-Access-Token",
 			},
+			DocsURL: "https://shopify.dev/docs/api/admin-graphql#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -37,7 +30,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     true,
+			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
