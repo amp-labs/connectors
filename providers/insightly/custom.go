@@ -1,4 +1,4 @@
-// nolint:tagliatelle
+// nolint:tagliatelle,godoclint
 package insightly
 
 import (

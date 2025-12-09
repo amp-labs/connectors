@@ -20,7 +20,7 @@ type Result struct {
 // ModuleEvent represents a module and operation combination.
 type ModuleEvent string
 
-// String returns the formatted string representation of the module event.
+// ModuleAPI returns the formatted string representation of the module event.
 func (me ModuleEvent) ModuleAPI() (string, error) {
 	parts, err := me.parts()
 	if err != nil {

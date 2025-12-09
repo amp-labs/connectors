@@ -97,7 +97,7 @@ func checkErr(resp *writeResponse, recordId any, success bool) (err error) {
 			return err
 		}
 
-		return errors.New(message) //nolint: goerr113
+		return errors.New(message) // nolint:err113
 	}
 
 	return nil

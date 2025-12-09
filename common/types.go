@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package common
 
 import (
@@ -495,12 +496,6 @@ type ObjectMetadata struct {
 	FieldsMap map[string]string
 }
 
-// AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
-func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
-	m.Fields[fieldName] = fieldMetadata
-	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
-}
-
 // NewObjectMetadata constructs ObjectMetadata.
 // This will automatically infer fields map from field metadata map. This construct exists for such convenience.
 func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadata {
@@ -509,6 +504,12 @@ func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadat
 		Fields:      fields,
 		FieldsMap:   inferDeprecatedFieldsMap(fields),
 	}
+}
+
+// AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
+func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
+	m.Fields[fieldName] = fieldMetadata
+	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
 }
 
 type FieldMetadata struct {
@@ -591,7 +592,7 @@ type SubscriptionUpdateEvent interface {
 	UpdatedFields() ([]string, error)
 }
 
-// Some providers send multiple events in a single webhook payload.
+// CollapsedSubscriptionEvent some providers send multiple events in a single webhook payload.
 // This interface is used to extract individual events to SubscriptionEvent type
 // from a collapsed event for webhook parsing and processing.
 type CollapsedSubscriptionEvent interface {
@@ -631,13 +632,13 @@ type RegistrationResult struct {
 type RegistrationStatus string
 
 const (
-	// registration is pending and not yet complete.
+	// RegistrationStatusPending registration is pending and not yet complete.
 	RegistrationStatusPending RegistrationStatus = "pending"
-	// registration returned error, and all intermittent steps are rolled back.
+	// RegistrationStatusFailed registration returned error, and all intermittent steps are rolled back.
 	RegistrationStatusFailed RegistrationStatus = "failed"
-	// successful registration.
+	// RegistrationStatusSuccess successful registration.
 	RegistrationStatusSuccess RegistrationStatus = "success"
-	// registration returned error, and failed to rollback some intermittent steps.
+	// RegistrationStatusFailedToRollback registration returned error, and failed to rollback some intermittent steps.
 	RegistrationStatusFailedToRollback RegistrationStatus = "failed_to_rollback"
 )
 
@@ -696,12 +697,12 @@ type SubscriptionResult struct { // this corresponds to each API call.
 type SubscriptionStatus string
 
 const (
-	// registration is pending and not yet complete.
+	// SubscriptionStatusPending registration is pending and not yet complete.
 	SubscriptionStatusPending SubscriptionStatus = "pending"
-	// registration returned error, and all intermittent steps are rolled back.
+	// SubscriptionStatusFailed registration returned error, and all intermittent steps are rolled back.
 	SubscriptionStatusFailed SubscriptionStatus = "failed"
-	// successful registration.
+	// SubscriptionStatusSuccess successful registration.
 	SubscriptionStatusSuccess SubscriptionStatus = "success"
-	// registration returned error, and failed to rollback some intermittent steps.
+	// SubscriptionStatusFailedToRollback registration returned error, and failed to rollback some intermittent steps.
 	SubscriptionStatusFailedToRollback SubscriptionStatus = "failed_to_rollback"
 )

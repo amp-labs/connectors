@@ -141,14 +141,14 @@ func (s *QueryParamStats) SaveParameterStats(queryParamName string, objectNames 
 
 	s.Data = append(s.Data, queryParamObjectStats{
 		Name:         queryParamName,
-		Frequency:    roundFloat(freq, 4), // nolint:gomnd,mnd
+		Frequency:    roundFloat(freq, 4), // nolint:mnd
 		TotalObjects: num,
 		Objects:      objectNames,
 	})
 }
 
 func roundFloat(f float64, decPlaces int) float64 {
-	target := math.Pow(10, float64(decPlaces)) // nolint:gomnd,mnd
+	target := math.Pow(10, float64(decPlaces)) // nolint:mnd
 
 	return float64(int(f*target)) / target
 }
@@ -166,8 +166,8 @@ func (s DateTime) MarshalJSON() ([]byte, error) {
 func (s *DateTime) UnmarshalJSON(bytes []byte) error {
 	str := string(bytes)
 	// remove string quotes
-	if len(str) < 2 { // nolint:gomnd,mnd
-		return errors.New("date time has no quotes") // nolint:goerr113
+	if len(str) < 2 { // nolint:mnd
+		return errors.New("date time has no quotes") // nolint:err113
 	}
 
 	format := str[1 : len(str)-1]

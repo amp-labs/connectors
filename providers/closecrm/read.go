@@ -38,7 +38,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	url.WithQueryParam(skipQuery, "0")
 	url.WithQueryParam(limitQuery, defaultPageSize)
 
-	resp, err := c.Client.Get(ctx, url.String())
+	urlstring := addTrailingSlashIfNeeded(url.String())
+
+	resp, err := c.Client.Get(ctx, urlstring)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,9 @@ var ErrSupportNotConfigured = errors.New("support not configured")
 // TODO: Convert this to a type alias for easier usage when we go to go1.24: https://go.dev/doc/go1.24#language
 type ConnectorConstructor[T any] func(*Connector) (*T, error)
 
-// Connector provides a reusable base for implementing API connectors.
+// Connector provides a reusable base for API connectors, embedding Transport
+// and explicitly defining core methods (JSONHTTPClient, HTTPClient, Provider, String)
+// to avoid ambiguity when combined with interfaces that embed fmt.Stringer.
 type Connector struct {
 	*Transport
 }
@@ -53,4 +55,28 @@ func Initialize[T any](
 	}
 
 	return conn, nil
+}
+
+// JSONHTTPClient returns the connector's JSON-capable HTTP client.
+// Defined explicitly to expose the method on Connector for compile-time conflict detection with interfaces.
+func (c Connector) JSONHTTPClient() *common.JSONHTTPClient {
+	return c.Transport.JSONHTTPClient() // do not remove
+}
+
+// HTTPClient returns the underlying raw HTTP client.
+// Defined explicitly to expose the method on Connector for compile-time conflict detection with interfaces.
+func (c Connector) HTTPClient() *common.HTTPClient {
+	return c.Transport.HTTPClient()
+}
+
+// Provider returns the provider associated with this connector.
+// Defined explicitly to expose the method on Connector for compile-time conflict detection with interfaces.
+func (c Connector) Provider() providers.Provider {
+	return c.Transport.ProviderContext.Provider()
+}
+
+// String returns a human-readable identifier for this connector.
+// Defined explicitly to expose the method on Connector for compile-time conflict detection with interfaces.
+func (c Connector) String() string {
+	return c.Transport.ProviderContext.String()
 }

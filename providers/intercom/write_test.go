@@ -42,7 +42,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(messageForInvalidSyntax), // nolint:goerr113
+				errors.New(messageForInvalidSyntax),
 			},
 		},
 		{

@@ -1,0 +1,40 @@
+query PaymentSearch {
+  search {
+    payments(
+      input: {
+        {{if or .FromDate .ToDate}}
+        createdAt: {
+          {{if .FromDate}}
+          greaterThanOrEqualTo: "{{.FromDate}}"
+          {{end}}
+          {{if .ToDate}}
+          lessThanOrEqualTo: "{{.ToDate}}"
+          {{end}}
+        }
+        {{end}}
+      }
+      first: {{.First}}
+      {{if .After}}
+      after: "{{.After}}"
+      {{end}}
+    ) {
+      edges {
+        node {
+          id
+          legacyId
+          createdAt
+          amount {
+            value
+            currencyCode
+          }
+          orderId
+          status
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
