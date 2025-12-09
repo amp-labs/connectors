@@ -14,8 +14,3 @@ var (
 
 	FileManager = api3.NewOpenapiFileManager[any](apiFile) // nolint:gochecknoglobals
 )
-
-// GetAPIFile returns the raw OpenAPI file bytes for custom parsing.
-func GetAPIFile() []byte {
-	return apiFile
-}

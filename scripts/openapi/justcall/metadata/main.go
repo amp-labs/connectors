@@ -2,19 +2,24 @@ package main
 
 import (
 	"log/slog"
+	"os"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/justcall/metadata"
-	"github.com/amp-labs/connectors/providers/justcall/metadata/openapi"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
+const openAPIFilePath = "providers/justcall/openapi/api-v21.json"
+
 func loadOpenAPIDocument() *openapi3.T {
+	data, err := os.ReadFile(openAPIFilePath)
+	goutils.MustBeNil(err)
+
 	loader := openapi3.NewLoader()
 
-	doc, err := loader.LoadFromData(openapi.GetAPIFile())
+	doc, err := loader.LoadFromData(data)
 	goutils.MustBeNil(err)
 
 	return doc
