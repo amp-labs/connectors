@@ -362,7 +362,7 @@ func TestNewConnectorWithStructSchemas(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			conn, err := NewConnector(tt.rawSchemas, tt.structOpts...)
+			conn, err := NewConnector(append([]Option{WithRawSchemas(tt.rawSchemas)}, tt.structOpts...)...)
 
 			if tt.expectError {
 				if err == nil {
@@ -407,7 +407,7 @@ func TestSchemasPriority(t *testing.T) {
 	}
 
 	// Create connector with both raw and struct schemas
-	conn, err := NewConnector(rawSchemas, WithStructSchemas(structSchemas))
+	conn, err := NewConnector(WithRawSchemas(rawSchemas), WithStructSchemas(structSchemas))
 	if err != nil {
 		t.Fatalf("failed to create connector: %v", err)
 	}
@@ -886,7 +886,7 @@ func TestNewConnector_Success(t *testing.T) {
 		"products": testProductSchema,
 	}
 
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 	require.NotNil(t, conn)
 }
@@ -914,7 +914,7 @@ func TestNewConnector_EmptySchemas(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			conn, err := NewConnector(tt.schemas)
+			conn, err := NewConnector(WithRawSchemas(tt.schemas))
 			if tt.wantErr {
 				require.Error(t, err)
 				assert.Nil(t, conn)
@@ -947,7 +947,7 @@ func TestNewConnector_InvalidSchema(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			conn, err := NewConnector(tt.schemas)
+			conn, err := NewConnector(WithRawSchemas(tt.schemas))
 			require.Error(t, err)
 			assert.Nil(t, conn)
 		})
@@ -962,12 +962,12 @@ func TestNewConnector_WithOptions(t *testing.T) {
 	}
 
 	// Test WithClient option
-	conn, err := NewConnector(schemas, WithClient(http.DefaultClient))
+	conn, err := NewConnector(WithRawSchemas(schemas), WithClient(http.DefaultClient))
 	require.NoError(t, err)
 	require.NotNil(t, conn)
 
 	// Test WithAuthenticatedClient option
-	conn2, err := NewConnector(schemas, WithAuthenticatedClient(http.DefaultClient))
+	conn2, err := NewConnector(WithRawSchemas(schemas), WithAuthenticatedClient(http.DefaultClient))
 	require.NoError(t, err)
 	require.NotNil(t, conn2)
 }
@@ -982,7 +982,7 @@ func TestWrite_ValidData(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	tests := []struct {
@@ -1035,7 +1035,7 @@ func TestWrite_InvalidData(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	tests := []struct {
@@ -1100,7 +1100,7 @@ func TestWrite_EnumValidation(t *testing.T) {
 	schemas := map[string][]byte{
 		"products": testProductSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1134,7 +1134,7 @@ func TestWrite_PatternValidation(t *testing.T) {
 	schemas := map[string][]byte{
 		"complex": testComplexSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1167,7 +1167,7 @@ func TestWrite_NumericConstraints(t *testing.T) {
 		"products": testProductSchema,
 		"complex":  testComplexSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1225,7 +1225,7 @@ func TestWrite_ArrayConstraints(t *testing.T) {
 	schemas := map[string][]byte{
 		"products": testProductSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1285,7 +1285,7 @@ func TestWrite_NestedObjectValidation(t *testing.T) {
 	schemas := map[string][]byte{
 		"complex": testComplexSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1328,7 +1328,7 @@ func TestWrite_Create(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1362,7 +1362,7 @@ func TestWrite_Update(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1408,7 +1408,7 @@ func TestWrite_CreateWithExplicitID(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1441,7 +1441,7 @@ func TestRead_Basic(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1481,7 +1481,7 @@ func TestRead_Pagination(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1540,7 +1540,7 @@ func TestRead_TimeFiltering(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1597,7 +1597,7 @@ func TestRead_EmptyResult(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1618,7 +1618,7 @@ func TestDelete_Success(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1657,7 +1657,7 @@ func TestDelete_NotFound(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1678,7 +1678,7 @@ func TestListObjectMetadata(t *testing.T) {
 		"persons":  testPersonSchema,
 		"products": testProductSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1716,7 +1716,7 @@ func TestConcurrentWrites(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1756,7 +1756,7 @@ func TestConcurrentReads(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1799,7 +1799,7 @@ func TestConcurrentMixedOperations(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1871,7 +1871,7 @@ func TestMutationProtection_Read(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1915,7 +1915,7 @@ func TestMutationProtection_Write(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1955,7 +1955,7 @@ func TestMutationProtection_GetAll(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -2011,7 +2011,7 @@ func TestDeepCopyVerification(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -2081,7 +2081,7 @@ func TestGenerateRandomRecord_PrimitiveTypes(t *testing.T) {
 	schemas := map[string][]byte{
 		"primitives": primitiveSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	record, err := conn.GenerateRandomRecord("primitives")
@@ -2118,7 +2118,7 @@ func TestGenerateRandomRecord_Formats(t *testing.T) {
 	schemas := map[string][]byte{
 		"formats": formatSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	record, err := conn.GenerateRandomRecord("formats")
@@ -2153,7 +2153,7 @@ func TestGenerateRandomRecord_Enums(t *testing.T) {
 	schemas := map[string][]byte{
 		"enums": enumSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	// Generate multiple records to test randomness
@@ -2186,7 +2186,7 @@ func TestGenerateRandomRecord_NumericConstraints(t *testing.T) {
 	schemas := map[string][]byte{
 		"constraints": constraintSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	// Generate multiple records to test constraints
@@ -2226,7 +2226,7 @@ func TestGenerateRandomRecord_StringConstraints(t *testing.T) {
 	schemas := map[string][]byte{
 		"strings": stringSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	for i := 0; i < 10; i++ {
@@ -2265,7 +2265,7 @@ func TestGenerateRandomRecord_Arrays(t *testing.T) {
 	schemas := map[string][]byte{
 		"arrays": arraySchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	for i := 0; i < 10; i++ {
@@ -2309,7 +2309,7 @@ func TestGenerateRandomRecord_NestedObjects(t *testing.T) {
 	schemas := map[string][]byte{
 		"nested": nestedSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	record, err := conn.GenerateRandomRecord("nested")
@@ -2363,7 +2363,7 @@ func TestGenerateRandomRecord_DepthLimit(t *testing.T) {
 	schemas := map[string][]byte{
 		"deep": deepSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	// Should not panic or hang
@@ -2378,7 +2378,7 @@ func TestGenerateRandomRecord_SpecialFields(t *testing.T) {
 	schemas := map[string][]byte{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	record, err := conn.GenerateRandomRecord("persons")
@@ -2407,7 +2407,7 @@ func TestGenerateRandomRecord_ValidationSuccess(t *testing.T) {
 		"products": testProductSchema,
 		"complex":  testComplexSchema,
 	}
-	conn, err := NewConnector(schemas)
+	conn, err := NewConnector(WithRawSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()

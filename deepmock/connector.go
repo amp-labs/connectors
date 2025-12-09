@@ -17,6 +17,7 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/google/uuid"
+	"github.com/kaptinlin/jsonschema"
 )
 
 // JSON Schema type constants.
@@ -71,7 +72,7 @@ var (
 // NewConnector creates a new deepmock connector instance.
 //
 //nolint:cyclop // Complexity inherent to initialization logic with multiple configuration paths
-func NewConnector(schemas map[string][]byte, opts ...Option) (*Connector, error) {
+func NewConnector(opts ...Option) (*Connector, error) {
 	// Apply options without pre-populated schemas/storage
 	params, err := paramsbuilder.Apply(parameters{}, opts, WithClient(http.DefaultClient))
 	if err != nil {
@@ -79,20 +80,20 @@ func NewConnector(schemas map[string][]byte, opts ...Option) (*Connector, error)
 	}
 
 	// Determine which schemas to use (raw vs struct-derived)
-	finalSchemas, err := selectSchemas(schemas, params.structSchemas)
+	finalSchemas, err := selectSchemas(params.rawSchemas, params.structSchemas, params.schemas)
 	if err != nil {
 		return nil, err
 	}
-
-	// Extract special fields from raw schemas before compilation
-	// (compilation may not preserve custom x-amp extensions)
-	idFields, updatedFields := extractSpecialFields(finalSchemas)
 
 	// Parse schemas
 	parsedSchemas, err := parseSchemas(finalSchemas)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse schemas: %w", err)
 	}
+
+	// Extract special fields from raw schemas before compilation
+	// (compilation may not preserve custom x-amp extensions)
+	idFields, updatedFields := extractSpecialFields(finalSchemas)
 
 	// Initialize storage with parsed schemas and special fields
 	storage := NewStorage(parsedSchemas, idFields, updatedFields)
@@ -1021,8 +1022,25 @@ func generateNumberInRange(minValue, maxValue *float64) float64 {
 
 // selectSchemas determines which schemas to use: raw schemas or struct-derived schemas.
 // It prioritizes raw schemas if provided, warns if both are provided, and falls back to struct schemas.
-func selectSchemas(rawSchemas map[string][]byte, structSchemas map[string]any) (map[string][]byte, error) {
+func selectSchemas(
+	rawSchemas map[string][]byte,
+	structSchemas map[string]any,
+	schemas map[string]*jsonschema.Schema,
+) (map[string][]byte, error) {
 	switch {
+	case len(schemas) > 0:
+		out := make(map[string][]byte, len(schemas))
+
+		for name, schema := range schemas {
+			bts, err := json.Marshal(schema)
+			if err != nil {
+				return nil, err
+			}
+
+			out[name] = bts
+		}
+
+		return out, nil
 	case len(rawSchemas) > 0:
 		// Raw schemas provided
 		// Warn if both raw and struct schemas are provided

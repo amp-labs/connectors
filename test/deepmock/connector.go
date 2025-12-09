@@ -160,14 +160,14 @@ var dealSchemaJSON = []byte(`{
 //	    ObjectName: "contacts",
 //	    RecordData: record,
 //	})
-func GetDeepMockConnector(ctx context.Context) *deepmock.Connector {
+func GetDeepMockConnector(_ context.Context) *deepmock.Connector {
 	schemas := map[string][]byte{
 		"contacts":  contactSchemaJSON,
 		"companies": companySchemaJSON,
 		"deals":     dealSchemaJSON,
 	}
 
-	conn, err := deepmock.NewConnector(schemas)
+	conn, err := deepmock.NewConnector(deepmock.WithRawSchemas(schemas))
 	if err != nil {
 		panic(err)
 	}
