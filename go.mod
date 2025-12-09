@@ -19,6 +19,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/google/uuid v1.6.0
 	github.com/iancoleman/strcase v0.3.0
+	github.com/invopop/jsonschema v0.13.0
 	github.com/invopop/yaml v0.3.1
 	github.com/kaptinlin/jsonschema v0.6.2
 	github.com/mitchellh/hashstructure v1.1.0
@@ -26,7 +27,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 	gitlab.com/c0b/go-ordered-json v0.0.0-20201030195603-febf46534d5a
 	go.uber.org/atomic v1.11.0
-	golang.org/x/net v0.47.0
+	golang.org/x/net v0.48.0
 	golang.org/x/oauth2 v0.34.0
 	golang.org/x/text v0.32.0
 )
@@ -60,7 +61,6 @@ require (
 	github.com/goccy/go-yaml v1.19.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/invopop/jsonschema v0.13.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/kaptinlin/go-i18n v0.2.0 // indirect
 	github.com/kaptinlin/jsonpointer v0.4.6 // indirect
@@ -74,7 +74,7 @@ require (
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
 	github.com/woodsbury/decimal128 v1.3.0 // indirect
-	golang.org/x/sys v0.38.0 // indirect
+	golang.org/x/sys v0.39.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )
 
