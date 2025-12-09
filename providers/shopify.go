@@ -3,18 +3,6 @@ package providers
 const Shopify Provider = "shopify"
 
 func init() {
-	// Shopify GraphQL Admin API Configuration
-	//
-	// AUTHENTICATION MODEL:
-	// Shopify supports two token types via OAuth2:
-	//   1. OFFLINE TOKENS (default) - Never expire, no refresh needed, for backend integrations
-	//   2. ONLINE TOKENS - Expire in 24h, require refresh, for user-specific actions
-	//
-	// This connector uses OFFLINE TOKENS because:
-	//   - Data sync runs server-to-server without user interaction
-	//   - Tokens persist indefinitely without re-authentication
-	//   - No refresh token mechanism needed
-
 	// Docs: https://shopify.dev/docs/apps/build/authentication-authorization/access-tokens
 	SetInfo(Shopify, ProviderInfo{
 		DisplayName: "Shopify",

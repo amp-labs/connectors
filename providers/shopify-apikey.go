@@ -1,16 +1,8 @@
 package providers
 
-const ShopifyApiKey Provider = "shopify-apikey"
+const ShopifyApiKey Provider = "shopify-apikey" //nolint:gosec
 
 func init() {
-	// Shopify GraphQL Admin API Configuration
-	//
-	// IMPORTANT: Shopify OAuth2 Quirk
-	// - Shopify uses OAuth2 to OBTAIN tokens (via AuthURL/TokenURL)
-	// - However, tokens are "offline access tokens" that NEVER expire
-	// - There is NO refresh token mechanism
-	// - Once obtained, tokens act like permanent API keys
-
 	// Docs: https://shopify.dev/docs/apps/build/authentication-authorization/access-tokens
 	SetInfo(ShopifyApiKey, ProviderInfo{
 		DisplayName: "Shopify",
