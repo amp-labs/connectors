@@ -45,7 +45,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Date value '-53s' for field 'updated' is invalid"), // nolint:goerr113
+				errors.New("Date value '-53s' for field 'updated' is invalid"),
 			},
 		},
 		{
@@ -57,7 +57,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Not Found - No message available"), // nolint:goerr113
+				errors.New("Not Found - No message available"),
 			},
 		},
 		{

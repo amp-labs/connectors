@@ -48,7 +48,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(`Campaign not found - Invalid campaign_id.`), // nolint:goerr113
+				errors.New(`Campaign not found - Invalid campaign_id.`),
 			},
 		},
 		{

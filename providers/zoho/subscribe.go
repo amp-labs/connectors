@@ -229,7 +229,7 @@ func (c *Connector) putOrPostSubscribe(
 			}
 
 			mutex.Lock()
-			watchObject.Events = append(watchObject.Events, mappedEvents...)
+			watchObject.Events = append(watchObject.Events, mappedEvents...) // nolint:wsl_v5
 			watchObject.NotificationCondition = append(watchObject.NotificationCondition, notificationConditions...)
 			mutex.Unlock()
 

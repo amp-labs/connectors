@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package common
 
 import (
@@ -47,14 +48,14 @@ func (q QueryParam) ApplyToRequest(vals *url.Values) {
 	}
 }
 
+func (q QueryParam) String() string {
+	return fmt.Sprintf("%s: %s", q.Key, q.Value)
+}
+
 func (q QueryParam) equals(other QueryParam) bool {
 	return q.Key == other.Key &&
 		q.Value == other.Value &&
 		q.Mode == other.Mode
-}
-
-func (q QueryParam) String() string {
-	return fmt.Sprintf("%s: %s", q.Key, q.Value)
 }
 
 type QueryParams []QueryParam

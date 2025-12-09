@@ -1,6 +1,7 @@
 package marketo
 
 import (
+	"slices"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -64,21 +65,9 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 }
 
 func usesStandardId(object string) bool {
-	for _, v := range IdResponseObjects {
-		if v == object {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(IdResponseObjects, object)
 }
 
 func usesMarketoGUID(object string) bool {
-	for _, v := range marketoGUIDResponseObjects {
-		if v == object {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(marketoGUIDResponseObjects, object)
 }

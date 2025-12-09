@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package utils
 
 import (
@@ -21,7 +22,9 @@ type OAuth2AuthCodeOptions struct {
 	Scopes             []string
 }
 
-func CreateOAuth2AuthorizationCodeClient(ctx context.Context, info *providers.ProviderInfo, opts OAuth2AuthCodeOptions) common.AuthenticatedHTTPClient {
+func CreateOAuth2AuthorizationCodeClient(
+	ctx context.Context, info *providers.ProviderInfo, opts OAuth2AuthCodeOptions,
+) common.AuthenticatedHTTPClient {
 	// Create the authenticated HTTP client.
 	httpClient, err := info.NewClient(ctx, &providers.NewClientParams{
 		// If you set this to true, the client will log all requests and responses.
@@ -68,7 +71,9 @@ type OAuth2ClientCredentialsOptions struct {
 	EndpointParams     url.Values
 }
 
-func CreateOAuth2ClientCredentialsClient(ctx context.Context, info *providers.ProviderInfo, opts OAuth2ClientCredentialsOptions) common.AuthenticatedHTTPClient {
+func CreateOAuth2ClientCredentialsClient(
+	ctx context.Context, info *providers.ProviderInfo, opts OAuth2ClientCredentialsOptions,
+) common.AuthenticatedHTTPClient {
 	// Create the authenticated HTTP client.
 	httpClient, err := info.NewClient(ctx, &providers.NewClientParams{
 		// If you set this to true, the client will log all requests and responses.

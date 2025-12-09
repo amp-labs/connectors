@@ -40,7 +40,7 @@ func mapValuesFromEnum(fieldDef SageIntacctFieldDef) []common.FieldValue {
 	return values
 }
 
-func buildReadBody(params common.ReadParams) (map[string]interface{}, error) {
+func buildReadBody(params common.ReadParams) (map[string]any, error) {
 	fieldNames := params.Fields.List()
 	payload := map[string]any{
 		"object":      params.ObjectName,

@@ -47,7 +47,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrServer,
-				errors.New("Internal Server Error"), // nolint:goerr113
+				errors.New("Internal Server Error"),
 			},
 		},
 		{
@@ -60,7 +60,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(`"Internal Error"`), // nolint:goerr113
+				errors.New(`"Internal Error"`),
 			},
 		},
 		{
@@ -73,7 +73,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				common.ErrNotFound,
-				errors.New("An Error Occurred: Not Found"), // nolint:goerr113
+				errors.New("An Error Occurred: Not Found"),
 			},
 		},
 		{
@@ -85,7 +85,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Invalid filter [Invalid page number: -1]"), // nolint:goerr113
+				errors.New("Invalid filter [Invalid page number: -1]"),
 			},
 		},
 		{

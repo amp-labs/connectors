@@ -56,7 +56,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New( // nolint:goerr113
+				errors.New(
 					"No such customer: 'cus_Rd2zeYCh5b9gtC'",
 				),
 			},

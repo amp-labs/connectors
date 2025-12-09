@@ -44,7 +44,7 @@ func addIssuesTimeWindowQuery(url *urlbuilder.URL, params common.ReadParams) err
 	}
 
 	if endTime.Sub(startTime) > 30*24*time.Hour {
-		return errors.New("time window exceeds 30 days") // nolint:goerr113
+		return errors.New("time window exceeds 30 days") // nolint:err113
 	}
 
 	url.WithQueryParam("start_time", startTime.Format(time.RFC3339))

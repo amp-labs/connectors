@@ -21,7 +21,6 @@ type Connector struct {
 	*components.Connector
 	common.RequireAuthenticatedClient
 
-	components.SchemaProvider
 	components.Reader
 	components.Writer
 	components.Deleter

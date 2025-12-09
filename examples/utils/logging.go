@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package utils
 
 import (

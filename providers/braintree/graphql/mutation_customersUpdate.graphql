@@ -1,0 +1,14 @@
+mutation UpdateCustomer($input: CustomerInput!, $customerId: ID!) {
+  customersUpdate: updateCustomer(input: {customerId: $customerId, customer: $input}) {
+    customer {
+      id
+      legacyId
+      createdAt
+      email
+      company
+      firstName
+      lastName
+      phoneNumber
+    }
+  }
+}

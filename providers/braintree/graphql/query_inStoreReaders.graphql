@@ -1,0 +1,27 @@
+query InStoreReaderSearch {
+  search {
+    inStoreReaders(
+      first: {{.First}}
+      {{if .After}}
+      after: "{{.After}}"
+      {{end}}
+    ) {
+      edges {
+        node {
+          id
+          name
+          status
+          pairedAt
+          location {
+            id
+            name
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}

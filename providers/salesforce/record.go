@@ -56,6 +56,7 @@ func (c *Connector) GetRecordsByIds( // nolint:revive
 
 type recordsByIDsParams struct {
 	common.ReadParams
+
 	RecordIdentifiers datautils.Set[string]
 }
 

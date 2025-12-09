@@ -61,7 +61,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Always: mockserver.Response(http.StatusNotFound, responseErrorFormat),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("parameter_invalid[Per Page is too big]"), // nolint:goerr113
+				common.ErrBadRequest, errors.New("parameter_invalid[Per Page is too big]"),
 			},
 		},
 		{

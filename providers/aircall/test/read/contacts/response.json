@@ -1,0 +1,32 @@
+{
+  "contacts": [
+    {
+      "id": 2410757,
+      "direct_link": "https://api.aircall.io/v1/contacts/2410757",
+      "first_name": "John",
+      "last_name": "Doe",
+      "company_name": "Acme Corp",
+      "information": "CEO",
+      "phone_numbers": [
+        {
+          "label": "Work",
+          "value": "+1234567890"
+        }
+      ],
+      "emails": [
+        {
+          "label": "Work",
+          "value": "john.doe@acme.com"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "count": 1,
+    "total": 1,
+    "current_page": 1,
+    "per_page": 50,
+    "next_page_link": null,
+    "previous_page_link": null
+  }
+}
