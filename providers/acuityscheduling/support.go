@@ -17,6 +17,7 @@ var supportObjectIncrementalRead = datautils.NewSet(
 )
 
 func supportedOperations() components.EndpointRegistryInput {
+	// docs: https://developers.acuityscheduling.com/reference/quick-start
 	readSupport := []string{
 		"appointments",
 		"appointment-addons",
@@ -32,11 +33,22 @@ func supportedOperations() components.EndpointRegistryInput {
 		"products",
 	}
 
+	writeSupport := []string{
+		"appointments",
+		"blocks",
+		"certificates",
+		"clients",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
