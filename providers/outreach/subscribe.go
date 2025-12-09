@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 	"strconv"
 	"sync"
 
@@ -26,6 +27,7 @@ func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	}
 }
 
+// Subscribe creates subscriptions for the specified objects and events.
 // nolint: funlen, cyclop
 func (c *Connector) Subscribe(
 	ctx context.Context,
@@ -294,9 +296,7 @@ func (c *Connector) UpdateSubscription(
 					finalResult.Subscriptions[objName] = make(map[ModuleEvent]createSubscriptionsResponse)
 				}
 
-				for eventName, response := range eventsMap {
-					finalResult.Subscriptions[objName][eventName] = response
-				}
+				maps.Copy(finalResult.Subscriptions[objName], eventsMap)
 			}
 		}
 	}
