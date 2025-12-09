@@ -1384,7 +1384,14 @@ func TestGetRequestHeaders(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			result := GetRequestHeaders(tt.request)
-			assert.Equal(t, tt.expected, result)
+
+			if tt.expected == nil {
+				assert.Nil(t, result)
+				return
+			}
+
+			require.NotNil(t, result)
+			assert.ElementsMatch(t, tt.expected, result, "headers should match regardless of order")
 		})
 	}
 }
