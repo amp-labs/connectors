@@ -211,7 +211,7 @@ func (evt SubscriptionEvent) RecordId() (string, error) {
 	return id, nil
 }
 
-// No workspace concept in Outreach.
+// Workspace returns an empty string as there is no workspace concept in Outreach.
 func (evt SubscriptionEvent) Workspace() (string, error) {
 	return "", nil
 }

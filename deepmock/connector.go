@@ -13,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/internal/future"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/google/uuid"
@@ -51,10 +52,11 @@ const (
 
 // Connector is an in-memory mock connector with JSON schema validation.
 type Connector struct {
-	client  *common.JSONHTTPClient
-	params  *parameters
-	schemas schemaRegistry
-	storage *Storage
+	client    *common.JSONHTTPClient
+	params    *parameters
+	schemas   schemaRegistry
+	storage   *Storage
+	observers []func(action string, record map[string]any)
 }
 
 // Compile-time interface checks.
@@ -77,47 +79,14 @@ func NewConnector(schemas map[string][]byte, opts ...Option) (*Connector, error)
 	}
 
 	// Determine which schemas to use (raw vs struct-derived)
-	var finalSchemas map[string][]byte
-
-	switch {
-	case len(schemas) > 0:
-		// Raw schemas provided
-		finalSchemas = schemas
-
-		// Warn if both raw and struct schemas are provided
-		if len(params.structSchemas) > 0 {
-			slog.Warn("both raw schemas and struct schemas provided; using raw schemas",
-				"rawSchemaCount", len(schemas),
-				"structSchemaCount", len(params.structSchemas))
-		}
-	case len(params.structSchemas) > 0:
-		// Derive schemas from structs
-		var err error
-
-		finalSchemas, err = DeriveSchemasFromStructs(params.structSchemas)
-		if err != nil {
-			return nil, fmt.Errorf("failed to derive schemas from structs: %w", err)
-		}
-	default:
-		// Neither provided
-		return nil, fmt.Errorf("%w: must provide either raw schemas or use WithStructSchemas option", ErrMissingParam)
+	finalSchemas, err := selectSchemas(schemas, params.structSchemas)
+	if err != nil {
+		return nil, err
 	}
 
 	// Extract special fields from raw schemas before compilation
 	// (compilation may not preserve custom x-amp extensions)
-	idFields := make(map[string]string)
-	updatedFields := make(map[string]string)
-
-	for objectName, rawSchema := range finalSchemas {
-		idField, updatedField := extractSpecialFieldsFromRaw(rawSchema)
-		if idField != "" {
-			idFields[objectName] = idField
-		}
-
-		if updatedField != "" {
-			updatedFields[objectName] = updatedField
-		}
-	}
+	idFields, updatedFields := extractSpecialFields(finalSchemas)
 
 	// Parse schemas
 	parsedSchemas, err := parseSchemas(finalSchemas)
@@ -132,9 +101,10 @@ func NewConnector(schemas map[string][]byte, opts ...Option) (*Connector, error)
 		client: &common.JSONHTTPClient{
 			HTTPClient: params.Caller,
 		},
-		params:  params,
-		schemas: parsedSchemas,
-		storage: storage,
+		params:    params,
+		schemas:   parsedSchemas,
+		storage:   storage,
+		observers: params.observers,
 	}, nil
 }
 
@@ -161,7 +131,7 @@ func (c *Connector) Provider() providers.Provider {
 // Read retrieves records for an object with pagination and filtering.
 //
 //nolint:cyclop,funlen // Complexity from pagination, filtering, field selection logic
-func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+func (c *Connector) Read(_ context.Context, params common.ReadParams) (*common.ReadResult, error) {
 	// Validate parameters
 	if err := params.ValidateParams(true); err != nil {
 		return nil, err
@@ -176,25 +146,6 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 	records, err := c.storage.List(params.ObjectName, params.Since, params.Until)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list records: %w", err)
-	}
-
-	// Apply field filtering if specified
-	if len(params.Fields) > 0 {
-		filteredRecords := make([]map[string]any, len(records))
-
-		for i, record := range records {
-			filtered := make(map[string]any)
-
-			for field := range params.Fields {
-				if value, exists := record[field]; exists {
-					filtered[field] = value
-				}
-			}
-
-			filteredRecords[i] = filtered
-		}
-
-		records = filteredRecords
 	}
 
 	// Parse pagination parameters
@@ -230,16 +181,29 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 
 	// Build result rows
 	rows := make([]common.ReadResultRow, len(pageRecords))
-	for i, record := range pageRecords {
+	for index, record := range pageRecords {
 		// Build fields map with lowercase keys
+		// If specific fields are requested, only include those fields
+		// Otherwise, include all fields from the record
 		fields := make(map[string]any)
-		for key, value := range record {
-			fields[strings.ToLower(key)] = value
+
+		if len(params.Fields) > 0 {
+			// Field filtering: only include requested fields
+			for field := range params.Fields {
+				if value, exists := record[field]; exists {
+					fields[strings.ToLower(field)] = value
+				}
+			}
+		} else {
+			// No field filtering: include all fields
+			for key, value := range record {
+				fields[strings.ToLower(key)] = value
+			}
 		}
 
-		rows[i] = common.ReadResultRow{
+		rows[index] = common.ReadResultRow{
 			Fields: fields,
-			Raw:    record,
+			Raw:    record, // Always include full record in Raw
 		}
 	}
 
@@ -265,7 +229,7 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 // Write creates or updates a record.
 //
 //nolint:cyclop,funlen,nestif // Complexity from create/update branching and ID/timestamp generation logic
-func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*common.WriteResult, error) {
+func (c *Connector) Write(_ context.Context, params common.WriteParams) (*common.WriteResult, error) {
 	// Validate parameters
 	if err := params.ValidateParams(); err != nil {
 		return nil, err
@@ -291,8 +255,8 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 	// Determine operation (create vs update)
 	if params.RecordId == "" {
 		// CREATE operation
-		idField := c.storage.idFields[params.ObjectName]
-		updatedField := c.storage.updatedFields[params.ObjectName]
+		idField := c.storage.idFields[ObjectName(params.ObjectName)]
+		updatedField := c.storage.updatedFields[ObjectName(params.ObjectName)]
 
 		// Generate ID if field exists and not provided
 		if idField != "" {
@@ -331,7 +295,7 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 		}
 
 		// Update timestamp field if not explicitly provided in the update
-		updatedField := c.storage.updatedFields[params.ObjectName]
+		updatedField := c.storage.updatedFields[ObjectName(params.ObjectName)]
 		if updatedField != "" {
 			// Only auto-generate if not explicitly provided in the update data
 			if _, providedInUpdate := recordMap[updatedField]; !providedInUpdate {
@@ -347,9 +311,27 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 		return nil, fmt.Errorf("validation failed: %w", err)
 	}
 
+	// Deep copy before storing (for observers)
+	recordCopy, err := deepCopyRecord(finalRecord)
+	if err != nil {
+		return nil, fmt.Errorf("failed to copy record: %w", err)
+	}
+
 	// Store record
 	if err := c.storage.Store(params.ObjectName, recordID, finalRecord); err != nil {
 		return nil, fmt.Errorf("failed to store record: %w", err)
+	}
+
+	// Send to observers, if any
+	for _, observe := range c.observers {
+		recordCopyCopy, err := deepCopyRecord(recordCopy)
+		if err == nil {
+			c.sendRecordToObserver("write", recordCopyCopy, observe)
+		} else {
+			slog.Warn("deepCopyRecord failed", "error", err)
+
+			c.sendRecordToObserver("write", recordCopy, observe)
+		}
 	}
 
 	return &common.WriteResult{
@@ -360,7 +342,7 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 }
 
 // Delete removes a record.
-func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
+func (c *Connector) Delete(_ context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
 	// Validate parameters
 	if err := params.ValidateParams(); err != nil {
 		return nil, err
@@ -371,10 +353,20 @@ func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) 
 		return nil, fmt.Errorf("%w: %s", ErrSchemaNotFound, params.ObjectName)
 	}
 
+	record, err := c.storage.Get(params.ObjectName, params.RecordId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to delete record: %w", err)
+	}
+
 	// Delete record from storage
-	err := c.storage.Delete(params.ObjectName, params.RecordId)
+	err = c.storage.Delete(params.ObjectName, params.RecordId)
 	if err != nil {
 		return nil, err
+	}
+
+	// Send to observers, if any
+	for _, observe := range c.observers {
+		c.sendRecordToObserver("delete", record, observe)
 	}
 
 	return &connectors.DeleteResult{
@@ -384,7 +376,7 @@ func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) 
 
 // ListObjectMetadata returns metadata for specified objects.
 func (c *Connector) ListObjectMetadata(
-	ctx context.Context,
+	_ context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
 	if len(objectNames) == 0 {
@@ -445,8 +437,8 @@ func (c *Connector) generateRandomRecordWithDepth(objectName string, depth int) 
 	}
 
 	// Get special fields
-	idField := c.storage.idFields[objectName]
-	updatedField := c.storage.updatedFields[objectName]
+	idField := c.storage.idFields[ObjectName(objectName)]
+	updatedField := c.storage.updatedFields[ObjectName(objectName)]
 
 	// Retry logic for validation failures
 	var (
@@ -1025,4 +1017,64 @@ func generateNumberInRange(minValue, maxValue *float64) float64 {
 	}
 
 	return gofakeit.Float64Range(minVal, maxVal)
+}
+
+// selectSchemas determines which schemas to use: raw schemas or struct-derived schemas.
+// It prioritizes raw schemas if provided, warns if both are provided, and falls back to struct schemas.
+func selectSchemas(rawSchemas map[string][]byte, structSchemas map[string]any) (map[string][]byte, error) {
+	switch {
+	case len(rawSchemas) > 0:
+		// Raw schemas provided
+		// Warn if both raw and struct schemas are provided
+		if len(structSchemas) > 0 {
+			slog.Warn("both raw schemas and struct schemas provided; using raw schemas",
+				"rawSchemaCount", len(rawSchemas),
+				"structSchemaCount", len(structSchemas))
+		}
+
+		return rawSchemas, nil
+	case len(structSchemas) > 0:
+		// Derive schemas from structs
+		finalSchemas, err := DeriveSchemasFromStructs(structSchemas)
+		if err != nil {
+			return nil, fmt.Errorf("failed to derive schemas from structs: %w", err)
+		}
+
+		return finalSchemas, nil
+	default:
+		// Neither provided
+		return nil, fmt.Errorf("%w: must provide either raw schemas or use WithStructSchemas option", ErrMissingParam)
+	}
+}
+
+// extractSpecialFields extracts ID and updated timestamp field names from all raw schemas.
+// Returns two maps: objectName -> idField and objectName -> updatedField.
+func extractSpecialFields(schemas map[string][]byte) (idFields, updatedFields map[string]string) {
+	idFields = make(map[string]string)
+	updatedFields = make(map[string]string)
+
+	for objectName, rawSchema := range schemas {
+		idField, updatedField := extractSpecialFieldsFromRaw(rawSchema)
+		if idField != "" {
+			idFields[objectName] = idField
+		}
+
+		if updatedField != "" {
+			updatedFields[objectName] = updatedField
+		}
+	}
+
+	return idFields, updatedFields
+}
+
+func (c *Connector) sendRecordToObserver(
+	action string,
+	record map[string]any,
+	observer func(action string, record map[string]any),
+) {
+	_ = future.Go[struct{}](func() (struct{}, error) {
+		observer(action, record)
+
+		return struct{}{}, nil
+	})
 }

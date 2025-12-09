@@ -14,6 +14,8 @@ type parameters struct {
 
 	structSchemas map[string]any
 	err           error
+
+	observers []func(action string, record map[string]any)
 }
 
 // ValidateParams checks that all required parameters are present and valid.
@@ -34,6 +36,13 @@ func (p parameters) ValidateParams() error {
 
 // Option is a function that configures the connector parameters.
 type Option = func(*parameters)
+
+// WithObserver adds an observer for modifications to the schema.
+func WithObserver(f func(action string, record map[string]any)) Option {
+	return func(p *parameters) {
+		p.observers = append(p.observers, f)
+	}
+}
 
 // WithClient wraps an HTTP client in a JSONHTTPClient.
 func WithClient(client *http.Client) Option {

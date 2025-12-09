@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/google/uuid"
 	"github.com/kaptinlin/jsonschema"
 )
@@ -14,22 +15,31 @@ import (
 // Storage provides thread-safe in-memory storage for records.
 type Storage struct {
 	mu            sync.RWMutex
-	data          map[string]map[string]map[string]any // objectName -> recordID -> record
-	idFields      map[string]string                    // objectName -> ID field name
-	updatedFields map[string]string                    // objectName -> updated timestamp field name
+	data          map[ObjectName]map[RecordID]common.Record // objectName -> recordID -> record
+	idFields      map[ObjectName]string                     // objectName -> ID field name
+	updatedFields map[ObjectName]string                     // objectName -> updated timestamp field name
 }
 
 // NewStorage creates a new Storage instance.
 func NewStorage(schemas schemaRegistry, idFields, updatedFields map[string]string) *Storage {
 	storage := &Storage{
-		data:          make(map[string]map[string]map[string]any),
-		idFields:      idFields,
-		updatedFields: updatedFields,
+		data:          make(map[ObjectName]map[RecordID]common.Record),
+		idFields:      make(map[ObjectName]string),
+		updatedFields: make(map[ObjectName]string),
 	}
 
-	// Initialize object maps
+	// Initialize object maps and convert string keys to typed keys
 	for objectName := range schemas {
-		storage.data[objectName] = make(map[string]map[string]any)
+		storage.data[ObjectName(objectName)] = make(map[RecordID]common.Record)
+	}
+
+	// Convert string maps to typed maps
+	for objectName, fieldName := range idFields {
+		storage.idFields[ObjectName(objectName)] = fieldName
+	}
+
+	for objectName, fieldName := range updatedFields {
+		storage.updatedFields[ObjectName(objectName)] = fieldName
 	}
 
 	return storage
@@ -89,11 +99,12 @@ func (s *Storage) Store(objectName, recordID string, record map[string]any) erro
 	}
 
 	// Initialize object map if needed
-	if _, exists := s.data[objectName]; !exists {
-		s.data[objectName] = make(map[string]map[string]any)
+	objName := ObjectName(objectName)
+	if _, exists := s.data[objName]; !exists {
+		s.data[objName] = make(map[RecordID]common.Record)
 	}
 
-	s.data[objectName][recordID] = recordCopy
+	s.data[objName][RecordID(recordID)] = recordCopy
 
 	return nil
 }
@@ -103,12 +114,12 @@ func (s *Storage) Get(objectName, recordID string) (map[string]any, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	objectData, exists := s.data[objectName]
+	objectData, exists := s.data[ObjectName(objectName)]
 	if !exists {
 		return nil, fmt.Errorf("%w: object %s", ErrRecordNotFound, objectName)
 	}
 
-	record, exists := objectData[recordID]
+	record, exists := objectData[RecordID(recordID)]
 	if !exists {
 		return nil, fmt.Errorf("%w: record %s", ErrRecordNotFound, recordID)
 	}
@@ -127,7 +138,7 @@ func (s *Storage) GetAll(objectName string) ([]map[string]any, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	objectData, exists := s.data[objectName]
+	objectData, exists := s.data[ObjectName(objectName)]
 	if !exists {
 		return []map[string]any{}, nil
 	}
@@ -151,16 +162,16 @@ func (s *Storage) Delete(objectName, recordID string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	objectData, exists := s.data[objectName]
+	objectData, exists := s.data[ObjectName(objectName)]
 	if !exists {
 		return fmt.Errorf("%w: object %s", ErrRecordNotFound, objectName)
 	}
 
-	if _, exists := objectData[recordID]; !exists {
+	if _, exists := objectData[RecordID(recordID)]; !exists {
 		return fmt.Errorf("%w: record %s", ErrRecordNotFound, recordID)
 	}
 
-	delete(objectData, recordID)
+	delete(objectData, RecordID(recordID))
 
 	return nil
 }
@@ -172,13 +183,13 @@ func (s *Storage) List(objectName string, since, until time.Time) ([]map[string]
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	objectData, exists := s.data[objectName]
+	objectData, exists := s.data[ObjectName(objectName)]
 	if !exists {
 		return []map[string]any{}, nil
 	}
 
 	// Get the updated field name for this object
-	updatedField := s.updatedFields[objectName]
+	updatedField := s.updatedFields[ObjectName(objectName)]
 
 	records := make([]map[string]any, 0)
 

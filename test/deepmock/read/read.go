@@ -15,6 +15,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	deepmocktest "github.com/amp-labs/connectors/test/deepmock"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
 func main() {
@@ -165,45 +166,11 @@ func testReadContacts(ctx context.Context, conn *deepmock.Connector) {
 func testReadWithPagination(ctx context.Context, conn *deepmock.Connector) {
 	slog.Info("Reading contacts with pagination (PageSize=10)")
 
-	pageSize := 10
-	currentPage := 1
-	var nextPageToken common.NextPageToken
-	totalRecords := 0
-
-	for {
-		result, err := conn.Read(ctx, common.ReadParams{
-			ObjectName: "contacts",
-			Fields:     datautils.NewStringSet("id", "email"),
-			PageSize:   pageSize,
-			NextPage:   nextPageToken,
-		})
-		if err != nil {
-			slog.Error("Failed to read page", "page", currentPage, "error", err)
-			break
-		}
-
-		recordCount := len(result.Data)
-		totalRecords += recordCount
-
-		slog.Info("Page retrieved",
-			"page", currentPage,
-			"recordsInPage", recordCount,
-			"hasNextPage", !result.Done)
-
-		if result.Done {
-			slog.Info("Pagination complete", "totalPages", currentPage, "totalRecords", totalRecords)
-			break
-		}
-
-		nextPageToken = result.NextPage
-		currentPage++
-
-		// Safety check to prevent infinite loops
-		if currentPage > 100 {
-			slog.Warn("Stopping pagination after 100 pages")
-			break
-		}
-	}
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "contacts",
+		Fields:     datautils.NewStringSet("id", "email"),
+		PageSize:   10,
+	})
 
 	fmt.Println()
 }
