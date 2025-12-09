@@ -83,12 +83,13 @@ func buildReadBody(config common.ReadParams) map[string]any {
 	}
 
 	if config.ObjectName == objectNameCalls {
+		// https://app.gong.io/settings/api/documentation#post-/v2/calls/extensive
 		body["contentSelector"] = map[string]any{
 			"context": "Extended",
 			"exposedFields": map[string]any{
 				"parties": true,
+				"media":   true,
 			},
-			"media": true,
 		}
 	}
 

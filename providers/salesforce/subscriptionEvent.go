@@ -1,4 +1,4 @@
-// nolint:lll,tagliatelle
+// nolint:lll,tagliatelle,godoclint
 package salesforce
 
 import (
@@ -35,7 +35,7 @@ func (*Connector) VerifyWebhookMessage(
 
 var _ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 
-// ChangeEvent represents data received from a subscription.
+// CollapsedSubscriptionEvent represents data received from a subscription.
 // A single event may contain multiple record identifiers and can be expanded into multiple SubscriptionEvent instances.
 //
 // Structure reference:
@@ -46,7 +46,7 @@ func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
 	return maps.Clone(e), nil
 }
 
-// ToRecordList splits bundled event into per record event.
+// SubscriptionEventList splits bundled event into per record event.
 // Every property is duplicated across SubscriptionEvent. RecordIds is spread as RecordId.
 func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.SubscriptionEvent, error) {
 	eventHeaderMap, err := extractChangeEventHeader(e)
@@ -104,7 +104,7 @@ var (
 // https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_field_conversion_single_event.htm.
 type SubscriptionEvent map[string]any
 
-func (s SubscriptionEvent) asMap() (common.StringMap, error) {
+func (s SubscriptionEvent) asMap() (common.StringMap, error) { // nolint:funcorder
 	return extractChangeEventHeader(s)
 }
 
@@ -308,7 +308,7 @@ func isStandardCompoundField(obj, field string) bool {
 	return ok
 }
 
-func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) (string, error) {
+func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) (string, error) { // nolint:funcorder
 	if !strings.Contains(name, ".") {
 		return name, nil
 	}
@@ -317,8 +317,8 @@ func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) (string, error
 	// We're interested in the rightmost part, but to validate
 	// that indeed it's a compound field, we have to consider the
 	// leftmost part first.
-	parts := strings.SplitN(name, ".", 2) //nolint:mnd,gomnd
-	if len(parts) < 2 {                   //nolint:mnd,gomnd
+	parts := strings.SplitN(name, ".", 2) //nolint:mnd
+	if len(parts) < 2 {                   //nolint:mnd
 		return parts[0], nil
 	}
 

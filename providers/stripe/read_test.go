@@ -47,7 +47,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New( // nolint:goerr113
+				errors.New(
 					"Received unknown parameter: pineapple"),
 			},
 		},

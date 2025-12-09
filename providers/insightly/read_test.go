@@ -45,7 +45,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					"API User does not have access to CommunityComments."),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New("API User does not have access to CommunityComments."), // nolint:goerr113
+				errors.New("API User does not have access to CommunityComments."),
 				common.ErrRetryable,
 			},
 		},

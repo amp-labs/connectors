@@ -63,7 +63,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("400 Bad Request: Your client has issued a malformed or illegal request."), // nolint:goerr113
+				errors.New("400 Bad Request: Your client has issued a malformed or illegal request."),
 			},
 		},
 		{
@@ -75,7 +75,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Keap - Page Not Found"), // nolint:goerr113
+				errors.New("Keap - Page Not Found"),
 			},
 		},
 		// {

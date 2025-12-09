@@ -37,6 +37,7 @@ func (p SearchParams) ValidateParams() error {
 
 type searchCRMParams struct {
 	SearchParams
+
 	PageSize int
 }
 

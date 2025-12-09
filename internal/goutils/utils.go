@@ -1,4 +1,3 @@
-// nolint:ireturn
 package goutils
 
 // Pointer returns a pointer to the given value.

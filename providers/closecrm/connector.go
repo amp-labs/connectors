@@ -37,10 +37,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	return conn, nil
 }
 
-func (c *Connector) getAPIURL(object string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, restAPIVersion, object)
-}
-
 func (c *Connector) Provider() string {
 	return providers.Close
 }
@@ -48,6 +44,10 @@ func (c *Connector) Provider() string {
 // String implements fmt.Stringer interface.
 func (c *Connector) String() string {
 	return c.Provider() + ".Connector"
+}
+
+func (c *Connector) getAPIURL(object string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.BaseURL, restAPIVersion, object)
 }
 
 func (c *Connector) setBaseURL(newURL string) {

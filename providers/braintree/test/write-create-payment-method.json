@@ -1,0 +1,15 @@
+{
+  "data": {
+    "paymentMethodsCreate": {
+      "paymentMethod": {
+        "id": "pm_123",
+        "legacyId": "pm123456",
+        "createdAt": "2025-01-25T10:00:00Z",
+        "customer": {
+          "id": "customer_123",
+          "email": "john.doe@example.com"
+        }
+      }
+    }
+  }
+}

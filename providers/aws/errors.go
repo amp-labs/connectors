@@ -15,6 +15,7 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	}...,
 )
 
+// ResponseError
 // nolint:tagliatelle
 type ResponseError struct {
 	Type    string `json:"__type"`

@@ -295,7 +295,7 @@ func (c *Connector) getDefaultValues(ctx context.Context, o Data) (fields []comm
 		})
 	}
 
-	return
+	return fields, nil
 }
 
 // getOptionValuesForRecordReferenceType retrieves the default option values for a

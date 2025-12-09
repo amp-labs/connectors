@@ -34,12 +34,14 @@ func main() {
 					"id":        "123456",
 					"lastname":  "Dyer (updated)",
 					"firstname": "Siena (updated)",
-				}}, {
+				},
+			}, {
 				Record: map[string]any{
 					"id":        "123456",
 					"lastname":  "Blevins (updated)",
 					"firstname": "Markus (updated)",
-				}}},
+				},
+			}},
 		},
 		{
 			name: "Missing identifier for one record",
@@ -48,11 +50,13 @@ func main() {
 					"id":        "171591000199",
 					"lastname":  "Dyer (updated)",
 					"firstname": "Siena (updated)",
-				}}, {
+				},
+			}, {
 				Record: map[string]any{
 					"lastname":  "Blevins (updated)",
 					"firstname": "Markus (updated)",
-				}}},
+				},
+			}},
 		},
 		{
 			name: "Invalid fields but has identifiers",
@@ -61,12 +65,14 @@ func main() {
 					"id":           "171591000199",
 					"last000name":  "Dyer (updated)",
 					"first000name": "Siena (updated)",
-				}}, {
+				},
+			}, {
 				Record: map[string]any{
 					"id":           "171591000198",
 					"last000name":  "Blevins (updated)",
 					"first000name": "Markus (updated)",
-				}}},
+				},
+			}},
 		},
 		{
 			name: "Both records are valid",
@@ -75,12 +81,14 @@ func main() {
 					"id":        "171591000199",
 					"lastname":  "Dyer (updated)",
 					"firstname": "Siena (updated)",
-				}}, {
+				},
+			}, {
 				Record: map[string]any{
 					"id":        "171591000198",
 					"lastname":  "Blevins (updated)",
 					"firstname": "Markus (updated)",
-				}}},
+				},
+			}},
 		},
 	}
 

@@ -15,7 +15,6 @@ import (
 func TestErrorHandler(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
-	// nolint:goerr113
 	var (
 		// These errors imitate what each error handler would return after response is parsed.
 		// NOTE: we are not interested in parsing itself, rather that the right branches are visited.

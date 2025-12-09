@@ -1,0 +1,97 @@
+{
+  "data": {
+    "__type": {
+      "name": "Customer",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "name": "ID",
+            "kind": "SCALAR",
+            "ofType": {
+              "name": null,
+              "kind": null
+            }
+          }
+        },
+        {
+          "name": "legacyId",
+          "type": {
+            "name": "ID",
+            "kind": "SCALAR",
+            "ofType": {
+              "name": null,
+              "kind": null
+            }
+          }
+        },
+        {
+          "name": "createdAt",
+          "type": {
+            "name": "Timestamp",
+            "kind": "SCALAR",
+            "ofType": {
+              "name": null,
+              "kind": null
+            }
+          }
+        },
+        {
+          "name": "email",
+          "type": {
+            "name": "String",
+            "kind": "SCALAR",
+            "ofType": {
+              "name": null,
+              "kind": null
+            }
+          }
+        },
+        {
+          "name": "company",
+          "type": {
+            "name": "String",
+            "kind": "SCALAR",
+            "ofType": {
+              "name": null,
+              "kind": null
+            }
+          }
+        },
+        {
+          "name": "firstName",
+          "type": {
+            "name": "String",
+            "kind": "SCALAR",
+            "ofType": {
+              "name": null,
+              "kind": null
+            }
+          }
+        },
+        {
+          "name": "lastName",
+          "type": {
+            "name": "String",
+            "kind": "SCALAR",
+            "ofType": {
+              "name": null,
+              "kind": null
+            }
+          }
+        },
+        {
+          "name": "phone",
+          "type": {
+            "name": "String",
+            "kind": "SCALAR",
+            "ofType": {
+              "name": null,
+              "kind": null
+            }
+          }
+        }
+      ]
+    }
+  }
+}
