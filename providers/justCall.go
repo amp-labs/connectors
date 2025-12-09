@@ -37,8 +37,5 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1733335200/media/justcall_logo.svg",
 			},
 		},
-		Labels: &Labels{
-			LabelExperimental: LabelValueTrue,
-		},
 	})
 }
