@@ -32,7 +32,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 
 		{
-			Name: "Successfully creation of a client",
+			Name: "Successful creation of a client",
 			Input: common.WriteParams{ObjectName: "clients", RecordData: map[string]any{
 				"firstName": "Bob",
 				"lastName":  "Burger",
@@ -56,7 +56,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Successfully creation of an appointment",
+			Name: "Successful creation of an appointment",
 			Input: common.WriteParams{ObjectName: "appointments", RecordData: map[string]any{
 				"firstName": "Bob",
 				"lastName":  "McTest",
