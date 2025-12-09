@@ -21,7 +21,7 @@ require (
 	github.com/iancoleman/strcase v0.3.0
 	github.com/invopop/jsonschema v0.13.0
 	github.com/invopop/yaml v0.3.1
-	github.com/kaptinlin/jsonschema v0.6.2
+	github.com/kaptinlin/jsonschema v0.6.3
 	github.com/mitchellh/hashstructure v1.1.0
 	github.com/spyzhov/ajson v0.9.6
 	github.com/stretchr/testify v1.11.1
