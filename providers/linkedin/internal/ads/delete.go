@@ -7,7 +7,7 @@ import (
 	u "net/url"
 
 	"github.com/amp-labs/connectors/common"
-	liinternal "github.com/amp-labs/connectors/providers/linkedin/internal/linkedininternal"
+	"github.com/amp-labs/connectors/providers/linkedin/internal/shared"
 )
 
 func (c *Adapter) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
@@ -23,8 +23,8 @@ func (c *Adapter) buildDeleteRequest(ctx context.Context, params common.DeletePa
 		return nil, err
 	}
 
-	req.Header.Add("LinkedIn-Version", liinternal.LinkedInVersion) // nolint:canonicalheader
-	req.Header.Add("X-Restli-Protocol-Version", liinternal.ProtocolVersion)
+	req.Header.Add("LinkedIn-Version", shared.LinkedInVersion) // nolint:canonicalheader
+	req.Header.Add("X-Restli-Protocol-Version", shared.ProtocolVersion)
 
 	return req, nil
 }

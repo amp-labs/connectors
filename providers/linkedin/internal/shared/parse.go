@@ -1,4 +1,4 @@
-package linkedininternal
+package shared //nolint:revive
 
 import (
 	"strconv"

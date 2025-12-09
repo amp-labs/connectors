@@ -13,7 +13,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
-	liinternal "github.com/amp-labs/connectors/providers/linkedin/internal/linkedininternal"
+	"github.com/amp-labs/connectors/providers/linkedin/internal/shared"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
@@ -67,7 +67,7 @@ func constructor(base *components.Connector) (*Adapter, error) {
 			BuildRequest:  adapter.buildSingleObjectMetadataRequest,
 			ParseResponse: adapter.parseSingleObjectMetadataResponse,
 			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(liinternal.ErrorFormats, nil),
+				JSON: interpreter.NewFaultyResponder(shared.ErrorFormats, nil),
 			}.Handle,
 		},
 	)
@@ -87,7 +87,7 @@ func constructor(base *components.Connector) (*Adapter, error) {
 			BuildRequest:  adapter.buildReadRequest,
 			ParseResponse: adapter.parseReadResponse,
 			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(liinternal.ErrorFormats, nil),
+				JSON: interpreter.NewFaultyResponder(shared.ErrorFormats, nil),
 			}.Handle,
 		},
 	)
@@ -100,7 +100,7 @@ func constructor(base *components.Connector) (*Adapter, error) {
 			BuildRequest:  adapter.buildWriteRequest,
 			ParseResponse: adapter.parseWriteResponse,
 			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(liinternal.ErrorFormats, nil),
+				JSON: interpreter.NewFaultyResponder(shared.ErrorFormats, nil),
 			}.Handle,
 		},
 	)
@@ -113,7 +113,7 @@ func constructor(base *components.Connector) (*Adapter, error) {
 			BuildRequest:  adapter.buildDeleteRequest,
 			ParseResponse: adapter.parseDeleteResponse,
 			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(liinternal.ErrorFormats, nil),
+				JSON: interpreter.NewFaultyResponder(shared.ErrorFormats, nil),
 			}.Handle,
 		},
 	)

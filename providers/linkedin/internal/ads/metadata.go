@@ -7,7 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
-	liinternal "github.com/amp-labs/connectors/providers/linkedin/internal/linkedininternal"
+	"github.com/amp-labs/connectors/providers/linkedin/internal/shared"
 )
 
 type responseObject struct {
@@ -38,8 +38,8 @@ func (c *Adapter) buildSingleObjectMetadataRequest(ctx context.Context, objectNa
 		return nil, err
 	}
 
-	req.Header.Add("LinkedIn-Version", liinternal.LinkedInVersion) // nolint:canonicalheader
-	req.Header.Add("X-Restli-Protocol-Version", liinternal.ProtocolVersion)
+	req.Header.Add("LinkedIn-Version", shared.LinkedInVersion) // nolint:canonicalheader
+	req.Header.Add("X-Restli-Protocol-Version", shared.ProtocolVersion)
 
 	return req, nil
 }
@@ -61,7 +61,7 @@ func (c *Adapter) parseSingleObjectMetadataResponse(
 	}
 
 	if len(data.Elements) == 0 {
-		return nil, liinternal.ErrMetadataNotFound
+		return nil, shared.ErrMetadataNotFound
 	}
 
 	// Using the first result data to generate the metadata.
