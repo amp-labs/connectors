@@ -12,14 +12,24 @@ import (
 )
 
 const (
-	// JustCall pagination: max 100 per page
+	// JustCall pagination: max 100 per page for most endpoints
 	// https://developer.justcall.io/reference/call_list_v21
-	justcallMaxPerPage = "100"
+	defaultPerPage          = "100"
+	whatsappPerPage         = "50" // WhatsApp endpoints have lower limit
+	callsAIPerPage          = "20" // Calls AI max is 20
+	salesDialerCampaignPage = "50" // Sales Dialer campaigns max is 50
 )
 
 // objectsWithoutPagination lists objects that don't support per_page parameter.
 var objectsWithoutPagination = map[string]bool{
 	"webhooks": true,
+}
+
+// objectsWithLowerPageLimit lists objects with lower per_page limits.
+var objectsWithLowerPageLimit = map[string]string{
+	"whatsapp/messages":       whatsappPerPage,
+	"calls_ai":                callsAIPerPage,
+	"sales_dialer/campaigns":  salesDialerCampaignPage,
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -38,7 +48,12 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	if !objectsWithoutPagination[params.ObjectName] {
-		url.WithQueryParam("per_page", justcallMaxPerPage)
+		perPage := defaultPerPage
+		if limit, ok := objectsWithLowerPageLimit[params.ObjectName]; ok {
+			perPage = limit
+		}
+
+		url.WithQueryParam("per_page", perPage)
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
