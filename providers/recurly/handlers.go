@@ -116,7 +116,6 @@ func (c *Connector) parseWriteResponse(
 	return &common.WriteResult{
 		Success:  true,
 		RecordId: recordID,
-		Errors:   nil,
 		Data:     resp,
 	}, nil
 }
