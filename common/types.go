@@ -667,23 +667,45 @@ func (n ObjectName) String() string {
 }
 
 type SubscribeParams struct {
+	// Request contains provider-specific parameters that are unique to each subscription.
+	// These parameters can be either optional or required depending on the provider's API requirements.
+	// Each provider defines its own request structure (e.g., webhook URL, secret, unique reference, etc.)
+	// that must be provided when creating subscriptions. The structure is provider-specific and should
+	// match the provider's expected request format for subscription operations.
 	Request any
 	// RegistrationResult is the result of the Connector.Register call.
 	// Connector.Subscribe requires information from the registration.
 	// Not all providers require registration, so this is optional.
 	// eg) Salesforce and HubSpot require registration because
 	RegistrationResult *RegistrationResult
+	// SubscriptionEvents is a normalized view representing the exact subscription state
+	// that should be maintained in the provider's system. This field specifies which
+	// objects and events the caller wants to subscribe to, using a provider-agnostic
+	// format. Connector.Subscribe method will translate these normalized events to its own event
+	// naming conventions when creating subscriptions. This represents the desired
+	// state, which may differ from the actual state returned in SubscriptionResult.ObjectEvents
+	// if some subscription operations fail or are rolled back.
 	SubscriptionEvents map[ObjectName]ObjectEvents
 }
 
 type SubscriptionResult struct { // this corresponds to each API call.
-	Result       any
+	// Result contains the provider's original response data in its raw form.
+	// This field preserves the complete, unmodified response from the provider's API,
+	// allowing callers to access all original metadata, IDs, timestamps, and other
+	// provider-specific information that may not be represented in the transformed ObjectEvents.
+	// The structure of Result is provider-specific and should match the provider's actual API response format.
+	Result any
+	// ObjectEvents represents the transformed view of the subscription state after the operation.
+	// This field contains a normalized, provider-agnostic representation of which objects and events
+	// are currently subscribed in the provider's system. It reflects the exact state after
+	// creating, updating, or deleting subscriptions, and may differ from the requested subscriptions
+	// if some operations failed or were rolled back. This transformed view is useful for tracking
+	// the actual subscription state without needing to parse provider-specific response formats.
 	ObjectEvents map[ObjectName]ObjectEvents
 	Status       SubscriptionStatus
 
-	// Below fields are deprecated, and will be removed in a future release.
+	// Below fields are soon to be DEPRECATED, and will be removed in a future release.
 	// Use ObjectEvents instead.
-
 	Objects []ObjectName
 	Events  []SubscriptionEventType
 	// ["create", "update", "delete"]
