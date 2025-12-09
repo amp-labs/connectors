@@ -11,10 +11,10 @@ import (
 // nolint:gochecknoglobals
 var (
 	//go:embed schemas.json
-	SchemasJSON []byte
+	schemaContent []byte
 
 	FileManager = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV2](
-		SchemasJSON, fileconv.NewSiblingFileLocator())
+		schemaContent, fileconv.NewSiblingFileLocator())
 
 	Schemas = FileManager.MustLoadSchemas()
 )
