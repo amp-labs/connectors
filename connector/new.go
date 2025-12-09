@@ -87,6 +87,7 @@ import (
 	"github.com/amp-labs/connectors/providers/pipeliner"
 	"github.com/amp-labs/connectors/providers/podium"
 	"github.com/amp-labs/connectors/providers/pylon"
+	"github.com/amp-labs/connectors/providers/recurly"
 	"github.com/amp-labs/connectors/providers/sageintacct"
 	"github.com/amp-labs/connectors/providers/salesflare"
 	"github.com/amp-labs/connectors/providers/salesforce"
@@ -199,6 +200,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Pipeliner:               wrapper(newPipelinerConnector),
 	providers.Podium:                  wrapper(newPodiumConnector),
 	providers.Pylon:                   wrapper(newPylonConnector),
+	providers.Recurly:                 wrapper(newRecurlyConnector),
 	providers.SageIntacct:             wrapper(newSageIntacctConnector),
 	providers.Salesflare:              wrapper(newSalesflareConnector),
 	providers.Salesforce:              wrapper(newSalesforceConnector),
@@ -889,4 +891,8 @@ func newAircallConnector(
 
 func newSolarWindsConnector(params common.ConnectorParams) (*solarwinds.Connector, error) {
 	return solarwinds.NewConnector(params)
+}
+
+func newRecurlyConnector(params common.ConnectorParams) (*recurly.Connector, error) {
+	return recurly.NewConnector(params)
 }
