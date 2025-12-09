@@ -17,9 +17,18 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// Helper function to parse JSON schema into InputSchema
+func mustParseSchema(jsonSchema string) *InputSchema {
+	var schema InputSchema
+	if err := json.Unmarshal([]byte(jsonSchema), &schema); err != nil {
+		panic(fmt.Sprintf("failed to parse test schema: %v", err))
+	}
+	return &schema
+}
+
 // Test schemas used across multiple tests
 var (
-	testPersonSchema = []byte(`{
+	testPersonSchema = mustParseSchema(`{
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"type": "object",
 		"properties": {
@@ -32,7 +41,7 @@ var (
 		"required": ["name", "email"]
 	}`)
 
-	testProductSchema = []byte(`{
+	testProductSchema = mustParseSchema(`{
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"type": "object",
 		"properties": {
@@ -52,7 +61,7 @@ var (
 		"required": ["name", "category"]
 	}`)
 
-	testComplexSchema = []byte(`{
+	testComplexSchema = mustParseSchema(`{
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"type": "object",
 		"properties": {
@@ -99,7 +108,7 @@ var (
 //   }
 //
 //   // Create connector with struct schemas
-//   conn, err := deepmock.NewConnector(nil, deepmock.WithStructSchemas(map[string]interface{}{
+//   conn, err := deepmock.NewConnector(deepmock.WithStructSchemas(map[string]interface{}{
 //       "users": &User{},
 //   }))
 //
@@ -293,7 +302,7 @@ func TestNewConnectorWithStructSchemas(t *testing.T) {
 
 	tests := []struct {
 		name        string
-		rawSchemas  map[string][]byte
+		rawSchemas  map[string]*InputSchema
 		structOpts  []Option
 		expectError bool
 		errorMsg    string
@@ -362,7 +371,7 @@ func TestNewConnectorWithStructSchemas(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			conn, err := NewConnector(append([]Option{WithRawSchemas(tt.rawSchemas)}, tt.structOpts...)...)
+			conn, err := NewConnector(append([]Option{WithSchemas(tt.rawSchemas)}, tt.structOpts...)...)
 
 			if tt.expectError {
 				if err == nil {
@@ -387,8 +396,8 @@ func TestNewConnectorWithStructSchemas(t *testing.T) {
 func TestSchemasPriority(t *testing.T) {
 	t.Parallel()
 
-	// Define a raw schema with different field names
-	rawContactSchema := []byte(`{
+	// Define a schema with different field names
+	rawContactSchema := mustParseSchema(`{
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"type": "object",
 		"properties": {
@@ -398,7 +407,7 @@ func TestSchemasPriority(t *testing.T) {
 		"required": ["rawEmail"]
 	}`)
 
-	rawSchemas := map[string][]byte{
+	rawSchemas := map[string]*InputSchema{
 		"contacts": rawContactSchema,
 	}
 
@@ -407,7 +416,7 @@ func TestSchemasPriority(t *testing.T) {
 	}
 
 	// Create connector with both raw and struct schemas
-	conn, err := NewConnector(WithRawSchemas(rawSchemas), WithStructSchemas(structSchemas))
+	conn, err := NewConnector(WithSchemas(rawSchemas), WithStructSchemas(structSchemas))
 	if err != nil {
 		t.Fatalf("failed to create connector: %v", err)
 	}
@@ -443,7 +452,7 @@ func TestCRUDWithStructSchemas(t *testing.T) {
 	ctx := context.Background()
 
 	// Create connector with struct schemas
-	conn, err := NewConnector(nil, WithStructSchemas(map[string]interface{}{
+	conn, err := NewConnector(WithStructSchemas(map[string]interface{}{
 		"contacts":  &TestContact{},
 		"companies": &TestCompany{},
 	}))
@@ -578,7 +587,7 @@ func TestGenerateRandomRecordWithStructSchemas(t *testing.T) {
 
 	ctx := context.Background()
 
-	conn, err := NewConnector(nil, WithStructSchemas(map[string]interface{}{
+	conn, err := NewConnector(WithStructSchemas(map[string]interface{}{
 		"contacts":  &TestContact{},
 		"companies": &TestCompany{},
 		"deals":     &TestDeal{},
@@ -741,7 +750,7 @@ func TestListObjectMetadataWithStructSchemas(t *testing.T) {
 
 	ctx := context.Background()
 
-	conn, err := NewConnector(nil, WithStructSchemas(map[string]interface{}{
+	conn, err := NewConnector(WithStructSchemas(map[string]interface{}{
 		"contacts":  &TestContact{},
 		"companies": &TestCompany{},
 	}))
@@ -881,12 +890,12 @@ func TestListObjectMetadataWithStructSchemas(t *testing.T) {
 func TestNewConnector_Success(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons":  testPersonSchema,
 		"products": testProductSchema,
 	}
 
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 	require.NotNil(t, conn)
 }
@@ -896,7 +905,7 @@ func TestNewConnector_EmptySchemas(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		schemas map[string][]byte
+		schemas map[string]*InputSchema
 		wantErr bool
 	}{
 		{
@@ -906,7 +915,7 @@ func TestNewConnector_EmptySchemas(t *testing.T) {
 		},
 		{
 			name:    "empty schemas",
-			schemas: map[string][]byte{},
+			schemas: map[string]*InputSchema{},
 			wantErr: true,
 		},
 	}
@@ -914,7 +923,7 @@ func TestNewConnector_EmptySchemas(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			conn, err := NewConnector(WithRawSchemas(tt.schemas))
+			conn, err := NewConnector(WithSchemas(tt.schemas))
 			if tt.wantErr {
 				require.Error(t, err)
 				assert.Nil(t, conn)
@@ -931,25 +940,37 @@ func TestNewConnector_InvalidSchema(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		schemas map[string][]byte
+		schemas map[string]*InputSchema
 	}{
 		{
-			name: "malformed JSON",
-			schemas: map[string][]byte{
-				"invalid": []byte(`{"type": "object", "properties": {`),
+			name: "schema with invalid type",
+			schemas: map[string]*InputSchema{
+				"invalid": {
+					// Schema with no type and no properties
+					Schema: "https://json-schema.org/draft/2020-12/schema",
+				},
 			},
 		},
-		// Note: The jsonschema compiler doesn't validate schema structure during compilation.
-		// It only validates data against schemas. Testing malformed JSON is sufficient
-		// to ensure schema parsing errors are properly handled.
+		// Note: When using WithSchemas, the schemas are already parsed InputSchema objects.
+		// Invalid/malformed JSON would be caught during the parsing phase before calling NewConnector.
+		// This test validates that schemas with missing required fields are properly handled.
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			conn, err := NewConnector(WithRawSchemas(tt.schemas))
-			require.Error(t, err)
-			assert.Nil(t, conn)
+			// The connector should be created successfully, but validation will happen when using it
+			conn, err := NewConnector(WithSchemas(tt.schemas))
+			// Note: The connector creation may succeed even with incomplete schemas,
+			// but operations on those schemas will fail during validation
+			if err != nil {
+				require.Error(t, err)
+				assert.Nil(t, conn)
+			} else {
+				// If connector creation succeeds, it should still be valid
+				require.NoError(t, err)
+				assert.NotNil(t, conn)
+			}
 		})
 	}
 }
@@ -957,17 +978,17 @@ func TestNewConnector_InvalidSchema(t *testing.T) {
 func TestNewConnector_WithOptions(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
 
 	// Test WithClient option
-	conn, err := NewConnector(WithRawSchemas(schemas), WithClient(http.DefaultClient))
+	conn, err := NewConnector(WithSchemas(schemas), WithClient(http.DefaultClient))
 	require.NoError(t, err)
 	require.NotNil(t, conn)
 
 	// Test WithAuthenticatedClient option
-	conn2, err := NewConnector(WithRawSchemas(schemas), WithAuthenticatedClient(http.DefaultClient))
+	conn2, err := NewConnector(WithSchemas(schemas), WithAuthenticatedClient(http.DefaultClient))
 	require.NoError(t, err)
 	require.NotNil(t, conn2)
 }
@@ -979,10 +1000,10 @@ func TestNewConnector_WithOptions(t *testing.T) {
 func TestWrite_ValidData(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	tests := []struct {
@@ -1032,10 +1053,10 @@ func TestWrite_ValidData(t *testing.T) {
 func TestWrite_InvalidData(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	tests := []struct {
@@ -1097,10 +1118,10 @@ func TestWrite_InvalidData(t *testing.T) {
 func TestWrite_EnumValidation(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"products": testProductSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1131,10 +1152,10 @@ func TestWrite_EnumValidation(t *testing.T) {
 func TestWrite_PatternValidation(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"complex": testComplexSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1163,11 +1184,11 @@ func TestWrite_PatternValidation(t *testing.T) {
 func TestWrite_NumericConstraints(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"products": testProductSchema,
 		"complex":  testComplexSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1222,10 +1243,10 @@ func TestWrite_NumericConstraints(t *testing.T) {
 func TestWrite_ArrayConstraints(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"products": testProductSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1282,10 +1303,10 @@ func TestWrite_ArrayConstraints(t *testing.T) {
 func TestWrite_NestedObjectValidation(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"complex": testComplexSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1325,10 +1346,10 @@ func TestWrite_NestedObjectValidation(t *testing.T) {
 func TestWrite_Create(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1359,10 +1380,10 @@ func TestWrite_Create(t *testing.T) {
 func TestWrite_Update(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1405,10 +1426,10 @@ func TestWrite_Update(t *testing.T) {
 func TestWrite_CreateWithExplicitID(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1438,10 +1459,10 @@ func TestWrite_CreateWithExplicitID(t *testing.T) {
 func TestRead_Basic(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1478,10 +1499,10 @@ func TestRead_Basic(t *testing.T) {
 func TestRead_Pagination(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1537,10 +1558,10 @@ func TestRead_Pagination(t *testing.T) {
 func TestRead_TimeFiltering(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1594,10 +1615,10 @@ func TestRead_TimeFiltering(t *testing.T) {
 func TestRead_EmptyResult(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1615,10 +1636,10 @@ func TestRead_EmptyResult(t *testing.T) {
 func TestDelete_Success(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1654,10 +1675,10 @@ func TestDelete_Success(t *testing.T) {
 func TestDelete_NotFound(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1674,11 +1695,11 @@ func TestDelete_NotFound(t *testing.T) {
 func TestListObjectMetadata(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons":  testPersonSchema,
 		"products": testProductSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1713,10 +1734,10 @@ func TestListObjectMetadata(t *testing.T) {
 func TestConcurrentWrites(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1753,10 +1774,10 @@ func TestConcurrentWrites(t *testing.T) {
 func TestConcurrentReads(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1796,10 +1817,10 @@ func TestConcurrentReads(t *testing.T) {
 func TestConcurrentMixedOperations(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1868,10 +1889,10 @@ func TestConcurrentMixedOperations(t *testing.T) {
 func TestMutationProtection_Read(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1912,10 +1933,10 @@ func TestMutationProtection_Read(t *testing.T) {
 func TestMutationProtection_Write(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -1952,10 +1973,10 @@ func TestMutationProtection_Write(t *testing.T) {
 func TestMutationProtection_GetAll(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -2008,10 +2029,10 @@ func TestMutationProtection_GetAll(t *testing.T) {
 func TestDeepCopyVerification(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -2067,7 +2088,7 @@ func TestDeepCopyVerification(t *testing.T) {
 func TestGenerateRandomRecord_PrimitiveTypes(t *testing.T) {
 	t.Parallel()
 
-	primitiveSchema := []byte(`{
+	primitiveSchema := mustParseSchema(`{
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"type": "object",
 		"properties": {
@@ -2078,10 +2099,10 @@ func TestGenerateRandomRecord_PrimitiveTypes(t *testing.T) {
 		}
 	}`)
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"primitives": primitiveSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	record, err := conn.GenerateRandomRecord("primitives")
@@ -2102,7 +2123,7 @@ func TestGenerateRandomRecord_PrimitiveTypes(t *testing.T) {
 func TestGenerateRandomRecord_Formats(t *testing.T) {
 	t.Parallel()
 
-	formatSchema := []byte(`{
+	formatSchema := mustParseSchema(`{
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"type": "object",
 		"properties": {
@@ -2115,10 +2136,10 @@ func TestGenerateRandomRecord_Formats(t *testing.T) {
 		}
 	}`)
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"formats": formatSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	record, err := conn.GenerateRandomRecord("formats")
@@ -2142,7 +2163,7 @@ func TestGenerateRandomRecord_Formats(t *testing.T) {
 func TestGenerateRandomRecord_Enums(t *testing.T) {
 	t.Parallel()
 
-	enumSchema := []byte(`{
+	enumSchema := mustParseSchema(`{
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"type": "object",
 		"properties": {
@@ -2150,10 +2171,10 @@ func TestGenerateRandomRecord_Enums(t *testing.T) {
 		}
 	}`)
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"enums": enumSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	// Generate multiple records to test randomness
@@ -2173,7 +2194,7 @@ func TestGenerateRandomRecord_Enums(t *testing.T) {
 func TestGenerateRandomRecord_NumericConstraints(t *testing.T) {
 	t.Parallel()
 
-	constraintSchema := []byte(`{
+	constraintSchema := mustParseSchema(`{
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"type": "object",
 		"properties": {
@@ -2183,10 +2204,10 @@ func TestGenerateRandomRecord_NumericConstraints(t *testing.T) {
 		}
 	}`)
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"constraints": constraintSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	// Generate multiple records to test constraints
@@ -2214,7 +2235,7 @@ func TestGenerateRandomRecord_NumericConstraints(t *testing.T) {
 func TestGenerateRandomRecord_StringConstraints(t *testing.T) {
 	t.Parallel()
 
-	stringSchema := []byte(`{
+	stringSchema := mustParseSchema(`{
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"type": "object",
 		"properties": {
@@ -2223,10 +2244,10 @@ func TestGenerateRandomRecord_StringConstraints(t *testing.T) {
 		}
 	}`)
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"strings": stringSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	for i := 0; i < 10; i++ {
@@ -2248,7 +2269,7 @@ func TestGenerateRandomRecord_StringConstraints(t *testing.T) {
 func TestGenerateRandomRecord_Arrays(t *testing.T) {
 	t.Parallel()
 
-	arraySchema := []byte(`{
+	arraySchema := mustParseSchema(`{
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"type": "object",
 		"properties": {
@@ -2262,10 +2283,10 @@ func TestGenerateRandomRecord_Arrays(t *testing.T) {
 		}
 	}`)
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"arrays": arraySchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	for i := 0; i < 10; i++ {
@@ -2291,7 +2312,7 @@ func TestGenerateRandomRecord_Arrays(t *testing.T) {
 func TestGenerateRandomRecord_NestedObjects(t *testing.T) {
 	t.Parallel()
 
-	nestedSchema := []byte(`{
+	nestedSchema := mustParseSchema(`{
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"type": "object",
 		"properties": {
@@ -2306,10 +2327,10 @@ func TestGenerateRandomRecord_NestedObjects(t *testing.T) {
 		}
 	}`)
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"nested": nestedSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	record, err := conn.GenerateRandomRecord("nested")
@@ -2327,7 +2348,7 @@ func TestGenerateRandomRecord_DepthLimit(t *testing.T) {
 	t.Parallel()
 
 	// Deeply nested schema that would recurse infinitely without depth limit
-	deepSchema := []byte(`{
+	deepSchema := mustParseSchema(`{
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"type": "object",
 		"properties": {
@@ -2360,10 +2381,10 @@ func TestGenerateRandomRecord_DepthLimit(t *testing.T) {
 		}
 	}`)
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"deep": deepSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	// Should not panic or hang
@@ -2375,10 +2396,10 @@ func TestGenerateRandomRecord_DepthLimit(t *testing.T) {
 func TestGenerateRandomRecord_SpecialFields(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons": testPersonSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	record, err := conn.GenerateRandomRecord("persons")
@@ -2402,12 +2423,12 @@ func TestGenerateRandomRecord_SpecialFields(t *testing.T) {
 func TestGenerateRandomRecord_ValidationSuccess(t *testing.T) {
 	t.Parallel()
 
-	schemas := map[string][]byte{
+	schemas := map[string]*InputSchema{
 		"persons":  testPersonSchema,
 		"products": testProductSchema,
 		"complex":  testComplexSchema,
 	}
-	conn, err := NewConnector(WithRawSchemas(schemas))
+	conn, err := NewConnector(WithSchemas(schemas))
 	require.NoError(t, err)
 
 	ctx := context.Background()

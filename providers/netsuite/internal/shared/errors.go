@@ -1,4 +1,4 @@
-package netsuiteinternal
+package shared
 
 import (
 	"fmt"

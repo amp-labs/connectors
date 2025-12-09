@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/kaptinlin/jsonschema"
 )
 
 // parameters holds the configuration for the deepmock connector.
@@ -15,7 +14,7 @@ type parameters struct {
 
 	rawSchemas    map[string][]byte
 	structSchemas map[string]any
-	schemas       map[string]*jsonschema.Schema
+	schemas       map[string]*InputSchema
 
 	err error
 
@@ -74,7 +73,7 @@ func WithRawSchemas(schemas map[string][]byte) Option {
 // WithSchemas configures the connector with pre-parsed JSON schemas.
 // Use this option when you have already parsed jsonschema.Schema objects.
 // This is an alternative to providing raw JSON schemas via WithRawSchemas.
-func WithSchemas(schemas map[string]*jsonschema.Schema) Option {
+func WithSchemas(schemas map[string]*InputSchema) Option {
 	return func(p *parameters) {
 		p.schemas = schemas
 	}

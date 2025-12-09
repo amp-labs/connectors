@@ -12,7 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/internal/simultaneously"
-	nsinternal "github.com/amp-labs/connectors/providers/netsuite/internal/netsuiteinternal"
+	"github.com/amp-labs/connectors/providers/netsuite/internal/shared"
 )
 
 const (
@@ -70,7 +70,7 @@ func (a *Adapter) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(resp,
 		common.ExtractRecordsFromPath("items"),
-		nsinternal.GetNextPageURL(),
+		shared.GetNextPageURL(),
 		a.getMarshaledData(ctx),
 		params.Fields,
 	)

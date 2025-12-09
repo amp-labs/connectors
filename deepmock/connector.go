@@ -17,7 +17,6 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/google/uuid"
-	"github.com/kaptinlin/jsonschema"
 )
 
 // JSON Schema type constants.
@@ -1025,7 +1024,7 @@ func generateNumberInRange(minValue, maxValue *float64) float64 {
 func selectSchemas(
 	rawSchemas map[string][]byte,
 	structSchemas map[string]any,
-	schemas map[string]*jsonschema.Schema,
+	schemas map[string]*InputSchema,
 ) (map[string][]byte, error) {
 	switch {
 	case len(schemas) > 0:

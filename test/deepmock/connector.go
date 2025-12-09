@@ -2,13 +2,24 @@ package deepmock
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/amp-labs/connectors/deepmock"
 )
 
+// mustParseSchema is a helper function to parse JSON schema into InputSchema
+func mustParseSchema(jsonSchema string) *deepmock.InputSchema {
+	var schema deepmock.InputSchema
+	if err := json.Unmarshal([]byte(jsonSchema), &schema); err != nil {
+		panic(fmt.Sprintf("failed to parse schema: %v", err))
+	}
+	return &schema
+}
+
 // Sample CRM-style schemas for demonstration purposes
 
-var contactSchemaJSON = []byte(`{
+var contactSchemaJSON = mustParseSchema(`{
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"type": "object",
 	"properties": {
@@ -59,7 +70,7 @@ var contactSchemaJSON = []byte(`{
 	"required": ["email"]
 }`)
 
-var companySchemaJSON = []byte(`{
+var companySchemaJSON = mustParseSchema(`{
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"type": "object",
 	"properties": {
@@ -98,7 +109,7 @@ var companySchemaJSON = []byte(`{
 	"required": ["name"]
 }`)
 
-var dealSchemaJSON = []byte(`{
+var dealSchemaJSON = mustParseSchema(`{
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"type": "object",
 	"properties": {
@@ -161,13 +172,13 @@ var dealSchemaJSON = []byte(`{
 //	    RecordData: record,
 //	})
 func GetDeepMockConnector(_ context.Context) *deepmock.Connector {
-	schemas := map[string][]byte{
+	schemas := map[string]*deepmock.InputSchema{
 		"contacts":  contactSchemaJSON,
 		"companies": companySchemaJSON,
 		"deals":     dealSchemaJSON,
 	}
 
-	conn, err := deepmock.NewConnector(deepmock.WithRawSchemas(schemas))
+	conn, err := deepmock.NewConnector(deepmock.WithSchemas(schemas))
 	if err != nil {
 		panic(err)
 	}
