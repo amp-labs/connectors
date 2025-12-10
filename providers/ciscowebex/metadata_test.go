@@ -191,6 +191,27 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name:  "Returns error when server responds with 500",
+			Input: []string{"people"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1/people"),
+					mockcond.QueryParam("max", "1"),
+				},
+				Then: mockserver.Response(http.StatusInternalServerError),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Errors: map[string]error{
+					"people": mockutils.ExpectedSubsetErrors{
+						common.ErrServer,
+					},
+				},
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {
