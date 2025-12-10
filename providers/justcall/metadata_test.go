@@ -25,17 +25,17 @@ func TestListObjectMetadata(t *testing.T) {
 						DisplayName: "Users",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
-								DisplayName:  "ID",
-								ValueType:    "integer",
-								ProviderType: "integer",
+								DisplayName:  "id",
+								ValueType:    "int",
+								ProviderType: "number",
 							},
 							"name": {
-								DisplayName:  "Name",
+								DisplayName:  "name",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
 							"email": {
-								DisplayName:  "Email",
+								DisplayName:  "email",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
@@ -45,24 +45,24 @@ func TestListObjectMetadata(t *testing.T) {
 						DisplayName: "Calls",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
-								DisplayName:  "ID",
-								ValueType:    "integer",
-								ProviderType: "integer",
+								DisplayName:  "id",
+								ValueType:    "int",
+								ProviderType: "number",
 							},
-							"direction": {
-								DisplayName:  "Direction",
+							"contact_number": {
+								DisplayName:  "contact_number",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
-							"status": {
-								DisplayName:  "Status",
+							"agent_name": {
+								DisplayName:  "agent_name",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
-							"duration": {
-								DisplayName:  "Duration",
-								ValueType:    "integer",
-								ProviderType: "integer",
+							"call_date": {
+								DisplayName:  "call_date",
+								ValueType:    "string",
+								ProviderType: "string",
 							},
 						},
 					},
@@ -96,6 +96,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	}
 
 	connector.SetUnitTestBaseURL(serverURL)
+	connector.BaseURL = serverURL
 
 	return connector, nil
 }
