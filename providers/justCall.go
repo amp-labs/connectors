@@ -22,19 +22,19 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     true,
+			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1733335200/media/justcall_icon.png",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1733335200/media/justcall_logo.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1765374822/media/justcall.io_1765374817.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1765374913/media/justcall.io_1765374911.jpg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1733335200/media/justcall_icon.png",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1733335200/media/justcall_logo.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1765374822/media/justcall.io_1765374817.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1765374913/media/justcall.io_1765374911.jpg",
 			},
 		},
 	})
