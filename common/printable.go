@@ -70,6 +70,7 @@ func logResponseWithoutBody(logger *slog.Logger, res *http.Response, method, id,
 			"url":           fullURL,
 			"correlationId": id,
 			"headers":       headers,
+			"status":        res.StatusCode,
 		},
 	)
 
@@ -85,6 +86,7 @@ func logResponseWithBody(logger *slog.Logger, res *http.Response, method, id, fu
 			"url":           fullURL,
 			"correlationId": id,
 			"headers":       headers,
+			"status":        res.StatusCode,
 		},
 	)
 
@@ -504,11 +506,7 @@ func getBodyAsPrintable(bcr bodyContentReader) (*PrintablePayload, error) { //no
 	// Check printability (sample max N bytes)
 	const maxCheckLen = 1024
 
-	checkLen := len(decodedData)
-
-	if checkLen > maxCheckLen {
-		checkLen = maxCheckLen
-	}
+	checkLen := min(len(decodedData), maxCheckLen)
 
 	sample := decodedData[:checkLen]
 

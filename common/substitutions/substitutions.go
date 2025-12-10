@@ -8,7 +8,7 @@ import (
 
 // substituteStruct applies substitutions to all string fields in the struct pointed to by input.
 // It handles nested structs, pointers, slices, arrays, maps (including pointers-to-maps), and structs inside maps.
-func substituteStruct(input interface{}, substitutions map[string]string) error {
+func substituteStruct(input any, substitutions map[string]string) error {
 	val := reflect.ValueOf(input)
 	if val.Kind() != reflect.Ptr || val.IsNil() {
 		return nil

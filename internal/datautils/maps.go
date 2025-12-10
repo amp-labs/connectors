@@ -3,6 +3,7 @@ package datautils
 import (
 	"encoding/gob"
 	"encoding/json"
+	"maps"
 
 	"github.com/amp-labs/connectors/internal/goutils"
 )
@@ -29,10 +30,7 @@ func FromMap[K comparable, V any](source map[K]V) Map[K, V] {
 // a separate map container, not deep copies of the values.
 func (m Map[K, V]) ShallowCopy() Map[K, V] {
 	result := make(map[K]V)
-
-	for key, value := range m {
-		result[key] = value
-	}
+	maps.Copy(result, m)
 
 	return result
 }
@@ -81,9 +79,7 @@ func (m Map[K, V]) Values() []V {
 }
 
 func (m Map[K, V]) AddMapValues(source Map[K, V]) {
-	for k, v := range source {
-		m[k] = v
-	}
+	maps.Copy(m, source)
 }
 
 // Select returns the values for the given keys, along with the keys not found.
