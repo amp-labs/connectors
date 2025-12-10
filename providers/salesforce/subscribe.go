@@ -29,7 +29,7 @@ type Filter struct {
 	FilterExpression string
 }
 
-type SalesforceSubscribeRequest struct {
+type SubscriptionRequest struct {
 	Filters map[common.ObjectName]*Filter
 }
 
@@ -67,10 +67,11 @@ func (c *Connector) Subscribe(
 		)
 	}
 
-	var req *SalesforceSubscribeRequest
+	var req *SubscriptionRequest
 
 	if params.Request != nil {
-		req, ok = params.Request.(*SalesforceSubscribeRequest)
+		//nolint:varnamelen
+		req, ok = params.Request.(*SubscriptionRequest)
 		if !ok {
 			return nil, fmt.Errorf(
 				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'", errInvalidRequestType,
