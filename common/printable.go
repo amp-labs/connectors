@@ -62,6 +62,17 @@ func logRequestWithoutBody(logger *slog.Logger, req *http.Request, method, id, f
 }
 
 func logResponseWithoutBody(logger *slog.Logger, res *http.Response, method, id, fullURL string) {
+	if res == nil {
+		logger.Debug("HTTP response",
+			"method", method,
+			"url", fullURL,
+			"correlationId", id,
+			"status", "nil (request failed)",
+		)
+
+		return
+	}
+
 	headers := redactSensitiveResponseHeaders(GetResponseHeaders(res))
 
 	logger = logger.With(
@@ -78,6 +89,17 @@ func logResponseWithoutBody(logger *slog.Logger, res *http.Response, method, id,
 }
 
 func logResponseWithBody(logger *slog.Logger, res *http.Response, method, id, fullURL string, body []byte) {
+	if res == nil {
+		logger.Debug("HTTP response",
+			"method", method,
+			"url", fullURL,
+			"correlationId", id,
+			"status", "nil (request failed)",
+		)
+
+		return
+	}
+
 	headers := redactSensitiveResponseHeaders(GetResponseHeaders(res))
 
 	logger = logger.With(
