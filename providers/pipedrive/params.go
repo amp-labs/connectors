@@ -14,6 +14,8 @@ type Option = func(params *parameters)
 
 type parameters struct {
 	paramsbuilder.Client
+
+	Module common.ModuleID
 }
 
 func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
@@ -44,5 +46,11 @@ func WithClient(ctx context.Context, client *http.Client,
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 	return func(params *parameters) {
 		params.WithAuthenticatedClient(client)
+	}
+}
+
+func WithModule(module common.ModuleID) Option {
+	return func(params *parameters) {
+		params.Module = module
 	}
 }

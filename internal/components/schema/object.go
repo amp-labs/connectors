@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components/operations"
@@ -47,10 +48,8 @@ func (p *ObjectSchemaProvider) ListObjectMetadata(
 		return nil, common.ErrMissingObjects
 	}
 
-	for _, object := range objects {
-		if object == "" {
-			return nil, fmt.Errorf("%w: object name cannot be empty", common.ErrMissingObjects)
-		}
+	if slices.Contains(objects, "") {
+		return nil, fmt.Errorf("%w: object name cannot be empty", common.ErrMissingObjects)
 	}
 
 	switch p.fetchType {
