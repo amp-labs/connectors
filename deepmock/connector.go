@@ -13,7 +13,6 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/internal/future"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/google/uuid"
@@ -52,11 +51,10 @@ const (
 
 // Connector is an in-memory mock connector with JSON schema validation.
 type Connector struct {
-	client    *common.JSONHTTPClient
-	params    *parameters
-	schemas   schemaRegistry
-	storage   *Storage
-	observers []func(action string, record map[string]any)
+	client  *common.JSONHTTPClient
+	params  *parameters
+	schemas SchemaRegistry
+	storage Storage
 }
 
 // Compile-time interface checks.
@@ -85,7 +83,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	}
 
 	// Parse schemas
-	parsedSchemas, err := parseSchemas(finalSchemas)
+	parsedSchemas, err := ParseSchemas(finalSchemas)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse schemas: %w", err)
 	}
@@ -94,17 +92,28 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	// (compilation may not preserve custom x-amp extensions)
 	idFields, updatedFields := extractSpecialFields(finalSchemas)
 
+	var store Storage
+
 	// Initialize storage with parsed schemas and special fields
-	storage := NewStorage(parsedSchemas, idFields, updatedFields)
+	switch {
+	case params.storage != nil:
+		store = params.storage
+	case params.storageFactory != nil:
+		store, err = params.storageFactory(parsedSchemas, idFields, updatedFields, params.observers)
+		if err != nil {
+			return nil, err
+		}
+	default:
+		store = NewStorage(parsedSchemas, idFields, updatedFields, params.observers)
+	}
 
 	return &Connector{
 		client: &common.JSONHTTPClient{
 			HTTPClient: params.Caller,
 		},
-		params:    params,
-		schemas:   parsedSchemas,
-		storage:   storage,
-		observers: params.observers,
+		params:  params,
+		schemas: parsedSchemas,
+		storage: store,
 	}, nil
 }
 
@@ -255,8 +264,8 @@ func (c *Connector) Write(_ context.Context, params common.WriteParams) (*common
 	// Determine operation (create vs update)
 	if params.RecordId == "" {
 		// CREATE operation
-		idField := c.storage.idFields[ObjectName(params.ObjectName)]
-		updatedField := c.storage.updatedFields[ObjectName(params.ObjectName)]
+		idField := c.storage.GetIdFields()[ObjectName(params.ObjectName)]
+		updatedField := c.storage.GetUpdatedFields()[ObjectName(params.ObjectName)]
 
 		// Generate ID if field exists and not provided
 		if idField != "" {
@@ -295,7 +304,7 @@ func (c *Connector) Write(_ context.Context, params common.WriteParams) (*common
 		}
 
 		// Update timestamp field if not explicitly provided in the update
-		updatedField := c.storage.updatedFields[ObjectName(params.ObjectName)]
+		updatedField := c.storage.GetUpdatedFields()[ObjectName(params.ObjectName)]
 		if updatedField != "" {
 			// Only auto-generate if not explicitly provided in the update data
 			if _, providedInUpdate := recordMap[updatedField]; !providedInUpdate {
@@ -311,27 +320,9 @@ func (c *Connector) Write(_ context.Context, params common.WriteParams) (*common
 		return nil, fmt.Errorf("validation failed: %w", err)
 	}
 
-	// Deep copy before storing (for observers)
-	recordCopy, err := deepCopyRecord(finalRecord)
-	if err != nil {
-		return nil, fmt.Errorf("failed to copy record: %w", err)
-	}
-
 	// Store record
 	if err := c.storage.Store(params.ObjectName, recordID, finalRecord); err != nil {
 		return nil, fmt.Errorf("failed to store record: %w", err)
-	}
-
-	// Send to observers, if any
-	for _, observe := range c.observers {
-		recordCopyCopy, err := deepCopyRecord(recordCopy)
-		if err == nil {
-			c.sendRecordToObserver("write", recordCopyCopy, observe)
-		} else {
-			slog.Warn("deepCopyRecord failed", "error", err)
-
-			c.sendRecordToObserver("write", recordCopy, observe)
-		}
 	}
 
 	return &common.WriteResult{
@@ -353,20 +344,10 @@ func (c *Connector) Delete(_ context.Context, params connectors.DeleteParams) (*
 		return nil, fmt.Errorf("%w: %s", ErrSchemaNotFound, params.ObjectName)
 	}
 
-	record, err := c.storage.Get(params.ObjectName, params.RecordId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to delete record: %w", err)
-	}
-
 	// Delete record from storage
-	err = c.storage.Delete(params.ObjectName, params.RecordId)
+	err := c.storage.Delete(params.ObjectName, params.RecordId)
 	if err != nil {
 		return nil, err
-	}
-
-	// Send to observers, if any
-	for _, observe := range c.observers {
-		c.sendRecordToObserver("delete", record, observe)
 	}
 
 	return &connectors.DeleteResult{
@@ -437,8 +418,8 @@ func (c *Connector) generateRandomRecordWithDepth(objectName string, depth int) 
 	}
 
 	// Get special fields
-	idField := c.storage.idFields[ObjectName(objectName)]
-	updatedField := c.storage.updatedFields[ObjectName(objectName)]
+	idField := c.storage.GetIdFields()[ObjectName(objectName)]
+	updatedField := c.storage.GetUpdatedFields()[ObjectName(objectName)]
 
 	// Retry logic for validation failures
 	var (
@@ -1082,16 +1063,4 @@ func extractSpecialFields(schemas map[string][]byte) (idFields, updatedFields ma
 	}
 
 	return idFields, updatedFields
-}
-
-func (c *Connector) sendRecordToObserver(
-	action string,
-	record map[string]any,
-	observer func(action string, record map[string]any),
-) {
-	_ = future.Go[struct{}](func() (struct{}, error) {
-		observer(action, record)
-
-		return struct{}{}, nil
-	})
 }

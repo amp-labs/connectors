@@ -12,13 +12,27 @@ import (
 type parameters struct {
 	paramsbuilder.AuthClient
 
-	rawSchemas    map[string][]byte
+	// rawSchemas holds unparsed JSON schema definitions as byte slices.
+	rawSchemas map[string][]byte
+	// structSchemas holds Go struct templates for schema derivation.
 	structSchemas map[string]any
-	schemas       map[string]*InputSchema
+	// schemas holds parsed and validated JSON schemas.
+	schemas map[string]*InputSchema
 
+	// err holds any error encountered during parameter initialization.
 	err error
 
+	// observers holds callback functions that are notified of data modifications.
 	observers []func(action string, record map[string]any)
+
+	// storage holds the configured storage backend instance.
+	storage Storage
+	// storageFactory creates a new storage backend with the given configuration.
+	storageFactory func(
+		schemas SchemaRegistry,
+		idFields, updatedFields map[string]string,
+		observers []func(action string, record map[string]any),
+	) (Storage, error)
 }
 
 // ValidateParams checks that all required parameters are present and valid.
@@ -85,5 +99,27 @@ func WithSchemas(schemas map[string]*InputSchema) Option {
 func WithStructSchemas(schemas map[string]any) Option {
 	return func(params *parameters) {
 		params.structSchemas = schemas
+	}
+}
+
+// WithStorage configures the connector with a pre-initialized storage backend.
+// Use this option when you want to provide a custom storage implementation.
+func WithStorage(storage Storage) Option {
+	return func(p *parameters) {
+		p.storage = storage
+	}
+}
+
+// WithStorageFactory configures the connector with a factory function for creating storage backends.
+// The factory function receives schema information and observers, allowing for dynamic storage initialization.
+// This is useful when storage needs to be created with specific runtime configuration.
+func WithStorageFactory(f func(
+	schemas SchemaRegistry,
+	idFields, updatedFields map[string]string,
+	observers []func(action string, record map[string]any),
+) (Storage, error),
+) Option {
+	return func(p *parameters) {
+		p.storageFactory = f
 	}
 }
