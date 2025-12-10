@@ -65,10 +65,14 @@ type EventChannelMember struct {
 }
 
 type EventChannelMemberMetadata struct {
-	EventChannel     string   `json:"eventChannel"`
-	SelectedEntity   string   `json:"selectedEntity,omitempty"`
-	EnrichedField    []string `json:"enrichedFields,omitempty"`
-	FilterExpression string   `json:"filterExpression,omitempty"`
+	EventChannel     string           `json:"eventChannel"`
+	SelectedEntity   string           `json:"selectedEntity,omitempty"`
+	EnrichedFields   []*EnrichedField `json:"enrichedFields,omitempty"`
+	FilterExpression string           `json:"filterExpression,omitempty"`
+}
+
+type EnrichedField struct {
+	Name string `json:"name"`
 }
 
 type NamedCredentialParameterType string

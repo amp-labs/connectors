@@ -25,7 +25,7 @@ func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 }
 
 type Filter struct {
-	EnrichedField    []string
+	EnrichedFields   []*EnrichedField
 	FilterExpression string
 }
 
@@ -95,7 +95,7 @@ func (c *Connector) Subscribe(
 		}
 
 		if req != nil && req.Filters != nil && req.Filters[objName] != nil {
-			channelMetadata.EnrichedField = req.Filters[objName].EnrichedField
+			channelMetadata.EnrichedFields = req.Filters[objName].EnrichedFields
 			channelMetadata.FilterExpression = req.Filters[objName].FilterExpression
 		}
 
