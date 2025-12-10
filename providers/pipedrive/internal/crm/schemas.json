@@ -1,0 +1,603 @@
+{
+  "modules": {
+    "crm": {
+      "id": "crm",
+      "path": "",
+      "objects": {
+        "activities": {
+          "displayName": "Activities",
+          "path": "/activities",
+          "responseKey": "data",
+          "fields": {
+            "add_time": {
+              "displayName": "add_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "attendees": {
+              "displayName": "attendees",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "busy": {
+              "displayName": "busy",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "conference_meeting_client": {
+              "displayName": "conference_meeting_client",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "conference_meeting_id": {
+              "displayName": "conference_meeting_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "conference_meeting_url": {
+              "displayName": "conference_meeting_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "creator_user_id": {
+              "displayName": "creator_user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "deal_id": {
+              "displayName": "deal_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "done": {
+              "displayName": "done",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "due_date": {
+              "displayName": "due_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "due_time": {
+              "displayName": "due_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "duration": {
+              "displayName": "duration",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_deleted": {
+              "displayName": "is_deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "lead_id": {
+              "displayName": "lead_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "marked_as_done_time": {
+              "displayName": "marked_as_done_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "note": {
+              "displayName": "note",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "org_id": {
+              "displayName": "org_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "owner_id": {
+              "displayName": "owner_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "participants": {
+              "displayName": "participants",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "person_id": {
+              "displayName": "person_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "priority": {
+              "displayName": "priority",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "project_id": {
+              "displayName": "project_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "public_description": {
+              "displayName": "public_description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "update_time": {
+              "displayName": "update_time",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "deals": {
+          "displayName": "Deals",
+          "path": "/deals",
+          "responseKey": "data",
+          "fields": {
+            "acv": {
+              "displayName": "acv",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "add_time": {
+              "displayName": "add_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "arr": {
+              "displayName": "arr",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "channel": {
+              "displayName": "channel",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "channel_id": {
+              "displayName": "channel_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "close_time": {
+              "displayName": "close_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "currency": {
+              "displayName": "currency",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "expected_close_date": {
+              "displayName": "expected_close_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_archived": {
+              "displayName": "is_archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_deleted": {
+              "displayName": "is_deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "label_ids": {
+              "displayName": "label_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "lost_reason": {
+              "displayName": "lost_reason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lost_time": {
+              "displayName": "lost_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mrr": {
+              "displayName": "mrr",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "org_id": {
+              "displayName": "org_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "origin": {
+              "displayName": "origin",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "origin_id": {
+              "displayName": "origin_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner_id": {
+              "displayName": "owner_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "person_id": {
+              "displayName": "person_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "pipeline_id": {
+              "displayName": "pipeline_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "probability": {
+              "displayName": "probability",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "stage_change_time": {
+              "displayName": "stage_change_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "stage_id": {
+              "displayName": "stage_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "update_time": {
+              "displayName": "update_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "value": {
+              "displayName": "value",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "visible_to": {
+              "displayName": "visible_to",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "won_time": {
+              "displayName": "won_time",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "organizations": {
+          "displayName": "Organizations",
+          "path": "/organizations",
+          "responseKey": "data",
+          "fields": {
+            "add_time": {
+              "displayName": "add_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "address": {
+              "displayName": "address",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_deleted": {
+              "displayName": "is_deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "label_ids": {
+              "displayName": "label_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner_id": {
+              "displayName": "owner_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "update_time": {
+              "displayName": "update_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visible_to": {
+              "displayName": "visible_to",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "persons": {
+          "displayName": "Persons",
+          "path": "/persons",
+          "responseKey": "data",
+          "fields": {
+            "add_time": {
+              "displayName": "add_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "birthday": {
+              "displayName": "birthday",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "emails": {
+              "displayName": "emails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "im": {
+              "displayName": "im",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "is_deleted": {
+              "displayName": "is_deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "job_title": {
+              "displayName": "job_title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "label_ids": {
+              "displayName": "label_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "org_id": {
+              "displayName": "org_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "owner_id": {
+              "displayName": "owner_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "phones": {
+              "displayName": "phones",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "picture_id": {
+              "displayName": "picture_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "postal_address": {
+              "displayName": "postal_address",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "update_time": {
+              "displayName": "update_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visible_to": {
+              "displayName": "visible_to",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "pipelines": {
+          "displayName": "Pipelines",
+          "path": "/pipelines",
+          "responseKey": "data",
+          "fields": {
+            "add_time": {
+              "displayName": "add_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_deal_probability_enabled": {
+              "displayName": "is_deal_probability_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_deleted": {
+              "displayName": "is_deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_selected": {
+              "displayName": "is_selected",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "order_nr": {
+              "displayName": "order_nr",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "update_time": {
+              "displayName": "update_time",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "products": {
+          "displayName": "Products",
+          "path": "/products",
+          "responseKey": "data",
+          "fields": {
+            "data": {
+              "displayName": "data",
+              "valueType": "other"
+            },
+            "success": {
+              "displayName": "success",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "stages": {
+          "displayName": "Stages",
+          "path": "/stages",
+          "responseKey": "data",
+          "fields": {
+            "add_time": {
+              "displayName": "add_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "days_to_rotten": {
+              "displayName": "days_to_rotten",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "deal_probability": {
+              "displayName": "deal_probability",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_deal_rot_enabled": {
+              "displayName": "is_deal_rot_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_deleted": {
+              "displayName": "is_deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "order_nr": {
+              "displayName": "order_nr",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "pipeline_id": {
+              "displayName": "pipeline_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "update_time": {
+              "displayName": "update_time",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
