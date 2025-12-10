@@ -1,10 +1,9 @@
 package providers
 
-const Shopify Provider = "shopify"
+const ShopifyOAuth2 Provider = "shopify-oauth2"
 
 func init() {
-	// Docs: https://shopify.dev/docs/apps/build/authentication-authorization/access-tokens
-	SetInfo(Shopify, ProviderInfo{
+	SetInfo(ShopifyOAuth2, ProviderInfo{
 		DisplayName: "Shopify",
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.myshopify.com/admin/api/2025-10/graphql.json",

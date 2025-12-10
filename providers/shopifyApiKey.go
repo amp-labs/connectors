@@ -3,7 +3,6 @@ package providers
 const ShopifyApiKey Provider = "shopify-apikey" //nolint:gosec
 
 func init() {
-	// Docs: https://shopify.dev/docs/apps/build/authentication-authorization/access-tokens
 	SetInfo(ShopifyApiKey, ProviderInfo{
 		DisplayName: "Shopify",
 		AuthType:    ApiKey,
