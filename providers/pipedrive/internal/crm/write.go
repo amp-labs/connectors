@@ -13,7 +13,6 @@ type writeResponse struct {
 	// Other fields.
 }
 
-// https://developers.pipedrive.com/docs/api/v2
 func (a *Adapter) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	var write common.WriteMethod
 
