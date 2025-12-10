@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/pipedrive"
 	testConn "github.com/amp-labs/connectors/test/pipedrive"
 	"github.com/amp-labs/connectors/test/utils"
@@ -23,7 +24,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := testConn.GetPipedriveConnector(ctx)
+	conn := testConn.GetPipedriveConnector(ctx, providers.ModulePipedriveCRM)
 
 	if err := createActivity(ctx, conn); err != nil {
 		slog.Error(err.Error())
@@ -43,9 +44,21 @@ func createActivity(ctx context.Context, conn *pipedrive.Connector) error {
 		ObjectName: "activities",
 		RecordData: map[string]any{
 			"due_date":           "2024-10-30",
-			"location":           "Dar es salaam",
+			"type":               "call",
 			"public_description": "Demo activity",
 			"subject":            "I usually can't come up with words",
+			"location": map[string]any{
+				"value":              "Eiffel Tower, Avenue Gustave Eiffel, Paris, France",
+				"street_number":      "",
+				"route":              "Avenue Gustave Eiffel",
+				"sublocality":        "",
+				"locality":           "Paris",
+				"admin_area_level_1": "Île-de-France",
+				"admin_area_level_2": "Département de Paris",
+				"country":            "France",
+				"postal_code":        "75007",
+				"formatted_address":  "Av. Gustave Eiffel, 75007 Paris, France",
+			},
 		},
 	}
 

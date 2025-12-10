@@ -60,6 +60,16 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	return conn, nil
 }
 
+func (c *Connector) ListObjectMetadata(ctx context.Context,
+	objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.ListObjectMetadata(ctx, objectNames)
+	}
+
+	return c.legacyAdapter.ListObjectMetadata(ctx, objectNames)
+}
+
 func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
 	if c.crmAdapter != nil {
 		return c.crmAdapter.Read(ctx, params)
@@ -68,8 +78,12 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 	return c.legacyAdapter.Read(ctx, params)
 }
 
-func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
-	return c.legacyAdapter.Write(ctx, config)
+func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*common.WriteResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.Write(ctx, params)
+	}
+
+	return c.legacyAdapter.Write(ctx, params)
 }
 
 // Provider returns the pipedrive provider instance.
@@ -86,14 +100,4 @@ func (c *Connector) SetBaseURL(newURL string) {
 	c.providerInfo.BaseURL = newURL
 	c.moduleInfo.BaseURL = newURL
 	c.HTTPClient().Base = newURL
-}
-
-func (c *Connector) ListObjectMetadata(ctx context.Context,
-	objectNames []string,
-) (*common.ListObjectMetadataResult, error) {
-	if c.crmAdapter != nil {
-		return c.crmAdapter.ListObjectMetadata(ctx, objectNames)
-	}
-
-	return c.legacyAdapter.ListObjectMetadata(ctx, objectNames)
 }
