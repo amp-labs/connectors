@@ -24,6 +24,15 @@ func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	}
 }
 
+type Filter struct {
+	EnrichedField    []string
+	FilterExpression string
+}
+
+type SalesforceSubscribeRequest struct {
+	Filters map[common.ObjectName]*Filter
+}
+
 // Subscribe subscribes to the events for the given objects.
 // It creates event channel members for each object in the subscription.
 // If any of the event channel members fail to be created, it will rollback the operation.
@@ -58,6 +67,18 @@ func (c *Connector) Subscribe(
 		)
 	}
 
+	var req *SalesforceSubscribeRequest
+
+	if params.Request != nil {
+		req, ok = params.Request.(*SalesforceSubscribeRequest)
+		if !ok {
+			return nil, fmt.Errorf(
+				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'", errInvalidRequestType,
+				req, params.Request,
+			)
+		}
+	}
+
 	sfRes := &SubscribeResult{
 		EventChannelMembers: make(map[common.ObjectName]*EventChannelMember),
 	}
@@ -72,6 +93,12 @@ func (c *Connector) Subscribe(
 			EventChannel:   GetChannelName(rawChannelName),
 			SelectedEntity: eventName,
 		}
+
+		if req != nil && req.Filters != nil && req.Filters[objName] != nil {
+			channelMetadata.EnrichedField = req.Filters[objName].EnrichedField
+			channelMetadata.FilterExpression = req.Filters[objName].FilterExpression
+		}
+
 		channelMember := &EventChannelMember{
 			FullName: GetChangeDataCaptureChannelMembershipName(rawChannelName, eventName),
 			Metadata: channelMetadata,
