@@ -1,9 +1,9 @@
 package providers
 
-const ShopifyApiKey Provider = "shopify-apikey" //nolint:gosec
+const Shopify Provider = "shopify" //nolint:gosec
 
 func init() {
-	SetInfo(ShopifyApiKey, ProviderInfo{
+	SetInfo(Shopify, ProviderInfo{
 		DisplayName: "Shopify",
 		AuthType:    ApiKey,
 		BaseURL:     "https://{{.workspace}}.myshopify.com/admin/api/2025-10/graphql.json",
