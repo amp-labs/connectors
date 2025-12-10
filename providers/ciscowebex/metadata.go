@@ -11,18 +11,17 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-// Most objects use "items", but some use different keys (e.g., "groups")
 var objectResponseField = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
 	"groups": "groups",
 }, func(key string) string {
-	return "items" // default response key for most Webex objects
+	return "items"
 })
 
-// Groups uses "count", others use "max"
+// Groups uses "count", others use "max".
 var objectLimitQueryParam = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint:gochecknoglobals
 	"groups": "count",
 }, func(key string) string {
-	return "max" // default query param for most Webex objects
+	return "max"
 })
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
