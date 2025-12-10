@@ -10,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
@@ -160,12 +161,22 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	dotNotationFieldNames, err := convertFieldsToDotNotation(params.Fields.List())
+	if err != nil {
+		return nil, err
+	}
+
+	var FieldNameSet datautils.Set[string]
+	if len(dotNotationFieldNames) > 0 {
+		FieldNameSet = datautils.NewStringSet(dotNotationFieldNames...)
+	}
+
 	return common.ParseResult(
 		response,
 		common.ExtractRecordsFromPath("ia::result"),
 		makeNextRecordsURL(),
 		common.GetMarshaledData,
-		params.Fields,
+		FieldNameSet,
 	)
 }
 

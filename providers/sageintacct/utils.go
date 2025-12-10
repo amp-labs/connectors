@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/amp-labs/amp-common/jsonpath"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/goutils"
@@ -40,11 +41,35 @@ func mapValuesFromEnum(fieldDef SageIntacctFieldDef) []common.FieldValue {
 	return values
 }
 
+// convertFieldsToDotNotation converts bracket notation fields to dot notation.
+// Example: $['audit']['createdby'] -> audit.createdby
+func convertFieldsToDotNotation(fieldNames []string) ([]string, error) {
+	dotNotation := make([]string, 0, len(fieldNames))
+
+	for _, field := range fieldNames {
+		dotNotationField, err := jsonpath.ConvertBracketToDotNotation(field)
+		if err != nil {
+			return nil, err
+		}
+		dotNotation = append(dotNotation, dotNotationField)
+	}
+
+	return dotNotation, nil
+}
+
 func buildReadBody(params common.ReadParams) (map[string]interface{}, error) {
+	// Fields names are in bracket notation format e.g. $['audit']['createdby']
+	// we need to convert them to dot notation e.g. audit.createdby for the API request
 	fieldNames := params.Fields.List()
+
+	dotNotation, err := convertFieldsToDotNotation(fieldNames)
+	if err != nil {
+		return nil, err
+	}
+
 	payload := map[string]any{
 		"object":      params.ObjectName,
-		"fields":      fieldNames,
+		"fields":      dotNotation,
 		pageSizeParam: defaultPageSize,
 		pageParam:     1,
 	}
@@ -91,9 +116,9 @@ func flattenFields(prefix string, fields map[string]SageIntacctFieldDef) map[str
 	result := make(map[string]common.FieldMetadata)
 
 	for fieldName, fieldDef := range fields {
-		fullPath := fieldName
+		fullPath := jsonpath.ToNestedPath(fieldName)
 		if prefix != "" {
-			fullPath = prefix + "." + fieldName
+			fullPath = jsonpath.ToNestedPath(prefix, fieldName)
 		}
 
 		result[fullPath] = common.FieldMetadata{
@@ -116,7 +141,7 @@ func flattenGroups(prefix string, groups map[string]SageIntacctGroup) map[string
 	for groupName, group := range groups {
 		groupPath := groupName
 		if prefix != "" {
-			groupPath = prefix + "." + groupName
+			groupPath = jsonpath.ToNestedPath(prefix, groupName)
 		}
 
 		groupFields := flattenFields(groupPath, group.Fields)
@@ -134,7 +159,7 @@ func flattenRefs(prefix string, refs map[string]SageIntacctRef) map[string]commo
 	for refName, ref := range refs {
 		refPath := refName
 		if prefix != "" {
-			refPath = prefix + "." + refName
+			refPath = jsonpath.ToNestedPath(prefix, refName)
 		}
 
 		refFields := flattenFields(refPath, ref.Fields)
