@@ -1,0 +1,113 @@
+{
+    "notFoundIds": null,
+    "items": [
+        {
+            "id": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS8xNzQ5MmVmNC1iMGFjLTRjMTYtYWRjNS02OTNkMjEyM2Q5MmI",
+            "emails": [
+                "admin@example.wbx.ai"
+            ],
+            "sipAddresses": [
+                {
+                    "type": "personal-room",
+                    "value": "admin73@example.webex.com",
+                    "primary": false
+                },
+                {
+                    "type": "personal-room",
+                    "value": "26638155981@example.webex.com",
+                    "primary": false
+                },
+                {
+                    "type": "cloud-calling",
+                    "value": "admin@example.calls.webex.com",
+                    "primary": true
+                }
+            ],
+            "displayName": "admin@example.wbx.ai",
+            "nickName": "admin",
+            "firstName": "admin",
+            "lastName": "admin",
+            "orgId": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9iMmYzYzMwNC1kYTI1LTQxZTMtOWY4NC0yOGM1NGEyZmMyZjQ",
+            "roles": [
+                "Y2lzY29zcGFyazovL3VzL1JPTEUvaWRfZnVsbF9hZG1pbg"
+            ],
+            "licenses": [
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0Ok1TXzRhOGNkMzU4LTcxMWEtNDkyMC1hYjM3LTljN2Y5ZTIzOWI0MQ",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OlJUVF85N2I4MzhiYS04ZjkxLTRkZTYtOGFkNi01ZmU0NDcxYzA1MmY",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OkNGX2E2YzNmMGM0LTYwNDYtNDBjMy05MTdkLWVjM2FkYTBhZWYzOQ",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OldBTV84Y2I3ZGQ1MS0zOTUzLTQ2ZmQtOWQ1MS0xYWI4NWY3ODE0M2I",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OkZTU18xYjcyOGZmOS03ZGU4LTRjYjctOTU0MC0yOTMyMGI1YTQyY2I",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OkZNU185ZWNhNzgxNC0zMzEzLTQ2NGYtOTY0Mi0wMjM5ODc1YmM5Zjg",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OkZUQ19hMjQ3MzgyOC1hOTgwLTQ3MmYtODE5ZC02YjljY2UwOGU5MmI",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OkVFX2EwNzMxYjAzLTZjNGEtNDhiNS1hN2E4LWRjMmRjYzc5NDY1Yl9leGFtcGxlLndlYmV4LmNvbQ",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OkZUTV9mNWZkZTM1Zi00NzA0LTQ2MGEtODEwZi00YzVkMzUyNDFlNjk"
+            ],
+            "created": "2025-12-05T21:15:33.454Z",
+            "lastModified": "2025-12-07T12:25:50.047Z",
+            "status": "unknown",
+            "invitePending": false,
+            "loginEnabled": true,
+            "type": "person",
+            "siteUrls": [
+                "example.webex.com"
+            ]
+        },
+        {
+            "id": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS9iMTQzNmI1OS02MDExLTQ2OTEtODBjZC0xN2Y0NGRhODVmNTk",
+            "emails": [
+                "testuser@example.com"
+            ],
+            "phoneNumbers": [
+                {
+                    "type": "work_extension",
+                    "value": "09",
+                    "primary": true
+                }
+            ],
+            "sipAddresses": [
+                {
+                    "type": "personal-room",
+                    "value": "testuser@example.webex.com",
+                    "primary": false
+                },
+                {
+                    "type": "cloud-calling",
+                    "value": "testuser@example.calls.webex.com",
+                    "primary": true
+                },
+                {
+                    "type": "personal-room",
+                    "value": "26613373125@example.webex.com",
+                    "primary": false
+                }
+            ],
+            "displayName": "testuser",
+            "nickName": "testuser",
+            "firstName": "test",
+            "lastName": "user",
+            "orgId": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9iMmYzYzMwNC1kYTI1LTQxZTMtOWY4NC0yOGM1NGEyZmMyZjQ",
+            "roles": [],
+            "licenses": [
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OkJDU1REXzE2OTlmM2QzLTFiYTQtNDdhMS1hZDU3LTI0ZTJmMDk0NjU0ZQ",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0Ok1TXzRhOGNkMzU4LTcxMWEtNDkyMC1hYjM3LTljN2Y5ZTIzOWI0MQ",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OlJUVF85N2I4MzhiYS04ZjkxLTRkZTYtOGFkNi01ZmU0NDcxYzA1MmY",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OlVDUFJFTV9jMzMyOWQzMi0xNmVkLTQxNDUtOTUyNS02M2FjYjRiMzFiMjA",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OkZTU18xYjcyOGZmOS03ZGU4LTRjYjctOTU0MC0yOTMyMGI1YTQyY2I",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OkZNU185ZWNhNzgxNC0zMzEzLTQ2NGYtOTY0Mi0wMjM5ODc1YmM5Zjg",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OkZUQ19hMjQ3MzgyOC1hOTgwLTQ3MmYtODE5ZC02YjljY2UwOGU5MmI",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OkVFX2EwNzMxYjAzLTZjNGEtNDhiNS1hN2E4LWRjMmRjYzc5NDY1Yl9leGFtcGxlLndlYmV4LmNvbQ",
+                "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvYjJmM2MzMDQtZGEyNS00MWUzLTlmODQtMjhjNTRhMmZjMmY0OkZUTV9mNWZkZTM1Zi00NzA0LTQ2MGEtODEwZi00YzVkMzUyNDFlNjk"
+            ],
+            "created": "2025-12-05T21:33:47.929Z",
+            "lastModified": "2025-12-05T21:38:59.298Z",
+            "lastActivity": "2025-12-05T21:57:24.630Z",
+            "status": "inactive",
+            "invitePending": false,
+            "loginEnabled": true,
+            "type": "person",
+            "siteUrls": [
+                "example.webex.com"
+            ]
+        }
+    ]
+}
