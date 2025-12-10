@@ -35,9 +35,14 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ModuleID, metadata.Schemas)
 
+	registry, err := components.NewEndpointRegistry(supportedOperations())
+	if err != nil {
+		return nil, err
+	}
+
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
-		components.NewEmptyEndpointRegistry(),
+		registry,
 		connector.ModuleID,
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,

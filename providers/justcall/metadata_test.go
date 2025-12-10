@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
 
-func TestListObjectMetadata(t *testing.T) {
+func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	tests := []testroutines.Metadata{
@@ -24,11 +24,6 @@ func TestListObjectMetadata(t *testing.T) {
 					"users": {
 						DisplayName: "Users",
 						Fields: map[string]common.FieldMetadata{
-							"id": {
-								DisplayName:  "id",
-								ValueType:    "int",
-								ProviderType: "number",
-							},
 							"name": {
 								DisplayName:  "name",
 								ValueType:    "string",
@@ -39,16 +34,16 @@ func TestListObjectMetadata(t *testing.T) {
 								ValueType:    "string",
 								ProviderType: "string",
 							},
+							"role": {
+								DisplayName:  "role",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
 						},
 					},
 					"calls": {
 						DisplayName: "Calls",
 						Fields: map[string]common.FieldMetadata{
-							"id": {
-								DisplayName:  "id",
-								ValueType:    "int",
-								ProviderType: "number",
-							},
 							"contact_number": {
 								DisplayName:  "contact_number",
 								ValueType:    "string",

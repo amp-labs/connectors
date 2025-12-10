@@ -23,25 +23,24 @@ func main() {
 
 	conn := testJustCall.GetJustCallConnector(ctx)
 
-	// All verified working API objects
 	objects := []string{
 		// Core JustCall objects
 		"users",
 		"calls",
 		"contacts",
+		"contacts/blacklist",
 		"texts",
 		"phone-numbers",
 		"webhooks",
-		"texts/tags",
-		"blacklisted-contacts",
-		"whatsapp/messages",
+		"tags",
+		"messages",
 		"user_groups",
+		"list",
 		// JustCall AI
 		"calls_ai",
-		// Sales Dialer (requires Sales Dialer subscription)
+		"meetings_ai",
+		// Sales Dialer
 		"sales_dialer/calls",
-		// Note: sales_dialer/campaigns and sales_dialer/contacts
-		// return errors without active Sales Dialer subscription
 	}
 
 	for _, obj := range objects {

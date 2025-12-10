@@ -3,6 +3,7 @@ package justcall
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -12,7 +13,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestRead(t *testing.T) {
+func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	t.Parallel()
 
 	responseUsers := testutils.DataFromFile(t, "read/users/list.json")
@@ -160,7 +161,7 @@ func TestRead(t *testing.T) {
 			},
 			ExpectedErrs: nil,
 		},
-		{
+		{ //nolint:dupl
 			Name: "Read contacts",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
@@ -208,7 +209,7 @@ func TestRead(t *testing.T) {
 			},
 			ExpectedErrs: nil,
 		},
-		{
+		{ //nolint:dupl
 			Name: "Read texts",
 			Input: common.ReadParams{
 				ObjectName: "texts",
@@ -299,6 +300,41 @@ func TestRead(t *testing.T) {
 				},
 				NextPage: "",
 				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read calls with incremental sync (Since/Until)",
+			Input: common.ReadParams{
+				ObjectName: "calls",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2024, 12, 31, 23, 59, 59, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v2.1/calls"),
+					mockcond.QueryParam("from_datetime", "2024-01-01 00:00:00"),
+					mockcond.QueryParam("to_datetime", "2024-12-31 23:59:59"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCallsFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"id": float64(1001)},
+						Raw:    map[string]any{"call_sid": "CA123456789"},
+					},
+					{
+						Fields: map[string]any{"id": float64(1002)},
+						Raw:    map[string]any{"call_sid": "CA987654321"},
+					},
+				},
+				NextPage: "https://api.justcall.io/v2.1/calls?page=2&per_page=2",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
