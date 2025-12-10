@@ -199,57 +199,10 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 	return nil
 }
 
-// hasFilterChanged checks if the filter expression or enriched fields have changed
-// for a given object between the new request and existing channel member.
-func hasFilterChanged(req *SubscriptionRequest, objName common.ObjectName, existingMember *EventChannelMember) bool {
-	// If no new filter is provided, check if existing member has any filter
-	if req == nil || req.Filters == nil || req.Filters[objName] == nil {
-		// No new filter - check if existing member has any filter
-		if existingMember.Metadata == nil {
-			return false
-		}
-		hasExistingFilter := existingMember.Metadata.FilterExpression != "" || len(existingMember.Metadata.EnrichedFields) > 0
-		return hasExistingFilter // Changed if existing had a filter but new doesn't
-	}
-
-	newFilter := req.Filters[objName]
-
-	// If existing member has no metadata, any new filter means it changed
-	if existingMember.Metadata == nil {
-		return true
-	}
-
-	// Compare filter expressions
-	if newFilter.FilterExpression != existingMember.Metadata.FilterExpression {
-		return true
-	}
-
-	// Compare enriched fields
-	if len(newFilter.EnrichedFields) != len(existingMember.Metadata.EnrichedFields) {
-		return true
-	}
-
-	// Create a map of existing enriched field names for comparison
-	existingFields := make(map[string]bool)
-	for _, field := range existingMember.Metadata.EnrichedFields {
-		existingFields[field.Name] = true
-	}
-
-	// Check if all new fields exist in the existing fields
-	for _, field := range newFilter.EnrichedFields {
-		if !existingFields[field.Name] {
-			return true
-		}
-	}
-
-	return false
-}
-
 // UpdateSubscription will update the subscription by:
 // 1. Removing objects from the previous subscription that are not in the new subscription.
 // 2. Adding new objects to the subscription that are in the new subscription but not in the previous subscription.
-// 3. Updating filter expressions and enriched fields for existing objects if they have changed.
-// 4. Returning the updated subscription result.
+// 3. Returning the updated subscription result.
 //
 //nolint:funlen,cyclop
 func (c *Connector) UpdateSubscription(
@@ -272,43 +225,20 @@ func (c *Connector) UpdateSubscription(
 		)
 	}
 
-	var req *SubscriptionRequest
-	if params.Request != nil {
-		var ok bool
-		req, ok = params.Request.(*SubscriptionRequest)
-		if !ok {
-			return nil, fmt.Errorf(
-				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'",
-				errInvalidRequestType,
-				req, params.Request,
-			)
-		}
-	}
-
 	objectsToExcludeFromSubscription := []common.ObjectName{}
 	objectsExcludeFromDelete := []common.ObjectName{}
 
 	// collect objects to exclude from subscription
 	for objName := range params.SubscriptionEvents {
 		if _, ok := prevState.EventChannelMembers[objName]; ok {
-			// Check if filter has changed for this existing object
-			filterChanged := hasFilterChanged(req, objName, prevState.EventChannelMembers[objName])
-			if !filterChanged {
-				// Only exclude from re-subscription if filter hasn't changed
-				objectsToExcludeFromSubscription = append(objectsToExcludeFromSubscription, objName)
-			}
+			objectsToExcludeFromSubscription = append(objectsToExcludeFromSubscription, objName)
 		}
 	}
 
 	// collect objects to exclude from delete
 	for objName := range prevState.EventChannelMembers {
 		if _, ok := params.SubscriptionEvents[objName]; ok {
-			// Check if filter has changed for this existing object
-			filterChanged := hasFilterChanged(req, objName, prevState.EventChannelMembers[objName])
-			if !filterChanged {
-				// Only keep existing member if filter hasn't changed
-				objectsExcludeFromDelete = append(objectsExcludeFromDelete, objName)
-			}
+			objectsExcludeFromDelete = append(objectsExcludeFromDelete, objName)
 		}
 	}
 
