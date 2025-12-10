@@ -38,20 +38,15 @@ func main() {
 	if err := createCallLog(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
-
-	if err := createCallLog(ctx, conn); err != nil {
-		slog.Error(err.Error())
-	}
 }
 
 func createActivity(ctx context.Context, conn *pipedrive.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "activities",
 		RecordData: map[string]any{
-			"due_date":           "2024-10-30",
-			"location":           "Dar es salaam",
-			"public_description": "Demo activity",
-			"subject":            "I usually can't come up with words",
+			"public_description": "description",
+			"subject":            "Make call with sales people",
+			"type":               "call",
 		},
 	}
 
