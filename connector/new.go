@@ -381,6 +381,7 @@ func newPipedriveConnector(
 ) (*pipedrive.Connector, error) {
 	return pipedrive.NewConnector(
 		pipedrive.WithAuthenticatedClient(params.AuthenticatedClient),
+		pipedrive.WithModule(params.Module),
 	)
 }
 
