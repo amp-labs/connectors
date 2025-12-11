@@ -7,9 +7,12 @@ import (
 	"slices"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/simultaneously"
 )
+
+var _ components.SchemaProvider = &ObjectSchemaProvider{}
 
 var (
 	FetchModeParallel = "parallel" // nolint:gochecknoglobals
