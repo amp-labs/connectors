@@ -14,6 +14,21 @@ func (s *Objects) Get(objectName string) (*objectConfig, bool) {
 	return &cfg, ok
 }
 
+func (s *Objects) ToMetadataMap() map[string]string {
+	result := make(map[string]string)
+
+	// Reverse of newSnowflakeObjects
+	for objectName, objectConfig := range *s {
+		result[fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyQuery)] = objectConfig.query
+		result[fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyTimestampColumn)] = objectConfig.timestampColumn
+		result[fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyTargetLag)] = objectConfig.targetLag
+		result[fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyDynamicTableName)] = objectConfig.dynamicTableName
+		result[fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyStreamName)] = objectConfig.streamName
+	}
+
+	return result
+}
+
 type objectConfig struct {
 	// query is the SQL query defining the data that we treat as an object.
 	query string
