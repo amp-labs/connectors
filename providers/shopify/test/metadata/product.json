@@ -1,0 +1,76 @@
+{
+    "data": {
+        "__type": {
+            "name": "Product",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "ID",
+                            "kind": "SCALAR"
+                        }
+                    }
+                },
+                {
+                    "name": "title",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "description",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "handle",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "status",
+                    "type": {
+                        "name": "ProductStatus",
+                        "kind": "ENUM",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "totalInventory",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "createdAt",
+                    "type": {
+                        "name": "DateTime",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "updatedAt",
+                    "type": {
+                        "name": "DateTime",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                }
+            ]
+        }
+    }
+}
