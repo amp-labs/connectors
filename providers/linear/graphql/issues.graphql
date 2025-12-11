@@ -43,7 +43,8 @@ query Issues($filter: IssueFilter, $first: Int, $after: String) {
       customerTicketCount
       description
       descriptionState
-      assignee{
+      {{- if .assignee}}
+      assignee {
         id
         name
         email
@@ -52,13 +53,17 @@ query Issues($filter: IssueFilter, $first: Int, $after: String) {
         updatedAt
         avatarUrl
       }
-      team{
-         id
+      {{- end}}
+      {{- if .team}}
+      team {
+        id
         name
         description
         issueCount
       }
-      creator{
+      {{- end}}
+      {{- if .creator}}
+      creator {
         active
         createdAt
         email
@@ -68,15 +73,19 @@ query Issues($filter: IssueFilter, $first: Int, $after: String) {
         url
         avatarUrl
       }
-      state{
-       id
+      {{- end}}
+      {{- if .state}}
+      state {
+        id
         name
         type
         createdAt
         description
         position
-    }
-      parent{
+      }
+      {{- end}}
+      {{- if .parent}}
+      parent {
         branchName
         canceledAt
         createdAt
@@ -87,7 +96,9 @@ query Issues($filter: IssueFilter, $first: Int, $after: String) {
         updatedAt
         priority
         id
-    }
+      }
+      {{- end}}
+      {{- if .attachments}}
       attachments {
         nodes {
           id
@@ -100,7 +111,8 @@ query Issues($filter: IssueFilter, $first: Int, $after: String) {
           sourceType
         }
       }
-      }
+      {{- end}}
+    }
     pageInfo {
       hasPreviousPage
       hasNextPage

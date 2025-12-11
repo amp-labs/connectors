@@ -14,6 +14,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
@@ -131,7 +132,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
 
-	query := getQuery("graphql/"+params.ObjectName+".graphql", params.ObjectName)
+	query := getQuery("graphql/"+params.ObjectName+".graphql", params.ObjectName, params.Fields)
 
 	// Create request body with query and variables
 	requestBody := map[string]any{
@@ -157,7 +158,19 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	return req, nil
 }
 
-func getQuery(filepath, queryName string) string {
+// fieldsToTemplateData converts a StringSet of field names to a map for template execution.
+// This allows conditional inclusion of nested fields in GraphQL queries.
+func fieldsToTemplateData(fields datautils.StringSet) map[string]bool {
+	data := make(map[string]bool)
+
+	for field := range fields {
+		data[field] = true
+	}
+
+	return data
+}
+
+func getQuery(filepath, queryName string, fields datautils.StringSet) string {
 	queryBytes, err := queryFS.ReadFile(filepath)
 	if err != nil {
 		return ""
@@ -170,7 +183,10 @@ func getQuery(filepath, queryName string) string {
 
 	var queryBuf bytes.Buffer
 
-	err = tmpl.Execute(&queryBuf, nil)
+	// Convert fields slice to a map for template execution
+	templateData := fieldsToTemplateData(fields)
+
+	err = tmpl.Execute(&queryBuf, templateData)
 	if err != nil {
 		return ""
 	}
@@ -237,7 +253,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
 
-	query := getQuery("graphql/"+params.ObjectName+"-write.graphql", params.ObjectName)
+	query := getQuery("graphql/"+params.ObjectName+"-write.graphql", params.ObjectName, nil)
 
 	requestBody := map[string]any{
 		"query": query,
