@@ -6,8 +6,11 @@ import (
 	"slices"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 )
+
+var _ components.SchemaProvider = &AggregateSchemaProvider{}
 
 // AggregateSchemaProvider gets the schema for multiple objects using a single batch request.
 type AggregateSchemaProvider struct {

@@ -10,6 +10,8 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
+var _ components.SchemaProvider = &CompositeSchemaProvider{}
+
 // CompositeSchemaProvider gets metadata from multiple providers with fallback.
 // For example, certain connectors may have OpenAPI definitions for some objects,
 // while other objects require calling an API endpoint to get the metadata.

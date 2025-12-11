@@ -9,6 +9,8 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 )
 
+var _ components.Reader = &HTTPReader{}
+
 // HTTPReader implements a reading operation using HTTP, and uses the EndpointSupport
 // to validate the operation.
 type HTTPReader struct {
