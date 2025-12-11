@@ -1,13 +1,15 @@
 package snowflake
 
 import (
+	"context"
+	"fmt"
 	"regexp"
 	"strings"
 )
 
-type snowflakeObjects map[string]objectConfig
+type Objects map[string]objectConfig
 
-func (s *snowflakeObjects) Get(objectName string) (*objectConfig, bool) {
+func (s *Objects) Get(objectName string) (*objectConfig, bool) {
 	cfg, ok := (*s)[objectName]
 	return &cfg, ok
 }
@@ -44,8 +46,8 @@ const (
 
 const objectsPrefix = "$['objects']"
 
-func newSnowflakeObjects(paramsMap map[string]string) (*snowflakeObjects, error) {
-	result := make(snowflakeObjects)
+func newSnowflakeObjects(paramsMap map[string]string) (*Objects, error) {
+	result := make(Objects)
 
 	// Pattern: $['objects']['objectName']['property']
 	// Captures: objectName (group 1), property (group 2)
@@ -88,4 +90,63 @@ func newSnowflakeObjects(paramsMap map[string]string) (*snowflakeObjects, error)
 	}
 
 	return &result, nil
+}
+
+func getStreamName(objectName string) string {
+	return fmt.Sprintf("%s%s", objectName, "_stream")
+}
+
+func getDynamicTableName(objectName string) string {
+	return objectName
+}
+
+// EnsureObjects ensures that the objects are created on snowflake.
+func (c *Connector) EnsureObjects(ctx context.Context) (*Objects, error) {
+	if c.objects == nil {
+		return nil, nil
+	}
+
+	// Create dynamic tables and streams for each object, and populate their names
+	for objectName, objectConfig := range *c.objects {
+		// Validate that query exists
+		if objectConfig.query == "" {
+			return nil, fmt.Errorf("object %q has no query defined", objectName)
+		}
+
+		needsUpdate := false
+
+		// Create dynamic table if it doesn't exist
+		if objectConfig.dynamicTableName == "" {
+			targetLag := objectConfig.targetLag
+			if targetLag == "" {
+				targetLag = "1 hour"
+			}
+
+			dynamicTableName := getDynamicTableName(objectName)
+			if err := c.CreateDynamicTable(ctx, dynamicTableName, objectConfig.query, targetLag); err != nil {
+				return nil, fmt.Errorf("failed to create dynamic table %s: %w", objectName, err)
+			}
+
+			objectConfig.dynamicTableName = dynamicTableName
+			needsUpdate = true
+		}
+
+		// Create stream if it doesn't exist
+		if objectConfig.streamName == "" {
+			streamName := getStreamName(objectName)
+			if err := c.CreateStream(ctx, streamName, objectName); err != nil {
+				return nil, fmt.Errorf("failed to create stream %s: %w", streamName, err)
+			}
+
+			objectConfig.streamName = streamName
+			needsUpdate = true
+		}
+
+		// Only update the map if we made changes
+		if needsUpdate {
+			(*c.objects)[objectName] = objectConfig
+		}
+	}
+
+	return c.objects, nil
 }

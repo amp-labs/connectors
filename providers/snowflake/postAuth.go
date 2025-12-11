@@ -3,6 +3,7 @@ package snowflake
 import (
 	"context"
 	"fmt"
+	"strings"
 )
 
 // DefaultTargetLag is the default target lag for Dynamic Tables.
@@ -31,7 +32,7 @@ func (c *Connector) CreateDynamicTable(ctx context.Context, tableName, query, ta
 		TARGET_LAG = '%s'
 		WAREHOUSE = %s
 		AS %s
-	`, fqName, targetLag, c.handle.warehouse, query)
+	`, strings.ToUpper(fqName), targetLag, strings.ToUpper(c.handle.warehouse), query)
 
 	_, err := c.handle.db.ExecContext(ctx, createSQL)
 	if err != nil {
@@ -51,7 +52,7 @@ func (c *Connector) CreateStream(ctx context.Context, streamName, dynamicTableNa
 		CREATE OR REPLACE STREAM %s
 		ON DYNAMIC TABLE %s
 		SHOW_INITIAL_ROWS = TRUE
-	`, fqStreamName, fqDTName)
+	`, strings.ToUpper(fqStreamName), strings.ToUpper(fqDTName))
 
 	_, err := c.handle.db.ExecContext(ctx, createSQL)
 	if err != nil {

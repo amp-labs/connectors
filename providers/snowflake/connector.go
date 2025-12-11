@@ -40,7 +40,7 @@ type Connector struct {
 
 	// Per-object configurations parsed from metadata.
 	// Key is objectName (e.g., "contacts__stream").
-	objects *snowflakeObjects
+	objects *Objects
 }
 
 // TODO:

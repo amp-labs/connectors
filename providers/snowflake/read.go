@@ -352,8 +352,8 @@ func (c *Connector) getFullyQualifiedName(objectName string) string {
 	}
 
 	return fmt.Sprintf(`"%s"."%s"."%s"`,
-		c.handle.database,
-		c.handle.schema,
+		strings.ToUpper(c.handle.database),
+		strings.ToUpper(c.handle.schema),
 		strings.ToUpper(objectName),
 	)
 }
