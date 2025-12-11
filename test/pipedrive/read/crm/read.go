@@ -33,6 +33,10 @@ func main() {
 	if err := readDeals(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
+
+	if err := readStages(ctx, conn); err != nil {
+		slog.Error(err.Error())
+	}
 }
 
 func readActivities(ctx context.Context, conn *pipedrive.Connector) error {
@@ -66,6 +70,30 @@ func readDeals(ctx context.Context, conn *pipedrive.Connector) error {
 		ObjectName: "deals",
 		Since:      time.Now().Add(-720 * time.Hour),
 		Fields:     connectors.Fields("close_time", "id"),
+	}
+
+	result, err := conn.Read(ctx, config)
+	if err != nil {
+		return err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func readStages(ctx context.Context, conn *pipedrive.Connector) error {
+	config := connectors.ReadParams{
+		ObjectName: "stages",
+		Since:      time.Now().Add(-720 * time.Hour),
+		Fields:     connectors.Fields("id"),
 	}
 
 	result, err := conn.Read(ctx, config)
