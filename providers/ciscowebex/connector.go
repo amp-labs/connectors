@@ -69,5 +69,6 @@ func constructor(base *components.Connector) (*Connector, error) {
 			ErrorHandler:  common.InterpretError,
 		},
 	)
+
 	return connector, nil
 }

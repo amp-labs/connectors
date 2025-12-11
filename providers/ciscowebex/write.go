@@ -19,6 +19,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	method := http.MethodPost
+
 	if params.RecordId != "" {
 		// Groups use PATCH for updates, others use PUT
 		if params.ObjectName == "groups" {
