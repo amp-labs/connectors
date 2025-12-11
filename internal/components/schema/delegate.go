@@ -35,10 +35,6 @@ func (p *DelegateSchemaProvider) ListObjectMetadata(
 	return p.execute(ctx, objects)
 }
 
-<<<<<<< HEAD
-func (p *DelegateSchemaProvider) String() string {
-=======
 func (p *DelegateSchemaProvider) SchemaSource() string {
->>>>>>> main
 	return "DelegateSchemaProvider"
 }
