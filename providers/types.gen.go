@@ -263,7 +263,7 @@ type MetadataItemPostAuthentication struct {
 }
 
 // ModuleDependencies Does this metadata item only apply to a specific module?
-type ModuleDependencies = map[string]ModuleDependency
+type ModuleDependencies map[string]ModuleDependency
 
 // ModuleDependency Dependency for a single module.
 type ModuleDependency = map[string]interface{}
@@ -278,7 +278,7 @@ type ModuleInfo struct {
 }
 
 // Modules The registry of provider modules.
-type Modules = map[string]ModuleInfo
+type Modules map[string]ModuleInfo
 
 // Oauth2Opts Configuration for OAuth2.0. Must be provided if authType is oauth2.
 type Oauth2Opts struct {
