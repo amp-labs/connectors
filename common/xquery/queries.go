@@ -23,7 +23,7 @@ func NewXML(data []byte) (*XML, error) {
 	}
 
 	// try to create XML node again, but now trim any spaces
-	withoutEmptySpaces := []byte(node.OutputXML(true))
+	withoutEmptySpaces := []byte(node.OutputXMLWithOptions(xq.WithoutPreserveSpace(), xq.WithOutputSelf()))
 
 	node, err = xq.Parse(bytes.NewReader(withoutEmptySpaces))
 	if err != nil {
@@ -101,7 +101,7 @@ func (x *XML) RawXML() string {
 		return ""
 	}
 
-	return x.delegate.OutputXML(true)
+	return x.delegate.OutputXMLWithOptions(xq.WithoutPreserveSpace(), xq.WithOutputSelf())
 }
 
 // Text provides inner text of this node.

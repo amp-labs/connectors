@@ -17,7 +17,7 @@ func (f Factory) CreateProxyCustom(ctx context.Context) *Proxy {
 	providerInfo := getProviderConfig(f.Provider, f.CatalogVariables)
 	fields := getCustomFields(providerInfo)
 	secrets := getCustomSecrets(f.Registry, fields)
-	httpClient := setupCustomHTTPClient(ctx, providerInfo, secrets, f.Debug, f.Substitutions)
+	httpClient := setupCustomHTTPClient(ctx, providerInfo, secrets, f.Debug, f.Metadata)
 	baseURL := getBaseURL(providerInfo)
 
 	return newProxy(baseURL, httpClient)
@@ -25,7 +25,7 @@ func (f Factory) CreateProxyCustom(ctx context.Context) *Proxy {
 
 func forEachField(callback func(name string, f credscanning.Field)) {
 	v := reflect.ValueOf(credscanning.Fields)
-	t := reflect.TypeOf(credscanning.Fields)
+	t := v.Type()
 
 	for i := range v.NumField() {
 		name := t.Field(i).Name

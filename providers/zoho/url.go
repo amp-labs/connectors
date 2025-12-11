@@ -12,8 +12,7 @@ import (
 )
 
 const (
-	timeLayout     = "2006-01-02T15:04:05.000Z"
-	articlesObject = "articles"
+	timeLayout = "2006-01-02T15:04:05.000Z"
 )
 
 type (
@@ -29,14 +28,19 @@ var (
 	fieldJoiner = func(flds []string) string { return strings.Join(flds, ",") } //nolint: gochecknoglobals
 )
 
+var deskObjectsWithFieldQuerySupport = datautils.NewSet( //nolint: gochecknoglobals
+	"accounts", "tickets", "contacts")
+
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
 	switch c.moduleID { // nolint: exhaustive
-	case providers.ZohoDesk:
+	case providers.ModuleZohoDesk:
 		// Desk uses lowercase field names with comma separation
 		return c.buildModuleURL(config, deskAPIVersion, identityFn, fieldJoiner)
 	default:
 		// CRM uses capitalized field names with custom formatting
-		return c.buildModuleURL(config, crmAPIVersion, naming.CapitalizeFirstLetter, constructFieldNames)
+		return c.buildModuleURL(config, crmAPIVersion, naming.CapitalizeFirstLetter, func(flds []string) string {
+			return strings.Join(flds, ",")
+		})
 	}
 }
 
@@ -58,7 +62,9 @@ func (c *Connector) buildModuleURL(params common.ReadParams, apiVersion string,
 	c.constructIncrementalParams(url, params)
 
 	fields := c.prepareFields(params, fldTransformer)
-	if params.ObjectName != articlesObject {
+
+	if c.moduleID == providers.ModuleZohoCRM || (c.moduleID == providers.ModuleZohoDesk &&
+		deskObjectsWithFieldQuerySupport.Has(params.ObjectName)) {
 		url.WithQueryParam("fields", fields)
 	}
 
@@ -76,7 +82,7 @@ func (c *Connector) transformedObjectName(params common.ReadParams, transformer 
 func (c *Connector) prepareFields(params common.ReadParams, fieldTransformer fieldsTransformer) string {
 	fieldSet := datautils.NewStringSet(params.Fields.List()...)
 
-	if c.moduleID == providers.ZohoDesk {
+	if c.moduleID == providers.ModuleZohoDesk {
 		c.ensureTimestampFields(fieldSet, params.ObjectName)
 	}
 
@@ -94,7 +100,7 @@ func (c *Connector) ensureTimestampFields(fieldSet datautils.StringSet, objectNa
 }
 
 func (c *Connector) constructIncrementalParams(url *urlbuilder.URL, params common.ReadParams) {
-	if c.moduleID != providers.ZohoDesk {
+	if c.moduleID != providers.ModuleZohoDesk {
 		return
 	}
 
@@ -115,52 +121,4 @@ func (c *Connector) applySinceParam(url *urlbuilder.URL, params common.ReadParam
 	case objectsSortablebyModifiedTime.Has(params.ObjectName):
 		url.WithQueryParam("sortBy", "-modifiedTime")
 	}
-}
-
-// Zoho field names typically start with a capital letter.
-// For fields with multiple words, underscores are used to separate them.
-// This function converts field names into a format that the API accepts.
-func constructFieldNames(flds []string) string {
-	cpdFlds := make([]string, len(flds))
-
-	for idx, fld := range flds {
-		// id is used and attached to the field parameter as is.
-		if strings.ToLower(fld) == "id" {
-			cpdFlds[idx] = fld
-
-			continue
-		}
-
-		// Some fields end with `__s`, and the `s` should not be capitalized,
-		// so we strip it first and then reattach it after capitalizing all the other words
-		if strings.HasSuffix(fld, "__s") {
-			fld = capitalizeSegments(fld[:len(fld)-3])
-			fld += "__s"
-			cpdFlds[idx] = fld
-		} else {
-			cpdFlds[idx] = capitalizeSegments(fld)
-		}
-	}
-
-	return strings.Join(cpdFlds, ",")
-}
-
-func capitalizeSegments(fld string) string {
-	// This maps fields to the unique available fields.
-	mappedObject, ok := uniqueFields[strings.ToLower(fld)]
-	if ok {
-		return mappedObject
-	}
-
-	// Most Fields are in the structure XXX_XXXX (Full_Name).
-	// thus we capitalize first letter of individual substrings.
-	// Split the field by `_` and capitalize the individual segments.
-	segments := strings.Split(fld, "_")
-	for idx, seg := range segments {
-		seg = naming.CapitalizeFirstLetterEveryWord(seg)
-		// Update the segment to it's capitalized string.
-		segments[idx] = seg
-	}
-
-	return strings.Join(segments, "_")
 }

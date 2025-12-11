@@ -1,0 +1,35 @@
+mutation VehicleCreate($input: VehicleCreateInput!) {
+    vehicleCreate(input : $input) {
+      vehicle{
+        createdAt
+        externalUrl
+        iconColor
+        id
+        licensePlate
+        liveState{
+          currentPosition{
+            latitude
+            longitude
+            timestamp
+          }
+          dataRefreshedAt
+          direction
+          fuelPercentage
+          speed
+          starterBatteryVoltage
+          status
+          statusChangedAt 
+        }
+        make
+        model
+        name
+        updatedAt
+        vin
+        year
+      }
+      userErrors {
+        message
+        path
+      }
+    }
+}

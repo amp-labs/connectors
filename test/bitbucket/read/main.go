@@ -22,15 +22,14 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	slog.Info("Reading workspaces")
+	slog.Info("Reading projects")
 
 	connector := bitbucket.GetConnector(ctx)
 
 	res, err := connector.Read(ctx, common.ReadParams{
-		ObjectName: "workspaces",
-		Fields:     datautils.NewStringSet("type", "uuid", "name", "slug"),
+		ObjectName: "projects",
+		Fields:     datautils.NewStringSet("type", "owner", "is_private", "uuid"),
 	})
-
 	if err != nil {
 		slog.Error(err.Error())
 	}

@@ -41,7 +41,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("no Signal Registration found for integration id 5167 and given type"), // nolint:goerr113
+				errors.New("no Signal Registration found for integration id 5167 and given type"),
 			},
 		},
 		{

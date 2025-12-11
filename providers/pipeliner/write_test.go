@@ -29,14 +29,14 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:         "Write needs data payload",
-			Input:        common.WriteParams{ObjectName: "notes"},
+			Input:        common.WriteParams{ObjectName: "Notes"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordData},
 		},
 		{
 			Name: "Error on failed entity validation",
 			Input: common.WriteParams{
-				ObjectName: "notes",
+				ObjectName: "Notes",
 				RecordId:   "019097b8-a5f4-ca93-62c5-5a25c58afa63",
 				RecordData: "dummy",
 			},
@@ -46,7 +46,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New( // nolint:goerr113
+				errors.New(
 					"Non-null field 'Note'[01909781-5963-26bc-28ff-747e10a79a52].owner' is null or empty.",
 				),
 			},
@@ -54,7 +54,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name: "Error on invalid json body",
 			Input: common.WriteParams{
-				ObjectName: "notes",
+				ObjectName: "Notes",
 				RecordId:   "019097b8-a5f4-ca93-62c5-5a25c58afa63",
 				RecordData: "dummy",
 			},
@@ -64,12 +64,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Missing or invalid JSON data."), // nolint:goerr113
+				errors.New("Missing or invalid JSON data."),
 			},
 		},
 		{
 			Name:  "Write must act as a Create",
-			Input: common.WriteParams{ObjectName: "notes", RecordData: "dummy"},
+			Input: common.WriteParams{ObjectName: "Notes", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPOST(),
@@ -81,7 +81,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name: "Write must act as an Update",
 			Input: common.WriteParams{
-				ObjectName: "notes",
+				ObjectName: "Notes",
 				RecordId:   "019097b8-a5f4-ca93-62c5-5a25c58afa63",
 				RecordData: "dummy",
 			},
@@ -95,7 +95,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Valid creation of a note",
-			Input: common.WriteParams{ObjectName: "notes", RecordData: "dummy"},
+			Input: common.WriteParams{ObjectName: "Notes", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPOST(),
@@ -117,7 +117,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name: "Valid update of a note",
 			Input: common.WriteParams{
-				ObjectName: "notes",
+				ObjectName: "Notes",
 				RecordId:   "019097b8-a5f4-ca93-62c5-5a25c58afa63",
 				RecordData: "dummy",
 			},

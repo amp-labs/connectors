@@ -48,7 +48,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Invalid page token value."), // nolint:goerr113
+				errors.New("Invalid page token value."),
 			},
 		},
 		{
@@ -61,7 +61,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				common.ErrNotFound,
-				errors.New("The requested URL /calendar/v3/calendarList?maxResults=3000&showDeleted=true was not found on this server."), // nolint:goerr113,lll
+				errors.New("The requested URL /calendar/v3/calendarList?maxResults=3000&showDeleted=true was not found on this server."), // nolint:lll
 			},
 		},
 		{
@@ -333,7 +333,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Page size must be less than or equal to 1000."), // nolint:goerr113
+				errors.New("Page size must be less than or equal to 1000."),
 			},
 		},
 		{
@@ -346,7 +346,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				common.ErrNotFound,
-				errors.New("The requested URL /v1/bananas was not found on this server."), // nolint:goerr113
+				errors.New("The requested URL /v1/bananas was not found on this server."),
 			},
 		},
 		{

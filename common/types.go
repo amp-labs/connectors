@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package common
 
 import (
@@ -172,6 +173,14 @@ type ReadParams struct {
 	//	* Capsule: Embeds objects in response.
 	//		Reference: https://developer.capsulecrm.com/v2/overview/reading-from-the-api
 	AssociatedObjects []string // optional
+
+	// PageSize specifies the # of records to request when making a read request.
+	PageSize int // optional
+}
+
+type WriteHeader struct {
+	Key   string
+	Value string
 }
 
 // WriteParams defines how we are writing data to a SaaS API.
@@ -188,9 +197,18 @@ type WriteParams struct {
 
 	// Associations contains associations between the object and other objects.
 	Associations any // optional
+
+	Headers []WriteHeader // optional
+}
+
+func (p WriteParams) GetRecord() (Record, error) {
+	return RecordDataToMap(p.RecordData)
 }
 
 // RecordDataToMap converts WriteParams.RecordData into a map[string]any.
+//
+// When possible use WriteParams.GetRecord instead.
+//
 // If RecordData is already a map, it is returned directly.
 // Otherwise, it is serialized to JSON and then deserialized back into a map.
 func RecordDataToMap(recordData any) (map[string]any, error) {
@@ -269,7 +287,7 @@ type Association struct {
 	Raw             map[string]any `json:"raw,omitempty"`
 }
 
-// WriteResult is what's returned from writing data via the Write call.
+// WriteResult represents the outcome of a single record write operation.
 type WriteResult struct {
 	// Success is true if write succeeded.
 	Success bool `json:"success"`
@@ -281,10 +299,108 @@ type WriteResult struct {
 	Data map[string]any `json:"data,omitempty"` // optional
 }
 
-// DeleteResult is what's returned from deleting data via the Delete call.
+// DeleteResult represents the outcome of a single record delete operation.
 type DeleteResult struct {
 	// Success is true if deletion succeeded.
 	Success bool `json:"success"`
+}
+
+// BatchStatus describes the aggregate outcome of a batch operation.
+type BatchStatus string
+
+const (
+	BatchStatusSuccess BatchStatus = "success"
+	BatchStatusFailure BatchStatus = "failure"
+	BatchStatusPartial BatchStatus = "partial"
+)
+
+// BatchWriteType specifies the intended operation type within a batch modification.
+type BatchWriteType string
+
+const (
+	BatchWriteTypeCreate BatchWriteType = "create"
+	BatchWriteTypeUpdate BatchWriteType = "update"
+)
+
+// BatchWriteParam defines the input required to execute a batch write operation.
+// It allows creating, updating, or upserting multiple records in a single request.
+type BatchWriteParam struct {
+	// ObjectName identifies the target object for the write operation.
+	ObjectName ObjectName
+	// Type defines how the records should be processed: create, update, or upsert.
+	Type BatchWriteType
+	// Batch contains the collection of record payloads to be written.
+	Batch BatchItems
+	// Headers contains additional headers to be added to the request.
+	Headers []WriteHeader // optional
+}
+
+func TransformWriteHeaders(headers []WriteHeader, mode HeaderMode) []Header {
+	transformedHeaders := []Header{}
+	for _, header := range headers {
+		transformedHeaders = append(transformedHeaders, Header{
+			Key:   header.Key,
+			Value: header.Value,
+			Mode:  mode,
+		})
+	}
+
+	return transformedHeaders
+}
+
+type BatchItem struct {
+	Record       map[string]any
+	Associations any
+}
+
+func (i BatchItem) GetRecord() (Record, error) {
+	return RecordDataToMap(i.Record)
+}
+
+type BatchItems []BatchItem
+
+func (p BatchWriteParam) IsCreate() bool {
+	return p.Type == BatchWriteTypeCreate
+}
+
+func (p BatchWriteParam) IsUpdate() bool {
+	return p.Type == BatchWriteTypeUpdate
+}
+
+type Record map[string]any
+
+func (p BatchWriteParam) GetRecords() ([]Record, error) {
+	return datautils.ForEachWithErr(p.Batch, func(batchItem BatchItem) (Record, error) {
+		return RecordDataToMap(batchItem.Record)
+	})
+}
+
+// BatchWriteResult represents the outcome of a provider batch write operation.
+//
+// It contains both a high-level summary of the batch and detailed per-record results.
+//
+// Providers may return more errors than there are payload items, or omit identifiers
+// that would allow matching errors to specific records. In such cases, unmatched or
+// batch-level issues are collected in the top-level Errors slice.
+//
+// Each identifiable record—matched by reference ID or record ID—produces a WriteResult
+// entry in Results. If multiple identifiable errors occurred for the same record, they
+// are grouped under WriteResult.Errors.
+//
+// Top-level Errors represent issues that apply to the batch as a whole or to records
+// that could not be reliably matched to payload items.
+type BatchWriteResult struct {
+	// Status summarizes the batch outcome (success, failure, or partial).
+	Status BatchStatus
+	// Errors lists top-level errors that are not tied to specific records.
+	// While errors that are specific to certain records are found in Results[i].Errors
+	Errors []any
+	// Results contains the detailed outcomes for each record in the batch.
+	Results []WriteResult
+	// SuccessCount is the number of successfully written records.
+	SuccessCount int `json:"successCount"`
+	// FailureCount is the number of failed records.
+	FailureCount int `json:"failureCount"`
 }
 
 // WriteMethod is signature for any HTTP method that performs write modifications.
@@ -380,12 +496,6 @@ type ObjectMetadata struct {
 	FieldsMap map[string]string
 }
 
-// AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
-func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
-	m.Fields[fieldName] = fieldMetadata
-	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
-}
-
 // NewObjectMetadata constructs ObjectMetadata.
 // This will automatically infer fields map from field metadata map. This construct exists for such convenience.
 func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadata {
@@ -394,6 +504,17 @@ func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadat
 		Fields:      fields,
 		FieldsMap:   inferDeprecatedFieldsMap(fields),
 	}
+}
+
+// AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
+func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
+	m.Fields[fieldName] = fieldMetadata
+	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
+}
+
+func (m *ObjectMetadata) RemoveFieldMetadata(fieldName string) {
+	delete(m.Fields, fieldName)
+	delete(m.FieldsMap, fieldName)
 }
 
 type FieldMetadata struct {
@@ -408,7 +529,16 @@ type FieldMetadata struct {
 	ProviderType string
 
 	// ReadOnly would indicate if field can be modified or only read.
-	ReadOnly bool
+	ReadOnly *bool
+
+	// IsCustom indicates whether the field is user-defined or custom.
+	// True means the field was added by the user, false means it is native to the provider.
+	IsCustom *bool
+
+	// IsRequired indicates whether a value for the field is mandatory
+	// when creating or updating the object.
+	// True means the field must have a value, false means it is optional.
+	IsRequired *bool
 
 	// Values is a list of possible values for this field.
 	// It is applicable only if the type is either singleSelect or multiSelect, otherwise slice is nil.
@@ -422,7 +552,6 @@ func (f FieldsMetadata) AddFieldWithDisplayOnly(fieldName string, displayName st
 		DisplayName:  displayName,
 		ValueType:    "",
 		ProviderType: "",
-		ReadOnly:     false,
 		Values:       nil,
 	}
 }
@@ -468,7 +597,7 @@ type SubscriptionUpdateEvent interface {
 	UpdatedFields() ([]string, error)
 }
 
-// Some providers send multiple events in a single webhook payload.
+// CollapsedSubscriptionEvent some providers send multiple events in a single webhook payload.
 // This interface is used to extract individual events to SubscriptionEvent type
 // from a collapsed event for webhook parsing and processing.
 type CollapsedSubscriptionEvent interface {
@@ -508,13 +637,13 @@ type RegistrationResult struct {
 type RegistrationStatus string
 
 const (
-	// registration is pending and not yet complete.
+	// RegistrationStatusPending registration is pending and not yet complete.
 	RegistrationStatusPending RegistrationStatus = "pending"
-	// registration returned error, and all intermittent steps are rolled back.
+	// RegistrationStatusFailed registration returned error, and all intermittent steps are rolled back.
 	RegistrationStatusFailed RegistrationStatus = "failed"
-	// successful registration.
+	// RegistrationStatusSuccess successful registration.
 	RegistrationStatusSuccess RegistrationStatus = "success"
-	// registration returned error, and failed to rollback some intermittent steps.
+	// RegistrationStatusFailedToRollback registration returned error, and failed to rollback some intermittent steps.
 	RegistrationStatusFailedToRollback RegistrationStatus = "failed_to_rollback"
 )
 
@@ -538,24 +667,50 @@ type ObjectEvents struct {
 
 type ObjectName string
 
+func (n ObjectName) String() string {
+	return string(n)
+}
+
 type SubscribeParams struct {
+	// Request contains provider-specific parameters that are unique to each subscription.
+	// These parameters can be either optional or required depending on the provider's API requirements.
+	// Each provider defines its own request structure (e.g., webhook URL, secret, unique reference, etc.)
+	// that must be provided when creating subscriptions. The structure is provider-specific and should
+	// match the provider's expected request format for subscription operations.
 	Request any
 	// RegistrationResult is the result of the Connector.Register call.
 	// Connector.Subscribe requires information from the registration.
 	// Not all providers require registration, so this is optional.
 	// eg) Salesforce and HubSpot require registration because
 	RegistrationResult *RegistrationResult
+	// SubscriptionEvents is a normalized view representing the exact subscription state
+	// that should be maintained in the provider's system. This field specifies which
+	// objects and events the caller wants to subscribe to, using a provider-agnostic
+	// format. Connector.Subscribe method will translate these normalized events to its own event
+	// naming conventions when creating subscriptions. This represents the desired
+	// state, which may differ from the actual state returned in SubscriptionResult.ObjectEvents
+	// if some subscription operations fail or are rolled back.
 	SubscriptionEvents map[ObjectName]ObjectEvents
 }
 
 type SubscriptionResult struct { // this corresponds to each API call.
-	Result       any
+	// Result contains the provider's original response data in its raw form.
+	// This field preserves the complete, unmodified response from the provider's API,
+	// allowing callers to access all original metadata, IDs, timestamps, and other
+	// provider-specific information that may not be represented in the transformed ObjectEvents.
+	// The structure of Result is provider-specific and should match the provider's actual API response format.
+	Result any
+	// ObjectEvents represents the transformed view of the subscription state after the operation.
+	// This field contains a normalized, provider-agnostic representation of which objects and events
+	// are currently subscribed in the provider's system. It reflects the exact state after
+	// creating, updating, or deleting subscriptions, and may differ from the requested subscriptions
+	// if some operations failed or were rolled back. This transformed view is useful for tracking
+	// the actual subscription state without needing to parse provider-specific response formats.
 	ObjectEvents map[ObjectName]ObjectEvents
 	Status       SubscriptionStatus
 
-	// Below fields are deprecated, and will be removed in a future release.
+	// Below fields are soon to be DEPRECATED, and will be removed in a future release.
 	// Use ObjectEvents instead.
-
 	Objects []ObjectName
 	Events  []SubscriptionEventType
 	// ["create", "update", "delete"]
@@ -569,12 +724,12 @@ type SubscriptionResult struct { // this corresponds to each API call.
 type SubscriptionStatus string
 
 const (
-	// registration is pending and not yet complete.
+	// SubscriptionStatusPending registration is pending and not yet complete.
 	SubscriptionStatusPending SubscriptionStatus = "pending"
-	// registration returned error, and all intermittent steps are rolled back.
+	// SubscriptionStatusFailed registration returned error, and all intermittent steps are rolled back.
 	SubscriptionStatusFailed SubscriptionStatus = "failed"
-	// successful registration.
+	// SubscriptionStatusSuccess successful registration.
 	SubscriptionStatusSuccess SubscriptionStatus = "success"
-	// registration returned error, and failed to rollback some intermittent steps.
+	// SubscriptionStatusFailedToRollback registration returned error, and failed to rollback some intermittent steps.
 	SubscriptionStatusFailedToRollback SubscriptionStatus = "failed_to_rollback"
 )

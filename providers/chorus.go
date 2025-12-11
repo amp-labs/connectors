@@ -6,7 +6,7 @@ func init() {
 	SetInfo(Chorus, ProviderInfo{
 		DisplayName: "Chorus",
 		AuthType:    Basic,
-		BaseURL:     "https://chorus.ai/api",
+		BaseURL:     "https://chorus.ai",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1758628755/media/chorus.ai_1758628760.svg",
@@ -25,9 +25,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 	})
 }

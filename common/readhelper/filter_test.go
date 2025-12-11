@@ -82,7 +82,8 @@ func testEmptyRecords(createTestData func([]map[string]any) *ajson.Node, mockNex
 }
 
 func testAllRecordsNewer(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error),
+) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
 
@@ -108,7 +109,8 @@ func testAllRecordsNewer(createTestData func([]map[string]any) *ajson.Node,
 }
 
 func testMixedRecords(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error),
+) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
 
@@ -134,7 +136,8 @@ func testMixedRecords(createTestData func([]map[string]any) *ajson.Node,
 }
 
 func testAllRecordsOlder(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error),
+) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
 
@@ -157,7 +160,8 @@ func testAllRecordsOlder(createTestData func([]map[string]any) *ajson.Node,
 }
 
 func testLastRecordNewer(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error),
+) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
 
@@ -180,7 +184,8 @@ func testLastRecordNewer(createTestData func([]map[string]any) *ajson.Node,
 }
 
 func testInvalidRecordsKey(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error),
+) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
 
@@ -197,7 +202,8 @@ func testInvalidRecordsKey(createTestData func([]map[string]any) *ajson.Node,
 }
 
 func testInvalidTimestampKey(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error),
+) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
 
@@ -214,7 +220,8 @@ func testInvalidTimestampKey(createTestData func([]map[string]any) *ajson.Node,
 }
 
 func testInvalidTimestampFormat(createTestData func([]map[string]any) *ajson.Node,
-	mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
+	mockNextPageFunc func(*ajson.Node) (string, error),
+) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
 
@@ -236,7 +243,8 @@ func testInvalidTimestampFormat(createTestData func([]map[string]any) *ajson.Nod
 }
 
 func testNextPageError(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, errorNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, errorNextPageFunc func(*ajson.Node) (string, error),
+) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
 
@@ -253,7 +261,8 @@ func testNextPageError(createTestData func([]map[string]any) *ajson.Node,
 }
 
 func testDifferentTimestampFormat(createTestData func([]map[string]any) *ajson.Node,
-	mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
+	mockNextPageFunc func(*ajson.Node) (string, error),
+) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
 
@@ -276,7 +285,8 @@ func testDifferentTimestampFormat(createTestData func([]map[string]any) *ajson.N
 }
 
 func testExactSameTimestamp(createTestData func([]map[string]any) *ajson.Node,
-	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error)) func(t *testing.T) {
+	createRecord func(string, string) map[string]any, mockNextPageFunc func(*ajson.Node) (string, error),
+) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
 

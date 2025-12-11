@@ -55,7 +55,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	}
 
 	switch c.moduleID { // nolint: exhaustive
-	case providers.ZohoDesk:
+	case providers.ModuleZohoDesk:
 		return c.writeDesk(ctx, config)
 	default:
 		return c.writeCRM(ctx, config)
@@ -174,29 +174,10 @@ func constructWritePayload(payload any) (any, error) {
 			return nil, common.ErrBadRequest
 		}
 
-		capitalizeKeys(objectData)
-
 		return map[string]any{"data": []map[string]any{objectData}}, nil
 	}
 
-	// Range Over the Slice for every map, Capitalize them.
-	for _, v := range data {
-		capitalizeKeys(v)
-	}
-
 	return map[string]any{"data": data}, nil
-}
-
-func capitalizeKeys(data map[string]any) {
-	// Capitalize words in the data fields for Creation/Updating
-	for k, d := range data {
-		fld := constructFieldNames([]string{k})
-		data[fld] = d
-		// Remove the previous field key in the map, as it's no longer required.
-		if fld != k {
-			delete(data, k)
-		}
-	}
 }
 
 func constructResponse(records []*ajson.Node, errs []any) (string, map[string]any, error) {

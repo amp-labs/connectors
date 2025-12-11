@@ -13,7 +13,13 @@ type writeResultComparator struct{}
 // SubsetData checks that expected WriteResult.Data is a subset of actual WriteResult.Data
 // other fields are strictly compared.
 func (writeResultComparator) SubsetData(actual, expected *common.WriteResult) bool {
+	// We are expecting more fields than there in the existence.
 	if len(actual.Data) < len(expected.Data) {
+		return false
+	}
+
+	// At least one field should be mentioned.
+	if len(actual.Data) > 0 && len(expected.Data) == 0 {
 		return false
 	}
 
@@ -29,9 +35,4 @@ func (writeResultComparator) SubsetData(actual, expected *common.WriteResult) bo
 	}
 
 	return true
-}
-
-// ExactErrors uses strict error comparison.
-func (writeResultComparator) ExactErrors(actual, expected *common.WriteResult) bool {
-	return reflect.DeepEqual(actual.Errors, expected.Errors)
 }

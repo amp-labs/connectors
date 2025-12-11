@@ -1,0 +1,7 @@
+mutation VehicleDelete($id: EncodedId!) {
+    vehicleDelete(vehicleId : $id) {
+        vehicle{
+            id
+        }
+    }
+}

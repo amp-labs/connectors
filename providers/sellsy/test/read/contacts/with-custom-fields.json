@@ -1,0 +1,257 @@
+{
+    "data": [
+        {
+            "id": 28,
+            "civility": "mr",
+            "first_name": "Clément",
+            "last_name": "Martin",
+            "email": "clement@sellsy-papillon.fr",
+            "_embed": {
+                "custom_fields": [
+                    {
+                        "value": null,
+                        "type": "radio",
+                        "parameters": {
+                            "items": [
+                                {
+                                    "id": 9,
+                                    "label": "Orange",
+                                    "checked": true,
+                                    "rank": 0
+                                },
+                                {
+                                    "id": 10,
+                                    "label": "Strawberry",
+                                    "checked": false,
+                                    "rank": 1
+                                },
+                                {
+                                    "id": 11,
+                                    "label": "Kivi",
+                                    "checked": false,
+                                    "rank": 2
+                                }
+                            ]
+                        },
+                        "id": 4,
+                        "name": "Fruits",
+                        "code": "fruits",
+                        "description": "",
+                        "mandatory": false,
+                        "rank": 0,
+                        "related_objects": [
+                            "contact"
+                        ],
+                        "show_on_pdf": false,
+                        "customfield_group": {
+                            "id": 0,
+                            "name": "",
+                            "code": "",
+                            "open_by_default": true
+                        }
+                    },
+                    {
+                        "value": null,
+                        "type": "checkbox",
+                        "parameters": {
+                            "min": null,
+                            "max": null,
+                            "items": [
+                                {
+                                    "id": 12,
+                                    "label": "Art",
+                                    "checked": false,
+                                    "rank": 0
+                                },
+                                {
+                                    "id": 13,
+                                    "label": "Travelling",
+                                    "checked": false,
+                                    "rank": 1
+                                },
+                                {
+                                    "id": 14,
+                                    "label": "Movies",
+                                    "checked": false,
+                                    "rank": 2
+                                }
+                            ]
+                        },
+                        "id": 5,
+                        "name": "Hobbies",
+                        "code": "hobbies",
+                        "description": "",
+                        "mandatory": false,
+                        "rank": 0,
+                        "related_objects": [
+                            "contact"
+                        ],
+                        "show_on_pdf": false,
+                        "customfield_group": {
+                            "id": 0,
+                            "name": "",
+                            "code": "",
+                            "open_by_default": true
+                        }
+                    },
+                    {
+                        "value": null,
+                        "type": "numeric",
+                        "parameters": {
+                            "default_value": null,
+                            "min_value": null,
+                            "max_value": null
+                        },
+                        "id": 9,
+                        "name": "Age",
+                        "code": "age",
+                        "description": "",
+                        "mandatory": false,
+                        "rank": 0,
+                        "related_objects": [
+                            "contact"
+                        ],
+                        "show_on_pdf": false,
+                        "customfield_group": {
+                            "id": 0,
+                            "name": "",
+                            "code": "",
+                            "open_by_default": true
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "id": 47,
+            "civility": null,
+            "first_name": "Sponge",
+            "last_name": "Bob",
+            "email": null,
+            "_embed": {
+                "custom_fields": [
+                    {
+                        "value": 10,
+                        "type": "radio",
+                        "parameters": {
+                            "items": [
+                                {
+                                    "id": 9,
+                                    "label": "Orange",
+                                    "checked": true,
+                                    "rank": 0
+                                },
+                                {
+                                    "id": 10,
+                                    "label": "Strawberry",
+                                    "checked": false,
+                                    "rank": 1
+                                },
+                                {
+                                    "id": 11,
+                                    "label": "Kivi",
+                                    "checked": false,
+                                    "rank": 2
+                                }
+                            ]
+                        },
+                        "id": 4,
+                        "name": "Fruits",
+                        "code": "fruits",
+                        "description": "",
+                        "mandatory": false,
+                        "rank": 0,
+                        "related_objects": [
+                            "contact"
+                        ],
+                        "show_on_pdf": false,
+                        "customfield_group": {
+                            "id": 0,
+                            "name": "",
+                            "code": "",
+                            "open_by_default": true
+                        }
+                    },
+                    {
+                        "value": [
+                            13,
+                            14
+                        ],
+                        "type": "checkbox",
+                        "parameters": {
+                            "min": null,
+                            "max": null,
+                            "items": [
+                                {
+                                    "id": 12,
+                                    "label": "Art",
+                                    "checked": false,
+                                    "rank": 0
+                                },
+                                {
+                                    "id": 13,
+                                    "label": "Travelling",
+                                    "checked": false,
+                                    "rank": 1
+                                },
+                                {
+                                    "id": 14,
+                                    "label": "Movies",
+                                    "checked": false,
+                                    "rank": 2
+                                }
+                            ]
+                        },
+                        "id": 5,
+                        "name": "Hobbies",
+                        "code": "hobbies",
+                        "description": "",
+                        "mandatory": false,
+                        "rank": 0,
+                        "related_objects": [
+                            "contact"
+                        ],
+                        "show_on_pdf": false,
+                        "customfield_group": {
+                            "id": 0,
+                            "name": "",
+                            "code": "",
+                            "open_by_default": true
+                        }
+                    },
+                    {
+                        "value": "18",
+                        "type": "numeric",
+                        "parameters": {
+                            "default_value": null,
+                            "min_value": null,
+                            "max_value": null
+                        },
+                        "id": 9,
+                        "name": "Age",
+                        "code": "age",
+                        "description": "",
+                        "mandatory": false,
+                        "rank": 0,
+                        "related_objects": [
+                            "contact"
+                        ],
+                        "show_on_pdf": false,
+                        "customfield_group": {
+                            "id": 0,
+                            "name": "",
+                            "code": "",
+                            "open_by_default": true
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "pagination": {
+        "limit": 25,
+        "count": 16,
+        "total": 41,
+        "offset": "WyI0NyJd"
+    }
+}

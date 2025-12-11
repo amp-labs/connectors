@@ -4,13 +4,14 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 const Hubspot Provider = "hubspot"
 
 const (
 	// ModuleHubspotCRM is the module used for accessing standard CRM objects.
-	ModuleHubspotCRM common.ModuleID = "CRM"
+	ModuleHubspotCRM common.ModuleID = "crm"
 )
 
 func init() { //nolint:funlen
@@ -49,6 +50,18 @@ func init() { //nolint:funlen
 				BaseURL:     "https://api.hubapi.com/crm",
 				DisplayName: "HubSpot CRM",
 				Support: Support{
+					BatchWrite: &BatchWriteSupport{
+						Create: BatchWriteSupportConfig{
+							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
+							ObjectRecordLimits: nil,
+							Supported:          true,
+						},
+						Update: BatchWriteSupportConfig{
+							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
+							ObjectRecordLimits: nil,
+							Supported:          true,
+						},
+					},
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/simultaneously"
 )
 
 /*
@@ -31,10 +32,7 @@ type metadataFields struct {
 func (c *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
-	var (
-		wg sync.WaitGroup //nolint: varnamelen
-		mu sync.Mutex     //nolint: varnamelen
-	)
+	var mutex sync.Mutex
 
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
@@ -45,30 +43,34 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		Errors: make(map[string]error, len(objectNames)),
 	}
 
-	wg.Add(len(objectNames))
+	// Tasks to be executed simultaneously.
+	callbacks := make([]simultaneously.Job, 0, len(objectNames))
 
 	for _, object := range objectNames {
-		go func(object string) {
-			metadata, err := c.getMetadata(ctx, object)
-			if err != nil {
-				mu.Lock()
-				objectMetadata.Errors[object] = err
-				mu.Unlock()
-				wg.Done()
+		obj := object // capture loop variable
 
-				return
+		callbacks = append(callbacks, func(ctx context.Context) error {
+			metadata, err := c.getMetadata(ctx, obj)
+			if err != nil {
+				mutex.Lock()
+				objectMetadata.Errors[obj] = err // nolint:wsl_v5
+				mutex.Unlock()
+
+				return nil //nolint:nilerr // intentionally collecting errors in map, not failing fast
 			}
 
-			mu.Lock()
-			objectMetadata.Result[object] = *metadata
-			mu.Unlock()
+			mutex.Lock()
+			objectMetadata.Result[obj] = *metadata // nolint:wsl_v5
+			mutex.Unlock()
 
-			wg.Done()
-		}(object)
+			return nil
+		})
 	}
 
-	// Wait for all goroutines to finish their calls.
-	wg.Wait()
+	// This will block until all callbacks are done.
+	if err := simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
+		return nil, err
+	}
 
 	return &objectMetadata, nil
 }
@@ -83,7 +85,7 @@ func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common
 	url.WithQueryParam("_limit", "1")
 	url.WithQueryParam("_skip", "0")
 
-	resp, err := c.Client.Get(ctx, url.String())
+	resp, err := c.Client.Get(ctx, addTrailingSlashIfNeeded(url.String()))
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,23 @@
+{
+  "request_status": "SUCCESS",
+  "request_id": "5eaa9f3f00ff0e03450355dbc60001737e616473617069",
+  "billingcenters": [
+    {
+      "sub_request_status": "SUCCESS",
+      "billingcenter": {
+        "id": "6e0f4532-3702-4f0b-9889-9fe5d0614afd",
+        "updated_at": "2025-02-30T09:49:52.118Z",
+        "created_at": "2025-02-30T09:49:52.118Z",
+        "organization_id": "8fdeefec-f502-4ca8-9a84-6411e0a51053",
+        "name": "Kianjous Billing Center",
+        "email_address": "honeybear_ltd@example.com",
+        "address_line_1": "10 Honey Bear Road",
+        "locality": "London",
+        "administrative_district_level_1": "GB-LND",
+        "country": "GB",
+        "postal_code": "NW1 4RY",
+        "alternative_email_addresses": ["honeybear_burrow@example.com"]
+      }
+    }
+  ]
+}

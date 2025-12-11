@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Header xmlns="http://soap.sforce.com/2006/04/metadata">
+        <AllOrNoneHeader>
+            <allOrNone>true</allOrNone>
+        </AllOrNoneHeader>
+        <SessionHeader>
+            <sessionId>TEST_ACCESS_TOKEN</sessionId>
+        </SessionHeader>
+    </soapenv:Header>
+    <soapenv:Body xmlns="http://soap.sforce.com/2006/04/metadata">
+        <upsertMetadata>
+            <metadata xsi:type="CustomField">
+                <fullName>TestObject15__c.Birthday__c</fullName>
+                <label>Birthday</label>
+                <description>Story describing birthday</description>
+                <type>Text</type>
+                <required>false</required>
+                <unique>false</unique>
+                <indexed>false</indexed>
+                <length>30</length>
+            </metadata>
+            <metadata xsi:type="CustomField">
+                <fullName>TestObject15__c.Hobby__c</fullName>
+                <label>Hobby</label>
+                <description>Your hobby description</description>
+                <type>LongTextArea</type>
+                <required>false</required>
+                <unique>false</unique>
+                <indexed>false</indexed>
+                <length>444</length>
+                <visibleLines>39</visibleLines>
+            </metadata>
+            <metadata xsi:type="CustomField">
+                <fullName>TestObject15__c.Age__c</fullName>
+                <label>Age</label>
+                <description>How many years you lived.</description>
+                <type>Number</type>
+                <required>true</required>
+                <unique>false</unique>
+                <indexed>false</indexed>
+                <defaultValue>18</defaultValue>
+                <precision>3</precision>
+                <scale>2</scale>
+            </metadata>
+            <metadata xsi:type="CustomField">
+                <fullName>TestObject15__c.Interests__c</fullName>
+                <label>Interests</label>
+                <description>Topics that are of interest.</description>
+                <type>MultiselectPicklist</type>
+                <required>true</required>
+                <unique>false</unique>
+                <indexed>false</indexed>
+                <visibleLines>10</visibleLines>
+                <valueSet>
+                    <restricted>true</restricted>
+                    <valueSetDefinition>
+                        <sorted>true</sorted>
+                        <value>
+                            <fullName>art</fullName>
+                            <default>true</default>
+                            <label>art</label>
+                        </value>
+                        <value>
+                            <fullName>travel</fullName>
+                            <default>false</default>
+                            <label>travel</label>
+                        </value>
+                        <value>
+                            <fullName>swimming</fullName>
+                            <default>false</default>
+                            <label>swimming</label>
+                        </value>
+                    </valueSetDefinition>
+                </valueSet>
+            </metadata>
+            <metadata xsi:type="CustomField">
+                <fullName>TestObject15__c.IsReady__c</fullName>
+                <label>IsReady</label>
+                <description>Indicates the readiness for next steps.</description>
+                <type>Checkbox</type>
+                <required>false</required>
+                <unique>false</unique>
+                <indexed>false</indexed>
+                <defaultValue>false</defaultValue>
+            </metadata>
+            <metadata xsi:type="CustomField">
+                <fullName>TestObject15__c.Connection__c</fullName>
+                <label>Connection</label>
+                <description>Connection to other objects.</description>
+                <type>Lookup</type>
+                <required>false</required>
+                <unique>false</unique>
+                <indexed>false</indexed>
+                <referenceTo>Account</referenceTo>
+                <deleteConstraint>SetNull</deleteConstraint>
+                <relationshipName>MyAccount</relationshipName>
+            </metadata>
+        </upsertMetadata>
+    </soapenv:Body>
+</soapenv:Envelope>

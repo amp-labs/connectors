@@ -1,7 +1,12 @@
-// nolint:ireturn
 package datautils
 
-import "encoding/json"
+import (
+	"encoding/gob"
+	"encoding/json"
+	"maps"
+
+	"github.com/amp-labs/connectors/internal/goutils"
+)
 
 // Map is a generic version of map with useful methods.
 // It can return Keys as a slice or a Set.
@@ -19,16 +24,29 @@ func FromMap[K comparable, V any](source map[K]V) Map[K, V] {
 	return source
 }
 
-// ShallowCopy performs copying which should cover most cases.
-// For deep copy you could use goutils.Clone.
+// ShallowCopy creates a shallow copy of the map.
+// It copies the top-level keys and values, but does not clone
+// nested or referenced objects. Use this when you only need
+// a separate map container, not deep copies of the values.
 func (m Map[K, V]) ShallowCopy() Map[K, V] {
 	result := make(map[K]V)
-
-	for key, value := range m {
-		result[key] = value
-	}
+	maps.Copy(result, m)
 
 	return result
+}
+
+func init() {
+	gob.Register(Map[string, any]{})
+}
+
+// DeepCopy creates a deep copy of the map using `goutils.Clone`.
+//
+// Internally this uses `encoding/gob`, so all concrete key/value types
+// must be registered with `gob.Register` before use.
+//
+// Register the missing types (e.g. `gob.Register(MyStruct{})`) before calling DeepCopy.
+func (m Map[K, V]) DeepCopy() (Map[K, V], error) {
+	return goutils.Clone(m)
 }
 
 func (m Map[K, V]) Keys() []K {
@@ -53,7 +71,7 @@ func (m Map[K, V]) Has(key K) bool {
 func (m Map[K, V]) Values() []V {
 	values := make([]V, 0, len(m))
 
-	for key := range m { // nolint:ireturn
+	for key := range m {
 		values = append(values, m[key])
 	}
 
@@ -61,9 +79,7 @@ func (m Map[K, V]) Values() []V {
 }
 
 func (m Map[K, V]) AddMapValues(source Map[K, V]) {
-	for k, v := range source {
-		m[k] = v
-	}
+	maps.Copy(m, source)
 }
 
 // Select returns the values for the given keys, along with the keys not found.
@@ -89,6 +105,7 @@ type DefaultMap[K comparable, V any] struct {
 	// Map is a delegate.
 	// All methods are embedded which grants the same capabilities, plus default value.
 	Map[K, V]
+
 	// When key is not found this callback will be used to provide default value.
 	fallback func(key K) V
 }
@@ -101,7 +118,6 @@ func NewDefaultMap[K comparable, V any](dict Map[K, V], fallback func(K) V) Defa
 }
 
 // Get method uses map with a fallback value.
-// nolint:ireturn
 func (m DefaultMap[K, V]) Get(key K) V {
 	value, ok := m.Map[key]
 	if ok {
@@ -132,4 +148,25 @@ func StructToMap(obj any) (map[string]any, error) {
 	}
 
 	return result, nil
+}
+
+// MergeMaps creates a new map by combining all provided maps.
+//
+// Each key from the input maps is copied into the resulting map.
+// This is a **shallow copy**: the values themselves are not cloned,
+// so if they are pointers, slices, maps, or other reference types,
+// modifications to those values will be reflected in both the input and output maps.
+//
+// If the same key exists in multiple input maps, the value from the
+// last map in the argument list takes precedence.
+//
+// The original maps are not modified.
+func MergeMaps[K comparable, V any](maps ...map[K]V) map[K]V {
+	result := FromMap(make(map[K]V))
+
+	for _, mapping := range maps {
+		result.AddMapValues(FromMap(mapping))
+	}
+
+	return result
 }

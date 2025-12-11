@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/providers/netsuite/internal/shared"
 )
 
@@ -129,8 +129,6 @@ func (a *Adapter) getMarshaledData(ctx context.Context) common.MarshalFunc {
 // batches of maxRecordsToFetchConcurrently to avoid running into rate limits.
 // nolint:funlen
 func (a *Adapter) fetchRecords(ctx context.Context, recordsToFetch []string) ([]map[string]any, error) {
-	maxc := make(chan struct{}, maxRecordsToFetchConcurrently)
-
 	type result struct {
 		index int
 		data  map[string]any
@@ -139,44 +137,50 @@ func (a *Adapter) fetchRecords(ctx context.Context, recordsToFetch []string) ([]
 
 	resultChan := make(chan result, len(recordsToFetch))
 
-	var wgroup sync.WaitGroup
+	callbacks := make([]simultaneously.Job, 0, len(recordsToFetch))
 
 	for idx, recordURL := range recordsToFetch {
-		wgroup.Add(1)
+		index := idx     // capture loop variable
+		url := recordURL // capture loop variable
 
-		go func(index int, url string) {
-			defer wgroup.Done()
-
-			// Block to avoid overwhelming the API with too many concurrent requests.
-			maxc <- struct{}{}
-			defer func() { <-maxc }()
-
+		callbacks = append(callbacks, func(ctx context.Context) error {
 			record, err := a.JSONHTTPClient().Get(ctx, url)
 			if err != nil {
 				resultChan <- result{index: index, err: fmt.Errorf("failed to fetch record from URL %s: %w", url, err)}
 
-				return
+				return nil
 			}
 
 			node, ok := record.Body()
 			if !ok {
 				resultChan <- result{index: index, err: fmt.Errorf("%w: %s", ErrNoRecordFound, url)}
 
-				return
+				return nil
 			}
 
 			recordBody, err := jsonquery.Convertor.ObjectToMap(node)
 			if err != nil {
 				resultChan <- result{index: index, err: fmt.Errorf("failed to convert record body to map for URL %s: %w", url, err)}
 
-				return
+				return nil
 			}
 
 			resultChan <- result{index: index, data: recordBody}
-		}(idx, recordURL)
+
+			return nil
+		})
 	}
 
-	wgroup.Wait()
+	// This will block until all callbacks are done. Note that since the
+	// channel is buffered, we won't block on sending results.
+	if err := simultaneously.DoCtx(ctx, maxRecordsToFetchConcurrently, callbacks...); err != nil {
+		close(resultChan)
+
+		return nil, fmt.Errorf("error fetching records concurrently: %w", err)
+	}
+
+	// All callbacks are done, we can close the result channel.
+	// This will signal the result collection loop to stop.
 	close(resultChan)
 
 	// Collect the results.

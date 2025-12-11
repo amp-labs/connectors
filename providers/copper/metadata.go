@@ -34,7 +34,6 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 				DisplayName:  field.DisplayName,
 				ValueType:    getFieldValueType(field),
 				ProviderType: field.DataType,
-				ReadOnly:     false,
 				Values:       field.getValues(),
 			})
 		}

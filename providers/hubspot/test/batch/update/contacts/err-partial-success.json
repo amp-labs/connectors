@@ -1,0 +1,40 @@
+{
+  "completedAt": "2025-11-04T20:29:54.897Z",
+  "status": "COMPLETE",
+  "startedAt": "2025-11-04T20:29:54.816Z",
+  "results": [
+    {
+      "id": "171591000199",
+      "properties": {
+        "createdate": "2025-11-04T03:44:52.657Z",
+        "firstname": "Siena (updated)",
+        "hs_is_unworked": "true",
+        "hs_object_id": "171591000199",
+        "hs_object_source": "INTEGRATION",
+        "hs_object_source_id": "19083857",
+        "hs_object_source_label": "INTEGRATION",
+        "hs_pipeline": "contacts-lifecycle-pipeline",
+        "lastmodifieddate": "2025-11-04T12:10:35.352Z",
+        "lastname": "Dyer (updated)",
+        "lifecyclestage": "lead"
+      },
+      "createdAt": "2025-11-04T03:44:52.657Z",
+      "updatedAt": "2025-11-04T12:10:35.352Z",
+      "archived": false,
+      "url": "https://app.hubspot.com/contacts/44237313/record/0-1/171591000199"
+    }
+  ],
+  "errors": [
+    {
+      "status": "error",
+      "category": "OBJECT_NOT_FOUND",
+      "message": "Could not get some CONTACT objects, they may be deleted or not exist. Check that ids are valid.",
+      "context": {
+        "ids": [
+          ""
+        ]
+      }
+    }
+  ],
+  "numErrors": 1
+}

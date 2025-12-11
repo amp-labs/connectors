@@ -78,13 +78,42 @@ func compareNextPageToken(actual, expected string) bool {
 	return actualURL.Equals(expectedURL)
 }
 
-// ComparatorSubsetWrite ensures that only the specified metadata objects are present,
-// while other values are verified through an exact match..
+// ComparatorSubsetWrite compares two WriteResult objects, allowing partial
+// (subset) matching for Data fields while requiring exact matches for Success and RecordId.
+//
+// It provides flexible error comparison logic:
+//   - Errors are normalized before comparison, allowing strings, Go error types,
+//     and mockutils.JSONErrorWrapper values (for JSON-based or struct comparison)
+//     to be treated uniformly.
+//
+// This comparator is typically used when only a subset of Data fields
+// needs verification rather than a full equality check.
 func ComparatorSubsetWrite(_ string, actual, expected *common.WriteResult) bool {
 	return mockutils.WriteResultComparator.SubsetData(actual, expected) &&
-		mockutils.WriteResultComparator.ExactErrors(actual, expected) &&
+		mockutils.ErrorNormalizedComparator.EachErrorEquals(actual.Errors, expected.Errors) &&
 		actual.Success == expected.Success &&
 		actual.RecordId == expected.RecordId
+}
+
+// ComparatorSubsetBatchWrite compares two BatchWriteResult objects,
+// performing subset matching for individual WriteResult entries while
+// ensuring batch-level metrics (Status, SuccessCount, FailureCount) match exactly.
+//
+// Error comparison is normalized, allowing flexible matches between
+// strings, Go errors, and mockutils.JSONErrorWrapper values—useful when
+// top-level or per-record errors are represented as structs or JSON.
+//
+// This enables expressive, stable tests that verify meaningful fields
+// without enforcing strict structural equality across the entire batch.
+func ComparatorSubsetBatchWrite(_ string, actual, expected *common.BatchWriteResult) bool {
+	if actual.Status != expected.Status ||
+		actual.SuccessCount != expected.SuccessCount ||
+		actual.FailureCount != expected.FailureCount {
+		return false
+	}
+
+	return mockutils.BatchWriteResultComparator.SubsetWriteResults(actual, expected) &&
+		mockutils.ErrorNormalizedComparator.EachErrorEquals(actual.Errors, expected.Errors)
 }
 
 // ComparatorSubsetMetadata will check a subset of fields is present.

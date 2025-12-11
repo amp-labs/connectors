@@ -21,6 +21,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/future"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/scripts/utils/credutils"
@@ -39,7 +40,7 @@ import (
 //		"clientSecret": "**************",
 //		"scopes": "crm.contacts.read,crm.contacts.write", (optional)
 //		"provider": "salesforce",
-//		"substitutions": { (optional)
+//		"metadata": { (optional)
 //		    "workspace": "some-subdomain"
 //		},
 //		"accessToken": "",
@@ -61,7 +62,7 @@ const (
 	WaitBeforeExitSeconds    = 1
 	ReadHeaderTimeoutSeconds = 3
 
-	SubstitutionsFieldName = "Substitutions"
+	MetadataFieldName = "Metadata"
 )
 
 // ================================
@@ -73,8 +74,8 @@ var registry = scanning.NewRegistry()
 var readers = []scanning.Reader{
 	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
-		JSONPath: "$['substitutions']",
-		KeyName:  SubstitutionsFieldName,
+		JSONPath: "$['metadata']",
+		KeyName:  MetadataFieldName,
 	},
 	credscanning.Fields.Provider.GetJSONReader(DefaultCredsFile),
 	credscanning.Fields.ClientId.GetJSONReader(DefaultCredsFile),
@@ -189,11 +190,12 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 		os.Exit(1)
 	}
 
-	go func() {
+	future.Go(func() (struct{}, error) {
 		time.Sleep(WaitBeforeExitSeconds * time.Second)
-
 		os.Exit(0)
-	}()
+
+		return struct{}{}, nil
+	})
 }
 
 // Run executes the OAuth flow to get a token.
@@ -228,10 +230,12 @@ func (a *OAuthApp) Run() error {
 
 		http.Handle("/", a)
 
-		go func() {
+		future.Go(func() (struct{}, error) {
 			time.Sleep(1 * time.Second)
 			openBrowser(fmt.Sprintf("%s://localhost:%d", a.Proto, a.Port))
-		}()
+
+			return struct{}{}, nil
+		})
 
 		server := &http.Server{
 			Addr:              fmt.Sprintf("0.0.0.0:%d", a.Port),
@@ -261,7 +265,7 @@ func openBrowser(url string) {
 	case "darwin":
 		err = exec.Command("open", url).Start()
 	default:
-		err = fmt.Errorf("unsupported platform: %s", runtime.GOOS) //nolint:goerr113
+		err = fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 	}
 
 	if err != nil {
@@ -287,14 +291,14 @@ func setup() *OAuthApp {
 		return nil
 	}
 
-	substitutions, err := registry.GetMap(SubstitutionsFieldName)
+	metadata, err := registry.GetMap(MetadataFieldName)
 	if err != nil {
-		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}", "error", err)
+		slog.Warn("no connector metadata, ensure that the provider info doesn't have any {{variables}}", "error", err)
 	}
 
 	provider := registry.MustString(credscanning.Fields.Provider.Name)
 
-	providerInfo, err := providers.ReadInfo(provider, paramsbuilder.NewCatalogVariables(substitutions)...)
+	providerInfo, err := providers.ReadInfo(provider, paramsbuilder.NewCatalogVariables(metadata)...)
 	if err != nil {
 		slog.Error("failed to read provider config", "error", err)
 

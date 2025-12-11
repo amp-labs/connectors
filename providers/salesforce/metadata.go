@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 func (c *Connector) UpsertMetadata(
@@ -152,6 +153,9 @@ type fieldResult struct {
 	Calculated *bool `json:"calculated,omitempty"`
 	Createable *bool `json:"createable,omitempty"`
 	Updateable *bool `json:"updateable,omitempty"`
+	Custom     *bool `json:"custom,omitempty"`
+	// Optional indicates if the field may be omitted (API: "nillable").
+	Optional *bool `json:"nillable"`
 }
 
 type picklistValue struct {
@@ -176,20 +180,20 @@ func (r describeSObjectResult) transformToFields() map[string]common.FieldMetada
 // fields to determine if a field is read-only.
 //
 //nolint:lll
-func (o fieldResult) isReadOnly() bool {
-	return (o.Autonumber != nil && *o.Autonumber) ||
-		(o.Calculated != nil && *o.Calculated) ||
-		(o.Createable != nil && !*o.Createable && o.Updateable != nil && !*o.Updateable)
+func (f fieldResult) isReadOnly() bool {
+	return (f.Autonumber != nil && *f.Autonumber) ||
+		(f.Calculated != nil && *f.Calculated) ||
+		(f.Createable != nil && !*f.Createable && f.Updateable != nil && !*f.Updateable)
 }
 
-func (o fieldResult) transformToFieldMetadata() common.FieldMetadata {
+func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
 	var (
 		valueType common.ValueType
 		values    []common.FieldValue
 	)
 
 	// Based on type property map value to Ampersand value type.
-	switch o.Type {
+	switch f.Type {
 	case "string", "textarea":
 		valueType = common.ValueTypeString
 	case "boolean":
@@ -204,27 +208,29 @@ func (o fieldResult) transformToFieldMetadata() common.FieldMetadata {
 		valueType = common.ValueTypeDateTime
 	case "picklist", "combobox":
 		valueType = common.ValueTypeSingleSelect
-		values = o.getFieldValues()
+		values = f.getFieldValues()
 	case "multipicklist":
 		valueType = common.ValueTypeMultiSelect
-		values = o.getFieldValues()
+		values = f.getFieldValues()
 	default:
 		// Examples: base64, ID, reference, currency, percent, phone, url, email, anyType, location
 		valueType = common.ValueTypeOther
 	}
 
 	return common.FieldMetadata{
-		DisplayName:  o.DisplayName,
+		DisplayName:  f.DisplayName,
 		ValueType:    valueType,
-		ProviderType: o.Type,
-		ReadOnly:     o.isReadOnly(),
+		ProviderType: f.Type,
+		ReadOnly:     goutils.Pointer(f.isReadOnly()),
+		IsCustom:     f.Custom,
+		IsRequired:   f.isRequired(),
 		Values:       values,
 	}
 }
 
-func (o fieldResult) getFieldValues() []common.FieldValue {
-	result := make([]common.FieldValue, len(o.PicklistValues))
-	for index, option := range o.PicklistValues {
+func (f fieldResult) getFieldValues() []common.FieldValue {
+	result := make([]common.FieldValue, len(f.PicklistValues))
+	for index, option := range f.PicklistValues {
 		result[index] = common.FieldValue{
 			Value:        option.Value,
 			DisplayValue: option.DisplayName,
@@ -232,4 +238,14 @@ func (o fieldResult) getFieldValues() []common.FieldValue {
 	}
 
 	return result
+}
+
+func (f fieldResult) isRequired() *bool {
+	if f.Optional == nil {
+		return nil
+	}
+
+	required := !(*f.Optional) // not optional
+
+	return goutils.Pointer(required)
 }

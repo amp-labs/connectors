@@ -46,14 +46,9 @@ func constructor(base *components.Connector) (*Connector, error) {
 		},
 	)
 
-	registry, err := components.NewEndpointRegistry(supportedOperations())
-	if err != nil {
-		return nil, err
-	}
-
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
-		registry,
+		components.NewEmptyEndpointRegistry(),
 		connector.ProviderContext.Module(),
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
@@ -66,7 +61,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 	connector.Writer = writer.NewHTTPWriter(
 		connector.HTTPClient().Client,
-		registry,
+		components.NewEmptyEndpointRegistry(),
 		connector.ProviderContext.Module(),
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
@@ -80,7 +75,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	// Set the deleter
 	connector.Deleter = deleter.NewHTTPDeleter(
 		connector.HTTPClient().Client,
-		registry,
+		components.NewEmptyEndpointRegistry(),
 		connector.ProviderContext.Module(),
 		operations.DeleteHandlers{
 			BuildRequest:  connector.buildDeleteRequest,

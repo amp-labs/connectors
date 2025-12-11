@@ -1,0 +1,35 @@
+{
+  "status": "error",
+  "message": "Property values were not valid: [{\"isValid\":false,\"message\":\"Property \\\"first000name\\\" does not exist\",\"error\":\"PROPERTY_DOESNT_EXIST\",\"name\":\"first000name\"},{\"isValid\":false,\"message\":\"Property \\\"last000name\\\" does not exist\",\"error\":\"PROPERTY_DOESNT_EXIST\",\"name\":\"last000name\"},{\"isValid\":false,\"message\":\"Property \\\"first000name\\\" does not exist\",\"error\":\"PROPERTY_DOESNT_EXIST\",\"name\":\"first000name\"},{\"isValid\":false,\"message\":\"Property \\\"last000name\\\" does not exist\",\"error\":\"PROPERTY_DOESNT_EXIST\",\"name\":\"last000name\"}]",
+  "correlationId": "9c5760c4-2c71-4059-897d-cf20a1ce1523",
+  "errors": [
+    {
+      "message": "Property \"first000name\" does not exist",
+      "code": "PROPERTY_DOESNT_EXIST",
+      "context": {
+        "propertyName": [
+          "first000name"
+        ]
+      }
+    },
+    {
+      "message": "Property \"last000name\" does not exist",
+      "code": "PROPERTY_DOESNT_EXIST",
+      "context": {
+        "propertyName": [
+          "last000name"
+        ]
+      }
+    },
+    {
+      "message": "Property \"first000name\" does not exist",
+      "code": "PROPERTY_DOESNT_EXIST",
+      "context": {
+        "propertyName": [
+          "first000name"
+        ]
+      }
+    }
+  ],
+  "category": "VALIDATION_ERROR"
+}

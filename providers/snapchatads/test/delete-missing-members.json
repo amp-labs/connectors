@@ -1,0 +1,10 @@
+{
+    "request_status": "ERROR",
+    "request_id": "232f5ee3-625d-4cdd-a429-c0bf1fbbae95",
+    "members": [
+        {
+            "sub_request_error_reason": "Error code: E3004, message: Entity does not exist or you do not have permission to access it",
+            "sub_request_status": "ERROR"
+        }
+    ]
+}

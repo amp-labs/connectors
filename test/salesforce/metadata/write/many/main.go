@@ -108,7 +108,7 @@ func main() {
 					Association: &common.AssociationDefinition{
 						AssociationType: "associatedAccount",
 						TargetObject:    "Account",
-						//TargetField: "Identifier",  makes an IndirectLookup field
+						// TargetField: "Identifier",  makes an IndirectLookup field
 						// (Salesforce account must have that in the first place)
 						OnDelete:               "SetNull",
 						ReverseLookupFieldName: "MyAccount",

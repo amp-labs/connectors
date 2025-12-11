@@ -1,0 +1,18 @@
+{
+    "request_status": "SUCCESS",
+    "request_id": "5151107b-1d6c-45a7-a618-a9c861ede74b",
+    "paging": {
+        "next_link": "https://adsapi.snapchat.com/v1/organizations/5cf59a25-5063-40e1-826b-5ceaf369b207/billingcenters?cursor=QmlsbGluZ0NlbnRlcnMvMDAyMjkxYzYtODc4Yi00YzllLWI2OTAtNmMwZmNjYWIzZGNl&limit=100"
+    },
+    "billingcenters": [
+        {
+            "sub_request_status": "SUCCESS",
+            "billingcenter": {
+                "id": "002291c6-878b-4c9e-b690-6c0fccab3dce",
+                "organization_id": "5cf59a25-5063-40e1-826b-5ceaf369b207",
+                "name": "New Billing Center",
+                "email_address": "honeybear_Itd@example. com"
+            }
+        }
+    ]
+}

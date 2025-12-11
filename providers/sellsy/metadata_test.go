@@ -1,23 +1,31 @@
 package sellsy
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
+	responseCustomFields := testutils.DataFromFile(t, "read/custom-fields.json")
+
 	tests := []testroutines.Metadata{
 		{
-			Name:       "Successful metadata for Tasks and Favourite Filters",
-			Input:      []string{"tasks", "companies/favourite-filters"},
-			Server:     mockserver.Dummy(),
+			Name:  "Successful metadata for Tasks and Favourite Filters",
+			Input: []string{"tasks", "companies/favourite-filters"},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, nil),
+			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
@@ -63,6 +71,63 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name:  "Custom fields are returned as part of Contacts metadata",
+			Input: []string{"contacts"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/custom-fields"),
+				Then:  mockserver.Response(http.StatusOK, responseCustomFields),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "Contacts",
+						Fields: map[string]common.FieldMetadata{
+							"age": {
+								DisplayName:  "Age",
+								ValueType:    "int",
+								ProviderType: "numeric",
+								Values:       nil,
+							},
+							"fruits": {
+								DisplayName:  "Fruits",
+								ValueType:    "singleSelect",
+								ProviderType: "radio",
+								Values: common.FieldValues{{
+									Value:        "9",
+									DisplayValue: "Orange",
+								}, {
+									Value:        "10",
+									DisplayValue: "Strawberry",
+								}, {
+									Value:        "11",
+									DisplayValue: "Kiwi",
+								}},
+							},
+							"hobbies": {
+								DisplayName:  "Hobbies",
+								ValueType:    "multiSelect",
+								ProviderType: "checkbox",
+								Values: common.FieldValues{{
+									Value:        "12",
+									DisplayValue: "Art",
+								}, {
+									Value:        "13",
+									DisplayValue: "Travelling",
+								}, {
+									Value:        "14",
+									DisplayValue: "Movies",
+								}},
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {
@@ -75,6 +140,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})
 		})
 	}
+}
+
+func TestConnectorStringMethods(t *testing.T) {
+	t.Parallel()
+
+	conn, err := constructTestConnector("http://mockserver.test")
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	testutils.CheckOutput(t, "conn.Provider():", "sellsy", conn.Provider())
+	testutils.CheckOutput(t, "conn.String():", "sellsy.Connector[root]", conn.String())
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {

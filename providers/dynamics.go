@@ -1,4 +1,4 @@
-// nolint:lll
+// nolint:lll,godoclint
 package providers
 
 const (
@@ -20,6 +20,11 @@ func init() { // nolint:funlen
 			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
+			},
+
+			// Map of source scopes that will be transformed into target scopes
+			ScopeMappings: map[string]string{
+				".default": "https://api.businesscentral.dynamics.com/.default",
 			},
 		},
 		Media: &Media{
@@ -69,7 +74,7 @@ func init() { // nolint:funlen
 	SetInfo(DynamicsCRM, ProviderInfo{
 		DisplayName: "Microsoft Dynamics CRM",
 		AuthType:    Oauth2,
-		BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com/api/data",
+		BaseURL:     "https://{{.workspace}}.api.{{.region}}.dynamics.com/api/data",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:              AuthorizationCode,
 			AuthURL:                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
@@ -80,6 +85,12 @@ func init() { // nolint:funlen
 			ExplicitWorkspaceRequired: true,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
+			},
+
+			// Map of source scopes that will be transformed into target scopes
+			ScopeMappings: map[string]string{
+				"user_impersonation": "https://{{.workspace}}.api.{{.region}}.dynamics.com/user_impersonation",
+				".default":           "https://{{.workspace}}.api.{{.region}}.dynamics.com/.default",
 			},
 		},
 		Media: &Media{
@@ -108,7 +119,16 @@ func init() { // nolint:funlen
 			Input: []MetadataItemInput{
 				{
 					Name:        "workspace",
-					DisplayName: "Organization ID",
+					DisplayName: "Web API environment",
+					DocsURL:     "https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/compose-http-requests-handle-errors?view=dataverse-latest#web-api-url-and-versions",
+					Prompt:      "Copy the environment name (e.g. `org123456`) from your Web API endpoint URL. It appears right after `https://` and before `.api.`",
+				},
+				{
+					Name:         "region",
+					DisplayName:  "Region",
+					DefaultValue: "crm",
+					DocsURL:      "https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/compose-http-requests-handle-errors?view=dataverse-latest#web-api-url-and-versions",
+					Prompt:       "Copy the region (e.g. `crm4`) from your Web API endpoint URL. It appears right after `.api.` and before `.dynamics.com`",
 				},
 			},
 		},

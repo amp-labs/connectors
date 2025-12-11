@@ -49,7 +49,7 @@ func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 				url.WithQueryParam(skipQuery, currSkip+defaultPageSize)
 				url.WithQueryParam(limitQuery, defaultPageSize)
 
-				return url.String(), nil
+				return addTrailingSlashIfNeeded(url.String()), nil
 			}
 		}
 

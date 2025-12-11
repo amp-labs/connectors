@@ -37,12 +37,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{common.ErrMissingFields},
 		},
 		{
-			Name:         "Unsupported object name",
-			Input:        common.ReadParams{ObjectName: "butterflies", Fields: connectors.Fields("id")},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
 			Name:  "Correct error message is understood from JSON response",
 			Input: common.ReadParams{ObjectName: "Profiles", Fields: connectors.Fields("id")},
 			Server: mockserver.Fixed{
@@ -51,7 +45,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("The requested URL was not found on the server"), // nolint:goerr113
+				errors.New("The requested URL was not found on the server"),
 			},
 		},
 		{
@@ -177,15 +171,18 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(mockutils.NewClient()),
-		WithWorkspace("test-workspace"),
+		common.ConnectorParams{
+			AuthenticatedClient: mockutils.NewClient(),
+			Workspace:           "test-workspace",
+			Metadata:            map[string]string{},
+		},
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
+	connector.SetUnitTestBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }

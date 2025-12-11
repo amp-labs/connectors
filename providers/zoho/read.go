@@ -14,9 +14,10 @@ import (
 // ref: https://www.zoho.com/crm/developer/docs/api/v6/get-records.html
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	switch c.moduleID { //nolint:exhaustive
-	case providers.ZohoDesk:
+	case providers.ModuleZohoDesk:
 		return c.read(ctx, config, nil)
-
+	case providers.ModuleZohoServiceDeskPlus:
+		return c.servicedeskplusAdapter.Read(ctx, config)
 	default:
 		headers := constructHeaders(config)
 
@@ -53,7 +54,7 @@ func (c *Connector) read(ctx context.Context, config common.ReadParams,
 		}, nil
 	}
 
-	if c.moduleID == providers.ZohoDesk {
+	if c.moduleID == providers.ModuleZohoDesk {
 		switch {
 		case objectsSortableByCreatedTime.Has(config.ObjectName):
 			return manualIncrementalSync(node, dataKey, config, createdTimeKey, timeLayout, getNextRecordsURLDesk(url))

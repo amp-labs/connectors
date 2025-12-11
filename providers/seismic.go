@@ -5,11 +5,11 @@ import "github.com/amp-labs/connectors/common"
 const (
 	Seismic Provider = "seismic"
 
-	// ModuleReporting is the module used for accessing and manging reporting API.
-	ModuleReporting common.ModuleID = "reporting"
+	// ModuleSeismicReporting is the module used for accessing and manging reporting API.
+	ModuleSeismicReporting common.ModuleID = "reporting"
 
-	// ModuleIntegration is the module used for accessing and manging integration API.
-	ModuleIntegration common.ModuleID = "integration"
+	// ModuleSeismicIntegration is the module used for accessing and manging integration API.
+	ModuleSeismicIntegration common.ModuleID = "integration"
 )
 
 func init() { // nolint: funlen
@@ -42,22 +42,22 @@ func init() { // nolint: funlen
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
 			Write:     false,
 		},
-		DefaultModule: ModuleReporting,
+		DefaultModule: ModuleSeismicReporting,
 		Modules: &Modules{
-			ModuleReporting: {
+			ModuleSeismicReporting: {
 				DisplayName: "Seismic Reporting",
 				BaseURL:     "https://api.seismic.com/reporting",
 				Support: Support{
 					Proxy: false,
-					Read:  false,
+					Read:  true,
 					Write: false,
 				},
 			},
-			ModuleIntegration: {
+			ModuleSeismicIntegration: {
 				DisplayName: "Seismic Integration",
 				BaseURL:     "https://api.seismic.com/integration",
 				Support: Support{
@@ -72,6 +72,10 @@ func init() { // nolint: funlen
 				{
 					Name:        "workspace",
 					DisplayName: "Tenant",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleSeismicIntegration: ModuleDependency{},
+						ModuleSeismicReporting:   ModuleDependency{},
+					},
 				},
 			},
 		},

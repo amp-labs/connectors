@@ -1,4 +1,3 @@
-// nolint:ireturn
 package proxyserv
 
 import (
@@ -15,7 +14,7 @@ func (f Factory) CreateProxyOAuth2ClientCreds(ctx context.Context) *Proxy {
 	params := createClientAuthParams(f.Provider, f.Registry)
 	providerInfo := getProviderConfig(f.Provider, f.CatalogVariables)
 	cfg := configureOAuthClientCredentials(params.ID, params.Secret, params.Scopes, providerInfo)
-	httpClient := setupOAuth2ClientCredentialsHTTPClient(ctx, providerInfo, cfg, f.Debug, f.Substitutions)
+	httpClient := setupOAuth2ClientCredentialsHTTPClient(ctx, providerInfo, cfg, f.Debug, f.Metadata)
 	baseURL := getBaseURL(providerInfo)
 
 	return newProxy(baseURL, httpClient)

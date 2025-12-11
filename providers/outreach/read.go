@@ -65,6 +65,8 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	// If Since is present, we turn it into the format the Outreach API expects
 	if !config.Since.IsZero() {
 		t := config.Since.Format(time.DateOnly)
+		// Add `..inf` to filter for all records updated after the given time.
+		// See: https://developers.outreach.io/api/making-requests/#filter-by-greater-than-or-equal-to-condition
 		fmtTime := t + "..inf"
 		url.WithQueryParam("filter[updatedAt]", fmtTime)
 	}

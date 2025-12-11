@@ -1,0 +1,33 @@
+{
+  "success": true,
+  "statuscode": 200,
+  "data": {
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "hasmorerecords": true
+    },
+    "data": [
+      {
+        "callmetadataid": 2367,
+        "title": "Outplay Training",
+        "callstarttime": "02/06/2025 14:41:22",
+        "callduration": 18,
+        "recordingfilepath": "https://ap1-app.somexyz.com/exportrecording/2367",
+        "mimetype": "audio/x-wav",
+        "meetingtype": "External",
+        "callsource": "GoogleMeet",
+        "createddate": "2025-02-06T14:42:38.682231",
+        "attendees": [
+          {
+            "Attendeeid": 4793372,
+            "Name": "",
+            "Emailid": "vaibhav.j@abcdef.co.in",
+            "Type": 2
+          }
+        ],
+        "unknownattendees": []
+      }
+    ]
+  }
+}

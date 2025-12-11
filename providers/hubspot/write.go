@@ -71,3 +71,8 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		Data:     record,
 	}, nil
 }
+
+func (c *Connector) BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error) {
+	// Delegated.
+	return c.batchAdapter.BatchWrite(ctx, params)
+}

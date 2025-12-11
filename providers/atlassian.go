@@ -70,6 +70,9 @@ func init() {
 					Name:        "workspace",
 					DisplayName: "App name",
 					DocsURL:     "https://support.atlassian.com/organization-administration/docs/update-your-product-and-site-url/",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleAtlassianJira: ModuleDependency{},
+					},
 				},
 			},
 		},

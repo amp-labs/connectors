@@ -12,7 +12,6 @@ func ConvertMetadataFieldToFieldMetadataMapV2(field metadatadef.Field) staticsch
 			DisplayName:  field.Name,
 			ValueType:    getFieldValueType(field),
 			ProviderType: field.Type,
-			ReadOnly:     false,
 			Values:       getFieldValueOptions(field),
 		},
 	}

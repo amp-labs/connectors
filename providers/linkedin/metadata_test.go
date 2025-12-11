@@ -12,18 +12,13 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
+func TestAdsListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	adTargetingFacetsResponse := testutils.DataFromFile(t, "adTargetingFacets.json")
 	dmpEngagementSourceTypesResponse := testutils.DataFromFile(t, "dmpEngagementSourceTypes.json")
 
 	tests := []testroutines.Metadata{
-		{
-			Name:         "Object must be included",
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrMissingObjects},
-		},
 		{
 			Name:  "Successfully describe multiple object with metadata",
 			Input: []string{"adTargetingFacets", "dmpEngagementSourceTypes"},
@@ -120,7 +115,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestAdsConnector(tt.Server.URL)
 			})
 		})
 	}

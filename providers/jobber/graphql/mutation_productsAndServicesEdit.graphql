@@ -1,0 +1,31 @@
+mutation ProductsAndServicesEdit($id: EncodedId! $input: ProductsAndServicesEditInput!) {
+    productsAndServicesEdit(
+      productOrServiceId : $id
+      input : $input
+    ) {
+        productOrService {
+        	bookableType
+          category
+          defaultUnitCost
+          description
+          durationMinutes
+          id
+          internalUnitCost
+          markup
+          name
+          onlineBookingSortOrder
+          onlineBookingsEnabled
+          quantityRange{
+            maxQuantity
+            minQuantity
+            quantityEnabled
+          }
+          taxable
+          visible
+        }
+        userErrors {
+          message
+          path
+        }
+    }
+}

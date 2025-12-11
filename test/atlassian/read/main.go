@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -23,11 +24,13 @@ func main() {
 
 	conn := connTest.GetAtlassianConnector(ctx)
 
+	day := 24 * time.Hour
+
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "issues",
 		Fields:     connectors.Fields("id", "summary", "status"),
-		// Below is the example to get issues that were updated in the last 15 min.
-		// Since: time.Now().Add(-15 * time.Minute),
+		Since:      time.Now().Add(-1000 * day),
+		Until:      time.Now().Add(-120 * day),
 	})
 	if err != nil {
 		utils.Fail("error reading from Atlassian", "error", err)

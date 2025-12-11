@@ -1,0 +1,24 @@
+mutation EventCreate($input: EventCreateInput!) {
+    eventCreate(input :$input) {
+        event {
+          allDay
+					createdBy
+          description
+          duration
+          endAt
+          id
+          isComplete
+          isDefaultTitle
+          overrideOrder
+          recurringSummary
+          routingOrder
+          startAt
+          teamReminderOffset
+          title
+        }
+        userErrors {
+          message
+          path
+        }
+    }
+}

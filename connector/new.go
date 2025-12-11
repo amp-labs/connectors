@@ -1,4 +1,3 @@
-// nolint:ireturn
 package connector
 
 import (
@@ -7,7 +6,9 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/acuityscheduling"
 	"github.com/amp-labs/connectors/providers/aha"
+	"github.com/amp-labs/connectors/providers/aircall"
 	"github.com/amp-labs/connectors/providers/amplitude"
 	"github.com/amp-labs/connectors/providers/apollo"
 	"github.com/amp-labs/connectors/providers/asana"
@@ -19,12 +20,16 @@ import (
 	"github.com/amp-labs/connectors/providers/bitbucket"
 	"github.com/amp-labs/connectors/providers/blackbaud"
 	"github.com/amp-labs/connectors/providers/blueshift"
+	"github.com/amp-labs/connectors/providers/braintree"
 	"github.com/amp-labs/connectors/providers/braze"
 	"github.com/amp-labs/connectors/providers/breakcold"
 	"github.com/amp-labs/connectors/providers/brevo"
+	"github.com/amp-labs/connectors/providers/calendly"
 	"github.com/amp-labs/connectors/providers/campaignmonitor"
 	"github.com/amp-labs/connectors/providers/capsule"
+	"github.com/amp-labs/connectors/providers/chargebee"
 	"github.com/amp-labs/connectors/providers/chilipiper"
+	"github.com/amp-labs/connectors/providers/chorus"
 	"github.com/amp-labs/connectors/providers/claricopilot"
 	"github.com/amp-labs/connectors/providers/clickup"
 	"github.com/amp-labs/connectors/providers/closecrm"
@@ -41,12 +46,14 @@ import (
 	"github.com/amp-labs/connectors/providers/flatfile"
 	"github.com/amp-labs/connectors/providers/freshdesk"
 	"github.com/amp-labs/connectors/providers/front"
+	"github.com/amp-labs/connectors/providers/getresponse"
 	"github.com/amp-labs/connectors/providers/github"
 	"github.com/amp-labs/connectors/providers/gitlab"
 	"github.com/amp-labs/connectors/providers/gong"
 	"github.com/amp-labs/connectors/providers/google"
 	"github.com/amp-labs/connectors/providers/gorgias"
 	"github.com/amp-labs/connectors/providers/groove"
+	"github.com/amp-labs/connectors/providers/happyfox"
 	"github.com/amp-labs/connectors/providers/helpscoutmailbox"
 	"github.com/amp-labs/connectors/providers/heyreach"
 	"github.com/amp-labs/connectors/providers/highlevelstandard"
@@ -58,6 +65,8 @@ import (
 	"github.com/amp-labs/connectors/providers/instantlyai"
 	"github.com/amp-labs/connectors/providers/intercom"
 	"github.com/amp-labs/connectors/providers/iterable"
+	"github.com/amp-labs/connectors/providers/jobber"
+	"github.com/amp-labs/connectors/providers/kaseyavsax"
 	"github.com/amp-labs/connectors/providers/keap"
 	"github.com/amp-labs/connectors/providers/kit"
 	"github.com/amp-labs/connectors/providers/klaviyo"
@@ -65,18 +74,22 @@ import (
 	"github.com/amp-labs/connectors/providers/lever"
 	"github.com/amp-labs/connectors/providers/linear"
 	"github.com/amp-labs/connectors/providers/linkedin"
+	"github.com/amp-labs/connectors/providers/loxo"
 	"github.com/amp-labs/connectors/providers/marketo"
 	"github.com/amp-labs/connectors/providers/microsoft"
 	"github.com/amp-labs/connectors/providers/mixmax"
 	"github.com/amp-labs/connectors/providers/monday"
 	"github.com/amp-labs/connectors/providers/netsuite"
 	"github.com/amp-labs/connectors/providers/nutshell"
+	"github.com/amp-labs/connectors/providers/outplay"
 	"github.com/amp-labs/connectors/providers/outreach"
+	"github.com/amp-labs/connectors/providers/paddle"
 	"github.com/amp-labs/connectors/providers/pinterest"
 	"github.com/amp-labs/connectors/providers/pipedrive"
 	"github.com/amp-labs/connectors/providers/pipeliner"
 	"github.com/amp-labs/connectors/providers/podium"
 	"github.com/amp-labs/connectors/providers/pylon"
+	"github.com/amp-labs/connectors/providers/recurly"
 	"github.com/amp-labs/connectors/providers/sageintacct"
 	"github.com/amp-labs/connectors/providers/salesflare"
 	"github.com/amp-labs/connectors/providers/salesforce"
@@ -85,6 +98,8 @@ import (
 	"github.com/amp-labs/connectors/providers/sellsy"
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/smartlead"
+	"github.com/amp-labs/connectors/providers/snapchatads"
+	"github.com/amp-labs/connectors/providers/solarwinds"
 	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/xero"
@@ -106,6 +121,8 @@ func New(provider providers.Provider, params common.ConnectorParams) (connectors
 }
 
 var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nolint:gochecknoglobals
+	providers.AcuityScheduling:        wrapper(newAcuitySchedulingConnector),
+	providers.Aircall:                 wrapper(newAircallConnector),
 	providers.AWS:                     wrapper(newAWSConnector),
 	providers.Aha:                     wrapper(newAhaConnector),
 	providers.Amplitude:               wrapper(newAmplitudeConnector),
@@ -118,12 +135,16 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Bitbucket:               wrapper(newBitBucketConnector),
 	providers.Blackbaud:               wrapper(newBlackbaudConnector),
 	providers.Blueshift:               wrapper(newBlueshiftConnector),
+	providers.Braintree:               wrapper(newBraintreeConnector),
 	providers.Braze:                   wrapper(newBrazeConnector),
 	providers.Breakcold:               wrapper(newBreakcoldConnector),
 	providers.Brevo:                   wrapper(newBrevoConnector),
 	providers.CampaignMonitor:         wrapper(newCampaignMonitorConnector),
 	providers.Capsule:                 wrapper(newCapsuleConnector),
+	providers.Calendly:                wrapper(newCalendlyConnector),
+	providers.Chargebee:               wrapper(newChargebeeConnector),
 	providers.ChiliPiper:              wrapper(newChiliPiperConnector),
+	providers.Chorus:                  wrapper(newChorusConnector),
 	providers.ClariCopilot:            wrapper(newClariCopilotConnector),
 	providers.ClickUp:                 wrapper(newClickUpConnector),
 	providers.Close:                   wrapper(newCloseConnector),
@@ -140,12 +161,14 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Flatfile:                wrapper(newFlatfileConnector),
 	providers.Freshdesk:               wrapper(newFreshdeskConnector),
 	providers.Front:                   wrapper(newFrontConnector),
+	providers.GetResponse:             wrapper(newGetResponseConnector),
 	providers.GitLab:                  wrapper(newGitLabConnector),
 	providers.Github:                  wrapper(newGithubConnector),
 	providers.Gong:                    wrapper(newGongConnector),
 	providers.Google:                  wrapper(newGoogleConnector),
 	providers.Gorgias:                 wrapper(newGorgiasConnector),
 	providers.Groove:                  wrapper(newGrooveConnector),
+	providers.HappyFox:                wrapper(newHappyFoxConnector),
 	providers.HelpScoutMailbox:        wrapper(newHelpScoutMailboxConnector),
 	providers.HeyReach:                wrapper(newHeyReachConnector),
 	providers.HighLevelStandard:       wrapper(newHighLevelStandardConnector),
@@ -157,6 +180,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.InstantlyAI:             wrapper(newInstantlyAIConnector),
 	providers.Intercom:                wrapper(newIntercomConnector),
 	providers.Iterable:                wrapper(newIterableConnector),
+	providers.Jobber:                  wrapper(newJobberConnector),
+	providers.KaseyaVSAX:              wrapper(newKaseyaVSAXConnector),
 	providers.Keap:                    wrapper(newKeapConnector),
 	providers.Kit:                     wrapper(newKitConnector),
 	providers.Klaviyo:                 wrapper(newKlaviyoConnector),
@@ -164,6 +189,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Lever:                   wrapper(newLeverConnector),
 	providers.Linear:                  wrapper(newLinearConnector),
 	providers.LinkedIn:                wrapper(newLinkedInConnector),
+	providers.Loxo:                    wrapper(newLoxoConnector),
 	providers.Marketo:                 wrapper(newMarketoConnector),
 	providers.Microsoft:               wrapper(newMicrosoftConnector),
 	providers.Mixmax:                  wrapper(newMixmaxConnector),
@@ -171,11 +197,14 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Netsuite:                wrapper(newNetsuiteConnector),
 	providers.Nutshell:                wrapper(newNutshellConnector),
 	providers.Outreach:                wrapper(newOutreachConnector),
+	providers.Outplay:                 wrapper(newOutplayConnector),
+	providers.Paddle:                  wrapper(newPaddleConnector),
 	providers.Pinterest:               wrapper(newPinterestConnector),
 	providers.Pipedrive:               wrapper(newPipedriveConnector),
 	providers.Pipeliner:               wrapper(newPipelinerConnector),
 	providers.Podium:                  wrapper(newPodiumConnector),
 	providers.Pylon:                   wrapper(newPylonConnector),
+	providers.Recurly:                 wrapper(newRecurlyConnector),
 	providers.SageIntacct:             wrapper(newSageIntacctConnector),
 	providers.Salesflare:              wrapper(newSalesflareConnector),
 	providers.Salesforce:              wrapper(newSalesforceConnector),
@@ -184,6 +213,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Sellsy:                  wrapper(newSellsyConnector),
 	providers.ServiceNow:              wrapper(newServiceNowConnector),
 	providers.Smartlead:               wrapper(newSmartleadConnector),
+	providers.SnapchatAds:             wrapper(newSnapchatAdsConnector),
+	providers.SolarWindsServiceDesk:   wrapper(newSolarWindsConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
 	providers.Xero:                    wrapper(newXeroConnector),
@@ -252,6 +283,7 @@ func newDynamicsCRMConnector(
 	return dynamicscrm.NewConnector(
 		dynamicscrm.WithWorkspace(params.Workspace),
 		dynamicscrm.WithAuthenticatedClient(params.AuthenticatedClient),
+		dynamicscrm.WithMetadata(params.Metadata),
 	)
 }
 
@@ -286,10 +318,7 @@ func newAtlassianConnector(
 func newPipelinerConnector(
 	params common.ConnectorParams,
 ) (*pipeliner.Connector, error) {
-	return pipeliner.NewConnector(
-		pipeliner.WithWorkspace(params.Workspace),
-		pipeliner.WithAuthenticatedClient(params.AuthenticatedClient),
-	)
+	return pipeliner.NewConnector(params)
 }
 
 func newSmartleadConnector(
@@ -352,6 +381,7 @@ func newPipedriveConnector(
 ) (*pipedrive.Connector, error) {
 	return pipedrive.NewConnector(
 		pipedrive.WithAuthenticatedClient(params.AuthenticatedClient),
+		pipedrive.WithModule(params.Module),
 	)
 }
 
@@ -575,6 +605,12 @@ func newFrontConnector(
 	return front.NewConnector(params)
 }
 
+func newGetResponseConnector(
+	params common.ConnectorParams,
+) (*getresponse.Connector, error) {
+	return getresponse.NewConnector(params)
+}
+
 func newFreshdeskConnector(
 	params common.ConnectorParams,
 ) (*freshdesk.Connector, error) {
@@ -700,6 +736,12 @@ func newLeverConnector(
 	return lever.NewConnector(params)
 }
 
+func newBraintreeConnector(
+	params common.ConnectorParams,
+) (*braintree.Connector, error) {
+	return braintree.NewConnector(params)
+}
+
 func newBrazeConnector(
 	params common.ConnectorParams,
 ) (*braze.Connector, error) {
@@ -799,4 +841,75 @@ func newAmplitudeConnector(
 	params common.ConnectorParams,
 ) (*amplitude.Connector, error) {
 	return amplitude.NewConnector(params)
+}
+
+func newCalendlyConnector(params common.ConnectorParams,
+) (*calendly.Connector, error) {
+	return calendly.NewConnector(params)
+}
+
+func newPaddleConnector(params common.ConnectorParams,
+) (*paddle.Connector, error) {
+	return paddle.NewConnector(params)
+}
+
+func newJobberConnector(params common.ConnectorParams,
+) (*jobber.Connector, error) {
+	return jobber.NewConnector(params)
+}
+
+func newChorusConnector(params common.ConnectorParams,
+) (*chorus.Connector, error) {
+	return chorus.NewConnector(params)
+}
+
+func newChargebeeConnector(params common.ConnectorParams,
+) (*chargebee.Connector, error) {
+	return chargebee.NewConnector(params)
+}
+
+func newLoxoConnector(params common.ConnectorParams,
+) (*loxo.Connector, error) {
+	return loxo.NewConnector(params)
+}
+
+func newSnapchatAdsConnector(params common.ConnectorParams,
+) (*snapchatads.Connector, error) {
+	return snapchatads.NewConnector(params)
+}
+
+func newOutplayConnector(params common.ConnectorParams,
+) (*outplay.Connector, error) {
+	return outplay.NewConnector(params)
+}
+
+func newHappyFoxConnector(params common.ConnectorParams,
+) (*happyfox.Connector, error) {
+	return happyfox.NewConnector(params)
+}
+
+func newAircallConnector(
+	params common.ConnectorParams,
+) (*aircall.Connector, error) {
+	return aircall.NewConnector(params)
+}
+
+func newSolarWindsConnector(params common.ConnectorParams) (*solarwinds.Connector, error) {
+	return solarwinds.NewConnector(params)
+}
+
+func newRecurlyConnector(params common.ConnectorParams) (*recurly.Connector, error) {
+	return recurly.NewConnector(params)
+}
+
+func newAcuitySchedulingConnector(
+	params common.ConnectorParams,
+) (*acuityscheduling.Connector, error) {
+	return acuityscheduling.NewConnector(params)
+}
+
+func newKaseyaVSAXConnector(
+	params common.ConnectorParams,
+) (*kaseyavsax.Connector, error) {
+	return kaseyavsax.NewConnector(params)
 }

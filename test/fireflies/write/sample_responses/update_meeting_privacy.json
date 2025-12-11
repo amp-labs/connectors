@@ -1,0 +1,12 @@
+{
+  "Data": {
+    "updateMeetingPrivacy": {
+      "id": "01K9YQ1SPTN3X9RAEXV1AH2P6G",
+      "privacy": "owner",
+      "title": "Daily Standup"
+    }
+  },
+  "Errors": [],
+  "RecordId": "",
+  "Success": true
+}

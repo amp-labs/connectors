@@ -13,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/go-playground/validator"
 	"github.com/mitchellh/hashstructure"
 )
@@ -171,9 +172,6 @@ func (c *Connector) putOrPostSubscribe(
 		return nil, fmt.Errorf("error getting module metadata map: %w", err)
 	}
 
-	//nolint:varnamelen
-	var wg sync.WaitGroup
-
 	var subscriptionErr error
 
 	var dur time.Duration
@@ -200,12 +198,13 @@ func (c *Connector) putOrPostSubscribe(
 	var mutex sync.Mutex
 
 	// iterate over all objects and events to build the payload
+	callbacks := make([]simultaneously.Job, 0, len(params.SubscriptionEvents))
+
 	for obj, evt := range params.SubscriptionEvents {
-		wg.Add(1)
+		objName := obj // capture loop variable
+		event := evt   // capture loop variable
 
-		go func(objName common.ObjectName, event common.ObjectEvents) {
-			defer wg.Done()
-
+		callbacks = append(callbacks, func(ctx context.Context) error {
 			mappedEvents, err := mapEvents(string(objName), event.Events)
 			if err != nil {
 				subscriptionErr = errors.Join(
@@ -213,7 +212,7 @@ func (c *Connector) putOrPostSubscribe(
 					fmt.Errorf("error mapping events: %w", err),
 				)
 
-				return
+				return nil
 			}
 
 			moduleMetadata := moduleMetadataMap[string(objName)]
@@ -226,18 +225,21 @@ func (c *Connector) putOrPostSubscribe(
 					fmt.Errorf("error getting notification conditions for object %s: %w", objName, goroutineErr),
 				)
 
-				return
+				return nil
 			}
 
 			mutex.Lock()
-			watchObject.Events = append(watchObject.Events, mappedEvents...)
+			watchObject.Events = append(watchObject.Events, mappedEvents...) // nolint:wsl_v5
 			watchObject.NotificationCondition = append(watchObject.NotificationCondition, notificationConditions...)
-
 			mutex.Unlock()
-		}(obj, evt)
+
+			return nil
+		})
 	}
 
-	wg.Wait()
+	if err := simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
+		return nil, fmt.Errorf("error processing subscription events concurrently: %w", err)
+	}
 
 	payload.Watch = append(payload.Watch, watchObject)
 

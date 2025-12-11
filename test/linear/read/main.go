@@ -46,5 +46,4 @@ func main() {
 
 	slog.Info("Reading project statuses..")
 	utils.DumpJSON(res, os.Stdout)
-
 }

@@ -20,6 +20,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseNotFoundError := testutils.DataFromFile(t, "read/not-found.json")
 	responsePartiesFirstPage := testutils.DataFromFile(t, "read/parties/first-page.json")
 	responsePartiesLastPage := testutils.DataFromFile(t, "read/parties/last-page.json")
+	responseProjects := testutils.DataFromFile(t, "read/projects/first-page.json")
 
 	tests := []testroutines.Read{
 		{
@@ -30,7 +31,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Always: mockserver.Response(http.StatusNotFound, responseNotFoundError),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New("Could not find resource"), // nolint:goerr113
+				errors.New("Could not find resource"),
 				common.ErrBadRequest,
 			},
 		},
@@ -48,6 +49,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					mockcond.Path("/api/v2/parties"),
 					// Pacific time to UTC is achieved by adding 8 hours
 					mockcond.QueryParam("since", "2024-09-19T12:30:45Z"),
+					mockcond.QueryParam("embed", "fields"),
 				},
 				Then: mockserver.ResponseChainedFuncs(
 					mockserver.Header("Link",
@@ -101,6 +103,51 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 					Raw: map[string]any{
 						"firstName": "integration.tes1907",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read projects which have custom fields",
+			Input: common.ReadParams{
+				ObjectName: "projects",
+				Fields:     connectors.Fields("id", "name", "interests"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v2/kases"),
+					mockcond.QueryParam("embed", "fields"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseProjects),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":   float64(5588202),
+						"name": "Research",
+						// Custom fields can be requested.
+						"interests": "Skiing",
+					},
+					Raw: map[string]any{
+						"description": "Designing shopping cart website",
+						// Custom fields are at the root level
+						"fields": []any{
+							map[string]any{
+								"id": float64(9785121),
+								"definition": map[string]any{
+									"id":   float64(926886),
+									"name": "Interests",
+								},
+								"value": "Skiing",
+								"tagId": float64(168298),
+							},
+						},
 					},
 				}},
 				NextPage: "",

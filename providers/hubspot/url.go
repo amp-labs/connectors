@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 var errMissingValue = errors.New("missing value for query parameter")
@@ -57,4 +58,19 @@ func (c *Connector) getCRMSearchURL(config searchCRMParams) (string, error) {
 	relativeURL := strings.Join([]string{config.ObjectName, "search"}, "/")
 
 	return c.getURL(relativeURL)
+}
+
+// https://developers.hubspot.com/docs/api-reference/crm-properties-v3/core/get-crm-v3-properties-objectType
+func (c *Connector) getPropertiesURL(objectName string) (string, error) {
+	return c.getURL(strings.Join([]string{"properties", objectName}, "/"))
+}
+
+// https://developers.hubspot.com/docs/api-reference/crm-schemas-v3/core/get-crm-object-schemas-v3-schemas-objectType
+func (c *Connector) getObjectSchemaURL(objectName string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.getRootProviderURL(), "crm-object-schemas", ModuleCRMVersion, "schemas", objectName)
+}
+
+// Returns module agnostic Hubspot URL.
+func (c *Connector) getRootProviderURL() string {
+	return c.providerInfo.BaseURL
 }

@@ -95,9 +95,14 @@ func ValidateMetadataContainsRead(
 
 	slog.Info("Reading an object using all fields from ListObjectMetadata", "objectName", objectName)
 
-	requestFields := datautils.Map[string, common.FieldMetadata](
-		metadata.Result[objectName].Fields,
-	).KeySet()
+	requestFields := datautils.MergeSets(
+		datautils.Map[string, common.FieldMetadata](
+			metadata.Result[objectName].Fields,
+		).KeySet(),
+		datautils.Map[string, string](
+			metadata.Result[objectName].FieldsMap,
+		).KeySet(),
+	)
 
 	response, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,

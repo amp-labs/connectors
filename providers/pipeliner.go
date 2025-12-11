@@ -5,10 +5,9 @@ const Pipeliner Provider = "pipeliner"
 func init() {
 	// Pipeliner API Key authentication
 	SetInfo(Pipeliner, ProviderInfo{
-		// TODO [ExplicitWorkspaceRequired: true]
 		DisplayName: "Pipeliner",
 		AuthType:    Basic,
-		BaseURL:     "https://eu-central.api.pipelinersales.com",
+		BaseURL:     "https://{{.region}}.api.pipelinersales.com",
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -31,6 +30,18 @@ func init() {
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{{
+				Name:        "workspace",
+				DisplayName: "Space ID",
+				DocsURL:     "https://developers.pipelinersales.com/api-docs/overview/about-the-api#space-and-space-id",
+			}, {
+				Name:         "region",
+				DisplayName:  "Space URL Region",
+				DefaultValue: "eu-central",
+				DocsURL:      "https://developers.pipelinersales.com/api-docs/overview/about-the-api#service-url",
+			}},
 		},
 	})
 }

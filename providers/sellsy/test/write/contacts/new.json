@@ -1,0 +1,29 @@
+{
+  "id": 39,
+  "first_name": "Waldo",
+  "last_name": "Vazquez",
+  "note": "",
+  "is_archived": false,
+  "created": "2025-09-16T23:47:09+02:00",
+  "updated": "2025-09-16T23:47:09+02:00",
+  "social": {
+    "viadeo": null
+  },
+  "sync": {
+    "mailchimp": true,
+    "mailjet": true,
+    "simplemail": true
+  },
+  "owner": {
+    "id": 605352,
+    "type": "staff"
+  },
+  "marketing_campaigns_subscriptions": [],
+  "rgpd_consent": {
+    "email": false,
+    "sms": false,
+    "phone": false,
+    "postal_mail": false,
+    "custom": false
+  }
+}

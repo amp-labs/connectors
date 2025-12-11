@@ -2,12 +2,25 @@ package atlassian
 
 import (
 	"context"
-	"fmt"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/providers/atlassian/internal/jql"
 )
+
+const (
+	// issues API support upto 500 issues per API call.
+	pageSize = 200
+)
+
+type issueRequest struct {
+	Fields        []string `json:"fields"`
+	FieldsByKeys  bool     `json:"fieldsByKeys,omitempty"`
+	JQL           string   `json:"jql"`
+	MaxResults    int      `json:"maxResults"`
+	NextPageToken string   `json:"nextPageToken,omitempty"`
+}
 
 // Read only returns a list of Jira Issues.
 // You can provide the following values:
@@ -19,47 +32,49 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	url, err := c.buildReadURL(config)
+	switch config.ObjectName {
+	case "issue":
+	case "issues":
+	default:
+		logging.Logger(ctx).Warn(
+			"using Atlassian connector with unknown object", "objectName", config.ObjectName)
+	}
+
+	url, err := c.getSearchIssuesURL()
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, url.String())
+	jqlQuery := jql.New().
+		SinceMinutes(config.Since).
+		UntilMinutes(config.Until).
+		String()
+
+	reqBody := issueRequest{
+		Fields:     config.Fields.List(),
+		JQL:        jqlQuery,
+		MaxResults: pageSize,
+	}
+
+	if len(config.NextPage) > 0 {
+		reqBody.NextPageToken = config.NextPage.String()
+	}
+
+	resp, err := c.Client.Post(ctx, url.String(), reqBody)
 	if err != nil {
 		return nil, err
 	}
 
 	return common.ParseResult(
-		rsp,
+		resp,
 		getRecords,
-		getNextRecords,
+		getNextRecordIssues,
 		common.MakeMarshaledDataFunc(flattenRecord),
 		config.Fields,
 	)
 }
 
-func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
-	url, err := c.getModuleURL("search")
-	if err != nil {
-		return nil, err
-	}
-
-	if len(config.NextPage) != 0 {
-		url.WithQueryParam("startAt", config.NextPage.String())
-	}
-
-	if !config.Since.IsZero() {
-		// Read URL supports time scoping. common.ReadParams.Since is used to get relative time frame.
-		// Here is an API example on how to request issues that were updated in the last 30 minutes.
-		// search?jql=updated > "-30m"
-		// The reason we use minutes is that it is the most granular API permits.
-		diff := time.Since(config.Since)
-
-		minutes := int64(diff.Minutes())
-		if minutes > 0 {
-			url.WithQueryParam("jql", fmt.Sprintf(`updated > "-%vm"`, minutes))
-		}
-	}
-
-	return url, nil
+func (c *Connector) getSearchIssuesURL() (*urlbuilder.URL, error) {
+	// https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-rest-api-3-search-jql-post
+	return c.getModuleURL("search/jql")
 }

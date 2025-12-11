@@ -2,7 +2,6 @@ package atlassian
 
 import (
 	"errors"
-	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -57,32 +56,26 @@ func getRecords(node *ajson.Node) ([]*ajson.Node, error) {
 }
 
 // Next starting page index is calculated base on current index and array size.
-func getNextRecords(node *ajson.Node) (string, error) {
-	records, err := getRecords(node)
+func getNextRecordIssues(node *ajson.Node) (string, error) {
+	q := jsonquery.New(node)
+
+	nextPageToken, err := q.StringOptional("nextPageToken")
 	if err != nil {
 		return "", err
 	}
 
-	size := int64(len(records))
-
-	if size == 0 {
-		// No elements returned for the current page.
-		// There is no need to go further, definitely we are at the end.
-		return "", nil
-	}
-
-	startAt, err := jsonquery.New(node).IntegerOptional("startAt")
+	isLast, err := q.BoolOptional("isLast")
 	if err != nil {
 		return "", err
 	}
 
-	if startAt == nil {
-		// we cannot determine the next page
+	if isLast != nil && *isLast {
 		return "", nil
 	}
 
-	// StartAt starts from zero
-	nextStartIndex := *startAt + size
+	if nextPageToken == nil {
+		return "", nil
+	}
 
-	return strconv.FormatInt(nextStartIndex, 10), nil
+	return *nextPageToken, nil
 }

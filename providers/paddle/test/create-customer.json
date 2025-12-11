@@ -1,0 +1,17 @@
+{
+  "data": {
+    "id": "ctm_01hv6y1jedq4p1n0yqn5ba3ky4",
+    "status": "active",
+    "custom_data": null,
+    "name": "Jo Brown",
+    "email": "jo@example.com",
+    "marketing_consent": false,
+    "locale": "en",
+    "created_at": "2024-04-11T15:57:24.813Z",
+    "updated_at": "2024-04-11T15:57:24.813Z",
+    "import_meta": null
+  },
+  "meta": {
+    "request_id": "9bcdcc29-e180-4055-ad3d-d37e5dc5e56d"
+  }
+}

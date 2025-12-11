@@ -167,7 +167,7 @@ func supportedOperations() components.EndpointRegistryInput {
 	}
 
 	return components.EndpointRegistryInput{
-		providers.ModuleReporting: {
+		providers.ModuleSeismicReporting: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,

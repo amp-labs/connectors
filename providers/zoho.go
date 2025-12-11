@@ -3,11 +3,12 @@ package providers
 import "github.com/amp-labs/connectors/common"
 
 const (
-	Zoho           Provider        = "zoho"
-	ZohoCRM        common.ModuleID = "crm"
-	ZohoDesk       common.ModuleID = "desk"
-	ZohoProjects   common.ModuleID = "projects"
-	ZohoBugTracker common.ModuleID = "bugtracker"
+	Zoho                      Provider        = "zoho"
+	ModuleZohoCRM             common.ModuleID = "crm"
+	ModuleZohoDesk            common.ModuleID = "desk"
+	ModuleZohoProjects        common.ModuleID = "projects"
+	ModuleZohoBugTracker      common.ModuleID = "bugtracker"
+	ModuleZohoServiceDeskPlus common.ModuleID = "servicedeskplus"
 )
 
 // nolint: funlen
@@ -62,9 +63,9 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722471890/media/zoho_1722471890.svg",
 			},
 		},
-		DefaultModule: ZohoCRM,
+		DefaultModule: ModuleZohoCRM,
 		Modules: &Modules{
-			ZohoCRM: {
+			ModuleZohoCRM: {
 				BaseURL:     "https://{{.zoho_api_domain}}",
 				DisplayName: "Zoho CRM",
 				Support: Support{
@@ -73,17 +74,17 @@ func init() {
 					Write:     true,
 				},
 			},
-			ZohoDesk: {
+			ModuleZohoDesk: {
 				// E.g. www.desk.zoho.com, www.desk.zoho.eu, www.desk.zoho.in, etc.
 				BaseURL:     "https://{{.zoho_desk_domain}}",
 				DisplayName: "Zoho Desk",
 				Support: Support{
-					Read:      false,
+					Read:      true,
 					Subscribe: false,
-					Write:     false,
+					Write:     true,
 				},
 			},
-			ZohoProjects: {
+			ModuleZohoProjects: {
 				BaseURL:     "https://projectsapi.zoho.com",
 				DisplayName: "Zoho Projects",
 				Support: Support{
@@ -92,9 +93,18 @@ func init() {
 					Write:     false,
 				},
 			},
-			ZohoBugTracker: {
+			ModuleZohoBugTracker: {
 				BaseURL:     "https://bugtracker.zoho.com",
 				DisplayName: "Zoho BugTracker",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
+			ModuleZohoServiceDeskPlus: {
+				BaseURL:     "https://{{.zoho_servicedeskplus_domain}}",
+				DisplayName: "Zoho ServiceDeskPlus",
 				Support: Support{
 					Read:      false,
 					Subscribe: false,

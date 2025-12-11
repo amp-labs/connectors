@@ -17,6 +17,46 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+func (c *Connector) ListObjectMetadata(
+	ctx context.Context, objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
+	metadataResult, err := metadata.Schemas.Select(c.Module(), objectNames)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, objectName := range objectNames {
+		fields, err := c.requestCustomFields(ctx, objectName)
+		if err != nil {
+			metadataResult.Errors[objectName] = err
+
+			continue
+		}
+
+		// Attach fields to the object metadata.
+		// Get a reference to the metadata in the map so changes are persisted.
+		objectMetadata, ok := metadataResult.Result[objectName]
+		if !ok {
+			// Object not found in result, skip it
+			continue
+		}
+
+		for _, field := range fields {
+			objectMetadata.AddFieldMetadata(field.Name, common.FieldMetadata{
+				DisplayName:  field.Name,
+				ValueType:    field.getValueType(),
+				ProviderType: field.Type,
+				Values:       field.getValues(),
+			})
+		}
+
+		// Write the modified metadata back to the map
+		metadataResult.Result[objectName] = objectMetadata
+	}
+
+	return metadataResult, nil
+}
+
 // DefaultPageSize
 // https://developer.capsulecrm.com/v2/overview/reading-from-the-api
 const DefaultPageSize = "100"
@@ -48,8 +88,21 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		url.WithQueryParam("since", datautils.Time.FormatRFC3339inUTC(params.Since))
 	}
 
+	// Associated objects are provided via embed query param and could be useful for some objects.
+	embedQueryParam := make([]string, 0, len(params.AssociatedObjects)+1)
 	if len(params.AssociatedObjects) != 0 {
-		url.WithQueryParam("embed", strings.Join(params.AssociatedObjects, ","))
+		embedQueryParam = append(embedQueryParam, params.AssociatedObjects...)
+	}
+
+	// Custom fields are not returned by default unless requested.
+	// Embed query parameter list must include "fields" to request custom fields.
+	// https://developer.capsulecrm.com/v2/operations/Project#listProjects
+	if objectsWithCustomFields.Has(params.ObjectName) {
+		embedQueryParam = append(embedQueryParam, "fields")
+	}
+
+	if len(embedQueryParam) != 0 {
+		url.WithQueryParam("embed", strings.Join(embedQueryParam, ","))
 	}
 
 	return url, nil
@@ -61,15 +114,21 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module(), params.ObjectName)
-
 	return common.ParseResult(
 		resp,
-		common.ExtractOptionalRecordsFromPath(responseFieldName),
+		c.makeGetRecords(params.ObjectName),
 		makeNextRecordsURL(resp),
-		common.GetMarshaledData,
+		common.MakeMarshaledDataFunc(flattenCustomFields),
 		params.Fields,
 	)
+}
+
+func (c *Connector) makeGetRecords(objectName string) common.NodeRecordsFunc {
+	return func(node *ajson.Node) ([]*ajson.Node, error) {
+		return jsonquery.New(node).ArrayOptional(
+			metadata.Schemas.LookupArrayFieldName(c.Module(), objectName),
+		)
+	}
 }
 
 // Next page is communicated via `Link` header under the `next` rel.

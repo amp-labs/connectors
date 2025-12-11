@@ -45,7 +45,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Date value '-53s' for field 'updated' is invalid"), // nolint:goerr113
+				errors.New("Date value '-53s' for field 'updated' is invalid"),
 			},
 		},
 		{
@@ -57,7 +57,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Not Found - No message available"), // nolint:goerr113
+				errors.New("Not Found - No message available"),
 			},
 		},
 		{
@@ -138,37 +138,24 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Next page is implied from start index and issues size",
-			Input: common.ReadParams{ObjectName: "issues", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup: mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusOK, `
-				{
-				  "startAt": 6,
-				  "issues": [
-					{"fields":{}, "id": "0"},
-					{"fields":{}, "id": "1"}
-				]}`),
-			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
-			Expected: &common.ReadResult{
-				Rows:     2,
-				NextPage: "8",
-				Done:     false,
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name: "Since rounds to minute time frame",
+			Name: "Since and Until round to minute time frame",
 			Input: common.ReadParams{
 				ObjectName: "issues",
 				Fields:     connectors.Fields("id"),
 				Since:      time.Now().Add(-5 * time.Minute),
+				Until:      time.Now().Add(-2 * time.Minute),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				// server was asked to get issues that occurred in the last 5 min
-				If: mockcond.QueryParam("jql", `updated > "-5m"`),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/ex/jira/ebc887b2-7e61-4059-ab35-71f15cc16e12/rest/api/3/search/jql"),
+					mockcond.Body(`{
+						"fields":["id"],
+						"jql":"updated \u003e \"-5m\" AND updated \u003c \"-2m\"",
+						"maxResults":200}`),
+				},
 				Then: mockserver.ResponseString(http.StatusOK, `
 					{
 					  "startAt": 0,
@@ -178,37 +165,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     1,
-				NextPage: "1",
-				Done:     false,
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil, // there must be no errors.
-		},
-		{
-			Name: "Next page is propagated in query params",
-			Input: common.ReadParams{
-				ObjectName: "issues",
-				Fields:     connectors.Fields("id"),
-				NextPage:   "17",
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.QueryParam("startAt", "17"),
-				Then: mockserver.ResponseString(http.StatusOK, `
-					{
-					  "startAt": 17,
-					  "issues": [
-						{"fields":{}, "id": "0"},
-						{"fields":{}, "id": "1"},
-						{"fields":{}, "id": "2"}
-					]}`),
-			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
-			Expected: &common.ReadResult{
-				Rows:     3,
-				NextPage: "20",
-				Done:     false,
-			},
-			ExpectedErrs: nil, // there must be no errors
 		},
 		{
 			Name: "Successful list of rows",
@@ -216,10 +176,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "issues",
 				Fields:     connectors.Fields("id", "summary"),
 			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/ex/jira/ebc887b2-7e61-4059-ab35-71f15cc16e12/rest/api/3/search"),
-				Then:  mockserver.Response(http.StatusOK, responseIssuesFirstPage),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseIssuesFirstPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -243,8 +202,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"key": "AM-1",
 					},
 				}},
-				NextPage: "2",
-				Done:     false,
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},

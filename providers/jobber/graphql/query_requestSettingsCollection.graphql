@@ -1,0 +1,24 @@
+query RequestSettingsConnection{
+  requestSettingsCollection(
+     first: {{.First}}
+     {{if .After}}
+     after: {{.After}}
+     {{end}}
+  ){
+    nodes{
+      default
+      description
+      embeddedRequestUrl
+      enabled
+      id
+      name
+      requestEmbedScript
+      requestUrl  
+    }
+    pageInfo{
+      endCursor
+      hasNextPage
+    }
+    totalCount
+  }
+}

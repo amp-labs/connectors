@@ -51,7 +51,7 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 // WithModule specifies the Zoho module (e.g., CRM, Books, Desk) to connect to.
 func WithModule(module common.ModuleID) Option {
 	return func(params *parameters) {
-		params.WithModule(module, supportedModules, providers.ZohoCRM)
+		params.WithModule(module, supportedModules, providers.ModuleZohoCRM)
 	}
 }
 

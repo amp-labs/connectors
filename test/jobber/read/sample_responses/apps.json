@@ -1,0 +1,101 @@
+{
+  "rows": 5,
+  "data": [
+    {
+      "fields": {},
+      "raw": {
+        "applicationScopes": "read_clients",
+        "author": "NiceJob Inc.",
+        "beforeStartingContent": "- \u0026#8227; Book a call with one of our Sites experts here to get a report on your current website conversion rate so we know what benchmark to beat",
+        "description": "Get 10%+ more website salesΓÇöor itΓÇÖs free! Increase your leads and sales with an industry-leading, high-converting website. ItΓÇÖll be the last website your business ever needs.",
+        "displayName": "Convert Sites by NiceJob",
+        "id": "Z2lkOi8vSm9iYmVyL0FwcGxpY2F0aW9uLzExMzA=",
+        "installationStepsContent": "- \u0026#8227; [Visit our website](https://nicejob.grsm.io/ConvertWebsites) to learn more and sign up for Convert Sites by NiceJob",
+        "learnMoreUrl": "https://nicejob.grsm.io/ConvertWebsites",
+        "logoUrl": "https://d3c880upivypdk.cloudfront.net/eyJidWNrZXQiOiJqb2JiZXItcHJvZHVjdGlvbi1kZXZlbG9wZXItY2VudGVyIiwia2V5IjoiZm5yb2p0NHc3YjdhZ283bGc4cmNkaTR1MmxjNyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MTkyLCJoZWlnaHQiOjE5MiwiZml0IjoiY292ZXIifSwicm90YXRlIjpudWxsfX0=",
+        "manageAppUrl": "/marketplace/1130",
+        "marketplaceUrl": "/marketplace/1130",
+        "name": "Convert Sites by NiceJob",
+        "oauthUrl": null,
+        "redirectUrl": ""
+      }
+    },
+    {
+      "fields": {},
+      "raw": {
+        "applicationScopes": "read_clients read_quotes read_jobs read_invoices",
+        "author": "SendJim",
+        "beforeStartingContent": "- \u0026#8227; [SendJim Recorded Demo Video](https://windowwealth.wistia.com/medias/149h0z90l6)\r\n- \u0026#8227; [Sign Up for SendJim (Starting at $19/month)](https://members.sendjim.com/pricing)",
+        "description": "SendJim is an automated Direct Mail software created for companies in the home service industry to build a relationship with their current customers and increase their route density through targeted mailings to their customerΓÇÖs neighbors. \r\n",
+        "displayName": "SendJim",
+        "id": "Z2lkOi8vSm9iYmVyL0FwcGxpY2F0aW9uLzExOA==",
+        "installationStepsContent": "- \u0026#8227; [Step-By-Step Guide](https://support.sendjim.io/en/articles/2306319-jobber-integration)\r\n- \u0026#8227; [Schedule an Integration Appointment](https://learn.servicemoxie.com/integration-set-up)",
+        "learnMoreUrl": "",
+        "logoUrl": "https://d3c880upivypdk.cloudfront.net/eyJidWNrZXQiOiJqb2JiZXItcHJvZHVjdGlvbi1kZXZlbG9wZXItY2VudGVyIiwia2V5IjoiMXppaW92bzV2OGt2eG1leGpscWdmYzdncG0weiIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MTkyLCJoZWlnaHQiOjE5MiwiZml0IjoiY292ZXIifSwicm90YXRlIjpudWxsfX0=",
+        "manageAppUrl": "/marketplace/118",
+        "marketplaceUrl": "/marketplace/118",
+        "name": "SendJim",
+        "oauthUrl": "/api/oauth/authorize?client_id=ad9a19d1-0627-4ae7-aff7-f1933956c927\u0026redirect_uri=https%3A%2F%2Fmembers.sendjim.com%2FMembers%2FoAuth%2FJobber",
+        "redirectUrl": "https://members.sendjim.com/Members/oAuth/Jobber"
+      }
+    },
+    {
+      "fields": {},
+      "raw": {
+        "applicationScopes": "read_clients",
+        "author": "",
+        "beforeStartingContent": "- \u0026#8227; Click [Start Free Trial](https://adcritter.com/partner/jobber-ef6b6ac8) to get started. There is no charge until you launch your first campaign!",
+        "description": "Post ads on streaming TV, digital billboards and internet. AdCritter is a leading self-serve advertising platform for small businesses in the US.  You can create and manage digital advertising campaigns. With simple-to-use tools, you'll find that nearly anyone on your team can build and manage effective online campaigns.",
+        "displayName": "AdCritter",
+        "id": "Z2lkOi8vSm9iYmVyL0FwcGxpY2F0aW9uLzEyMg==",
+        "installationStepsContent": "",
+        "learnMoreUrl": "https://adcritter.com/partner/jobber-ef6b6ac8",
+        "logoUrl": "https://d3c880upivypdk.cloudfront.net/eyJidWNrZXQiOiJqb2JiZXItcHJvZHVjdGlvbi1kZXZlbG9wZXItY2VudGVyIiwia2V5Ijoia3Y5amRqdWZ1cnVhZ3djOWd3eDN5dW84aWdieCIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MTkyLCJoZWlnaHQiOjE5MiwiZml0IjoiY292ZXIifSwicm90YXRlIjpudWxsfX0=",
+        "manageAppUrl": "/marketplace/122",
+        "marketplaceUrl": "/marketplace/122",
+        "name": "AdCritter",
+        "oauthUrl": null,
+        "redirectUrl": ""
+      }
+    },
+    {
+      "fields": {},
+      "raw": {
+        "applicationScopes": "read_clients write_clients read_requests write_requests read_invoices read_users",
+        "author": "Zac Holt",
+        "beforeStartingContent": "- \u0026#8227; You will need a [LoyalAs account](https://loyalas.com/signup) in order to connect this integration\r\n- \u0026#8227; Think about how much you want to reward referred and referring clients\r\n- \u0026#8227; When you first connect to Jobber, LoyalAs will automatically upload your entire customer list\r\n- \u0026#8227; Then send a referral link to customers selected from your upload\r\n- \u0026#8227; A new LoyalAs referral will automatically generate a new client and work request in your Jobber account\r\n- \u0026#8227; All new Jobber clients will automatically be added to LoyalAs and asked for a referral upon paid invoice",
+        "description": "Referrals are the cheapest, fastest way to land new customers. We automate your referral program so you get quality leads that close at a higher rate, and cost a fraction of digital ads and other lead gen programs.",
+        "displayName": "LoyalAs",
+        "id": "Z2lkOi8vSm9iYmVyL0FwcGxpY2F0aW9uLzEyNA==",
+        "installationStepsContent": "- \u0026#8227; Navigate to settings page in your LoyalAs account\r\n- \u0026#8227; Click ΓÇ£ConnectΓÇ¥ next to Jobber\r\n- \u0026#8227; Authenticate and approve access to your Jobber account\r\n- \u0026#8227; Set credit values for the customer making a referral, and the referred customer",
+        "learnMoreUrl": "",
+        "logoUrl": "https://d3c880upivypdk.cloudfront.net/eyJidWNrZXQiOiJqb2JiZXItcHJvZHVjdGlvbi1kZXZlbG9wZXItY2VudGVyIiwia2V5IjoiOXRocHdwOGJjZjQzOHhiNHZnczR3NG94OGNxbyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MTkyLCJoZWlnaHQiOjE5MiwiZml0IjoiY292ZXIifSwicm90YXRlIjpudWxsfX0=",
+        "manageAppUrl": "/api/oauth/authorize?client_id=cc336eef-b356-4b6d-9a48-c994a72918bc\u0026redirect_uri=https%3A%2F%2Floyalas.com%2Fjobber\u0026skip_reauthorization=true",
+        "marketplaceUrl": "/marketplace/124",
+        "name": "LoyalAs",
+        "oauthUrl": "/api/oauth/authorize?client_id=cc336eef-b356-4b6d-9a48-c994a72918bc\u0026redirect_uri=https%3A%2F%2Floyalas.com%2Fjobber",
+        "redirectUrl": "https://loyalas.com/jobber"
+      }
+    },
+    {
+      "fields": {},
+      "raw": {
+        "applicationScopes": "read_clients write_clients read_requests write_requests read_quotes write_quotes read_jobs write_jobs read_scheduled_items write_scheduled_items read_invoices write_invoices read_jobber_payments read_users write_users write_tax_rates read_expenses write_expenses read_custom_field_configurations write_custom_field_configurations read_time_sheets",
+        "author": "Integrately",
+        "beforeStartingContent": "- \u0026#8227; YouΓÇÖll need an Integrately account to connect this integration\r\n- \u0026#8227; [Click here to sign up for Integrately](https://app.integrately.com/signup)",
+        "description": "Integrately is the easiest automation platform designed especially for non-techies that connects your apps in a single click. Millions of ready-to-use integrations, an intuitive automation builder, a guided user interface, and top-rated live-chat support make it stand out in the automation world.",
+        "displayName": "Integrately",
+        "id": "Z2lkOi8vSm9iYmVyL0FwcGxpY2F0aW9uLzEyOTEx",
+        "installationStepsContent": "- \u0026#8227; Step 1: Login or Sign up for Integrately\r\n- \u0026#8227; Step 2: Search and select Jobber and the other app that you wish to connect\r\n- \u0026#8227; Step 3: After selecting an app, You can either choose from the ready-to-activate automations Or, create your own custom automation\r\n- \u0026#8227; Step 4: You can ask Integrately AI to create an automation for you or select either the 1-click integration or create custom automation by selecting the trigger and action\r\n- \u0026#8227; Step 5: Next, you need to connect your Jobber account\r\n- \u0026#8227; Step 6: Similarly connect the other app account. Once connected, map the fields for automation, and that's it. Click the Test and Turn On button. Your automation is all set and ready!",
+        "learnMoreUrl": "",
+        "logoUrl": "https://d3c880upivypdk.cloudfront.net/eyJidWNrZXQiOiJqb2JiZXItcHJvZHVjdGlvbi1kZXZlbG9wZXItY2VudGVyIiwia2V5IjoiNG5oMzZzbmdqNmg2ZXJnOXp4MTVjNzU1M2pldSIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MTkyLCJoZWlnaHQiOjE5MiwiZml0IjoiY292ZXIifSwicm90YXRlIjpudWxsfX0=",
+        "manageAppUrl": "/api/oauth/authorize?client_id=94af89dc-bef1-44b0-b503-39c3f4fb90e1\u0026redirect_uri=https%3A%2F%2Fintegrately.com\u0026skip_reauthorization=true",
+        "marketplaceUrl": "/marketplace/12911",
+        "name": "Integrately",
+        "oauthUrl": "/api/oauth/authorize?client_id=94af89dc-bef1-44b0-b503-39c3f4fb90e1\u0026redirect_uri=https%3A%2F%2Fapp.integrately.com%2Fauth%2FJobber%2FAuthorize",
+        "redirectUrl": "https://app.integrately.com/auth/Jobber/Authorize"
+      }
+    }
+  ],
+  "nextPage": "NQ"
+}

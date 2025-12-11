@@ -1,8 +1,10 @@
+// nolint:revive,godoclint
 package common
 
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"strings"
 
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -18,6 +20,13 @@ type (
 	RecordsFunc func(*ajson.Node) ([]map[string]any, error)
 	// NodeRecordsFunc extracts a list of records as ajson.Node from the response body.
 	NodeRecordsFunc func(*ajson.Node) ([]*ajson.Node, error)
+
+	// RecordsFilterFunc filters records based on ReadParams (e.g., Since/Until ranges).
+	// It returns:
+	//   - A filtered slice of records
+	//   - A next page token (which may be empty if no more records are available using deduction)
+	//   - An error, if filtering fails
+	RecordsFilterFunc func(ReadParams, *ajson.Node, []*ajson.Node) ([]*ajson.Node, string, error)
 
 	// RecordTransformer is a function that processes a JSON node and transforms it
 	// into a map representation, potentially applying structural modifications.
@@ -71,6 +80,65 @@ func ParseResult[R ProviderReadResponseType](
 	}
 
 	nextPage, err := extractNextPage(body)
+	if err != nil {
+		return nil, err
+	}
+
+	marshaledData, err := marshalFunc(records, fields.List())
+	if err != nil {
+		return nil, err
+	}
+
+	// Next page doesn't exist if:
+	// * either there is no next page token,
+	// * or current page was empty.
+	// This will guarantee that Read is finite.
+	done := nextPage == "" || len(marshaledData) == 0
+	if done {
+		// It is possible that the provider doesn't reset the next page token when there are no more records.
+		// In this case, we should set the next page token to an empty string to indicate that we are done.
+		nextPage = ""
+	}
+
+	if len(marshaledData) == 0 {
+		// Either a JSON array is empty or it was nil.
+		// For consistency return empty array for missing records.
+		marshaledData = make([]ReadResultRow, 0)
+	}
+
+	return &ReadResult{
+		Rows:     int64(len(marshaledData)),
+		Data:     marshaledData,
+		NextPage: NextPageToken(nextPage),
+		Done:     done,
+	}, nil
+}
+
+// ParseResultFiltered parses the response from a provider into a ReadResult. A 2xx return type is assumed.
+// The sizeFunc returns the total number of records in the response.
+// The extractRecords returns the records in the response.
+// The filterRecords acts as a sieve based on ReadParams since and until properties.
+// The marshalFunc is used to structure the data into an array of ReadResultRows.
+// The fields are used to populate ReadResultRow.Fields.
+func ParseResultFiltered(
+	params ReadParams,
+	resp *JSONHTTPResponse,
+	extractRecords func(*ajson.Node) ([]*ajson.Node, error),
+	filterRecords func(ReadParams, *ajson.Node, []*ajson.Node) ([]*ajson.Node, string, error),
+	marshalFunc func([]*ajson.Node, []string) ([]ReadResultRow, error),
+	fields datautils.Set[string],
+) (*ReadResult, error) {
+	body, ok := resp.Body()
+	if !ok {
+		return nil, ErrEmptyJSONHTTPResponse
+	}
+
+	unfilteredRecords, err := extractRecords(body)
+	if err != nil {
+		return nil, err
+	}
+
+	records, nextPage, err := filterRecords(params, body, unfilteredRecords)
 	if err != nil {
 		return nil, err
 	}
@@ -175,11 +243,20 @@ func GetMarshalledDataWithId(records []map[string]any, fields []string) ([]ReadR
 	return data, nil
 }
 
-// MakeMarshaledDataFunc produces ReadResultRow where raw record differs from the fields.
-// This usually includes a set of actions to preprocess, usually to flatten the raw record and then extract
-// fields requested by the user.
+// MakeMarshaledDataFunc constructs a MarshalFromNodeFunc that converts records into ReadResultRow slices.
+// It applies an optional RecordTransformer to each record; if nil, it defaults to ajson-to-map conversion.
+// Typically used to flatten, normalize records or enhance them with custom fields.
 func MakeMarshaledDataFunc(nodeRecordFunc RecordTransformer) MarshalFromNodeFunc {
 	return func(records []*ajson.Node, fields []string) ([]ReadResultRow, error) {
+		if nodeRecordFunc == nil {
+			// Default method converts ajson.Node to map[string]any.
+			// If conversion is not enough and data should be altered
+			// non-nil RecordTransformer should've been given.
+			nodeRecordFunc = func(node *ajson.Node) (map[string]any, error) {
+				return jsonquery.Convertor.ObjectToMap(node)
+			}
+		}
+
 		data := make([]ReadResultRow, len(records))
 
 		for index, nodeRecord := range records {
@@ -200,6 +277,15 @@ func MakeMarshaledDataFunc(nodeRecordFunc RecordTransformer) MarshalFromNodeFunc
 		}
 
 		return data, nil
+	}
+}
+
+// MakeRecordsFunc returns a function that extracts an array of record nodes from a JSON document.
+// The jsonPath defines where the records array resides.
+// The optional nestedPath specifies a traversal prefix to locate nested arrays.
+func MakeRecordsFunc(jsonPath string, nestedPath ...string) NodeRecordsFunc {
+	return func(node *ajson.Node) ([]*ajson.Node, error) {
+		return jsonquery.New(node, nestedPath...).ArrayRequired(jsonPath)
 	}
 }
 
@@ -274,9 +360,7 @@ func FlattenNestedFields(nestedKey string) RecordTransformer {
 		delete(root, nestedKey)
 
 		// Fields from attributes are moved to the top level.
-		for key, value := range nested {
-			root[key] = value
-		}
+		maps.Copy(root, nested)
 
 		// Root level has adopted fields from nested object.
 		return root, nil

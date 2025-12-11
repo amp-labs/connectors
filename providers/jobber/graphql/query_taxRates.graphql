@@ -1,0 +1,32 @@
+query TaxRateConnection{
+  taxRates(
+     first: {{.First}}
+     {{if .After}}
+     after: {{.After}}
+     {{end}}
+  ){
+    nodes{
+      components{
+        default
+        description
+        id
+        label
+        name
+        qboTaxType
+        tax
+      }
+      default
+      description
+      id
+      label
+      name
+      qboTaxType
+      tax
+    }
+    pageInfo{
+      endCursor
+      hasNextPage
+    }
+    totalCount
+  }
+}

@@ -1,7 +1,17 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const LinkedIn Provider = "linkedIn"
 
+const (
+	// ModuleLinkedInPlatform is the module used for platform linkedIn objects.
+	ModuleLinkedInPlatform common.ModuleID = "platform"
+	// ModuleLinkedInAds is the module used for ads related objects.
+	ModuleLinkedInAds common.ModuleID = "ads"
+)
+
+// nolint:funlen
 func init() {
 	// LinkedIn configuration
 	SetInfo(LinkedIn, ProviderInfo{
@@ -16,6 +26,27 @@ func init() {
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
+			},
+		},
+		DefaultModule: ModuleLinkedInPlatform,
+		Modules: &Modules{
+			ModuleLinkedInPlatform: {
+				BaseURL:     "https://api.linkedin.com",
+				DisplayName: "LinkedIn (Platform)",
+				Support: Support{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
+			ModuleLinkedInAds: {
+				BaseURL:     "https://api.linkedin.com",
+				DisplayName: "LinkedIn (Ads)",
+				Support: Support{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
 			},
 		},
 		Support: Support{
@@ -46,6 +77,10 @@ func init() {
 					Name:        "adAccountId",
 					DisplayName: "Ad Account ID",
 					DocsURL:     "https://www.linkedin.com/help/linkedin/answer/a424270/find-linkedin-ads-account-details",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleLinkedInAds: ModuleDependency{},
+					},
+					Prompt: "Follow the instructions under the `LinkedIn Ads account ID number` section to retrieve the ID.",
 				},
 			},
 		},

@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
@@ -48,7 +49,7 @@ func (s scrappedSchemas) SaveData(model scrapper.ModelDocLink, fieldName, fieldT
 				DisplayName:  fieldDisplayName,
 				ValueType:    getFieldValueType(fieldType, fieldValueOptions),
 				ProviderType: fieldType,
-				ReadOnly:     isReadOnly,
+				ReadOnly:     goutils.Pointer(isReadOnly),
 				Values:       getFieldValueOptions(fieldValueOptions),
 			},
 		}
@@ -56,6 +57,14 @@ func (s scrappedSchemas) SaveData(model scrapper.ModelDocLink, fieldName, fieldT
 
 	responseKey := objectNameToResponseKey.Get(model.Name)
 	urlPath := objectNameToURLPath.Get(model.Name)
+
+	if model.Name == "projects" {
+		// Duplicate projects object as kases.
+		// https://developer.capsulecrm.com/v2/operations/Case
+		s.Metadata.Add(
+			common.ModuleRoot, "kases", modelDisplayName,
+			urlPath, responseKey, fields, &model.URL, nil)
+	}
 
 	s.Metadata.Add(
 		common.ModuleRoot, model.Name, modelDisplayName,

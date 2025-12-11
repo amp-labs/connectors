@@ -1,7 +1,6 @@
 package testroutines
 
 import (
-	"context"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -22,6 +21,6 @@ func (w Write) Run(t *testing.T, builder ConnectorBuilder[connectors.WriteConnec
 	})
 
 	conn := builder.Build(t, w.Name)
-	output, err := conn.Write(context.Background(), w.Input)
+	output, err := conn.Write(t.Context(), w.Input)
 	WriteType(w).Validate(t, err, output)
 }

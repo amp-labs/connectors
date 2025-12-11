@@ -29,7 +29,7 @@ func GetConnector(ctx context.Context) *seismic.Connector {
 	conn, err := seismic.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 		Workspace:           "ampersanddemo",
-		Module:              providers.ModuleReporting,
+		Module:              providers.ModuleSeismicReporting,
 	})
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

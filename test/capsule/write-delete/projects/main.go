@@ -22,7 +22,7 @@ type Party struct {
 	ID int `json:"id"`
 }
 
-const partyID = 273316942 // 254633973
+const partyID = 277242033
 
 func main() {
 	// Handle Ctrl-C gracefully.
@@ -39,29 +39,35 @@ func main() {
 	updatedName := gofakeit.Name()
 	updatedDescription := gofakeit.Name()
 
-	testscenario.ValidateCreateUpdateDelete(ctx, conn,
-		"projects",
-		Payload{
-			Party:       Party{ID: partyID},
-			Name:        name,
-			Description: description,
-		},
-		Payload{
-			Party:       Party{ID: partyID},
-			Name:        updatedName,
-			Description: updatedDescription,
-		},
-		testscenario.CRUDTestSuite{
-			ReadFields: datautils.NewSet("id", "name", "description"),
-			SearchBy: testscenario.Property{
-				Key:   "name",
-				Value: name,
+	// Object names can be used interchangeably.
+	// https://developer.capsulecrm.com/v2/operations/Case
+	objectAliases := []string{"projects", "kases"}
+
+	for _, objectName := range objectAliases {
+		testscenario.ValidateCreateUpdateDelete(ctx, conn,
+			objectName,
+			Payload{
+				Party:       Party{ID: partyID},
+				Name:        name,
+				Description: description,
 			},
-			RecordIdentifierKey: "id",
-			UpdatedFields: map[string]string{
-				"name":        updatedName,
-				"description": updatedDescription,
+			Payload{
+				Party:       Party{ID: partyID},
+				Name:        updatedName,
+				Description: updatedDescription,
 			},
-		},
-	)
+			testscenario.CRUDTestSuite{
+				ReadFields: datautils.NewSet("id", "name", "description"),
+				SearchBy: testscenario.Property{
+					Key:   "name",
+					Value: name,
+				},
+				RecordIdentifierKey: "id",
+				UpdatedFields: map[string]string{
+					"name":        updatedName,
+					"description": updatedDescription,
+				},
+			},
+		)
+	}
 }

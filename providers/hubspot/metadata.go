@@ -2,7 +2,9 @@ package hubspot
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
 	"strconv"
 	"strings"
 
@@ -10,6 +12,8 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/providers/hubspot/metadata"
 )
 
@@ -48,39 +52,58 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
+	callbacks := make([]simultaneously.Job, 0, len(objectNames))
+
 	for _, objectName := range objectNames {
-		go func(object string) {
-			objectMetadata, err := c.getObjectMetadata(ctx, object)
+		obj := objectName // capture loop variable
+
+		callbacks = append(callbacks, func(ctx context.Context) error {
+			objectMetadata, err := c.getObjectMetadata(ctx, obj)
 			if err != nil {
 				errChannel <- &objectMetadataError{
-					ObjectName: object,
+					ObjectName: obj,
 					Error:      err,
 				}
 
-				return
+				return nil //nolint:nilerr // intentionally collecting errors in channel, not failing fast
 			}
 
 			// Send object metadata to metadataChannel
 			metadataChannel <- &objectMetadataResult{
-				ObjectName: object,
+				ObjectName: obj,
 				Response:   *objectMetadata,
 			}
-		}(objectName)
+
+			return nil
+		})
 	}
+
+	// This will block until all callbacks are done. Note that since the
+	// channels are buffered, the above code won't block on sending to them
+	// even if we're not receiving yet.
+	if err := simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
+		close(metadataChannel)
+		close(errChannel)
+
+		return nil, err
+	}
+
+	// Since all callbacks are done, we can close the channels.
+	// This ensures that the following range loops will terminate.
+	close(metadataChannel)
+	close(errChannel)
 
 	// Collect metadata for each object
 	objectsMap := &common.ListObjectMetadataResult{}
 	objectsMap.Result = make(map[string]common.ObjectMetadata)
 	objectsMap.Errors = make(map[string]error)
 
-	for range objectNames {
-		select {
-		// Add object metadata to objectsMap
-		case objectMetadataResult := <-metadataChannel:
-			objectsMap.Result[objectMetadataResult.ObjectName] = objectMetadataResult.Response
-		case objectMetadataError := <-errChannel:
-			objectsMap.Errors[objectMetadataError.ObjectName] = objectMetadataError.Error
-		}
+	for object := range metadataChannel {
+		objectsMap.Result[object.ObjectName] = object.Response
+	}
+
+	for object := range errChannel {
+		objectsMap.Errors[object.ObjectName] = object.Error
 	}
 
 	return objectsMap, nil
@@ -97,13 +120,10 @@ func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*
 
 // This method describes objects that are part of Objects API using properties endpoint.
 // There is a dedicated API endpoint that is used for discovery of object properties.
-// https://developers.hubspot.com/docs/guides/api/crm/properties
 func (c *Connector) getObjectMetadataFromPropertyAPI(
 	ctx context.Context, objectName string,
 ) (*common.ObjectMetadata, error) {
-	relativeURL := strings.Join([]string{"properties", objectName}, "/")
-
-	u, err := c.getURL(relativeURL)
+	u, err := c.getPropertiesURL(objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +138,14 @@ func (c *Connector) getObjectMetadataFromPropertyAPI(
 		return nil, fmt.Errorf("error unmarshalling object metadata response into JSON: %w", err)
 	}
 
+	// Attached enum value options to each field if any.
 	fields, err := c.fetchExternalMetadataEnumValues(ctx, objectName, resp.transformToFields())
+	if err != nil {
+		return nil, err
+	}
+
+	// Mark required fields.
+	fields, err = c.fetchRequiredFieldsBestEffort(ctx, objectName, fields)
 	if err != nil {
 		return nil, err
 	}
@@ -158,7 +185,6 @@ func (c *Connector) getObjectMetadataFromCRMSearch(
 			DisplayName:  fieldName,
 			ValueType:    common.ValueTypeOther,
 			ProviderType: "", // not available
-			ReadOnly:     false,
 			Values:       nil,
 		}
 	}
@@ -212,17 +238,21 @@ type fieldDescriptionResponse struct {
 }
 
 type fieldDescription struct {
-	Name                 string                    `json:"name"`
-	Label                string                    `json:"label"`
-	Type                 string                    `json:"type"`
-	FieldType            string                    `json:"fieldType"`
+	Name      string `json:"name"`
+	Label     string `json:"label"`
+	Type      string `json:"type"`
+	FieldType string `json:"fieldType"`
+	// IsBuiltIn indicates whether the field is HubSpot-defined (built-in).
+	// If false or omitted, the field is custom.
+	IsBuiltIn            bool                      `json:"hubspotDefined"`
 	Options              []fieldEnumerationOption  `json:"options"`
 	ModificationMetadata fieldModificationMetadata `json:"modificationMetadata"`
 }
 
 type fieldEnumerationOption struct {
-	Label string `json:"label"`
-	Value string `json:"value"`
+	Label       string `json:"label"`
+	Value       string `json:"value"`
+	Description string `json:"description"`
 }
 
 type fieldModificationMetadata struct {
@@ -242,14 +272,14 @@ func (r fieldDescriptionResponse) transformToFields() map[string]common.FieldMet
 
 // transformToFieldMetadata converts Provider model of a field into Ampersand's common.FieldMetadata.
 // This normalizes provider response to the unified standard across all providers.
-func (o fieldDescription) transformToFieldMetadata() common.FieldMetadata {
+func (f fieldDescription) transformToFieldMetadata() common.FieldMetadata {
 	var (
 		valueType common.ValueType
 		values    []common.FieldValue
 	)
 
 	// Based on type and field type properties from Hubspot object model map value to Ampersand value type.
-	switch o.Type {
+	switch f.Type {
 	case "string":
 		valueType = common.ValueTypeString
 	case "number":
@@ -259,7 +289,7 @@ func (o fieldDescription) transformToFieldMetadata() common.FieldMetadata {
 	case "datetime":
 		valueType = common.ValueTypeDateTime
 	case "enumeration":
-		valueType, values = o.implyEnumerationType()
+		valueType, values = f.implyEnumerationType(f.Name)
 		// Enumeration type means there are predefined field values.
 	default:
 		// ex: object_coordinates, phone_number
@@ -267,29 +297,42 @@ func (o fieldDescription) transformToFieldMetadata() common.FieldMetadata {
 	}
 
 	return common.FieldMetadata{
-		DisplayName:  o.Label,
+		DisplayName:  f.Label,
 		ValueType:    valueType,
-		ProviderType: o.Type + "." + o.FieldType,
-		ReadOnly:     o.ModificationMetadata.ReadOnlyValue,
-		Values:       values,
+		ProviderType: f.Type + "." + f.FieldType,
+		ReadOnly:     goutils.Pointer(f.ModificationMetadata.ReadOnlyValue),
+		IsCustom:     goutils.Pointer(!f.IsBuiltIn),
+		// IsRequired is not known from current struct,
+		// info is acquired by different API call and set by fetchRequiredFieldsBestEffort.
+		IsRequired: nil,
+		Values:     values,
 	}
 }
 
-func (o fieldDescription) implyEnumerationType() (common.ValueType, []common.FieldValue) {
+func (f fieldDescription) implyEnumerationType(fieldName string) (common.ValueType, []common.FieldValue) {
 	var values []common.FieldValue
 
-	if len(o.Options) != 0 {
+	if len(f.Options) != 0 {
 		// List of values is not nil, at least one option exists.
-		values = make([]common.FieldValue, len(o.Options))
-		for index, option := range o.Options {
+		values = make([]common.FieldValue, len(f.Options))
+
+		for index, option := range f.Options {
+			displayValue := option.Label
+			// For persona field, use description if it exists, otherwise fall back to label
+			// https://community.hubspot.com/t5/APIs-Integrations/Getting-Wrong-Value-from-Persona-in-API/
+			// m-p/1193587/highlight/true#M84004
+			if strings.EqualFold(fieldName, "hs_persona") && option.Description != "" {
+				displayValue = option.Description
+			}
+
 			values[index] = common.FieldValue{
 				Value:        option.Value,
-				DisplayValue: option.Label,
+				DisplayValue: displayValue,
 			}
 		}
 	}
 
-	switch o.FieldType {
+	switch f.FieldType {
 	case "checkbox":
 		return common.ValueTypeMultiSelect, values
 	case "booleancheckbox":
@@ -462,4 +505,64 @@ type pipeline struct {
 type stage struct {
 	Value       string `json:"id"`
 	DisplayName string `json:"label"`
+}
+
+// fetchRequiredFieldsBestEffort fetches the object's schema and marks required fields.
+// If the schema cannot be fetched due to the `crm.schemas.custom.read` scope missing, it returns the original
+// fields unchanged without an error. Other errors are returned normally.
+func (c *Connector) fetchRequiredFieldsBestEffort(
+	ctx context.Context, objectName string, fields map[string]common.FieldMetadata,
+) (map[string]common.FieldMetadata, error) {
+	url, err := c.getObjectSchemaURL(objectName)
+	if err != nil {
+		return nil, err
+	}
+
+	rsp, err := c.Client.Get(ctx, url.String())
+	if err != nil {
+		if isMissingSchemasScope(err) {
+			// User does not have permission to access the schema endpoint.
+			// Return the original fields without enrichment.
+			logging.VerboseLogger(ctx).Debug(fmt.Sprintf(
+				"Not populating isRequired for fields of %s because scopes are missing", objectName,
+			))
+
+			return fields, nil
+		}
+
+		return nil, fmt.Errorf("error fetching HubSpot fields: %w", err)
+	}
+
+	resp, err := common.UnmarshalJSON[schemaResponse](rsp)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshalling schemaResponse response into JSON: %w", err)
+	}
+
+	required := datautils.NewSetFromList(resp.RequiredProperties)
+
+	for name, meta := range fields {
+		isRequired := required.Has(name)
+		meta.IsRequired = goutils.Pointer(isRequired)
+		fields[name] = meta
+	}
+
+	return fields, nil
+}
+
+func isMissingSchemasScope(err error) bool {
+	httpErr := &common.HTTPError{}
+	if errors.As(err, &httpErr) {
+		body := string(httpErr.Body)
+
+		return strings.Contains(body, "custom-object-read") &&
+			strings.Contains(body, "MISSING_SCOPES") &&
+			httpErr.Status == http.StatusForbidden
+	}
+
+	return false
+}
+
+type schemaResponse struct {
+	RequiredProperties []string           `json:"requiredProperties"`
+	Properties         []fieldDescription `json:"properties"`
 }

@@ -39,7 +39,6 @@ func GetQuickBooksConnector(ctx context.Context) *quickbooks.Connector {
 }
 
 func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
-
 	cfg := &oauth2.Config{
 		ClientID:     reader.Get(credscanning.Fields.ClientId),
 		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),

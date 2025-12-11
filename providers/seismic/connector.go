@@ -39,6 +39,9 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
+	if params.Module == "" {
+		params.Module = providers.ModuleSeismicReporting
+	}
 	// Create base connector with provider info
 	return components.Initialize(providers.Seismic, params, constructor)
 }
@@ -53,7 +56,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	}
 
 	switch connector.Module() { //nolint: exhaustive
-	case providers.ModuleReporting:
+	case providers.ModuleSeismicReporting:
 		// Set the metadata provider for the connector
 		connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)
 

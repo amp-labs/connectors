@@ -1,0 +1,11 @@
+[
+    {
+        "id": 1,
+        "code": "USD",
+        "name": "United States Dollar",
+        "symbol": "$",
+        "precision": 2,
+        "default": true,
+        "position": 1
+    }
+]

@@ -232,6 +232,9 @@ var (
 				WorkspaceRefField: "instance_url",
 				ScopesField:       "scope",
 			},
+			ScopeMappings: map[string]string{
+				"test_scope": "https://{{.workspace}}.my.salesforce.com/test_scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -359,6 +362,9 @@ var (
 				ConsumerRefField:  "id",
 				WorkspaceRefField: "instance_url",
 				ScopesField:       "scope",
+			},
+			ScopeMappings: map[string]string{
+				"test_scope": "https://test-workspace.my.salesforce.com/test_scope",
 			},
 		},
 		Support: Support{
@@ -688,6 +694,9 @@ type Oauth2Opts struct {
 
 	// TokenMetadataFields Fields to be used to extract token metadata from the token response.
 	TokenMetadataFields TokenMetadataFields `json:"tokenMetadataFields"`
+
+	// ScopeMappings Maps input scopes to their full OAuth scope values with template variable support. Scopes not in this map are passed through unchanged. Needed for some providers.
+	ScopeMappings map[string]string `json:"scopeMappings,omitempty"`
 
 	// TokenURL The token URL.
 	TokenURL string `json:"tokenURL" validate:"required"`

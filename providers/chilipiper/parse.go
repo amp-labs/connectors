@@ -61,5 +61,5 @@ func hasMorePages(pageSize, page, total int) bool {
 		return false
 	}
 
-	return !(total <= ((page + 1) * pageSize))
+	return !(total <= ((page + 1) * pageSize)) // nolint:staticcheck
 }

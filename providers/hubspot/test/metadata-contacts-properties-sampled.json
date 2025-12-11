@@ -410,6 +410,32 @@
       },
       "formField": false,
       "dataSensitivity": "non_sensitive"
+    },
+    {
+      "updatedAt": "2025-11-08T02:23:39.217Z",
+      "createdAt": "2025-09-04T23:21:40.970Z",
+      "name": "hobby__c",
+      "label": "Hobby",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Your hobby description",
+      "groupName": "integrationcreatedproperties",
+      "options": [],
+      "createdUserId": "76070032",
+      "updatedUserId": "76070032",
+      "displayOrder": -1,
+      "calculated": false,
+      "externalOptions": false,
+      "archived": false,
+      "hasUniqueValue": true,
+      "hidden": false,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": false,
+        "readOnlyValue": false
+      },
+      "formField": true,
+      "dataSensitivity": "non_sensitive"
     }
   ]
 }

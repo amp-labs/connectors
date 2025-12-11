@@ -1,0 +1,6 @@
+{
+  "status": "error",
+  "message": "Contact already exists",
+  "correlationId": "c0895ebf-9e3e-4b7d-b6e6-124e02d3f9c3",
+  "category": "CONFLICT"
+}

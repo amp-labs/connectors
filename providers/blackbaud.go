@@ -40,7 +40,7 @@ func init() {
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name:        "BbApiSubscriptionKey",
+					Name:        "bbApiSubscriptionKey",
 					DisplayName: "Blackbaud API subscription key",
 				},
 			},

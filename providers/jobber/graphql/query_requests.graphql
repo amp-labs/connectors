@@ -1,0 +1,49 @@
+query RequestConnection{
+  requests(
+     first: {{.First}}
+     {{if .After}}
+     after: {{.After}}
+     {{end}}
+  ){
+    nodes{
+      arrivalWindow{
+        centeredOnStartTime
+        duration
+        endAt
+        id
+        startAt
+      }
+      assessment{
+        allDay
+        clientConfirmed
+        completedAt
+        duration
+        id 
+        instructions
+        isComplete
+        isDefaultTitle
+        overrideOrder
+        routingOrder
+        startAt
+        teamReminderOffset
+        title
+      }
+      companyName
+      contactName
+      email
+      id
+      isArchivable
+      isScheduled
+      jobberWebUri
+      phone
+      source
+      title
+      updatedAt
+    }
+    pageInfo{
+      endCursor
+      hasNextPage
+    }
+    totalCount
+  }
+}

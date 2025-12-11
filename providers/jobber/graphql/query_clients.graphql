@@ -1,0 +1,50 @@
+query ClientConnection{
+  clients(
+     first: {{.First}}
+     {{if .After}}
+     after: {{.After}}
+     {{end}}
+  ){
+    nodes{
+      balance
+      billingAddress{
+        city
+        country
+        latitude
+        longitude
+        name
+        postalCode
+        province
+        street
+        street1
+        street2
+      }
+      billingAddressPresent
+      companyName
+      createdAt
+      firstName
+      id
+      isArchivable
+      isArchived
+      isCompany
+      isLead
+      jobberWebUri
+      lastName
+      name
+      receivesFollowUps
+      receivesInvoiceFollowUps
+      receivesQuoteFollowUps
+      receivesReminders
+      receivesReviewRequests
+      sampleData
+      secondaryName
+      title
+      updatedAt
+    }
+    pageInfo{
+      endCursor
+      hasNextPage
+    }
+    totalCount
+  }
+}

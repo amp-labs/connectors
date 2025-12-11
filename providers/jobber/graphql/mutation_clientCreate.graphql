@@ -1,0 +1,44 @@
+mutation ClientCreate($input: ClientCreateInput!){
+    clientCreate(input : $input) {
+        client {
+            balance
+          	billingAddress{
+              city
+              country
+              latitude
+              longitude
+              name
+              postalCode
+              province
+              street
+              street1
+              street2
+            }
+          	billingAddressPresent
+          	companyName
+			createdAt
+          	firstName
+          	id
+          	isArchivable
+          	isArchived
+          	isCompany
+          	isLead
+          	jobberWebUri
+          	lastName
+          	name
+          	receivesFollowUps
+          	receivesInvoiceFollowUps
+          	receivesQuoteFollowUps
+          	receivesReminders
+          	receivesReviewRequests
+          	sampleData
+          	secondaryName
+          	title
+          	updatedAt
+        }
+		userErrors {
+			message
+			path
+        }
+    }
+}

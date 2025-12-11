@@ -66,7 +66,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				}`),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("Failed to verify cursor"), // nolint:goerr113
+				common.ErrBadRequest, errors.New("Failed to verify cursor"),
 			},
 		},
 		{
@@ -107,7 +107,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				// Pacific time to UTC is achieved by adding 8 hours
-				If:   mockcond.Body(`{"filter":{"fromDateTime":"2024-09-19T12:30:45Z"},"contentSelector":{"context":"Extended","exposedFields":{"parties":true}}}`),
+				If:   mockcond.Body(`{"filter":{"fromDateTime":"2024-09-19T12:30:45Z"},"contentSelector":{"context":"Extended","exposedFields":{"parties":true, "media": true}}}`),
 				Then: mockserver.Response(http.StatusOK, fakeServerResp),
 			}.Server(),
 			Comparator:   testroutines.ComparatorPagination,

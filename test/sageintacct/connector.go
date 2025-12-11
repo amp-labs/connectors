@@ -21,7 +21,6 @@ func GetSageIntacctConnector(ctx context.Context) *sageintacct.Connector {
 		common.WithOAuthConfig(getConfig(reader)),
 		common.WithOAuthToken(reader.GetOauthToken()),
 	)
-
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
 	}

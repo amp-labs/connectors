@@ -1,0 +1,41 @@
+query VehicleConnection{
+  vehicles(
+     first: {{.First}}
+     {{if .After}}
+     after: {{.After}}
+     {{end}}
+  ){
+    nodes{
+      createdAt
+      externalUrl
+      iconColor
+      id
+      licensePlate
+      liveState{
+        currentPosition{
+          latitude
+          longitude
+          timestamp
+        }
+        dataRefreshedAt
+        direction
+        fuelPercentage
+        speed
+        starterBatteryVoltage
+        status
+        statusChangedAt
+      }
+      make
+      model
+      name
+      updatedAt
+      vin
+      year
+    }
+    pageInfo{
+      endCursor
+      hasNextPage
+    }
+    totalCount
+  }
+}

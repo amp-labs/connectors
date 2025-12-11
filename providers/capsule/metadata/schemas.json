@@ -126,6 +126,114 @@
           },
           "docs": "https://developer.capsulecrm.com/v2/models/country"
         },
+        "kases": {
+          "displayName": "Projects",
+          "path": "/kases",
+          "responseKey": "kases",
+          "fields": {
+            "closedOn": {
+              "displayName": "Closed On",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "expectedCloseOn": {
+              "displayName": "Expected Close On",
+              "valueType": "date",
+              "providerType": "Date"
+            },
+            "fields": {
+              "displayName": "Fields",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "lastContactedAt": {
+              "displayName": "Last Contacted At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "missingImportantFields": {
+              "displayName": "Missing Important Fields",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "opportunity": {
+              "displayName": "Opportunity",
+              "valueType": "other",
+              "providerType": "Nested Opportunity"
+            },
+            "owner": {
+              "displayName": "Owner",
+              "valueType": "other",
+              "providerType": "Nested User"
+            },
+            "party": {
+              "displayName": "Party",
+              "valueType": "other",
+              "providerType": "Nested Party"
+            },
+            "stage": {
+              "displayName": "Stage",
+              "valueType": "other",
+              "providerType": "Nested Stage"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "providerType": "String",
+              "values": [
+                {
+                  "value": "OPEN",
+                  "displayValue": "OPEN"
+                },
+                {
+                  "value": "CLOSED",
+                  "displayValue": "CLOSED"
+                }
+              ]
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "team": {
+              "displayName": "Team",
+              "valueType": "other",
+              "providerType": "Nested Team"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/project"
+        },
         "lostreasons": {
           "displayName": "Lost Reasons",
           "path": "/lostreasons",

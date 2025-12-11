@@ -1,0 +1,25 @@
+{
+  "data": [
+    {
+      "id": "ctm_01hv6y1jedq4p1n0yqn5ba3ky4",
+      "status": "active",
+      "custom_data": null,
+      "name": "Jo Brown-Anderson",
+      "email": "jo@example.com",
+      "marketing_consent": false,
+      "locale": "en",
+      "created_at": "2024-04-11T15:57:24.813Z",
+      "updated_at": "2024-04-11T15:59:56.658719Z",
+      "import_meta": null
+    }
+  ],
+  "meta": {
+    "request_id": "913dee78-d496-4d13-a93e-09d834c208dd",
+    "pagination": {
+      "per_page": 50,
+      "next": "https://api.paddle.com/customers?after=ctm_01h8441jn5pcwrfhwh78jqt8hk",
+      "has_more": true,
+      "estimated_total": 4
+    }
+  }
+}

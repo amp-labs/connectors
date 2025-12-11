@@ -66,6 +66,94 @@ See the [examples directory](https://github.com/amp-labs/connectors/tree/main/ex
 | **Anthropic** | [example](https://github.com/amp-labs/connectors/tree/main/examples/auth_connectors/antrhopic)  | | API Key               |
 | **Blueshift** | [example](https://github.com/amp-labs/connectors/tree/main/examples/auth_connectors/blueshift) | | Basic Auth            |
 
+# Concurrency Safety
+
+This codebase uses the `future` and `simultaneously` packages to provide safe concurrency primitives. **Do NOT use the bare `go` keyword** - always use these primitives instead.
+
+## Using the `future` package
+
+For launching async operations that return a result:
+
+```go
+// Instead of: go func() { ... }()
+// Use future.Go for simple async operations:
+result := future.Go(func() (User, error) {
+    return fetchUser(id)
+})
+user, err := result.Await()
+
+// With context support:
+result := future.GoContext(ctx, func(ctx context.Context) (User, error) {
+    return fetchUserWithContext(ctx, id)
+})
+user, err := result.AwaitContext(ctx)
+```
+
+## Using the `simultaneously` package
+
+For running multiple operations in parallel with controlled concurrency:
+
+```go
+// Instead of launching multiple goroutines with: go func() { ... }()
+// Use simultaneously.Do to run functions in parallel:
+err := simultaneously.Do(maxConcurrent,
+    func(ctx context.Context) error { return processItem1(ctx) },
+    func(ctx context.Context) error { return processItem2(ctx) },
+    func(ctx context.Context) error { return processItem3(ctx) },
+)
+
+// With context:
+err := simultaneously.DoCtx(ctx, maxConcurrent, callbacks...)
+```
+
+**Why?** These primitives automatically handle panic recovery and prevent unbounded goroutine spawning, protecting against production outages.
+
+# Linter
+
+## One-time Setup
+
+Build the custom linters:
+```bash
+make custom-gcl
+```
+
+Rebuild the linters from scratch. This is useful when the linter has been expanded with new plugins:
+```bash
+make linter-rebuild
+```
+
+## Day-to-Day Usage
+
+Run all linters:
+```bash
+make lint
+```
+
+Automatically apply formatting fixes:
+```bash
+make fix
+```
+
+# Tests
+
+Run the full test suite:
+```bash
+make test
+```
+
+Run tests with prettier, more readable output:
+```bash
+make test-pretty
+```
+
+Run tests in parallel to verify test isolation and correctness:
+```bash
+make test-parallel
+```
+Notes on parallelized tests:
+  * `-parallel=N`: Runs up to `N` (ex:8) test functions concurrently. Useful for speeding up large test suites and for catching concurrency-related bugs.
+  * `-count=M`: Runs the test `M` (ex:3) times. This helps catch flakiness or non-deterministic behavior in tests.
+
 # Contributors
 
 Thankful to the OSS community for making Ampersand better every day.

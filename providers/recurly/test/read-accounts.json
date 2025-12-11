@@ -1,0 +1,29 @@
+{
+  "object": "string",
+  "has_more": true,
+  "next": "/accounts?cursor=string",
+  "data": [
+    {
+      "id": "string",
+      "object": "string",
+      "state": "active",
+      "hosted_login_token": "string",
+      "has_live_subscription": true,
+      "has_active_subscription": true,
+      "has_future_subscription": true,
+      "has_canceled_subscription": true,
+      "has_paused_subscription": true,
+      "has_past_due_invoice": true,
+      "created_at": "2019-08-24T14:15:22Z",
+      "updated_at": "2019-08-24T14:15:22Z",
+      "deleted_at": "2019-08-24T14:15:22Z",
+      "code": "string",
+      "username": "string",
+      "company": "string",
+      "vat_number": "string",
+      "tax_exempt": true,
+      "entity_use_code": "string",
+      "bill_date": "2019-08-24T14:15:22Z"
+    }
+  ]
+}

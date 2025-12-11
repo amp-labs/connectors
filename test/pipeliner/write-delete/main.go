@@ -20,8 +20,6 @@ type NotesPayload struct {
 	ContactId string `json:"contact_id"`
 }
 
-var objectName = "Notes" // nolint: gochecknoglobals
-
 func main() {
 	// Handle Ctrl-C gracefully.
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -84,7 +82,7 @@ func searchNotes(res *common.ReadResult, key, value string) map[string]any {
 
 func readNotes(ctx context.Context, conn *pipeliner.Connector) *common.ReadResult {
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: objectName,
+		ObjectName: "Notes",
 		Fields:     connectors.Fields("id", "view", "name"),
 	})
 	if err != nil {
@@ -123,7 +121,7 @@ func getFirstObjectID(ctx context.Context, conn *pipeliner.Connector, name strin
 
 func createNotes(ctx context.Context, conn *pipeliner.Connector, payload *NotesPayload) *common.WriteResult {
 	res, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: objectName,
+		ObjectName: "Notes",
 		RecordId:   "",
 		RecordData: payload,
 	})
@@ -140,7 +138,7 @@ func createNotes(ctx context.Context, conn *pipeliner.Connector, payload *NotesP
 
 func updateNotes(ctx context.Context, conn *pipeliner.Connector, viewID string, payload *NotesPayload) *common.WriteResult {
 	res, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: objectName,
+		ObjectName: "Notes",
 		RecordId:   viewID,
 		RecordData: payload,
 	})
@@ -157,7 +155,7 @@ func updateNotes(ctx context.Context, conn *pipeliner.Connector, viewID string, 
 
 func removeNotes(ctx context.Context, conn *pipeliner.Connector, viewID string) {
 	res, err := conn.Delete(ctx, common.DeleteParams{
-		ObjectName: objectName,
+		ObjectName: "Notes",
 		RecordId:   viewID,
 	})
 	if err != nil {

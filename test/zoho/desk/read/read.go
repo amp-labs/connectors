@@ -22,7 +22,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetZohoConnector(ctx, providers.ZohoDesk)
+	conn := connTest.GetZohoConnector(ctx, providers.ModuleZohoDesk)
 
 	res, err := conn.Read(ctx, connectors.ReadParams{
 		ObjectName: "contacts",
@@ -49,7 +49,7 @@ func main() {
 	utils.DumpJSON(res, os.Stdout)
 
 	res, err = conn.Read(ctx, connectors.ReadParams{
-		ObjectName: "calls",
+		ObjectName: "departments",
 		Since:      time.Now().Add(-1 * time.Hour),
 		Fields:     connectors.Fields("id"),
 	})
