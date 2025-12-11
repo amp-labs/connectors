@@ -1,7 +1,6 @@
 package snowflake
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 
@@ -37,23 +36,18 @@ type Connector struct {
 	components.Reader
 
 	// Required to establish / maintain connection.
-	db        *sql.DB
-	warehouse string
-	database  string
-	schema    string
-	role      string
+	handle *connectionInfo
 
 	// Per-object configurations parsed from metadata.
 	// Key is objectName (e.g., "contacts__stream").
-	objects map[string]*ObjectConfig
+	objects *snowflakeObjects
 }
 
+// TODO:
+// 1. Error handling
+// 2. Figure out permissions needed for write
+// 3. Pagination
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	// TODO:
-	// 1. Error handling
-	// 2. Manage connection lifecycle
-	// 3. Figure out permissions needed for write
-	// 4. Pagination
 	connector, err := components.Initialize(providers.Snowflake, params, constructor)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize connector: %w", err)
@@ -75,45 +69,20 @@ func constructor(base *components.Connector) (*Connector, error) {
 	return connector, nil
 }
 
-// Close closes the database connection.
-func (c *Connector) Close() error {
-	if c.db != nil {
-		return c.db.Close()
-	}
-
-	return nil
-}
-
 func (c *Connector) setup(params common.ConnectorParams) error {
-	var ok bool
+	var err error
 
-	c.db, ok = params.CustomAuthenticatedClient.(*sql.DB)
-	if !ok {
-		return errInvalidCustomAuthenticatedClient
+	// Parse per-object configurations.
+	c.objects, err = newSnowflakeObjects(params.Metadata)
+	if err != nil {
+		return fmt.Errorf("failed to parse objects: %w", err)
 	}
 
-	c.warehouse, ok = params.Metadata["warehouse"]
-	if !ok {
-		return errMissingWarehouse
+	// Create connection info.
+	c.handle, err = newConnectionInfoFromParams(params)
+	if err != nil {
+		return fmt.Errorf("failed to create connection info: %w", err)
 	}
-
-	c.database, ok = params.Metadata["database"]
-	if !ok {
-		return errMissingDatabase
-	}
-
-	c.schema, ok = params.Metadata["schema"]
-	if !ok {
-		return errMissingSchema
-	}
-
-	c.role, ok = params.Metadata["role"]
-	if !ok {
-		return errMissingRole
-	}
-
-	// Parse per-object configurations from metadata
-	c.objects = parseObjectConfigs(params.Metadata)
 
 	return nil
 }

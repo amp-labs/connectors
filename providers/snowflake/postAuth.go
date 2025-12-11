@@ -13,7 +13,7 @@ const DefaultTargetLag = "1 minute"
 func (c *Connector) ValidateQuery(ctx context.Context, query string) error {
 	explainQuery := "EXPLAIN " + query
 
-	_, err := c.db.ExecContext(ctx, explainQuery)
+	_, err := c.handle.db.ExecContext(ctx, explainQuery)
 	if err != nil {
 		return fmt.Errorf("query validation failed: %w", err)
 	}
@@ -31,9 +31,9 @@ func (c *Connector) CreateDynamicTable(ctx context.Context, tableName, query, ta
 		TARGET_LAG = '%s'
 		WAREHOUSE = %s
 		AS %s
-	`, fqName, targetLag, c.warehouse, query)
+	`, fqName, targetLag, c.handle.warehouse, query)
 
-	_, err := c.db.ExecContext(ctx, createSQL)
+	_, err := c.handle.db.ExecContext(ctx, createSQL)
 	if err != nil {
 		return fmt.Errorf("failed to create dynamic table %s: %w", fqName, err)
 	}
@@ -53,7 +53,7 @@ func (c *Connector) CreateStream(ctx context.Context, streamName, dynamicTableNa
 		SHOW_INITIAL_ROWS = TRUE
 	`, fqStreamName, fqDTName)
 
-	_, err := c.db.ExecContext(ctx, createSQL)
+	_, err := c.handle.db.ExecContext(ctx, createSQL)
 	if err != nil {
 		return fmt.Errorf("failed to create stream %s: %w", fqStreamName, err)
 	}

@@ -81,7 +81,7 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 	}
 
 	// Get object config from connector's parsed metadata
-	objConfig, ok := c.objects[params.ObjectName]
+	objConfig, ok := c.objects.Get(params.ObjectName)
 	if !ok {
 		return nil, fmt.Errorf("object %q not found in connector configuration", params.ObjectName)
 	}
@@ -108,18 +108,18 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 func (c *Connector) readFromStream(
 	ctx context.Context,
 	params common.ReadParams,
-	objConfig *ObjectConfig,
+	objConfig *objectConfig,
 ) (*common.ReadResult, error) {
-	if objConfig.StreamName == "" {
+	if objConfig.streamName == "" {
 		return nil, fmt.Errorf("streamName not configured for object %q", params.ObjectName)
 	}
 
-	streamName := c.getFullyQualifiedName(objConfig.StreamName)
+	streamName := c.getFullyQualifiedName(objConfig.streamName)
 
 	// Build the query to read from stream with CDC metadata
 	query := c.buildStreamQuery(streamName, params)
 
-	rows, err := c.db.QueryContext(ctx, query)
+	rows, err := c.handle.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query stream: %w", err)
 	}
@@ -142,18 +142,18 @@ func (c *Connector) readFromStream(
 func (c *Connector) readFromDynamicTable(
 	ctx context.Context,
 	params common.ReadParams,
-	objConfig *ObjectConfig,
+	objConfig *objectConfig,
 ) (*common.ReadResult, error) {
-	if objConfig.DynamicTableName == "" {
+	if objConfig.dynamicTableName == "" {
 		return nil, fmt.Errorf("dynamicTableName not configured for object %q", params.ObjectName)
 	}
 
-	tableName := c.getFullyQualifiedName(objConfig.DynamicTableName)
+	tableName := c.getFullyQualifiedName(objConfig.dynamicTableName)
 
 	// Build SELECT query with time filtering
 	query := c.buildDynamicTableQuery(tableName, params, objConfig)
 
-	rows, err := c.db.QueryContext(ctx, query)
+	rows, err := c.handle.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query dynamic table: %w", err)
 	}
@@ -213,7 +213,7 @@ func (c *Connector) buildStreamQuery(streamName string, params common.ReadParams
 func (c *Connector) buildDynamicTableQuery(
 	tableName string,
 	params common.ReadParams,
-	objConfig *ObjectConfig,
+	objConfig *objectConfig,
 ) string {
 	var selectCols string
 
@@ -235,15 +235,15 @@ func (c *Connector) buildDynamicTableQuery(
 	// Add time filtering if timestamp column is specified
 	var conditions []string
 
-	if objConfig.TimestampColumn != "" {
+	if objConfig.timestampColumn != "" {
 		if !params.Since.IsZero() {
 			conditions = append(conditions,
-				fmt.Sprintf(`"%s" >= '%s'`, strings.ToUpper(objConfig.TimestampColumn), params.Since.Format("2006-01-02 15:04:05")))
+				fmt.Sprintf(`"%s" >= '%s'`, strings.ToUpper(objConfig.timestampColumn), params.Since.Format("2006-01-02 15:04:05")))
 		}
 
 		if !params.Until.IsZero() {
 			conditions = append(conditions,
-				fmt.Sprintf(`"%s" <= '%s'`, strings.ToUpper(objConfig.TimestampColumn), params.Until.Format("2006-01-02 15:04:05")))
+				fmt.Sprintf(`"%s" <= '%s'`, strings.ToUpper(objConfig.timestampColumn), params.Until.Format("2006-01-02 15:04:05")))
 		}
 	}
 
@@ -252,8 +252,8 @@ func (c *Connector) buildDynamicTableQuery(
 	}
 
 	// Add ordering by timestamp column if available
-	if objConfig.TimestampColumn != "" {
-		query = fmt.Sprintf("%s ORDER BY \"%s\"", query, strings.ToUpper(objConfig.TimestampColumn))
+	if objConfig.timestampColumn != "" {
+		query = fmt.Sprintf("%s ORDER BY \"%s\"", query, strings.ToUpper(objConfig.timestampColumn))
 	}
 
 	// Add LIMIT if PageSize is specified
@@ -352,8 +352,8 @@ func (c *Connector) getFullyQualifiedName(objectName string) string {
 	}
 
 	return fmt.Sprintf(`"%s"."%s"."%s"`,
-		c.database,
-		c.schema,
+		c.handle.database,
+		c.handle.schema,
 		strings.ToUpper(objectName),
 	)
 }

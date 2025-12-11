@@ -34,8 +34,8 @@ func (c *Connector) listObjectMetadata(
 func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
 	// Resolve the actual table name from object config if available
 	tableName := objectName
-	if cfg, ok := c.objects[objectName]; ok && cfg.DynamicTableName != "" {
-		tableName = cfg.DynamicTableName
+	if cfg, ok := c.objects.Get(objectName); ok && cfg.dynamicTableName != "" {
+		tableName = cfg.dynamicTableName
 	}
 
 	columns, err := c.getColumnMetadata(ctx, tableName)
@@ -49,7 +49,7 @@ func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*
 			DisplayName:  col.Name,
 			ValueType:    snowflakeTypeToValueTypeWithScale(col.DataType, col.NumericScale),
 			ProviderType: col.DataType,
-			ReadOnly:     false, // Snowflake columns are generally writable if table is
+			ReadOnly:     boolPtr(false), // Snowflake columns are generally writable if table is
 			IsRequired:   boolPtr(!col.IsNullable),
 		}
 	}
@@ -74,9 +74,9 @@ func (c *Connector) getColumnMetadata(ctx context.Context, objectName string) ([
 		WHERE TABLE_SCHEMA = ?
 		  AND TABLE_NAME = ?
 		ORDER BY ORDINAL_POSITION
-	`, c.database)
+	`, c.handle.database)
 
-	rows, err := c.db.QueryContext(ctx, query, c.schema, objectName)
+	rows, err := c.handle.db.QueryContext(ctx, query, c.handle.schema, objectName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query columns: %w", err)
 	}
