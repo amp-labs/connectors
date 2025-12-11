@@ -11,7 +11,6 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/httpkit"
-	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -60,41 +59,11 @@ func (c *Connector) parseReadResponse(
 	return common.ParseResultFiltered(
 		params,
 		resp,
-		makeOptionalRecordsFunc(responseKey),
+		common.MakeRecordsFunc(responseKey),
 		makeFilterFunc(params, resp),
-		makeMarshaledDataWithIdFunc(),
+		common.MakeMarshaledDataFunc(nil),
 		params.Fields,
 	)
-}
-
-func makeOptionalRecordsFunc(jsonPath string) common.NodeRecordsFunc {
-	return func(node *ajson.Node) ([]*ajson.Node, error) {
-		return jsonquery.New(node).ArrayOptional(jsonPath)
-	}
-}
-
-func makeMarshaledDataWithIdFunc() common.MarshalFromNodeFunc {
-	return func(records []*ajson.Node, fields []string) ([]common.ReadResultRow, error) {
-		fields = append(fields, "id")
-
-		result, err := common.MakeMarshaledDataFunc(nil)(records, fields)
-		if err != nil {
-			return nil, err
-		}
-
-		for i := range result {
-			idAny := result[i].Fields["id"]
-			if idAny == nil {
-				continue
-			}
-
-			if id, ok := idAny.(string); ok {
-				result[i].Id = id
-			}
-		}
-
-		return result, nil
-	}
 }
 
 func makeFilterFunc(params common.ReadParams, resp *common.JSONHTTPResponse) common.RecordsFilterFunc {
