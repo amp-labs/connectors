@@ -1,0 +1,20 @@
+{
+    "id": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS9",
+    "emails": [
+        "exmple@example.com"
+    ],
+    "displayName": "Example Person",
+    "nickName": "Example",
+    "firstName": "Example",
+    "lastName": "Person",
+    "orgId": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9iMmYzYzMwNC1kYTI1LTQxZTMtOWY4NC0yOGM1NGEyZmMyZjQ",
+    "roles": [],
+    "licenses": [
+        "Y2lzY29zcGFyazovL3VzL1BFT1BMRS9"
+    ],
+    "created": "2025-12-07T15:23:45.438Z",
+    "lastModified": "2025-12-07T15:23:45.438Z",
+    "invitePending": true,
+    "loginEnabled": true,
+    "type": "person"
+}
