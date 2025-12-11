@@ -130,7 +130,6 @@ func (c *Connector) ListObjectMetadata(
 				DisplayName:  field.Name,
 				ValueType:    field.getValueType(),
 				ProviderType: field.Type,
-				ReadOnly:     false,
 				Values:       field.getValues(),
 			})
 		}

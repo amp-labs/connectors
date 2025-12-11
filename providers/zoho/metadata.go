@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -21,7 +22,6 @@ type metadataFetcher func(ctx context.Context, objectName string) (*common.Objec
 // doc: https://www.zoho.com/crm/developer/docs/api/v6/field-meta.html
 const (
 	restMetadataEndpoint = "settings/fields"
-	organizations        = "organizations"
 	users                = "users"
 	org                  = "org"
 )
@@ -34,12 +34,19 @@ type metadataFieldsV2 struct {
 	Fields []field `json:"fields"`
 }
 
+// Response from: https://www.zoho.com/crm/developer/docs/api/v6/field-meta.html
+//
 //nolint:tagliatelle
 type field struct {
-	Name           string        `json:"api_name"`
-	DisplayName    string        `json:"field_label"`
-	Type           string        `json:"data_type"`
-	ReadOnly       bool          `json:"read_only"`
+	Name        string `json:"api_name"`
+	DisplayName string `json:"field_label"`
+	Type        string `json:"data_type"`
+	// Whether field is read only for the current user
+	// We ignore this.
+	ReadOnly bool `json:"read_only"`
+	// Whether field is always read only for everyone
+	// This is the field we return in FieldMetadata.ReadOnly
+	FieldReadOnly  bool          `json:"field_read_only"`
 	PickListValues []fieldValues `json:"pick_list_values,omitempty"`
 	// The rest metadata details
 }
@@ -73,7 +80,8 @@ type deskValues struct {
 
 // ==============================================================================
 
-func (c *Connector) ListObjectMetadata(ctx context.Context,
+func (c *Connector) ListObjectMetadata( // nolint:wsl_v5
+	ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
 	var (
@@ -83,6 +91,10 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 	if c.moduleID == providers.ModuleZohoDesk {
 		mf = c.deskMetadata
+	}
+
+	if c.isServiceDeskPlusModule() {
+		return c.servicedeskplusAdapter.ListObjectMetadata(ctx, objectNames)
 	}
 
 	if len(objectNames) == 0 {
@@ -103,14 +115,14 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			metadata, err := mf(ctx, obj)
 			if err != nil {
 				mu.Lock()
-				objectMetadata.Errors[obj] = err
+				objectMetadata.Errors[obj] = err // nolint:wsl_v5
 				mu.Unlock()
 
 				return nil //nolint:nilerr // intentionally collecting errors in map, not failing fast
 			}
 
 			mu.Lock()
-			objectMetadata.Result[object] = *metadata
+			objectMetadata.Result[object] = *metadata // nolint:wsl_v5
 			mu.Unlock()
 
 			return nil
@@ -186,7 +198,7 @@ func parseCRMMetadataResponse(resp *common.JSONHTTPResponse, objectName string) 
 			DisplayName:  fld.DisplayName,
 			ValueType:    nativeCRMType(fld.Type),
 			ProviderType: fld.Type,
-			ReadOnly:     fld.ReadOnly,
+			ReadOnly:     goutils.Pointer(fld.FieldReadOnly),
 			Values:       fieldValues,
 		}
 

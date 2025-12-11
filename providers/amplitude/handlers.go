@@ -74,7 +74,6 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 			DisplayName:  field,
 			ValueType:    inferValueTypeFromData(value),
 			ProviderType: "", // not available
-			ReadOnly:     false,
 			Values:       nil,
 		}
 	}

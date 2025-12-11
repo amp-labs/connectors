@@ -1,7 +1,13 @@
 query {
     transcripts(
         limit: {{.Limit}},
-        skip: {{.Skip}}
+        skip: {{.Skip}},
+        {{if .FromDate}}
+        fromDate: "{{.FromDate}}", 
+        {{end}}
+        {{if .ToDate}}
+        toDate: "{{.ToDate}}"
+        {{end}}
     ) {
         id
         sentences {

@@ -20,6 +20,7 @@ const (
 	users         = "users"
 	conversations = "conversations"
 	playbooks     = "playbooks"
+	accounts      = "accounts"
 
 	ListSuffix = "/list"
 )
@@ -80,9 +81,11 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	if params.RecordId != "" {
-		url.AddPath(params.RecordId)
-
 		method = http.MethodPatch
+
+		url = constructUpdateEndpoint(url, params.ObjectName, params.RecordId)
+	} else {
+		url = constructCreateEndpoint(url, params.ObjectName)
 	}
 
 	if params.ObjectName == updateAccount {
@@ -98,13 +101,6 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 }
 
 func (c *Connector) constructWriteURL(objectName string) (*urlbuilder.URL, error) {
-	lowerCaseObject := strings.ToLower(objectName)
-
-	// Check if this endpoint requires the create suffix
-	if lowerCaseObject == conversations {
-		objectName += "/new"
-	}
-
 	return urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
 }
 

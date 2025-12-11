@@ -40,7 +40,7 @@ func TestBulkRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Always: mockserver.Response(http.StatusBadRequest, responseUnknownObject),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("sObject type 'Accout' is not supported"), // nolint:goerr113
+				common.ErrBadRequest, errors.New("sObject type 'Accout' is not supported"),
 			},
 		},
 		{

@@ -2,124 +2,149 @@ package custom
 
 import (
 	"context"
-	"encoding/xml"
 	"errors"
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/xquery"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-var (
-	ErrCreateMetadata = errors.New("error in performSOAPRequest")
-	ErrMarshalIndent  = errors.New("xml.MarshalIndent failed")
-)
+var ErrPermissionSetUpsert = errors.New("metadata: upsert PermissionSet failed")
 
-// UpsertMetadata creates or updates definition of a custom field.
-// https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_upsertMetadata.htm
+// UpsertMetadata creates or updates the definition of custom fields in Salesforce.
+//
+// This method uses the Salesforce Metadata API to synchronize custom field definitions,
+// and ensures that any *optional* fields (those not automatically visible to users)
+// receive appropriate FieldPermissions through the Ampersand-managed Permission Set.
+//
+// Reference:
+//
+//	https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_upsertMetadata.htm
+//
+// Behavior summary:
+//  1. Calls upsertCustomFields to create or update field definitions.
+//  2. If optional fields were created, retrieves the existing field permissions.
+//  3. Merges existing and new permissions into a combined permission map.
+//  4. Upserts the Ampersand Permission Set to include new permissions.
+//  5. Ensures the current user is assigned to that Permission Set.
+//
+// Optional fields in Salesforce are *not visible to any profile or user by default*.
+// This function guarantees those fields are accessible after creation.
 func (a *Adapter) UpsertMetadata(
 	ctx context.Context, params *common.UpsertMetadataParams,
 ) (*common.UpsertMetadataResult, error) {
-	customFields, err := NewCustomFieldsPayload(params)
-	if err != nil {
+	if err := params.ValidateParams(); err != nil {
 		return nil, err
 	}
 
-	data, err := xml.MarshalIndent(customFields, "", "  ")
+	// ---
+	// The comments below starting with [Current state] indicate the Salesforce data state
+	// and the side effects of each step at that *exit point*.
+	// Rerunning UpsertMetadata will safely resume progress.
+	// ---
+
+	// Step 1: Create or update all custom fields.
+	result, optionalFields, err := a.upsertCustomFields(ctx, params)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrMarshalIndent, err)
+		return nil, err // [Current state]: Fields upserted, but optional ones remain invisible.
 	}
 
-	accessToken, present := common.GetAuthToken(ctx)
-	if !present {
-		return nil, common.ErrMissingAccessToken
+	// Step 2: If there are no optional fields, no permission updates are needed.
+	if len(optionalFields) == 0 {
+		return result, nil
 	}
 
-	response, err := a.performSOAPRequest(ctx, data, accessToken.String())
+	// Step 3: Fetch the existing FieldPermissions defined in the Ampersand Permission Set.
+	existingFieldPermissions, err := a.fetchFieldPermissions(ctx)
 	if err != nil {
-		return nil, err
+		return nil, err // [Current state]: Fields upserted, but optional ones remain invisible.
 	}
 
-	return parseResponse(response)
+	// Step 4: Merge new optional field permissions with the existing set.
+	// This ensures existing permissions are preserved and new fields are appended.
+	combinedPermissions := datautils.MergeMaps(
+		existingFieldPermissions,
+		optionalFields,
+	)
+
+	// Step 5: Upsert the Ampersand Permission Set with the combined permissions.
+	if err = a.upsertPermissionSet(ctx, combinedPermissions); err != nil {
+		return nil, err // [Current state]: Fields upserted, but optional ones remain invisible.
+	}
+
+	// Step 6: Retrieve IDs required to assign the Permission Set to the current user.
+	permissionSetID, err := a.fetchPermissionSetID(ctx)
+	if err != nil {
+		return nil, err // [Current state]: Fields upserted and permission set has new + old field permissions.
+	}
+
+	userID, err := a.fetchUserID(ctx)
+	if err != nil {
+		return nil, err // [Current state]: Fields upserted and permission set has new + old field permissions.
+	}
+
+	// Step 7: Assign the Ampersand-managed Permission Set to the current user,
+	// ensuring access to all optional fields that were just created.
+	if err = a.assignPermissionSetToUser(ctx, userID, permissionSetID); err != nil {
+		return nil, err // [Current state]: Fields upserted and permission set has new + old field permissions.
+	}
+
+	// [Current state]: Fields upserted, permission set updated, and current user is assigned to the permission set.
+	return result, nil
 }
 
-// performSOAPRequest sends a SOAP request to the Salesforce API using the provided xmlPayload.
-// The query in the payload determines the operation (e.g., read, create, update).
-//
-// A valid, non-expired accessToken must be passed directly.
-// Each SOAP request must include a SessionHeader with the access token, as required by Salesforce.
-// See: https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_header_sessionheader.htm
-//
-// Returns the raw SOAP response body.
-func (a *Adapter) performSOAPRequest(ctx context.Context, xmlPayload []byte, accessToken string) ([]byte, error) {
-	body, err := xquery.NewXML(xmlPayload)
+func (a *Adapter) upsertCustomFields(
+	ctx context.Context, params *common.UpsertMetadataParams,
+) (*common.UpsertMetadataResult, FieldPermissions, error) {
+	payload, err := NewCustomFieldsPayload(params)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	body, err = putInsideEnvelope(body, accessToken)
+	response, err := performMetadataAPICall[UpsertMetadataResponse](ctx, a, payload)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	url, err := a.getSoapURL()
+	result, err := transformResponseToResult(response)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	resp, err := a.XMLClient.Post(ctx, url.String(), body, getSOAPHeaders()...)
-	if err != nil {
-		return nil, errors.Join(ErrCreateMetadata, err)
-	}
-
-	return []byte(resp.Body.RawXML()), nil
+	return result, payload.getOptionalFields(), nil
 }
 
-func putInsideEnvelope(content *xquery.XML, accessToken string) (*xquery.XML, error) {
-	template := `
-<?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <soapenv:Header xmlns="http://soap.sforce.com/2006/04/metadata">
-        <AllOrNoneHeader>
-            <allOrNone>true</allOrNone>
-        </AllOrNoneHeader>
-        <SessionHeader>
-            <sessionId>TODO----accessToken</sessionId>
-        </SessionHeader>
-    </soapenv:Header>
-    <soapenv:Body xmlns="http://soap.sforce.com/2006/04/metadata"/>
-</soapenv:Envelope>
-`
+func (a *Adapter) fetchFieldPermissions(ctx context.Context) (FieldPermissions, error) {
+	payload := NewReadPermissionSetPayload()
 
-	envelope, err := xquery.NewXML([]byte(template))
+	permissionSetBody, err := performMetadataAPICall[PermissionSetResponse](ctx, a, payload)
 	if err != nil {
 		return nil, err
 	}
 
-	session := envelope.FindOne("//sessionId").GetChild()
-	session.SetDataText(accessToken)
-	// Store user passed data within body tag.
-	envelope.FindOne("//soapenv:Body").SetDataNode(content)
-
-	return envelope, nil
+	return permissionSetBody.GetFieldPermissions(), nil
 }
 
-func getSOAPHeaders() []common.Header {
-	// SOAP API definition specifies that SOAPAction header should be empty string
-	// but if we set to "", API will error, so we use "''" instead as a workaround.
-	//
-	// For related information you can read Salesforce stackexchange:
-	// https://salesforce.stackexchange.com/a/49273
-	//
-	// The SOAP API spec states that missing value of a header is compensated by information found in URI.
-	// But can be used by server side for routing purposes.
-	// https://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383528
-	return []common.Header{{
-		Key:   "Content-Type",
-		Value: "text/xml",
-	}, {
-		Key:   "SOAPAction",
-		Value: "''",
-	}}
+func (a *Adapter) upsertPermissionSet(ctx context.Context, permissions FieldPermissions) error {
+	payload := NewPermissionSetPayload(permissions)
+
+	response, err := performMetadataAPICall[UpsertMetadataResponse](ctx, a, payload)
+	if err != nil {
+		return err
+	}
+
+	// Validate that PermissionSet was successfully created/updated.
+	success := false
+
+	for _, result := range response.Response.Results {
+		if result.FullName == DefaultPermissionSetName && result.Success {
+			success = true
+		}
+	}
+
+	if !success {
+		return fmt.Errorf("%w: failed for %s", ErrPermissionSetUpsert, DefaultPermissionSetName)
+	}
+
+	return nil
 }

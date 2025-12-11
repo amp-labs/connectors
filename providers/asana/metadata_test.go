@@ -71,7 +71,6 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 								DisplayName:  "gid",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
 								Values:       nil,
 							},
 
@@ -79,7 +78,6 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 								DisplayName:  "resource_type",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
 								Values:       nil,
 							},
 
@@ -87,7 +85,6 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 								DisplayName:  "name",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
 								Values:       nil,
 							},
 						},
@@ -99,7 +96,6 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 								DisplayName:  "gid",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
 								Values:       nil,
 							},
 
@@ -107,7 +103,6 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 								DisplayName:  "resource_type",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
 								Values:       nil,
 							},
 
@@ -115,7 +110,6 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 								DisplayName:  "name",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
 								Values:       nil,
 							},
 						},
@@ -127,7 +121,6 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 								DisplayName:  "gid",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
 								Values:       nil,
 							},
 
@@ -135,7 +128,6 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 								DisplayName:  "resource_type",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
 								Values:       nil,
 							},
 
@@ -143,7 +135,6 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 								DisplayName:  "name",
 								ValueType:    "string",
 								ProviderType: "",
-								ReadOnly:     false,
 								Values:       nil,
 							},
 						},

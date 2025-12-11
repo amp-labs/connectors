@@ -1,4 +1,3 @@
-// nolint:ireturn
 package connector
 
 import (
@@ -7,7 +6,9 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/acuityscheduling"
 	"github.com/amp-labs/connectors/providers/aha"
+	"github.com/amp-labs/connectors/providers/aircall"
 	"github.com/amp-labs/connectors/providers/amplitude"
 	"github.com/amp-labs/connectors/providers/apollo"
 	"github.com/amp-labs/connectors/providers/asana"
@@ -19,6 +20,7 @@ import (
 	"github.com/amp-labs/connectors/providers/bitbucket"
 	"github.com/amp-labs/connectors/providers/blackbaud"
 	"github.com/amp-labs/connectors/providers/blueshift"
+	"github.com/amp-labs/connectors/providers/braintree"
 	"github.com/amp-labs/connectors/providers/braze"
 	"github.com/amp-labs/connectors/providers/breakcold"
 	"github.com/amp-labs/connectors/providers/brevo"
@@ -44,6 +46,7 @@ import (
 	"github.com/amp-labs/connectors/providers/flatfile"
 	"github.com/amp-labs/connectors/providers/freshdesk"
 	"github.com/amp-labs/connectors/providers/front"
+	"github.com/amp-labs/connectors/providers/getresponse"
 	"github.com/amp-labs/connectors/providers/github"
 	"github.com/amp-labs/connectors/providers/gitlab"
 	"github.com/amp-labs/connectors/providers/gong"
@@ -63,6 +66,7 @@ import (
 	"github.com/amp-labs/connectors/providers/intercom"
 	"github.com/amp-labs/connectors/providers/iterable"
 	"github.com/amp-labs/connectors/providers/jobber"
+	"github.com/amp-labs/connectors/providers/kaseyavsax"
 	"github.com/amp-labs/connectors/providers/keap"
 	"github.com/amp-labs/connectors/providers/kit"
 	"github.com/amp-labs/connectors/providers/klaviyo"
@@ -85,6 +89,7 @@ import (
 	"github.com/amp-labs/connectors/providers/pipeliner"
 	"github.com/amp-labs/connectors/providers/podium"
 	"github.com/amp-labs/connectors/providers/pylon"
+	"github.com/amp-labs/connectors/providers/recurly"
 	"github.com/amp-labs/connectors/providers/sageintacct"
 	"github.com/amp-labs/connectors/providers/salesflare"
 	"github.com/amp-labs/connectors/providers/salesforce"
@@ -95,6 +100,7 @@ import (
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/snapchatads"
 	"github.com/amp-labs/connectors/providers/snowflake"
+	"github.com/amp-labs/connectors/providers/solarwinds"
 	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/xero"
@@ -116,6 +122,8 @@ func New(provider providers.Provider, params common.ConnectorParams) (connectors
 }
 
 var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nolint:gochecknoglobals
+	providers.AcuityScheduling:        wrapper(newAcuitySchedulingConnector),
+	providers.Aircall:                 wrapper(newAircallConnector),
 	providers.AWS:                     wrapper(newAWSConnector),
 	providers.Aha:                     wrapper(newAhaConnector),
 	providers.Amplitude:               wrapper(newAmplitudeConnector),
@@ -128,6 +136,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Bitbucket:               wrapper(newBitBucketConnector),
 	providers.Blackbaud:               wrapper(newBlackbaudConnector),
 	providers.Blueshift:               wrapper(newBlueshiftConnector),
+	providers.Braintree:               wrapper(newBraintreeConnector),
 	providers.Braze:                   wrapper(newBrazeConnector),
 	providers.Breakcold:               wrapper(newBreakcoldConnector),
 	providers.Brevo:                   wrapper(newBrevoConnector),
@@ -153,6 +162,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Flatfile:                wrapper(newFlatfileConnector),
 	providers.Freshdesk:               wrapper(newFreshdeskConnector),
 	providers.Front:                   wrapper(newFrontConnector),
+	providers.GetResponse:             wrapper(newGetResponseConnector),
 	providers.GitLab:                  wrapper(newGitLabConnector),
 	providers.Github:                  wrapper(newGithubConnector),
 	providers.Gong:                    wrapper(newGongConnector),
@@ -172,6 +182,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Intercom:                wrapper(newIntercomConnector),
 	providers.Iterable:                wrapper(newIterableConnector),
 	providers.Jobber:                  wrapper(newJobberConnector),
+	providers.KaseyaVSAX:              wrapper(newKaseyaVSAXConnector),
 	providers.Keap:                    wrapper(newKeapConnector),
 	providers.Kit:                     wrapper(newKitConnector),
 	providers.Klaviyo:                 wrapper(newKlaviyoConnector),
@@ -194,6 +205,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Pipeliner:               wrapper(newPipelinerConnector),
 	providers.Podium:                  wrapper(newPodiumConnector),
 	providers.Pylon:                   wrapper(newPylonConnector),
+	providers.Recurly:                 wrapper(newRecurlyConnector),
 	providers.SageIntacct:             wrapper(newSageIntacctConnector),
 	providers.Salesflare:              wrapper(newSalesflareConnector),
 	providers.Salesforce:              wrapper(newSalesforceConnector),
@@ -204,6 +216,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Smartlead:               wrapper(newSmartleadConnector),
 	providers.SnapchatAds:             wrapper(newSnapchatAdsConnector),
 	providers.Snowflake:               wrapper(newSnowflakeConnector),
+	providers.SolarWindsServiceDesk:   wrapper(newSolarWindsConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
 	providers.Xero:                    wrapper(newXeroConnector),
@@ -370,6 +383,7 @@ func newPipedriveConnector(
 ) (*pipedrive.Connector, error) {
 	return pipedrive.NewConnector(
 		pipedrive.WithAuthenticatedClient(params.AuthenticatedClient),
+		pipedrive.WithModule(params.Module),
 	)
 }
 
@@ -593,6 +607,12 @@ func newFrontConnector(
 	return front.NewConnector(params)
 }
 
+func newGetResponseConnector(
+	params common.ConnectorParams,
+) (*getresponse.Connector, error) {
+	return getresponse.NewConnector(params)
+}
+
 func newFreshdeskConnector(
 	params common.ConnectorParams,
 ) (*freshdesk.Connector, error) {
@@ -716,6 +736,12 @@ func newLeverConnector(
 	params common.ConnectorParams,
 ) (*lever.Connector, error) {
 	return lever.NewConnector(params)
+}
+
+func newBraintreeConnector(
+	params common.ConnectorParams,
+) (*braintree.Connector, error) {
+	return braintree.NewConnector(params)
 }
 
 func newBrazeConnector(
@@ -867,4 +893,30 @@ func newHappyFoxConnector(params common.ConnectorParams,
 func newSnowflakeConnector(params common.ConnectorParams,
 ) (*snowflake.Connector, error) {
 	return snowflake.NewConnector(params)
+}
+
+func newAircallConnector(
+	params common.ConnectorParams,
+) (*aircall.Connector, error) {
+	return aircall.NewConnector(params)
+}
+
+func newSolarWindsConnector(params common.ConnectorParams) (*solarwinds.Connector, error) {
+	return solarwinds.NewConnector(params)
+}
+
+func newRecurlyConnector(params common.ConnectorParams) (*recurly.Connector, error) {
+	return recurly.NewConnector(params)
+}
+
+func newAcuitySchedulingConnector(
+	params common.ConnectorParams,
+) (*acuityscheduling.Connector, error) {
+	return acuityscheduling.NewConnector(params)
+}
+
+func newKaseyaVSAXConnector(
+	params common.ConnectorParams,
+) (*kaseyavsax.Connector, error) {
+	return kaseyavsax.NewConnector(params)
 }

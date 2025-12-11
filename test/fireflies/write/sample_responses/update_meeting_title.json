@@ -1,8 +1,10 @@
 {
- "success": true,
- "data": {
-  "updateMeetingTitle": {
-   "title": "Daily Standup"
-  }
- }
+  "Data": {
+    "updateMeetingTitle": {
+      "title": "Daily Standup"
+    }
+  },
+  "Errors": [],
+  "RecordId": "",
+  "Success": true
 }

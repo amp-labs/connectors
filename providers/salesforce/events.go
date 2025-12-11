@@ -26,6 +26,7 @@ type SFAPIResponseBody struct {
 	Warnings []any  `json:"warnings"`
 }
 
+// EventChannel
 // nolint:tagliatelle
 type EventChannel struct {
 	Id       string                `json:"Id,omitempty"`
@@ -38,6 +39,7 @@ type EventChannelMetadata struct {
 	Label       string `json:"label"`
 }
 
+// EventRelayConfig
 // nolint:tagliatelle
 type EventRelayConfig struct {
 	Id                      string                    `json:"Id,omitempty"`
@@ -54,6 +56,7 @@ type EventRelayConfigMetadata struct {
 	State                   string `json:"state,omitempty"`
 }
 
+// EventChannelMember
 // nolint:tagliatelle
 type EventChannelMember struct {
 	Id       string                      `json:"Id,omitempty"`
@@ -62,12 +65,19 @@ type EventChannelMember struct {
 }
 
 type EventChannelMemberMetadata struct {
-	EventChannel   string `json:"eventChannel"`
-	SelectedEntity string `json:"selectedEntity,omitempty"`
+	EventChannel     string           `json:"eventChannel"`
+	SelectedEntity   string           `json:"selectedEntity,omitempty"`
+	EnrichedFields   []*EnrichedField `json:"enrichedFields,omitempty"`
+	FilterExpression string           `json:"filterExpression,omitempty"`
+}
+
+type EnrichedField struct {
+	Name string `json:"name"`
 }
 
 type NamedCredentialParameterType string
 
+// ToolingApiBaseParams
 // nolint: tagliatelle
 type ToolingApiBaseParams struct {
 	DeveloperName   string `json:"DeveloperName,omitempty"`
@@ -94,6 +104,7 @@ type NamedCredentialParameter struct {
 	SequenceNumber            int    `json:"sequenceNumber"`
 }
 
+// NamedCredentialMetadata
 // nolint: lll
 type NamedCredentialMetadata struct {
 	AllowMergeFieldsInBody      bool                        `json:"allowMergeFieldsInBody,omitempty"`
@@ -128,6 +139,7 @@ type NamedCredentialMetadata struct {
 	Username                 string `json:"username,omitempty"`
 }
 
+// NamedCredential
 // nolint:tagliatelle
 type NamedCredential struct {
 	FullName string                   `json:"FullName"`
@@ -141,6 +153,7 @@ func (n *NamedCredential) DestinationResourceName() string {
 	return fmt.Sprint("callout:", n.FullName)
 }
 
+// CreateEventChannel .
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_platformeventchannel.htm
 func (c *Connector) CreateEventChannel(ctx context.Context, channel *EventChannel) (*EventChannel, error) {
@@ -158,6 +171,7 @@ func (c *Connector) DeleteEventChannel(ctx context.Context, channelId string) (*
 	return c.deleteToSFAPI(ctx, "tooling/sobjects/PlatformEventChannel/"+channelId, "PlatformEventChannel")
 }
 
+// CreateEventChannelMember
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_platformeventchannelmember.htm
 func (c *Connector) CreateEventChannelMember(
@@ -178,6 +192,7 @@ func (c *Connector) DeleteEventChannelMember(ctx context.Context, memberId strin
 	return c.deleteToSFAPI(ctx, "tooling/sobjects/PlatformEventChannelMember/"+memberId, "EventChannelMember")
 }
 
+// CreateEventRelayConfig .
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
 func (c *Connector) CreateEventRelayConfig(
@@ -259,6 +274,7 @@ func GetRemoteResource(orgId, channelId string) string {
 	return fmt.Sprintf("aws.partner/salesforce.com/%s/%s", orgId, channelId)
 }
 
+// CreateNamedCredential
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_namedcredential.htm
 func (c *Connector) CreateNamedCredential(ctx context.Context, creds *NamedCredential) (*NamedCredential, error) {

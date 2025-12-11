@@ -9,6 +9,8 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 )
 
+var _ components.Writer = &HTTPWriter{}
+
 // HTTPWriter implements Writer using HTTP.
 type HTTPWriter struct {
 	operation *operations.WriteOperation

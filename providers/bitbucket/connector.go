@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/tools/fileconv"
@@ -31,14 +32,25 @@ type Connector struct {
 
 	// Require authenticated client
 	common.RequireAuthenticatedClient
+	common.RequireWorkspace
 
 	// Supported operations
 	components.SchemaProvider
 	components.Reader
+	components.Writer
+
+	Workspace string
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(providers.Bitbucket, params, constructor)
+	connector, err := components.Initialize(providers.Bitbucket, params, constructor)
+	if err != nil {
+		return nil, err
+	}
+
+	connector.Workspace = params.Workspace
+
+	return connector, nil
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
@@ -73,6 +85,17 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	connector.Writer = writer.NewHTTPWriter(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
 			ErrorHandler:  common.InterpretError,
 		},
 	)

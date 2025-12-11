@@ -30,5 +30,5 @@ func formatProblematicKeyError(key string, baseErr error) error {
 }
 
 func createKeyNotFoundErr(key string) error {
-	return errors.Join(ErrKeyNotFound, fmt.Errorf("key: [%v]", key)) // nolint:goerr113
+	return errors.Join(ErrKeyNotFound, fmt.Errorf("key: [%v]", key)) // nolint:err113
 }

@@ -1,8 +1,10 @@
+// nolint:revive,godoclint
 package common
 
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"strings"
 
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -358,9 +360,7 @@ func FlattenNestedFields(nestedKey string) RecordTransformer {
 		delete(root, nestedKey)
 
 		// Fields from attributes are moved to the top level.
-		for key, value := range nested {
-			root[key] = value
-		}
+		maps.Copy(root, nested)
 
 		// Root level has adopted fields from nested object.
 		return root, nil

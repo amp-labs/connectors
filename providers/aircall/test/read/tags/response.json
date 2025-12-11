@@ -1,0 +1,19 @@
+{
+  "tags": [
+    {
+      "id": 10,
+      "direct_link": "https://api.aircall.io/v1/tags/10",
+      "name": "VIP",
+      "color": "#FF0000",
+      "description": "Very important"
+    }
+  ],
+  "meta": {
+    "count": 1,
+    "total": 1,
+    "current_page": 1,
+    "per_page": 50,
+    "next_page_link": null,
+    "previous_page_link": null
+  }
+}

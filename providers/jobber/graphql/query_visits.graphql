@@ -85,7 +85,33 @@ query VisitConnection{
           street2
         }
         assignedColor
-        assignedVehicle
+        assignedVehicle{
+          createdAt
+          externalUrl
+          iconColor
+          id
+          licensePlate
+          liveState{
+            currentPosition{
+              latitude
+              longitude
+              timestamp
+            }
+            dataRefreshedAt
+            direction
+            fuelPercentage
+            speed
+            starterBatteryVoltage
+            status
+            statusChangedAt
+          }
+          make
+          model
+          name
+          updatedAt
+          vin
+          year
+        }
         availableForScheduling
         createdAt
         email{
@@ -99,7 +125,11 @@ query VisitConnection{
         isAccountOwner
         isCurrentUser
         lastLoginAt
-        name
+        name{
+          first
+          full
+          last
+        }
         status
         timezone
         uuid

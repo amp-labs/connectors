@@ -12,8 +12,9 @@ import (
 // Explorer allows to traverse schema in most common ways
 // relevant for connectors metadata extraction.
 type Explorer[C any] struct {
-	schema *Document
 	*parameters
+
+	schema *Document
 }
 
 // NewExplorer creates explorer on openAPI v3 file.
@@ -185,21 +186,21 @@ func (w EndpointOperations) String() string {
 	keys := registry.Keys()
 	sort.Strings(keys)
 
-	var support string
+	var support strings.Builder
 
 	for _, key := range keys {
 		if w.OperationsSupport[key] {
-			support += key
+			support.WriteString(key)
 		} else {
 			for range len(key) {
-				support += " "
+				support.WriteString(" ")
 			}
 		}
 
-		support += " "
+		support.WriteString(" ")
 	}
 
-	return support + "\t" + w.URLPath
+	return support.String() + "\t" + w.URLPath
 }
 
 // GetEndpointOperations retrieves URLs and a checklist of the operations they support.

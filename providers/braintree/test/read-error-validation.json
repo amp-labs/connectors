@@ -1,0 +1,19 @@
+{
+  "errors": [
+    {
+      "message": "Invalid search criteria provided",
+      "locations": [
+        {
+          "line": 2,
+          "column": 3
+        }
+      ],
+      "path": ["search", "customers"],
+      "extensions": {
+        "errorClass": "VALIDATION",
+        "errorType": "user_error"
+      }
+    }
+  ],
+  "data": null
+}

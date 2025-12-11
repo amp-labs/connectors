@@ -4,8 +4,16 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
+<<<<<<< HEAD
 )
 
+=======
+	"github.com/amp-labs/connectors/internal/components"
+)
+
+var _ components.SchemaProvider = &DelegateSchemaProvider{}
+
+>>>>>>> main
 // DelegateSchemaProvider implements SchemaProvider by delegating to a provided function.
 // Use this when the connector needs full control over the schema implementation.
 type DelegateSchemaProvider struct {
@@ -32,6 +40,6 @@ func (p *DelegateSchemaProvider) ListObjectMetadata(
 	return p.execute(ctx, objects)
 }
 
-func (p *DelegateSchemaProvider) String() string {
+func (p *DelegateSchemaProvider) SchemaSource() string {
 	return "DelegateSchemaProvider"
 }
