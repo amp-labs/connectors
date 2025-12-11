@@ -17,6 +17,7 @@ import (
 const (
 	apiVersion      = "v1"
 	defaultPageSize = 100
+	// the default size for most objects is 100 https://developer.webex.com/admin/docs/api/v1/people/list-people
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {

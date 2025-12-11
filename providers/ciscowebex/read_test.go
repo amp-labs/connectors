@@ -22,7 +22,7 @@ func TestRead(t *testing.T) {
 	responseReadPeople := testutils.DataFromFile(t, "read-people.json")
 	responseReadPeopleFirstPage := testutils.DataFromFile(t, "read-people-first-page.json")
 	responseReadPeopleSecondPage := testutils.DataFromFile(t, "read-people-second-page.json")
-
+	responseReadGroupsFiltered := testutils.DataFromFile(t, "read-groups-filtered.json")
 	tests := []testroutines.Read{
 		{
 			Name:         "Read object must be included",
@@ -275,7 +275,7 @@ func TestRead(t *testing.T) {
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.Path("/v1/groups"),
-				Then:  mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read-groups.json")),
+				Then:  mockserver.Response(http.StatusOK, responseReadGroupsFiltered),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
