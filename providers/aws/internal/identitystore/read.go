@@ -11,6 +11,7 @@ import (
 // nolint:tagliatelle
 type readPayload struct {
 	*core.ReadPayload
+
 	IdentityStoreID string `json:"IdentityStoreId"`
 }
 

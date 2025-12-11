@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"os"
@@ -10,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	ap "github.com/amp-labs/connectors/providers/fireflies"
 	"github.com/amp-labs/connectors/test/fireflies"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
@@ -44,6 +44,11 @@ func MainFn() int {
 		return 1
 	}
 
+	err = testUpdateMeetingPrivacy(ctx)
+	if err != nil {
+		return 1
+	}
+
 	return 0
 }
 
@@ -55,18 +60,18 @@ func testAddToLiveMeeting(ctx context.Context) error {
 	writeParams := common.WriteParams{
 		ObjectName: "liveMeetings",
 		RecordData: map[string]any{
-			"meeting_link": "https://meet.google.com/qdt-vccw-nzt",
-			// "title":            "demo",
-			// "meeting_password": "Ab34TRD",
-			// "duration":         60,
-			// "language":         "en",
-			// "attendees": []any{
-			// 	map[string]string{
-			// 		"displayName": "Fireflies Notetaker",
-			// 		"email":       "notetaker@fireflies.ai",
-			// 		"phoneNumber": "5522668874",
-			// 	},
-			// },
+			"meeting_link":     "https://meet.google.com/hey-gdmi-xht",
+			"title":            "demo",
+			"meeting_password": "Ab34TRD",
+			"duration":         60,
+			"language":         "en",
+			"attendees": []any{
+				map[string]string{
+					"displayName": "Fireflies Notetaker",
+					"email":       "notetaker@fireflies.ai",
+					"phoneNumber": "5522668874",
+				},
+			},
 		},
 		RecordId: "",
 	}
@@ -78,9 +83,7 @@ func testAddToLiveMeeting(ctx context.Context) error {
 		return err
 	}
 
-	if err := constructResponse(writeRes); err != nil {
-		return err
-	}
+	utils.DumpJSON(writeRes, os.Stdout)
 
 	return nil
 }
@@ -93,13 +96,13 @@ func testCreateBite(ctx context.Context) error {
 	writeParams := common.WriteParams{
 		ObjectName: "bites",
 		RecordData: map[string]any{
-			"transcriptId": "01JSXJ9T9DCS3PH46ACCRSCAX2",
+			"transcriptId": "01K9YQ1SPTN3X9RAEXV1AH2P6G",
 			"startTime":    float64(3),
 			"endTime":      float64(4),
-			// "name":         "bite",
-			// "media_type":   "audio",
-			// "privacies":    []string{"team", "participants"},
-			// "summary":      "creating the bites",
+			"name":         "bite",
+			"media_type":   "audio",
+			"privacies":    []string{"team", "participants"},
+			"summary":      "creating the bites",
 		},
 		RecordId: "",
 	}
@@ -111,9 +114,7 @@ func testCreateBite(ctx context.Context) error {
 		return err
 	}
 
-	if err := constructResponse(writeRes); err != nil {
-		return err
-	}
+	utils.DumpJSON(writeRes, os.Stdout)
 
 	return nil
 }
@@ -126,7 +127,7 @@ func testSetUserRole(ctx context.Context) error {
 	writeParams := common.WriteParams{
 		ObjectName: "userRole",
 		RecordData: map[string]any{
-			"user_id": "01JSH43RZP1W6GAWQ2B87EAK7X",
+			"user_id": "YUBzRk85N2",
 			"role":    "user",
 		},
 		RecordId: "",
@@ -139,9 +140,7 @@ func testSetUserRole(ctx context.Context) error {
 		return err
 	}
 
-	if err := constructResponse(writeRes); err != nil {
-		return err
-	}
+	utils.DumpJSON(writeRes, os.Stdout)
 
 	return nil
 }
@@ -184,9 +183,7 @@ func testUploadAudio(ctx context.Context) error {
 		return err
 	}
 
-	if err := constructResponse(writeRes); err != nil {
-		return err
-	}
+	utils.DumpJSON(writeRes, os.Stdout)
 
 	return nil
 }
@@ -197,7 +194,7 @@ func testUpdateMeetingTitle(ctx context.Context) error {
 	slog.Info("Updating the meeting title")
 
 	inputParts := map[string]any{
-		"id":    "01JW6CPYTHM5DEFKH9X739BDPS",
+		"id":    "01K9YQ1SPTN3X9RAEXV1AH2P6G",
 		"title": "Daily Standup",
 	}
 	writeParams := common.WriteParams{
@@ -212,9 +209,33 @@ func testUpdateMeetingTitle(ctx context.Context) error {
 		return err
 	}
 
-	if err := constructResponse(writeRes); err != nil {
+	utils.DumpJSON(writeRes, os.Stdout)
+
+	return nil
+}
+
+func testUpdateMeetingPrivacy(ctx context.Context) error {
+	conn := fireflies.GetFirefliesConnector(ctx)
+
+	slog.Info("Updating the meeting privacy")
+
+	inputParts := map[string]any{
+		"id":      "01K9YQ1SPTN3X9RAEXV1AH2P6G",
+		"privacy": "owner",
+	}
+	writeParams := common.WriteParams{
+		ObjectName: "meetingPrivacy",
+		RecordData: inputParts,
+	}
+
+	writeRes, err := Write(ctx, conn, writeParams)
+	if err != nil {
+		fmt.Println("ERR: ", err)
+
 		return err
 	}
+
+	utils.DumpJSON(writeRes, os.Stdout)
 
 	return nil
 }
@@ -226,17 +247,4 @@ func Write(ctx context.Context, conn *ap.Connector, payload common.WriteParams) 
 	}
 
 	return res, nil
-}
-
-// unmarshal the write response.
-func constructResponse(res *common.WriteResult) error {
-	jsonStr, err := json.MarshalIndent(res, "", " ")
-	if err != nil {
-		return fmt.Errorf("error marshalling JSON: %w", err)
-	}
-
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
-
-	return nil
 }

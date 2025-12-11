@@ -1,0 +1,14 @@
+{
+  "status": "error",
+  "message": "One or more of the following scopes are required.",
+  "correlationId": "e06d5f4a-fcde-4985-bc2b-2b89d29568b0",
+  "context": {
+    "requiredGranularScopes": [
+      "custom-object-read"
+    ],
+    "links": [
+      "https://developers.hubspot.com/scopes"
+    ]
+  },
+  "category": "MISSING_SCOPES"
+}

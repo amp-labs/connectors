@@ -1,4 +1,3 @@
-// nolint:gochecknoglobals
 package ssoadmin
 
 import (
@@ -11,7 +10,7 @@ const (
 	ServiceSigningName = "sso"
 )
 
-var Registry = core.Registry{
+var Registry = core.Registry{ // nolint:gochecknoglobals
 	"AccountAssignmentCreationStatus": {
 		Commands: core.ObjectCommands{
 			Read:   "ListAccountAssignmentCreationStatus",

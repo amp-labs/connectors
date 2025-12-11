@@ -3,6 +3,7 @@ package schema
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components/operations"
@@ -30,15 +31,13 @@ func (p *AggregateSchemaProvider) ListObjectMetadata(
 		return nil, fmt.Errorf("%w: %s", common.ErrNotImplemented, "schema provider is not implemented")
 	}
 
-	for _, object := range objects {
-		if object == "" {
-			return nil, fmt.Errorf("%w: object name cannot be empty", common.ErrMissingObjects)
-		}
+	if slices.Contains(objects, "") {
+		return nil, fmt.Errorf("%w: object name cannot be empty", common.ErrMissingObjects)
 	}
 
 	return p.operation.ExecuteRequest(ctx, objects)
 }
 
-func (p *AggregateSchemaProvider) String() string {
+func (p *AggregateSchemaProvider) SchemaSource() string {
 	return "AggregateSchemaProvider"
 }

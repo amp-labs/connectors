@@ -41,7 +41,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Resource not found for the segment 'conacs'"), // nolint:goerr113
+				errors.New("Resource not found for the segment 'conacs'"),
 			},
 		},
 		{

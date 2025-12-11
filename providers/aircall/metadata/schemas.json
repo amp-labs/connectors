@@ -1,0 +1,381 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "calls": {
+          "displayName": "Calls",
+          "path": "/calls",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "integer",
+              "providerType": "integer"
+            },
+            "direction": {
+              "displayName": "Direction",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "missed_call_reason": {
+              "displayName": "Missed Call Reason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "started_at": {
+              "displayName": "Started At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "answered_at": {
+              "displayName": "Answered At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ended_at": {
+              "displayName": "Ended At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "duration": {
+              "displayName": "Duration",
+              "valueType": "integer",
+              "providerType": "integer"
+            },
+            "voicemail": {
+              "displayName": "Voicemail",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recording": {
+              "displayName": "Recording",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "asset": {
+              "displayName": "Asset",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "User",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "contact": {
+              "displayName": "Contact",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "archived": {
+              "displayName": "Archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "assigned_to": {
+              "displayName": "Assigned To",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "transferred_to": {
+              "displayName": "Transferred To",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "transferred_from": {
+              "displayName": "Transferred From",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "cost": {
+              "displayName": "Cost",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number": {
+              "displayName": "Number",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "comments": {
+              "displayName": "Comments",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "integer",
+              "providerType": "integer"
+            },
+            "direct_link": {
+              "displayName": "Direct Link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "available": {
+              "displayName": "Available",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "availability_status": {
+              "displayName": "Availability Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time_zone": {
+              "displayName": "Time Zone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "language": {
+              "displayName": "Language",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "wrap_up_time": {
+              "displayName": "Wrap Up Time",
+              "valueType": "integer",
+              "providerType": "integer"
+            },
+            "numbers": {
+              "displayName": "Numbers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "state": {
+              "displayName": "State",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "extension": {
+              "displayName": "Extension",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/contacts",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "integer",
+              "providerType": "integer"
+            },
+            "direct_link": {
+              "displayName": "Direct Link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "First Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "Last Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_name": {
+              "displayName": "Company Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "information": {
+              "displayName": "Information",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone_numbers": {
+              "displayName": "Phone Numbers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "emails": {
+              "displayName": "Emails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "numbers": {
+          "displayName": "Numbers",
+          "path": "/numbers",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "integer",
+              "providerType": "integer"
+            },
+            "direct_link": {
+              "displayName": "Direct Link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "digits": {
+              "displayName": "Digits",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "country": {
+              "displayName": "Country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time_zone": {
+              "displayName": "Time Zone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "open": {
+              "displayName": "Open",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "availability_status": {
+              "displayName": "Availability Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_ivr": {
+              "displayName": "Is IVR",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "live_recording_activated": {
+              "displayName": "Live Recording Activated",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "messages": {
+              "displayName": "Messages",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "teams": {
+          "displayName": "Teams",
+          "path": "/teams",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "integer",
+              "providerType": "integer"
+            },
+            "direct_link": {
+              "displayName": "Direct Link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "users": {
+              "displayName": "Users",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "integer",
+              "providerType": "integer"
+            },
+            "direct_link": {
+              "displayName": "Direct Link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "color": {
+              "displayName": "Color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

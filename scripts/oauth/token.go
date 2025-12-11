@@ -40,7 +40,7 @@ import (
 //		"clientSecret": "**************",
 //		"scopes": "crm.contacts.read,crm.contacts.write", (optional)
 //		"provider": "salesforce",
-//		"substitutions": { (optional)
+//		"metadata": { (optional)
 //		    "workspace": "some-subdomain"
 //		},
 //		"accessToken": "",
@@ -62,7 +62,7 @@ const (
 	WaitBeforeExitSeconds    = 1
 	ReadHeaderTimeoutSeconds = 3
 
-	SubstitutionsFieldName = "Substitutions"
+	MetadataFieldName = "Metadata"
 )
 
 // ================================
@@ -74,8 +74,8 @@ var registry = scanning.NewRegistry()
 var readers = []scanning.Reader{
 	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
-		JSONPath: "$['substitutions']",
-		KeyName:  SubstitutionsFieldName,
+		JSONPath: "$['metadata']",
+		KeyName:  MetadataFieldName,
 	},
 	credscanning.Fields.Provider.GetJSONReader(DefaultCredsFile),
 	credscanning.Fields.ClientId.GetJSONReader(DefaultCredsFile),
@@ -265,7 +265,7 @@ func openBrowser(url string) {
 	case "darwin":
 		err = exec.Command("open", url).Start()
 	default:
-		err = fmt.Errorf("unsupported platform: %s", runtime.GOOS) //nolint:goerr113
+		err = fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 	}
 
 	if err != nil {
@@ -291,14 +291,14 @@ func setup() *OAuthApp {
 		return nil
 	}
 
-	substitutions, err := registry.GetMap(SubstitutionsFieldName)
+	metadata, err := registry.GetMap(MetadataFieldName)
 	if err != nil {
-		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}", "error", err)
+		slog.Warn("no connector metadata, ensure that the provider info doesn't have any {{variables}}", "error", err)
 	}
 
 	provider := registry.MustString(credscanning.Fields.Provider.Name)
 
-	providerInfo, err := providers.ReadInfo(provider, paramsbuilder.NewCatalogVariables(substitutions)...)
+	providerInfo, err := providers.ReadInfo(provider, paramsbuilder.NewCatalogVariables(metadata)...)
 	if err != nil {
 		slog.Error("failed to read provider config", "error", err)
 

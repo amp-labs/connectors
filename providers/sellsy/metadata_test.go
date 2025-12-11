@@ -89,14 +89,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Age",
 								ValueType:    "int",
 								ProviderType: "numeric",
-								ReadOnly:     false,
 								Values:       nil,
 							},
 							"fruits": {
 								DisplayName:  "Fruits",
 								ValueType:    "singleSelect",
 								ProviderType: "radio",
-								ReadOnly:     false,
 								Values: common.FieldValues{{
 									Value:        "9",
 									DisplayValue: "Orange",
@@ -112,7 +110,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Hobbies",
 								ValueType:    "multiSelect",
 								ProviderType: "checkbox",
-								ReadOnly:     false,
 								Values: common.FieldValues{{
 									Value:        "12",
 									DisplayValue: "Art",
@@ -143,6 +140,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})
 		})
 	}
+}
+
+func TestConnectorStringMethods(t *testing.T) {
+	t.Parallel()
+
+	conn, err := constructTestConnector("http://mockserver.test")
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	testutils.CheckOutput(t, "conn.Provider():", "sellsy", conn.Provider())
+	testutils.CheckOutput(t, "conn.String():", "sellsy.Connector[root]", conn.String())
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {

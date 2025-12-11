@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package common
 
 import (
@@ -177,6 +178,11 @@ type ReadParams struct {
 	PageSize int // optional
 }
 
+type WriteHeader struct {
+	Key   string
+	Value string
+}
+
 // WriteParams defines how we are writing data to a SaaS API.
 type WriteParams struct {
 	// The name of the object we are writing, e.g. "Account"
@@ -191,6 +197,8 @@ type WriteParams struct {
 
 	// Associations contains associations between the object and other objects.
 	Associations any // optional
+
+	Headers []WriteHeader // optional
 }
 
 func (p WriteParams) GetRecord() (Record, error) {
@@ -321,9 +329,35 @@ type BatchWriteParam struct {
 	ObjectName ObjectName
 	// Type defines how the records should be processed: create, update, or upsert.
 	Type BatchWriteType
-	// Records contains the collection of record payloads to be written.
-	Records []any
+	// Batch contains the collection of record payloads to be written.
+	Batch BatchItems
+	// Headers contains additional headers to be added to the request.
+	Headers []WriteHeader // optional
 }
+
+func TransformWriteHeaders(headers []WriteHeader, mode HeaderMode) []Header {
+	transformedHeaders := []Header{}
+	for _, header := range headers {
+		transformedHeaders = append(transformedHeaders, Header{
+			Key:   header.Key,
+			Value: header.Value,
+			Mode:  mode,
+		})
+	}
+
+	return transformedHeaders
+}
+
+type BatchItem struct {
+	Record       map[string]any
+	Associations any
+}
+
+func (i BatchItem) GetRecord() (Record, error) {
+	return RecordDataToMap(i.Record)
+}
+
+type BatchItems []BatchItem
 
 func (p BatchWriteParam) IsCreate() bool {
 	return p.Type == BatchWriteTypeCreate
@@ -336,8 +370,8 @@ func (p BatchWriteParam) IsUpdate() bool {
 type Record map[string]any
 
 func (p BatchWriteParam) GetRecords() ([]Record, error) {
-	return datautils.ForEachWithErr(p.Records, func(record any) (Record, error) {
-		return RecordDataToMap(record)
+	return datautils.ForEachWithErr(p.Batch, func(batchItem BatchItem) (Record, error) {
+		return RecordDataToMap(batchItem.Record)
 	})
 }
 
@@ -462,12 +496,6 @@ type ObjectMetadata struct {
 	FieldsMap map[string]string
 }
 
-// AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
-func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
-	m.Fields[fieldName] = fieldMetadata
-	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
-}
-
 // NewObjectMetadata constructs ObjectMetadata.
 // This will automatically infer fields map from field metadata map. This construct exists for such convenience.
 func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadata {
@@ -476,6 +504,17 @@ func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadat
 		Fields:      fields,
 		FieldsMap:   inferDeprecatedFieldsMap(fields),
 	}
+}
+
+// AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
+func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
+	m.Fields[fieldName] = fieldMetadata
+	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
+}
+
+func (m *ObjectMetadata) RemoveFieldMetadata(fieldName string) {
+	delete(m.Fields, fieldName)
+	delete(m.FieldsMap, fieldName)
 }
 
 type FieldMetadata struct {
@@ -490,7 +529,7 @@ type FieldMetadata struct {
 	ProviderType string
 
 	// ReadOnly would indicate if field can be modified or only read.
-	ReadOnly bool
+	ReadOnly *bool
 
 	// IsCustom indicates whether the field is user-defined or custom.
 	// True means the field was added by the user, false means it is native to the provider.
@@ -513,7 +552,6 @@ func (f FieldsMetadata) AddFieldWithDisplayOnly(fieldName string, displayName st
 		DisplayName:  displayName,
 		ValueType:    "",
 		ProviderType: "",
-		ReadOnly:     false,
 		Values:       nil,
 	}
 }
@@ -559,7 +597,7 @@ type SubscriptionUpdateEvent interface {
 	UpdatedFields() ([]string, error)
 }
 
-// Some providers send multiple events in a single webhook payload.
+// CollapsedSubscriptionEvent some providers send multiple events in a single webhook payload.
 // This interface is used to extract individual events to SubscriptionEvent type
 // from a collapsed event for webhook parsing and processing.
 type CollapsedSubscriptionEvent interface {
@@ -599,13 +637,13 @@ type RegistrationResult struct {
 type RegistrationStatus string
 
 const (
-	// registration is pending and not yet complete.
+	// RegistrationStatusPending registration is pending and not yet complete.
 	RegistrationStatusPending RegistrationStatus = "pending"
-	// registration returned error, and all intermittent steps are rolled back.
+	// RegistrationStatusFailed registration returned error, and all intermittent steps are rolled back.
 	RegistrationStatusFailed RegistrationStatus = "failed"
-	// successful registration.
+	// RegistrationStatusSuccess successful registration.
 	RegistrationStatusSuccess RegistrationStatus = "success"
-	// registration returned error, and failed to rollback some intermittent steps.
+	// RegistrationStatusFailedToRollback registration returned error, and failed to rollback some intermittent steps.
 	RegistrationStatusFailedToRollback RegistrationStatus = "failed_to_rollback"
 )
 
@@ -634,23 +672,45 @@ func (n ObjectName) String() string {
 }
 
 type SubscribeParams struct {
+	// Request contains provider-specific parameters that are unique to each subscription.
+	// These parameters can be either optional or required depending on the provider's API requirements.
+	// Each provider defines its own request structure (e.g., webhook URL, secret, unique reference, etc.)
+	// that must be provided when creating subscriptions. The structure is provider-specific and should
+	// match the provider's expected request format for subscription operations.
 	Request any
 	// RegistrationResult is the result of the Connector.Register call.
 	// Connector.Subscribe requires information from the registration.
 	// Not all providers require registration, so this is optional.
 	// eg) Salesforce and HubSpot require registration because
 	RegistrationResult *RegistrationResult
+	// SubscriptionEvents is a normalized view representing the exact subscription state
+	// that should be maintained in the provider's system. This field specifies which
+	// objects and events the caller wants to subscribe to, using a provider-agnostic
+	// format. Connector.Subscribe method will translate these normalized events to its own event
+	// naming conventions when creating subscriptions. This represents the desired
+	// state, which may differ from the actual state returned in SubscriptionResult.ObjectEvents
+	// if some subscription operations fail or are rolled back.
 	SubscriptionEvents map[ObjectName]ObjectEvents
 }
 
 type SubscriptionResult struct { // this corresponds to each API call.
-	Result       any
+	// Result contains the provider's original response data in its raw form.
+	// This field preserves the complete, unmodified response from the provider's API,
+	// allowing callers to access all original metadata, IDs, timestamps, and other
+	// provider-specific information that may not be represented in the transformed ObjectEvents.
+	// The structure of Result is provider-specific and should match the provider's actual API response format.
+	Result any
+	// ObjectEvents represents the transformed view of the subscription state after the operation.
+	// This field contains a normalized, provider-agnostic representation of which objects and events
+	// are currently subscribed in the provider's system. It reflects the exact state after
+	// creating, updating, or deleting subscriptions, and may differ from the requested subscriptions
+	// if some operations failed or were rolled back. This transformed view is useful for tracking
+	// the actual subscription state without needing to parse provider-specific response formats.
 	ObjectEvents map[ObjectName]ObjectEvents
 	Status       SubscriptionStatus
 
-	// Below fields are deprecated, and will be removed in a future release.
+	// Below fields are soon to be DEPRECATED, and will be removed in a future release.
 	// Use ObjectEvents instead.
-
 	Objects []ObjectName
 	Events  []SubscriptionEventType
 	// ["create", "update", "delete"]
@@ -664,12 +724,12 @@ type SubscriptionResult struct { // this corresponds to each API call.
 type SubscriptionStatus string
 
 const (
-	// registration is pending and not yet complete.
+	// SubscriptionStatusPending registration is pending and not yet complete.
 	SubscriptionStatusPending SubscriptionStatus = "pending"
-	// registration returned error, and all intermittent steps are rolled back.
+	// SubscriptionStatusFailed registration returned error, and all intermittent steps are rolled back.
 	SubscriptionStatusFailed SubscriptionStatus = "failed"
-	// successful registration.
+	// SubscriptionStatusSuccess successful registration.
 	SubscriptionStatusSuccess SubscriptionStatus = "success"
-	// registration returned error, and failed to rollback some intermittent steps.
+	// SubscriptionStatusFailedToRollback registration returned error, and failed to rollback some intermittent steps.
 	SubscriptionStatusFailedToRollback SubscriptionStatus = "failed_to_rollback"
 )

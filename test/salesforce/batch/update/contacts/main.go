@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -25,23 +26,24 @@ func main() {
 	res, err := conn.BatchWrite(ctx, &connectors.BatchWriteParam{
 		ObjectName: "Contact",
 		Type:       connectors.BatchWriteTypeUpdate,
-		Records: []any{
-			map[string]any{
+		Batch: common.BatchItems{{
+			Record: map[string]any{
 				"id":        "003ak00000jvIfpAAE",
 				"LastName":  "Dyer (updated)",
 				"FirstName": "Siena (updated)",
 			},
-			map[string]any{
+		}, {
+			Record: map[string]any{
 				"id":        "003ak00000jvIfqAAE",
 				"LastName":  "Blevins (updated)",
 				"FirstName": "Markus (updated)",
 			},
-		},
+		}},
 	})
 	if err != nil {
 		utils.Fail("error reading", "error", err)
 	}
 
-	fmt.Println("Reading..")
+	fmt.Println("Updating..")
 	utils.DumpJSON(res, os.Stdout)
 }

@@ -183,6 +183,21 @@ func readObjects(ctx context.Context, conn ConnectorCRUD, objectName string, fie
 		utils.Fail("error reading from provider", "error", err)
 	}
 
+	// Paginate
+	for len(res.NextPage) > 0 {
+		params := common.ReadParams{
+			ObjectName: objectName,
+			Fields:     fields,
+			NextPage:   res.NextPage,
+		}
+		nextRes, err := conn.Read(ctx, params)
+		if err != nil {
+			utils.Fail("error reading next page from provider", "error", err)
+		}
+		res.Data = append(res.Data, nextRes.Data...)
+		res.NextPage = nextRes.NextPage
+	}
+
 	return res
 }
 

@@ -1,7 +1,6 @@
 package testroutines
 
 import (
-	"context"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -22,6 +21,6 @@ func (m BatchWrite) Run(t *testing.T, builder ConnectorBuilder[connectors.BatchW
 	})
 
 	conn := builder.Build(t, m.Name)
-	output, err := conn.BatchWrite(context.Background(), m.Input)
+	output, err := conn.BatchWrite(t.Context(), m.Input)
 	BatchWriteType(m).Validate(t, err, output)
 }

@@ -13,7 +13,7 @@ import (
 
 const ApiKey = "<api key>"
 
-// Run this example with `go run anthropic.go`
+// Run this example with `go run anthropic.go`.
 func main() {
 	utils.Run(anthropicAuthExample)
 }
@@ -35,7 +35,7 @@ func anthropicAuthExample(ctx context.Context) error {
 	// Call the Anthropic API
 	response, err := conn.Client.Post(ctx, "/v1/messages", &Message{
 		Model:     "claude-3-5-sonnet-20240620",
-		MaxTokens: 1024,
+		MaxTokens: 1024, // nolint:mnd
 		Messages: map[string]string{
 			"role":    "user",
 			"content": "Hello, Claude",
@@ -47,12 +47,12 @@ func anthropicAuthExample(ctx context.Context) error {
 
 	// Check the response status code
 	if response.Code != http.StatusOK {
-		return fmt.Errorf("unexpected status code: %d", response.Code)
+		return fmt.Errorf("unexpected status code: %d", response.Code) // nolint:err113
 	}
 
 	body, ok := response.Body()
 	if !ok {
-		return fmt.Errorf("cannot get messages: %w", common.ErrEmptyJSONHTTPResponse)
+		return fmt.Errorf("cannot get messages: %w", common.ErrEmptyJSONHTTPResponse) // nolint:err113
 	}
 
 	// The response body is already parsed (as JSON). You can access it like this:
@@ -62,7 +62,7 @@ func anthropicAuthExample(ctx context.Context) error {
 	}
 
 	// Print out the model field
-	fmt.Printf("model: %s\n", nodes[0].MustString())
+	fmt.Printf("model: %s\n", nodes[0].MustString()) // nolint:forbidigo
 
 	return nil
 }
@@ -70,7 +70,7 @@ func anthropicAuthExample(ctx context.Context) error {
 // Create an auth connector with the Anthropic provider.
 func createAuthConnector(ctx context.Context) *generic.Connector {
 	conn, err := generic.NewConnector(providers.Anthropic,
-		generic.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
+		generic.WithAuthenticatedClient(createAuthenticatedHTTPClient(ctx)))
 	if err != nil {
 		panic(err)
 	}
@@ -79,7 +79,7 @@ func createAuthConnector(ctx context.Context) *generic.Connector {
 }
 
 // Create an api-key authenticated HTTP client for Anthropic.
-func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTPClient {
+func createAuthenticatedHTTPClient(ctx context.Context) common.AuthenticatedHTTPClient {
 	info, err := providers.ReadInfo(providers.Anthropic, nil)
 	if err != nil {
 		panic(err)

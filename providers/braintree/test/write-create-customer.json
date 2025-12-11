@@ -1,0 +1,16 @@
+{
+  "data": {
+    "customersCreate": {
+      "customer": {
+        "id": "customer_123",
+        "legacyId": "123456",
+        "createdAt": "2025-01-25T10:00:00Z",
+        "email": "john.doe@example.com",
+        "company": null,
+        "firstName": "John",
+        "lastName": "Doe",
+        "phoneNumber": null
+      }
+    }
+  }
+}

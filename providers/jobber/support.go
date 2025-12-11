@@ -31,7 +31,7 @@ func supportedOperations() components.EndpointRegistryInput {
 		"timeSheetEntries",
 		"users",
 		"vehicles",
-		"vists",
+		"visits",
 	}
 
 	writeSupport := []string{

@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package utils
 
 import (
@@ -12,7 +13,6 @@ type ApiKeyOptions struct {
 	ApiKey string
 }
 
-//nolint:ireturn
 func CreateApiKeyClient(
 	ctx context.Context,
 	info *providers.ProviderInfo,

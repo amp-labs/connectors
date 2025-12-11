@@ -67,7 +67,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Fruits",
 								ValueType:    common.ValueTypeSingleSelect,
 								ProviderType: "Dropdown",
-								ReadOnly:     false,
 								Values: []common.FieldValue{{
 									Value:        "2082340",
 									DisplayValue: "Banana",
@@ -85,7 +84,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Birthday",
 								ValueType:    "datetime",
 								ProviderType: "Date",
-								ReadOnly:     false,
 							},
 							"custom_field_child_of": {
 								DisplayName:  "Child of",
@@ -101,7 +99,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Fruits",
 								ValueType:    "singleSelect",
 								ProviderType: "Dropdown",
-								ReadOnly:     false,
 								Values: []common.FieldValue{{
 									Value:        "2082340",
 									DisplayValue: "Banana",
@@ -124,7 +121,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Many",
 								ValueType:    "multiSelect",
 								ProviderType: "MultiSelect",
-								ReadOnly:     false,
 								Values: []common.FieldValue{{
 									Value:        "2082480",
 									DisplayValue: "Option 1",

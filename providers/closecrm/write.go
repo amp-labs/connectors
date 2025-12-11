@@ -32,7 +32,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		write = c.Client.Put
 	}
 
-	json, err := write(ctx, url.String(), config.RecordData)
+	json, err := write(ctx, addTrailingSlashIfNeeded(url.String()), config.RecordData)
 	if err != nil {
 		return nil, err
 	}
