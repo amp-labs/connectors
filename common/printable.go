@@ -61,7 +61,18 @@ func logRequestWithoutBody(logger *slog.Logger, req *http.Request, method, id, f
 	logger.Debug("HTTP request")
 }
 
-func logResponseWithoutBody(logger *slog.Logger, res *http.Response, method, id, fullURL string) {
+func logResponseWithoutBody(logger *slog.Logger, res *http.Response, method, id, fullURL string) { // nolint: varnamelen
+	if res == nil {
+		logger.Debug("HTTP response",
+			"method", method,
+			"url", fullURL,
+			"correlationId", id,
+			"status", "nil (request failed)",
+		)
+
+		return
+	}
+
 	headers := redactSensitiveResponseHeaders(GetResponseHeaders(res))
 
 	logger = logger.With(
@@ -77,7 +88,18 @@ func logResponseWithoutBody(logger *slog.Logger, res *http.Response, method, id,
 	logger.Debug("HTTP response")
 }
 
-func logResponseWithBody(logger *slog.Logger, res *http.Response, method, id, fullURL string, body []byte) {
+func logResponseWithBody(logger *slog.Logger, res *http.Response, method, id, fullURL string, body []byte) { // nolint: varnamelen,lll
+	if res == nil {
+		logger.Debug("HTTP response",
+			"method", method,
+			"url", fullURL,
+			"correlationId", id,
+			"status", "nil (request failed)",
+		)
+
+		return
+	}
+
 	headers := redactSensitiveResponseHeaders(GetResponseHeaders(res))
 
 	logger = logger.With(
