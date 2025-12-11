@@ -6,15 +6,24 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const apiVersion = "60.0"
+const (
+	apiVersion    = "60.0"
+	versionPrefix = "v"
+	version       = versionPrefix + apiVersion
+)
 
 type Adapter struct {
+	ClientCRM  *common.JSONHTTPClient
 	XMLClient  *common.XMLHTTPClient
 	moduleInfo *providers.ModuleInfo
 }
 
-func NewAdapter(httpClient *common.HTTPClient, moduleInfo *providers.ModuleInfo) *Adapter {
+func NewAdapter(
+	httpClient *common.HTTPClient, salesforceCRMClient *common.JSONHTTPClient,
+	moduleInfo *providers.ModuleInfo,
+) *Adapter {
 	return &Adapter{
+		ClientCRM: salesforceCRMClient, // reuses error handling from Salesforce CRM connector.
 		XMLClient: &common.XMLHTTPClient{
 			HTTPClient: httpClient,
 		},
@@ -22,14 +31,22 @@ func NewAdapter(httpClient *common.HTTPClient, moduleInfo *providers.ModuleInfo)
 	}
 }
 
-func APIVersionSOAP() string {
-	return apiVersion
-}
-
 func (a *Adapter) getModuleURL() string {
 	return a.moduleInfo.BaseURL
 }
 
 func (a *Adapter) getSoapURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.getModuleURL(), "services/Soap/m", APIVersionSOAP())
+	return urlbuilder.New(a.getModuleURL(), "services/Soap/m", apiVersion)
+}
+
+func (a *Adapter) getQueryURL() (*urlbuilder.URL, error) {
+	return urlbuilder.New(a.getModuleURL(), "services/data", version, "query")
+}
+
+func (a *Adapter) getUserInfoURL() (*urlbuilder.URL, error) {
+	return urlbuilder.New(a.getModuleURL(), "services/oauth2/userinfo")
+}
+
+func (a *Adapter) getSobjectsURL(objectName string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(a.getModuleURL(), "services/data", version, "sobjects", objectName)
 }

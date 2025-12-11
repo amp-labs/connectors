@@ -72,7 +72,7 @@ func parseBulkIssue(payload *Payload, rsp *common.JSONHTTPResponse) (*common.Bat
 		failures = datautils.ToAnySlice(response.Errors)
 	}
 
-	totalNumRecords := len(payload.Records)
+	totalNumRecords := len(payload.Items)
 
 	return common.NewBatchWriteResultFailed(nil, totalNumRecords, failures)
 }
@@ -93,14 +93,14 @@ func parseBulkResponse(
 
 	if response == nil {
 		return common.NewBatchWriteResultFailed(
-			nil, len(payload.Records), []any{common.ErrEmptyJSONHTTPResponse})
+			nil, len(payload.Items), []any{common.ErrEmptyJSONHTTPResponse})
 	}
 
 	// == Create == //
 	if params.IsCreate() {
 		// Response order matches payload order.
 		return common.ParseBatchWrite(
-			payload.Records,
+			payload.Items,
 			func(index int, payloadItem PayloadItem) *ResponseItem {
 				return &response.Results[index]
 			},
@@ -120,26 +120,15 @@ func parseBulkResponse(
 	items := response.GetItemsMap()
 
 	return common.ParseBatchWrite(
-		payload.Records,
+		payload.Items,
 		func(_ int, payloadItem PayloadItem) *ResponseItem {
 			// Each record must have an id when performing Bulk Update.
-			identifier, err := payloadItem.GetID()
-			if err != nil {
-				// Missing ID in payload.
-				return nil
-			}
-
-			return items[identifier]
+			return items[payloadItem.ID]
 		},
 		func(payloadItem PayloadItem, respItem *ResponseItem) (*common.WriteResult, error) {
 			if respItem == nil {
 				// No matching response, but we still know which record failed.
-				identifier, err := payloadItem.GetID()
-				if err != nil {
-					return nil, err
-				}
-
-				return createUnprocessableItem(identifier), nil
+				return createUnprocessableItem(payloadItem.ID), nil
 			}
 
 			return respItem.ToWriteResult()
@@ -161,14 +150,23 @@ func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilde
 }
 
 func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
-	items, err := datautils.ForEachWithErr(params.Records, func(record any) (PayloadItem, error) {
-		return common.RecordDataToMap(record)
-	})
-	if err != nil {
-		return nil, err
+	payloadItems := make([]PayloadItem, len(params.Batch))
+
+	for index, batchItem := range params.Batch {
+		record, err := batchItem.GetRecord()
+		if err != nil {
+			return nil, err
+		}
+
+		item, err := NewPayloadItem(record, batchItem.Associations)
+		if err != nil {
+			return nil, err
+		}
+
+		payloadItems[index] = *item
 	}
 
-	return &Payload{Records: items}, nil
+	return &Payload{Items: payloadItems}, nil
 }
 
 func createUnprocessableItem(identifier string) *common.WriteResult {
@@ -184,13 +182,43 @@ func createUnprocessableItem(identifier string) *common.WriteResult {
 
 // Payload represents the HubSpot batch request body.
 type Payload struct {
-	Records []PayloadItem `json:"inputs"`
+	Items []PayloadItem `json:"inputs"`
 }
 
 // PayloadItem represents a single item in the API payload.
 // Hubspot's payload is identical to what client supplies to the connector.
 // This is an alias.
-type PayloadItem common.Record
+type PayloadItem struct {
+	ID           string        `json:"id,omitempty"`
+	Properties   common.Record `json:"properties"`
+	Associations any           `json:"associations,omitempty"`
+}
+
+func NewPayloadItem(record common.Record, associations any) (*PayloadItem, error) {
+	node, err := jsonquery.Convertor.NodeFromMap(record)
+	if err != nil {
+		return nil, err
+	}
+
+	identifier, err := jsonquery.New(node).StrWithDefault("id", "")
+	if err != nil {
+		return nil, err
+	}
+
+	properties, err := datautils.FromMap(record).DeepCopy()
+	if err != nil {
+		return nil, err
+	}
+
+	// Hubspot will complain about unexpected fields, must cleanup
+	delete(properties, "id")
+
+	return &PayloadItem{
+		ID:           identifier,
+		Properties:   common.Record(properties),
+		Associations: associations,
+	}, nil
+}
 
 // Response models a HubSpot batch success response.
 type Response struct {
@@ -246,12 +274,3 @@ type IssueResponse struct {
 // Issue represents a single HubSpot error entry.
 // Its structure varies by error type, but typically includes "message" and "context" fields.
 type Issue any
-
-func (i PayloadItem) GetID() (string, error) {
-	node, err := jsonquery.Convertor.NodeFromMap(i)
-	if err != nil {
-		return "", err
-	}
-
-	return jsonquery.New(node).StringRequired("id")
-}

@@ -3,10 +3,10 @@ package providers
 const (
 	Netsuite Provider = "netsuite"
 
-	// NetsuiteModuleSuiteQL is a read-only module that uses SuiteQL to read data.
+	// ModuleNetsuiteSuiteQL is a read-only module that uses SuiteQL to read data.
 	ModuleNetsuiteSuiteQL = "suiteql"
 
-	// NetsuiteModuleRESTAPI is a read-write module that uses the REST API to read and write data.
+	// ModuleNetsuiteRESTAPI is a read-write module that uses the REST API to read and write data.
 	ModuleNetsuiteRESTAPI = "restapi"
 )
 

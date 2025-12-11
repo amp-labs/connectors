@@ -6,6 +6,8 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -125,6 +127,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Priority",
 								ValueType:    "singleSelect",
 								ProviderType: "enum",
+								ReadOnly:     goutils.Pointer(false),
 								Values: common.FieldValues{
 									{
 										Value:        "24",
@@ -153,19 +156,23 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server.URL, providers.ModulePipedriveLegacy)
 			})
 		})
 	}
 }
 
-func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(WithAuthenticatedClient(mockutils.NewClient()))
+func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connector, error) {
+	connector, err := NewConnector(
+		WithAuthenticatedClient(mockutils.NewClient()),
+		WithModule(moduleID),
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
+	// for testing we want to redirect calls to our mock server
+	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, serverURL))
 
 	return connector, nil
 }

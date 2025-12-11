@@ -1,7 +1,6 @@
 package testroutines
 
 import (
-	"context"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -23,7 +22,7 @@ func (r Read) Run(t *testing.T, builder ConnectorBuilder[connectors.ReadConnecto
 
 	conn := builder.Build(t, r.Name)
 	readParams := prepareReadParams(r.Server.URL, r.Input)
-	output, err := conn.Read(context.Background(), readParams)
+	output, err := conn.Read(t.Context(), readParams)
 	ReadType(r).Validate(t, err, output)
 }
 

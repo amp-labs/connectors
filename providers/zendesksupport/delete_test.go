@@ -39,7 +39,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrServer,
-				errors.New("Internal Server Error"), // nolint:goerr113
+				errors.New("Internal Server Error"),
 			},
 		},
 		{

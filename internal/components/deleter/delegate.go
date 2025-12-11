@@ -4,7 +4,10 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/components"
 )
+
+var _ components.Deleter = &DelegateDeleter{}
 
 type DelegateDeleter struct {
 	execute func(context.Context, common.DeleteParams) (*common.DeleteResult, error)

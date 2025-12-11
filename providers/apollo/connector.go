@@ -40,14 +40,18 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	return conn, nil
 }
 
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
-}
-
 // Provider returns the connector provider.
 func (c *Connector) Provider() providers.Provider {
 	return providers.Apollo
+}
+
+func (c *Connector) String() string {
+	return c.Provider() + ".Connector"
+}
+
+func (c *Connector) setBaseURL(newURL string) {
+	c.BaseURL = newURL
+	c.Client.HTTPClient.Base = newURL
 }
 
 // getAPIURL builds the url we can write/read data from
@@ -72,8 +76,4 @@ func (c *Connector) getAPIURL(objectName string, ops operation) (*urlbuilder.URL
 	}
 
 	return url, nil
-}
-
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
 }

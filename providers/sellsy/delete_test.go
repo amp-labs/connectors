@@ -39,7 +39,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("bad request: not found: Not Found"), // nolint:goerr113
+				errors.New("bad request: not found: Not Found"),
 			},
 		},
 		{

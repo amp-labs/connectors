@@ -42,7 +42,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("No such column 'AccountNumer' on sobject of type Account"), // nolint:goerr113
+				errors.New("No such column 'AccountNumer' on sobject of type Account"),
 			},
 		},
 		{
@@ -54,7 +54,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Unable to create/update fields: MasterRecordId"), // nolint:goerr113
+				errors.New("Unable to create/update fields: MasterRecordId"),
 			},
 		},
 		{

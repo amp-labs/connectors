@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
@@ -48,7 +49,7 @@ func (s scrappedSchemas) SaveData(model scrapper.ModelDocLink, fieldName, fieldT
 				DisplayName:  fieldDisplayName,
 				ValueType:    getFieldValueType(fieldType, fieldValueOptions),
 				ProviderType: fieldType,
-				ReadOnly:     isReadOnly,
+				ReadOnly:     goutils.Pointer(isReadOnly),
 				Values:       getFieldValueOptions(fieldValueOptions),
 			},
 		}

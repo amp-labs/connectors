@@ -1,4 +1,3 @@
-// nolint:ireturn
 package providers
 
 import (
@@ -55,7 +54,7 @@ func NewCustomCatalog(opts ...CatalogOption) CustomCatalog {
 	return CustomCatalog{custom: params.catalog}
 }
 
-func (c CustomCatalog) catalog() (*CatalogWrapper, error) {
+func (c CustomCatalog) catalog() (*CatalogWrapper, error) { // nolint:funcorder
 	if c.custom == nil {
 		// Null catalog was probably set via options.
 		// This is not allowed.
@@ -790,7 +789,8 @@ func createApiKeyHTTPClient( //nolint:ireturn,cyclop,funlen
 ) (common.AuthenticatedHTTPClient, error) {
 	apiKey := cfg.Key
 
-	if info.ApiKeyOpts.AttachmentType == Header { //nolint:nestif
+	switch info.ApiKeyOpts.AttachmentType {
+	case Header:
 		if info.ApiKeyOpts.Header.ValuePrefix != "" {
 			apiKey = info.ApiKeyOpts.Header.ValuePrefix + apiKey
 		}
@@ -834,7 +834,7 @@ func createApiKeyHTTPClient( //nolint:ireturn,cyclop,funlen
 		}
 
 		return authClient, nil
-	} else if info.ApiKeyOpts.AttachmentType == Query {
+	case Query:
 		opts := []common.QueryParamAuthClientOption{
 			common.WithQueryParamClient(getClient(client)),
 		}
@@ -874,9 +874,9 @@ func createApiKeyHTTPClient( //nolint:ireturn,cyclop,funlen
 		}
 
 		return authClient, nil
+	default:
+		return nil, fmt.Errorf("%w: unsupported api key type %q", ErrClient, info.ApiKeyOpts.AttachmentType)
 	}
-
-	return nil, fmt.Errorf("%w: unsupported api key type %q", ErrClient, info.ApiKeyOpts.AttachmentType)
 }
 
 func (i *ProviderInfo) GetApiKeyQueryParamName() (string, error) {

@@ -4,7 +4,10 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/components"
 )
+
+var _ components.Reader = &DelegateReader{}
 
 // DelegateReader implements Reader by delegating to a provided function.
 // Use this when the connector needs full control over the read implementation

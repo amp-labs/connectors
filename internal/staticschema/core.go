@@ -1,6 +1,7 @@
 package staticschema
 
 import (
+	"maps"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -66,7 +67,7 @@ type FieldMetadata struct {
 	DisplayName  string           `json:"displayName,omitempty"`
 	ValueType    common.ValueType `json:"valueType,omitempty"`
 	ProviderType string           `json:"providerType,omitempty"`
-	ReadOnly     bool             `json:"readOnly,omitempty"`
+	ReadOnly     *bool            `json:"readOnly,omitempty"`
 	Values       FieldValues      `json:"values,omitempty"`
 }
 
@@ -181,13 +182,8 @@ func (m *Metadata[F, C]) Add( // nolint:funlen
 	//   The other paths are unreachable and conceptually invalid, as they pertain to entirely different types.
 	if presentFields, isV1 := (any(object.Fields)).(FieldMetadataMapV1); isV1 {
 		fieldsMap := make(FieldMetadataMapV1)
-		for k, v := range presentFields {
-			fieldsMap[k] = v
-		}
-
-		for k, v := range (any(fieldMetadataMap)).(FieldMetadataMapV1) { // nolint:forcetypeassert
-			fieldsMap[k] = v
-		}
+		maps.Copy(fieldsMap, presentFields)
+		maps.Copy(fieldsMap, (any(fieldMetadataMap)).(FieldMetadataMapV1)) // nolint:forcetypeassert
 
 		object.Fields = any(fieldsMap).(F) // nolint:forcetypeassert
 
@@ -196,13 +192,8 @@ func (m *Metadata[F, C]) Add( // nolint:funlen
 
 	if presentFields, isV2 := (any(object.Fields)).(FieldMetadataMapV2); isV2 {
 		fieldsMap := make(FieldMetadataMapV2)
-		for k, v := range presentFields {
-			fieldsMap[k] = v
-		}
-
-		for k, v := range (any(fieldMetadataMap)).(FieldMetadataMapV2) { // nolint:forcetypeassert
-			fieldsMap[k] = v
-		}
+		maps.Copy(fieldsMap, presentFields)
+		maps.Copy(fieldsMap, (any(fieldMetadataMap)).(FieldMetadataMapV2)) // nolint:forcetypeassert
 
 		object.Fields = any(fieldsMap).(F) // nolint:forcetypeassert
 

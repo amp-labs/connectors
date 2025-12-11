@@ -43,6 +43,7 @@ import (
 //	)
 func FilterSortedRecords(data *ajson.Node, recordsKey string, since time.Time, //nolint:cyclop
 	timestampKey string, timestampFormat string, nextPageFunc common.NextPageFunc,
+	zoom ...string,
 ) ([]map[string]any, string, error) {
 	var (
 		updatedNodeRecords []*ajson.Node
@@ -64,7 +65,7 @@ func FilterSortedRecords(data *ajson.Node, recordsKey string, since time.Time, /
 	}
 
 	for idx, nodeRecord := range nodeRecords {
-		recordTimestamp, err := extractTimestamp(nodeRecord, timestampKey, timestampFormat)
+		recordTimestamp, err := extractTimestamp(nodeRecord, timestampKey, timestampFormat, zoom...)
 		if err != nil {
 			return nil, "", err
 		}
@@ -135,6 +136,28 @@ func MakeTimeFilterFunc(
 	timestampKey string, timestampFormat string,
 	nextPageFunc common.NextPageFunc,
 ) common.RecordsFilterFunc {
+	return MakeTimeFilterFuncWithZoom(order, boundary, nil, timestampKey, timestampFormat, nextPageFunc)
+}
+
+// MakeTimeFilterFuncWithZoom is similar to MakeTimeFilterFunc, but allows
+// the timestamp field to be nested within the JSON record.
+//
+// Use `zoom` to specify the path to the nested object that contains the
+// timestamp. Each element in `zoom` represents a key to traverse in order.
+// Once the zoom path is resolved, `timestampKey` is read from that object
+// and parsed using `timestampFormat`.
+//
+// Example:
+//
+//	If the timestamp is located at:
+//	    {"meta": {"info": {"created_at": "..."} }}
+//	Then zoom should be: []string{"meta", "info"}
+//	And timestampKey: "created_at"
+func MakeTimeFilterFuncWithZoom(
+	order TimeOrder, boundary *TimeBoundary,
+	zoom []string, timestampKey string, timestampFormat string,
+	nextPageFunc common.NextPageFunc,
+) common.RecordsFilterFunc {
 	return func(params common.ReadParams, body *ajson.Node, records []*ajson.Node) ([]*ajson.Node, string, error) {
 		if len(records) == 0 {
 			// Nothing to process on this page.
@@ -147,7 +170,7 @@ func MakeTimeFilterFunc(
 		)
 
 		for idx, nodeRecord := range records {
-			recordTimestamp, err := extractTimestamp(nodeRecord, timestampKey, timestampFormat)
+			recordTimestamp, err := extractTimestamp(nodeRecord, timestampKey, timestampFormat, zoom...)
 			if err != nil {
 				return nil, "", err
 			}
@@ -191,9 +214,10 @@ func hasNextPage(order TimeOrder, idx int, recordsLen int) bool {
 	}
 }
 
-func extractTimestamp(nodeRecord *ajson.Node, timestampKey string, timestampFormat string) (*time.Time, error) {
+func extractTimestamp(nodeRecord *ajson.Node, timestampKey string, timestampFormat string, zoom ...string,
+) (*time.Time, error) {
 	// Extract the timestamp value from the record
-	timestamp, err := jsonquery.New(nodeRecord).StringRequired(timestampKey)
+	timestamp, err := jsonquery.New(nodeRecord, zoom...).StringRequired(timestampKey)
 	if err != nil {
 		return nil, fmt.Errorf("error: bad since timestamp key: %w", err)
 	}

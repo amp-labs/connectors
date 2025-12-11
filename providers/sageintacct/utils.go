@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 func mapSageIntacctTypeToValueType(sageType string) common.ValueType {
@@ -39,7 +40,7 @@ func mapValuesFromEnum(fieldDef SageIntacctFieldDef) []common.FieldValue {
 	return values
 }
 
-func buildReadBody(params common.ReadParams) (map[string]interface{}, error) {
+func buildReadBody(params common.ReadParams) (map[string]any, error) {
 	fieldNames := params.Fields.List()
 	payload := map[string]any{
 		"object":      params.ObjectName,
@@ -99,7 +100,7 @@ func flattenFields(prefix string, fields map[string]SageIntacctFieldDef) map[str
 			DisplayName:  naming.CapitalizeFirstLetterEveryWord(fullPath),
 			ValueType:    mapSageIntacctTypeToValueType(fieldDef.Type),
 			ProviderType: fieldDef.Type,
-			ReadOnly:     fieldDef.ReadOnly,
+			ReadOnly:     goutils.Pointer(fieldDef.ReadOnly),
 			Values:       mapValuesFromEnum(fieldDef),
 		}
 	}

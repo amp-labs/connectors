@@ -35,6 +35,7 @@ import (
 //	// {"name": "Bob", "objectName": "users"}
 type DecoratedRecord[T any] struct {
 	common.Record
+
 	Extension T
 }
 

@@ -23,10 +23,10 @@ type HubspotError struct {
 	Status         string      `json:"status,omitempty"`
 	Message        string      `json:"message,omitempty"`
 	CorrelationID  string      `json:"correlationId,omitempty"`
-	Context        ErrContext  `json:"context,omitempty"`
+	Context        ErrContext  `json:"context"`
 	Category       string      `json:"category,omitempty"`
 	SubCategory    string      `json:"subCategory,omitempty"`
-	Links          ErrLinks    `json:"links,omitempty"`
+	Links          ErrLinks    `json:"links"`
 	Details        []ErrDetail `json:"details,omitempty"`
 }
 

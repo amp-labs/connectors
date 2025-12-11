@@ -97,7 +97,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Errors: map[string]error{
 					"arsenal": mockutils.ExpectedSubsetErrors{
 						common.ErrCaller,
-						errors.New(string(unsupportedResponse)), // nolint:goerr113
+						errors.New(string(unsupportedResponse)),
 					},
 				},
 			},

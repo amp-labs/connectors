@@ -108,7 +108,6 @@ type customFieldDefinitionResponse struct {
 	Pagination struct {
 		Limit  int    `json:"limit"`
 		Count  int    `json:"count"`
-		Total  int    `json:"total"`
 		Offset string `json:"offset"`
 	} `json:"pagination"`
 }
@@ -117,35 +116,14 @@ type customFieldDefinition struct {
 	Type       string `json:"type"`
 	Parameters struct {
 		Items []struct {
-			Id      int    `json:"id"`
-			Label   string `json:"label"`
-			Checked bool   `json:"checked"`
-			Rank    int    `json:"rank"`
+			Id    int    `json:"id"`
+			Label string `json:"label"`
 		} `json:"items,omitempty"`
-		Min          any   `json:"min"`
-		Max          any   `json:"max"`
-		MinDate      any   `json:"min_date"`
-		MaxDate      any   `json:"max_date"`
-		DefaultValue *bool `json:"default_value,omitempty"`
-		CharMin      any   `json:"char_min"`
-		CharMax      any   `json:"char_max"`
-		MinValue     any   `json:"min_value"`
-		MaxValue     any   `json:"max_value"`
 	} `json:"parameters"`
-	Id               int      `json:"id"`
-	Name             string   `json:"name"`
-	Code             string   `json:"code"`
-	Description      string   `json:"description"`
-	Mandatory        bool     `json:"mandatory"`
-	Rank             int      `json:"rank"`
-	RelatedObjects   []string `json:"related_objects"`
-	ShowOnPdf        bool     `json:"show_on_pdf"`
-	CustomfieldGroup struct {
-		Id            int    `json:"id"`
-		Name          string `json:"name"`
-		Code          string `json:"code"`
-		OpenByDefault bool   `json:"open_by_default"`
-	} `json:"customfield_group"`
+	Id             int      `json:"id"`
+	Name           string   `json:"name"`
+	Code           string   `json:"code"`
+	RelatedObjects []string `json:"related_objects"`
 }
 
 func (d customFieldDefinition) getValueType() common.ValueType {

@@ -39,7 +39,7 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		return nil, err
 	}
 
-	resp, err := c.Client.Post(ctx, url.String(), searchFilter)
+	resp, err := c.Client.Post(ctx, addTrailingSlashIfNeeded(url.String()), searchFilter)
 	if err != nil {
 		return nil, err
 	}

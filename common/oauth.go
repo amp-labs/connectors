@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package common
 
 import (
@@ -108,7 +109,7 @@ func WithOAuthIsUnauthorizedHandler(
 	}
 }
 
-// This is useful for persisting the refreshed tokens somewhere, so that it can be
+// WithTokenUpdated this is useful for persisting the refreshed tokens somewhere, so that it can be
 // used later. It's optional.
 func WithTokenUpdated(onTokenUpdated func(oldToken, newToken *oauth2.Token) error) OAuthOption {
 	return func(params *oauthClientParams) {
@@ -179,7 +180,7 @@ type oauth2Transport struct {
 }
 
 // getTokenFromSource retrieves a token from the TokenSource.
-func (t *oauth2Transport) getTokenFromSource(ctx context.Context) (*oauth2.Token, error) {
+func (t *oauth2Transport) getTokenFromSource(ctx context.Context) (*oauth2.Token, error) { // nolint:funcorder
 	srcCtx, ok := t.Source.(TokenSourceWithContext)
 	if ok {
 		return srcCtx.TokenWithContext(ctx)
@@ -189,7 +190,8 @@ func (t *oauth2Transport) getTokenFromSource(ctx context.Context) (*oauth2.Token
 }
 
 // handleUnauthorizedResponse handles 401 responses or custom unauthorized conditions.
-func (t *oauth2Transport) handleUnauthorizedResponse(token *oauth2.Token,
+func (t *oauth2Transport) handleUnauthorizedResponse( // nolint:funcorder
+	token *oauth2.Token,
 	req *http.Request,
 	rsp *http.Response,
 ) (*http.Response, error) {

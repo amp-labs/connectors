@@ -132,7 +132,7 @@ func testSalesforceValidUpdate(ctx context.Context, conn *salesforce.Connector, 
 	}
 
 	if !writeRes.Success {
-		return fmt.Errorf("write to %s failed when it should have succeeded", writtenRecordId) //nolint:goerr113
+		return fmt.Errorf("write to %s failed when it should have succeeded", writtenRecordId)
 	}
 
 	// Print the results

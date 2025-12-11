@@ -19,6 +19,7 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	}...,
 )
 
+// ErrorDetails
 // nolint:tagliatelle
 type ErrorDetails struct {
 	Error errorResponse `json:"error"`

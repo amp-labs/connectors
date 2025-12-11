@@ -9,6 +9,8 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 )
 
+var _ components.Deleter = &HTTPDeleter{}
+
 type HTTPDeleter struct {
 	operation *operations.DeleteOperation
 	registry  *components.EndpointRegistry

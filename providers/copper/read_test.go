@@ -47,7 +47,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				common.ErrNotFound,
-				errors.New("not_found"), // nolint:goerr113,lll
+				errors.New("not_found"), // nolint:lll
 			},
 		},
 		{
@@ -59,7 +59,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Invalid input: Validation errors: Base: Unrecognized attributes specified: pageSize"), // nolint:goerr113,lll
+				errors.New("Invalid input: Validation errors: Base: Unrecognized attributes specified: pageSize"), // nolint:lll
 			},
 		},
 		{

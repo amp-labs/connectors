@@ -1,0 +1,16 @@
+{
+  "user_id": "005006007008",
+  "email_verified": true,
+  "zoneinfo": "America/New_York",
+  "address": {
+    "country": "CA"
+  },
+  "is_salesforce_integration_user": false,
+  "urls": {},
+  "active": true,
+  "user_type": "STANDARD",
+  "language": "en_US",
+  "locale": "en_CA",
+  "utcOffset": -18000000,
+  "updated_at": "2024-09-05T21:57:31Z"
+}
