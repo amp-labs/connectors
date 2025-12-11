@@ -329,25 +329,25 @@ func DeriveSchemasFromStructs(schemas map[string]any) (map[string][]byte, error)
 	return result, nil
 }
 
-// schemaRegistry is a registry of compiled JSON schemas by object name.
-type schemaRegistry map[string]*jsonschema.Schema
+// SchemaRegistry is a registry of compiled JSON schemas by object name.
+type SchemaRegistry map[string]*jsonschema.Schema
 
 // Get retrieves a schema by object name.
-func (r schemaRegistry) Get(objectName string) (*jsonschema.Schema, bool) {
+func (r SchemaRegistry) Get(objectName string) (*jsonschema.Schema, bool) {
 	schema, exists := r[objectName]
 
 	return schema, exists
 }
 
 // Set stores a schema for an object name.
-func (r schemaRegistry) Set(objectName string, schema *jsonschema.Schema) {
+func (r SchemaRegistry) Set(objectName string, schema *jsonschema.Schema) {
 	r[objectName] = schema
 }
 
-// parseSchemas parses raw JSON schemas into compiled schema objects.
-func parseSchemas(rawSchemas map[string][]byte) (schemaRegistry, error) {
+// ParseSchemas parses raw JSON schemas into compiled schema objects.
+func ParseSchemas(rawSchemas map[string][]byte) (SchemaRegistry, error) {
 	compiler := jsonschema.NewCompiler()
-	parsed := make(schemaRegistry)
+	parsed := make(SchemaRegistry)
 
 	for objectName, rawSchema := range rawSchemas {
 		// Compile the schema with a unique URI

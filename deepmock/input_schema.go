@@ -1,11 +1,46 @@
 package deepmock
 
-import "github.com/kaptinlin/jsonschema"
+import (
+	"fmt"
+	"hash"
+	"sort"
+
+	"github.com/kaptinlin/jsonschema"
+)
 
 // InputSchemaMap is a mapping of schema names or identifiers to their corresponding InputSchema definitions.
 // This is commonly used to organize and reference multiple schemas within a single document, such as
 // in the $defs field or when managing a collection of reusable schema components.
 type InputSchemaMap map[string]*InputSchema
+
+// UpdateHash implements the hashable interface for InputSchemaMap, enabling deterministic
+// hash computation for schema maps.
+//
+// The method ensures deterministic hashing by:
+//   - Sorting map keys alphabetically before processing (Go maps have random iteration order)
+//   - Using the hashBuilder to consistently encode each key-value pair
+//   - Recursively hashing nested InputSchema values
+//
+// This allows InputSchemaMap instances with identical content to produce identical hashes
+// regardless of insertion order or Go's internal map ordering, making it suitable for
+// cache keys and content-addressable storage.
+func (m InputSchemaMap) UpdateHash(h hash.Hash) error {
+	builder := &hashBuilder{h: h}
+
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		builder.String(k)
+		builder.Hashable(m[k])
+	}
+
+	return builder.Error()
+}
 
 // InputSchema represents a JSON Schema Draft 2020-12 compliant schema definition.
 // It contains all the keywords defined in the JSON Schema specification for validating
@@ -184,4 +219,185 @@ type InputSchema struct {
 	XAmpIdField *bool `json:"x-amp-id-field,omitempty"`
 	// When true, marks field as a timestamp indicating when resource was last modified.
 	XAmpUpdatedField *bool `json:"x-amp-updated-field,omitempty"`
+}
+
+// UpdateHash implements the hashable interface for InputSchema, enabling deterministic
+// hash computation for JSON schema definitions.
+//
+// This method produces a stable hash for the entire schema structure by:
+//   - Processing all schema fields in a fixed order (matching struct field declaration order)
+//   - Sorting all map keys (Defs, DependentSchemas, DependentRequired) alphabetically before hashing
+//   - Including array indices when hashing ordered collections (AllOf, AnyOf, OneOf, etc.)
+//   - Using type-safe encoding via hashBuilder for each field type
+//   - Recursively hashing nested InputSchema structures
+//
+// The deterministic nature ensures that:
+//   - Identical schemas always produce identical hashes regardless of field insertion order
+//   - Schema changes are reliably detected through hash comparison
+//   - Schemas can be used as cache keys or for content-addressable storage
+//
+// All schema keywords defined in JSON Schema Draft 2020-12 are included in the hash,
+// along with Ampersand-specific extension fields (x-amp-*).
+//
+// Note: The Examples field is intentionally excluded from the hash computation as it would
+// add unnecessary complexity (requiring deep comparison of arbitrary values) while providing
+// no meaningful value for schema identity - examples are purely documentation and don't affect
+// validation behavior.
+//
+//nolint:cyclop,funlen // Complex schema hashing requires processing all JSON Schema keywords sequentially
+func (is *InputSchema) UpdateHash(h hash.Hash) error {
+	builder := &hashBuilder{h: h}
+
+	builder.String(is.ID)
+	builder.String(is.Schema)
+	builder.StringPtr(is.Format)
+	builder.String(is.Ref)
+	builder.String(is.DynamicRef)
+	builder.String(is.Anchor)
+	builder.String(is.DynamicAnchor)
+
+	defKeys := make([]string, 0, len(is.Defs))
+	for k := range is.Defs {
+		defKeys = append(defKeys, k)
+	}
+
+	sort.Strings(defKeys)
+
+	for _, k := range defKeys {
+		builder.String(k)
+		builder.Hashable(is.Defs[k])
+	}
+
+	builder.Hashable(is.ResolvedRef)
+	builder.Hashable(is.ResolvedDynamicRef)
+	builder.BoolPtr(is.Boolean)
+
+	for index, schema := range is.AllOf {
+		builder.Int64(int64(index))
+		builder.Hashable(schema)
+	}
+
+	for index, schema := range is.AnyOf {
+		builder.Int64(int64(index))
+		builder.Hashable(schema)
+	}
+
+	for index, schema := range is.OneOf {
+		builder.Int64(int64(index))
+		builder.Hashable(schema)
+	}
+
+	builder.Hashable(is.Not)
+
+	builder.Hashable(is.If)
+	builder.Hashable(is.Then)
+	builder.Hashable(is.Else)
+
+	dependentSchemaKeys := make([]string, 0, len(is.DependentSchemas))
+	for k := range is.DependentSchemas {
+		dependentSchemaKeys = append(dependentSchemaKeys, k)
+	}
+
+	sort.Strings(dependentSchemaKeys)
+
+	for _, k := range dependentSchemaKeys {
+		builder.String(k)
+		builder.Hashable(is.DependentSchemas[k])
+	}
+
+	for index, schema := range is.PrefixItems {
+		builder.Int64(int64(index))
+		builder.Hashable(schema)
+	}
+
+	builder.Hashable(is.Items)
+	builder.Hashable(is.Contains)
+
+	builder.Hashable(is.Properties)
+	builder.Hashable(is.PatternProperties)
+	builder.Hashable(is.AdditionalProperties)
+	builder.Hashable(is.PropertyNames)
+
+	for _, tpe := range is.Type {
+		builder.String(tpe)
+	}
+
+	for index, value := range is.Enum {
+		builder.Int64(int64(index))
+		builder.String(fmt.Sprint(value))
+	}
+
+	if is.Const == nil {
+		builder.Nil()
+	} else {
+		builder.NonNil()
+		builder.Bool(is.Const.IsSet)
+		builder.String(fmt.Sprint(is.Const.Value))
+	}
+
+	builder.Rat(is.MultipleOf)
+	builder.Rat(is.Maximum)
+	builder.Rat(is.ExclusiveMaximum)
+	builder.Rat(is.Minimum)
+	builder.Rat(is.ExclusiveMinimum)
+
+	builder.Float64Ptr(is.MaxLength)
+	builder.Float64Ptr(is.MinLength)
+	builder.StringPtr(is.Pattern)
+
+	builder.Float64Ptr(is.MaxItems)
+	builder.Float64Ptr(is.MinItems)
+	builder.BoolPtr(is.UniqueItems)
+	builder.Float64Ptr(is.MaxContains)
+	builder.Float64Ptr(is.MinContains)
+
+	builder.Hashable(is.UnevaluatedItems)
+
+	builder.Float64Ptr(is.MaxProperties)
+	builder.Float64Ptr(is.MinProperties)
+
+	for index, fld := range is.Required {
+		builder.Int64(int64(index))
+		builder.String(fld)
+	}
+
+	dependentRequiredKeys := make([]string, 0, len(is.DependentRequired))
+	for k := range is.DependentRequired {
+		dependentRequiredKeys = append(dependentRequiredKeys, k)
+	}
+
+	sort.Strings(dependentRequiredKeys)
+
+	for _, k := range dependentRequiredKeys {
+		builder.String(k)
+
+		for index, value := range is.DependentRequired[k] {
+			builder.Int64(int64(index))
+			builder.String(value)
+		}
+	}
+
+	builder.Hashable(is.UnevaluatedProperties)
+
+	builder.StringPtr(is.ContentEncoding)
+	builder.StringPtr(is.ContentMediaType)
+	builder.Hashable(is.ContentSchema)
+
+	builder.StringPtr(is.Title)
+	builder.StringPtr(is.Description)
+
+	if is.Default == nil {
+		builder.Nil()
+	} else {
+		builder.NonNil()
+		builder.String(fmt.Sprint(is.Default))
+	}
+
+	builder.BoolPtr(is.ReadOnly)
+	builder.BoolPtr(is.WriteOnly)
+
+	builder.BoolPtr(is.XAmpIdField)
+	builder.BoolPtr(is.XAmpUpdatedField)
+
+	return builder.Error()
 }

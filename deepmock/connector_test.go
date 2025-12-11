@@ -330,18 +330,18 @@ func TestNewConnectorWithStructSchemas(t *testing.T) {
 				}
 
 				// Verify ID fields are detected
-				if idField := conn.storage.idFields["contacts"]; idField != "id" {
+				if idField := conn.storage.GetIdFields()["contacts"]; idField != "id" {
 					t.Errorf("expected contacts ID field 'id', got %q", idField)
 				}
-				if idField := conn.storage.idFields["companies"]; idField != "id" {
+				if idField := conn.storage.GetIdFields()["companies"]; idField != "id" {
 					t.Errorf("expected companies ID field 'id', got %q", idField)
 				}
 
 				// Verify updated fields are detected
-				if updatedField := conn.storage.updatedFields["contacts"]; updatedField != "createdAt" {
+				if updatedField := conn.storage.GetUpdatedFields()["contacts"]; updatedField != "createdAt" {
 					t.Errorf("expected contacts updated field 'createdAt', got %q", updatedField)
 				}
-				if updatedField := conn.storage.updatedFields["companies"]; updatedField != "updatedAt" {
+				if updatedField := conn.storage.GetUpdatedFields()["companies"]; updatedField != "updatedAt" {
 					t.Errorf("expected companies updated field 'updatedAt', got %q", updatedField)
 				}
 			},
@@ -441,7 +441,7 @@ func TestSchemasPriority(t *testing.T) {
 	}
 
 	// Verify ID field is from raw schema
-	if idField := conn.storage.idFields["contacts"]; idField != "rawId" {
+	if idField := conn.storage.GetIdFields()["contacts"]; idField != "rawId" {
 		t.Errorf("expected ID field 'rawId' from raw schema, got %q", idField)
 	}
 }
