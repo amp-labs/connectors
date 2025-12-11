@@ -160,7 +160,7 @@ type DateTime struct { //nolint:recvcheck
 func (s DateTime) MarshalJSON() ([]byte, error) {
 	format := s.Time.Format(time.DateOnly)
 
-	return []byte(fmt.Sprintf(`"%v"`, format)), nil
+	return fmt.Appendf(nil, `"%v"`, format), nil
 }
 
 func (s *DateTime) UnmarshalJSON(bytes []byte) error {

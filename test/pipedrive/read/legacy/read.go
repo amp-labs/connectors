@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/pipedrive"
 	testConn "github.com/amp-labs/connectors/test/pipedrive"
 	"github.com/amp-labs/connectors/test/utils"
@@ -23,7 +24,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := testConn.GetPipedriveConnector(ctx)
+	conn := testConn.GetPipedriveConnector(ctx, providers.ModulePipedriveLegacy)
 
 	if err := readActivities(ctx, conn); err != nil {
 		slog.Error(err.Error())
@@ -43,6 +44,7 @@ func readActivities(ctx context.Context, conn *pipedrive.Connector) error {
 		ObjectName: "activities",
 		Since:      time.Now().Add(-720 * time.Hour),
 		Fields:     connectors.Fields("user_id", "done", "id"),
+		// NextPage:   "https://api.pipedrive.com/api/v2/activities?cursor=eyJmaWVsZCI6ImlkIiwiZmllbGRWYWx1ZSI6MTMsInNvcnREaXJlY3Rpb24iOiJhc2MiLCJpZCI6MTN9\u0026limit=2\u0026updated_since=2025-09-27T18%3A42%3A31%2B03%3A00",
 	}
 
 	result, err := conn.Read(ctx, config)

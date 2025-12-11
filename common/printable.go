@@ -61,7 +61,18 @@ func logRequestWithoutBody(logger *slog.Logger, req *http.Request, method, id, f
 	logger.Debug("HTTP request")
 }
 
-func logResponseWithoutBody(logger *slog.Logger, res *http.Response, method, id, fullURL string) {
+func logResponseWithoutBody(logger *slog.Logger, res *http.Response, method, id, fullURL string) { // nolint: varnamelen
+	if res == nil {
+		logger.Debug("HTTP response",
+			"method", method,
+			"url", fullURL,
+			"correlationId", id,
+			"status", "nil (request failed)",
+		)
+
+		return
+	}
+
 	headers := redactSensitiveResponseHeaders(GetResponseHeaders(res))
 
 	logger = logger.With(
@@ -70,13 +81,25 @@ func logResponseWithoutBody(logger *slog.Logger, res *http.Response, method, id,
 			"url":           fullURL,
 			"correlationId": id,
 			"headers":       headers,
+			"status":        res.StatusCode,
 		},
 	)
 
 	logger.Debug("HTTP response")
 }
 
-func logResponseWithBody(logger *slog.Logger, res *http.Response, method, id, fullURL string, body []byte) {
+func logResponseWithBody(logger *slog.Logger, res *http.Response, method, id, fullURL string, body []byte) { // nolint: varnamelen,lll
+	if res == nil {
+		logger.Debug("HTTP response",
+			"method", method,
+			"url", fullURL,
+			"correlationId", id,
+			"status", "nil (request failed)",
+		)
+
+		return
+	}
+
 	headers := redactSensitiveResponseHeaders(GetResponseHeaders(res))
 
 	logger = logger.With(
@@ -85,6 +108,7 @@ func logResponseWithBody(logger *slog.Logger, res *http.Response, method, id, fu
 			"url":           fullURL,
 			"correlationId": id,
 			"headers":       headers,
+			"status":        res.StatusCode,
 		},
 	)
 
@@ -504,11 +528,7 @@ func getBodyAsPrintable(bcr bodyContentReader) (*PrintablePayload, error) { //no
 	// Check printability (sample max N bytes)
 	const maxCheckLen = 1024
 
-	checkLen := len(decodedData)
-
-	if checkLen > maxCheckLen {
-		checkLen = maxCheckLen
-	}
+	checkLen := min(len(decodedData), maxCheckLen)
 
 	sample := decodedData[:checkLen]
 

@@ -12,7 +12,7 @@ func init() {
 			Header: &ApiKeyOptsHeader{
 				Name: "X-Shopify-Access-Token",
 			},
-			DocsURL: "https://shopify.dev/docs/api/admin-rest#authentication",
+			DocsURL: "https://shopify.dev/docs/api/admin-graphql#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -41,6 +41,7 @@ func init() {
 				{
 					Name:        "workspace",
 					DisplayName: "Store",
+					DocsURL:     "https://shopify.dev/docs/api/admin-graphql#endpoints",
 				},
 			},
 		},

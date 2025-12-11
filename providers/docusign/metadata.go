@@ -73,7 +73,7 @@ func (c *Connector) GetPostAuthInfo(
 			return nil, err
 		}
 
-		if baseURLWithoutHTTPS := strings.TrimPrefix(baseURIString, "https://"); baseURLWithoutHTTPS != baseURIString {
+		if baseURLWithoutHTTPS, found := strings.CutPrefix(baseURIString, "https://"); found {
 			if parts := strings.SplitN(baseURLWithoutHTTPS, ".", 2); len(parts) > 1 { // nolint:mnd
 				postAuthInfo.CatalogVars = AuthMetadataVars{
 					Server: parts[0],

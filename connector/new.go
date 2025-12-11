@@ -66,6 +66,7 @@ import (
 	"github.com/amp-labs/connectors/providers/intercom"
 	"github.com/amp-labs/connectors/providers/iterable"
 	"github.com/amp-labs/connectors/providers/jobber"
+	"github.com/amp-labs/connectors/providers/kaseyavsax"
 	"github.com/amp-labs/connectors/providers/keap"
 	"github.com/amp-labs/connectors/providers/kit"
 	"github.com/amp-labs/connectors/providers/klaviyo"
@@ -181,6 +182,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Intercom:                wrapper(newIntercomConnector),
 	providers.Iterable:                wrapper(newIterableConnector),
 	providers.Jobber:                  wrapper(newJobberConnector),
+	providers.KaseyaVSAX:              wrapper(newKaseyaVSAXConnector),
 	providers.Keap:                    wrapper(newKeapConnector),
 	providers.Kit:                     wrapper(newKitConnector),
 	providers.Klaviyo:                 wrapper(newKlaviyoConnector),
@@ -381,6 +383,7 @@ func newPipedriveConnector(
 ) (*pipedrive.Connector, error) {
 	return pipedrive.NewConnector(
 		pipedrive.WithAuthenticatedClient(params.AuthenticatedClient),
+		pipedrive.WithModule(params.Module),
 	)
 }
 
@@ -911,4 +914,10 @@ func newShopifyConnector(
 	params common.ConnectorParams,
 ) (*shopify.Connector, error) {
 	return shopify.NewConnector(params)
+}
+
+func newKaseyaVSAXConnector(
+	params common.ConnectorParams,
+) (*kaseyavsax.Connector, error) {
+	return kaseyavsax.NewConnector(params)
 }

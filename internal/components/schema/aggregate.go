@@ -3,10 +3,14 @@ package schema
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 )
+
+var _ components.SchemaProvider = &AggregateSchemaProvider{}
 
 // AggregateSchemaProvider gets the schema for multiple objects using a single batch request.
 type AggregateSchemaProvider struct {
@@ -30,10 +34,8 @@ func (p *AggregateSchemaProvider) ListObjectMetadata(
 		return nil, fmt.Errorf("%w: %s", common.ErrNotImplemented, "schema provider is not implemented")
 	}
 
-	for _, object := range objects {
-		if object == "" {
-			return nil, fmt.Errorf("%w: object name cannot be empty", common.ErrMissingObjects)
-		}
+	if slices.Contains(objects, "") {
+		return nil, fmt.Errorf("%w: object name cannot be empty", common.ErrMissingObjects)
 	}
 
 	return p.operation.ExecuteRequest(ctx, objects)

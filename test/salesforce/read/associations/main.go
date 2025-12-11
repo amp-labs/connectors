@@ -28,6 +28,8 @@ func main() {
 	ctx, done = context.WithTimeout(ctx, TimeoutSeconds*time.Second)
 	defer done()
 
+	// Test Account associations
+	fmt.Println("Testing Account associations (Account -> Contacts, Opportunities)...")
 	res, err := conn.Read(ctx, connectors.ReadParams{
 		ObjectName: "Account",
 		Fields:     connectors.Fields("Id", "Name", "BillingCity", "IsDeleted", "SystemModstamp"),
@@ -37,10 +39,25 @@ func main() {
 		AssociatedObjects: []string{"Contacts", "Opportunities"},
 	})
 	if err != nil {
-		utils.Fail("error reading", "error", err)
+		utils.Fail("error reading Account associations", "error", err)
 	}
 
-	fmt.Println("Reading..")
+	fmt.Println("Account associations result:")
+	utils.DumpJSON(res, os.Stdout)
+
+	// Test Opportunity associations
+	fmt.Println("\nTesting Opportunity associations (Opportunity -> Account, Contacts)...")
+	res, err = conn.Read(ctx, connectors.ReadParams{
+		ObjectName: "Opportunity",
+		Fields:     connectors.Fields("Id", "Name", "Amount", "StageName", "CloseDate"),
+		// Test both parent relationship (account) and junction relationship (contacts)
+		AssociatedObjects: []string{"account", "contacts"},
+	})
+	if err != nil {
+		utils.Fail("error reading Opportunity associations", "error", err)
+	}
+
+	fmt.Println("Opportunity associations result:")
 	utils.DumpJSON(res, os.Stdout)
 }
 

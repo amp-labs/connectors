@@ -2,6 +2,7 @@ package urlbuilder
 
 import (
 	"errors"
+	"maps"
 	"net/url"
 	"strings"
 
@@ -97,9 +98,7 @@ func (u *URL) RemoveQueryParam(name string) {
 }
 
 func (u *URL) AddEncodingExceptions(exceptions map[string]string) {
-	for key, value := range exceptions {
-		u.encodingExceptions[key] = value
-	}
+	maps.Copy(u.encodingExceptions, exceptions)
 }
 
 // ToURL relies on String method.
