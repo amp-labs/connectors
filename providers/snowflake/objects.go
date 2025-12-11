@@ -102,6 +102,9 @@ func newSnowflakeObjects(paramsMap map[string]string) (*Objects, error) {
 		case MetadataKeyStreamName:
 			cfg.streamName = value
 		}
+
+		// Write the modified config back to the map (Go structs are value types)
+		result[objectName] = cfg
 	}
 
 	return &result, nil
