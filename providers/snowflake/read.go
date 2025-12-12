@@ -340,6 +340,7 @@ func (c *Connector) buildDynamicTableQuery(
 
 // processRows converts SQL rows to ReadResultRows.
 // requestedFields specifies which fields to include in Fields; if empty, Fields will be empty.
+// Field matching is case-insensitive, and output field names are lowercased.
 func (c *Connector) processRows(
 	rows *sql.Rows,
 	requestedFields datautils.StringSet,
@@ -349,18 +350,13 @@ func (c *Connector) processRows(
 		return nil, fmt.Errorf("failed to get columns: %w", err)
 	}
 
-	// Build a set of requested field names for quick lookup
-	requestedSet := make(map[string]bool)
-	if len(requestedFields) > 0 {
-		for _, f := range requestedFields.List() {
-			requestedSet[f] = true
-		}
-	}
+	// Get list of requested fields for case-insensitive extraction
+	fieldsList := requestedFields.List()
 
 	var resultRows []common.ReadResultRow
 
 	for rows.Next() {
-		row, err := c.scanRow(rows, columns, requestedSet)
+		row, err := c.scanRow(rows, columns, fieldsList)
 		if err != nil {
 			return nil, err
 		}
@@ -376,8 +372,9 @@ func (c *Connector) processRows(
 }
 
 // scanRow scans a single row from the result set.
-// requestedFields is a set of field names to include in Fields; if empty, Fields will be empty.
-func (c *Connector) scanRow(rows *sql.Rows, columns []string, requestedFields map[string]bool) (*common.ReadResultRow, error) {
+// requestedFields is a list of field names to include in Fields; if empty, Fields will be empty.
+// Field matching is case-insensitive, and output field names are lowercased.
+func (c *Connector) scanRow(rows *sql.Rows, columns []string, requestedFields []string) (*common.ReadResultRow, error) {
 	// Create scan destinations
 	values := make([]any, len(columns))
 	valuePtrs := make([]any, len(columns))
@@ -390,8 +387,7 @@ func (c *Connector) scanRow(rows *sql.Rows, columns []string, requestedFields ma
 		return nil, fmt.Errorf("failed to scan row: %w", err)
 	}
 
-	// Build the result row
-	fields := make(map[string]any)
+	// Build the raw map with all columns
 	raw := make(map[string]any)
 
 	var rowID string
@@ -405,22 +401,18 @@ func (c *Connector) scanRow(rows *sql.Rows, columns []string, requestedFields ma
 		// Store in raw (always includes everything)
 		raw[col] = converted
 
-		// Handle CDC metadata columns - extract row ID but don't put in fields
-		switch col {
-		case metadataRowID:
+		// Extract row ID from CDC metadata
+		if col == metadataRowID {
 			if s, ok := converted.(string); ok {
 				rowID = s
 			}
-			// CDC metadata goes in raw only, not fields
-		case metadataAction, metadataIsUpdate:
-			// CDC metadata goes in raw only, not fields
-		default:
-			// Only add to fields if it was explicitly requested
-			if len(requestedFields) > 0 && requestedFields[col] {
-				fields[col] = converted
-			}
 		}
 	}
+
+	// Use ExtractLowercaseFieldsFromRaw for case-insensitive field extraction
+	// This handles the case where Snowflake returns UPPERCASE column names
+	// but the config has lowercase field names
+	fields := common.ExtractLowercaseFieldsFromRaw(requestedFields, raw)
 
 	return &common.ReadResultRow{
 		Fields: fields,
