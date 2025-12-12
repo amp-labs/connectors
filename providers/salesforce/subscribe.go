@@ -96,17 +96,18 @@ func (c *Connector) Subscribe(
 			SelectedEntity: eventName,
 		}
 
-		fmt.Println("channelMetadata before create=========", debug.PrettyFormatStringJSON(req))
-
 		if req != nil && req.Filters != nil && req.Filters[objName] != nil {
 			channelMetadata.EnrichedFields = req.Filters[objName].EnrichedFields
 			channelMetadata.FilterExpression = req.Filters[objName].FilterExpression
 		}
 
+		fmt.Println("channelMetadata before create=========", debug.PrettyFormatStringJSON(req))
+
 		channelMember := &EventChannelMember{
 			FullName: GetChangeDataCaptureChannelMembershipName(rawChannelName, eventName),
 			Metadata: channelMetadata,
 		}
+
 		fmt.Println("channelMember before create=========", debug.PrettyFormatStringJSON(channelMember))
 
 		newChannelMember, err := c.CreateEventChannelMember(ctx, channelMember)
