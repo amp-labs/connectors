@@ -33,6 +33,10 @@ var ignoreEndpoints = []string{ //nolint:gochecknoglobals
 	"/v2.1/sales_dialer/analytics",
 	// Scheduling endpoints
 	"/v2.1/appointments/available-slots",
+	// Custom fields endpoint - returns field definitions for sales_dialer/contacts.
+	// This is metadata about fields, not actual data records.
+	// The connector should fetch custom fields dynamically and add them to contacts metadata.
+	"/v2.1/sales_dialer/contacts/custom-fields",
 }
 
 func main() {
@@ -40,6 +44,8 @@ func main() {
 		api3.WithDisplayNamePostProcessors(
 			api3.CamelCaseToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,
+			replaceSlashWithSpace,
+			fixAICapitalization,
 		),
 		api3.WithArrayItemAutoSelection(),
 		api3.WithDuplicatesResolver(api3.SingleItemDuplicatesResolver(objectNameFromPath)),
@@ -95,4 +101,14 @@ func objectNameFromPath(path string) string {
 	name = strings.TrimPrefix(name, "/")
 
 	return name
+}
+
+// replaceSlashWithSpace replaces forward slashes with spaces in display names.
+func replaceSlashWithSpace(displayName string) string {
+	return strings.ReplaceAll(displayName, "/", " ")
+}
+
+// fixAICapitalization replaces "Ai" with "AI" for proper acronym capitalization.
+func fixAICapitalization(displayName string) string {
+	return strings.ReplaceAll(displayName, "Ai", "AI")
 }

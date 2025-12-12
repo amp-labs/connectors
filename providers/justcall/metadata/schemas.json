@@ -148,7 +148,7 @@
           }
         },
         "calls_ai": {
-          "displayName": "Calls Ai",
+          "displayName": "Calls AI",
           "path": "/calls_ai",
           "responseKey": "data",
           "fields": {
@@ -430,7 +430,7 @@
           }
         },
         "contacts/blacklist": {
-          "displayName": "Contacts/Blacklist",
+          "displayName": "Contacts Blacklist",
           "path": "/contacts/blacklist",
           "responseKey": "data",
           "fields": {
@@ -520,28 +520,6 @@
             }
           }
         },
-        "custom-fields": {
-          "displayName": "Custom Fields",
-          "path": "/sales_dialer/contacts/custom-fields",
-          "responseKey": "data",
-          "fields": {
-            "key": {
-              "displayName": "key",
-              "valueType": "other",
-              "providerType": "number"
-            },
-            "label": {
-              "displayName": "label",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "type": {
-              "displayName": "type",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "list": {
           "displayName": "List",
           "path": "/voice-agents/list",
@@ -595,7 +573,7 @@
           }
         },
         "meetings_ai": {
-          "displayName": "Meetings Ai",
+          "displayName": "Meetings AI",
           "path": "/meetings_ai",
           "responseKey": "data",
           "fields": {
@@ -949,7 +927,7 @@
           }
         },
         "sales_dialer/calls": {
-          "displayName": "Sales Dialer/Calls",
+          "displayName": "Sales Dialer Calls",
           "path": "/sales_dialer/calls",
           "responseKey": "data",
           "fields": {
@@ -1041,7 +1019,7 @@
           }
         },
         "sales_dialer/campaigns/contacts": {
-          "displayName": "Sales Dialer/Campaigns/Contacts",
+          "displayName": "Sales Dialer Campaigns Contacts",
           "path": "/sales_dialer/campaigns/contacts",
           "responseKey": "data",
           "fields": {
@@ -1146,7 +1124,7 @@
           }
         },
         "sales_dialer/contacts": {
-          "displayName": "Sales Dialer/Contacts",
+          "displayName": "Sales Dialer Contacts",
           "path": "/sales_dialer/contacts",
           "responseKey": "data",
           "fields": {
