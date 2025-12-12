@@ -28,14 +28,6 @@ func TestDelete(t *testing.T) {
 			ExpectedErrs: []error{common.ErrMissingRecordID},
 		},
 		{
-			Name:   "Object name is not supported",
-			Input:  common.DeleteParams{ObjectName: "rooms", RecordId: "Y2lzY29zcGFyazovL3VzL1JPT00vY"},
-			Server: mockserver.Dummy(),
-			ExpectedErrs: []error{
-				common.ErrOperationNotSupportedForObject,
-			},
-		},
-		{
 			Name:  "Successful delete person",
 			Input: common.DeleteParams{ObjectName: "people", RecordId: "Y2lzY29zcGFyazovL3VzL1BFT1B"},
 			Server: mockserver.Conditional{
