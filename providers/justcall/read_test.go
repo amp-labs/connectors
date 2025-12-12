@@ -22,6 +22,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	responseContacts := testutils.DataFromFile(t, "read/contacts/list.json")
 	responseTexts := testutils.DataFromFile(t, "read/texts/list.json")
 	responseWebhooks := testutils.DataFromFile(t, "read/webhooks/list.json")
+	responseSalesDialerContacts := testutils.DataFromFile(t, "read/sales_dialer_contacts/first-page.json")
 
 	tests := []testroutines.Read{
 		{
@@ -335,6 +336,42 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				NextPage: "https://api.justcall.io/v2.1/calls?page=2&per_page=2",
 				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read sales_dialer/contacts with custom fields",
+			Input: common.ReadParams{
+				ObjectName: "sales_dialer/contacts",
+				Fields:     connectors.Fields("id", "name", "membership_status", "priority_level"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v2.1/sales_dialer/contacts"),
+					mockcond.QueryParam("per_page", "100"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseSalesDialerContacts),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":                float64(1234),
+							"name":              "Rachel Green",
+							"membership_status": "premium",
+							"priority_level":    "5",
+						},
+						Raw: map[string]any{
+							"phone_number": "1213566XXXX",
+							"email":        "rachel.green@friends.co",
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},
