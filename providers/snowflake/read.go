@@ -24,6 +24,7 @@ const (
 
 // Errors for read operations.
 var (
+	errPrimaryKeyRequired      = fmt.Errorf("primaryKey is required for consistent pagination")
 	errTimestampColumnRequired = fmt.Errorf("timestampColumn is required when Since or Until is specified")
 )
 
@@ -96,6 +97,11 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 		return nil, fmt.Errorf("object %q not found in connector configuration", params.ObjectName)
 	}
 
+	// Validate that primaryKey is set (required for consistent pagination)
+	if objConfig.primaryKey == "" {
+		return nil, errPrimaryKeyRequired
+	}
+
 	// Validate that timestampColumn is set if time filtering is requested
 	hasTimeFilter := !params.Since.IsZero() || !params.Until.IsZero()
 	if hasTimeFilter && objConfig.timestampColumn == "" {
@@ -147,6 +153,8 @@ func (c *Connector) AcknowledgeStreamConsumption(ctx context.Context, objectName
 }
 
 // readFromStream reads CDC data from a Snowflake Stream.
+// Note: SELECT from a stream does not advance the stream offset.
+// Call AcknowledgeStreamConsumption after processing all pages to advance the offset.
 func (c *Connector) readFromStream(
 	ctx context.Context,
 	params common.ReadParams,
@@ -158,8 +166,25 @@ func (c *Connector) readFromStream(
 
 	streamName := c.getFullyQualifiedName(objConfig.streamName)
 
+	// Determine page size
+	pageSize := params.PageSize
+	if pageSize <= 0 {
+		pageSize = DefaultPageSize
+	}
+
+	// Parse offset from NextPage token (default 0)
+	offset := 0
+	if params.NextPage != "" {
+		parsed, err := strconv.Atoi(string(params.NextPage))
+		if err != nil {
+			return nil, fmt.Errorf("invalid NextPage token: %w", err)
+		}
+
+		offset = parsed
+	}
+
 	// Build the query to read from stream with CDC metadata
-	query := c.buildStreamQuery(streamName, params)
+	query := c.buildStreamQuery(streamName, objConfig, pageSize, offset)
 
 	rows, err := c.handle.db.QueryContext(ctx, query)
 	if err != nil {
@@ -173,10 +198,20 @@ func (c *Connector) readFromStream(
 		return nil, err
 	}
 
+	// Determine if there might be more data
+	done := len(resultRows) < pageSize
+
+	// Calculate next page token
+	var nextPage common.NextPageToken
+	if !done {
+		nextPage = common.NextPageToken(strconv.Itoa(offset + pageSize))
+	}
+
 	return &common.ReadResult{
-		Rows: int64(len(resultRows)),
-		Data: resultRows,
-		Done: true, // Streams return all pending changes; no pagination
+		Rows:     int64(len(resultRows)),
+		Data:     resultRows,
+		NextPage: nextPage,
+		Done:     done,
 	}, nil
 }
 
@@ -242,14 +277,22 @@ func (c *Connector) readFromDynamicTable(
 }
 
 // buildStreamQuery builds the SQL query for reading from a stream.
-func (c *Connector) buildStreamQuery(streamName string, params common.ReadParams) string {
+func (c *Connector) buildStreamQuery(
+	streamName string,
+	objConfig *objectConfig,
+	pageSize int,
+	offset int,
+) string {
 	// Always select all columns plus CDC metadata for streams
 	// Fields filtering is done at the result processing level
 	query := fmt.Sprintf(`SELECT *, %s, %s, %s FROM %s`,
 		metadataAction, metadataIsUpdate, metadataRowID, streamName)
 
-	// Streams return all pending changes; we don't paginate them
-	// as they should be fully consumed to advance the offset
+	// Order by primary key for consistent pagination across calls
+	query = fmt.Sprintf(`%s ORDER BY "%s" ASC`, query, objConfig.primaryKey)
+
+	// Add LIMIT and OFFSET for pagination
+	query = fmt.Sprintf("%s LIMIT %d OFFSET %d", query, pageSize, offset)
 
 	return query
 }
@@ -287,10 +330,7 @@ func (c *Connector) buildDynamicTableQuery(
 	}
 
 	// Order by primary key for consistent pagination across calls
-	// Without ORDER BY, OFFSET-based pagination may return inconsistent results
-	if objConfig.primaryKey != "" {
-		query = fmt.Sprintf(`%s ORDER BY "%s" ASC`, query, objConfig.primaryKey)
-	}
+	query = fmt.Sprintf(`%s ORDER BY "%s" ASC`, query, objConfig.primaryKey)
 
 	// Add LIMIT and OFFSET for pagination
 	query = fmt.Sprintf("%s LIMIT %d OFFSET %d", query, pageSize, offset)
