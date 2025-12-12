@@ -166,9 +166,9 @@ func (c *Connector) parseReadResponse(
 		return nil, err
 	}
 
-	var FieldNameSet datautils.Set[string]
+	var fieldNameSet datautils.Set[string]
 	if len(dotNotationFieldNames) > 0 {
-		FieldNameSet = datautils.NewStringSet(dotNotationFieldNames...)
+		fieldNameSet = datautils.NewStringSet(dotNotationFieldNames...)
 	}
 
 	return common.ParseResult(
@@ -176,7 +176,7 @@ func (c *Connector) parseReadResponse(
 		common.ExtractRecordsFromPath("ia::result"),
 		makeNextRecordsURL(),
 		common.GetMarshaledData,
-		FieldNameSet,
+		fieldNameSet,
 	)
 }
 
