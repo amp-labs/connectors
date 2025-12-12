@@ -23,9 +23,8 @@ func ParseNexPageLinkHeader(linkHeader string) string {
 		return "" // this indicates we're done.
 	}
 
-	links := strings.Split(linkHeader, ",")
 	// `<https://ampersand.freshdesk.com/api/v2/contacts?per_page=1&page=2>; rel="next"
-	for _, link := range links {
+	for link := range strings.SplitSeq(linkHeader, ",") {
 		if strings.Contains(link, `rel="next"`) {
 			urls := strings.Split(link, ";")
 			url = strings.TrimPrefix(urls[0], "<")

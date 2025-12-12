@@ -24,7 +24,7 @@ type Error struct {
 	Code   string `json:"code,omitempty"`
 	Detail string `json:"detail,omitempty"`
 	Id     string `json:"id,omitempty"`
-	Source Source `json:"source,omitempty"`
+	Source Source `json:"source"`
 	Status string `json:"status,omitempty"`
 	Title  string `json:"title,omitempty"`
 }

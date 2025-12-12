@@ -512,6 +512,11 @@ func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldM
 	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
 }
 
+func (m *ObjectMetadata) RemoveFieldMetadata(fieldName string) {
+	delete(m.Fields, fieldName)
+	delete(m.FieldsMap, fieldName)
+}
+
 type FieldMetadata struct {
 	// DisplayName is a human-readable field name.
 	DisplayName string
