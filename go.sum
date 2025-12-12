@@ -2,6 +2,8 @@ github.com/PuerkitoBio/goquery v1.11.0 h1:jZ7pwMQXIITcUXNH83LLk+txlaEy6NVOfTuP43
 github.com/PuerkitoBio/goquery v1.11.0/go.mod h1:wQHgxUOU3JGuj3oD/QFfxUdlzW6xPHfqyHre6VMY4DQ=
 github.com/amp-labs/amp-common v0.0.0-20251209001615-8c8dc4bc2d08 h1:vo17w5+zPgC6ILQF/aVBREIEWxnY6p1e4QBKZushfb8=
 github.com/amp-labs/amp-common v0.0.0-20251209001615-8c8dc4bc2d08/go.mod h1:lhNrTfCkeNu/N27tG6BwYaZ9xieLjjPQCJZIxlQMc2A=
+github.com/amp-labs/amp-common v0.0.0-20251212044833-7e81ba98986f h1:fzFeo0WFL5VbssJXOKmCmBwVNaye9WePTrLR3jnRGJg=
+github.com/amp-labs/amp-common v0.0.0-20251212044833-7e81ba98986f/go.mod h1:YKXCJcouD67LpJvtrmUVVyfCWZWQhzOeddDkMTxpGaw=
 github.com/andybalholm/cascadia v1.3.3 h1:AG2YHrzJIm4BZ19iwJ/DAua6Btl3IwJX+VI4kktS1LM=
 github.com/andybalholm/cascadia v1.3.3/go.mod h1:xNd9bqTn98Ln4DwST8/nG+H0yuB8Hmgu1YHNnWw0GeA=
 github.com/antchfx/xmlquery v1.5.0 h1:uAi+mO40ZWfyU6mlUBxRVvL6uBNZ6LMU4M3+mQIBV4c=
