@@ -7,6 +7,7 @@ import (
 	"maps"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/go-playground/validator"
 )
 
@@ -95,9 +96,15 @@ func (c *Connector) Subscribe(
 			SelectedEntity: eventName,
 		}
 
-		if req != nil && req.Filters != nil && req.Filters[objName] != nil {
-			channelMetadata.EnrichedFields = req.Filters[objName].EnrichedFields
-			channelMetadata.FilterExpression = req.Filters[objName].FilterExpression
+		if req != nil && req.Filters != nil {
+			for objKey, filter := range req.Filters {
+				if naming.PluralityAndCaseIgnoreEqual(string(objKey), string(objName)) {
+					channelMetadata.EnrichedFields = filter.EnrichedFields
+					channelMetadata.FilterExpression = filter.FilterExpression
+
+					break
+				}
+			}
 		}
 
 		channelMember := &EventChannelMember{
