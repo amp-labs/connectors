@@ -57,15 +57,15 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 						DisplayName: "Company-config/user",
 						Fields: map[string]common.FieldMetadata{
 							// Top-level fields
-							"accountEmail": {
-								DisplayName:  "Accountemail",
+							"$['accountEmail']": {
+								DisplayName:  "$['Accountemail']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
-							"adminPrivileges": {
-								DisplayName:  "Adminprivileges",
+							"$['adminPrivileges']": {
+								DisplayName:  "$['Adminprivileges']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
@@ -84,88 +84,88 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 									},
 								},
 							},
-							// Flattened nested fields from refs.contact
-							"contact.id": {
-								DisplayName:  "Contact.id",
+							// Nested fields from refs.contact
+							"$['contact']['id']": {
+								DisplayName:  "$['Contact']['Id']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
-							"contact.key": {
-								DisplayName:  "Contact.key",
+							"$['contact']['key']": {
+								DisplayName:  "$['Contact']['Key']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
-							"contact.firstName": {
-								DisplayName:  "Contact.firstname",
+							"$['contact']['firstName']": {
+								DisplayName:  "$['Contact']['Firstname']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
-							"contact.lastName": {
-								DisplayName:  "Contact.lastname",
+							"$['contact']['lastName']": {
+								DisplayName:  "$['Contact']['Lastname']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
-							"contact.email1": {
-								DisplayName:  "Contact.email1",
+							"$['contact']['email1']": {
+								DisplayName:  "$['Contact']['Email1']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
-							// Flattened nested fields from refs.contact.groups.mailingAddress
-							"contact.mailingAddress.addressLine1": {
-								DisplayName:  "Contact.mailingaddress.addressline1",
+							// Nested fields from refs.contact.groups.mailingAddress
+							"$['$['contact']['mailingAddress']']['addressLine1']": {
+								DisplayName:  "$['$['Contact']['Mailingaddress']']['Addressline1']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
-							"contact.mailingAddress.city": {
-								DisplayName:  "Contact.mailingaddress.city",
+							"$['$['contact']['mailingAddress']']['city']": {
+								DisplayName:  "$['$['Contact']['Mailingaddress']']['City']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
-							"contact.mailingAddress.state": {
-								DisplayName:  "Contact.mailingaddress.state",
+							"$['$['contact']['mailingAddress']']['state']": {
+								DisplayName:  "$['$['Contact']['Mailingaddress']']['State']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
-							"contact.mailingAddress.country": {
-								DisplayName:  "Contact.mailingaddress.country",
+							"$['$['contact']['mailingAddress']']['country']": {
+								DisplayName:  "$['$['Contact']['Mailingaddress']']['Country']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
-							// Flattened nested fields from refs.entity
-							"entity.id": {
-								DisplayName:  "Entity.id",
+							// Nested fields from refs.entity
+							"$['entity']['id']": {
+								DisplayName:  "$['Entity']['Id']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
-							"entity.key": {
-								DisplayName:  "Entity.key",
+							"$['entity']['key']": {
+								DisplayName:  "$['Entity']['Key']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
-							"entity.name": {
-								DisplayName:  "Entity.name",
+							"$['entity']['name']": {
+								DisplayName:  "$['Entity']['Name']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(true),
