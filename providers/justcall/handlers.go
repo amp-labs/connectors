@@ -224,20 +224,29 @@ func (c *Connector) parseWriteResponse(
 }
 
 // extractRecordID extracts the record ID from response, handling both string and numeric IDs.
+// JustCall has different response structures:
+//   - Tags: {"status": "success", "data": {"id": 123, ...}}
+//   - Contacts: {"status": "success", "data": [{"id": 123, ...}]}.
 func extractRecordID(node *ajson.Node) string {
+	query := jsonquery.New(node)
+
 	// Try root level ID
-	if id := tryExtractID(jsonquery.New(node)); id != "" {
+	if id := tryExtractID(query); id != "" {
 		return id
 	}
 
-	// Try in data object
-	if id := tryExtractID(jsonquery.New(node, "data")); id != "" {
-		return id
+	// Try in data object (for tags: data.id)
+	if dataNode, err := query.ObjectOptional("data"); err == nil && dataNode != nil {
+		if id := tryExtractID(jsonquery.New(dataNode)); id != "" {
+			return id
+		}
 	}
 
-	// Try in nested data.data array (JustCall pattern for contacts)
-	if dataArray, err := jsonquery.New(node, "data").ArrayOptional("data"); err == nil && len(dataArray) > 0 {
-		return tryExtractID(jsonquery.New(dataArray[0]))
+	// Try in data array (for contacts: data[0].id)
+	if dataArray, err := query.ArrayOptional("data"); err == nil && len(dataArray) > 0 {
+		if id := tryExtractID(jsonquery.New(dataArray[0])); id != "" {
+			return id
+		}
 	}
 
 	return ""
@@ -273,7 +282,15 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
+	// JustCall requires a JSON body even for DELETE requests
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), bytes.NewReader([]byte("{}")))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
 }
 
 func (c *Connector) buildDeleteURL(params common.DeleteParams) (*urlbuilder.URL, error) {

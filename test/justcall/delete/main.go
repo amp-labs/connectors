@@ -45,10 +45,11 @@ func run(ctx context.Context, conn *justcall.Connector) error {
 func createTestTag(ctx context.Context, conn *justcall.Connector) (string, error) {
 	slog.Info("Creating a test tag for delete test")
 
+	// JustCall has a 15 character limit for tag names
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "tags",
 		RecordData: map[string]any{
-			"name":       fmt.Sprintf("DeleteTestTag%d", os.Getpid()),
+			"name":       fmt.Sprintf("DelTag%d", os.Getpid()%10000),
 			"color_code": "#FF0000",
 		},
 	})
