@@ -1,6 +1,9 @@
 package snowflake
 
 import (
+	"database/sql"
+	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -31,6 +34,29 @@ type ColumnInfo struct {
 
 	// NumericScale is the scale for numeric types
 	NumericScale *int64
+}
+
+// getFullyQualifiedName returns the fully qualified name for an object.
+// Only the database, schema, and object names are uppercased (FQN components).
+func (c *Connector) getFullyQualifiedName(objectName string) string {
+	// If already fully qualified, return as-is
+	if strings.Contains(objectName, ".") {
+		return objectName
+	}
+
+	return fmt.Sprintf(`"%s"."%s"."%s"`,
+		strings.ToUpper(c.handle.database),
+		strings.ToUpper(c.handle.schema),
+		strings.ToUpper(objectName),
+	)
+}
+
+func getStreamName(objectName string) string {
+	return fmt.Sprintf("%s%s", objectName, "_stream")
+}
+
+func getDynamicTableName(objectName string) string {
+	return objectName
 }
 
 // snowflakeTypeToValueType maps Snowflake data types to Ampersand ValueTypes.
@@ -100,6 +126,56 @@ func snowflakeTypeToValueType(snowflakeType string, scale *int64) common.ValueTy
 
 	default:
 		return common.ValueTypeOther
+	}
+}
+
+// convertSQLValue converts SQL types to standard Go types.
+func convertSQLValue(val any) any {
+	if val == nil {
+		return nil
+	}
+
+	switch v := val.(type) {
+	case []byte:
+		// Try to parse as JSON first
+		var jsonVal any
+		if err := json.Unmarshal(v, &jsonVal); err == nil {
+			return jsonVal
+		}
+		// Otherwise return as string
+		return string(v)
+	case sql.NullString:
+		if v.Valid {
+			return v.String
+		}
+
+		return nil
+	case sql.NullInt64:
+		if v.Valid {
+			return v.Int64
+		}
+
+		return nil
+	case sql.NullFloat64:
+		if v.Valid {
+			return v.Float64
+		}
+
+		return nil
+	case sql.NullBool:
+		if v.Valid {
+			return v.Bool
+		}
+
+		return nil
+	case sql.NullTime:
+		if v.Valid {
+			return v.Time
+		}
+
+		return nil
+	default:
+		return v
 	}
 }
 

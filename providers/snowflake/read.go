@@ -3,7 +3,6 @@ package snowflake
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -15,23 +14,15 @@ import (
 // DefaultPageSize is the default number of rows to fetch per page.
 const DefaultPageSize = 2000
 
+// readMode represents the type of read operation to perform.
+type readMode int
+
 // CDC metadata columns from Snowflake streams.
 const (
 	metadataAction   = "METADATA$ACTION"
 	metadataIsUpdate = "METADATA$ISUPDATE"
 	metadataRowID    = "METADATA$ROW_ID"
-)
 
-// Errors for read operations.
-var (
-	errPrimaryKeyRequired      = fmt.Errorf("primaryKey is required for consistent pagination")
-	errTimestampColumnRequired = fmt.Errorf("timestampColumn is required when Since or Until is specified")
-)
-
-// readMode represents the type of read operation to perform.
-type readMode int
-
-const (
 	// readModeFullBackfill reads all data from the Dynamic Table.
 	// Used when neither Since nor Until is set.
 	readModeFullBackfill readMode = iota
@@ -46,39 +37,11 @@ const (
 	readModeTimeRange
 )
 
-// determineReadMode determines which read mode to use based on Since/Until parameters.
-//
-// Read mode logic:
-//   - Neither Since nor Until set → Full backfill from Dynamic Table
-//   - Only Since set → Incremental read from Stream (CDC)
-//   - Only Until set → Time-bounded read from Dynamic Table
-//   - Both Since and Until set → Time range read from Dynamic Table
-func determineReadMode(params common.ReadParams) readMode {
-	hasSince := !params.Since.IsZero()
-	hasUntil := !params.Until.IsZero()
-
-	switch {
-	case !hasSince && !hasUntil:
-		// Full backfill: read everything from Dynamic Table
-		return readModeFullBackfill
-
-	case hasSince && !hasUntil:
-		// Incremental: read changes from Stream
-		return readModeIncremental
-
-	case !hasSince && hasUntil:
-		// Historical up to a point: read from Dynamic Table with Until filter
-		return readModeTimeRange
-
-	case hasSince && hasUntil:
-		// Time range: read from Dynamic Table with Since and Until filters
-		return readModeTimeRange
-
-	default:
-		// Should never reach here, but default to full backfill
-		return readModeFullBackfill
-	}
-}
+// Errors for read operations.
+var (
+	errPrimaryKeyRequired      = fmt.Errorf("primaryKey is required for consistent pagination")
+	errTimestampColumnRequired = fmt.Errorf("timestampColumn is required when Since or Until is specified")
+)
 
 // Read reads data from a Snowflake Stream (incremental) or Dynamic Table (full/historical).
 //
@@ -150,6 +113,40 @@ func (c *Connector) AcknowledgeStreamConsumption(ctx context.Context, objectName
 	//
 	// For now, this is a stub - the caller must decide how to consume.
 	return nil
+}
+
+// determineReadMode determines which read mode to use based on Since/Until parameters.
+//
+// Read mode logic:
+//   - Neither Since nor Until set → Full backfill from Dynamic Table
+//   - Only Since set → Incremental read from Stream (CDC)
+//   - Only Until set → Time-bounded read from Dynamic Table
+//   - Both Since and Until set → Time range read from Dynamic Table
+func determineReadMode(params common.ReadParams) readMode {
+	hasSince := !params.Since.IsZero()
+	hasUntil := !params.Until.IsZero()
+
+	switch {
+	case !hasSince && !hasUntil:
+		// Full backfill: read everything from Dynamic Table
+		return readModeFullBackfill
+
+	case hasSince && !hasUntil:
+		// Incremental: read changes from Stream
+		return readModeIncremental
+
+	case !hasSince && hasUntil:
+		// Historical up to a point: read from Dynamic Table with Until filter
+		return readModeTimeRange
+
+	case hasSince && hasUntil:
+		// Time range: read from Dynamic Table with Since and Until filters
+		return readModeTimeRange
+
+	default:
+		// Should never reach here, but default to full backfill
+		return readModeFullBackfill
+	}
 }
 
 // readFromStream reads CDC data from a Snowflake Stream.
@@ -419,70 +416,4 @@ func (c *Connector) scanRow(rows *sql.Rows, columns []string, requestedFields []
 		Raw:    raw,
 		Id:     rowID,
 	}, nil
-}
-
-// getFullyQualifiedName returns the fully qualified name for an object.
-// Only the database, schema, and object names are uppercased (FQN components).
-func (c *Connector) getFullyQualifiedName(objectName string) string {
-	// If already fully qualified, return as-is
-	if strings.Contains(objectName, ".") {
-		return objectName
-	}
-
-	return fmt.Sprintf(`"%s"."%s"."%s"`,
-		strings.ToUpper(c.handle.database),
-		strings.ToUpper(c.handle.schema),
-		strings.ToUpper(objectName),
-	)
-}
-
-
-// convertSQLValue converts SQL types to standard Go types.
-func convertSQLValue(val any) any {
-	if val == nil {
-		return nil
-	}
-
-	switch v := val.(type) {
-	case []byte:
-		// Try to parse as JSON first
-		var jsonVal any
-		if err := json.Unmarshal(v, &jsonVal); err == nil {
-			return jsonVal
-		}
-		// Otherwise return as string
-		return string(v)
-	case sql.NullString:
-		if v.Valid {
-			return v.String
-		}
-
-		return nil
-	case sql.NullInt64:
-		if v.Valid {
-			return v.Int64
-		}
-
-		return nil
-	case sql.NullFloat64:
-		if v.Valid {
-			return v.Float64
-		}
-
-		return nil
-	case sql.NullBool:
-		if v.Valid {
-			return v.Bool
-		}
-
-		return nil
-	case sql.NullTime:
-		if v.Valid {
-			return v.Time
-		}
-
-		return nil
-	default:
-		return v
-	}
 }
