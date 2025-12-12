@@ -36,10 +36,10 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 
 // nolint:lll
 // We flatten the fields, groups, and refs into a single map of field metadata
-// with dot-notation keys for nested fields.
+// with JSONPath bracket notation keys for nested fields.
 // We require to mention the fields explicitly in the read requests.
 // Sage doesn't support wildcard selection of fields or nested field selection.
-// So we need to ensure all fields are explicitly specified in the request like audit.createdByUser.key.
+// So we need to ensure all fields are explicitly specified in the request like $['audit']['createdByUser']['key'].
 // Due to which we are flattening the metadata here.
 //
 // IMPORTANT: Lists (array fields like "locations", "departments") are NOT queryable in SageIntacct.
@@ -76,13 +76,13 @@ metadata response structure:
    }
 
    Flattened output:
-   "id": { ... },
-   "name": { ... },
-   "audit.createdByUser.key": { ... },
-   "audit.createdByUser.name": { ... },
-   "audit.createdDate": { ... },
-   "contact.id": { ... },
-   "contact.firstName": { ... }
+   "$['id']": { ... },
+   "$['name']": { ... },
+   "$['audit']['createdByUser']['key']": { ... },
+   "$['audit']['createdByUser']['name']": { ... },
+   "$['audit']['createdDate']": { ... },
+   "$['contact']['id']": { ... },
+   "$['contact']['firstName']": { ... }
    // Note: "locations" is NOT included because lists are not queryable
 */
 
@@ -118,18 +118,18 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	// Flatten top-level fields
-	topLevelFields := flattenFields("", res.Result.Fields)
+	topLevelFields := flattenFields(nil, res.Result.Fields)
 	maps.Copy(objectMetadata.Fields, topLevelFields)
 
 	// Flatten groups (nested objects like audit, etc.)
 	if len(res.Result.Groups) > 0 {
-		groupFields := flattenGroups("", res.Result.Groups)
+		groupFields := flattenGroups(nil, res.Result.Groups)
 		maps.Copy(objectMetadata.Fields, groupFields)
 	}
 
 	// Flatten refs (reference objects)
 	if len(res.Result.Refs) > 0 {
-		refFields := flattenRefs("", res.Result.Refs)
+		refFields := flattenRefs(nil, res.Result.Refs)
 		maps.Copy(objectMetadata.Fields, refFields)
 	}
 

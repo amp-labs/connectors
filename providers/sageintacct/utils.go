@@ -42,11 +42,11 @@ func mapValuesFromEnum(fieldDef SageIntacctFieldDef) []common.FieldValue {
 	return values
 }
 
-func buildReadBody(params common.ReadParams) (map[string]interface{}, error) {
-	// Fields names are in bracket notation format e.g. $['audit']['createdby']
-	// we need to convert them to dot notation e.g. audit.createdby for the API request
+func buildReadBody(params common.ReadParams) (map[string]any, error) {
 	fieldNames := params.Fields.List()
 
+	// Fields names are in bracket notation format e.g. $['audit']['createdby']
+	// we need to convert them to dot notation e.g. audit.createdby for the API request
 	dotNotation, err := convertFieldsToDotNotation(fieldNames)
 	if err != nil {
 		return nil, err
@@ -95,16 +95,14 @@ func buildReadBody(params common.ReadParams) (map[string]interface{}, error) {
 	return payload, nil
 }
 
-// flattenFields flattens nested field definitions into dot-notation paths.
+// flattenFields flattens nested field definitions into JSONPath bracket notation.
 // For example, audit.createdByUser.key becomes a single field entry.
-func flattenFields(prefix string, fields map[string]SageIntacctFieldDef) map[string]common.FieldMetadata {
+func flattenFields(pathParts []string, fields map[string]SageIntacctFieldDef) map[string]common.FieldMetadata {
 	result := make(map[string]common.FieldMetadata)
 
 	for fieldName, fieldDef := range fields {
-		fullPath := jsonpath.ToNestedPath(fieldName)
-		if prefix != "" {
-			fullPath = jsonpath.ToNestedPath(prefix, fieldName)
-		}
+		parts := append(pathParts, fieldName)
+		fullPath := jsonpath.ToNestedPath(parts...)
 
 		result[fullPath] = common.FieldMetadata{
 			DisplayName:  naming.CapitalizeFirstLetterEveryWord(fullPath),
@@ -118,40 +116,33 @@ func flattenFields(prefix string, fields map[string]SageIntacctFieldDef) map[str
 	return result
 }
 
-// flattenGroups flattens group definitions into dot-notation paths.
+// flattenGroups flattens group definitions into JSONPath bracket notation.
 // Groups can contain nested field definitions that are processed into flat paths.
-func flattenGroups(prefix string, groups map[string]SageIntacctGroup) map[string]common.FieldMetadata {
+func flattenGroups(pathParts []string, groups map[string]SageIntacctGroup) map[string]common.FieldMetadata {
 	result := make(map[string]common.FieldMetadata)
 
 	for groupName, group := range groups {
-		groupPath := groupName
-		if prefix != "" {
-			groupPath = jsonpath.ToNestedPath(prefix, groupName)
-		}
-
-		groupFields := flattenFields(groupPath, group.Fields)
+		parts := append(pathParts, groupName)
+		groupFields := flattenFields(parts, group.Fields)
 		maps.Copy(result, groupFields)
 	}
 
 	return result
 }
 
-// flattenRefs flattens reference (nested object) definitions into dot-notation paths.
+// flattenRefs flattens reference (nested object) definitions into JSONPath bracket notation.
 // Refs can contain both fields and nested groups, which are all processed into flat paths.
-func flattenRefs(prefix string, refs map[string]SageIntacctRef) map[string]common.FieldMetadata {
+func flattenRefs(pathParts []string, refs map[string]SageIntacctRef) map[string]common.FieldMetadata {
 	result := make(map[string]common.FieldMetadata)
 
 	for refName, ref := range refs {
-		refPath := refName
-		if prefix != "" {
-			refPath = jsonpath.ToNestedPath(prefix, refName)
-		}
+		parts := append(pathParts, refName)
 
-		refFields := flattenFields(refPath, ref.Fields)
+		refFields := flattenFields(parts, ref.Fields)
 		maps.Copy(result, refFields)
 
 		if len(ref.Groups) > 0 {
-			refGroups := flattenGroups(refPath, ref.Groups)
+			refGroups := flattenGroups(parts, ref.Groups)
 			maps.Copy(result, refGroups)
 		}
 	}

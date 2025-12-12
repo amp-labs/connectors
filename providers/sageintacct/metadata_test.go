@@ -121,29 +121,29 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								Values:       []common.FieldValue{},
 							},
 							// Nested fields from refs.contact.groups.mailingAddress
-							"$['$['contact']['mailingAddress']']['addressLine1']": {
-								DisplayName:  "$['$['Contact']['Mailingaddress']']['Addressline1']",
+							"$['contact']['mailingAddress']['addressLine1']": {
+								DisplayName:  "$['Contact']['Mailingaddress']['Addressline1']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
-							"$['$['contact']['mailingAddress']']['city']": {
-								DisplayName:  "$['$['Contact']['Mailingaddress']']['City']",
+							"$['contact']['mailingAddress']['city']": {
+								DisplayName:  "$['Contact']['Mailingaddress']['City']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
-							"$['$['contact']['mailingAddress']']['state']": {
-								DisplayName:  "$['$['Contact']['Mailingaddress']']['State']",
+							"$['contact']['mailingAddress']['state']": {
+								DisplayName:  "$['Contact']['Mailingaddress']['State']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
-							"$['$['contact']['mailingAddress']']['country']": {
-								DisplayName:  "$['$['Contact']['Mailingaddress']']['Country']",
+							"$['contact']['mailingAddress']['country']": {
+								DisplayName:  "$['Contact']['Mailingaddress']['Country']",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
