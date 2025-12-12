@@ -14,6 +14,35 @@ func (s *Objects) Get(objectName string) (*objectConfig, bool) {
 	return &cfg, ok
 }
 
+// Validate checks that all objects have the required configuration.
+// Required fields: query, dynamicTable.primaryKey
+// Returns an error describing all validation failures.
+func (s *Objects) Validate() error {
+	if s == nil || len(*s) == 0 {
+		return nil
+	}
+
+	var errors []string
+
+	for objectName, cfg := range *s {
+		if cfg.query == "" {
+			errors = append(errors, fmt.Sprintf("object %q: missing required field '%s'",
+				objectName, MetadataKeyQuery))
+		}
+
+		if cfg.dynamicTable.primaryKey == "" {
+			errors = append(errors, fmt.Sprintf("object %q: missing required field '%s.%s'",
+				objectName, MetadataKeyDynamicTable, MetadataKeyPrimaryKey))
+		}
+	}
+
+	if len(errors) > 0 {
+		return fmt.Errorf("snowflake objects validation failed:\n  - %s", strings.Join(errors, "\n  - "))
+	}
+
+	return nil
+}
+
 func (s *Objects) ToMetadataMap() map[string]string {
 	result := make(map[string]string)
 
@@ -25,51 +54,93 @@ func (s *Objects) ToMetadataMap() map[string]string {
 	}
 
 	// Reverse of newSnowflakeObjects
-	for objectName, objectConfig := range *s {
-		addIfNotEmpty(fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyQuery), objectConfig.query)
-		addIfNotEmpty(fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyPrimaryKey), objectConfig.primaryKey)
-		addIfNotEmpty(fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyTimestampColumn), objectConfig.timestampColumn)
-		addIfNotEmpty(fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyTargetLag), objectConfig.targetLag)
-		addIfNotEmpty(fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyDynamicTableName), objectConfig.dynamicTableName)
-		addIfNotEmpty(fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyStreamName), objectConfig.streamName)
+	// Structure: $['objects']['objName']['query'] for object-level
+	//            $['objects']['objName']['dynamicTable']['property'] for DT
+	//            $['objects']['objName']['stream']['property'] for Stream
+	for objectName, cfg := range *s {
+		// Object-level property
+		addIfNotEmpty(fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyQuery), cfg.query)
+
+		// Dynamic Table properties (nested under 'dynamicTable')
+		dtPrefix := fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyDynamicTable)
+		addIfNotEmpty(fmt.Sprintf("%s['%s']", dtPrefix, MetadataKeyPrimaryKey), cfg.dynamicTable.primaryKey)
+		addIfNotEmpty(fmt.Sprintf("%s['%s']", dtPrefix, MetadataKeyTimestampColumn), cfg.dynamicTable.timestampColumn)
+		addIfNotEmpty(fmt.Sprintf("%s['%s']", dtPrefix, MetadataKeyTargetLag), cfg.dynamicTable.targetLag)
+		addIfNotEmpty(fmt.Sprintf("%s['%s']", dtPrefix, MetadataKeyName), cfg.dynamicTable.name)
+
+		// Stream properties (nested under 'stream')
+		streamPrefix := fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyStream)
+		addIfNotEmpty(fmt.Sprintf("%s['%s']", streamPrefix, MetadataKeyName), cfg.stream.name)
 	}
 
 	return result
 }
 
+// objectConfig holds the configuration for a single Snowflake object.
+// Structure mirrors the metadata JSONPath:
+//
+//	$['objects']['objName']['query']
+//	$['objects']['objName']['dynamicTable'][...]
+//	$['objects']['objName']['stream'][...]
 type objectConfig struct {
 	// query is the SQL query defining the data that we treat as an object.
 	query string
 
+	// dynamicTable holds Dynamic Table specific configuration.
+	dynamicTable dynamicTableConfig
+
+	// stream holds Stream specific configuration.
+	stream streamConfig
+}
+
+// dynamicTableConfig holds configuration for a Snowflake Dynamic Table.
+type dynamicTableConfig struct {
 	// primaryKey is the column used for consistent ordering during pagination.
 	// This should be a unique, stable column (e.g., "id", "account_id").
 	primaryKey string
 
-	// timestampColumn is the column used for incremental filtering on the
-	// dynamic table generated over the query.
+	// timestampColumn is the column used for incremental filtering.
 	timestampColumn string
 
 	// targetLag is the Dynamic Table refresh interval (e.g., "1 hour").
 	targetLag string
 
-	// dynamicTableName is the generated DT name (set after PostAuth flow).
+	// name is the generated Dynamic Table name (set after PostAuth flow).
 	// Used to read data when we need to do non-incremental syncs.
-	dynamicTableName string
+	name string
+}
 
-	// streamName is the generated Stream name (set after PostAuth flow).
+// streamConfig holds configuration for a Snowflake Stream.
+type streamConfig struct {
+	// name is the generated Stream name (set after PostAuth flow).
 	// Used to read data for incremental syncs.
-	streamName string
+	name string
 }
 
 // Metadata keys for per-object configuration.
-// These are the property names expected in JSONPath keys like $['objects']['objName']['query'].
+// These are the property names expected in JSONPath keys.
+//
+// Structure:
+//
+//	$['objects']['objName']['query']                      - SQL query (object level)
+//	$['objects']['objName']['dynamicTable']['primaryKey'] - Primary key column
+//	$['objects']['objName']['dynamicTable']['timestampColumn'] - Timestamp column
+//	$['objects']['objName']['dynamicTable']['targetLag'] - Refresh interval
+//	$['objects']['objName']['dynamicTable']['name']      - Generated DT name
+//	$['objects']['objName']['stream']['name']            - Generated stream name
 const (
-	MetadataKeyQuery            = "query"
-	MetadataKeyPrimaryKey       = "primaryKey"
-	MetadataKeyTimestampColumn  = "timestampColumn"
-	MetadataKeyTargetLag        = "targetLag"
-	MetadataKeyDynamicTableName = "dynamicTableName"
-	MetadataKeyStreamName       = "streamName"
+	// MetadataKeyQuery is the SQL query defining the data source (object level).
+	MetadataKeyQuery = "query"
+
+	// Parent keys for nested structure.
+	MetadataKeyDynamicTable = "dynamicTable"
+	MetadataKeyStream       = "stream"
+
+	// Dynamic Table specific keys (nested under 'dynamicTable').
+	MetadataKeyPrimaryKey      = "primaryKey"
+	MetadataKeyTimestampColumn = "timestampColumn"
+	MetadataKeyTargetLag       = "targetLag"
+	MetadataKeyName            = "name"
 )
 
 const objectsPrefix = "$['objects']"
@@ -77,9 +148,15 @@ const objectsPrefix = "$['objects']"
 func newSnowflakeObjects(paramsMap map[string]string) (*Objects, error) {
 	result := make(Objects)
 
-	// Pattern: $['objects']['objectName']['property']
+	// Pattern for 3-level paths: $['objects']['objectName']['property']
+	// Used for object-level properties like 'query'
 	// Captures: objectName (group 1), property (group 2)
-	pattern := regexp.MustCompile(`^\$\['objects'\]\['([^']+)'\]\['([^']+)'\]$`)
+	pattern3Level := regexp.MustCompile(`^\$\['objects'\]\['([^']+)'\]\['([^']+)'\]$`)
+
+	// Pattern for 4-level paths: $['objects']['objectName']['parent']['property']
+	// Used for nested properties like 'dynamicTable.primaryKey' or 'stream.name'
+	// Captures: objectName (group 1), parent (group 2), property (group 3)
+	pattern4Level := regexp.MustCompile(`^\$\['objects'\]\['([^']+)'\]\['([^']+)'\]\['([^']+)'\]$`)
 
 	for key, value := range paramsMap {
 		// Skip keys that don't start with objects prefix
@@ -87,39 +164,52 @@ func newSnowflakeObjects(paramsMap map[string]string) (*Objects, error) {
 			continue
 		}
 
-		matches := pattern.FindStringSubmatch(key)
-		if len(matches) != 3 {
+		// Try 4-level pattern first (more specific)
+		if matches := pattern4Level.FindStringSubmatch(key); len(matches) == 4 {
+			objectName := matches[1]
+			parent := matches[2]
+			property := matches[3]
+
+			cfg := result[objectName]
+
+			switch parent {
+			case MetadataKeyDynamicTable:
+				switch property {
+				case MetadataKeyPrimaryKey:
+					cfg.dynamicTable.primaryKey = value
+				case MetadataKeyTimestampColumn:
+					cfg.dynamicTable.timestampColumn = value
+				case MetadataKeyTargetLag:
+					cfg.dynamicTable.targetLag = value
+				case MetadataKeyName:
+					cfg.dynamicTable.name = value
+				}
+			case MetadataKeyStream:
+				switch property {
+				case MetadataKeyName:
+					cfg.stream.name = value
+				}
+			}
+
+			result[objectName] = cfg
+
 			continue
 		}
 
-		objectName := matches[1]
-		property := matches[2]
+		// Try 3-level pattern (object-level properties)
+		if matches := pattern3Level.FindStringSubmatch(key); len(matches) == 3 {
+			objectName := matches[1]
+			property := matches[2]
 
-		// Get or create ObjectConfig for this object
-		cfg, ok := result[objectName]
-		if !ok {
-			cfg = objectConfig{}
+			cfg := result[objectName]
+
+			switch property {
+			case MetadataKeyQuery:
+				cfg.query = value
+			}
+
 			result[objectName] = cfg
 		}
-
-		// Set the appropriate field based on property name
-		switch property {
-		case MetadataKeyQuery:
-			cfg.query = value
-		case MetadataKeyPrimaryKey:
-			cfg.primaryKey = value
-		case MetadataKeyTimestampColumn:
-			cfg.timestampColumn = value
-		case MetadataKeyTargetLag:
-			cfg.targetLag = value
-		case MetadataKeyDynamicTableName:
-			cfg.dynamicTableName = value
-		case MetadataKeyStreamName:
-			cfg.streamName = value
-		}
-
-		// Write the modified config back to the map (Go structs are value types)
-		result[objectName] = cfg
 	}
 
 	return &result, nil
@@ -139,50 +229,50 @@ func (c *Connector) EnsureObjects(ctx context.Context) (*Objects, error) {
 		return nil, nil
 	}
 
-	// Create dynamic tables and streams for each object, and populate their names
-	for objectName, objectConfig := range *c.objects {
-		// Validate that query exists
-		if objectConfig.query == "" {
-			return nil, fmt.Errorf("object %q has no query defined", objectName)
-		}
+	// Validate all objects have required configuration
+	if err := c.objects.Validate(); err != nil {
+		return nil, err
+	}
 
+	// Create dynamic tables and streams for each object, and populate their names
+	for objectName, cfg := range *c.objects {
 		needsUpdate := false
 
 		// Create dynamic table if it doesn't exist
-		if objectConfig.dynamicTableName == "" {
+		if cfg.dynamicTable.name == "" {
 			// Validate the query before creating the dynamic table
-			if err := c.ValidateQuery(ctx, objectConfig.query); err != nil {
+			if err := c.ValidateQuery(ctx, cfg.query); err != nil {
 				return nil, fmt.Errorf("invalid query for object %s: %w", objectName, err)
 			}
 
-			targetLag := objectConfig.targetLag
+			targetLag := cfg.dynamicTable.targetLag
 			if targetLag == "" {
 				targetLag = DefaultTargetLag
 			}
 
 			dynamicTableName := getDynamicTableName(objectName)
-			if err := c.CreateDynamicTable(ctx, dynamicTableName, objectConfig.query, targetLag); err != nil {
+			if err := c.CreateDynamicTable(ctx, dynamicTableName, cfg.query, targetLag); err != nil {
 				return nil, fmt.Errorf("failed to create dynamic table %s: %w", objectName, err)
 			}
 
-			objectConfig.dynamicTableName = dynamicTableName
+			cfg.dynamicTable.name = dynamicTableName
 			needsUpdate = true
 		}
 
 		// Create stream if it doesn't exist
-		if objectConfig.streamName == "" {
+		if cfg.stream.name == "" {
 			streamName := getStreamName(objectName)
 			if err := c.CreateStream(ctx, streamName, objectName); err != nil {
 				return nil, fmt.Errorf("failed to create stream %s: %w", streamName, err)
 			}
 
-			objectConfig.streamName = streamName
+			cfg.stream.name = streamName
 			needsUpdate = true
 		}
 
 		// Only update the map if we made changes
 		if needsUpdate {
-			(*c.objects)[objectName] = objectConfig
+			(*c.objects)[objectName] = cfg
 		}
 	}
 

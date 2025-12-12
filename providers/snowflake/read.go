@@ -98,13 +98,13 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 	}
 
 	// Validate that primaryKey is set (required for consistent pagination)
-	if objConfig.primaryKey == "" {
+	if objConfig.dynamicTable.primaryKey == "" {
 		return nil, errPrimaryKeyRequired
 	}
 
 	// Validate that timestampColumn is set if time filtering is requested
 	hasTimeFilter := !params.Since.IsZero() || !params.Until.IsZero()
-	if hasTimeFilter && objConfig.timestampColumn == "" {
+	if hasTimeFilter && objConfig.dynamicTable.timestampColumn == "" {
 		return nil, errTimestampColumnRequired
 	}
 
@@ -138,8 +138,8 @@ func (c *Connector) AcknowledgeStreamConsumption(ctx context.Context, objectName
 		return fmt.Errorf("object %q not found in connector configuration", objectName)
 	}
 
-	if objConfig.streamName == "" {
-		return fmt.Errorf("streamName not configured for object %q", objectName)
+	if objConfig.stream.name == "" {
+		return fmt.Errorf("stream.name not configured for object %q", objectName)
 	}
 
 	// TODO: Implement stream consumption via DML operation.
@@ -160,11 +160,11 @@ func (c *Connector) readFromStream(
 	params common.ReadParams,
 	objConfig *objectConfig,
 ) (*common.ReadResult, error) {
-	if objConfig.streamName == "" {
-		return nil, fmt.Errorf("streamName not configured for object %q", params.ObjectName)
+	if objConfig.stream.name == "" {
+		return nil, fmt.Errorf("stream.name not configured for object %q", params.ObjectName)
 	}
 
-	streamName := c.getFullyQualifiedName(objConfig.streamName)
+	streamName := c.getFullyQualifiedName(objConfig.stream.name)
 
 	// Determine page size
 	pageSize := params.PageSize
@@ -221,11 +221,11 @@ func (c *Connector) readFromDynamicTable(
 	params common.ReadParams,
 	objConfig *objectConfig,
 ) (*common.ReadResult, error) {
-	if objConfig.dynamicTableName == "" {
-		return nil, fmt.Errorf("dynamicTableName not configured for object %q", params.ObjectName)
+	if objConfig.dynamicTable.name == "" {
+		return nil, fmt.Errorf("dynamicTable.name not configured for object %q", params.ObjectName)
 	}
 
-	tableName := c.getFullyQualifiedName(objConfig.dynamicTableName)
+	tableName := c.getFullyQualifiedName(objConfig.dynamicTable.name)
 
 	// Determine page size
 	pageSize := params.PageSize
@@ -289,7 +289,7 @@ func (c *Connector) buildStreamQuery(
 		metadataAction, metadataIsUpdate, metadataRowID, streamName)
 
 	// Order by primary key for consistent pagination across calls
-	query = fmt.Sprintf(`%s ORDER BY "%s" ASC`, query, objConfig.primaryKey)
+	query = fmt.Sprintf(`%s ORDER BY "%s" ASC`, query, objConfig.dynamicTable.primaryKey)
 
 	// Add LIMIT and OFFSET for pagination
 	query = fmt.Sprintf("%s LIMIT %d OFFSET %d", query, pageSize, offset)
@@ -314,14 +314,14 @@ func (c *Connector) buildDynamicTableQuery(
 	if !params.Since.IsZero() {
 		conditions = append(conditions,
 			fmt.Sprintf(`"%s" >= '%s'`,
-				objConfig.timestampColumn,
+				objConfig.dynamicTable.timestampColumn,
 				params.Since.Format("2006-01-02 15:04:05.999999999")))
 	}
 
 	if !params.Until.IsZero() {
 		conditions = append(conditions,
 			fmt.Sprintf(`"%s" <= '%s'`,
-				objConfig.timestampColumn,
+				objConfig.dynamicTable.timestampColumn,
 				params.Until.Format("2006-01-02 15:04:05.999999999")))
 	}
 
@@ -330,7 +330,7 @@ func (c *Connector) buildDynamicTableQuery(
 	}
 
 	// Order by primary key for consistent pagination across calls
-	query = fmt.Sprintf(`%s ORDER BY "%s" ASC`, query, objConfig.primaryKey)
+	query = fmt.Sprintf(`%s ORDER BY "%s" ASC`, query, objConfig.dynamicTable.primaryKey)
 
 	// Add LIMIT and OFFSET for pagination
 	query = fmt.Sprintf("%s LIMIT %d OFFSET %d", query, pageSize, offset)

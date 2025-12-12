@@ -78,6 +78,11 @@ func (c *Connector) setup(params common.ConnectorParams) error {
 		return fmt.Errorf("failed to parse objects: %w", err)
 	}
 
+	// Validate that all objects have required configuration.
+	if err := c.objects.Validate(); err != nil {
+		return err
+	}
+
 	// Create connection info.
 	c.handle, err = newConnectionInfoFromParams(params)
 	if err != nil {

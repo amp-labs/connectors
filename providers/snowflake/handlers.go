@@ -35,8 +35,8 @@ func (c *Connector) listObjectMetadata(
 func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
 	// Resolve the actual table name from object config if available
 	tableName := objectName
-	if cfg, ok := c.objects.Get(objectName); ok && cfg.dynamicTableName != "" {
-		tableName = cfg.dynamicTableName
+	if cfg, ok := c.objects.Get(objectName); ok && cfg.dynamicTable.name != "" {
+		tableName = cfg.dynamicTable.name
 	}
 
 	columns, err := c.getColumnMetadata(ctx, tableName)
