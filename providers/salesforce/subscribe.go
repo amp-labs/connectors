@@ -96,11 +96,6 @@ func (c *Connector) Subscribe(
 			SelectedEntity: eventName,
 		}
 
-		channelMember := &EventChannelMember{
-			FullName: GetChangeDataCaptureChannelMembershipName(rawChannelName, eventName),
-			Metadata: channelMetadata,
-		}
-
 		if req != nil && req.Filters != nil {
 			for objKey, filter := range req.Filters {
 				objName := string(objKey)
@@ -111,6 +106,11 @@ func (c *Connector) Subscribe(
 					break
 				}
 			}
+		}
+
+		channelMember := &EventChannelMember{
+			FullName: GetChangeDataCaptureChannelMembershipName(rawChannelName, eventName),
+			Metadata: channelMetadata,
 		}
 
 		newChannelMember, err := c.CreateEventChannelMember(ctx, channelMember)
