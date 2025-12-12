@@ -41,7 +41,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("project:Specify a valid project ID or key"), // nolint:goerr113
+				errors.New("project:Specify a valid project ID or key"),
 			},
 		},
 		{
@@ -53,7 +53,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("issuetype:Specify an issue type"), // nolint:goerr113
+				errors.New("issuetype:Specify an issue type"),
 			},
 		},
 		{

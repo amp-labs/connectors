@@ -13,8 +13,8 @@ import (
 	"github.com/amp-labs/connectors/providers/salesforce"
 )
 
+// Replace these with your own values.
 const (
-	// Replace these with your own values.
 	Workspace          = "<workspace>"
 	OAuth2ClientId     = "<client id>"
 	OAuth2ClientSecret = "<client secret>"
@@ -26,9 +26,9 @@ const (
 // This is used to determine if the token needs to be refreshed.
 // If you have an actual value, you can set it here. Otherwise
 // it will be set to a day ago to force a refresh.
-var AccessTokenExpiry = time.Now().Add(-24 * time.Hour)
+var AccessTokenExpiry = time.Now().Add(-24 * time.Hour) // nolint:gochecknoglobals
 
-// Run this example with `go run salesforce.go`
+// Run this example with `go run salesforce.go`.
 func main() {
 	utils.Run(salesforceDeepExample)
 }
@@ -69,7 +69,7 @@ func salesforceDeepExample(ctx context.Context) error {
 		allRows = append(allRows, result.Data...)
 	}
 
-	fmt.Printf("Result is %v\n", allRows)
+	fmt.Printf("Result is %v\n", allRows) // nolint:forbidigo
 
 	return nil
 }
@@ -77,7 +77,7 @@ func salesforceDeepExample(ctx context.Context) error {
 // Create a deep connector with the Salesforce provider.
 func createDeepConnector(ctx context.Context) *salesforce.Connector {
 	conn, err := salesforce.NewConnector(
-		salesforce.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)),
+		salesforce.WithAuthenticatedClient(createAuthenticatedHTTPClient(ctx)),
 		salesforce.WithWorkspace(Workspace))
 	if err != nil {
 		panic(err)
@@ -87,7 +87,7 @@ func createDeepConnector(ctx context.Context) *salesforce.Connector {
 }
 
 // Create an OAuth2 authenticated HTTP client for Salesforce.
-func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTPClient {
+func createAuthenticatedHTTPClient(ctx context.Context) common.AuthenticatedHTTPClient {
 	info, err := providers.ReadInfo(providers.Salesforce, &paramsbuilder.Workspace{Name: Workspace})
 	if err != nil {
 		panic(err)

@@ -1,29 +1,33 @@
 package pipedrive
 
 import (
+	"context"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/pipedrive/metadata"
-)
-
-const (
-	apiVersion string = "v1"    // nolint:gochecknoglobals
-	limitQuery string = "limit" // nolint:gochecknoglobals
+	"github.com/amp-labs/connectors/providers/pipedrive/internal/crm"
+	"github.com/amp-labs/connectors/providers/pipedrive/internal/legacy"
 )
 
 // Connector represents the Pipedrive Connector.
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
-	Module  common.Module
+	Client *common.JSONHTTPClient
+
+	providerInfo *providers.ProviderInfo
+	moduleInfo   *providers.ModuleInfo
+	moduleID     common.ModuleID
+
+	crmAdapter    *crm.Adapter
+	legacyAdapter *legacy.Adapter
 }
 
 // NewConnector constructs the Pipedrive Connector and returns it, Fails
 // if any of the required fields are not instantiated.
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+	params, err := paramsbuilder.Apply(parameters{}, opts,
+		WithModule(providers.ModulePipedriveLegacy),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -34,14 +38,52 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		},
 	}
 
-	providerInfo, err := providers.ReadInfo(conn.Provider())
+	conn.providerInfo, err = providers.ReadInfo(conn.Provider())
 	if err != nil {
 		return nil, err
 	}
 
-	conn.setBaseURL(providerInfo.BaseURL)
+	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
+
+	conn.SetBaseURL(conn.moduleInfo.BaseURL)
+
+	conn.moduleID = params.Module
+
+	if conn.moduleID == providers.ModulePipedriveCRM {
+		conn.crmAdapter = crm.NewAdapter(conn.Client, conn.moduleInfo)
+	}
+
+	if conn.moduleID == providers.ModulePipedriveLegacy {
+		conn.legacyAdapter = legacy.NewAdapter(conn.Client, conn.moduleInfo)
+	}
 
 	return conn, nil
+}
+
+func (c *Connector) ListObjectMetadata(ctx context.Context,
+	objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.ListObjectMetadata(ctx, objectNames)
+	}
+
+	return c.legacyAdapter.ListObjectMetadata(ctx, objectNames)
+}
+
+func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.Read(ctx, params)
+	}
+
+	return c.legacyAdapter.Read(ctx, params)
+}
+
+func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*common.WriteResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.Write(ctx, params)
+	}
+
+	return c.legacyAdapter.Write(ctx, params)
 }
 
 // Provider returns the pipedrive provider instance.
@@ -54,30 +96,8 @@ func (c *Connector) String() string {
 	return c.Provider() + ".Connector"
 }
 
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
-}
-
-// getAPIURL constructs a specific object's resource URL in the format
-// `{{baseURL}}/{{version}}/{{objectName}}`.
-func (c *Connector) getAPIURL(arg string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, arg)
-}
-
-func (c *Connector) constructMetadataURL(obj string) (*urlbuilder.URL, error) {
-	if metadataDiscoveryEndpoints.Has(obj) {
-		obj = metadataDiscoveryEndpoints.Get(obj)
-	}
-
-	return c.getAPIURL(obj)
-}
-
-func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
-	if err != nil {
-		return nil, err
-	}
-
-	return c.getAPIURL(path)
+func (c *Connector) SetBaseURL(newURL string) {
+	c.providerInfo.BaseURL = newURL
+	c.moduleInfo.BaseURL = newURL
+	c.HTTPClient().Base = newURL
 }

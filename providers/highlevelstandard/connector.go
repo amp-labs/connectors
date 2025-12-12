@@ -35,6 +35,7 @@ const (
 	metadataKeyLocationID = "locationId"
 )
 
+// NewConnector
 // In the highlevel connector, there is two listing type -- standard and whitelabel.
 // Both type have different Authorization URL. Refer below link.
 // https://highlevel.stoplight.io/docs/integrations/a04191c0fabf9-authorization#3-get-the-apps-authorization-page-url.

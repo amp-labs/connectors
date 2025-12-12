@@ -1,4 +1,4 @@
-// nolint:lll
+// nolint:lll,godoclint
 package providers
 
 const (

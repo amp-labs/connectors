@@ -34,7 +34,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Le contenu de la requête est invalide: le champ 'last_name' est manquant."), // nolint:goerr113
+				errors.New("Le contenu de la requête est invalide: le champ 'last_name' est manquant."),
 			},
 		},
 		{

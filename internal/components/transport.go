@@ -5,12 +5,15 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
+// Transport
 // TODO: Add support for XML, CSV, etc.
 type Transport struct {
 	ProviderContext
+
 	json *common.JSONHTTPClient
 }
 
+// NewTransport
 // TODO: The JSON client by itself is not providing any functionality right now - this is to only provide
 // continuity for the existing codebase. We should refactor the existing JSON/XML/CSV/HTTP clients to
 // satisfy a common interface, and then hook them up in here.

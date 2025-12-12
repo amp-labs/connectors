@@ -25,11 +25,11 @@ const (
 
 // AccessTokenExpiry is the time when the access token expires.
 // This is used to determine if the token needs to be refreshed.
-// If you have an actual value, you can set it here. Otherwise
+// If you have an actual value, you can set it here. Otherwise,
 // it will be set to a day ago to force a refresh.
-var AccessTokenExpiry = time.Now().Add(-24 * time.Hour)
+var AccessTokenExpiry = time.Now().Add(-24 * time.Hour) // nolint:gochecknoglobals
 
-// Run this example with `go run salesforce.go`
+// Run this example with `go run salesforce.go`.
 func main() {
 	utils.Run(salesforceAuthExample)
 }
@@ -50,12 +50,12 @@ func salesforceAuthExample(ctx context.Context) error {
 
 	// Check the response status code
 	if response.Code != http.StatusOK {
-		return fmt.Errorf("unexpected status code: %d", response.Code)
+		return fmt.Errorf("unexpected status code: %d", response.Code) // nolint:err113
 	}
 
 	body, ok := response.Body()
 	if !ok {
-		return fmt.Errorf("cannot get limits %w", common.ErrEmptyJSONHTTPResponse)
+		return fmt.Errorf("cannot get limits %w", common.ErrEmptyJSONHTTPResponse) // nolint:err113
 	}
 
 	// The response body is already parsed (as JSON). You can access it like this:
@@ -65,7 +65,7 @@ func salesforceAuthExample(ctx context.Context) error {
 	}
 
 	// Print out the mass email limit
-	fmt.Printf("MassEmail.Max: %f\n", nodes[0].MustNumeric())
+	fmt.Printf("MassEmail.Max: %f\n", nodes[0].MustNumeric()) // nolint:forbidigo
 
 	return nil
 }
@@ -73,7 +73,7 @@ func salesforceAuthExample(ctx context.Context) error {
 // Create an auth connector with the Salesforce provider.
 func createAuthConnector(ctx context.Context) *generic.Connector {
 	conn, err := generic.NewConnector(providers.Salesforce,
-		generic.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)),
+		generic.WithAuthenticatedClient(createAuthenticatedHTTPClient(ctx)),
 		generic.WithWorkspace(Workspace))
 	if err != nil {
 		panic(err)
@@ -83,7 +83,7 @@ func createAuthConnector(ctx context.Context) *generic.Connector {
 }
 
 // Create an OAuth2 authenticated HTTP client for Salesforce.
-func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTPClient {
+func createAuthenticatedHTTPClient(ctx context.Context) common.AuthenticatedHTTPClient {
 	info, err := providers.ReadInfo(providers.Salesforce, &paramsbuilder.Workspace{Name: Workspace})
 	if err != nil {
 		panic(err)

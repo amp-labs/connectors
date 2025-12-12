@@ -42,7 +42,7 @@ func (q *Query) ObjectRequired(key string) (*ajson.Node, error) {
 	return q.internalQueryObject(key, false)
 }
 
-func (q *Query) internalQueryObject(key string, optional bool) (*ajson.Node, error) {
+func (q *Query) internalQueryObject(key string, optional bool) (*ajson.Node, error) { // nolint:funcorder
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err
@@ -83,7 +83,7 @@ func (q *Query) IntegerRequired(key string) (int64, error) {
 	return *integer, nil
 }
 
-func (q *Query) internalQueryInteger(key string, optional bool) (*int64, error) {
+func (q *Query) internalQueryInteger(key string, optional bool) (*int64, error) { // nolint:funcorder
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err
@@ -131,7 +131,7 @@ func (q *Query) StringRequired(key string) (string, error) {
 	return *text, nil
 }
 
-func (q *Query) internalQueryString(key string, optional bool) (*string, error) {
+func (q *Query) internalQueryString(key string, optional bool) (*string, error) { // nolint:funcorder
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err
@@ -173,7 +173,7 @@ func (q *Query) BoolRequired(key string) (bool, error) {
 	return *flag, nil
 }
 
-func (q *Query) internalQueryBool(key string, optional bool) (*bool, error) {
+func (q *Query) internalQueryBool(key string, optional bool) (*bool, error) { // nolint:funcorder
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err

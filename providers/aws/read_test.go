@@ -42,7 +42,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("The operation is not supported for this Identity Center instance"), // nolint:goerr113
+				errors.New("The operation is not supported for this Identity Center instance"),
 			},
 		},
 		{

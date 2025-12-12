@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package common
 
 import (
@@ -22,7 +23,7 @@ var (
 
 const ModuleRoot ModuleID = "root"
 
-type ModuleID string
+type ModuleID = string
 
 type Modules = datautils.Map[ModuleID, Module]
 

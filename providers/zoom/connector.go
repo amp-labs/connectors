@@ -37,6 +37,14 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	return conn, nil
 }
 
+func (c *Connector) Provider() providers.Provider {
+	return providers.Zoom
+}
+
+func (c *Connector) String() string {
+	return c.Provider() + ".Connector"
+}
+
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 	path, err := metadata.Schemas.LookupURLPath(common.ModuleRoot, objectName)
 	if err != nil {
@@ -50,14 +58,6 @@ func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
 	path := objectNameToWritePath.Get(objectName)
 
 	return urlbuilder.New(c.BaseURL, apiVersion, path)
-}
-
-func (c *Connector) Provider() providers.Provider {
-	return providers.Zoom
-}
-
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
 }
 
 func (c *Connector) setBaseURL(newURL string) {

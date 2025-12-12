@@ -113,12 +113,12 @@ func constructProperties(data OpenAPI, schemas map[string]string) map[string][]s
 
 	for resourcePath, flds := range properties {
 		// update the resourcePath to be the supportedObject.
-		if len(strings.Split(resourcePath, "/")) == 4 { //nolint:gomnd,mnd
+		if len(strings.Split(resourcePath, "/")) == 4 { //nolint:mnd
 			properties[strings.Split(resourcePath, "/")[schemaIdx]] = flds
 			delete(properties, resourcePath)
 		}
 
-		if len(strings.Split(resourcePath, "/")) > 4 { //nolint:gomnd,mnd
+		if len(strings.Split(resourcePath, "/")) > 4 { //nolint:mnd
 			objects := strings.Split(resourcePath, "/")
 			customNamedObject := strings.Join(objects[3:], "_")
 			properties[customNamedObject] = flds

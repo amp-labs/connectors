@@ -1,4 +1,4 @@
-// nolint:ireturn
+// nolint:revive,godoclint
 package common
 
 import (
