@@ -52,12 +52,22 @@ func (c *Connector) getFullyQualifiedName(objectName string) string {
 }
 
 func getStreamName(objectName string) string {
-	return fmt.Sprintf("%s%s", objectName, "_stream")
+	return objectName + "_stream"
 }
 
 func getDynamicTableName(objectName string) string {
 	return objectName
 }
+
+// Type mapping tables for Snowflake to Ampersand value types.
+var (
+	stringTypes   = map[string]bool{"VARCHAR": true, "TEXT": true, "STRING": true, "CHAR": true, "CHARACTER": true, "NCHAR": true, "NVARCHAR": true, "NVARCHAR2": true}          //nolint:gochecknoglobals
+	integerTypes  = map[string]bool{"INT": true, "INTEGER": true, "BIGINT": true, "SMALLINT": true, "TINYINT": true, "BYTEINT": true}                                            //nolint:gochecknoglobals
+	numericTypes  = map[string]bool{"NUMBER": true, "NUMERIC": true, "DECIMAL": true}                                                                                            //nolint:gochecknoglobals
+	floatTypes    = map[string]bool{"FLOAT": true, "FLOAT4": true, "FLOAT8": true, "DOUBLE": true, "DOUBLE PRECISION": true, "REAL": true, "DECFLOAT": true}                     //nolint:gochecknoglobals
+	dateTimeTypes = map[string]bool{"TIMESTAMP": true, "TIMESTAMP_LTZ": true, "TIMESTAMP_NTZ": true, "TIMESTAMP_TZ": true, "DATETIME": true, "TIME": true}                       //nolint:gochecknoglobals
+	otherTypes    = map[string]bool{"VARIANT": true, "OBJECT": true, "ARRAY": true, "MAP": true, "BINARY": true, "VARBINARY": true, "GEOGRAPHY": true, "GEOMETRY": true, "VECTOR": true, "FILE": true} //nolint:gochecknoglobals
+)
 
 // snowflakeTypeToValueType maps Snowflake data types to Ampersand ValueTypes.
 // For NUMBER(p,s): if scale > 0, it's a decimal (Float), otherwise it's an integer (Int).
@@ -70,113 +80,112 @@ func snowflakeTypeToValueType(snowflakeType string, scale *int64) common.ValueTy
 		upperType = upperType[:idx]
 	}
 
-	switch upperType {
-	// String types
-	case "VARCHAR", "TEXT", "STRING", "CHAR", "CHARACTER", "NCHAR", "NVARCHAR", "NVARCHAR2":
+	return mapSnowflakeType(upperType, scale)
+}
+
+func mapSnowflakeType(upperType string, scale *int64) common.ValueType {
+	switch {
+	case stringTypes[upperType]:
 		return common.ValueTypeString
-
-	// Integer types - NUMBER without scale defaults to Int
-	case "INT", "INTEGER", "BIGINT", "SMALLINT", "TINYINT", "BYTEINT":
+	case integerTypes[upperType]:
 		return common.ValueTypeInt
-
-	// NUMBER/NUMERIC/DECIMAL: check scale to determine Int vs Float
-	case "NUMBER", "NUMERIC", "DECIMAL":
-		if scale != nil && *scale > 0 {
-			return common.ValueTypeFloat
-		}
-
-		return common.ValueTypeInt
-
-	// Float types
-	case "FLOAT", "FLOAT4", "FLOAT8", "DOUBLE", "DOUBLE PRECISION", "REAL", "DECFLOAT":
+	case numericTypes[upperType]:
+		return mapNumericType(scale)
+	case floatTypes[upperType]:
 		return common.ValueTypeFloat
-
-	// Boolean
-	case "BOOLEAN":
+	case upperType == "BOOLEAN":
 		return common.ValueTypeBoolean
-
-	// Date only
-	case "DATE":
+	case upperType == "DATE":
 		return common.ValueTypeDate
-
-	// Date/Time types
-	case "TIMESTAMP", "TIMESTAMP_LTZ", "TIMESTAMP_NTZ", "TIMESTAMP_TZ",
-		"DATETIME", "TIME":
+	case dateTimeTypes[upperType]:
 		return common.ValueTypeDateTime
-
-	// Semi-structured types
-	case "VARIANT", "OBJECT", "ARRAY", "MAP":
+	case otherTypes[upperType]:
 		return common.ValueTypeOther
-
-	// Binary types
-	case "BINARY", "VARBINARY":
-		return common.ValueTypeOther
-
-	// Geospatial types
-	case "GEOGRAPHY", "GEOMETRY":
-		return common.ValueTypeOther
-
-	// Vector type (for ML/AI workloads)
-	case "VECTOR":
-		return common.ValueTypeOther
-
-	// File type (unstructured data reference)
-	case "FILE":
-		return common.ValueTypeOther
-
 	default:
 		return common.ValueTypeOther
 	}
 }
 
+func mapNumericType(scale *int64) common.ValueType {
+	if scale != nil && *scale > 0 {
+		return common.ValueTypeFloat
+	}
+
+	return common.ValueTypeInt
+}
+
 // convertSQLValue converts SQL types to standard Go types.
-func convertSQLValue(val any) any {
-	if val == nil {
+func convertSQLValue(value any) any {
+	if value == nil {
 		return nil
 	}
 
-	switch v := val.(type) {
+	switch typed := value.(type) {
 	case []byte:
-		// Try to parse as JSON first
-		var jsonVal any
-		if err := json.Unmarshal(v, &jsonVal); err == nil {
-			return jsonVal
-		}
-		// Otherwise return as string
-		return string(v)
+		return convertBytes(typed)
 	case sql.NullString:
-		if v.Valid {
-			return v.String
-		}
-
-		return nil
+		return convertNullString(typed)
 	case sql.NullInt64:
-		if v.Valid {
-			return v.Int64
-		}
-
-		return nil
+		return convertNullInt64(typed)
 	case sql.NullFloat64:
-		if v.Valid {
-			return v.Float64
-		}
-
-		return nil
+		return convertNullFloat64(typed)
 	case sql.NullBool:
-		if v.Valid {
-			return v.Bool
-		}
-
-		return nil
+		return convertNullBool(typed)
 	case sql.NullTime:
-		if v.Valid {
-			return v.Time
-		}
-
-		return nil
+		return convertNullTime(typed)
 	default:
-		return v
+		return typed
 	}
+}
+
+func convertBytes(data []byte) any {
+	// Try to parse as JSON first
+	var jsonVal any
+	if err := json.Unmarshal(data, &jsonVal); err == nil {
+		return jsonVal
+	}
+	// Otherwise return as string
+	return string(data)
+}
+
+func convertNullString(ns sql.NullString) any {
+	if ns.Valid {
+		return ns.String
+	}
+
+	return nil
+}
+
+func convertNullInt64(ni sql.NullInt64) any {
+	if ni.Valid {
+		return ni.Int64
+	}
+
+	return nil
+}
+
+func convertNullFloat64(nf sql.NullFloat64) any {
+	if nf.Valid {
+		return nf.Float64
+	}
+
+	return nil
+}
+
+func convertNullBool(nb sql.NullBool) any {
+	if nb.Valid {
+		return nb.Bool
+	}
+
+	return nil
+}
+
+func convertNullTime(nt sql.NullTime) any {
+	if nt.Valid {
+		return nt.Time
+	}
+
+	return nil
 }
 
 // boolPtr returns a pointer to a bool.

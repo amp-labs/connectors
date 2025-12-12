@@ -22,7 +22,10 @@ const (
 	metadataAction   = "METADATA$ACTION"
 	metadataIsUpdate = "METADATA$ISUPDATE"
 	metadataRowID    = "METADATA$ROW_ID"
+)
 
+// Read mode constants.
+const (
 	// readModeFullBackfill reads all data from the Dynamic Table.
 	// Used when neither Since nor Until is set.
 	readModeFullBackfill readMode = iota
@@ -37,11 +40,6 @@ const (
 	readModeTimeRange
 )
 
-// Errors for read operations.
-var (
-	errPrimaryKeyRequired      = fmt.Errorf("primaryKey is required for consistent pagination")
-	errTimestampColumnRequired = fmt.Errorf("timestampColumn is required when Since or Until is specified")
-)
 
 // Read reads data from a Snowflake Stream (incremental) or Dynamic Table (full/historical).
 //
@@ -57,7 +55,7 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 	// Get object config from connector's parsed metadata
 	objConfig, ok := c.objects.Get(params.ObjectName)
 	if !ok {
-		return nil, fmt.Errorf("object %q not found in connector configuration", params.ObjectName)
+		return nil, fmt.Errorf("%w: %s", errObjectNotFound, params.ObjectName)
 	}
 
 	// Validate that primaryKey is set (required for consistent pagination)
@@ -98,11 +96,11 @@ func (c *Connector) AcknowledgeStreamConsumption(ctx context.Context, objectName
 	// Get object config
 	objConfig, ok := c.objects.Get(objectName)
 	if !ok {
-		return fmt.Errorf("object %q not found in connector configuration", objectName)
+		return fmt.Errorf("%w: %s", errObjectNotFound, objectName)
 	}
 
 	if objConfig.stream.name == "" {
-		return fmt.Errorf("stream.name not configured for object %q", objectName)
+		return fmt.Errorf("%w: %s", errStreamNotConfigured, objectName)
 	}
 
 	// TODO: Implement stream consumption via DML operation.
@@ -158,7 +156,7 @@ func (c *Connector) readFromStream(
 	objConfig *objectConfig,
 ) (*common.ReadResult, error) {
 	if objConfig.stream.name == "" {
-		return nil, fmt.Errorf("stream.name not configured for object %q", params.ObjectName)
+		return nil, fmt.Errorf("%w: %s", errStreamNotConfigured, params.ObjectName)
 	}
 
 	streamName := c.getFullyQualifiedName(objConfig.stream.name)
@@ -171,6 +169,7 @@ func (c *Connector) readFromStream(
 
 	// Parse offset from NextPage token (default 0)
 	offset := 0
+
 	if params.NextPage != "" {
 		parsed, err := strconv.Atoi(string(params.NextPage))
 		if err != nil {
@@ -219,7 +218,7 @@ func (c *Connector) readFromDynamicTable(
 	objConfig *objectConfig,
 ) (*common.ReadResult, error) {
 	if objConfig.dynamicTable.name == "" {
-		return nil, fmt.Errorf("dynamicTable.name not configured for object %q", params.ObjectName)
+		return nil, fmt.Errorf("%w: %s", errDynamicTableNotConfig, params.ObjectName)
 	}
 
 	tableName := c.getFullyQualifiedName(objConfig.dynamicTable.name)
@@ -232,6 +231,7 @@ func (c *Connector) readFromDynamicTable(
 
 	// Parse offset from NextPage token (default 0)
 	offset := 0
+
 	if params.NextPage != "" {
 		parsed, err := strconv.Atoi(string(params.NextPage))
 		if err != nil {
@@ -280,9 +280,13 @@ func (c *Connector) buildStreamQuery(
 	pageSize int,
 	offset int,
 ) string {
-	// Always select all columns plus CDC metadata for streams
-	// Fields filtering is done at the result processing level
-	query := fmt.Sprintf(`SELECT *, %s, %s, %s FROM %s`,
+	// Always select all columns plus CDC metadata for streams.
+	// Fields filtering is done at the result processing level.
+	// We need SELECT * here because:
+	// 1. We don't know the columns at query build time (they're discovered from the stream)
+	// 2. We need all columns for the Raw field in ReadResultRow
+	// 3. Field filtering is applied post-query in processRows
+	query := fmt.Sprintf(`SELECT *, %s, %s, %s FROM %s`, //nolint:unqueryvet // SELECT * required for dynamic column discovery
 		metadataAction, metadataIsUpdate, metadataRowID, streamName)
 
 	// Order by primary key for consistent pagination across calls
@@ -302,8 +306,12 @@ func (c *Connector) buildDynamicTableQuery(
 	pageSize int,
 	offset int,
 ) string {
-	// Always select all columns; field filtering is done at result processing level
-	query := fmt.Sprintf(`SELECT * FROM %s`, tableName)
+	// Always select all columns; field filtering is done at result processing level.
+	// We need SELECT * here because:
+	// 1. We don't know the columns at query build time (they're discovered from the table)
+	// 2. We need all columns for the Raw field in ReadResultRow
+	// 3. Field filtering is applied post-query in processRows
+	query := fmt.Sprintf(`SELECT * FROM %s`, tableName) //nolint:unqueryvet // SELECT * required for dynamic column discovery
 
 	// Build WHERE conditions for time filtering using params.Since and params.Until
 	var conditions []string

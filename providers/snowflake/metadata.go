@@ -45,6 +45,7 @@ func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*
 	}
 
 	fields := make(common.FieldsMetadata)
+
 	for _, col := range columns {
 		// Lowercase field names for consistency.
 		// Snowflake returns UPPERCASE column names, but we normalize to lowercase
@@ -64,7 +65,27 @@ func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*
 
 // getColumnMetadata retrieves column information for a table/view/dynamic table.
 func (c *Connector) getColumnMetadata(ctx context.Context, objectName string) ([]ColumnInfo, error) {
-	// Use INFORMATION_SCHEMA.COLUMNS for rich metadata
+	rows, err := c.queryColumnMetadata(ctx, objectName)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	columns, err := c.scanColumnRows(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(columns) == 0 {
+		return nil, fmt.Errorf("%w: %s", errObjectNoColumns, objectName)
+	}
+
+	return columns, nil
+}
+
+func (c *Connector) queryColumnMetadata(ctx context.Context, objectName string) (*sql.Rows, error) {
+	// Use INFORMATION_SCHEMA.COLUMNS for rich metadata.
+	// The database name comes from our validated connection configuration, not user input.
 	query := fmt.Sprintf(`
 		SELECT
 			COLUMN_NAME,
@@ -79,59 +100,23 @@ func (c *Connector) getColumnMetadata(ctx context.Context, objectName string) ([
 		WHERE TABLE_SCHEMA = ?
 		  AND TABLE_NAME = ?
 		ORDER BY ORDINAL_POSITION
-	`, c.handle.database)
+	`, c.handle.database) //nolint:gosec // database name is from validated config, not user input
 
 	rows, err := c.handle.db.QueryContext(ctx, query, strings.ToUpper(c.handle.schema), strings.ToUpper(objectName))
 	if err != nil {
 		return nil, fmt.Errorf("failed to query columns: %w", err)
 	}
-	defer rows.Close()
 
+	return rows, nil
+}
+
+func (c *Connector) scanColumnRows(rows *sql.Rows) ([]ColumnInfo, error) {
 	var columns []ColumnInfo
 
 	for rows.Next() {
-		var col ColumnInfo
-
-		var isNullable string
-
-		var defaultValue, comment sql.NullString
-
-		var charMaxLen, numPrecision, numScale sql.NullInt64
-
-		err := rows.Scan(
-			&col.Name,
-			&col.DataType,
-			&isNullable,
-			&defaultValue,
-			&comment,
-			&charMaxLen,
-			&numPrecision,
-			&numScale,
-		)
+		col, err := c.scanSingleColumn(rows)
 		if err != nil {
-			return nil, fmt.Errorf("failed to scan column: %w", err)
-		}
-
-		col.IsNullable = isNullable == "YES"
-
-		if defaultValue.Valid {
-			col.DefaultValue = &defaultValue.String
-		}
-
-		if comment.Valid {
-			col.Comment = &comment.String
-		}
-
-		if charMaxLen.Valid {
-			col.CharacterMaxLength = &charMaxLen.Int64
-		}
-
-		if numPrecision.Valid {
-			col.NumericPrecision = &numPrecision.Int64
-		}
-
-		if numScale.Valid {
-			col.NumericScale = &numScale.Int64
+			return nil, err
 		}
 
 		columns = append(columns, col)
@@ -141,9 +126,54 @@ func (c *Connector) getColumnMetadata(ctx context.Context, objectName string) ([
 		return nil, fmt.Errorf("error iterating columns: %w", err)
 	}
 
-	if len(columns) == 0 {
-		return nil, fmt.Errorf("object %s not found or has no columns", objectName)
+	return columns, nil
+}
+
+func (c *Connector) scanSingleColumn(rows *sql.Rows) (ColumnInfo, error) {
+	var col ColumnInfo
+
+	var isNullable string
+
+	var defaultValue, comment sql.NullString
+
+	var charMaxLen, numPrecision, numScale sql.NullInt64
+
+	err := rows.Scan(
+		&col.Name,
+		&col.DataType,
+		&isNullable,
+		&defaultValue,
+		&comment,
+		&charMaxLen,
+		&numPrecision,
+		&numScale,
+	)
+	if err != nil {
+		return ColumnInfo{}, fmt.Errorf("failed to scan column: %w", err)
 	}
 
-	return columns, nil
+	col.IsNullable = isNullable == "YES"
+	col.DefaultValue = nullStringToPtr(defaultValue)
+	col.Comment = nullStringToPtr(comment)
+	col.CharacterMaxLength = nullInt64ToPtr(charMaxLen)
+	col.NumericPrecision = nullInt64ToPtr(numPrecision)
+	col.NumericScale = nullInt64ToPtr(numScale)
+
+	return col, nil
+}
+
+func nullStringToPtr(ns sql.NullString) *string {
+	if ns.Valid {
+		return &ns.String
+	}
+
+	return nil
+}
+
+func nullInt64ToPtr(ni sql.NullInt64) *int64 {
+	if ni.Valid {
+		return &ni.Int64
+	}
+
+	return nil
 }

@@ -34,7 +34,7 @@ func (s *Objects) Validate() error {
 	}
 
 	if len(errors) > 0 {
-		return fmt.Errorf("snowflake objects validation failed:\n  - %s", strings.Join(errors, "\n  - "))
+		return fmt.Errorf("%w:\n  - %s", errObjectsValidationFailed, strings.Join(errors, "\n  - "))
 	}
 
 	return nil
@@ -75,6 +75,7 @@ func (s *Objects) ToMetadataMap() map[string]string {
 
 func (s *Objects) Get(objectName string) (*objectConfig, bool) {
 	cfg, ok := (*s)[objectName]
+
 	return &cfg, ok
 }
 
@@ -134,18 +135,28 @@ const (
 	// MetadataKeyQuery is the SQL query defining the data source (object level).
 	MetadataKeyQuery = "query"
 
-	// Parent keys for nested structure.
+	// MetadataKeyDynamicTable is the parent key for dynamic table configuration.
 	MetadataKeyDynamicTable = "dynamicTable"
-	MetadataKeyStream       = "stream"
+	// MetadataKeyStream is the parent key for stream configuration.
+	MetadataKeyStream = "stream"
 
-	// Dynamic Table specific keys (nested under 'dynamicTable').
-	MetadataKeyPrimaryKey      = "primaryKey"
+	// MetadataKeyPrimaryKey is the primary key column (nested under 'dynamicTable').
+	MetadataKeyPrimaryKey = "primaryKey"
+	// MetadataKeyTimestampColumn is the timestamp column (nested under 'dynamicTable').
 	MetadataKeyTimestampColumn = "timestampColumn"
-	MetadataKeyTargetLag       = "targetLag"
-	MetadataKeyName            = "name"
+	// MetadataKeyTargetLag is the refresh interval (nested under 'dynamicTable').
+	MetadataKeyTargetLag = "targetLag"
+	// MetadataKeyName is the generated name (nested under 'dynamicTable' or 'stream').
+	MetadataKeyName = "name"
 )
 
 const objectsPrefix = "$['objects']"
+
+// Number of capture groups in regex patterns (including full match).
+const (
+	pattern3LevelGroups = 3 // full match + objectName + property
+	pattern4LevelGroups = 4 // full match + objectName + parent + property
+)
 
 func newSnowflakeObjects(paramsMap map[string]string) (*Objects, error) {
 	result := make(Objects)
@@ -167,7 +178,7 @@ func newSnowflakeObjects(paramsMap map[string]string) (*Objects, error) {
 		}
 
 		// Try 4-level pattern first (more specific)
-		if matches := pattern4Level.FindStringSubmatch(key); len(matches) == 4 {
+		if matches := pattern4Level.FindStringSubmatch(key); len(matches) == pattern4LevelGroups {
 			objectName := matches[1]
 			parent := matches[2]
 			property := matches[3]
@@ -176,21 +187,9 @@ func newSnowflakeObjects(paramsMap map[string]string) (*Objects, error) {
 
 			switch parent {
 			case MetadataKeyDynamicTable:
-				switch property {
-				case MetadataKeyPrimaryKey:
-					cfg.dynamicTable.primaryKey = value
-				case MetadataKeyTimestampColumn:
-					cfg.dynamicTable.timestampColumn = value
-				case MetadataKeyTargetLag:
-					cfg.dynamicTable.targetLag = value
-				case MetadataKeyName:
-					cfg.dynamicTable.name = value
-				}
+				cfg = setDynamicTableProperty(cfg, property, value)
 			case MetadataKeyStream:
-				switch property {
-				case MetadataKeyName:
-					cfg.stream.name = value
-				}
+				cfg = setStreamProperty(cfg, property, value)
 			}
 
 			result[objectName] = cfg
@@ -199,14 +198,13 @@ func newSnowflakeObjects(paramsMap map[string]string) (*Objects, error) {
 		}
 
 		// Try 3-level pattern (object-level properties)
-		if matches := pattern3Level.FindStringSubmatch(key); len(matches) == 3 {
+		if matches := pattern3Level.FindStringSubmatch(key); len(matches) == pattern3LevelGroups {
 			objectName := matches[1]
 			property := matches[2]
 
 			cfg := result[objectName]
 
-			switch property {
-			case MetadataKeyQuery:
+			if property == MetadataKeyQuery {
 				cfg.query = value
 			}
 
@@ -215,4 +213,27 @@ func newSnowflakeObjects(paramsMap map[string]string) (*Objects, error) {
 	}
 
 	return &result, nil
+}
+
+func setDynamicTableProperty(cfg objectConfig, property, value string) objectConfig {
+	switch property {
+	case MetadataKeyPrimaryKey:
+		cfg.dynamicTable.primaryKey = value
+	case MetadataKeyTimestampColumn:
+		cfg.dynamicTable.timestampColumn = value
+	case MetadataKeyTargetLag:
+		cfg.dynamicTable.targetLag = value
+	case MetadataKeyName:
+		cfg.dynamicTable.name = value
+	}
+
+	return cfg
+}
+
+func setStreamProperty(cfg objectConfig, property, value string) objectConfig {
+	if property == MetadataKeyName {
+		cfg.stream.name = value
+	}
+
+	return cfg
 }

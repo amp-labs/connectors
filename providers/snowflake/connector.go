@@ -1,6 +1,7 @@
 package snowflake
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -17,6 +18,17 @@ var (
 	errMissingDatabase                  = errors.New("missing database")
 	errMissingSchema                    = errors.New("missing schema")
 	errMissingRole                      = errors.New("missing role")
+)
+
+// Sentinel errors for read operations.
+var (
+	errObjectNotFound          = errors.New("object not found in connector configuration")
+	errObjectNoColumns         = errors.New("object not found or has no columns")
+	errStreamNotConfigured     = errors.New("stream.name not configured for object")
+	errDynamicTableNotConfig   = errors.New("dynamicTable.name not configured for object")
+	errPrimaryKeyRequired      = errors.New("primaryKey is required for consistent pagination")
+	errTimestampColumnRequired = errors.New("timestampColumn is required when Since or Until is specified")
+	errObjectsValidationFailed = errors.New("snowflake objects validation failed")
 )
 
 type Connector struct {
@@ -43,17 +55,19 @@ type Connector struct {
 	objects *Objects
 }
 
+// NewConnector creates a new Snowflake connector.
+//
 // TODO:
-// 1. Error handling
-// 2. Figure out permissions needed for write
-// 3. Pagination
+//   - Error handling.
+//   - Figure out permissions needed for write.
+//   - Pagination.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	connector, err := components.Initialize(providers.Snowflake, params, constructor)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize connector: %w", err)
 	}
 
-	if err := connector.setup(params); err != nil {
+	if err := connector.setup(context.Background(), params); err != nil {
 		return nil, fmt.Errorf("failed to setup connector: %w", err)
 	}
 
@@ -69,7 +83,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	return connector, nil
 }
 
-func (c *Connector) setup(params common.ConnectorParams) error {
+func (c *Connector) setup(ctx context.Context, params common.ConnectorParams) error {
 	var err error
 
 	// Parse per-object configurations.
@@ -84,10 +98,18 @@ func (c *Connector) setup(params common.ConnectorParams) error {
 	}
 
 	// Create connection info.
-	c.handle, err = newConnectionInfoFromParams(params)
+	c.handle, err = newConnectionInfoFromParams(ctx, params)
 	if err != nil {
 		return fmt.Errorf("failed to create connection info: %w", err)
 	}
 
 	return nil
+}
+
+func (c *Connector) Close() error {
+	if c.handle == nil {
+		return nil
+	}
+
+	return c.handle.db.Close()
 }

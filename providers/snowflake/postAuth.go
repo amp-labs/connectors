@@ -10,9 +10,10 @@ import (
 const DefaultTargetLag = "1 hour"
 
 // EnsureObjects ensures that the objects are created on snowflake.
+// Returns the updated Objects or nil if no objects are configured.
 func (c *Connector) EnsureObjects(ctx context.Context) (*Objects, error) {
 	if c.objects == nil {
-		return nil, nil
+		return nil, nil //nolint:nilnil // nil objects is a valid state (no objects configured)
 	}
 
 	// Validate all objects have required configuration
@@ -22,47 +23,77 @@ func (c *Connector) EnsureObjects(ctx context.Context) (*Objects, error) {
 
 	// Create dynamic tables and streams for each object, and populate their names
 	for objectName, cfg := range *c.objects {
-		needsUpdate := false
-
-		// Create dynamic table if it doesn't exist
-		if cfg.dynamicTable.name == "" {
-			// Validate the query before creating the dynamic table
-			if err := c.validateQuery(ctx, cfg.query); err != nil {
-				return nil, fmt.Errorf("invalid query for object %s: %w", objectName, err)
-			}
-
-			targetLag := cfg.dynamicTable.targetLag
-			if targetLag == "" {
-				targetLag = DefaultTargetLag
-			}
-
-			dynamicTableName := getDynamicTableName(objectName)
-			if err := c.createDynamicTable(ctx, dynamicTableName, cfg.query, targetLag); err != nil {
-				return nil, fmt.Errorf("failed to create dynamic table %s: %w", objectName, err)
-			}
-
-			cfg.dynamicTable.name = dynamicTableName
-			needsUpdate = true
+		updatedCfg, err := c.ensureSingleObject(ctx, objectName, cfg)
+		if err != nil {
+			return nil, err
 		}
 
-		// Create stream if it doesn't exist
-		if cfg.stream.name == "" {
-			streamName := getStreamName(objectName)
-			if err := c.createStream(ctx, streamName, objectName); err != nil {
-				return nil, fmt.Errorf("failed to create stream %s: %w", streamName, err)
-			}
-
-			cfg.stream.name = streamName
-			needsUpdate = true
-		}
-
-		// Only update the map if we made changes
-		if needsUpdate {
-			(*c.objects)[objectName] = cfg
+		if updatedCfg != nil {
+			(*c.objects)[objectName] = *updatedCfg
 		}
 	}
 
 	return c.objects, nil
+}
+
+func (c *Connector) ensureSingleObject(ctx context.Context, objectName string, cfg objectConfig) (*objectConfig, error) {
+	needsUpdate := false
+
+	// Create dynamic table if it doesn't exist
+	if cfg.dynamicTable.name == "" {
+		if err := c.ensureDynamicTable(ctx, objectName, &cfg); err != nil {
+			return nil, err
+		}
+
+		needsUpdate = true
+	}
+
+	// Create stream if it doesn't exist
+	if cfg.stream.name == "" {
+		if err := c.ensureStream(ctx, objectName, &cfg); err != nil {
+			return nil, err
+		}
+
+		needsUpdate = true
+	}
+
+	if needsUpdate {
+		return &cfg, nil
+	}
+
+	return nil, nil //nolint:nilnil // nil indicates no update needed
+}
+
+func (c *Connector) ensureDynamicTable(ctx context.Context, objectName string, cfg *objectConfig) error {
+	// Validate the query before creating the dynamic table
+	if err := c.validateQuery(ctx, cfg.query); err != nil {
+		return fmt.Errorf("invalid query for object %s: %w", objectName, err)
+	}
+
+	targetLag := cfg.dynamicTable.targetLag
+	if targetLag == "" {
+		targetLag = DefaultTargetLag
+	}
+
+	dynamicTableName := getDynamicTableName(objectName)
+	if err := c.createDynamicTable(ctx, dynamicTableName, cfg.query, targetLag); err != nil {
+		return fmt.Errorf("failed to create dynamic table %s: %w", objectName, err)
+	}
+
+	cfg.dynamicTable.name = dynamicTableName
+
+	return nil
+}
+
+func (c *Connector) ensureStream(ctx context.Context, objectName string, cfg *objectConfig) error {
+	streamName := getStreamName(objectName)
+	if err := c.createStream(ctx, streamName, objectName); err != nil {
+		return fmt.Errorf("failed to create stream %s: %w", streamName, err)
+	}
+
+	cfg.stream.name = streamName
+
+	return nil
 }
 
 // createDynamicTable creates a Dynamic Table from a SQL query.

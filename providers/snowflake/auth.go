@@ -1,20 +1,22 @@
 package snowflake
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 )
 
-var (
+// Metadata keys for connection configuration.
+const (
 	metadataKeyDatabase  = "database"
 	metadataKeySchema    = "schema"
 	metadataKeyRole      = "role"
 	metadataKeyWarehouse = "warehouse"
 )
 
-// TODO: Manage connection lifecycle
+// TODO: Manage connection lifecycle.
 type connectionInfo struct {
 	db        *sql.DB
 	warehouse string
@@ -48,12 +50,11 @@ func (a *connectionInfo) validate() error {
 }
 
 func newConnectionInfo(
+	ctx context.Context,
 	db *sql.DB,
-	warehouse string,
-	database string,
-	schema string,
-	role string) (*connectionInfo, error) {
-	c := &connectionInfo{
+	warehouse, database, schema, role string,
+) (*connectionInfo, error) {
+	connInfo := &connectionInfo{
 		db:        db,
 		warehouse: warehouse,
 		database:  database,
@@ -61,20 +62,26 @@ func newConnectionInfo(
 		role:      role,
 	}
 
-	if err := c.validate(); err != nil {
+	if err := connInfo.validate(); err != nil {
 		return nil, fmt.Errorf("failed to validate connection info: %w", err)
 	}
 
-	if err := c.db.Ping(); err != nil {
+	if err := connInfo.db.PingContext(ctx); err != nil {
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	return c, nil
+	return connInfo, nil
 }
 
-func newConnectionInfoFromParams(params common.ConnectorParams) (*connectionInfo, error) {
+func newConnectionInfoFromParams(ctx context.Context, params common.ConnectorParams) (*connectionInfo, error) {
+	db, ok := params.CustomAuthenticatedClient.(*sql.DB)
+	if !ok {
+		return nil, errInvalidCustomAuthenticatedClient
+	}
+
 	return newConnectionInfo(
-		params.CustomAuthenticatedClient.(*sql.DB),
+		ctx,
+		db,
 		params.Metadata[metadataKeyWarehouse],
 		params.Metadata[metadataKeyDatabase],
 		params.Metadata[metadataKeySchema],
