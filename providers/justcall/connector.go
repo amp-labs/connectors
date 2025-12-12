@@ -3,6 +3,7 @@ package justcall
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
@@ -19,6 +20,7 @@ type Connector struct {
 	components.SchemaProvider
 	components.Reader
 	components.Writer
+	components.Deleter
 
 	BaseURL  string
 	ModuleID common.ModuleID
@@ -60,6 +62,17 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	connector.Deleter = deleter.NewHTTPDeleter(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ModuleID,
+		operations.DeleteHandlers{
+			BuildRequest:  connector.buildDeleteRequest,
+			ParseResponse: connector.parseDeleteResponse,
 			ErrorHandler:  common.InterpretError,
 		},
 	)

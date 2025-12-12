@@ -254,3 +254,64 @@ func tryExtractID(query *jsonquery.Query) string {
 
 	return ""
 }
+
+// deletableObjectsWithPathID lists objects where RecordId goes in the URL path for delete.
+var deletableObjectsWithPathID = map[string]string{ //nolint:gochecknoglobals
+	"tags":                  "/texts/tags",
+	"sales_dialer/contacts": "/sales_dialer/contacts",
+	"webhooks":              "/webhooks/url",
+}
+
+// deletableObjectsWithQueryID lists objects where RecordId goes in query params for delete.
+var deletableObjectsWithQueryID = map[string]string{ //nolint:gochecknoglobals
+	"contacts": "id",
+}
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	url, err := c.buildDeleteURL(params)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
+}
+
+func (c *Connector) buildDeleteURL(params common.DeleteParams) (*urlbuilder.URL, error) {
+	modulePath := metadata.Schemas.LookupModuleURLPath(c.ModuleID)
+
+	// Check if object uses path-based ID
+	if basePath, ok := deletableObjectsWithPathID[params.ObjectName]; ok {
+		return urlbuilder.New(c.BaseURL, modulePath, basePath, params.RecordId)
+	}
+
+	// Check if object uses query param for ID
+	queryParam, ok := deletableObjectsWithQueryID[params.ObjectName]
+	if !ok {
+		return nil, common.ErrOperationNotSupportedForObject
+	}
+
+	path, err := metadata.Schemas.FindURLPath(c.ModuleID, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	url, err := urlbuilder.New(c.BaseURL, modulePath, path)
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam(queryParam, params.RecordId)
+
+	return url, nil
+}
+
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context,
+	params common.DeleteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
+}
