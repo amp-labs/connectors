@@ -1,6 +1,6 @@
 module github.com/amp-labs/connectors
 
-go 1.25
+go 1.25.0
 
 require (
 	github.com/PuerkitoBio/goquery v1.11.0
