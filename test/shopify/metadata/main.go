@@ -14,7 +14,7 @@ func main() {
 
 	conn := shopify.GetShopifyConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"products", "orders", "customers", "collections", "inventoryItem"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"products", "orders", "customers"})
 	if err != nil {
 		log.Fatal("Error fetching metadata: ", err)
 	}
