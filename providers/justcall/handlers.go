@@ -14,15 +14,16 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+// Pagination constants for JustCall API.
+// Different endpoints have different max page sizes.
+// Reference: https://developer.justcall.io/reference/pagination
 const (
-	// JustCall pagination: max 100 per page for most endpoints.
-	// https://developer.justcall.io/reference/call_list_v21
-	defaultPerPage = "100"
-	perPage50      = "50"
-	perPage20      = "20"
+	defaultPerPage = "100" // Default max for most endpoints
+	perPage50      = "50"  // For messages, whatsapp/messages, campaigns
+	perPage20      = "20"  // For AI endpoints (calls_ai, meetings_ai)
 
-	// JustCall datetime format: yyyy-mm-dd hh:mm:ss or yyyy-mm-dd.
-	// https://developer.justcall.io/reference/call_list_v21
+	// JustCall datetime format for incremental sync.
+	// Reference: https://developer.justcall.io/reference/call_list_v21
 	datetimeFormat = "2006-01-02 15:04:05"
 )
 
@@ -54,6 +55,8 @@ var objectsWithIncrementalSync = map[string]bool{ //nolint:gochecknoglobals
 	"sales_dialer/campaigns": true,
 }
 
+// buildReadRequest constructs the HTTP request for read operations.
+// Handles pagination via next_page_link and incremental sync via from_datetime/to_datetime.
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if params.NextPage != "" {
 		url, err := urlbuilder.New(params.NextPage.String())
@@ -143,6 +146,9 @@ var objectsWithPUTOnly = map[string]bool{ //nolint:gochecknoglobals
 	"users/availability": true,
 }
 
+// buildWriteRequest constructs the HTTP request for write operations.
+// Uses POST for create, PUT for update. Some objects use special endpoints.
+// Reference: https://developer.justcall.io/reference/introduction
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	var (
 		url    *urlbuilder.URL
@@ -276,6 +282,9 @@ var deletableObjectsWithQueryID = map[string]string{ //nolint:gochecknoglobals
 	"contacts": "id",
 }
 
+// buildDeleteRequest constructs the HTTP request for delete operations.
+// Note: JustCall requires empty JSON body {} for DELETE requests.
+// Two patterns: path-based ID (/endpoint/{id}) or query param (/endpoint?id={id}).
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
 	url, err := c.buildDeleteURL(params)
 	if err != nil {

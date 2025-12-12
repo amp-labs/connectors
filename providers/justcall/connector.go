@@ -1,3 +1,5 @@
+// Package justcall provides a connector for the JustCall API.
+// API Documentation: https://developer.justcall.io/reference/introduction
 package justcall
 
 import (
@@ -12,11 +14,15 @@ import (
 	"github.com/amp-labs/connectors/providers/justcall/metadata"
 )
 
+// Connector is a JustCall connector.
 type Connector struct {
+	// Basic connector
 	*components.Connector
 
+	// Require authenticated client
 	common.RequireAuthenticatedClient
 
+	// Supported operations
 	components.SchemaProvider
 	components.Reader
 	components.Writer

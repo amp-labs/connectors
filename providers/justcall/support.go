@@ -10,6 +10,8 @@ import (
 )
 
 // writableObjects lists objects that support write operations.
+// Note: Some objects require additional setup (10DLC, WhatsApp Business, AI agents).
+// Reference: https://developer.justcall.io/reference/introduction
 var writableObjects = []string{ //nolint:gochecknoglobals
 	"contacts",
 	"contacts/status",
@@ -23,6 +25,7 @@ var writableObjects = []string{ //nolint:gochecknoglobals
 }
 
 // deletableObjects lists objects that support delete operations.
+// Note: webhooks use dedicated subscriber connector pattern for production use.
 var deletableObjects = []string{ //nolint:gochecknoglobals
 	"contacts",
 	"tags",
@@ -30,6 +33,8 @@ var deletableObjects = []string{ //nolint:gochecknoglobals
 	"webhooks",
 }
 
+// supportedOperations returns the endpoint registry for JustCall connector.
+// Includes read, write, and delete support for various objects.
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := metadata.Schemas.ObjectNames().GetList(common.ModuleRoot)
 
