@@ -98,8 +98,7 @@ func (c *Connector) Subscribe(
 
 		if req != nil && req.Filters != nil {
 			for objKey, filter := range req.Filters {
-				objName := string(objKey)
-				if naming.PluralityAndCaseIgnoreEqual(objName, string(objName)) {
+				if naming.PluralityAndCaseIgnoreEqual(string(objKey), string(objName)) {
 					channelMetadata.EnrichedFields = filter.EnrichedFields
 					channelMetadata.FilterExpression = filter.FilterExpression
 
