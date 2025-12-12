@@ -81,11 +81,3 @@ func newConnectionInfoFromParams(params common.ConnectorParams) (*connectionInfo
 		params.Metadata[metadataKeyRole],
 	)
 }
-
-func (c *connectionInfo) close() error {
-	if c.db != nil {
-		return c.db.Close()
-	}
-
-	return nil
-}

@@ -27,6 +27,7 @@ func (s *Objects) ToMetadataMap() map[string]string {
 	// Reverse of newSnowflakeObjects
 	for objectName, objectConfig := range *s {
 		addIfNotEmpty(fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyQuery), objectConfig.query)
+		addIfNotEmpty(fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyPrimaryKey), objectConfig.primaryKey)
 		addIfNotEmpty(fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyTimestampColumn), objectConfig.timestampColumn)
 		addIfNotEmpty(fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyTargetLag), objectConfig.targetLag)
 		addIfNotEmpty(fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyDynamicTableName), objectConfig.dynamicTableName)
@@ -39,6 +40,10 @@ func (s *Objects) ToMetadataMap() map[string]string {
 type objectConfig struct {
 	// query is the SQL query defining the data that we treat as an object.
 	query string
+
+	// primaryKey is the column used for consistent ordering during pagination.
+	// This should be a unique, stable column (e.g., "id", "account_id").
+	primaryKey string
 
 	// timestampColumn is the column used for incremental filtering on the
 	// dynamic table generated over the query.
@@ -60,6 +65,7 @@ type objectConfig struct {
 // These are the property names expected in JSONPath keys like $['objects']['objName']['query'].
 const (
 	MetadataKeyQuery            = "query"
+	MetadataKeyPrimaryKey       = "primaryKey"
 	MetadataKeyTimestampColumn  = "timestampColumn"
 	MetadataKeyTargetLag        = "targetLag"
 	MetadataKeyDynamicTableName = "dynamicTableName"
@@ -100,6 +106,8 @@ func newSnowflakeObjects(paramsMap map[string]string) (*Objects, error) {
 		switch property {
 		case MetadataKeyQuery:
 			cfg.query = value
+		case MetadataKeyPrimaryKey:
+			cfg.primaryKey = value
 		case MetadataKeyTimestampColumn:
 			cfg.timestampColumn = value
 		case MetadataKeyTargetLag:
@@ -142,9 +150,14 @@ func (c *Connector) EnsureObjects(ctx context.Context) (*Objects, error) {
 
 		// Create dynamic table if it doesn't exist
 		if objectConfig.dynamicTableName == "" {
+			// Validate the query before creating the dynamic table
+			if err := c.ValidateQuery(ctx, objectConfig.query); err != nil {
+				return nil, fmt.Errorf("invalid query for object %s: %w", objectName, err)
+			}
+
 			targetLag := objectConfig.targetLag
 			if targetLag == "" {
-				targetLag = "1 hour"
+				targetLag = DefaultTargetLag
 			}
 
 			dynamicTableName := getDynamicTableName(objectName)

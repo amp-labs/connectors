@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -47,7 +48,7 @@ func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*
 	for _, col := range columns {
 		fields[col.Name] = common.FieldMetadata{
 			DisplayName:  col.Name,
-			ValueType:    snowflakeTypeToValueTypeWithScale(col.DataType, col.NumericScale),
+			ValueType:    snowflakeTypeToValueType(col.DataType, col.NumericScale),
 			ProviderType: col.DataType,
 			ReadOnly:     boolPtr(false), // Snowflake columns are generally writable if table is
 			IsRequired:   boolPtr(!col.IsNullable),
@@ -76,7 +77,7 @@ func (c *Connector) getColumnMetadata(ctx context.Context, objectName string) ([
 		ORDER BY ORDINAL_POSITION
 	`, c.handle.database)
 
-	rows, err := c.handle.db.QueryContext(ctx, query, c.handle.schema, objectName)
+	rows, err := c.handle.db.QueryContext(ctx, query, strings.ToUpper(c.handle.schema), strings.ToUpper(objectName))
 	if err != nil {
 		return nil, fmt.Errorf("failed to query columns: %w", err)
 	}

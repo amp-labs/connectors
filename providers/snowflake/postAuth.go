@@ -7,15 +7,25 @@ import (
 )
 
 // DefaultTargetLag is the default target lag for Dynamic Tables.
-const DefaultTargetLag = "1 minute"
+const DefaultTargetLag = "1 hour"
 
 // ValidateQuery validates a SQL query by running EXPLAIN.
 // This checks syntax and permissions without executing the query.
 func (c *Connector) ValidateQuery(ctx context.Context, query string) error {
 	explainQuery := "EXPLAIN " + query
 
-	_, err := c.handle.db.ExecContext(ctx, explainQuery)
+	rows, err := c.handle.db.QueryContext(ctx, explainQuery)
 	if err != nil {
+		return fmt.Errorf("query validation failed: %w", err)
+	}
+	defer rows.Close()
+
+	// Drain the result set to ensure the query completes
+	for rows.Next() {
+		// We don't need the explain output, just validating
+	}
+
+	if err := rows.Err(); err != nil {
 		return fmt.Errorf("query validation failed: %w", err)
 	}
 

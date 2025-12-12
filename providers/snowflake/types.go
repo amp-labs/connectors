@@ -34,9 +34,8 @@ type ColumnInfo struct {
 }
 
 // snowflakeTypeToValueType maps Snowflake data types to Ampersand ValueTypes.
-// Note: For NUMBER types with scale (e.g., NUMBER(10,2)), use snowflakeTypeToValueTypeWithScale
-// to correctly identify decimal types.
-func snowflakeTypeToValueType(snowflakeType string) common.ValueType {
+// For NUMBER(p,s): if scale > 0, it's a decimal (Float), otherwise it's an integer (Int).
+func snowflakeTypeToValueType(snowflakeType string, scale *int64) common.ValueType {
 	// Normalize the type to uppercase for comparison
 	upperType := strings.ToUpper(snowflakeType)
 
@@ -46,58 +45,62 @@ func snowflakeTypeToValueType(snowflakeType string) common.ValueType {
 	}
 
 	switch upperType {
-	case "VARCHAR", "TEXT", "STRING", "CHAR", "CHARACTER":
+	// String types
+	case "VARCHAR", "TEXT", "STRING", "CHAR", "CHARACTER", "NCHAR", "NVARCHAR", "NVARCHAR2":
 		return common.ValueTypeString
 
-	// NUMBER without scale info defaults to Int - caller should use
-	// snowflakeTypeToValueTypeWithScale for accurate NUMBER handling
-	case "NUMBER", "INT", "INTEGER", "BIGINT", "SMALLINT", "TINYINT", "BYTEINT":
+	// Integer types - NUMBER without scale defaults to Int
+	case "INT", "INTEGER", "BIGINT", "SMALLINT", "TINYINT", "BYTEINT":
 		return common.ValueTypeInt
 
-	case "FLOAT", "FLOAT4", "FLOAT8", "DOUBLE", "DOUBLE PRECISION", "REAL":
+	// NUMBER/NUMERIC/DECIMAL: check scale to determine Int vs Float
+	case "NUMBER", "NUMERIC", "DECIMAL":
+		if scale != nil && *scale > 0 {
+			return common.ValueTypeFloat
+		}
+
+		return common.ValueTypeInt
+
+	// Float types
+	case "FLOAT", "FLOAT4", "FLOAT8", "DOUBLE", "DOUBLE PRECISION", "REAL", "DECFLOAT":
 		return common.ValueTypeFloat
 
+	// Boolean
 	case "BOOLEAN":
 		return common.ValueTypeBoolean
 
+	// Date only
 	case "DATE":
 		return common.ValueTypeDate
 
+	// Date/Time types
 	case "TIMESTAMP", "TIMESTAMP_LTZ", "TIMESTAMP_NTZ", "TIMESTAMP_TZ",
 		"DATETIME", "TIME":
 		return common.ValueTypeDateTime
 
-	case "VARIANT", "OBJECT", "ARRAY":
+	// Semi-structured types
+	case "VARIANT", "OBJECT", "ARRAY", "MAP":
 		return common.ValueTypeOther
 
+	// Binary types
 	case "BINARY", "VARBINARY":
 		return common.ValueTypeOther
 
+	// Geospatial types
 	case "GEOGRAPHY", "GEOMETRY":
+		return common.ValueTypeOther
+
+	// Vector type (for ML/AI workloads)
+	case "VECTOR":
+		return common.ValueTypeOther
+
+	// File type (unstructured data reference)
+	case "FILE":
 		return common.ValueTypeOther
 
 	default:
 		return common.ValueTypeOther
 	}
-}
-
-// snowflakeTypeToValueTypeWithScale maps Snowflake data types to Ampersand ValueTypes,
-// correctly handling NUMBER types with scale information.
-// For NUMBER(p,s): if scale > 0, it's a decimal (Float), otherwise it's an integer (Int).
-func snowflakeTypeToValueTypeWithScale(snowflakeType string, scale *int64) common.ValueType {
-	upperType := strings.ToUpper(snowflakeType)
-
-	// Handle parameterized types
-	if idx := strings.Index(upperType, "("); idx != -1 {
-		upperType = upperType[:idx]
-	}
-
-	// Special handling for NUMBER with scale
-	if upperType == "NUMBER" && scale != nil && *scale > 0 {
-		return common.ValueTypeFloat
-	}
-
-	return snowflakeTypeToValueType(snowflakeType)
 }
 
 // boolPtr returns a pointer to a bool.

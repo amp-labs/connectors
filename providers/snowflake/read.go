@@ -5,16 +5,26 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
+
+// DefaultPageSize is the default number of rows to fetch per page.
+const DefaultPageSize = 2000
 
 // CDC metadata columns from Snowflake streams.
 const (
 	metadataAction   = "METADATA$ACTION"
 	metadataIsUpdate = "METADATA$ISUPDATE"
 	metadataRowID    = "METADATA$ROW_ID"
+)
+
+// Errors for read operations.
+var (
+	errTimestampColumnRequired = fmt.Errorf("timestampColumn is required when Since or Until is specified")
 )
 
 // readMode represents the type of read operation to perform.
@@ -86,6 +96,12 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 		return nil, fmt.Errorf("object %q not found in connector configuration", params.ObjectName)
 	}
 
+	// Validate that timestampColumn is set if time filtering is requested
+	hasTimeFilter := !params.Since.IsZero() || !params.Until.IsZero()
+	if hasTimeFilter && objConfig.timestampColumn == "" {
+		return nil, errTimestampColumnRequired
+	}
+
 	// Determine read mode based on Since/Until
 	mode := determineReadMode(params)
 
@@ -102,6 +118,32 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 		// Should never reach here
 		return c.readFromDynamicTable(ctx, params, objConfig)
 	}
+}
+
+// AcknowledgeStreamConsumption advances the stream offset by consuming the pending changes.
+// This should be called after successfully processing data from readFromStream.
+// Note: SELECT alone does not advance the stream offset; only DML operations do.
+//
+// TODO: Implement the actual consumption logic. This is a stub for now.
+func (c *Connector) AcknowledgeStreamConsumption(ctx context.Context, objectName string) error {
+	// Get object config
+	objConfig, ok := c.objects.Get(objectName)
+	if !ok {
+		return fmt.Errorf("object %q not found in connector configuration", objectName)
+	}
+
+	if objConfig.streamName == "" {
+		return fmt.Errorf("streamName not configured for object %q", objectName)
+	}
+
+	// TODO: Implement stream consumption via DML operation.
+	// Options:
+	// 1. MERGE into a staging table
+	// 2. INSERT INTO a tracking table (even with no rows)
+	// 3. CREATE OR REPLACE STREAM to reset offset
+	//
+	// For now, this is a stub - the caller must decide how to consume.
+	return nil
 }
 
 // readFromStream reads CDC data from a Snowflake Stream.
@@ -126,7 +168,7 @@ func (c *Connector) readFromStream(
 	defer rows.Close()
 
 	// Process rows
-	resultRows, err := c.processRows(ctx, rows)
+	resultRows, err := c.processRows(rows, params.Fields)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +176,7 @@ func (c *Connector) readFromStream(
 	return &common.ReadResult{
 		Rows: int64(len(resultRows)),
 		Data: resultRows,
-		Done: true, // Streams don't paginate in the traditional sense
+		Done: true, // Streams return all pending changes; no pagination
 	}, nil
 }
 
@@ -150,8 +192,25 @@ func (c *Connector) readFromDynamicTable(
 
 	tableName := c.getFullyQualifiedName(objConfig.dynamicTableName)
 
-	// Build SELECT query with time filtering
-	query := c.buildDynamicTableQuery(tableName, params, objConfig)
+	// Determine page size
+	pageSize := params.PageSize
+	if pageSize <= 0 {
+		pageSize = DefaultPageSize
+	}
+
+	// Parse offset from NextPage token (default 0)
+	offset := 0
+	if params.NextPage != "" {
+		parsed, err := strconv.Atoi(string(params.NextPage))
+		if err != nil {
+			return nil, fmt.Errorf("invalid NextPage token: %w", err)
+		}
+
+		offset = parsed
+	}
+
+	// Build SELECT query with time filtering and pagination
+	query := c.buildDynamicTableQuery(tableName, params, objConfig, pageSize, offset)
 
 	rows, err := c.handle.db.QueryContext(ctx, query)
 	if err != nil {
@@ -160,51 +219,37 @@ func (c *Connector) readFromDynamicTable(
 	defer rows.Close()
 
 	// Process rows
-	resultRows, err := c.processRows(ctx, rows)
+	resultRows, err := c.processRows(rows, params.Fields)
 	if err != nil {
 		return nil, err
 	}
 
-	// Determine if there are more pages
-	done := true
-	if params.PageSize > 0 && len(resultRows) == params.PageSize {
-		// Might be more data - but we don't have cursor-based pagination yet
-		done = false
+	// Determine if there might be more data
+	done := len(resultRows) < pageSize
+
+	// Calculate next page token
+	var nextPage common.NextPageToken
+	if !done {
+		nextPage = common.NextPageToken(strconv.Itoa(offset + pageSize))
 	}
 
 	return &common.ReadResult{
-		Rows: int64(len(resultRows)),
-		Data: resultRows,
-		Done: done,
+		Rows:     int64(len(resultRows)),
+		Data:     resultRows,
+		NextPage: nextPage,
+		Done:     done,
 	}, nil
 }
 
 // buildStreamQuery builds the SQL query for reading from a stream.
 func (c *Connector) buildStreamQuery(streamName string, params common.ReadParams) string {
-	var selectCols string
+	// Always select all columns plus CDC metadata for streams
+	// Fields filtering is done at the result processing level
+	query := fmt.Sprintf(`SELECT *, %s, %s, %s FROM %s`,
+		metadataAction, metadataIsUpdate, metadataRowID, streamName)
 
-	if len(params.Fields) > 0 {
-		// Select specific fields plus metadata columns
-		fields := params.Fields.List()
-		quotedFields := make([]string, 0, len(fields)+3)
-
-		for _, f := range fields {
-			quotedFields = append(quotedFields, fmt.Sprintf(`"%s"`, strings.ToUpper(f)))
-		}
-
-		// Always include CDC metadata columns
-		quotedFields = append(quotedFields, metadataAction, metadataIsUpdate, metadataRowID)
-		selectCols = strings.Join(quotedFields, ", ")
-	} else {
-		selectCols = fmt.Sprintf("*, %s, %s, %s", metadataAction, metadataIsUpdate, metadataRowID)
-	}
-
-	query := fmt.Sprintf(`SELECT %s FROM %s`, selectCols, streamName)
-
-	// Add LIMIT if PageSize is specified
-	if params.PageSize > 0 {
-		query = fmt.Sprintf("%s LIMIT %d", query, params.PageSize)
-	}
+	// Streams return all pending changes; we don't paginate them
+	// as they should be fully consumed to advance the offset
 
 	return query
 }
@@ -214,70 +259,68 @@ func (c *Connector) buildDynamicTableQuery(
 	tableName string,
 	params common.ReadParams,
 	objConfig *objectConfig,
+	pageSize int,
+	offset int,
 ) string {
-	var selectCols string
+	// Always select all columns; field filtering is done at result processing level
+	query := fmt.Sprintf(`SELECT * FROM %s`, tableName)
 
-	if len(params.Fields) > 0 {
-		fields := params.Fields.List()
-		quotedFields := make([]string, 0, len(fields))
-
-		for _, f := range fields {
-			quotedFields = append(quotedFields, fmt.Sprintf(`"%s"`, strings.ToUpper(f)))
-		}
-
-		selectCols = strings.Join(quotedFields, ", ")
-	} else {
-		selectCols = "*"
-	}
-
-	query := fmt.Sprintf(`SELECT %s FROM %s`, selectCols, tableName)
-
-	// Add time filtering if timestamp column is specified
+	// Build WHERE conditions for time filtering using params.Since and params.Until
 	var conditions []string
 
-	if objConfig.timestampColumn != "" {
-		if !params.Since.IsZero() {
-			conditions = append(conditions,
-				fmt.Sprintf(`"%s" >= '%s'`, strings.ToUpper(objConfig.timestampColumn), params.Since.Format("2006-01-02 15:04:05")))
-		}
+	if !params.Since.IsZero() {
+		conditions = append(conditions,
+			fmt.Sprintf(`"%s" >= '%s'`,
+				objConfig.timestampColumn,
+				params.Since.Format("2006-01-02 15:04:05.999999999")))
+	}
 
-		if !params.Until.IsZero() {
-			conditions = append(conditions,
-				fmt.Sprintf(`"%s" <= '%s'`, strings.ToUpper(objConfig.timestampColumn), params.Until.Format("2006-01-02 15:04:05")))
-		}
+	if !params.Until.IsZero() {
+		conditions = append(conditions,
+			fmt.Sprintf(`"%s" <= '%s'`,
+				objConfig.timestampColumn,
+				params.Until.Format("2006-01-02 15:04:05.999999999")))
 	}
 
 	if len(conditions) > 0 {
 		query = fmt.Sprintf("%s WHERE %s", query, strings.Join(conditions, " AND "))
 	}
 
-	// Add ordering by timestamp column if available
-	if objConfig.timestampColumn != "" {
-		query = fmt.Sprintf("%s ORDER BY \"%s\"", query, strings.ToUpper(objConfig.timestampColumn))
+	// Order by primary key for consistent pagination across calls
+	// Without ORDER BY, OFFSET-based pagination may return inconsistent results
+	if objConfig.primaryKey != "" {
+		query = fmt.Sprintf(`%s ORDER BY "%s" ASC`, query, objConfig.primaryKey)
 	}
 
-	// Add LIMIT if PageSize is specified
-	if params.PageSize > 0 {
-		query = fmt.Sprintf("%s LIMIT %d", query, params.PageSize)
-	}
+	// Add LIMIT and OFFSET for pagination
+	query = fmt.Sprintf("%s LIMIT %d OFFSET %d", query, pageSize, offset)
 
 	return query
 }
 
 // processRows converts SQL rows to ReadResultRows.
+// requestedFields specifies which fields to include in Fields; if empty, Fields will be empty.
 func (c *Connector) processRows(
-	_ context.Context,
 	rows *sql.Rows,
+	requestedFields datautils.StringSet,
 ) ([]common.ReadResultRow, error) {
 	columns, err := rows.Columns()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get columns: %w", err)
 	}
 
+	// Build a set of requested field names for quick lookup
+	requestedSet := make(map[string]bool)
+	if len(requestedFields) > 0 {
+		for _, f := range requestedFields.List() {
+			requestedSet[f] = true
+		}
+	}
+
 	var resultRows []common.ReadResultRow
 
 	for rows.Next() {
-		row, err := c.scanRow(rows, columns)
+		row, err := c.scanRow(rows, columns, requestedSet)
 		if err != nil {
 			return nil, err
 		}
@@ -293,7 +336,8 @@ func (c *Connector) processRows(
 }
 
 // scanRow scans a single row from the result set.
-func (c *Connector) scanRow(rows *sql.Rows, columns []string) (*common.ReadResultRow, error) {
+// requestedFields is a set of field names to include in Fields; if empty, Fields will be empty.
+func (c *Connector) scanRow(rows *sql.Rows, columns []string, requestedFields map[string]bool) (*common.ReadResultRow, error) {
 	// Create scan destinations
 	values := make([]any, len(columns))
 	valuePtrs := make([]any, len(columns))
@@ -318,22 +362,23 @@ func (c *Connector) scanRow(rows *sql.Rows, columns []string) (*common.ReadResul
 		// Convert sql types to Go types
 		converted := convertSQLValue(val)
 
-		// Store in raw (always)
+		// Store in raw (always includes everything)
 		raw[col] = converted
 
-		// Handle CDC metadata columns specially
+		// Handle CDC metadata columns - extract row ID but don't put in fields
 		switch col {
 		case metadataRowID:
 			if s, ok := converted.(string); ok {
 				rowID = s
 			}
-			// Also include in fields for downstream processing
-			fields[strings.ToLower(col)] = converted
+			// CDC metadata goes in raw only, not fields
 		case metadataAction, metadataIsUpdate:
-			fields[strings.ToLower(col)] = converted
+			// CDC metadata goes in raw only, not fields
 		default:
-			// For regular columns, store in fields with lowercase key
-			fields[strings.ToLower(col)] = converted
+			// Only add to fields if it was explicitly requested
+			if len(requestedFields) > 0 && requestedFields[col] {
+				fields[col] = converted
+			}
 		}
 	}
 
@@ -345,6 +390,7 @@ func (c *Connector) scanRow(rows *sql.Rows, columns []string) (*common.ReadResul
 }
 
 // getFullyQualifiedName returns the fully qualified name for an object.
+// Only the database, schema, and object names are uppercased (FQN components).
 func (c *Connector) getFullyQualifiedName(objectName string) string {
 	// If already fully qualified, return as-is
 	if strings.Contains(objectName, ".") {
@@ -357,6 +403,7 @@ func (c *Connector) getFullyQualifiedName(objectName string) string {
 		strings.ToUpper(objectName),
 	)
 }
+
 
 // convertSQLValue converts SQL types to standard Go types.
 func convertSQLValue(val any) any {
