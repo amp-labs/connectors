@@ -183,7 +183,35 @@ func (c *Connector) CreateEventChannelMember(
 		return nil, err
 	}
 
-	member.Id = res.Id
+	// Read back the created member to get the actual state from Salesforce
+	return c.GetEventChannelMember(ctx, res.Id)
+}
+
+// GetEventChannelMember retrieves an EventChannelMember by ID from Salesforce
+// nolint: lll
+// https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_platformeventchannelmember.htm
+func (c *Connector) GetEventChannelMember(
+	ctx context.Context,
+	memberId string,
+) (*EventChannelMember, error) {
+	url, err := c.getRestApiURL("tooling/sobjects/PlatformEventChannelMember/" + memberId)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.Client.Get(ctx, url.String())
+	if err != nil {
+		return nil, fmt.Errorf("failed to get event channel member: %w", err)
+	}
+
+	member, err := common.UnmarshalJSON[EventChannelMember](resp)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal event channel member: %w", err)
+	}
+
+	if member == nil {
+		return nil, common.ErrEmptyJSONHTTPResponse
+	}
 
 	return member, nil
 }
