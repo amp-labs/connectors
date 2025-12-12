@@ -46,8 +46,12 @@ func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*
 
 	fields := make(common.FieldsMetadata)
 	for _, col := range columns {
-		fields[col.Name] = common.FieldMetadata{
-			DisplayName:  col.Name,
+		// Lowercase field names for consistency.
+		// Snowflake returns UPPERCASE column names, but we normalize to lowercase
+		// so that field selection, mappings, and webhook delivery are all consistent.
+		fieldName := strings.ToLower(col.Name)
+		fields[fieldName] = common.FieldMetadata{
+			DisplayName:  col.Name, // Keep original casing for display
 			ValueType:    snowflakeTypeToValueType(col.DataType, col.NumericScale),
 			ProviderType: col.DataType,
 			ReadOnly:     boolPtr(false), // Snowflake columns are generally writable if table is
