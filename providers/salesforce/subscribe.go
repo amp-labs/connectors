@@ -8,7 +8,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
-	"github.com/amp-labs/connectors/tools/debug"
 	"github.com/go-playground/validator"
 )
 
@@ -97,8 +96,6 @@ func (c *Connector) Subscribe(
 			SelectedEntity: eventName,
 		}
 
-		fmt.Println("channelMetadata before create=========", debug.PrettyFormatStringJSON(req))
-
 		channelMember := &EventChannelMember{
 			FullName: GetChangeDataCaptureChannelMembershipName(rawChannelName, eventName),
 			Metadata: channelMetadata,
@@ -116,16 +113,12 @@ func (c *Connector) Subscribe(
 			}
 		}
 
-		fmt.Println("channelMember before create=========", debug.PrettyFormatStringJSON(channelMember))
-
 		newChannelMember, err := c.CreateEventChannelMember(ctx, channelMember)
 		if err != nil {
 			failError = fmt.Errorf("failed to create event channel member for object %s, %w", objName, err)
 
 			break
 		}
-
-		fmt.Println("newChannelMember after create=========", debug.PrettyFormatStringJSON(newChannelMember))
 
 		sfRes.EventChannelMembers[objName] = newChannelMember
 	}
