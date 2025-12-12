@@ -7,6 +7,7 @@ import (
 	"maps"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/tools/debug"
 	"github.com/go-playground/validator"
 )
@@ -96,16 +97,23 @@ func (c *Connector) Subscribe(
 			SelectedEntity: eventName,
 		}
 
-		if req != nil && req.Filters != nil && req.Filters[objName] != nil {
-			channelMetadata.EnrichedFields = req.Filters[objName].EnrichedFields
-			channelMetadata.FilterExpression = req.Filters[objName].FilterExpression
-		}
-
 		fmt.Println("channelMetadata before create=========", debug.PrettyFormatStringJSON(req))
 
 		channelMember := &EventChannelMember{
 			FullName: GetChangeDataCaptureChannelMembershipName(rawChannelName, eventName),
 			Metadata: channelMetadata,
+		}
+
+		if req != nil && req.Filters != nil {
+			for objKey, filter := range req.Filters {
+				objName := string(objKey)
+				if naming.PluralityAndCaseIgnoreEqual(objName, string(objName)) {
+					channelMetadata.EnrichedFields = filter.EnrichedFields
+					channelMetadata.FilterExpression = filter.FilterExpression
+
+					break
+				}
+			}
 		}
 
 		fmt.Println("channelMember before create=========", debug.PrettyFormatStringJSON(channelMember))
