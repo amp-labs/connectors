@@ -15,7 +15,6 @@ import (
 func GetGetResponseConnector(ctx context.Context) *getresponse.Connector {
 
 	filePath := credscanning.LoadPath(providers.GetResponse)
-	// reader := testUtils.MustCreateProvCredJSON(filePath, false)
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	options := []common.OAuthOption{

@@ -3,11 +3,13 @@ package getresponse
 import (
 	"context"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/getresponse/metadata"
 	"github.com/spyzhov/ajson"
@@ -17,6 +19,8 @@ const (
 	pageSizeKey = "perPage"
 	pageSize    = "100"
 	pageKey     = "page"
+	sinceKey    = "query[createdOn][from]"
+	untilKey    = "query[createdOn][to]"
 	apiVersion  = "v3"
 )
 
@@ -36,19 +40,28 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	// Set pagination parameters
-	url.WithQueryParam(pageSizeKey, pageSize)
+	url.WithQueryParam(pageSizeKey, strconv.Itoa(params.PageSize))
 	url.WithQueryParam(pageKey, "1")
 
-	// Add field selection if specified
-	if len(params.Fields.List()) > 0 {
-		url.WithQueryParam("fields", strings.Join(params.Fields.List(), ","))
-	}
+	// Add field selection
+	url.WithQueryParam("fields", strings.Join(params.Fields.List(), ","))
 
 	// Parse GetResponse-specific filter and sort from params.Filter
 	// Format: "query[name]=value&query[isDefault]=true&sort[name]=ASC&sort[createdOn]=DESC"
 	// This is a simple implementation - can be extended for more complex filtering
 	if params.Filter != "" {
 		addGetResponseFilters(url, params.Filter)
+	}
+
+	// Only add server-side since/until filters if the object supports them
+	if shouldAddServerSideFilter(params.ObjectName, params) {
+		if !params.Since.IsZero() {
+			url.WithQueryParam(sinceKey, datautils.Time.FormatRFC3339inUTC(params.Since))
+		}
+
+		if !params.Until.IsZero() {
+			url.WithQueryParam(untilKey, datautils.Time.FormatRFC3339inUTC(params.Until))
+		}
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -81,9 +94,7 @@ func addGetResponseFilters(url *urlbuilder.URL, filterStr string) {
 		key := strings.TrimSpace(parts[0])
 		value := strings.TrimSpace(parts[1])
 
-		// Add as unencoded query parameter (GetResponse uses bracket notation like query[name])
-		// Brackets must remain unencoded: query[name] not query%5Bname%5D
-		url.WithUnencodedQueryParam(key, value)
+		url.WithQueryParam(key, value)
 	}
 }
 
@@ -94,11 +105,13 @@ func (c *Connector) parseReadResponse(
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
 	// GetResponse returns arrays directly, not wrapped in an object
-	return common.ParseResult(
+	// Use ParseResultFiltered to support client-side filtering for objects that don't support server-side filtering
+	return common.ParseResultFiltered(
+		params,
 		response,
-		common.ExtractRecordsFromPath(""),
-		makeNextRecordsURL(c, params, request),
-		common.GetMarshaledData,
+		common.MakeRecordsFunc(""),
+		makeFilterFunc(params, request.URL),
+		common.MakeMarshaledDataFunc(nil),
 		params.Fields,
 	)
 }
@@ -107,7 +120,7 @@ func (c *Connector) parseReadResponse(
 // GetResponse uses response headers (TotalCount, TotalPages, CurrentPage) for pagination info,
 // but since we only have the response body here, we check if the current page has records.
 // If the response is empty, we're done. Otherwise, increment the page.
-func makeNextRecordsURL(c *Connector, params common.ReadParams, request *http.Request) common.NextPageFunc {
+func makeNextRecordsURL(requestURL *url.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		// Check if response has any records - if empty array, we're done
 		records, err := jsonquery.New(node).ArrayOptional("")
@@ -116,7 +129,7 @@ func makeNextRecordsURL(c *Connector, params common.ReadParams, request *http.Re
 		}
 
 		// Extract current page from request URL
-		currentPageStr := request.URL.Query().Get(pageKey)
+		currentPageStr := requestURL.Query().Get(pageKey)
 		if currentPageStr == "" {
 			currentPageStr = "1"
 		}
@@ -140,13 +153,7 @@ func makeNextRecordsURL(c *Connector, params common.ReadParams, request *http.Re
 		// Increment page for next request
 		nextPage := currentPage + 1
 
-		// Rebuild URL with incremented page
-		path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
-		if err != nil {
-			return "", nil //nolint:nilerr
-		}
-
-		url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
+		url, err := urlbuilder.FromRawURL(requestURL)
 		if err != nil {
 			return "", nil //nolint:nilerr
 		}

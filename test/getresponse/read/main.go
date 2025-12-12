@@ -2,15 +2,15 @@ package main
 
 import (
 	"context"
-	"log/slog"
-	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 	connTest "github.com/amp-labs/connectors/test/getresponse"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
 func main() {
@@ -23,40 +23,23 @@ func main() {
 
 	conn := connTest.GetGetResponseConnector(ctx)
 
-	// Test reading campaigns
-	res, err := conn.Read(ctx, common.ReadParams{
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "campaigns",
 		Fields:     connectors.Fields("campaignId", "name", "description", "createdOn", "isDefault"),
+		PageSize:   1,
 	})
-	if err != nil {
-		utils.Fail("error reading campaigns from GetResponse", "error", err)
-	}
 
-	slog.Info("Reading campaigns..")
-	utils.DumpJSON(res, os.Stdout)
-
-	// Test reading contacts
-	res, err = conn.Read(ctx, common.ReadParams{
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "contacts",
-		Fields:     connectors.Fields("contactId", "email", "name", "createdOn"),
+		Fields:     datautils.NewSet("contactId", "email", "name", "createdOn"),
+		PageSize:   1,
 	})
-	if err != nil {
-		utils.Fail("error reading contacts from GetResponse", "error", err)
-	}
 
-	slog.Info("Reading contacts..")
-	utils.DumpJSON(res, os.Stdout)
-
-	// Test reading campaigns with filter and sort
-	res, err = conn.Read(ctx, common.ReadParams{
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "campaigns",
 		Fields:     connectors.Fields("campaignId", "name", "createdOn"),
 		Filter:     "query[isDefault]=true&sort[createdOn]=DESC",
+		PageSize:   1,
 	})
-	if err != nil {
-		utils.Fail("error reading filtered campaigns from GetResponse", "error", err)
-	}
 
-	slog.Info("Reading filtered campaigns (isDefault=true, sorted by createdOn DESC)..")
-	utils.DumpJSON(res, os.Stdout)
 }
