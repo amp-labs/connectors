@@ -3,6 +3,7 @@ package sageintacct
 import (
 	"maps"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/amp-labs/amp-common/jsonpath"
@@ -39,22 +40,6 @@ func mapValuesFromEnum(fieldDef SageIntacctFieldDef) []common.FieldValue {
 	}
 
 	return values
-}
-
-// convertFieldsToDotNotation converts bracket notation fields to dot notation.
-// Example: $['audit']['createdby'] -> audit.createdby
-func convertFieldsToDotNotation(fieldNames []string) ([]string, error) {
-	dotNotation := make([]string, 0, len(fieldNames))
-
-	for _, field := range fieldNames {
-		dotNotationField, err := jsonpath.ConvertBracketToDotNotation(field)
-		if err != nil {
-			return nil, err
-		}
-		dotNotation = append(dotNotation, dotNotationField)
-	}
-
-	return dotNotation, nil
 }
 
 func buildReadBody(params common.ReadParams) (map[string]interface{}, error) {
@@ -172,4 +157,34 @@ func flattenRefs(prefix string, refs map[string]SageIntacctRef) map[string]commo
 	}
 
 	return result
+}
+
+func convertBracketToDotNotation(path string) (string, error) {
+	parsedPathResult, err := jsonpath.ParsePath(path)
+	if err != nil {
+		return "", err
+	}
+
+	var dotNotationParts []string
+	for _, segment := range parsedPathResult {
+		dotNotationParts = append(dotNotationParts, segment.Key)
+	}
+
+	return strings.Join(dotNotationParts, "."), nil
+}
+
+// convertFieldsToDotNotation converts bracket notation fields to dot notation.
+// Example: $['audit']['createdby'] -> audit.createdby
+func convertFieldsToDotNotation(fieldNames []string) ([]string, error) {
+	dotNotation := make([]string, 0, len(fieldNames))
+
+	for _, field := range fieldNames {
+		dotNotationField, err := convertBracketToDotNotation(field)
+		if err != nil {
+			return nil, err
+		}
+		dotNotation = append(dotNotation, dotNotationField)
+	}
+
+	return dotNotation, nil
 }
