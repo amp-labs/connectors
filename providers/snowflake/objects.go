@@ -68,6 +68,7 @@ func (s *Objects) ToMetadataMap() map[string]string {
 		// Stream properties (nested under 'stream')
 		streamPrefix := fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyStream)
 		addIfNotEmpty(fmt.Sprintf("%s['%s']", streamPrefix, MetadataKeyName), cfg.stream.name)
+		addIfNotEmpty(fmt.Sprintf("%s['%s']", streamPrefix, MetadataKeyConsumptionTable), cfg.stream.consumptionTable)
 	}
 
 	return result
@@ -118,6 +119,11 @@ type streamConfig struct {
 	// name is the generated Stream name (set after PostAuth flow).
 	// Used to read data for incremental syncs.
 	name string
+
+	// consumptionTable is the table used to advance stream offsets.
+	// Set after PostAuth flow. Shared across all streams but stored per-object
+	// so each object's metadata is self-contained.
+	consumptionTable string
 }
 
 // Metadata keys for per-object configuration.
@@ -148,6 +154,8 @@ const (
 	MetadataKeyTargetLag = "targetLag"
 	// MetadataKeyName is the generated name (nested under 'dynamicTable' or 'stream').
 	MetadataKeyName = "name"
+	// MetadataKeyConsumptionTable is the table used for advancing stream offsets (nested under 'stream').
+	MetadataKeyConsumptionTable = "consumptionTable"
 )
 
 const objectsPrefix = "$['objects']"
@@ -158,6 +166,7 @@ const (
 	pattern4LevelGroups = 4 // full match + objectName + parent + property
 )
 
+//nolint:unparam // error return kept for future extensibility and API consistency
 func newSnowflakeObjects(paramsMap map[string]string) (*Objects, error) {
 	result := make(Objects)
 
@@ -231,8 +240,11 @@ func setDynamicTableProperty(cfg objectConfig, property, value string) objectCon
 }
 
 func setStreamProperty(cfg objectConfig, property, value string) objectConfig {
-	if property == MetadataKeyName {
+	switch property {
+	case MetadataKeyName:
 		cfg.stream.name = value
+	case MetadataKeyConsumptionTable:
+		cfg.stream.consumptionTable = value
 	}
 
 	return cfg

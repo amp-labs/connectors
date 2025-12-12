@@ -22,13 +22,14 @@ var (
 
 // Sentinel errors for read operations.
 var (
-	errObjectNotFound          = errors.New("object not found in connector configuration")
-	errObjectNoColumns         = errors.New("object not found or has no columns")
-	errStreamNotConfigured     = errors.New("stream.name not configured for object")
-	errDynamicTableNotConfig   = errors.New("dynamicTable.name not configured for object")
-	errPrimaryKeyRequired      = errors.New("primaryKey is required for consistent pagination")
-	errTimestampColumnRequired = errors.New("timestampColumn is required when Since or Until is specified")
-	errObjectsValidationFailed = errors.New("snowflake objects validation failed")
+	errObjectNotFound            = errors.New("object not found in connector configuration")
+	errObjectNoColumns           = errors.New("object not found or has no columns")
+	errStreamNotConfigured       = errors.New("stream.name not configured for object")
+	errConsumptionTableNotConfig = errors.New("consumptionTable not configured for object")
+	errDynamicTableNotConfig     = errors.New("dynamicTable.name not configured for object")
+	errPrimaryKeyRequired        = errors.New("primaryKey is required for consistent pagination")
+	errTimestampColumnRequired   = errors.New("timestampColumn is required when Since or Until is specified")
+	errObjectsValidationFailed   = errors.New("snowflake objects validation failed")
 )
 
 type Connector struct {
@@ -83,6 +84,14 @@ func constructor(base *components.Connector) (*Connector, error) {
 	return connector, nil
 }
 
+func (c *Connector) Close() error {
+	if c.handle == nil {
+		return nil
+	}
+
+	return c.handle.db.Close()
+}
+
 func (c *Connector) setup(ctx context.Context, params common.ConnectorParams) error {
 	var err error
 
@@ -104,12 +113,4 @@ func (c *Connector) setup(ctx context.Context, params common.ConnectorParams) er
 	}
 
 	return nil
-}
-
-func (c *Connector) Close() error {
-	if c.handle == nil {
-		return nil
-	}
-
-	return c.handle.db.Close()
 }

@@ -86,6 +86,7 @@ func (c *Connector) getColumnMetadata(ctx context.Context, objectName string) ([
 func (c *Connector) queryColumnMetadata(ctx context.Context, objectName string) (*sql.Rows, error) {
 	// Use INFORMATION_SCHEMA.COLUMNS for rich metadata.
 	// The database name comes from our validated connection configuration, not user input.
+	//nolint:gosec // database name is from validated config, not user input
 	query := fmt.Sprintf(`
 		SELECT
 			COLUMN_NAME,
@@ -100,7 +101,7 @@ func (c *Connector) queryColumnMetadata(ctx context.Context, objectName string) 
 		WHERE TABLE_SCHEMA = ?
 		  AND TABLE_NAME = ?
 		ORDER BY ORDINAL_POSITION
-	`, c.handle.database) //nolint:gosec // database name is from validated config, not user input
+	`, c.handle.database)
 
 	rows, err := c.handle.db.QueryContext(ctx, query, strings.ToUpper(c.handle.schema), strings.ToUpper(objectName))
 	if err != nil {

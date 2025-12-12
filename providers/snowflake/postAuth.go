@@ -9,6 +9,11 @@ import (
 // DefaultTargetLag is the default target lag for Dynamic Tables.
 const DefaultTargetLag = "1 hour"
 
+// StreamConsumptionTable is the name of the table used to advance stream offsets.
+// This table is created automatically during EnsureObjects and is used by
+// AcknowledgeStreamConsumption to advance stream offsets without storing data.
+const StreamConsumptionTable = "_AMP_STREAM_CONSUMPTION"
+
 // EnsureObjects ensures that the objects are created on snowflake.
 // Returns the updated Objects or nil if no objects are configured.
 func (c *Connector) EnsureObjects(ctx context.Context) (*Objects, error) {
@@ -18,6 +23,12 @@ func (c *Connector) EnsureObjects(ctx context.Context) (*Objects, error) {
 
 	// Validate all objects have required configuration
 	if err := c.objects.Validate(); err != nil {
+		return nil, err
+	}
+
+	// Create the stream consumption table (used by AcknowledgeStreamConsumption).
+	// This is a single table shared by all streams.
+	if err := c.ensureStreamConsumptionTable(ctx); err != nil {
 		return nil, err
 	}
 
@@ -36,7 +47,32 @@ func (c *Connector) EnsureObjects(ctx context.Context) (*Objects, error) {
 	return c.objects, nil
 }
 
-func (c *Connector) ensureSingleObject(ctx context.Context, objectName string, cfg objectConfig) (*objectConfig, error) {
+// ensureStreamConsumptionTable creates the stream consumption table if it doesn't exist.
+// This table is used by AcknowledgeStreamConsumption to advance stream offsets
+// without actually storing any data (using INSERT ... WHERE FALSE).
+func (c *Connector) ensureStreamConsumptionTable(ctx context.Context) error {
+	fqName := c.getFullyQualifiedName(StreamConsumptionTable)
+
+	// Create a minimal table with a single nullable column.
+	// We never actually insert data - the INSERT ... WHERE FALSE pattern
+	// advances the stream offset without writing anything.
+	createSQL := fmt.Sprintf(`
+		CREATE TABLE IF NOT EXISTS %s (
+			_placeholder NUMBER
+		)
+	`, strings.ToUpper(fqName))
+
+	_, err := c.handle.db.ExecContext(ctx, createSQL)
+	if err != nil {
+		return fmt.Errorf("failed to create stream consumption table: %w", err)
+	}
+
+	return nil
+}
+
+func (c *Connector) ensureSingleObject(
+	ctx context.Context, objectName string, cfg objectConfig,
+) (*objectConfig, error) {
 	needsUpdate := false
 
 	// Create dynamic table if it doesn't exist
@@ -92,6 +128,7 @@ func (c *Connector) ensureStream(ctx context.Context, objectName string, cfg *ob
 	}
 
 	cfg.stream.name = streamName
+	cfg.stream.consumptionTable = StreamConsumptionTable
 
 	return nil
 }
@@ -117,7 +154,12 @@ func (c *Connector) createDynamicTable(ctx context.Context, tableName, query, ta
 }
 
 // createStream creates a Stream on a Dynamic Table for CDC.
-// The stream will include initial rows (SHOW_INITIAL_ROWS = TRUE).
+// SHOW_INITIAL_ROWS = FALSE means the stream only captures changes AFTER creation.
+// For initial data, users should do a backfill read from the Dynamic Table first.
+// This avoids duplicate data when users do backfill followed by incremental reads.
+//
+// IMPORTANT: Streams become stale if not consumed within the data retention period
+// (default 1 day, up to 90 days for Enterprise). Schedule syncs accordingly.
 func (c *Connector) createStream(ctx context.Context, streamName, dynamicTableName string) error {
 	fqStreamName := c.getFullyQualifiedName(streamName)
 	fqDTName := c.getFullyQualifiedName(dynamicTableName)
@@ -125,7 +167,7 @@ func (c *Connector) createStream(ctx context.Context, streamName, dynamicTableNa
 	createSQL := fmt.Sprintf(`
 		CREATE OR REPLACE STREAM %s
 		ON DYNAMIC TABLE %s
-		SHOW_INITIAL_ROWS = TRUE
+		SHOW_INITIAL_ROWS = FALSE
 	`, strings.ToUpper(fqStreamName), strings.ToUpper(fqDTName))
 
 	_, err := c.handle.db.ExecContext(ctx, createSQL)

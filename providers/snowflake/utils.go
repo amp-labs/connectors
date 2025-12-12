@@ -60,13 +60,30 @@ func getDynamicTableName(objectName string) string {
 }
 
 // Type mapping tables for Snowflake to Ampersand value types.
+//
+//nolint:gochecknoglobals
 var (
-	stringTypes   = map[string]bool{"VARCHAR": true, "TEXT": true, "STRING": true, "CHAR": true, "CHARACTER": true, "NCHAR": true, "NVARCHAR": true, "NVARCHAR2": true}          //nolint:gochecknoglobals
-	integerTypes  = map[string]bool{"INT": true, "INTEGER": true, "BIGINT": true, "SMALLINT": true, "TINYINT": true, "BYTEINT": true}                                            //nolint:gochecknoglobals
-	numericTypes  = map[string]bool{"NUMBER": true, "NUMERIC": true, "DECIMAL": true}                                                                                            //nolint:gochecknoglobals
-	floatTypes    = map[string]bool{"FLOAT": true, "FLOAT4": true, "FLOAT8": true, "DOUBLE": true, "DOUBLE PRECISION": true, "REAL": true, "DECFLOAT": true}                     //nolint:gochecknoglobals
-	dateTimeTypes = map[string]bool{"TIMESTAMP": true, "TIMESTAMP_LTZ": true, "TIMESTAMP_NTZ": true, "TIMESTAMP_TZ": true, "DATETIME": true, "TIME": true}                       //nolint:gochecknoglobals
-	otherTypes    = map[string]bool{"VARIANT": true, "OBJECT": true, "ARRAY": true, "MAP": true, "BINARY": true, "VARBINARY": true, "GEOGRAPHY": true, "GEOMETRY": true, "VECTOR": true, "FILE": true} //nolint:gochecknoglobals
+	stringTypes = map[string]bool{
+		"VARCHAR": true, "TEXT": true, "STRING": true, "CHAR": true,
+		"CHARACTER": true, "NCHAR": true, "NVARCHAR": true, "NVARCHAR2": true,
+	}
+	integerTypes = map[string]bool{
+		"INT": true, "INTEGER": true, "BIGINT": true,
+		"SMALLINT": true, "TINYINT": true, "BYTEINT": true,
+	}
+	numericTypes = map[string]bool{"NUMBER": true, "NUMERIC": true, "DECIMAL": true}
+	floatTypes   = map[string]bool{
+		"FLOAT": true, "FLOAT4": true, "FLOAT8": true, "DOUBLE": true,
+		"DOUBLE PRECISION": true, "REAL": true, "DECFLOAT": true,
+	}
+	dateTimeTypes = map[string]bool{
+		"TIMESTAMP": true, "TIMESTAMP_LTZ": true, "TIMESTAMP_NTZ": true,
+		"TIMESTAMP_TZ": true, "DATETIME": true, "TIME": true,
+	}
+	otherTypes = map[string]bool{
+		"VARIANT": true, "OBJECT": true, "ARRAY": true, "MAP": true, "BINARY": true,
+		"VARBINARY": true, "GEOGRAPHY": true, "GEOMETRY": true, "VECTOR": true, "FILE": true,
+	}
 )
 
 // snowflakeTypeToValueType maps Snowflake data types to Ampersand ValueTypes.

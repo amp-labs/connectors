@@ -11,6 +11,12 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
+// SnowflakeTimestampFormat is the format string for Snowflake TIMESTAMP_NTZ values.
+// This format is auto-detected by Snowflake and avoids ambiguity.
+// Using microseconds (6 decimal places) for precision as it's widely supported.
+// Always convert to UTC before formatting to ensure consistent comparison.
+const SnowflakeTimestampFormat = "2006-01-02 15:04:05.000000"
+
 // DefaultPageSize is the default number of rows to fetch per page.
 const DefaultPageSize = 2000
 
@@ -39,7 +45,6 @@ const (
 	// Used when both Since and Until are set, or only Until is set.
 	readModeTimeRange
 )
-
 
 // Read reads data from a Snowflake Stream (incremental) or Dynamic Table (full/historical).
 //
@@ -88,10 +93,14 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 }
 
 // AcknowledgeStreamConsumption advances the stream offset by consuming the pending changes.
-// This should be called after successfully processing data from readFromStream.
-// Note: SELECT alone does not advance the stream offset; only DML operations do.
+// This should be called after successfully processing all pages from readFromStream.
 //
-// TODO: Implement the actual consumption logic. This is a stub for now.
+// Note: SELECT alone does not advance the stream offset; only DML operations do.
+// This method uses a filtered INSERT (WHERE FALSE) to advance the offset without
+// actually inserting any data. The stream is referenced in the SELECT, which
+// triggers the offset advancement when the DML transaction commits.
+//
+// The consumption table (_AMP_STREAM_CONSUMPTION) is created during EnsureObjects.
 func (c *Connector) AcknowledgeStreamConsumption(ctx context.Context, objectName string) error {
 	// Get object config
 	objConfig, ok := c.objects.Get(objectName)
@@ -103,13 +112,27 @@ func (c *Connector) AcknowledgeStreamConsumption(ctx context.Context, objectName
 		return fmt.Errorf("%w: %s", errStreamNotConfigured, objectName)
 	}
 
-	// TODO: Implement stream consumption via DML operation.
-	// Options:
-	// 1. MERGE into a staging table
-	// 2. INSERT INTO a tracking table (even with no rows)
-	// 3. CREATE OR REPLACE STREAM to reset offset
-	//
-	// For now, this is a stub - the caller must decide how to consume.
+	if objConfig.stream.consumptionTable == "" {
+		return fmt.Errorf("%w: %s", errConsumptionTableNotConfig, objectName)
+	}
+
+	streamName := c.getFullyQualifiedName(objConfig.stream.name)
+	consumptionTable := c.getFullyQualifiedName(objConfig.stream.consumptionTable)
+
+	// Use INSERT ... SELECT ... WHERE FALSE to advance the stream offset.
+	// This references the stream in a DML context (which advances the offset)
+	// but the WHERE FALSE ensures no rows are actually inserted.
+	//nolint:gosec // table names are from validated config, not user input
+	consumeSQL := fmt.Sprintf(`
+		INSERT INTO %s (_placeholder)
+		SELECT NULL FROM %s WHERE FALSE
+	`, consumptionTable, streamName)
+
+	_, err := c.handle.db.ExecContext(ctx, consumeSQL)
+	if err != nil {
+		return fmt.Errorf("failed to acknowledge stream consumption for %s: %w", objectName, err)
+	}
+
 	return nil
 }
 
@@ -149,7 +172,13 @@ func determineReadMode(params common.ReadParams) readMode {
 
 // readFromStream reads CDC data from a Snowflake Stream.
 // Note: SELECT from a stream does not advance the stream offset.
-// Call AcknowledgeStreamConsumption after processing all pages to advance the offset.
+// Call AcknowledgeStreamConsumption after processing the data to advance the offset.
+//
+// Streams don't use OFFSET-based pagination. Instead:
+//  1. Read with LIMIT to get a batch of changes
+//  2. Process the data
+//  3. Call AcknowledgeStreamConsumption to advance the stream offset
+//  4. Repeat until no more rows
 func (c *Connector) readFromStream(
 	ctx context.Context,
 	params common.ReadParams,
@@ -167,20 +196,8 @@ func (c *Connector) readFromStream(
 		pageSize = DefaultPageSize
 	}
 
-	// Parse offset from NextPage token (default 0)
-	offset := 0
-
-	if params.NextPage != "" {
-		parsed, err := strconv.Atoi(string(params.NextPage))
-		if err != nil {
-			return nil, fmt.Errorf("invalid NextPage token: %w", err)
-		}
-
-		offset = parsed
-	}
-
-	// Build the query to read from stream with CDC metadata
-	query := c.buildStreamQuery(streamName, objConfig, pageSize, offset)
+	// Build the query to read from stream with CDC metadata (no OFFSET, stream manages cursor)
+	query := c.buildStreamQuery(streamName, objConfig, pageSize)
 
 	rows, err := c.handle.db.QueryContext(ctx, query)
 	if err != nil {
@@ -194,19 +211,15 @@ func (c *Connector) readFromStream(
 		return nil, err
 	}
 
-	// Determine if there might be more data
+	// Done when we get fewer rows than requested (stream is exhausted)
 	done := len(resultRows) < pageSize
 
-	// Calculate next page token
-	var nextPage common.NextPageToken
-	if !done {
-		nextPage = common.NextPageToken(strconv.Itoa(offset + pageSize))
-	}
-
+	// Streams don't use NextPage tokens - the stream itself manages the cursor
+	// via AcknowledgeStreamConsumption
 	return &common.ReadResult{
 		Rows:     int64(len(resultRows)),
 		Data:     resultRows,
-		NextPage: nextPage,
+		NextPage: "",
 		Done:     done,
 	}, nil
 }
@@ -241,7 +254,8 @@ func (c *Connector) readFromDynamicTable(
 		offset = parsed
 	}
 
-	// Build SELECT query with time filtering and pagination
+	// Build SELECT query with time filtering and pagination.
+	// Uses SnowflakeTimestampFormat for consistent timestamp formatting.
 	query := c.buildDynamicTableQuery(tableName, params, objConfig, pageSize, offset)
 
 	rows, err := c.handle.db.QueryContext(ctx, query)
@@ -274,11 +288,11 @@ func (c *Connector) readFromDynamicTable(
 }
 
 // buildStreamQuery builds the SQL query for reading from a stream.
+// Streams don't use OFFSET - the stream itself manages the cursor via acknowledgment.
 func (c *Connector) buildStreamQuery(
 	streamName string,
 	objConfig *objectConfig,
 	pageSize int,
-	offset int,
 ) string {
 	// Always select all columns plus CDC metadata for streams.
 	// Fields filtering is done at the result processing level.
@@ -286,19 +300,21 @@ func (c *Connector) buildStreamQuery(
 	// 1. We don't know the columns at query build time (they're discovered from the stream)
 	// 2. We need all columns for the Raw field in ReadResultRow
 	// 3. Field filtering is applied post-query in processRows
-	query := fmt.Sprintf(`SELECT *, %s, %s, %s FROM %s`, //nolint:unqueryvet // SELECT * required for dynamic column discovery
+	//nolint:unqueryvet // SELECT * required for dynamic column discovery
+	query := fmt.Sprintf(`SELECT *, %s, %s, %s FROM %s`,
 		metadataAction, metadataIsUpdate, metadataRowID, streamName)
 
-	// Order by primary key for consistent pagination across calls
+	// Order by primary key for consistent ordering within the batch
 	query = fmt.Sprintf(`%s ORDER BY "%s" ASC`, query, objConfig.dynamicTable.primaryKey)
 
-	// Add LIMIT and OFFSET for pagination
-	query = fmt.Sprintf("%s LIMIT %d OFFSET %d", query, pageSize, offset)
+	// Add LIMIT only - no OFFSET needed, stream manages cursor via acknowledgment
+	query = fmt.Sprintf("%s LIMIT %d", query, pageSize)
 
 	return query
 }
 
 // buildDynamicTableQuery builds the SQL query for reading from a dynamic table.
+// Uses SnowflakeTimestampFormat for consistent timestamp formatting.
 func (c *Connector) buildDynamicTableQuery(
 	tableName string,
 	params common.ReadParams,
@@ -311,23 +327,26 @@ func (c *Connector) buildDynamicTableQuery(
 	// 1. We don't know the columns at query build time (they're discovered from the table)
 	// 2. We need all columns for the Raw field in ReadResultRow
 	// 3. Field filtering is applied post-query in processRows
-	query := fmt.Sprintf(`SELECT * FROM %s`, tableName) //nolint:unqueryvet // SELECT * required for dynamic column discovery
+	//nolint:unqueryvet // SELECT * required for dynamic column discovery
+	query := `SELECT * FROM ` + tableName
 
-	// Build WHERE conditions for time filtering using params.Since and params.Until
+	// Build WHERE conditions for time filtering.
+	// Using SnowflakeTimestampFormat ensures consistent formatting that Snowflake auto-detects.
+	// Times are converted to UTC for consistent comparison regardless of local timezone.
 	var conditions []string
 
 	if !params.Since.IsZero() {
 		conditions = append(conditions,
 			fmt.Sprintf(`"%s" >= '%s'`,
 				objConfig.dynamicTable.timestampColumn,
-				params.Since.Format("2006-01-02 15:04:05.999999999")))
+				params.Since.UTC().Format(SnowflakeTimestampFormat)))
 	}
 
 	if !params.Until.IsZero() {
 		conditions = append(conditions,
 			fmt.Sprintf(`"%s" <= '%s'`,
 				objConfig.dynamicTable.timestampColumn,
-				params.Until.Format("2006-01-02 15:04:05.999999999")))
+				params.Until.UTC().Format(SnowflakeTimestampFormat)))
 	}
 
 	if len(conditions) > 0 {
