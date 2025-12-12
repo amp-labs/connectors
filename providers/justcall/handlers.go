@@ -1,8 +1,11 @@
 package justcall
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -117,4 +120,137 @@ func makeNextRecordsURL() common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		return jsonquery.New(node).StrWithDefault("next_page_link", "")
 	}
+}
+
+// objectsWithPathID lists objects where RecordId goes in the URL path for updates.
+var objectsWithPathID = map[string]bool{ //nolint:gochecknoglobals
+	"calls": true,
+}
+
+// objectsWithSpecialWritePath maps objects to special write endpoints (not in metadata).
+var objectsWithSpecialWritePath = map[string]string{ //nolint:gochecknoglobals
+	"texts":                          "/texts/new",
+	"contacts/status":                "/contacts/status",
+	"texts/threads/tag":              "/texts/threads/tag",
+	"sales_dialer/campaigns/contact": "/sales_dialer/campaigns/contact",
+	"voice-agents/calls":             "/voice-agents/calls",
+	"users/availability":             "/users/availability",
+}
+
+// objectsWithPUTOnly lists objects that always use PUT (even without RecordId).
+var objectsWithPUTOnly = map[string]bool{ //nolint:gochecknoglobals
+	"contacts/status":    true,
+	"users/availability": true,
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	var (
+		url    *urlbuilder.URL
+		err    error
+		method = http.MethodPost
+	)
+
+	// Determine the URL path
+	modulePath := metadata.Schemas.LookupModuleURLPath(c.ModuleID)
+
+	if specialPath, ok := objectsWithSpecialWritePath[params.ObjectName]; ok {
+		url, err = urlbuilder.New(c.BaseURL, modulePath, specialPath)
+	} else if objectsWithPathID[params.ObjectName] && params.RecordId != "" {
+		// Objects like calls need ID in path: /calls/{id}
+		path, pathErr := metadata.Schemas.FindURLPath(c.ModuleID, params.ObjectName)
+		if pathErr != nil {
+			return nil, pathErr
+		}
+
+		url, err = urlbuilder.New(c.BaseURL, modulePath, path, params.RecordId)
+	} else {
+		url, err = c.buildURL(params.ObjectName)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Determine HTTP method
+	if params.RecordId != "" || objectsWithPUTOnly[params.ObjectName] {
+		method = http.MethodPut
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	node, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{Success: true}, nil
+	}
+
+	// Try to extract record ID from response
+	recordID := params.RecordId
+	if recordID == "" {
+		recordID = extractRecordID(node)
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil { //nolint:nilerr
+		return &common.WriteResult{
+			Success:  true,
+			RecordId: recordID,
+		}, nil
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Data:     data,
+	}, nil
+}
+
+// extractRecordID extracts the record ID from response, handling both string and numeric IDs.
+func extractRecordID(node *ajson.Node) string {
+	// Try root level ID
+	if id := tryExtractID(jsonquery.New(node)); id != "" {
+		return id
+	}
+
+	// Try in data object
+	if id := tryExtractID(jsonquery.New(node, "data")); id != "" {
+		return id
+	}
+
+	// Try in nested data.data array (JustCall pattern for contacts)
+	if dataArray, err := jsonquery.New(node, "data").ArrayOptional("data"); err == nil && len(dataArray) > 0 {
+		return tryExtractID(jsonquery.New(dataArray[0]))
+	}
+
+	return ""
+}
+
+func tryExtractID(query *jsonquery.Query) string {
+	if id, err := query.IntegerWithDefault("id", 0); err == nil && id != 0 {
+		return strconv.FormatInt(id, 10)
+	}
+
+	if id, err := query.StrWithDefault("id", ""); err == nil && id != "" {
+		return id
+	}
+
+	return ""
 }

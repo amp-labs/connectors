@@ -31,12 +31,12 @@ func main() {
 }
 
 func run(ctx context.Context, conn *justcall.Connector) error {
-	contactID, err := testCreateContact(ctx, conn)
+	contactID, phoneNumber, err := testCreateContact(ctx, conn)
 	if err != nil {
 		return err
 	}
 
-	if err := testUpdateContact(ctx, conn, contactID); err != nil {
+	if err := testUpdateContact(ctx, conn, contactID, phoneNumber); err != nil {
 		return err
 	}
 
@@ -59,7 +59,7 @@ func run(ctx context.Context, conn *justcall.Connector) error {
 	return nil
 }
 
-func testCreateContact(ctx context.Context, conn *justcall.Connector) (string, error) {
+func testCreateContact(ctx context.Context, conn *justcall.Connector) (string, string, error) {
 	phoneNumber := fmt.Sprintf("+1415555%04d", time.Now().Unix()%10000)
 
 	res, err := conn.Write(ctx, common.WriteParams{
@@ -73,23 +73,24 @@ func testCreateContact(ctx context.Context, conn *justcall.Connector) (string, e
 		},
 	})
 	if err != nil {
-		return "", fmt.Errorf("contacts create: %w", err)
+		return "", "", fmt.Errorf("contacts create: %w", err)
 	}
 
 	printResult("contacts (CREATE)", res)
 
-	return res.RecordId, nil
+	return res.RecordId, phoneNumber, nil
 }
 
-func testUpdateContact(ctx context.Context, conn *justcall.Connector, contactID string) error {
+func testUpdateContact(ctx context.Context, conn *justcall.Connector, contactID string, phoneNumber string) error {
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "contacts",
 		RecordId:   contactID,
 		RecordData: map[string]any{
-			"id":         contactID,
-			"first_name": "Updated",
-			"last_name":  "Contact",
-			"company":    "Updated Company",
+			"id":             contactID,
+			"contact_number": phoneNumber,
+			"first_name":     "Updated",
+			"last_name":      "Contact",
+			"company":        "Updated Company",
 		},
 	})
 	if err != nil {

@@ -9,6 +9,19 @@ import (
 	"github.com/amp-labs/connectors/providers/justcall/metadata"
 )
 
+// writableObjects lists objects that support write operations.
+var writableObjects = []string{ //nolint:gochecknoglobals
+	"contacts",
+	"contacts/status",
+	"tags",
+	"users/availability",
+	"calls",
+	"texts",
+	"texts/threads/tag",
+	"sales_dialer/campaigns/contact",
+	"voice-agents/calls",
+}
+
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := metadata.Schemas.ObjectNames().GetList(common.ModuleRoot)
 
@@ -17,6 +30,10 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writableObjects, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
