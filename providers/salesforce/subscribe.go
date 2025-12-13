@@ -41,7 +41,7 @@ type SubscriptionRequest struct {
 // If the rollback is successful, it will return the original error on object.
 // Registration is required prior to subscribing.
 //
-//nolint:funlen,cyclop,varnamelen
+//nolint:funlen,cyclop,varnamelen,gocognit
 func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
