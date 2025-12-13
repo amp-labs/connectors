@@ -1,0 +1,30 @@
+{
+  "paging": {
+    "currentPageToken": "eyJ0IjoxNzY1NTUwNDA2ODE1fQ==",
+    "perPage": 1
+  },
+  "meetings": [
+    {
+      "id": "33233b41-b14d-4256-9bb3-011c3c8a71e1!com-us-23@com-us-23",
+      "shortId": "109464156",
+      "bridgeId": "djI6Mjc4OTg4MDUyLDI3ODk4ODA1MixyY3YsaTwpPA_CujJLY3ltwqE",
+      "startTime": "2025-12-12T14:40:06.815Z",
+      "duration": 65,
+      "displayName": "RingCentral Video meeting",
+      "hostInfo": {
+        "accountId": "278988052",
+        "extensionId": "278988052",
+        "displayName": "Ampersand Developer"
+      },
+      "participants": [
+        {
+          "id": "44a09b2c7b0b0f8f9876450acc08f26262a4f3dd",
+          "accountId": "278988052",
+          "extensionId": "278988052",
+          "displayName": "Ampersand Developer"
+        }
+      ],
+      "chatContentUrl": "https://media.ringcentral.com/rcvideo/v1/chats/7tSq3ol8UHmAgOvq9Nh_-itHE9LKs82oZJvSZDsoEpa1FvNiq2KevyENyfL6gfoqrhI="
+    }
+  ]
+}
