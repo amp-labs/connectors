@@ -1,0 +1,55 @@
+{
+    "notFoundIds": null,
+    "items": [
+        {
+            "id": "Y2lzY29zcGFyazovL3VzL",
+            "emails": [
+                "testuser@example.com"
+            ],
+            "phoneNumbers": [
+                {
+                    "type": "work_extension",
+                    "value": "09",
+                    "primary": true
+                }
+            ],
+            "sipAddresses": [
+                {
+                    "type": "personal-room",
+                    "value": "testuser@example.webex.com",
+                    "primary": false
+                },
+                {
+                    "type": "cloud-calling",
+                    "value": "testuser@example.calls.webex.com",
+                    "primary": true
+                },
+                {
+                    "type": "personal-room",
+                    "value": "26613373125@example.webex.com",
+                    "primary": false
+                }
+            ],
+            "displayName": "testuser",
+            "nickName": "testuser",
+            "firstName": "test",
+            "lastName": "user",
+            "orgId": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPT",
+            "roles": [],
+            "licenses": [
+                "Y2lzY29zcGFY0OkJDU1REXzE2OTlmM2QzLTFiYTmMDk0NjU0ZQ",
+                "Y2lzY29zcGTXzRhOGNkMzU4LTcxMWEtNDkyMC1hYjM3LTljN2Y5"
+            ],
+            "created": "2025-12-05T21:33:47.929Z",
+            "lastModified": "2025-12-05T21:38:59.298Z",
+            "lastActivity": "2025-12-05T21:57:24.630Z",
+            "status": "inactive",
+            "invitePending": false,
+            "loginEnabled": true,
+            "type": "person",
+            "siteUrls": [
+                "example.webex.com"
+            ]
+        }
+    ]
+}
