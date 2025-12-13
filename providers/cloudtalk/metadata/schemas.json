@@ -1,0 +1,205 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "activity": {
+          "displayName": "Activity",
+          "path": "/activity/index.json",
+          "responseKey": "data",
+          "fields": {
+            "ContactActivity": {
+              "displayName": "ContactActivity",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "agents": {
+          "displayName": "Agents",
+          "path": "/agents/index.json",
+          "responseKey": "data",
+          "fields": {
+            "Agent": {
+              "displayName": "Agent",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "blacklist": {
+          "displayName": "Blacklist",
+          "path": "/blacklist/index.json",
+          "responseKey": "data",
+          "fields": {
+            "Blacklist": {
+              "displayName": "Blacklist",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "calls": {
+          "displayName": "Calls",
+          "path": "/calls/index.json",
+          "responseKey": "data",
+          "fields": {
+            "Agent": {
+              "displayName": "Agent",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "BillingData": {
+              "displayName": "BillingData",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "CallNumber": {
+              "displayName": "CallNumber",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "Cdr": {
+              "displayName": "Cdr",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "Contact": {
+              "displayName": "Contact",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "Notes": {
+              "displayName": "Notes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "Ratings": {
+              "displayName": "Ratings",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "Tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "campaigns": {
+          "displayName": "Campaigns",
+          "path": "/campaigns/index.json",
+          "responseKey": "data",
+          "fields": {
+            "Agent": {
+              "displayName": "Agent",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "Button": {
+              "displayName": "Button",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "Campaign": {
+              "displayName": "Campaign",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "Group": {
+              "displayName": "Group",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "Tag": {
+              "displayName": "Tag",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/contacts/index.json",
+          "responseKey": "data",
+          "fields": {
+            "Contact": {
+              "displayName": "Contact",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "ContactAttribute": {
+              "displayName": "ContactAttribute",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "ContactEmail": {
+              "displayName": "ContactEmail",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "ContactNumber": {
+              "displayName": "ContactNumber",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "groups": {
+          "displayName": "Groups",
+          "path": "/groups/index.json",
+          "responseKey": "data",
+          "fields": {
+            "Group": {
+              "displayName": "Group",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "notes": {
+          "displayName": "Notes",
+          "path": "/notes/index.json",
+          "responseKey": "data",
+          "fields": {
+            "ContactNote": {
+              "displayName": "ContactNote",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "numbers": {
+          "displayName": "Numbers",
+          "path": "/numbers/index.json",
+          "responseKey": "data",
+          "fields": {
+            "CallNumber": {
+              "displayName": "CallNumber",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags/index.json",
+          "responseKey": "data",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
