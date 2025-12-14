@@ -23,12 +23,13 @@ const (
 	// - Minimum page size: 1 resource per page
 	// The maximum value (1000) is used to minimize the number of API calls when iterating over all pages.
 	// This page size works for all endpoints including: contacts, campaigns, forms, custom-events, etc.
-	pageSizeKey = "perPage"
-	pageSize    = "1000" // Maximum allowed by GetResponse API to minimize API calls
-	pageKey     = "page"
-	sinceKey    = "query[createdOn][from]"
-	untilKey    = "query[createdOn][to]"
-	apiVersion  = "v3"
+	pageSizeKey    = "perPage"
+	pageSize       = "1000" // Maximum allowed by GetResponse API to minimize API calls
+	maxPageSizeInt = 1000   // Maximum allowed by GetResponse API (int version for validation)
+	pageKey        = "page"
+	sinceKey       = "query[createdOn][from]"
+	untilKey       = "query[createdOn][to]"
+	apiVersion     = "v3"
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -47,9 +48,8 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	// Set pagination parameters
-	// Use maximum page size (1000) if not specified or if it exceeds the maximum
+	// Use maximum page size if not specified or if it exceeds the maximum
 	requestedPageSize := params.PageSize
-	maxPageSizeInt := 1000 // Maximum allowed by GetResponse API
 	if requestedPageSize <= 0 || requestedPageSize > maxPageSizeInt {
 		requestedPageSize = maxPageSizeInt
 	}
@@ -91,8 +91,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 func addGetResponseFilters(url *urlbuilder.URL, filterStr string) {
 	// Simple parser for GetResponse filter format
 	// Split by & to get individual filter clauses
-	filters := strings.Split(filterStr, "&")
-	for _, filter := range filters {
+	for filter := range strings.SplitSeq(filterStr, "&") {
 		filter = strings.TrimSpace(filter)
 		if filter == "" {
 			continue
