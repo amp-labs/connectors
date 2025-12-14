@@ -60,7 +60,8 @@ func makeFilterFunc(params common.ReadParams, requestURL *url.URL) common.Record
 //
 // Notes:
 //   - Some objects support provider-side filtering via query[createdOn][from] and query[createdOn][to].
-//   - Some objects don't support provider-side filtering but expose a timestamp field usable for connector-side filtering.
+//   - Some objects don't support provider-side filtering but expose a timestamp field
+//     usable for connector-side filtering.
 //   - If both are unavailable, filterType = connectorSideFilter and ResponseAt = "".
 //
 // References:
@@ -156,5 +157,6 @@ const (
 // to the request URL based on the object's capabilities.
 func shouldAddProviderSideFilter(objectName string, params common.ReadParams) bool {
 	timeSpec := objectsFilterParam.Get(objectName)
+
 	return timeSpec.filterType == providerSideFilter && (!params.Since.IsZero() || !params.Until.IsZero())
 }
