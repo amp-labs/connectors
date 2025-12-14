@@ -135,7 +135,6 @@ func (c *Connector) ensureStream(ctx context.Context, objectName string, cfg *ob
 
 // createDynamicTable creates a Dynamic Table from a SQL query.
 // The Dynamic Table will automatically refresh based on the target lag.
-// CHANGE_TRACKING is enabled to allow streams to capture CDC changes.
 func (c *Connector) createDynamicTable(ctx context.Context, tableName, query, targetLag string) error {
 	fqName := c.getFullyQualifiedName(tableName)
 
@@ -143,7 +142,6 @@ func (c *Connector) createDynamicTable(ctx context.Context, tableName, query, ta
 		CREATE OR REPLACE DYNAMIC TABLE %s
 		TARGET_LAG = '%s'
 		WAREHOUSE = %s
-		CHANGE_TRACKING = TRUE
 		AS %s
 	`, strings.ToUpper(fqName), targetLag, strings.ToUpper(c.handle.warehouse), query)
 

@@ -7,6 +7,48 @@ import (
 	"github.com/amp-labs/amp-common/jsonpath"
 )
 
+// Metadata keys for per-object configuration.
+// These are the property names expected in JSONPath keys.
+//
+// Structure:
+//
+//	$['objects']['objName']['dynamicTable']['query']      - SQL query
+//	$['objects']['objName']['dynamicTable']['primaryKey'] - Primary key column
+//	$['objects']['objName']['dynamicTable']['timestampColumn'] - Timestamp column
+//	$['objects']['objName']['dynamicTable']['targetLag']  - Refresh interval
+//	$['objects']['objName']['dynamicTable']['name']       - Generated DT name
+//	$['objects']['objName']['stream']['name']             - Generated stream name
+//	$['objects']['objName']['stream']['consumptionTable'] - Consumption table
+const (
+	// MetadataKeyQuery is the SQL query defining the data source (nested under 'dynamicTable').
+	MetadataKeyQuery = "query"
+
+	// MetadataKeyDynamicTable is the parent key for dynamic table configuration.
+	MetadataKeyDynamicTable = "dynamicTable"
+	// MetadataKeyStream is the parent key for stream configuration.
+	MetadataKeyStream = "stream"
+
+	// MetadataKeyPrimaryKey is the primary key column (nested under 'dynamicTable').
+	MetadataKeyPrimaryKey = "primaryKey"
+	// MetadataKeyTimestampColumn is the timestamp column (nested under 'dynamicTable').
+	MetadataKeyTimestampColumn = "timestampColumn"
+	// MetadataKeyTargetLag is the refresh interval (nested under 'dynamicTable').
+	MetadataKeyTargetLag = "targetLag"
+	// MetadataKeyName is the generated name (nested under 'dynamicTable' or 'stream').
+	MetadataKeyName = "name"
+	// MetadataKeyConsumptionTable is the table used for advancing stream offsets (nested under 'stream').
+	MetadataKeyConsumptionTable = "consumptionTable"
+)
+
+const (
+	// objectsKey is the root key for all object configurations.
+	objectsKey = "objects"
+
+	// expectedPathDepth is the expected depth for all object configuration paths.
+	// All paths follow: $['objects']['objectName']['parent']['property'].
+	expectedPathDepth = 4
+)
+
 // Objects holds the configuration for multiple Snowflake objects.
 // Configuration refers to any parameters that help us create the
 // object on the snowflake i.e. the SQL query, stream name, etc.
@@ -141,48 +183,6 @@ type streamConfig struct {
 	// so each object's metadata is self-contained.
 	consumptionTable string
 }
-
-// Metadata keys for per-object configuration.
-// These are the property names expected in JSONPath keys.
-//
-// Structure:
-//
-//	$['objects']['objName']['dynamicTable']['query']      - SQL query
-//	$['objects']['objName']['dynamicTable']['primaryKey'] - Primary key column
-//	$['objects']['objName']['dynamicTable']['timestampColumn'] - Timestamp column
-//	$['objects']['objName']['dynamicTable']['targetLag']  - Refresh interval
-//	$['objects']['objName']['dynamicTable']['name']       - Generated DT name
-//	$['objects']['objName']['stream']['name']             - Generated stream name
-//	$['objects']['objName']['stream']['consumptionTable'] - Consumption table
-const (
-	// MetadataKeyQuery is the SQL query defining the data source (nested under 'dynamicTable').
-	MetadataKeyQuery = "query"
-
-	// MetadataKeyDynamicTable is the parent key for dynamic table configuration.
-	MetadataKeyDynamicTable = "dynamicTable"
-	// MetadataKeyStream is the parent key for stream configuration.
-	MetadataKeyStream = "stream"
-
-	// MetadataKeyPrimaryKey is the primary key column (nested under 'dynamicTable').
-	MetadataKeyPrimaryKey = "primaryKey"
-	// MetadataKeyTimestampColumn is the timestamp column (nested under 'dynamicTable').
-	MetadataKeyTimestampColumn = "timestampColumn"
-	// MetadataKeyTargetLag is the refresh interval (nested under 'dynamicTable').
-	MetadataKeyTargetLag = "targetLag"
-	// MetadataKeyName is the generated name (nested under 'dynamicTable' or 'stream').
-	MetadataKeyName = "name"
-	// MetadataKeyConsumptionTable is the table used for advancing stream offsets (nested under 'stream').
-	MetadataKeyConsumptionTable = "consumptionTable"
-)
-
-const (
-	// objectsKey is the root key for all object configurations.
-	objectsKey = "objects"
-
-	// expectedPathDepth is the expected depth for all object configuration paths.
-	// All paths follow: $['objects']['objectName']['parent']['property'].
-	expectedPathDepth = 4
-)
 
 func newSnowflakeObjects(paramsMap map[string]string) (*Objects, error) {
 	result := make(Objects)
