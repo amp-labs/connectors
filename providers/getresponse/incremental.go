@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	ResponseAtKey = "createdOn" // nolint:gochecknoglobals
+	ResponseAtKey = "createdOn" // nolint:gofumpt
 )
 
 // makeFilterFunc returns a filtering function that respects the Since and Until parameters specified in ReadParams.
