@@ -9,9 +9,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-var (
-	ResponseAtKey = "createdOn" // nolint:gofumpt
-)
+var ResponseAtKey = "createdOn" // nolint:gochecknoglobals
 
 // makeFilterFunc returns a filtering function that respects the Since and Until parameters specified in ReadParams.
 //
