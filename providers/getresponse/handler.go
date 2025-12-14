@@ -16,8 +16,15 @@ import (
 )
 
 const (
+	// Pagination constants for GetResponse APIv3.
+	// According to GetResponse API documentation (https://apidocs.getresponse.com/v3):
+	// - Default page size: 100 resources per page
+	// - Maximum page size: 1000 resources per page
+	// - Minimum page size: 1 resource per page
+	// The maximum value (1000) is used to minimize the number of API calls when iterating over all pages.
+	// This page size works for all endpoints including: contacts, campaigns, forms, custom-events, etc.
 	pageSizeKey = "perPage"
-	pageSize    = "100"
+	pageSize    = "1000" // Maximum allowed by GetResponse API to minimize API calls
 	pageKey     = "page"
 	sinceKey    = "query[createdOn][from]"
 	untilKey    = "query[createdOn][to]"
@@ -40,7 +47,13 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	// Set pagination parameters
-	url.WithQueryParam(pageSizeKey, strconv.Itoa(params.PageSize))
+	// Use maximum page size (1000) if not specified or if it exceeds the maximum
+	requestedPageSize := params.PageSize
+	maxPageSizeInt := 1000 // Maximum allowed by GetResponse API
+	if requestedPageSize <= 0 || requestedPageSize > maxPageSizeInt {
+		requestedPageSize = maxPageSizeInt
+	}
+	url.WithQueryParam(pageSizeKey, strconv.Itoa(requestedPageSize))
 	url.WithQueryParam(pageKey, "1")
 
 	// Add field selection
@@ -53,8 +66,8 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		addGetResponseFilters(url, params.Filter)
 	}
 
-	// Only add server-side since/until filters if the object supports them
-	if shouldAddServerSideFilter(params.ObjectName, params) {
+	// Only add provider-side since/until filters if the object supports them
+	if shouldAddProviderSideFilter(params.ObjectName, params) {
 		if !params.Since.IsZero() {
 			url.WithQueryParam(sinceKey, datautils.Time.FormatRFC3339inUTC(params.Since))
 		}
@@ -74,7 +87,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 //   - "sort[name]=ASC" -> adds sort[name]=ASC
 //   - "sort[createdOn]=DESC" -> adds sort[createdOn]=DESC
 //
-// Multiple filters can be separated by &, e.g., "query[name]=test&sort[createdOn]=DESC"
+// Multiple filters can be separated by &, e.g., "query[name]=test&sort[createdOn]=DESC".
 func addGetResponseFilters(url *urlbuilder.URL, filterStr string) {
 	// Simple parser for GetResponse filter format
 	// Split by & to get individual filter clauses
@@ -86,8 +99,8 @@ func addGetResponseFilters(url *urlbuilder.URL, filterStr string) {
 		}
 
 		// Parse key=value
-		parts := strings.SplitN(filter, "=", 2)
-		if len(parts) != 2 {
+		parts := strings.SplitN(filter, "=", 2) // nolint:mnd
+		if len(parts) != 2 {                    // nolint:mnd
 			continue
 		}
 
@@ -105,7 +118,7 @@ func (c *Connector) parseReadResponse(
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
 	// GetResponse returns arrays directly, not wrapped in an object
-	// Use ParseResultFiltered to support client-side filtering for objects that don't support server-side filtering
+	// Use ParseResultFiltered to support connector-side filtering for objects that don't support provider-side filtering
 	return common.ParseResultFiltered(
 		params,
 		response,
@@ -158,7 +171,7 @@ func makeNextRecordsURL(requestURL *url.URL) common.NextPageFunc {
 			return "", nil //nolint:nilerr
 		}
 
-		url.WithQueryParam(pageSizeKey, pageSize)
+		// Update only the page number - pageSize is already set in the original request
 		url.WithQueryParam(pageKey, strconv.Itoa(nextPage))
 
 		return url.String(), nil

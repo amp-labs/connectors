@@ -75,7 +75,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		}
 	]`
 
-	// Sample custom-events response (client-side filtering only)
+	// Sample custom-events response (connector-side filtering only)
 	customEventsResponse := `[
 		{
 			"eventId": "evt1",
@@ -99,7 +99,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name: "Read contacts with server-side filtering",
+			Name: "Read contacts with provider-side filtering",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("email", "name", "createdOn"),
@@ -209,7 +209,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read custom-events with client-side filtering (no server-side support)",
+			Name: "Read custom-events with connector-side filtering (no provider-side support)",
 			Input: common.ReadParams{
 				ObjectName: "custom-events",
 				Fields:     connectors.Fields("name", "createdOn"),
@@ -220,7 +220,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/v3/custom-events"),
-					// Should NOT have query[createdOn] parameters (client-side filtering only)
+					// Should NOT have query[createdOn] parameters (connector-side filtering only)
 					mockcond.QueryParamsMissing("query[createdOn][from]", "query[createdOn][to]"),
 				},
 				Then: mockserver.Response(http.StatusOK, []byte(customEventsResponse)),
