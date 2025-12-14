@@ -1,6 +1,6 @@
 module github.com/amp-labs/connectors
 
-go 1.25
+go 1.25.0
 
 require (
 	github.com/PuerkitoBio/goquery v1.11.0
@@ -33,6 +33,7 @@ require (
 )
 
 require (
+	github.com/amp-labs/amp-common v0.0.0-20251214035454-f8368b6f0abb // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/antchfx/xpath v1.3.5 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.16 // indirect

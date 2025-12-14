@@ -30,6 +30,9 @@ var (
 	errPrimaryKeyRequired        = errors.New("primaryKey is required for consistent pagination")
 	errTimestampColumnRequired   = errors.New("timestampColumn is required when Since or Until is specified")
 	errObjectsValidationFailed   = errors.New("snowflake objects validation failed")
+	errInvalidPathDepth          = errors.New("invalid path depth")
+	errInvalidParentKey          = errors.New("invalid parent key")
+	errUnknownProperty           = errors.New("unknown property")
 )
 
 type Connector struct {

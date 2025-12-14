@@ -9,12 +9,20 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
+var (
+	errObjectsNotInitialized = fmt.Errorf("objects not initialized")
+)
+
 // listObjectMetadata implements the schema lookup.
 // This is the internal implementation that gets wired to the DelegateSchemaProvider.
 func (c *Connector) listObjectMetadata(
 	ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
+	if c.objects == nil {
+		return nil, errObjectsNotInitialized
+	}
+
 	result := common.NewListObjectMetadataResult()
 
 	for _, objectName := range objectNames {
@@ -34,12 +42,14 @@ func (c *Connector) listObjectMetadata(
 // getObjectMetadata retrieves metadata for a single object.
 func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
 	// Resolve the actual table name from object config if available
-	tableName := objectName
-	if cfg, ok := c.objects.Get(objectName); ok && cfg.dynamicTable.name != "" {
-		tableName = cfg.dynamicTable.name
+	cfg, ok := c.objects.Get(objectName)
+	if !ok || cfg.dynamicTable.name == "" {
+		return nil, fmt.Errorf("object %q not initialized", objectName)
 	}
 
-	columns, err := c.getColumnMetadata(ctx, tableName)
+	objectName = cfg.dynamicTable.name
+
+	columns, err := c.getColumnMetadata(ctx, objectName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get column metadata for %s: %w", objectName, err)
 	}

@@ -23,6 +23,10 @@ const DefaultPageSize = 2000
 // readMode represents the type of read operation to perform.
 type readMode int
 
+var (
+	errStreamOrDynamicTableNotConfigured = fmt.Errorf("stream or dynamic table not configured")
+)
+
 // CDC metadata columns from Snowflake streams.
 const (
 	metadataAction   = "METADATA$ACTION"
@@ -63,6 +67,14 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 		return nil, fmt.Errorf("%w: %s", errObjectNotFound, params.ObjectName)
 	}
 
+	if objConfig.dynamicTable.name == "" || objConfig.stream.name == "" {
+		return nil, fmt.Errorf(
+			"%w: %s",
+			errStreamOrDynamicTableNotConfigured,
+			params.ObjectName,
+		)
+	}
+
 	// Validate that primaryKey is set (required for consistent pagination)
 	if objConfig.dynamicTable.primaryKey == "" {
 		return nil, errPrimaryKeyRequired
@@ -93,7 +105,8 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 }
 
 // AcknowledgeStreamConsumption advances the stream offset by consuming the pending changes.
-// This should be called after successfully processing all pages from readFromStream.
+// This is called automatically by readFromStream when done=true (stream exhausted).
+// Manual calls to this method are generally not needed.
 //
 // Note: SELECT alone does not advance the stream offset; only DML operations do.
 // This method uses a filtered INSERT (WHERE FALSE) to advance the offset without
@@ -172,13 +185,13 @@ func determineReadMode(params common.ReadParams) readMode {
 
 // readFromStream reads CDC data from a Snowflake Stream.
 // Note: SELECT from a stream does not advance the stream offset.
-// Call AcknowledgeStreamConsumption after processing the data to advance the offset.
+// The stream offset is automatically acknowledged when done=true (all data consumed).
 //
 // Streams don't use OFFSET-based pagination. Instead:
 //  1. Read with LIMIT to get a batch of changes
 //  2. Process the data
-//  3. Call AcknowledgeStreamConsumption to advance the stream offset
-//  4. Repeat until no more rows
+//  3. Repeat until done=true (stream exhausted)
+//  4. Stream offset is automatically acknowledged on the final read
 func (c *Connector) readFromStream(
 	ctx context.Context,
 	params common.ReadParams,
@@ -213,6 +226,13 @@ func (c *Connector) readFromStream(
 
 	// Done when we get fewer rows than requested (stream is exhausted)
 	done := len(resultRows) < pageSize
+
+	// Auto-acknowledge stream consumption when all data has been read
+	if done {
+		if err := c.AcknowledgeStreamConsumption(ctx, params.ObjectName); err != nil {
+			return nil, fmt.Errorf("failed to acknowledge stream consumption: %w", err)
+		}
+	}
 
 	// Streams don't use NextPage tokens - the stream itself manages the cursor
 	// via AcknowledgeStreamConsumption

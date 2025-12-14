@@ -102,7 +102,7 @@ func (c *Connector) ensureSingleObject(
 
 func (c *Connector) ensureDynamicTable(ctx context.Context, objectName string, cfg *objectConfig) error {
 	// Validate the query before creating the dynamic table
-	if err := c.validateQuery(ctx, cfg.query); err != nil {
+	if err := c.validateQuery(ctx, cfg.dynamicTable.query); err != nil {
 		return fmt.Errorf("invalid query for object %s: %w", objectName, err)
 	}
 
@@ -112,7 +112,7 @@ func (c *Connector) ensureDynamicTable(ctx context.Context, objectName string, c
 	}
 
 	dynamicTableName := getDynamicTableName(objectName)
-	if err := c.createDynamicTable(ctx, dynamicTableName, cfg.query, targetLag); err != nil {
+	if err := c.createDynamicTable(ctx, dynamicTableName, cfg.dynamicTable.query, targetLag); err != nil {
 		return fmt.Errorf("failed to create dynamic table %s: %w", objectName, err)
 	}
 
@@ -135,6 +135,7 @@ func (c *Connector) ensureStream(ctx context.Context, objectName string, cfg *ob
 
 // createDynamicTable creates a Dynamic Table from a SQL query.
 // The Dynamic Table will automatically refresh based on the target lag.
+// CHANGE_TRACKING is enabled to allow streams to capture CDC changes.
 func (c *Connector) createDynamicTable(ctx context.Context, tableName, query, targetLag string) error {
 	fqName := c.getFullyQualifiedName(tableName)
 
@@ -142,6 +143,7 @@ func (c *Connector) createDynamicTable(ctx context.Context, tableName, query, ta
 		CREATE OR REPLACE DYNAMIC TABLE %s
 		TARGET_LAG = '%s'
 		WAREHOUSE = %s
+		CHANGE_TRACKING = TRUE
 		AS %s
 	`, strings.ToUpper(fqName), targetLag, strings.ToUpper(c.handle.warehouse), query)
 

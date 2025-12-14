@@ -2,8 +2,9 @@ package snowflake
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
+
+	"github.com/amp-labs/amp-common/jsonpath"
 )
 
 // Objects holds the configuration for multiple Snowflake objects.
@@ -22,9 +23,9 @@ func (s *Objects) Validate() error {
 	var errors []string
 
 	for objectName, cfg := range *s {
-		if cfg.query == "" {
-			errors = append(errors, fmt.Sprintf("object %q: missing required field '%s'",
-				objectName, MetadataKeyQuery))
+		if cfg.dynamicTable.query == "" {
+			errors = append(errors, fmt.Sprintf("object %q: missing required field '%s.%s'",
+				objectName, MetadataKeyDynamicTable, MetadataKeyQuery))
 		}
 
 		if cfg.dynamicTable.primaryKey == "" {
@@ -51,24 +52,40 @@ func (s *Objects) ToMetadataMap() map[string]string {
 	}
 
 	// Reverse of newSnowflakeObjects
-	// Structure: $['objects']['objName']['query'] for object-level
-	//            $['objects']['objName']['dynamicTable']['property'] for DT
+	// Structure: $['objects']['objName']['dynamicTable']['property'] for DT
 	//            $['objects']['objName']['stream']['property'] for Stream
 	for objectName, cfg := range *s {
-		// Object-level property
-		addIfNotEmpty(fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyQuery), cfg.query)
-
 		// Dynamic Table properties (nested under 'dynamicTable')
-		dtPrefix := fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyDynamicTable)
-		addIfNotEmpty(fmt.Sprintf("%s['%s']", dtPrefix, MetadataKeyPrimaryKey), cfg.dynamicTable.primaryKey)
-		addIfNotEmpty(fmt.Sprintf("%s['%s']", dtPrefix, MetadataKeyTimestampColumn), cfg.dynamicTable.timestampColumn)
-		addIfNotEmpty(fmt.Sprintf("%s['%s']", dtPrefix, MetadataKeyTargetLag), cfg.dynamicTable.targetLag)
-		addIfNotEmpty(fmt.Sprintf("%s['%s']", dtPrefix, MetadataKeyName), cfg.dynamicTable.name)
+		addIfNotEmpty(
+			jsonpath.ToNestedPath(objectsKey, objectName, MetadataKeyDynamicTable, MetadataKeyQuery),
+			cfg.dynamicTable.query,
+		)
+		addIfNotEmpty(
+			jsonpath.ToNestedPath(objectsKey, objectName, MetadataKeyDynamicTable, MetadataKeyPrimaryKey),
+			cfg.dynamicTable.primaryKey,
+		)
+		addIfNotEmpty(
+			jsonpath.ToNestedPath(objectsKey, objectName, MetadataKeyDynamicTable, MetadataKeyTimestampColumn),
+			cfg.dynamicTable.timestampColumn,
+		)
+		addIfNotEmpty(
+			jsonpath.ToNestedPath(objectsKey, objectName, MetadataKeyDynamicTable, MetadataKeyTargetLag),
+			cfg.dynamicTable.targetLag,
+		)
+		addIfNotEmpty(
+			jsonpath.ToNestedPath(objectsKey, objectName, MetadataKeyDynamicTable, MetadataKeyName),
+			cfg.dynamicTable.name,
+		)
 
 		// Stream properties (nested under 'stream')
-		streamPrefix := fmt.Sprintf("%s['%s']['%s']", objectsPrefix, objectName, MetadataKeyStream)
-		addIfNotEmpty(fmt.Sprintf("%s['%s']", streamPrefix, MetadataKeyName), cfg.stream.name)
-		addIfNotEmpty(fmt.Sprintf("%s['%s']", streamPrefix, MetadataKeyConsumptionTable), cfg.stream.consumptionTable)
+		addIfNotEmpty(
+			jsonpath.ToNestedPath(objectsKey, objectName, MetadataKeyStream, MetadataKeyName),
+			cfg.stream.name,
+		)
+		addIfNotEmpty(
+			jsonpath.ToNestedPath(objectsKey, objectName, MetadataKeyStream, MetadataKeyConsumptionTable),
+			cfg.stream.consumptionTable,
+		)
 	}
 
 	return result
@@ -83,13 +100,9 @@ func (s *Objects) Get(objectName string) (*objectConfig, bool) {
 // objectConfig holds the configuration for a single Snowflake object.
 // Structure mirrors the metadata JSONPath:
 //
-//	$['objects']['objName']['query']
 //	$['objects']['objName']['dynamicTable'][...]
 //	$['objects']['objName']['stream'][...]
 type objectConfig struct {
-	// query is the SQL query defining the data that we treat as an object.
-	query string
-
 	// dynamicTable holds Dynamic Table specific configuration.
 	dynamicTable dynamicTableConfig
 
@@ -99,6 +112,9 @@ type objectConfig struct {
 
 // dynamicTableConfig holds configuration for a Snowflake Dynamic Table.
 type dynamicTableConfig struct {
+	// query is the SQL query defining the data that we treat as an object.
+	query string
+
 	// primaryKey is the column used for consistent ordering during pagination.
 	// This should be a unique, stable column (e.g., "id", "account_id").
 	primaryKey string
@@ -131,14 +147,15 @@ type streamConfig struct {
 //
 // Structure:
 //
-//	$['objects']['objName']['query']                      - SQL query (object level)
+//	$['objects']['objName']['dynamicTable']['query']      - SQL query
 //	$['objects']['objName']['dynamicTable']['primaryKey'] - Primary key column
 //	$['objects']['objName']['dynamicTable']['timestampColumn'] - Timestamp column
-//	$['objects']['objName']['dynamicTable']['targetLag'] - Refresh interval
-//	$['objects']['objName']['dynamicTable']['name']      - Generated DT name
-//	$['objects']['objName']['stream']['name']            - Generated stream name
+//	$['objects']['objName']['dynamicTable']['targetLag']  - Refresh interval
+//	$['objects']['objName']['dynamicTable']['name']       - Generated DT name
+//	$['objects']['objName']['stream']['name']             - Generated stream name
+//	$['objects']['objName']['stream']['consumptionTable'] - Consumption table
 const (
-	// MetadataKeyQuery is the SQL query defining the data source (object level).
+	// MetadataKeyQuery is the SQL query defining the data source (nested under 'dynamicTable').
 	MetadataKeyQuery = "query"
 
 	// MetadataKeyDynamicTable is the parent key for dynamic table configuration.
@@ -158,74 +175,78 @@ const (
 	MetadataKeyConsumptionTable = "consumptionTable"
 )
 
-const objectsPrefix = "$['objects']"
-
-// Number of capture groups in regex patterns (including full match).
 const (
-	pattern3LevelGroups = 3 // full match + objectName + property
-	pattern4LevelGroups = 4 // full match + objectName + parent + property
+	// objectsKey is the root key for all object configurations.
+	objectsKey = "objects"
+
+	// expectedPathDepth is the expected depth for all object configuration paths.
+	// All paths follow: $['objects']['objectName']['parent']['property'].
+	expectedPathDepth = 4
 )
 
-//nolint:unparam // error return kept for future extensibility and API consistency
 func newSnowflakeObjects(paramsMap map[string]string) (*Objects, error) {
 	result := make(Objects)
 
-	// Pattern for 3-level paths: $['objects']['objectName']['property']
-	// Used for object-level properties like 'query'
-	// Captures: objectName (group 1), property (group 2)
-	pattern3Level := regexp.MustCompile(`^\$\['objects'\]\['([^']+)'\]\['([^']+)'\]$`)
-
-	// Pattern for 4-level paths: $['objects']['objectName']['parent']['property']
-	// Used for nested properties like 'dynamicTable.primaryKey' or 'stream.name'
-	// Captures: objectName (group 1), parent (group 2), property (group 3)
-	pattern4Level := regexp.MustCompile(`^\$\['objects'\]\['([^']+)'\]\['([^']+)'\]\['([^']+)'\]$`)
-
 	for key, value := range paramsMap {
-		// Skip keys that don't start with objects prefix
-		if !strings.HasPrefix(key, objectsPrefix) {
+		if !jsonpath.IsNestedPath(key) {
 			continue
 		}
 
-		// Try 4-level pattern first (more specific)
-		if matches := pattern4Level.FindStringSubmatch(key); len(matches) == pattern4LevelGroups {
-			objectName := matches[1]
-			parent := matches[2]
-			property := matches[3]
+		// Parse the JSONPath to extract segments (this also validates the path)
+		segments, err := jsonpath.ParsePath(key)
+		if err != nil {
+			return nil, fmt.Errorf("invalid path %q: %w", key, err)
+		}
 
-			cfg := result[objectName]
-
-			switch parent {
-			case MetadataKeyDynamicTable:
-				cfg = setDynamicTableProperty(cfg, property, value)
-			case MetadataKeyStream:
-				cfg = setStreamProperty(cfg, property, value)
-			}
-
-			result[objectName] = cfg
-
+		// Skip paths that don't belong to objects
+		if segments[0].Key != objectsKey {
 			continue
 		}
 
-		// Try 3-level pattern (object-level properties)
-		if matches := pattern3Level.FindStringSubmatch(key); len(matches) == pattern3LevelGroups {
-			objectName := matches[1]
-			property := matches[2]
-
-			cfg := result[objectName]
-
-			if property == MetadataKeyQuery {
-				cfg.query = value
-			}
-
-			result[objectName] = cfg
+		// Validate path structure for objects: $['objects']['objectName']['parent']['property']
+		if len(segments) != expectedPathDepth {
+			return nil, fmt.Errorf(
+				"%w for %q: expected %d segments, got %d",
+				errInvalidPathDepth, key, expectedPathDepth, len(segments),
+			)
 		}
+
+		// Extract path components
+		objectName := segments[1].Key
+		parent := segments[2].Key
+		property := segments[3].Key
+
+		cfg := result[objectName]
+
+		// Set property based on parent type
+		var setErr error
+
+		switch parent {
+		case MetadataKeyDynamicTable:
+			cfg, setErr = setDynamicTableProperty(cfg, property, value)
+		case MetadataKeyStream:
+			cfg, setErr = setStreamProperty(cfg, property, value)
+		default:
+			return nil, fmt.Errorf(
+				"%w %q in path %q: must be %q or %q",
+				errInvalidParentKey, parent, key, MetadataKeyDynamicTable, MetadataKeyStream,
+			)
+		}
+
+		if setErr != nil {
+			return nil, fmt.Errorf("%w in path %q: %w", errUnknownProperty, key, setErr)
+		}
+
+		result[objectName] = cfg
 	}
 
 	return &result, nil
 }
 
-func setDynamicTableProperty(cfg objectConfig, property, value string) objectConfig {
+func setDynamicTableProperty(cfg objectConfig, property, value string) (objectConfig, error) {
 	switch property {
+	case MetadataKeyQuery:
+		cfg.dynamicTable.query = value
 	case MetadataKeyPrimaryKey:
 		cfg.dynamicTable.primaryKey = value
 	case MetadataKeyTimestampColumn:
@@ -234,18 +255,22 @@ func setDynamicTableProperty(cfg objectConfig, property, value string) objectCon
 		cfg.dynamicTable.targetLag = value
 	case MetadataKeyName:
 		cfg.dynamicTable.name = value
+	default:
+		return cfg, fmt.Errorf("%w: dynamicTable.%s", errUnknownProperty, property)
 	}
 
-	return cfg
+	return cfg, nil
 }
 
-func setStreamProperty(cfg objectConfig, property, value string) objectConfig {
+func setStreamProperty(cfg objectConfig, property, value string) (objectConfig, error) {
 	switch property {
 	case MetadataKeyName:
 		cfg.stream.name = value
 	case MetadataKeyConsumptionTable:
 		cfg.stream.consumptionTable = value
+	default:
+		return cfg, fmt.Errorf("%w: stream.%s", errUnknownProperty, property)
 	}
 
-	return cfg
+	return cfg, nil
 }

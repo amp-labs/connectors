@@ -11,15 +11,18 @@ func TestNewSnowflakeObjects(t *testing.T) {
 		name      string
 		paramsMap map[string]string
 		want      Objects
+		wantErr   bool
 	}{
 		{
-			name: "parses object-level query",
+			name: "parses query in dynamicTable",
 			paramsMap: map[string]string{
-				"$['objects']['contacts']['query']": "SELECT * FROM customers",
+				"$['objects']['contacts']['dynamicTable']['query']": "SELECT * FROM customers",
 			},
 			want: Objects{
 				"contacts": {
-					query: "SELECT * FROM customers",
+					dynamicTable: dynamicTableConfig{
+						query: "SELECT * FROM customers",
+					},
 				},
 			},
 		},
@@ -58,7 +61,7 @@ func TestNewSnowflakeObjects(t *testing.T) {
 		{
 			name: "parses full object config",
 			paramsMap: map[string]string{
-				"$['objects']['contacts']['query']":                           "SELECT * FROM customers",
+				"$['objects']['contacts']['dynamicTable']['query']":           "SELECT * FROM customers",
 				"$['objects']['contacts']['dynamicTable']['primaryKey']":      "id",
 				"$['objects']['contacts']['dynamicTable']['timestampColumn']": "updated_at",
 				"$['objects']['contacts']['dynamicTable']['targetLag']":       "1 hour",
@@ -67,8 +70,8 @@ func TestNewSnowflakeObjects(t *testing.T) {
 			},
 			want: Objects{
 				"contacts": {
-					query: "SELECT * FROM customers",
 					dynamicTable: dynamicTableConfig{
+						query:           "SELECT * FROM customers",
 						primaryKey:      "id",
 						timestampColumn: "updated_at",
 						targetLag:       "1 hour",
@@ -83,21 +86,21 @@ func TestNewSnowflakeObjects(t *testing.T) {
 		{
 			name: "parses multiple objects",
 			paramsMap: map[string]string{
-				"$['objects']['contacts']['query']":                      "SELECT * FROM customers",
+				"$['objects']['contacts']['dynamicTable']['query']":      "SELECT * FROM customers",
 				"$['objects']['contacts']['dynamicTable']['primaryKey']": "id",
-				"$['objects']['orders']['query']":                        "SELECT * FROM orders",
+				"$['objects']['orders']['dynamicTable']['query']":        "SELECT * FROM orders",
 				"$['objects']['orders']['dynamicTable']['primaryKey']":   "order_id",
 			},
 			want: Objects{
 				"contacts": {
-					query: "SELECT * FROM customers",
 					dynamicTable: dynamicTableConfig{
+						query:      "SELECT * FROM customers",
 						primaryKey: "id",
 					},
 				},
 				"orders": {
-					query: "SELECT * FROM orders",
 					dynamicTable: dynamicTableConfig{
+						query:      "SELECT * FROM orders",
 						primaryKey: "order_id",
 					},
 				},
@@ -106,15 +109,15 @@ func TestNewSnowflakeObjects(t *testing.T) {
 		{
 			name: "ignores non-object keys",
 			paramsMap: map[string]string{
-				"$['objects']['contacts']['query']":                      "SELECT * FROM customers",
+				"$['objects']['contacts']['dynamicTable']['query']":      "SELECT * FROM customers",
 				"$['objects']['contacts']['dynamicTable']['primaryKey']": "id",
-				"$['other']['key']":                                      "value",
+				"$['other']['key']['value']['test']":                     "value",
 				"someOtherKey":                                           "value",
 			},
 			want: Objects{
 				"contacts": {
-					query: "SELECT * FROM customers",
 					dynamicTable: dynamicTableConfig{
+						query:      "SELECT * FROM customers",
 						primaryKey: "id",
 					},
 				},
@@ -125,6 +128,41 @@ func TestNewSnowflakeObjects(t *testing.T) {
 			paramsMap: map[string]string{},
 			want:      Objects{},
 		},
+		{
+			name: "returns error for invalid path syntax",
+			paramsMap: map[string]string{
+				"$['objects']['contacts']['dynamicTable'][\"query\"]": "SELECT *",
+			},
+			wantErr: true,
+		},
+		{
+			name: "returns error for wrong path depth (3 levels)",
+			paramsMap: map[string]string{
+				"$['objects']['contacts']['query']": "SELECT *",
+			},
+			wantErr: true,
+		},
+		{
+			name: "returns error for invalid parent key",
+			paramsMap: map[string]string{
+				"$['objects']['contacts']['invalid']['query']": "SELECT *",
+			},
+			wantErr: true,
+		},
+		{
+			name: "returns error for unknown dynamicTable property",
+			paramsMap: map[string]string{
+				"$['objects']['contacts']['dynamicTable']['unknownProperty']": "value",
+			},
+			wantErr: true,
+		},
+		{
+			name: "returns error for unknown stream property",
+			paramsMap: map[string]string{
+				"$['objects']['contacts']['stream']['unknownProperty']": "value",
+			},
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -132,8 +170,12 @@ func TestNewSnowflakeObjects(t *testing.T) {
 			t.Parallel()
 
 			got, err := newSnowflakeObjects(tt.paramsMap)
-			if err != nil {
-				t.Errorf("newSnowflakeObjects() error = %v", err)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("newSnowflakeObjects() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if tt.wantErr {
 				return
 			}
 
@@ -149,8 +191,9 @@ func TestNewSnowflakeObjects(t *testing.T) {
 					continue
 				}
 
-				if gotCfg.query != wantCfg.query {
-					t.Errorf("object %q: query = %q, want %q", objName, gotCfg.query, wantCfg.query)
+				if gotCfg.dynamicTable.query != wantCfg.dynamicTable.query {
+					t.Errorf("object %q: dynamicTable.query = %q, want %q",
+						objName, gotCfg.dynamicTable.query, wantCfg.dynamicTable.query)
 				}
 
 				if gotCfg.dynamicTable.primaryKey != wantCfg.dynamicTable.primaryKey {
@@ -194,8 +237,8 @@ func TestObjects_ToMetadataMap(t *testing.T) {
 			name: "converts full object config to metadata map",
 			objects: Objects{
 				"contacts": {
-					query: "SELECT * FROM customers",
 					dynamicTable: dynamicTableConfig{
+						query:           "SELECT * FROM customers",
 						primaryKey:      "id",
 						timestampColumn: "updated_at",
 						targetLag:       "1 hour",
@@ -207,7 +250,7 @@ func TestObjects_ToMetadataMap(t *testing.T) {
 				},
 			},
 			want: map[string]string{
-				"$['objects']['contacts']['query']":                           "SELECT * FROM customers",
+				"$['objects']['contacts']['dynamicTable']['query']":           "SELECT * FROM customers",
 				"$['objects']['contacts']['dynamicTable']['primaryKey']":      "id",
 				"$['objects']['contacts']['dynamicTable']['timestampColumn']": "updated_at",
 				"$['objects']['contacts']['dynamicTable']['targetLag']":       "1 hour",
@@ -219,14 +262,14 @@ func TestObjects_ToMetadataMap(t *testing.T) {
 			name: "omits empty values",
 			objects: Objects{
 				"contacts": {
-					query: "SELECT * FROM customers",
 					dynamicTable: dynamicTableConfig{
+						query:      "SELECT * FROM customers",
 						primaryKey: "id",
 					},
 				},
 			},
 			want: map[string]string{
-				"$['objects']['contacts']['query']":                      "SELECT * FROM customers",
+				"$['objects']['contacts']['dynamicTable']['query']":      "SELECT * FROM customers",
 				"$['objects']['contacts']['dynamicTable']['primaryKey']": "id",
 			},
 		},
@@ -288,8 +331,8 @@ func TestObjects_Validate(t *testing.T) {
 			name: "valid object with query and primaryKey",
 			objects: &Objects{
 				"contacts": {
-					query: "SELECT * FROM customers",
 					dynamicTable: dynamicTableConfig{
+						query:      "SELECT * FROM customers",
 						primaryKey: "id",
 					},
 				},
@@ -306,13 +349,15 @@ func TestObjects_Validate(t *testing.T) {
 				},
 			},
 			wantErr: true,
-			errMsg:  "missing required field 'query'",
+			errMsg:  "missing required field 'dynamicTable.query'",
 		},
 		{
 			name: "missing primaryKey",
 			objects: &Objects{
 				"contacts": {
-					query: "SELECT * FROM customers",
+					dynamicTable: dynamicTableConfig{
+						query: "SELECT * FROM customers",
+					},
 				},
 			},
 			wantErr: true,
@@ -330,14 +375,16 @@ func TestObjects_Validate(t *testing.T) {
 			name: "multiple objects with one invalid",
 			objects: &Objects{
 				"contacts": {
-					query: "SELECT * FROM customers",
 					dynamicTable: dynamicTableConfig{
+						query:      "SELECT * FROM customers",
 						primaryKey: "id",
 					},
 				},
 				"orders": {
-					query: "SELECT * FROM orders",
-					// missing primaryKey
+					dynamicTable: dynamicTableConfig{
+						query: "SELECT * FROM orders",
+						// missing primaryKey
+					},
 				},
 			},
 			wantErr: true,
@@ -369,8 +416,8 @@ func TestObjects_Get(t *testing.T) {
 
 	objects := Objects{
 		"contacts": {
-			query: "SELECT * FROM customers",
 			dynamicTable: dynamicTableConfig{
+				query:      "SELECT * FROM customers",
 				primaryKey: "id",
 			},
 		},
@@ -385,8 +432,8 @@ func TestObjects_Get(t *testing.T) {
 			return
 		}
 
-		if cfg.query != "SELECT * FROM customers" {
-			t.Errorf("Get() query = %q, want %q", cfg.query, "SELECT * FROM customers")
+		if cfg.dynamicTable.query != "SELECT * FROM customers" {
+			t.Errorf("Get() query = %q, want %q", cfg.dynamicTable.query, "SELECT * FROM customers")
 		}
 	})
 
@@ -405,7 +452,7 @@ func TestRoundTrip(t *testing.T) {
 
 	// Test that parsing and ToMetadataMap are inverses of each other
 	original := map[string]string{
-		"$['objects']['contacts']['query']":                           "SELECT * FROM customers",
+		"$['objects']['contacts']['dynamicTable']['query']":           "SELECT * FROM customers",
 		"$['objects']['contacts']['dynamicTable']['primaryKey']":      "id",
 		"$['objects']['contacts']['dynamicTable']['timestampColumn']": "updated_at",
 		"$['objects']['contacts']['dynamicTable']['targetLag']":       "1 hour",
