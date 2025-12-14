@@ -12,7 +12,6 @@ import (
 )
 
 func GetGetResponseConnector(ctx context.Context) *getresponse.Connector {
-
 	filePath := credscanning.LoadPath(providers.GetResponse)
 
 	reader := utils.MustCreateProvCredJSON(filePath, true)

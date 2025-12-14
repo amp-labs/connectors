@@ -41,5 +41,4 @@ func main() {
 		Filter:     "query[isDefault]=true&sort[createdOn]=DESC",
 		PageSize:   1,
 	})
-
 }
