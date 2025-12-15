@@ -48,11 +48,9 @@ func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*
 		return nil, fmt.Errorf("%w: %q", errObjectsNotInitialized, objectName)
 	}
 
-	objectName = cfg.dynamicTable.name
-
-	columns, err := c.getColumnMetadata(ctx, objectName)
+	columns, err := c.getColumnMetadata(ctx, cfg.dynamicTable.name)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get column metadata for %s: %w", objectName, err)
+		return nil, fmt.Errorf("failed to get column metadata for %s: %w", cfg.dynamicTable.name, err)
 	}
 
 	fields := make(common.FieldsMetadata)
