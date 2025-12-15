@@ -3,6 +3,7 @@ package snowflake
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -24,7 +25,7 @@ const DefaultPageSize = 2000
 type readMode int
 
 var (
-	errStreamOrDynamicTableNotConfigured = fmt.Errorf("stream or dynamic table not configured")
+	errStreamOrDynamicTableNotConfigured = errors.New("stream or dynamic table not configured")
 )
 
 // CDC metadata columns from Snowflake streams.
@@ -56,7 +57,7 @@ const (
 //   - Full backfill (no Since/Until): Reads all data from Dynamic Table
 //   - Incremental (Since only): Reads CDC changes from Stream
 //   - Time range (Until set, or both): Reads from Dynamic Table with time filtering
-func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) { //nolint:cyclop
 	if err := params.ValidateParams(true); err != nil {
 		return nil, err
 	}
@@ -113,7 +114,7 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 // actually inserting any data. The stream is referenced in the SELECT, which
 // triggers the offset advancement when the DML transaction commits.
 //
-// The consumption table (_AMP_STREAM_CONSUMPTION) is created during EnsureObjects.
+// The consumption table is created during EnsureObjects.
 func (c *Connector) AcknowledgeStreamConsumption(ctx context.Context, objectName string) error {
 	// Get object config
 	objConfig, ok := c.objects.Get(objectName)

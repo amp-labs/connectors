@@ -1,7 +1,9 @@
 package snowflake
 
 import (
+	"crypto/rand"
 	"database/sql"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -51,12 +53,42 @@ func (c *Connector) getFullyQualifiedName(objectName string) string {
 	)
 }
 
-func getStreamName(objectName string) string {
-	return objectName + "_stream"
+// getStreamName generates a unique stream name for an object.
+// The random suffix is generated once and stored in metadata, ensuring consistent
+// naming across connector instances while preventing conflicts.
+func getStreamName(objectName string) (string, error) {
+	suffix, err := generateRandomSuffix()
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%s_stream_%s", objectName, suffix), nil
 }
 
-func getDynamicTableName(objectName string) string {
-	return objectName
+// getDynamicTableName generates a unique dynamic table name for an object.
+// The random suffix is generated once and stored in metadata, ensuring consistent
+// naming across connector instances while preventing conflicts.
+func getDynamicTableName(objectName string) (string, error) {
+	suffix, err := generateRandomSuffix()
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%s_dt_%s", objectName, suffix), nil
+}
+
+const randomSuffixBytes = 3 // 3 bytes = 6 hex characters
+
+// generateRandomSuffix generates a random 6-character hex suffix for unique object naming.
+// This prevents different connector installations from overwriting each other's objects
+// when sharing the same Snowflake account.
+func generateRandomSuffix() (string, error) {
+	bytes := make([]byte, randomSuffixBytes)
+	if _, err := rand.Read(bytes); err != nil {
+		return "", fmt.Errorf("failed to generate random suffix: %w", err)
+	}
+
+	return hex.EncodeToString(bytes), nil
 }
 
 // Type mapping tables for Snowflake to Ampersand value types.

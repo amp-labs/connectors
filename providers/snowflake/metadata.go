@@ -3,6 +3,7 @@ package snowflake
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -10,7 +11,7 @@ import (
 )
 
 var (
-	errObjectsNotInitialized = fmt.Errorf("objects not initialized")
+	errObjectsNotInitialized = errors.New("object(s) not initialized")
 )
 
 // listObjectMetadata implements the schema lookup.
@@ -44,7 +45,7 @@ func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*
 	// Resolve the actual table name from object config if available
 	cfg, ok := c.objects.Get(objectName)
 	if !ok || cfg.dynamicTable.name == "" {
-		return nil, fmt.Errorf("object %q not initialized", objectName)
+		return nil, fmt.Errorf("%w: %q", errObjectsNotInitialized, objectName)
 	}
 
 	objectName = cfg.dynamicTable.name

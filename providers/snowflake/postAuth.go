@@ -111,7 +111,11 @@ func (c *Connector) ensureDynamicTable(ctx context.Context, objectName string, c
 		targetLag = DefaultTargetLag
 	}
 
-	dynamicTableName := getDynamicTableName(objectName)
+	dynamicTableName, err := getDynamicTableName(objectName)
+	if err != nil {
+		return fmt.Errorf("failed to generate dynamic table name for %s: %w", objectName, err)
+	}
+
 	if err := c.createDynamicTable(ctx, dynamicTableName, cfg.dynamicTable.query, targetLag); err != nil {
 		return fmt.Errorf("failed to create dynamic table %s: %w", objectName, err)
 	}
@@ -122,8 +126,12 @@ func (c *Connector) ensureDynamicTable(ctx context.Context, objectName string, c
 }
 
 func (c *Connector) ensureStream(ctx context.Context, objectName string, cfg *objectConfig) error {
-	streamName := getStreamName(objectName)
-	if err := c.createStream(ctx, streamName, objectName); err != nil {
+	streamName, err := getStreamName(objectName)
+	if err != nil {
+		return fmt.Errorf("failed to generate stream name for %s: %w", objectName, err)
+	}
+
+	if err := c.createStream(ctx, streamName, cfg.dynamicTable.name); err != nil {
 		return fmt.Errorf("failed to create stream %s: %w", streamName, err)
 	}
 
