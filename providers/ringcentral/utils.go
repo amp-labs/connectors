@@ -3,8 +3,15 @@ package ringcentral
 import (
 	"fmt"
 	"reflect"
+	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 type ObjectsOperationURLs struct {
@@ -118,6 +125,10 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"message-store": {
 		ReadPath:     "restapi/v1.0/account/~/extension/~/message-store",
+		RecordsField: records,
+	},
+	"message-sync": {
+		ReadPath:     "restapi/v1.0/account/~/extension/~/message-sync",
 		RecordsField: records,
 	},
 
@@ -455,3 +466,87 @@ func inferValue(value any) common.ValueType {
 		return common.ValueTypeOther
 	}
 }
+
+func nextRecordsURL(objectName string, url *urlbuilder.URL) common.NextPageFunc { //nolint: gocognit,cyclop,funlen
+	return func(node *ajson.Node) (string, error) {
+		objectInfo, exists := pathURLs[objectName]
+		if !exists {
+			return "", fmt.Errorf("error couldn't construct read url for object: %s", objectName) //nolint: err113
+		}
+
+		switch {
+		case objectInfo.usesOffsetPagination:
+			page, err := jsonquery.New(node, "paging").IntegerOptional("page")
+			if err != nil {
+				return "", err
+			}
+
+			totalPages, err := jsonquery.New(node, "paging").IntegerOptional("totalPages")
+			if err != nil {
+				return "", err
+			}
+
+			if *page < *totalPages {
+				nextPage := *page + 1
+
+				url.WithQueryParam("page", strconv.Itoa(int(nextPage)))
+
+				return url.String(), nil
+			}
+
+		case objectInfo.usesCursorPagination:
+			nextPageToken, err := jsonquery.New(node, "navigation").StringOptional("nextPageToken")
+			if err != nil {
+				return "", err
+			}
+
+			if nextPageToken == nil {
+				nextPageToken, err = jsonquery.New(node, "pagination").StringOptional("nextPageToken")
+				if err != nil {
+					return "", err
+				}
+			}
+
+			if nextPageToken != nil {
+				url.WithQueryParam("pageToken", *nextPageToken)
+
+				return url.String(), nil
+			}
+
+		default:
+			nextPage, err := jsonquery.New(node, "navigation").StringOptional("nextPage")
+			if err != nil {
+				return "", err
+			}
+
+			if nextPage == nil {
+				return "", nil
+			}
+
+			url, err = urlbuilder.New(*nextPage)
+			if err != nil {
+				return "", err
+			}
+
+			return url.String(), nil
+		}
+
+		return "", nil
+	}
+}
+
+func supportedOperations() components.EndpointRegistryInput {
+	readSupport := []string{"*"}
+
+	return components.EndpointRegistryInput{
+		common.ModuleRoot: {
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
+				Support:  components.ReadSupport,
+			},
+		},
+	}
+}
+
+var creationTimeFrom = datautils.NewSet("webinars", "webinar/recordings", // nolint: gochecknoglobals
+	"webinar/company/recordings")
