@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
@@ -107,72 +106,4 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return objectMetadata, nil
-}
-
-func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
-	if params.NextPage != "" {
-		return urlbuilder.New(params.NextPage.String())
-	}
-
-	endpointPath, exists := pathURLs[params.ObjectName]
-	if !exists {
-		endpointPath.ReadPath = params.ObjectName
-	}
-
-	return urlbuilder.New(c.ProviderInfo().BaseURL, endpointPath.ReadPath)
-}
-
-func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := c.buildReadURL(params)
-	if err != nil {
-		return nil, err
-	}
-
-	if !params.Since.IsZero() {
-		if creationTimeFrom.Has(params.ObjectName) {
-			url.WithQueryParam("creationTimeFrom", params.Since.Format(time.RFC3339))
-		}
-	}
-
-	if !params.Until.IsZero() {
-		if creationTimeFrom.Has(params.ObjectName) {
-			url.WithQueryParam("creationTimeTo", params.Until.Format(time.RFC3339))
-		}
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-func (c *Connector) parseReadResponse(
-	ctx context.Context,
-	params common.ReadParams,
-	request *http.Request,
-	response *common.JSONHTTPResponse,
-) (*common.ReadResult, error) {
-	var recordsField string
-
-	url, err := urlbuilder.New(request.URL.String())
-	if err != nil {
-		return nil, err
-	}
-
-	objectPaths, exists := pathURLs[params.ObjectName]
-	if !exists {
-		recordsField = records
-	} else {
-		recordsField = objectPaths.RecordsField
-	}
-
-	return common.ParseResult(
-		response,
-		common.ExtractRecordsFromPath(recordsField),
-		nextRecordsURL(params.ObjectName, url),
-		common.GetMarshaledData,
-		params.Fields,
-	)
 }
