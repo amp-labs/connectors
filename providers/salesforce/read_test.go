@@ -2,8 +2,10 @@ package salesforce
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -113,10 +115,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/services/data/v60.0/query"),
-					mockcond.Or{
-						mockcond.QueryParam("q", "SELECT AssistantName,Department FROM contacts"),
-						mockcond.QueryParam("q", "SELECT Department,AssistantName FROM contacts"),
-					},
+					mockcond.Permute(
+						queryParam("SELECT %v FROM contacts"),
+						"AssistantName", "Department",
+					),
 				},
 				Then: mockserver.Response(http.StatusOK, responseListContacts),
 			}.Server(),
@@ -151,14 +153,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/services/data/v60.0/query"),
-					mockcond.Or{
-						// AccountId should be added to the query, order may vary
-						mockcond.QueryParam("q", "SELECT Name,Amount,StageName,AccountId FROM opportunity"),
-						mockcond.QueryParam("q", "SELECT AccountId,Name,Amount,StageName FROM opportunity"),
-						mockcond.QueryParam("q", "SELECT Name,AccountId,Amount,StageName FROM opportunity"),
-						mockcond.QueryParam("q", "SELECT Amount,Name,AccountId,StageName FROM opportunity"),
-						mockcond.QueryParam("q", "SELECT StageName,Name,Amount,AccountId FROM opportunity"),
-					},
+					mockcond.Permute(
+						// AccountId should be added to the query, order may vary.
+						queryParam("SELECT %v FROM opportunity"),
+						"Name", "Amount", "StageName", "AccountId",
+					),
 				},
 				Then: mockserver.Response(http.StatusOK, responseOpportunityWithAccount),
 			}.Server(),
@@ -224,19 +223,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/services/data/v60.0/query"),
-					mockcond.Or{
-						// OpportunityContactRoles subquery should be added to the query, order may vary
-						mockcond.QueryParam("q",
-							"SELECT Name,Amount,StageName,(SELECT FIELDS(STANDARD) FROM OpportunityContactRoles) FROM opportunity"),
-						mockcond.QueryParam("q",
-							"SELECT (SELECT FIELDS(STANDARD) FROM OpportunityContactRoles),Name,Amount,StageName FROM opportunity"),
-						mockcond.QueryParam("q",
-							"SELECT Name,(SELECT FIELDS(STANDARD) FROM OpportunityContactRoles),Amount,StageName FROM opportunity"),
-						mockcond.QueryParam("q",
-							"SELECT Amount,Name,StageName,(SELECT FIELDS(STANDARD) FROM OpportunityContactRoles) FROM opportunity"),
-						mockcond.QueryParam("q",
-							"SELECT StageName,Name,Amount,(SELECT FIELDS(STANDARD) FROM OpportunityContactRoles) FROM opportunity"),
-					},
+					mockcond.Permute(
+						// OpportunityContactRoles subquery should be added to the query, order may vary.
+						queryParam("SELECT %v FROM opportunity"),
+						"Name", "Amount", "StageName", "(SELECT FIELDS(STANDARD) FROM OpportunityContactRoles)",
+					),
 				},
 				Then: mockserver.Response(http.StatusOK, responseOpportunityWithContacts),
 			}.Server(),
@@ -429,4 +420,12 @@ func constructTestConnectorGeneral(serverURL string, module common.ModuleID) (*C
 	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, serverURL))
 
 	return connector, nil
+}
+
+func queryParam(templateString string) func(fields []string) mockcond.Condition {
+	return func(fields []string) mockcond.Condition {
+		selector := strings.Join(fields, ",")
+
+		return mockcond.QueryParam("q", fmt.Sprintf(templateString, selector))
+	}
 }
