@@ -12,7 +12,7 @@ const DefaultTargetLag = "1 hour"
 // StreamConsumptionTable is the name of the table used to advance stream offsets.
 // This table is created automatically during EnsureObjects and is used by
 // AcknowledgeStreamConsumption to advance stream offsets without storing data.
-const StreamConsumptionTable = "_AMP_STREAM_CONSUMPTION"
+const StreamConsumptionTable = "_STREAM_CONSUMPTION"
 
 // EnsureObjects ensures that the objects are created on snowflake.
 // Returns the updated Objects or nil if no objects are configured.
