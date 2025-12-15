@@ -1,0 +1,35 @@
+{
+  "uri": "https://platform.ringcentral.com/restapi/v1.0/account/278988052/extension/278988052/address-book/contact?sortBy=FirstName",
+  "records": [
+    {
+      "uri": "https://platform.ringcentral.com/restapi/v1.0/account/278988052/extension/278988052/address-book/contact/490491053",
+      "availability": "Alive",
+      "id": 490491053,
+      "company": "Ampersand",
+      "email": "joseph.karage@withampersand.com",
+      "firstName": "Joseph",
+      "lastName": "Karage",
+      "mobilePhone": "+255713507067",
+      "jobTitle": "Contributor"
+    }
+  ],
+  "paging": {
+    "page": 1,
+    "totalPages": 1,
+    "perPage": 100,
+    "totalElements": 1,
+    "pageStart": 0,
+    "pageEnd": 0
+  },
+  "navigation": {
+    "firstPage": {
+      "uri": "https://platform.ringcentral.com/restapi/v1.0/account/278988052/extension/278988052/address-book/contact?sortBy=FirstName&page=1&perPage=100"
+    },
+    "lastPage": {
+      "uri": "https://platform.ringcentral.com/restapi/v1.0/account/278988052/extension/278988052/address-book/contact?sortBy=FirstName&page=1&perPage=100"
+    }
+  },
+  "groups": {
+    "uri": "https://platform.ringcentral.com/restapi/v1.0/account/278988052/extension/278988052/address-book/group"
+  }
+}

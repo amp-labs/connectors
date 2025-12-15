@@ -130,13 +130,13 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	if !params.Since.IsZero() {
 		if creationTimeFrom.Has(params.ObjectName) {
-			url.WithQueryParam("creationTimeTo", params.Until.Format(time.RFC3339))
+			url.WithQueryParam("creationTimeFrom", params.Since.Format(time.RFC3339))
 		}
 	}
 
 	if !params.Until.IsZero() {
 		if creationTimeFrom.Has(params.ObjectName) {
-			url.WithQueryParam("creationTimeFrom", params.Since.Format(time.RFC3339))
+			url.WithQueryParam("creationTimeTo", params.Until.Format(time.RFC3339))
 		}
 	}
 
