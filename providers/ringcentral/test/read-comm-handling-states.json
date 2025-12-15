@@ -1,0 +1,50 @@
+{
+  "records": [
+    {
+      "id": "forward-all-calls",
+      "enabled": false,
+      "displayName": "Forward all calls",
+      "conditions": [
+        {
+          "type": "Schedule",
+          "schedule": {
+            "triggers": [
+              {
+                "triggerType": "Daily",
+                "startTime": "00:00:00",
+                "endTime": "23:59:59"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "dnd",
+      "enabled": false,
+      "displayName": "Do not disturb",
+      "conditions": [
+        {
+          "type": "Schedule",
+          "schedule": {
+            "triggers": [
+              {
+                "triggerType": "Daily",
+                "startTime": "00:00:00",
+                "endTime": "23:59:59"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "paging": {
+    "perPage": 2,
+    "page": 1,
+    "pageStart": 0,
+    "pageEnd": 1,
+    "totalPages": 2,
+    "totalElements": 3
+  }
+}
