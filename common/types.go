@@ -162,6 +162,16 @@ type ReadParams struct {
 	//		Note: Only supported when reading Lead Activities (not other endpoints).
 	//		Example: "1,6,12" (for visitWebpage, fillOutForm, emailClicked)
 	//		Reference: https://developer.adobe.com/marketo-apis/api/mapi/#tag/Activities
+	//  * GetResponse: An ampersand-style filter string that maps directly to GetResponse's
+	//      bracket-notation query parameters. Supports both `query[...]` and `sort[...]`.
+	//      Multiple filters can be separated by '&'.
+	//      Examples:
+	//          - "query[name]=campaign_name"
+	//          - "query[isDefault]=true"
+	//          - "sort[name]=ASC"
+	//          - "sort[createdOn]=DESC"
+	//          - "query[name]=test&sort[createdOn]=DESC"
+	//      Reference: https://apireference.getresponse.com/#operation/getCampaignList
 	Filter string // optional
 
 	// AssociatedObjects specifies a list of related objects to fetch along with the main object.
