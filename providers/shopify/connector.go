@@ -2,6 +2,7 @@ package shopify
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/schema"
@@ -37,4 +38,8 @@ func constructor(base *components.Connector) (*Connector, error) {
 	)
 
 	return connector, nil
+}
+
+func (c *Connector) getDiscoveryEndpoint() (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.ProviderInfo().BaseURL, "admin/api/2025-01/graphql.json")
 }

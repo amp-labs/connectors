@@ -10,15 +10,10 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
-	"github.com/amp-labs/connectors/common/urlbuilder"
-)
-
-const (
-	apiGraphQLSuffix = "/admin/api/2025-01/graphql.json"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL + apiGraphQLSuffix)
+	url, err := c.getDiscoveryEndpoint()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
