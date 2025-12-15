@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"maps"
 	"strings"
 
 	"github.com/amp-labs/connectors/internal/metadatadef"
@@ -107,13 +108,8 @@ func (e *Entity) GetAllProperties() map[string]metadatadef.Field {
 	parentProperties := e.parent.GetAllProperties()
 	combined := make(map[string]metadatadef.Field)
 
-	for k, v := range e.properties {
-		combined[k] = v
-	}
-
-	for k, v := range parentProperties {
-		combined[k] = v
-	}
+	maps.Copy(combined, e.properties)
+	maps.Copy(combined, parentProperties)
 
 	return combined
 }

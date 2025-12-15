@@ -1,0 +1,59 @@
+package legacy
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/amp-labs/connectors/common"
+)
+
+type writeResponse struct {
+	Data    map[string]any `json:"data"`
+	Success bool           `json:"success"`
+	// Other fields.
+}
+
+// Write creates or updates records in a pipedriver account.
+// https://developers.pipedrive.com/docs/api/v1
+func (a *Adapter) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+	if err := config.ValidateParams(); err != nil {
+		return nil, err
+	}
+
+	var write common.WriteMethod
+
+	url, err := a.getAPIURL(config.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(config.RecordId) != 0 {
+		url.AddPath(config.RecordId)
+
+		switch config.ObjectName {
+		case "leads", "leadLabels":
+			write = a.Client.Patch
+
+		default:
+			write = a.Client.Put
+		}
+	} else {
+		write = a.Client.Post
+	}
+
+	resp, err := write(ctx, url.String(), config.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := common.UnmarshalJSON[writeResponse](resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  response.Success,
+		RecordId: fmt.Sprint(response.Data["id"]),
+		Data:     response.Data,
+	}, nil
+}

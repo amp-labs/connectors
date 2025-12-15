@@ -137,7 +137,7 @@ type describeSObjectResult struct {
 	Fields []fieldResult `json:"fields" validate:"required"`
 }
 
-// See https://developer.salesforce.com/docs/atlas.en-us.244.0.api.meta/api/sforce_api_calls_describesobjects_describesobjectresult.htm#field.
+// See https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_describesobjects_describesobjectresult.htm#field.
 //
 //nolint:lll
 type fieldResult struct {
@@ -150,13 +150,13 @@ type fieldResult struct {
 
 	PicklistValues []picklistValue `json:"picklistValues"`
 
-	Autonumber *bool `json:"autonumber,omitempty"`
-	Calculated *bool `json:"calculated,omitempty"`
-	Createable *bool `json:"createable,omitempty"`
-	Updateable *bool `json:"updateable,omitempty"`
-	Custom     *bool `json:"custom,omitempty"`
-	// Optional indicates if the field may be omitted (API: "nillable").
-	Optional *bool `json:"nillable"`
+	Autonumber        *bool `json:"autonumber,omitempty"`
+	Calculated        *bool `json:"calculated,omitempty"`
+	Createable        *bool `json:"createable,omitempty"`
+	Updateable        *bool `json:"updateable,omitempty"`
+	Custom            *bool `json:"custom,omitempty"`
+	Nillable          *bool `json:"nillable,omitempty"`
+	DefaultedOnCreate *bool `json:"defaultedOnCreate,omitempty"`
 
 	// CompoundFieldName is the name of the parent compound field if this field is a component.
 	// For example, "BillingStreet" has CompoundFieldName "BillingAddress".
@@ -198,7 +198,7 @@ func (r describeSObjectResult) transformToFields() map[string]common.FieldMetada
 	return fieldsMap
 }
 
-// See https://developer.salesforce.com/docs/atlas.en-us.244.0.api.meta/api/sforce_api_calls_describesobjects_describesobjectresult.htm#field
+// See https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_describesobjects_describesobjectresult.htm#field
 //
 // Salesforce doesn't have a native concept of "read-only" fields, so we use some other
 // fields to determine if a field is read-only.
@@ -264,12 +264,29 @@ func (f fieldResult) getFieldValues() []common.FieldValue {
 	return result
 }
 
+// isRequired returns whether the field must be supplied when creating a record.
+// Salesforce only defines "required" in the context of CREATE (not update).
+//
+// A field is required on create when all of the following are true:
+//   - it is createable
+//   - it is not nillable (cannot be null)
+//   - it is not defaulted on create (Salesforce will not autopopulate it)
+//
+// nolint:lll
+// Reference: https://salesforce.stackexchange.com/questions/260294/in-order-to-check-if-a-field-is-required-or-not-is-the-result-of-isnillable-met
 func (f fieldResult) isRequired() *bool {
-	if f.Optional == nil {
+	// Platform-populated fields are never required inputs.
+	if f.Autonumber != nil && *f.Autonumber || f.Calculated != nil && *f.Calculated {
+		return goutils.Pointer(false)
+	}
+
+	// Cannot determine without all three metadata flags.
+	if f.Createable == nil || f.Nillable == nil || f.DefaultedOnCreate == nil {
 		return nil
 	}
 
-	required := !(*f.Optional) // not optional
+	// Required when createable, non-nillable, and not defaulted by Salesforce.
+	requiredOnCreate := *f.Createable && !*f.Nillable && !*f.DefaultedOnCreate
 
-	return goutils.Pointer(required)
+	return goutils.Pointer(requiredOnCreate)
 }

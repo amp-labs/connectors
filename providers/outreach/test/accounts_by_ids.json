@@ -1,0 +1,125 @@
+{
+  "data": [
+    {
+      "type": "account",
+      "id": 1,
+      "attributes": {
+        "buyerIntentScore": null,
+        "companyType": null,
+        "createdAt": "2025-01-15T10:30:00.000Z",
+        "custom1": null,
+        "customId": null,
+        "description": "First test account",
+        "domain": "example1.com",
+        "externalSource": "outreach-api",
+        "followers": 0,
+        "foundedAt": null,
+        "industry": "Technology",
+        "linkedInEmployees": null,
+        "linkedInUrl": null,
+        "locality": "San Francisco",
+        "name": "Example Corp 1",
+        "named": true,
+        "naturalName": "Example Corp 1",
+        "numberOfEmployees": 100,
+        "tags": [],
+        "touchedAt": "2025-01-15T10:30:00.000Z",
+        "updatedAt": "2025-01-15T10:30:00.000Z",
+        "websiteUrl": "https://example1.com"
+      },
+      "relationships": {
+        "owner": {
+          "data": {
+            "type": "user",
+            "id": 1
+          }
+        }
+      },
+      "links": {
+        "self": "https://api.outreach.io/api/v2/accounts/1"
+      }
+    },
+    {
+      "type": "account",
+      "id": 2,
+      "attributes": {
+        "buyerIntentScore": null,
+        "companyType": null,
+        "createdAt": "2025-01-16T11:45:00.000Z",
+        "custom1": null,
+        "customId": null,
+        "description": "Second test account",
+        "domain": "example2.com",
+        "externalSource": "outreach-api",
+        "followers": 0,
+        "foundedAt": null,
+        "industry": "Finance",
+        "linkedInEmployees": null,
+        "linkedInUrl": null,
+        "locality": "New York",
+        "name": "Example Corp 2",
+        "named": true,
+        "naturalName": "Example Corp 2",
+        "numberOfEmployees": 250,
+        "tags": [],
+        "touchedAt": "2025-01-16T11:45:00.000Z",
+        "updatedAt": "2025-01-16T11:45:00.000Z",
+        "websiteUrl": "https://example2.com"
+      },
+      "relationships": {
+        "owner": {
+          "data": {
+            "type": "user",
+            "id": 2
+          }
+        }
+      },
+      "links": {
+        "self": "https://api.outreach.io/api/v2/accounts/2"
+      }
+    },
+    {
+      "type": "account",
+      "id": 5,
+      "attributes": {
+        "buyerIntentScore": null,
+        "companyType": null,
+        "createdAt": "2025-01-17T09:20:00.000Z",
+        "custom1": null,
+        "customId": null,
+        "description": "Third test account",
+        "domain": "example5.com",
+        "externalSource": "outreach-api",
+        "followers": 0,
+        "foundedAt": null,
+        "industry": "Healthcare",
+        "linkedInEmployees": null,
+        "linkedInUrl": null,
+        "locality": "Boston",
+        "name": "Example Corp 5",
+        "named": true,
+        "naturalName": "Example Corp 5",
+        "numberOfEmployees": 500,
+        "tags": [],
+        "touchedAt": "2025-01-17T09:20:00.000Z",
+        "updatedAt": "2025-01-17T09:20:00.000Z",
+        "websiteUrl": "https://example5.com"
+      },
+      "relationships": {
+        "owner": {
+          "data": {
+            "type": "user",
+            "id": 1
+          }
+        }
+      },
+      "links": {
+        "self": "https://api.outreach.io/api/v2/accounts/5"
+      }
+    }
+  ],
+  "meta": {
+    "count": 3,
+    "count_truncated": false
+  }
+}

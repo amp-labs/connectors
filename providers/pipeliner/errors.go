@@ -62,10 +62,10 @@ type ResponseWithCodeError struct {
 			FieldName string `json:"field_name"`
 		} `json:"errors"`
 	} `json:"field_errors"`
-	StepChecklistErrors []interface{} `json:"step_checklist_errors"`
-	EntityIndex         interface{}   `json:"entity_index"`
-	HTTPStatus          int           `json:"http_status"`
-	Success             bool          `json:"success"`
+	StepChecklistErrors []any `json:"step_checklist_errors"`
+	EntityIndex         any   `json:"entity_index"`
+	HTTPStatus          int   `json:"http_status"`
+	Success             bool  `json:"success"`
 }
 
 func (r ResponseWithCodeError) CombineErr(base error) error {

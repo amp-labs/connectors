@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/go-playground/validator"
 )
 
@@ -23,6 +25,15 @@ func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	}
 }
 
+type Filter struct {
+	EnrichedFields   []*EnrichedField
+	FilterExpression string
+}
+
+type SubscriptionRequest struct {
+	Filters map[common.ObjectName]*Filter
+}
+
 // Subscribe subscribes to the events for the given objects.
 // It creates event channel members for each object in the subscription.
 // If any of the event channel members fail to be created, it will rollback the operation.
@@ -30,7 +41,7 @@ func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 // If the rollback is successful, it will return the original error on object.
 // Registration is required prior to subscribing.
 //
-//nolint:funlen,cyclop
+//nolint:funlen,cyclop,varnamelen
 func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -57,6 +68,19 @@ func (c *Connector) Subscribe(
 		)
 	}
 
+	var req *SubscriptionRequest
+
+	if params.Request != nil {
+		//nolint:varnamelen
+		req, ok = params.Request.(*SubscriptionRequest)
+		if !ok {
+			return nil, fmt.Errorf(
+				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'", errInvalidRequestType,
+				req, params.Request,
+			)
+		}
+	}
+
 	sfRes := &SubscribeResult{
 		EventChannelMembers: make(map[common.ObjectName]*EventChannelMember),
 	}
@@ -71,6 +95,18 @@ func (c *Connector) Subscribe(
 			EventChannel:   GetChannelName(rawChannelName),
 			SelectedEntity: eventName,
 		}
+
+		if req != nil && req.Filters != nil {
+			for objKey, filter := range req.Filters {
+				if naming.PluralityAndCaseIgnoreEqual(string(objKey), string(objName)) {
+					channelMetadata.EnrichedFields = filter.EnrichedFields
+					channelMetadata.FilterExpression = filter.FilterExpression
+
+					break
+				}
+			}
+		}
+
 		channelMember := &EventChannelMember{
 			FullName: GetChangeDataCaptureChannelMembershipName(rawChannelName, eventName),
 			Metadata: channelMetadata,
@@ -259,9 +295,7 @@ func (c *Connector) UpdateSubscription(
 
 	//nolint:forcetypeassert
 	// update the previous result with the new subscription result
-	for objName, objectMembership := range createRes.Result.(*SubscribeResult).EventChannelMembers {
-		newState.EventChannelMembers[objName] = objectMembership
-	}
+	maps.Copy(newState.EventChannelMembers, createRes.Result.(*SubscribeResult).EventChannelMembers)
 
 	// remove delete objects from the previous result to return
 	for _, objName := range objectsToDelete {
