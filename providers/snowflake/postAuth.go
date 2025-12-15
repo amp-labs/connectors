@@ -139,7 +139,7 @@ func (c *Connector) createDynamicTable(ctx context.Context, tableName, query, ta
 	fqName := c.getFullyQualifiedName(tableName)
 
 	createSQL := fmt.Sprintf(`
-		CREATE OR REPLACE DYNAMIC TABLE %s
+		CREATE DYNAMIC TABLE IF NOT EXISTS %s
 		TARGET_LAG = '%s'
 		WAREHOUSE = %s
 		AS %s
@@ -165,7 +165,7 @@ func (c *Connector) createStream(ctx context.Context, streamName, dynamicTableNa
 	fqDTName := c.getFullyQualifiedName(dynamicTableName)
 
 	createSQL := fmt.Sprintf(`
-		CREATE OR REPLACE STREAM %s
+		CREATE STREAM IF NOT EXISTS %s
 		ON DYNAMIC TABLE %s
 		SHOW_INITIAL_ROWS = FALSE
 	`, strings.ToUpper(fqStreamName), strings.ToUpper(fqDTName))
