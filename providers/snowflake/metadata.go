@@ -10,9 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-var (
-	errObjectsNotInitialized = errors.New("object(s) not initialized")
-)
+var errObjectsNotInitialized = errors.New("object(s) not initialized")
 
 // listObjectMetadata implements the schema lookup.
 // This is the internal implementation that gets wired to the DelegateSchemaProvider.

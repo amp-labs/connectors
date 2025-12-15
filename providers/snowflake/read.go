@@ -133,14 +133,18 @@ func (c *Connector) AcknowledgeStreamConsumption(ctx context.Context, objectName
 	streamName := c.getFullyQualifiedName(objConfig.stream.name)
 	consumptionTable := c.getFullyQualifiedName(objConfig.stream.consumptionTable)
 
-	// Use INSERT ... SELECT ... WHERE FALSE to advance the stream offset.
-	// This references the stream in a DML context (which advances the offset)
-	// but the WHERE FALSE ensures no rows are actually inserted.
+	// Use INSERT ... SELECT ... WHERE 0 = 1 to advance the stream offset.
+	// Per Snowflake docs: "query the stream but include a WHERE clause that filters
+	// out all of the change data (e.g. WHERE 0 = 1)".
+	//
+	// IMPORTANT: We must SELECT from stream columns (using METADATA$ROW_ID) so that
+	// Snowflake actually scans the stream data. The "WHERE 0 = 1" filter is evaluated
+	// AFTER reading, which advances the stream offset without inserting any rows.
 	//nolint:gosec // table names are from validated config, not user input
 	consumeSQL := fmt.Sprintf(`
 		INSERT INTO %s (_placeholder)
-		SELECT NULL FROM %s WHERE FALSE
-	`, consumptionTable, streamName)
+		SELECT %s FROM %s WHERE 0 = 1
+	`, consumptionTable, metadataRowID, streamName)
 
 	_, err := c.handle.db.ExecContext(ctx, consumeSQL)
 	if err != nil {

@@ -49,16 +49,17 @@ func (c *Connector) EnsureObjects(ctx context.Context) (*Objects, error) {
 
 // ensureStreamConsumptionTable creates the stream consumption table if it doesn't exist.
 // This table is used by AcknowledgeStreamConsumption to advance stream offsets
-// without actually storing any data (using INSERT ... WHERE FALSE).
+// without actually storing any data (using INSERT ... WHERE 0 = 1).
 func (c *Connector) ensureStreamConsumptionTable(ctx context.Context) error {
 	fqName := c.getFullyQualifiedName(StreamConsumptionTable)
 
-	// Create a minimal table with a single nullable column.
-	// We never actually insert data - the INSERT ... WHERE FALSE pattern
+	// Create a minimal table with a single nullable VARCHAR column.
+	// We never actually insert data - the INSERT ... WHERE 0 = 1 pattern
 	// advances the stream offset without writing anything.
+	// Using VARCHAR to match METADATA$ROW_ID type from streams.
 	createSQL := fmt.Sprintf(`
 		CREATE TABLE IF NOT EXISTS %s (
-			_placeholder NUMBER
+			_placeholder VARCHAR
 		)
 	`, strings.ToUpper(fqName))
 
