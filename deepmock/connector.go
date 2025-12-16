@@ -59,11 +59,15 @@ type Connector struct {
 
 // Compile-time interface checks.
 var (
-	_ connectors.Connector               = (*Connector)(nil)
-	_ connectors.ReadConnector           = (*Connector)(nil)
-	_ connectors.WriteConnector          = (*Connector)(nil)
-	_ connectors.DeleteConnector         = (*Connector)(nil)
-	_ connectors.ObjectMetadataConnector = (*Connector)(nil)
+	_ connectors.Connector                  = (*Connector)(nil)
+	_ connectors.ReadConnector              = (*Connector)(nil)
+	_ connectors.WriteConnector             = (*Connector)(nil)
+	_ connectors.DeleteConnector            = (*Connector)(nil)
+	_ connectors.ObjectMetadataConnector    = (*Connector)(nil)
+	_ connectors.SubscribeConnector         = (*Connector)(nil)
+	_ connectors.RegisterSubscribeConnector = (*Connector)(nil)
+	_ connectors.WebhookVerifierConnector   = (*Connector)(nil)
+	_ connectors.ConfigurationConnector     = (*Connector)(nil)
 )
 
 // NewConnector creates a new deepmock connector instance.
@@ -71,7 +75,9 @@ var (
 //nolint:cyclop // Complexity inherent to initialization logic with multiple configuration paths
 func NewConnector(opts ...Option) (*Connector, error) {
 	// Apply options without pre-populated schemas/storage
-	params, err := paramsbuilder.Apply(parameters{}, opts, WithClient(http.DefaultClient))
+	params, err := paramsbuilder.Apply(parameters{
+		observers: make(map[string]func(action string, record map[string]any)),
+	}, opts, WithClient(http.DefaultClient))
 	if err != nil {
 		return nil, err
 	}
@@ -262,8 +268,10 @@ func (c *Connector) Write(_ context.Context, params common.WriteParams) (*common
 	)
 
 	// Determine operation (create vs update)
+	var actionType string
 	if params.RecordId == "" {
 		// CREATE operation
+		actionType = "create"
 		idField := c.storage.GetIdFields()[ObjectName(params.ObjectName)]
 		updatedField := c.storage.GetUpdatedFields()[ObjectName(params.ObjectName)]
 
@@ -289,6 +297,7 @@ func (c *Connector) Write(_ context.Context, params common.WriteParams) (*common
 		finalRecord = recordMap
 	} else {
 		// UPDATE operation
+		actionType = "update"
 		recordID = params.RecordId
 
 		// Retrieve existing record
@@ -320,8 +329,8 @@ func (c *Connector) Write(_ context.Context, params common.WriteParams) (*common
 		return nil, fmt.Errorf("validation failed: %w", err)
 	}
 
-	// Store record
-	if err := c.storage.Store(params.ObjectName, recordID, finalRecord); err != nil {
+	// Store record with action type (create or update)
+	if err := c.storage.Store(params.ObjectName, recordID, finalRecord, actionType); err != nil {
 		return nil, fmt.Errorf("failed to store record: %w", err)
 	}
 
@@ -390,6 +399,11 @@ func (c *Connector) ListObjectMetadata(
 // GenerateRandomRecord generates a random record conforming to the object's schema.
 func (c *Connector) GenerateRandomRecord(objectName string) (map[string]any, error) {
 	return c.generateRandomRecordWithDepth(objectName, 0)
+}
+
+func (c *Connector) DefaultPageSize() int {
+	//TODO implement me
+	panic("implement me")
 }
 
 // generateRandomRecordWithDepth generates a random record with depth limiting for recursion.

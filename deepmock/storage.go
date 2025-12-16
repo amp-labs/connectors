@@ -15,6 +15,16 @@ import (
 	"github.com/kaptinlin/jsonschema"
 )
 
+type Observer func(subscription *SubscriptionContext, action string, record map[string]any)
+
+type SubscriptionContext struct {
+	Observer           Observer            `json:"-"`
+	Id                 string              `json:"id"`
+	RegistrationRef    string              `json:"registrationRef"`
+	RegistrationResult *RegistrationResult `json:"registrationResult"`
+	Metadata           map[string]any      `json:"metadata"`
+}
+
 // Storage defines the interface for persisting and retrieving mock API records.
 // It provides a flexible abstraction layer that allows different storage backends
 // (in-memory, file-based, database-backed) to be used with the deepmock connector.
@@ -34,6 +44,7 @@ type Storage interface {
 	//   - objectName: The type of object being stored (e.g., "contact", "account")
 	//   - recordID: A unique identifier for this record within the object type
 	//   - record: The record data as a map of field names to values
+	//   - action: Optional action type ("create", "update", or "write"). If omitted, defaults to "write".
 	//
 	// Returns an error if:
 	//   - The record is nil
@@ -41,7 +52,7 @@ type Storage interface {
 	//
 	// Implementations should deep copy the record to prevent external modifications
 	// from affecting stored data.
-	Store(objectName, recordID string, record map[string]any) error
+	Store(objectName, recordID string, record map[string]any, action ...string) error
 
 	// Get retrieves a single record by its ID for the specified object type.
 	//
@@ -140,6 +151,10 @@ type Storage interface {
 	// Implementations should return a copy of the internal mapping to prevent external
 	// modifications.
 	GetUpdatedFields() map[ObjectName]string
+
+	Subscribe(subscription *SubscriptionContext) error
+
+	Unsubscribe(id string) error
 }
 
 // storage provides thread-safe in-memory storage for records.
@@ -148,7 +163,21 @@ type storage struct {
 	data          map[ObjectName]map[RecordID]common.Record // objectName -> recordID -> record
 	idFields      map[ObjectName]string                     // objectName -> ID field name
 	updatedFields map[ObjectName]string                     // objectName -> updated timestamp field name
-	observers     []func(action string, record map[string]any)
+	subscriptions map[string]*SubscriptionContext
+}
+
+func (s *storage) RemoveObserver(id string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	_, ok := s.observers[id]
+	if !ok {
+		return ErrObserverNotFound
+	}
+
+	delete(s.observers, id)
+
+	return nil
 }
 
 // Compile-time check to ensure storage implements the Storage interface.
@@ -158,13 +187,12 @@ var _ Storage = (*storage)(nil)
 func NewStorage(
 	schemas SchemaRegistry,
 	idFields, updatedFields map[string]string,
-	observers []func(action string, record map[string]any),
 ) Storage {
 	store := &storage{
 		data:          make(map[ObjectName]map[RecordID]common.Record),
 		idFields:      make(map[ObjectName]string),
 		updatedFields: make(map[ObjectName]string),
-		observers:     observers,
+		observers:     make(map[string]*observer),
 	}
 
 	// Initialize object maps and convert string keys to typed keys
@@ -228,7 +256,8 @@ func deepCopyRecords(records []map[string]any) ([]map[string]any, error) {
 }
 
 // Store stores a record with the given ID.
-func (s *storage) Store(objectName, recordID string, record map[string]any) error {
+// The action parameter should be "create", "update", or "write" (defaults to "write" for backwards compatibility).
+func (s *storage) Store(objectName, recordID string, record map[string]any, action ...string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -237,6 +266,15 @@ func (s *storage) Store(objectName, recordID string, record map[string]any) erro
 	if err != nil {
 		return fmt.Errorf("failed to copy record: %w", err)
 	}
+
+	// Add the ID to the record (needed for observers and record retrieval)
+	// Use the schema's ID field name, defaulting to "id"
+	idField := s.idFields[ObjectName(objectName)]
+	if idField == "" {
+		idField = "id"
+	}
+
+	recordCopy[idField] = recordID
 
 	// Initialize object map if needed
 	objName := ObjectName(objectName)
@@ -247,14 +285,22 @@ func (s *storage) Store(objectName, recordID string, record map[string]any) erro
 	s.data[objName][RecordID(recordID)] = recordCopy
 
 	// Send to observers, if any
-	for _, observe := range s.observers {
+	// Include object name in action format: "action:objectName" (e.g., "create:accounts", "update:contacts")
+	actionType := "write" // default for backwards compatibility
+	if len(action) > 0 && action[0] != "" {
+		actionType = action[0]
+	}
+
+	observerAction := actionType + ":" + objectName
+
+	for _, o := range s.observers {
 		recordCopyCopy, err := deepCopyRecord(recordCopy)
 		if err == nil {
-			s.sendRecordToObserver("write", recordCopyCopy, observe)
+			s.sendRecordToObserver(observerAction, recordCopyCopy, o.metadata, o.callback)
 		} else {
 			slog.Warn("deepCopyRecord failed", "error", err)
 
-			s.sendRecordToObserver("write", recordCopy, observe)
+			s.sendRecordToObserver(observerAction, recordCopy, o.metadata, o.callback)
 		}
 	}
 
@@ -327,8 +373,10 @@ func (s *storage) Delete(objectName, recordID string) error {
 	delete(objectData, RecordID(recordID))
 
 	// Send to observers, if any
-	for _, observe := range s.observers {
-		s.sendRecordToObserver("delete", record, observe)
+	// Include object name in action format: "delete:objectName"
+	action := "delete:" + objectName
+	for _, o := range s.observers {
+		s.sendRecordToObserver(action, record, o.metadata, o.callback)
 	}
 
 	return nil
@@ -445,16 +493,37 @@ func (s *storage) GetUpdatedFields() map[ObjectName]string {
 	return out
 }
 
+// AddObserver adds additional observer functions to the storage.
+// This allows multiple connector instances sharing the same storage to register
+// their own observers. The method is thread-safe.
+func (s *storage) AddObserver(id string, metadata map[string]any, obs func(action string, record map[string]any, metadata map[string]any)) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	_, ok := s.observers[id]
+	if ok {
+		return fmt.Errorf("observer with id %q already exists", id)
+	}
+
+	s.observers[id] = &observer{
+		metadata: metadata,
+		callback: obs,
+	}
+
+	return nil
+}
+
 // sendRecordToObserver asynchronously notifies an observer of a storage action.
 // The observer function is invoked in a separate goroutine to prevent blocking
 // the storage operation. Any errors from the goroutine are intentionally ignored.
 func (s *storage) sendRecordToObserver(
 	action string,
 	record map[string]any,
-	observer func(action string, record map[string]any),
+	metadata map[string]any,
+	observer func(action string, record map[string]any, metadata map[string]any),
 ) {
 	_ = future.Go[struct{}](func() (struct{}, error) {
-		observer(action, record)
+		observer(action, record, metadata)
 
 		return struct{}{}, nil
 	})

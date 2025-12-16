@@ -53,4 +53,6 @@ var (
 
 	// ErrMissingDefs is returned when schema has $ref but no $defs.
 	ErrMissingDefs = errors.New("schema has $ref but no $defs")
+
+	ErrObserverNotFound = errors.New("observer not found")
 )

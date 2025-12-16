@@ -23,15 +23,15 @@ type parameters struct {
 	err error
 
 	// observers holds callback functions that are notified of data modifications.
-	observers []func(action string, record map[string]any)
+	observers map[string]func(action string, record map[string]any, metadata map[string]any)
 
 	// storage holds the configured storage backend instance.
 	storage Storage
+
 	// storageFactory creates a new storage backend with the given configuration.
 	storageFactory func(
 		schemas SchemaRegistry,
 		idFields, updatedFields map[string]string,
-		observers []func(action string, record map[string]any),
 	) (Storage, error)
 }
 
@@ -55,9 +55,9 @@ func (p parameters) ValidateParams() error {
 type Option = func(*parameters)
 
 // WithObserver adds an observer for modifications to the schema.
-func WithObserver(f func(action string, record map[string]any)) Option {
+func WithObserver(id string, f func(action string, record map[string]any)) Option {
 	return func(p *parameters) {
-		p.observers = append(p.observers, f)
+		p.observers[id] = f
 	}
 }
 
@@ -116,7 +116,7 @@ func WithStorage(storage Storage) Option {
 func WithStorageFactory(f func(
 	schemas SchemaRegistry,
 	idFields, updatedFields map[string]string,
-	observers []func(action string, record map[string]any),
+	observers map[string]func(action string, record map[string]any),
 ) (Storage, error),
 ) Option {
 	return func(p *parameters) {
