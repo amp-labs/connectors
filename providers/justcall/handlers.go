@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -18,6 +17,8 @@ import (
 // Different endpoints have different max page sizes.
 // Reference: https://developer.justcall.io/reference/pagination
 const (
+	apiVersion = "v2.1" // JustCall API version path
+
 	defaultPerPage = "100" // Default max for most endpoints
 	perPage50      = "50"  // For messages, whatsapp/messages, campaigns
 	perPage20      = "20"  // For AI endpoints (calls_ai, meetings_ai)
@@ -157,10 +158,8 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	)
 
 	// Determine the URL path
-	modulePath := metadata.Schemas.LookupModuleURLPath(common.ModuleRoot)
-
 	if specialPath, ok := objectsWithSpecialWritePath[params.ObjectName]; ok {
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, modulePath, specialPath)
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, specialPath)
 	} else if objectsWithPathID[params.ObjectName] && params.RecordId != "" {
 		// Objects like calls need ID in path: /calls/{id}
 		path, pathErr := metadata.Schemas.FindURLPath(common.ModuleRoot, params.ObjectName)
@@ -168,7 +167,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 			return nil, pathErr
 		}
 
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, modulePath, path, params.RecordId)
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path, params.RecordId)
 	} else {
 		url, err = c.buildURL(params.ObjectName)
 	}
@@ -237,34 +236,22 @@ func extractRecordID(node *ajson.Node) string {
 	query := jsonquery.New(node)
 
 	// Try root level ID
-	if id := tryExtractID(query); id != "" {
+	if id, err := query.TextWithDefault("id", ""); err == nil && id != "" {
 		return id
 	}
 
 	// Try in data object (for tags: data.id)
 	if dataNode, err := query.ObjectOptional("data"); err == nil && dataNode != nil {
-		if id := tryExtractID(jsonquery.New(dataNode)); id != "" {
+		if id, err := jsonquery.New(dataNode).TextWithDefault("id", ""); err == nil && id != "" {
 			return id
 		}
 	}
 
 	// Try in data array (for contacts: data[0].id)
 	if dataArray, err := query.ArrayOptional("data"); err == nil && len(dataArray) > 0 {
-		if id := tryExtractID(jsonquery.New(dataArray[0])); id != "" {
+		if id, err := jsonquery.New(dataArray[0]).TextWithDefault("id", ""); err == nil && id != "" {
 			return id
 		}
-	}
-
-	return ""
-}
-
-func tryExtractID(query *jsonquery.Query) string {
-	if id, err := query.IntegerWithDefault("id", 0); err == nil && id != 0 {
-		return strconv.FormatInt(id, 10)
-	}
-
-	if id, err := query.StrWithDefault("id", ""); err == nil && id != "" {
-		return id
 	}
 
 	return ""
@@ -278,6 +265,8 @@ var deletableObjectsWithPathID = map[string]string{ //nolint:gochecknoglobals
 }
 
 // deletableObjectsWithQueryID lists objects where RecordId goes in query params for delete.
+// Note: JustCall API uses query parameters for contacts delete (e.g., /contacts?id=12345)
+// instead of the more common path-based pattern (/contacts/12345).
 var deletableObjectsWithQueryID = map[string]string{ //nolint:gochecknoglobals
 	"contacts": "id",
 }
@@ -303,11 +292,9 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 }
 
 func (c *Connector) buildDeleteURL(params common.DeleteParams) (*urlbuilder.URL, error) {
-	modulePath := metadata.Schemas.LookupModuleURLPath(common.ModuleRoot)
-
 	// Check if object uses path-based ID
 	if basePath, ok := deletableObjectsWithPathID[params.ObjectName]; ok {
-		return urlbuilder.New(c.ProviderInfo().BaseURL, modulePath, basePath, params.RecordId)
+		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, basePath, params.RecordId)
 	}
 
 	// Check if object uses query param for ID
@@ -321,7 +308,7 @@ func (c *Connector) buildDeleteURL(params common.DeleteParams) (*urlbuilder.URL,
 		return nil, err
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, modulePath, path)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
 	if err != nil {
 		return nil, err
 	}
