@@ -3,7 +3,7 @@ package providers
 const Hightouch Provider = "hightouch"
 
 func init() {
-	// hightouch Connector Configuration
+	// Hightouch Connector Configuration
 	SetInfo(Hightouch, ProviderInfo{
 		DisplayName: "Hightouch",
 		AuthType:    ApiKey,
