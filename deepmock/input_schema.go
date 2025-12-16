@@ -42,6 +42,45 @@ func (m InputSchemaMap) UpdateHash(h hash.Hash) error {
 	return builder.Error()
 }
 
+// AssociationSchema defines association metadata for a field that references another object.
+// This extends JSON schemas with relationship information for foreign keys, reverse lookups,
+// and many-to-many relationships through junction tables.
+type AssociationSchema struct {
+	// AssociationType specifies the type of relationship.
+	// Valid values: "foreignKey" (many-to-one), "reverseLookup" (one-to-many), "junction" (many-to-many)
+	AssociationType string `json:"associationType"`
+
+	// TargetObject is the name of the related object type (e.g., "account", "contact").
+	// This is required for all association types.
+	TargetObject string `json:"targetObject"`
+
+	// TargetField is the field on the target object that this association references.
+	// Defaults to the target object's ID field if omitted.
+	// Used primarily for foreign key associations.
+	TargetField string `json:"targetField,omitempty"`
+
+	// Junction table configuration (required for "junction" associations only)
+
+	// JunctionObject is the name of the intermediate object that links the two objects.
+	// Example: "opportunity_contact" linking "opportunity" and "contact"
+	JunctionObject string `json:"junctionObject,omitempty"`
+
+	// JunctionFromField is the field in the junction object that references the source object.
+	// Example: "opportunity_id" in the "opportunity_contact" junction table
+	JunctionFromField string `json:"junctionFromField,omitempty"`
+
+	// JunctionToField is the field in the junction object that references the target object.
+	// Example: "contact_id" in the "opportunity_contact" junction table
+	JunctionToField string `json:"junctionToField,omitempty"`
+
+	// Reverse lookup configuration (required for "reverseLookup" associations only)
+
+	// ForeignKeyField is the field on the target object that references this object.
+	// Used to find all target records that point to this record.
+	// Example: "account_id" on contact object when defining account->contacts reverse lookup
+	ForeignKeyField string `json:"foreignKeyField,omitempty"`
+}
+
 // InputSchema represents a JSON Schema Draft 2020-12 compliant schema definition.
 // It contains all the keywords defined in the JSON Schema specification for validating
 // and describing JSON data structures. This structure is used to define the expected
@@ -219,6 +258,9 @@ type InputSchema struct {
 	XAmpIdField *bool `json:"x-amp-id-field,omitempty"`
 	// When true, marks field as a timestamp indicating when resource was last modified.
 	XAmpUpdatedField *bool `json:"x-amp-updated-field,omitempty"`
+	// When present, marks this field as an association to another object with relationship metadata.
+	// This enables foreign key relationships, reverse lookups, and many-to-many relationships.
+	XAmpAssociation *AssociationSchema `json:"x-amp-association,omitempty"`
 }
 
 // UpdateHash implements the hashable interface for InputSchema, enabling deterministic
@@ -398,6 +440,17 @@ func (is *InputSchema) UpdateHash(h hash.Hash) error {
 
 	builder.BoolPtr(is.XAmpIdField)
 	builder.BoolPtr(is.XAmpUpdatedField)
+
+	// Hash association metadata if present
+	if is.XAmpAssociation != nil {
+		builder.String(is.XAmpAssociation.AssociationType)
+		builder.String(is.XAmpAssociation.TargetObject)
+		builder.String(is.XAmpAssociation.TargetField)
+		builder.String(is.XAmpAssociation.JunctionObject)
+		builder.String(is.XAmpAssociation.JunctionFromField)
+		builder.String(is.XAmpAssociation.JunctionToField)
+		builder.String(is.XAmpAssociation.ForeignKeyField)
+	}
 
 	return builder.Error()
 }

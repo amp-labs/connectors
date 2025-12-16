@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log/slog"
 	"maps"
+	"reflect"
+	"slices"
 	"sync"
 	"time"
 
@@ -15,11 +17,27 @@ import (
 	"github.com/kaptinlin/jsonschema"
 )
 
-type Observer func(subscription *SubscriptionContext, action string, record map[string]any)
+// NotifyCallback is invoked when a storage operation occurs on a subscribed object.
+// It receives the subscription context, action type (e.g., "create:account", "update:contact"),
+// object name, record ID, and the full record data.
+type NotifyCallback func(
+	subscription *SubscriptionContext,
+	action string,
+	objectName string,
+	recordID string,
+	record map[string]any,
+)
 
+// SubscriptionEvents maps object names to the events and fields being watched for that object.
+type SubscriptionEvents = map[common.ObjectName]common.ObjectEvents
+
+// SubscriptionContext represents an active subscription to storage events.
+// It contains the callback function, subscription configuration, and metadata
+// needed to filter and deliver notifications.
 type SubscriptionContext struct {
-	Observer           Observer            `json:"-"`
+	Notify             NotifyCallback      `json:"-"`
 	Id                 string              `json:"id"`
+	SubscriptionEvents SubscriptionEvents  `json:"subscriptionEvents"`
 	RegistrationRef    string              `json:"registrationRef"`
 	RegistrationResult *RegistrationResult `json:"registrationResult"`
 	Metadata           map[string]any      `json:"metadata"`
@@ -152,30 +170,77 @@ type Storage interface {
 	// modifications.
 	GetUpdatedFields() map[ObjectName]string
 
+	// GetAssociations returns a mapping of object names to their association metadata.
+	//
+	// Each object can have zero or more fields configured as associations to other objects.
+	// For example, a "contact" object might have an "account_id" field that is a foreign key
+	// association to the "account" object.
+	//
+	// Returns:
+	//   - A map where keys are object names and values are maps of field names to association schemas
+	//   - Each association schema contains the type (foreignKey, reverseLookup, junction),
+	//     target object, and other configuration needed to expand the association
+	//
+	// This mapping is used by the connector to:
+	//   - Expand associations during Read operations by fetching related records
+	//   - Validate foreign key references during Write operations
+	//   - Include association definitions in object metadata
+	//
+	// Implementations should return a copy of the internal mapping to prevent external
+	// modifications.
+	GetAssociations() map[ObjectName]map[string]*AssociationSchema
+
+	// Subscribe registers a new subscription to receive notifications for storage events.
+	// The subscription context contains the callback function, event filters, and metadata.
+	//
+	// Parameters:
+	//   - subscription: The subscription context containing callback and event configuration
+	//
+	// Returns an error if:
+	//   - The subscription is nil
+	//   - A subscription with the same ID already exists
+	//
+	// Once subscribed, the callback will be invoked asynchronously for all matching
+	// storage operations (Store, Delete) based on the subscription's event filters.
 	Subscribe(subscription *SubscriptionContext) error
 
+	// Unsubscribe removes an active subscription by its ID.
+	//
+	// Parameters:
+	//   - id: The unique identifier of the subscription to remove
+	//
+	// Returns an error if no subscription exists with the given ID.
+	//
+	// After unsubscribing, the callback will no longer receive notifications.
 	Unsubscribe(id string) error
 }
 
 // storage provides thread-safe in-memory storage for records.
+// It implements the Storage interface and uses a read-write mutex to protect
+// concurrent access to its internal maps. Records are organized by object type
+// and record ID, and each object type can have custom ID and timestamp field names.
 type storage struct {
-	mu            sync.RWMutex
-	data          map[ObjectName]map[RecordID]common.Record // objectName -> recordID -> record
-	idFields      map[ObjectName]string                     // objectName -> ID field name
-	updatedFields map[ObjectName]string                     // objectName -> updated timestamp field name
-	subscriptions map[string]*SubscriptionContext
+	mu            sync.RWMutex                                 // Protects concurrent access to all fields
+	data          map[ObjectName]map[RecordID]common.Record    // objectName -> recordID -> record
+	idFields      map[ObjectName]string                        // objectName -> ID field name
+	updatedFields map[ObjectName]string                        // objectName -> updated timestamp field name
+	associations  map[ObjectName]map[string]*AssociationSchema // objectName -> fieldName -> association metadata
+	subscriptions map[string]*SubscriptionContext              // subscriptionID -> subscription context
 }
 
-func (s *storage) RemoveObserver(id string) error {
+// Unsubscribe removes an active subscription by its ID.
+// After unsubscribing, the callback will no longer receive notifications for storage events.
+// Returns ErrObserverNotFound if no subscription exists with the given ID.
+func (s *storage) Unsubscribe(id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	_, ok := s.observers[id]
+	_, ok := s.subscriptions[id]
 	if !ok {
 		return ErrObserverNotFound
 	}
 
-	delete(s.observers, id)
+	delete(s.subscriptions, id)
 
 	return nil
 }
@@ -183,16 +248,29 @@ func (s *storage) RemoveObserver(id string) error {
 // Compile-time check to ensure storage implements the Storage interface.
 var _ Storage = (*storage)(nil)
 
-// NewStorage creates a new Storage instance.
+// NewStorage creates a new Storage instance with the specified schemas and field mappings.
+//
+// Parameters:
+//   - schemas: Registry of object schemas used to initialize storage maps for each object type
+//   - idFields: Mapping of object names to their ID field names (e.g., "contact" -> "id")
+//   - updatedFields: Mapping of object names to their timestamp field names (e.g., "contact" -> "updated_at")
+//   - associations: Mapping of object names to their field-level association metadata
+//     (e.g., "contact" -> "account_id" -> AssociationSchema)
+//
+// Returns a thread-safe in-memory storage implementation with all object types initialized
+// and ready to accept records.
 func NewStorage(
 	schemas SchemaRegistry,
-	idFields, updatedFields map[string]string,
+	idFields map[string]string,
+	updatedFields map[string]string,
+	associations map[string]map[string]*AssociationSchema,
 ) Storage {
 	store := &storage{
 		data:          make(map[ObjectName]map[RecordID]common.Record),
 		idFields:      make(map[ObjectName]string),
 		updatedFields: make(map[ObjectName]string),
-		observers:     make(map[string]*observer),
+		associations:  make(map[ObjectName]map[string]*AssociationSchema),
+		subscriptions: make(map[string]*SubscriptionContext),
 	}
 
 	// Initialize object maps and convert string keys to typed keys
@@ -209,6 +287,16 @@ func NewStorage(
 		store.updatedFields[ObjectName(objectName)] = fieldName
 	}
 
+	// Convert association maps to typed maps and deep copy
+	for objectName, fieldAssocs := range associations {
+		store.associations[ObjectName(objectName)] = make(map[string]*AssociationSchema, len(fieldAssocs))
+		for fieldName, assoc := range fieldAssocs {
+			// Deep copy the AssociationSchema
+			assocCopy := *assoc
+			store.associations[ObjectName(objectName)][fieldName] = &assocCopy
+		}
+	}
+
 	return store
 }
 
@@ -216,6 +304,11 @@ func NewStorage(
 var errNilRecord = errors.New("record is nil")
 
 // deepCopyRecord creates an independent copy of a record.
+// This ensures that modifications to the returned record do not affect the original,
+// and vice versa. The function uses JSON marshaling/unmarshaling to handle nested
+// structures and complex types.
+//
+// Returns errNilRecord if the input record is nil.
 func deepCopyRecord(record map[string]any) (map[string]any, error) {
 	if record == nil {
 		return nil, errNilRecord
@@ -236,6 +329,11 @@ func deepCopyRecord(record map[string]any) (map[string]any, error) {
 }
 
 // deepCopyRecords creates independent copies of a slice of records.
+// Each record in the slice is deep copied to ensure modifications to the returned
+// slice or its records do not affect the originals.
+//
+// Returns errNilRecord if the input slice is nil, or an error if any individual
+// record fails to copy.
 func deepCopyRecords(records []map[string]any) ([]map[string]any, error) {
 	if records == nil {
 		return nil, errNilRecord
@@ -255,8 +353,16 @@ func deepCopyRecords(records []map[string]any) ([]map[string]any, error) {
 	return copies, nil
 }
 
-// Store stores a record with the given ID.
-// The action parameter should be "create", "update", or "write" (defaults to "write" for backwards compatibility).
+// Store stores a record with the given ID and notifies all active subscriptions.
+// The method automatically adds the record ID to the record using the object's configured
+// ID field name. If the record already exists, it will be replaced and an "update" event
+// will be generated; otherwise, a "create" event will be generated.
+//
+// The action parameter should be "create", "update", or "write" (defaults to "write" for
+// backwards compatibility). The action type is included in the observer notification as
+// "action:objectName" (e.g., "create:account", "update:contact").
+//
+// All subscriptions are notified asynchronously in separate goroutines to prevent blocking.
 func (s *storage) Store(objectName, recordID string, record map[string]any, action ...string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -282,6 +388,18 @@ func (s *storage) Store(objectName, recordID string, record map[string]any, acti
 		s.data[objName] = make(map[RecordID]common.Record)
 	}
 
+	var changedFields map[string]struct{}
+
+	previous, hasPrevious := s.data[objName][RecordID(recordID)]
+
+	eventType := common.SubscriptionEventTypeCreate
+
+	if hasPrevious {
+		eventType = common.SubscriptionEventTypeUpdate
+
+		changedFields = getChangedFields(previous, recordCopy)
+	}
+
 	s.data[objName][RecordID(recordID)] = recordCopy
 
 	// Send to observers, if any
@@ -293,21 +411,71 @@ func (s *storage) Store(objectName, recordID string, record map[string]any, acti
 
 	observerAction := actionType + ":" + objectName
 
-	for _, o := range s.observers {
+	for _, sub := range s.subscriptions {
 		recordCopyCopy, err := deepCopyRecord(recordCopy)
 		if err == nil {
-			s.sendRecordToObserver(observerAction, recordCopyCopy, o.metadata, o.callback)
+			s.sendRecordToSubscriber(observerAction, eventType, objectName, recordID, recordCopyCopy, changedFields, sub)
 		} else {
 			slog.Warn("deepCopyRecord failed", "error", err)
 
-			s.sendRecordToObserver(observerAction, recordCopy, o.metadata, o.callback)
+			s.sendRecordToSubscriber(observerAction, eventType, objectName, recordID, recordCopy, changedFields, sub)
 		}
 	}
 
 	return nil
 }
 
-// Get retrieves a record by ID.
+// getChangedFields compares two records and returns the set of fields that differ.
+// A field is considered changed if:
+//   - It exists in oldRecord but not in newRecord (deletion)
+//   - It exists in newRecord but not in oldRecord (addition)
+//   - It exists in both but has different values (modification)
+//
+// The returned map uses empty struct values for memory efficiency.
+func getChangedFields(oldRecord, newRecord common.Record) map[string]struct{} {
+	fields := make(map[string]struct{})
+
+	for field := range oldRecord {
+		oldValue := oldRecord[field]
+
+		newValue, hasField := newRecord[field]
+
+		if !hasField {
+			fields[field] = struct{}{}
+
+			continue
+		}
+
+		if !reflect.DeepEqual(oldValue, newValue) {
+			fields[field] = struct{}{}
+
+			continue
+		}
+	}
+
+	for field := range newRecord {
+		newValue := newRecord[field]
+
+		oldValue, hasField := oldRecord[field]
+
+		if !hasField {
+			fields[field] = struct{}{}
+
+			continue
+		}
+
+		if !reflect.DeepEqual(oldValue, newValue) {
+			fields[field] = struct{}{}
+
+			continue
+		}
+	}
+
+	return fields
+}
+
+// Get retrieves a record by ID and returns a deep copy to prevent external modifications.
+// Returns ErrRecordNotFound if either the object type or record ID does not exist.
 func (s *storage) Get(objectName, recordID string) (map[string]any, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -331,7 +499,9 @@ func (s *storage) Get(objectName, recordID string) (map[string]any, error) {
 	return recordCopy, nil
 }
 
-// GetAll retrieves all records for an object.
+// GetAll retrieves all records for an object and returns deep copies to prevent external modifications.
+// Returns an empty slice if the object type doesn't exist or has no records.
+// Unlike Get, this method does not return an error for non-existent object types.
 func (s *storage) GetAll(objectName string) ([]map[string]any, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -355,7 +525,9 @@ func (s *storage) GetAll(objectName string) ([]map[string]any, error) {
 	return copies, nil
 }
 
-// Delete removes a record by ID.
+// Delete removes a record by ID and notifies all active subscriptions.
+// Returns ErrRecordNotFound if either the object type or record ID does not exist.
+// All subscriptions are notified asynchronously with a "delete:objectName" action.
 func (s *storage) Delete(objectName, recordID string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -375,14 +547,24 @@ func (s *storage) Delete(objectName, recordID string) error {
 	// Send to observers, if any
 	// Include object name in action format: "delete:objectName"
 	action := "delete:" + objectName
-	for _, o := range s.observers {
-		s.sendRecordToObserver(action, record, o.metadata, o.callback)
+	for _, sub := range s.subscriptions {
+		s.sendRecordToSubscriber(action, common.SubscriptionEventTypeDelete,
+			objectName, recordID, record, nil, sub)
 	}
 
 	return nil
 }
 
-// List retrieves records filtered by time range.
+// List retrieves records filtered by time range and returns deep copies to prevent external modifications.
+// Records are filtered based on the object's configured updated timestamp field.
+//
+// Behavior:
+//   - If both since and until are zero, returns all records (equivalent to GetAll)
+//   - If no updated field is configured for the object, returns all records regardless of time range
+//   - Records with missing or unparseable timestamps are excluded when time filtering is active
+//   - Supports RFC3339 strings and Unix timestamps (int, int64, float64, json.Number)
+//
+// Returns an empty slice if the object type doesn't exist or no records match the time range.
 //
 //nolint:cyclop,funlen,gocognit // Complex timestamp parsing and time range filtering
 func (s *storage) List(objectName string, since, until time.Time) ([]map[string]any, error) {
@@ -493,40 +675,113 @@ func (s *storage) GetUpdatedFields() map[ObjectName]string {
 	return out
 }
 
-// AddObserver adds additional observer functions to the storage.
+// GetAssociations returns a deep copy of the object name to association metadata mapping.
+// This ensures external callers cannot modify the internal mapping.
+func (s *storage) GetAssociations() map[ObjectName]map[string]*AssociationSchema {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	out := make(map[ObjectName]map[string]*AssociationSchema, len(s.associations))
+
+	for objectName, fieldAssocs := range s.associations {
+		out[objectName] = make(map[string]*AssociationSchema, len(fieldAssocs))
+		for fieldName, assoc := range fieldAssocs {
+			// Deep copy the AssociationSchema to prevent external modifications
+			assocCopy := *assoc
+			out[objectName][fieldName] = &assocCopy
+		}
+	}
+
+	return out
+}
+
+// Subscribe adds additional observer functions to the storage.
 // This allows multiple connector instances sharing the same storage to register
 // their own observers. The method is thread-safe.
-func (s *storage) AddObserver(id string, metadata map[string]any, obs func(action string, record map[string]any, metadata map[string]any)) error {
+func (s *storage) Subscribe(subscription *SubscriptionContext) error {
+	if subscription == nil {
+		return ErrSubscriptionNil
+	}
+
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	_, ok := s.observers[id]
+	_, ok := s.subscriptions[subscription.Id]
 	if ok {
-		return fmt.Errorf("observer with id %q already exists", id)
+		return fmt.Errorf("%w: %q", ErrSubscriptionExists, subscription.Id)
 	}
 
-	s.observers[id] = &observer{
-		metadata: metadata,
-		callback: obs,
-	}
+	s.subscriptions[subscription.Id] = subscription
 
 	return nil
 }
 
-// sendRecordToObserver asynchronously notifies an observer of a storage action.
+// sendRecordToSubscriber asynchronously notifies an observer of a storage action.
 // The observer function is invoked in a separate goroutine to prevent blocking
 // the storage operation. Any errors from the goroutine are intentionally ignored.
-func (s *storage) sendRecordToObserver(
+func (s *storage) sendRecordToSubscriber(
 	action string,
+	evtType common.SubscriptionEventType,
+	objectName string,
+	recordID string,
 	record map[string]any,
-	metadata map[string]any,
-	observer func(action string, record map[string]any, metadata map[string]any),
+	changedFields map[string]struct{},
+	subscription *SubscriptionContext,
 ) {
 	_ = future.Go[struct{}](func() (struct{}, error) {
-		observer(action, record, metadata)
+		if wantNotification(evtType, objectName, changedFields, subscription) {
+			subscription.Notify(subscription, action, objectName, recordID, record)
+		}
 
 		return struct{}{}, nil
 	})
+}
+
+// wantNotification determines whether a subscription should receive a notification
+// for the given event. It checks:
+//  1. Whether the subscription is watching the object type
+//  2. Whether the subscription is interested in the event type (create/update/delete)
+//  3. For update events, whether any watched fields have changed
+//
+// For create and delete events, field filtering is not applied.
+// For update events with WatchFieldsAll=true, all updates are reported.
+// For update events with specific WatchFields, only updates to those fields trigger notifications.
+func wantNotification(
+	evtType common.SubscriptionEventType,
+	objectName string,
+	changedFields map[string]struct{},
+	subscription *SubscriptionContext,
+) bool {
+	evts, ok := subscription.SubscriptionEvents[common.ObjectName(objectName)]
+	if !ok {
+		return false
+	}
+
+	if !slices.Contains(evts.Events, evtType) {
+		return false
+	}
+
+	if evtType == common.SubscriptionEventTypeDelete || evtType == common.SubscriptionEventTypeCreate {
+		return true
+	}
+
+	if evts.WatchFieldsAll {
+		return true
+	}
+
+	foundRelevantFields := false
+
+	for _, field := range evts.WatchFields {
+		_, found := changedFields[field]
+
+		if found {
+			foundRelevantFields = true
+
+			break
+		}
+	}
+
+	return foundRelevantFields
 }
 
 // generateID generates an ID based on the schema's ID field type.

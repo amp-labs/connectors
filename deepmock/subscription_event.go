@@ -1,7 +1,6 @@
 package deepmock
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -24,8 +23,9 @@ type SubscriptionEvent struct {
 // EventType returns the type of event (create, update, delete).
 func (e *SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 	if e.EventTypeValue == "" {
-		return "", fmt.Errorf("event type is empty")
+		return "", ErrEventTypeEmpty
 	}
+
 	return e.EventTypeValue, nil
 }
 
@@ -38,8 +38,9 @@ func (e *SubscriptionEvent) RawEventName() (string, error) {
 // ObjectName returns the object name (e.g., "accounts", "contacts").
 func (e *SubscriptionEvent) ObjectName() (string, error) {
 	if e.ObjectNameValue == "" {
-		return "", fmt.Errorf("object name is empty")
+		return "", ErrObjectNameEmpty
 	}
+
 	return e.ObjectNameValue, nil
 }
 
@@ -52,8 +53,9 @@ func (e *SubscriptionEvent) Workspace() (string, error) {
 // RecordId returns the ID of the affected record.
 func (e *SubscriptionEvent) RecordId() (string, error) {
 	if e.RecordIDValue == "" {
-		return "", fmt.Errorf("record ID is empty")
+		return "", ErrRecordIDEmpty
 	}
+
 	return e.RecordIDValue, nil
 }
 
@@ -63,6 +65,7 @@ func (e *SubscriptionEvent) EventTimeStampNano() (int64, error) {
 		// If no time provided, use current time
 		return time.Now().UnixNano(), nil
 	}
+
 	return e.EventTimeValue, nil
 }
 
@@ -76,5 +79,6 @@ func (e *SubscriptionEvent) RawMap() (map[string]any, error) {
 			"eventTime":  e.EventTimeValue,
 		}, nil
 	}
+
 	return e.RawData, nil
 }
