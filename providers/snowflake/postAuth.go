@@ -1,4 +1,3 @@
-// nosemgrep
 package snowflake
 
 import (

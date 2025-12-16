@@ -4,3 +4,5 @@
 /providers/*/test/*.json
 /providers/*/test/*.yaml
 /providers/*/test/*.html
+/providers/snowflake/read.go
+/providers/snowflake/postAuth.go
