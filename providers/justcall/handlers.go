@@ -66,7 +66,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	if !objectsWithoutPagination[params.ObjectName] {
+	if hasPagination := !objectsWithoutPagination[params.ObjectName]; hasPagination {
 		perPage := defaultPerPage
 		if limit, ok := objectsWithLowerPageLimit[params.ObjectName]; ok {
 			perPage = limit
@@ -90,12 +90,12 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 }
 
 func (c *Connector) buildURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.ModuleID, objectName)
+	path, err := metadata.Schemas.LookupURLPath(common.ModuleRoot, objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return urlbuilder.New(c.BaseURL, path)
+	return urlbuilder.New(c.ProviderInfo().BaseURL, path)
 }
 
 func (c *Connector) parseReadResponse(

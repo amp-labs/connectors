@@ -338,6 +338,22 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Read returns error on 400 Bad Request",
+			Input: common.ReadParams{
+				ObjectName: "users",
+				Fields:     connectors.Fields("id", "name"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v2.1/users"),
+					mockcond.QueryParam("per_page", "100"),
+				},
+				Then: mockserver.Response(http.StatusBadRequest, testutils.DataFromFile(t, "read/error-bad-request.json")),
+			}.Server(),
+			ExpectedErrs: []error{common.ErrBadRequest},
+		},
 	}
 
 	for _, tt := range tests {
@@ -349,4 +365,20 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			})
 		})
 	}
+}
+
+func constructTestConnector(serverURL string) (*Connector, error) {
+	connector, err := NewConnector(
+		common.ConnectorParams{
+			Module:              common.ModuleRoot,
+			AuthenticatedClient: &http.Client{},
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	connector.SetUnitTestBaseURL(serverURL)
+
+	return connector, nil
 }
