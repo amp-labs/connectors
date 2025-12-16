@@ -1,7 +1,3 @@
-github.com/amp-labs/amp-common v0.0.0-20251208223454-e3e462792ad0 h1:bo8oXDjPj3jcnUO++uouNI5BigmHCz99lKIh5AdEm1o=
-github.com/amp-labs/amp-common v0.0.0-20251208223454-e3e462792ad0/go.mod h1:lhNrTfCkeNu/N27tG6BwYaZ9xieLjjPQCJZIxlQMc2A=
-github.com/amp-labs/amp-common v0.0.0-20251208224147-7dc8b73a6f4e h1:5Uh4AYbgt5OPnGrqr7V30A1ICBtI/WUpVX0kc2i4Keg=
-github.com/amp-labs/amp-common v0.0.0-20251208224147-7dc8b73a6f4e/go.mod h1:lhNrTfCkeNu/N27tG6BwYaZ9xieLjjPQCJZIxlQMc2A=
 github.com/PuerkitoBio/goquery v1.11.0 h1:jZ7pwMQXIITcUXNH83LLk+txlaEy6NVOfTuP43xxfqw=
 github.com/PuerkitoBio/goquery v1.11.0/go.mod h1:wQHgxUOU3JGuj3oD/QFfxUdlzW6xPHfqyHre6VMY4DQ=
 github.com/amp-labs/amp-common v0.0.0-20251214035454-f8368b6f0abb h1:5cQtzV93TMl7Vj2M9bHqgHqBrXgKCoaT8bdj8tA9PDM=
