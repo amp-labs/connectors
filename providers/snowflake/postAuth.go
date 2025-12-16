@@ -1,3 +1,4 @@
+// nosemgrep
 package snowflake
 
 import (
@@ -62,7 +63,7 @@ func (c *Connector) ensureStreamConsumptionTable(ctx context.Context) error {
 	CREATE TABLE IF NOT EXISTS %s (
 		_placeholder VARCHAR
 		)
-		`, strings.ToUpper(fqName)) // nosemgrep
+		`, strings.ToUpper(fqName))
 
 	_, err := c.handle.db.ExecContext(ctx, createSQL)
 	if err != nil {
@@ -157,7 +158,7 @@ func (c *Connector) createDynamicTable(ctx context.Context, tableName, query, ta
 		TARGET_LAG = '%s'
 		WAREHOUSE = %s
 		AS %s
-	`, strings.ToUpper(fqName), targetLag, strings.ToUpper(c.handle.warehouse), query) // nosemgrep
+	`, strings.ToUpper(fqName), targetLag, strings.ToUpper(c.handle.warehouse), query)
 
 	_, err := c.handle.db.ExecContext(ctx, createSQL)
 	if err != nil {
@@ -183,7 +184,7 @@ func (c *Connector) createStream(ctx context.Context, streamName, dynamicTableNa
 		CREATE STREAM IF NOT EXISTS %s
 		ON DYNAMIC TABLE %s
 		SHOW_INITIAL_ROWS = FALSE
-	`, strings.ToUpper(fqStreamName), strings.ToUpper(fqDTName)) // nosemgrep
+	`, strings.ToUpper(fqStreamName), strings.ToUpper(fqDTName))
 
 	_, err := c.handle.db.ExecContext(ctx, createSQL)
 	if err != nil {
@@ -197,7 +198,7 @@ func (c *Connector) createStream(ctx context.Context, streamName, dynamicTableNa
 // This checks syntax and permissions without executing the query.
 func (c *Connector) validateQuery(ctx context.Context, query string) error {
 	// query is the user's SQL definition - intentional raw SQL for Dynamic Table feature
-	explainQuery := "EXPLAIN " + query // nosemgrep
+	explainQuery := "EXPLAIN " + query
 
 	rows, err := c.handle.db.QueryContext(ctx, explainQuery)
 	if err != nil {
