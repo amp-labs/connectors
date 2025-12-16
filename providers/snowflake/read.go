@@ -113,6 +113,7 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 // triggers the offset advancement when the DML transaction commits.
 //
 // The consumption table is created during EnsureObjects.
+// nosemgrep: go.lang.security.audit.database.string-formatted-query.string-formatted-query
 func (c *Connector) AcknowledgeStreamConsumption(ctx context.Context, objectName string) error {
 	// Get object config
 	objConfig, ok := c.objects.Get(objectName)
@@ -138,7 +139,6 @@ func (c *Connector) AcknowledgeStreamConsumption(ctx context.Context, objectName
 	// IMPORTANT: We must SELECT from stream columns (using METADATA$ROW_ID) so that
 	// Snowflake actually scans the stream data. The "WHERE 0 = 1" filter is evaluated
 	// AFTER reading, which advances the stream offset without inserting any rows.
-	// nosemgrep: go.lang.security.audit.database.string-formatted-query.string-formatted-query
 	// table names are from validated config, not user input
 	consumeSQL := fmt.Sprintf(`
 		INSERT INTO %s (_placeholder)
