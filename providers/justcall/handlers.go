@@ -72,7 +72,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	if !objectsWithoutPagination[params.ObjectName] {
+	if hasPagination := !objectsWithoutPagination[params.ObjectName]; hasPagination {
 		perPage := defaultPerPage
 		if limit, ok := objectsWithLowerPageLimit[params.ObjectName]; ok {
 			perPage = limit
@@ -96,12 +96,12 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 }
 
 func (c *Connector) buildURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.ModuleID, objectName)
+	path, err := metadata.Schemas.LookupURLPath(common.ModuleRoot, objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return urlbuilder.New(c.BaseURL, path)
+	return urlbuilder.New(c.ProviderInfo().BaseURL, path)
 }
 
 func (c *Connector) parseReadResponse(
@@ -157,18 +157,18 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	)
 
 	// Determine the URL path
-	modulePath := metadata.Schemas.LookupModuleURLPath(c.ModuleID)
+	modulePath := metadata.Schemas.LookupModuleURLPath(common.ModuleRoot)
 
 	if specialPath, ok := objectsWithSpecialWritePath[params.ObjectName]; ok {
-		url, err = urlbuilder.New(c.BaseURL, modulePath, specialPath)
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, modulePath, specialPath)
 	} else if objectsWithPathID[params.ObjectName] && params.RecordId != "" {
 		// Objects like calls need ID in path: /calls/{id}
-		path, pathErr := metadata.Schemas.FindURLPath(c.ModuleID, params.ObjectName)
+		path, pathErr := metadata.Schemas.FindURLPath(common.ModuleRoot, params.ObjectName)
 		if pathErr != nil {
 			return nil, pathErr
 		}
 
-		url, err = urlbuilder.New(c.BaseURL, modulePath, path, params.RecordId)
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, modulePath, path, params.RecordId)
 	} else {
 		url, err = c.buildURL(params.ObjectName)
 	}
@@ -303,11 +303,11 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 }
 
 func (c *Connector) buildDeleteURL(params common.DeleteParams) (*urlbuilder.URL, error) {
-	modulePath := metadata.Schemas.LookupModuleURLPath(c.ModuleID)
+	modulePath := metadata.Schemas.LookupModuleURLPath(common.ModuleRoot)
 
 	// Check if object uses path-based ID
 	if basePath, ok := deletableObjectsWithPathID[params.ObjectName]; ok {
-		return urlbuilder.New(c.BaseURL, modulePath, basePath, params.RecordId)
+		return urlbuilder.New(c.ProviderInfo().BaseURL, modulePath, basePath, params.RecordId)
 	}
 
 	// Check if object uses query param for ID
@@ -316,12 +316,12 @@ func (c *Connector) buildDeleteURL(params common.DeleteParams) (*urlbuilder.URL,
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	path, err := metadata.Schemas.FindURLPath(c.ModuleID, params.ObjectName)
+	path, err := metadata.Schemas.FindURLPath(common.ModuleRoot, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	url, err := urlbuilder.New(c.BaseURL, modulePath, path)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, modulePath, path)
 	if err != nil {
 		return nil, err
 	}

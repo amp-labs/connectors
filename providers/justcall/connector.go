@@ -27,9 +27,6 @@ type Connector struct {
 	components.Reader
 	components.Writer
 	components.Deleter
-
-	BaseURL  string
-	ModuleID common.ModuleID
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -39,21 +36,12 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
-	providerInfo := connector.ProviderInfo()
-	connector.BaseURL = providerInfo.BaseURL
-	connector.ModuleID = connector.ProviderContext.Module()
-
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ModuleID, metadata.Schemas)
-
-	registry, err := components.NewEndpointRegistry(supportedOperations())
-	if err != nil {
-		return nil, err
-	}
+	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(common.ModuleRoot, metadata.Schemas)
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
-		registry,
-		connector.ModuleID,
+		components.NewEmptyEndpointRegistry(),
+		common.ModuleRoot,
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
@@ -63,8 +51,8 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 	connector.Writer = writer.NewHTTPWriter(
 		connector.HTTPClient().Client,
-		registry,
-		connector.ModuleID,
+		components.NewEmptyEndpointRegistry(),
+		common.ModuleRoot,
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
@@ -74,8 +62,8 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 	connector.Deleter = deleter.NewHTTPDeleter(
 		connector.HTTPClient().Client,
-		registry,
-		connector.ModuleID,
+		components.NewEmptyEndpointRegistry(),
+		common.ModuleRoot,
 		operations.DeleteHandlers{
 			BuildRequest:  connector.buildDeleteRequest,
 			ParseResponse: connector.parseDeleteResponse,
