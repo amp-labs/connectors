@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -14,15 +13,18 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+// Pagination constants for JustCall API.
+// Different endpoints have different max page sizes.
+// Reference: https://developer.justcall.io/reference/pagination
 const (
-	// JustCall pagination: max 100 per page for most endpoints.
-	// https://developer.justcall.io/reference/call_list_v21
-	defaultPerPage = "100"
-	perPage50      = "50"
-	perPage20      = "20"
+	apiVersion = "v2.1" // JustCall API version path
 
-	// JustCall datetime format: yyyy-mm-dd hh:mm:ss or yyyy-mm-dd.
-	// https://developer.justcall.io/reference/call_list_v21
+	defaultPerPage = "100" // Default max for most endpoints
+	perPage50      = "50"  // For messages, whatsapp/messages, campaigns
+	perPage20      = "20"  // For AI endpoints (calls_ai, meetings_ai)
+
+	// JustCall datetime format for incremental sync.
+	// Reference: https://developer.justcall.io/reference/call_list_v21
 	datetimeFormat = "2006-01-02 15:04:05"
 )
 
@@ -94,6 +96,8 @@ var objectsWithIncrementalSync = map[string]bool{ //nolint:gochecknoglobals
 	"sales_dialer/campaigns": true,
 }
 
+// buildReadRequest constructs the HTTP request for read operations.
+// Handles pagination via next_page_link and incremental sync via from_datetime/to_datetime.
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if params.NextPage != "" {
 		url, err := urlbuilder.New(params.NextPage.String())
@@ -109,7 +113,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	if !objectsWithoutPagination[params.ObjectName] {
+	if hasPagination := !objectsWithoutPagination[params.ObjectName]; hasPagination {
 		perPage := defaultPerPage
 		if limit, ok := objectsWithLowerPageLimit[params.ObjectName]; ok {
 			perPage = limit
@@ -133,12 +137,12 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 }
 
 func (c *Connector) buildURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.ModuleID, objectName)
+	path, err := metadata.Schemas.LookupURLPath(common.ModuleRoot, objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return urlbuilder.New(c.BaseURL, path)
+	return urlbuilder.New(c.ProviderInfo().BaseURL, path)
 }
 
 func (c *Connector) parseReadResponse(
@@ -189,6 +193,9 @@ var objectsWithPUTOnly = map[string]bool{ //nolint:gochecknoglobals
 	"users/availability": true,
 }
 
+// buildWriteRequest constructs the HTTP request for write operations.
+// Uses POST for create, PUT for update. Some objects use special endpoints.
+// Reference: https://developer.justcall.io/reference/introduction
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	var (
 		url    *urlbuilder.URL
@@ -197,18 +204,16 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	)
 
 	// Determine the URL path
-	modulePath := metadata.Schemas.LookupModuleURLPath(c.ModuleID)
-
 	if specialPath, ok := objectsWithSpecialWritePath[params.ObjectName]; ok {
-		url, err = urlbuilder.New(c.BaseURL, modulePath, specialPath)
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, specialPath)
 	} else if objectsWithPathID[params.ObjectName] && params.RecordId != "" {
 		// Objects like calls need ID in path: /calls/{id}
-		path, pathErr := metadata.Schemas.FindURLPath(c.ModuleID, params.ObjectName)
+		path, pathErr := metadata.Schemas.FindURLPath(common.ModuleRoot, params.ObjectName)
 		if pathErr != nil {
 			return nil, pathErr
 		}
 
-		url, err = urlbuilder.New(c.BaseURL, modulePath, path, params.RecordId)
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path, params.RecordId)
 	} else {
 		url, err = c.buildURL(params.ObjectName)
 	}
@@ -270,32 +275,29 @@ func (c *Connector) parseWriteResponse(
 }
 
 // extractRecordID extracts the record ID from response, handling both string and numeric IDs.
+// JustCall has different response structures:
+//   - Tags: {"status": "success", "data": {"id": 123, ...}}
+//   - Contacts: {"status": "success", "data": [{"id": 123, ...}]}.
 func extractRecordID(node *ajson.Node) string {
+	query := jsonquery.New(node)
+
 	// Try root level ID
-	if id := tryExtractID(jsonquery.New(node)); id != "" {
+	if id, err := query.TextWithDefault("id", ""); err == nil && id != "" {
 		return id
 	}
 
-	// Try in data object
-	if id := tryExtractID(jsonquery.New(node, "data")); id != "" {
-		return id
+	// Try in data object (for tags: data.id)
+	if dataNode, err := query.ObjectOptional("data"); err == nil && dataNode != nil {
+		if id, err := jsonquery.New(dataNode).TextWithDefault("id", ""); err == nil && id != "" {
+			return id
+		}
 	}
 
-	// Try in nested data.data array (JustCall pattern for contacts)
-	if dataArray, err := jsonquery.New(node, "data").ArrayOptional("data"); err == nil && len(dataArray) > 0 {
-		return tryExtractID(jsonquery.New(dataArray[0]))
-	}
-
-	return ""
-}
-
-func tryExtractID(query *jsonquery.Query) string {
-	if id, err := query.IntegerWithDefault("id", 0); err == nil && id != 0 {
-		return strconv.FormatInt(id, 10)
-	}
-
-	if id, err := query.StrWithDefault("id", ""); err == nil && id != "" {
-		return id
+	// Try in data array (for contacts: data[0].id)
+	if dataArray, err := query.ArrayOptional("data"); err == nil && len(dataArray) > 0 {
+		if id, err := jsonquery.New(dataArray[0]).TextWithDefault("id", ""); err == nil && id != "" {
+			return id
+		}
 	}
 
 	return ""
@@ -309,25 +311,36 @@ var deletableObjectsWithPathID = map[string]string{ //nolint:gochecknoglobals
 }
 
 // deletableObjectsWithQueryID lists objects where RecordId goes in query params for delete.
+// Note: JustCall API uses query parameters for contacts delete (e.g., /contacts?id=12345)
+// instead of the more common path-based pattern (/contacts/12345).
 var deletableObjectsWithQueryID = map[string]string{ //nolint:gochecknoglobals
 	"contacts": "id",
 }
 
+// buildDeleteRequest constructs the HTTP request for delete operations.
+// Note: JustCall requires empty JSON body {} for DELETE requests.
+// Two patterns: path-based ID (/endpoint/{id}) or query param (/endpoint?id={id}).
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
 	url, err := c.buildDeleteURL(params)
 	if err != nil {
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
+	// JustCall requires a JSON body even for DELETE requests
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), bytes.NewReader([]byte("{}")))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
 }
 
 func (c *Connector) buildDeleteURL(params common.DeleteParams) (*urlbuilder.URL, error) {
-	modulePath := metadata.Schemas.LookupModuleURLPath(c.ModuleID)
-
 	// Check if object uses path-based ID
 	if basePath, ok := deletableObjectsWithPathID[params.ObjectName]; ok {
-		return urlbuilder.New(c.BaseURL, modulePath, basePath, params.RecordId)
+		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, basePath, params.RecordId)
 	}
 
 	// Check if object uses query param for ID
@@ -336,12 +349,12 @@ func (c *Connector) buildDeleteURL(params common.DeleteParams) (*urlbuilder.URL,
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	path, err := metadata.Schemas.FindURLPath(c.ModuleID, params.ObjectName)
+	path, err := metadata.Schemas.FindURLPath(common.ModuleRoot, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	url, err := urlbuilder.New(c.BaseURL, modulePath, path)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
 	if err != nil {
 		return nil, err
 	}

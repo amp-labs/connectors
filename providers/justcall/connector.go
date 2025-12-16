@@ -1,3 +1,5 @@
+// Package justcall provides a connector for the JustCall API.
+// API Documentation: https://developer.justcall.io/reference/introduction
 package justcall
 
 import (
@@ -6,22 +8,25 @@ import (
 	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
+	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/justcall/metadata"
 )
 
+// Connector is a JustCall connector.
 type Connector struct {
+	// Basic connector
 	*components.Connector
 
+	// Require authenticated client
 	common.RequireAuthenticatedClient
 
-	// ListObjectMetadata is implemented directly to support custom fields.
+	// Supported operations
+	components.SchemaProvider
 	components.Reader
 	components.Writer
 	components.Deleter
-
-	BaseURL  string
-	ModuleID common.ModuleID
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -31,19 +36,12 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
-	providerInfo := connector.ProviderInfo()
-	connector.BaseURL = providerInfo.BaseURL
-	connector.ModuleID = connector.ProviderContext.Module()
-
-	registry, err := components.NewEndpointRegistry(supportedOperations())
-	if err != nil {
-		return nil, err
-	}
+	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(common.ModuleRoot, metadata.Schemas)
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
-		registry,
-		connector.ModuleID,
+		components.NewEmptyEndpointRegistry(),
+		common.ModuleRoot,
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
@@ -53,8 +51,8 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 	connector.Writer = writer.NewHTTPWriter(
 		connector.HTTPClient().Client,
-		registry,
-		connector.ModuleID,
+		components.NewEmptyEndpointRegistry(),
+		common.ModuleRoot,
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
@@ -64,8 +62,8 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 	connector.Deleter = deleter.NewHTTPDeleter(
 		connector.HTTPClient().Client,
-		registry,
-		connector.ModuleID,
+		components.NewEmptyEndpointRegistry(),
+		common.ModuleRoot,
 		operations.DeleteHandlers{
 			BuildRequest:  connector.buildDeleteRequest,
 			ParseResponse: connector.parseDeleteResponse,

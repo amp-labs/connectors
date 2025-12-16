@@ -15,6 +15,7 @@ import (
 	"github.com/amp-labs/connectors/providers/justcall"
 	testJustCall "github.com/amp-labs/connectors/test/justcall"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/brianvoe/gofakeit/v6"
 )
 
 func main() {
@@ -60,7 +61,7 @@ func run(ctx context.Context, conn *justcall.Connector) error {
 }
 
 func testCreateContact(ctx context.Context, conn *justcall.Connector) (string, string, error) {
-	phoneNumber := fmt.Sprintf("+1415555%04d", time.Now().Unix()%10000)
+	phoneNumber := "+1" + gofakeit.Phone()
 
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "contacts",
