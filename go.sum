@@ -1,9 +1,7 @@
-github.com/amp-labs/amp-common v0.0.0-20251208223454-e3e462792ad0 h1:bo8oXDjPj3jcnUO++uouNI5BigmHCz99lKIh5AdEm1o=
-github.com/amp-labs/amp-common v0.0.0-20251208223454-e3e462792ad0/go.mod h1:lhNrTfCkeNu/N27tG6BwYaZ9xieLjjPQCJZIxlQMc2A=
-github.com/amp-labs/amp-common v0.0.0-20251208224147-7dc8b73a6f4e h1:5Uh4AYbgt5OPnGrqr7V30A1ICBtI/WUpVX0kc2i4Keg=
-github.com/amp-labs/amp-common v0.0.0-20251208224147-7dc8b73a6f4e/go.mod h1:lhNrTfCkeNu/N27tG6BwYaZ9xieLjjPQCJZIxlQMc2A=
 github.com/PuerkitoBio/goquery v1.11.0 h1:jZ7pwMQXIITcUXNH83LLk+txlaEy6NVOfTuP43xxfqw=
 github.com/PuerkitoBio/goquery v1.11.0/go.mod h1:wQHgxUOU3JGuj3oD/QFfxUdlzW6xPHfqyHre6VMY4DQ=
+github.com/amp-labs/amp-common v0.0.0-20251214035454-f8368b6f0abb h1:5cQtzV93TMl7Vj2M9bHqgHqBrXgKCoaT8bdj8tA9PDM=
+github.com/amp-labs/amp-common v0.0.0-20251214035454-f8368b6f0abb/go.mod h1:YKXCJcouD67LpJvtrmUVVyfCWZWQhzOeddDkMTxpGaw=
 github.com/andybalholm/cascadia v1.3.3 h1:AG2YHrzJIm4BZ19iwJ/DAua6Btl3IwJX+VI4kktS1LM=
 github.com/andybalholm/cascadia v1.3.3/go.mod h1:xNd9bqTn98Ln4DwST8/nG+H0yuB8Hmgu1YHNnWw0GeA=
 github.com/antchfx/xmlquery v1.5.0 h1:uAi+mO40ZWfyU6mlUBxRVvL6uBNZ6LMU4M3+mQIBV4c=
@@ -86,8 +84,9 @@ github.com/golang-jwt/jwt/v5 v5.3.0 h1:pv4AsKCKKZuqlgs5sUmn4x8UlGa0kEVt/puTpKx9v
 github.com/golang-jwt/jwt/v5 v5.3.0/go.mod h1:fxCRLWMO43lRc8nhHWY6LGqRcf+1gQWArsqaEUEa5bE=
 github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da h1:oI5xCqsCo564l8iNU+DwB5epxmsaqB+rhGL0m5jtYqE=
 github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
-github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
+github.com/google/go-cmp v0.7.0 h1:wk8382ETsv4JYUZwIsn6YpYiWiBsYLSJiTsyBybVuN8=
+github.com/google/go-cmp v0.7.0/go.mod h1:pXiqmnSA92OHEEa9HXL2W4E7lf9JzCmGVUdgjX3N/iU=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/iancoleman/strcase v0.3.0 h1:nTXanmYxhfFAMjZL34Ov6gkzEsSJZ5DbhxWjvSASxEI=

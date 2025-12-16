@@ -1,10 +1,10 @@
 module github.com/amp-labs/connectors
 
-go 1.25
+go 1.25.0
 
 require (
-	github.com/amp-labs/amp-common v0.0.0-20251208224147-7dc8b73a6f4e
 	github.com/PuerkitoBio/goquery v1.11.0
+	github.com/amp-labs/amp-common v0.0.0-20251214035454-f8368b6f0abb
 	github.com/antchfx/xmlquery v1.5.0
 	github.com/aws/aws-sdk-go-v2 v1.41.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.5
@@ -61,7 +61,7 @@ require (
 	github.com/gobwas/ws v1.4.0 // indirect
 	github.com/goccy/go-yaml v1.19.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	github.com/google/go-cmp v0.6.0 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/kaptinlin/go-i18n v0.2.0 // indirect
 	github.com/kaptinlin/jsonpointer v0.4.6 // indirect
