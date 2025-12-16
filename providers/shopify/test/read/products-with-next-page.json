@@ -1,0 +1,84 @@
+{
+    "data": {
+        "products": {
+            "nodes": [
+                {
+                    "id": "gid://shopify/Product/123456789",
+                    "title": "Test Product",
+                    "handle": "test-product",
+                    "description": "A great test product",
+                    "descriptionHtml": "<p>A great test product</p>",
+                    "vendor": "Test Vendor",
+                    "productType": "Apparel",
+                    "status": "ACTIVE",
+                    "tags": ["summer", "sale"],
+                    "totalInventory": 100,
+                    "tracksInventory": true,
+                    "createdAt": "2024-01-15T10:30:00Z",
+                    "updatedAt": "2024-01-20T14:45:00Z",
+                    "publishedAt": "2024-01-15T12:00:00Z",
+                    "onlineStoreUrl": "https://test-store.myshopify.com/products/test-product",
+                    "onlineStorePreviewUrl": "https://test-store.myshopify.com/products/test-product?preview=true",
+                    "templateSuffix": null,
+                    "giftCardTemplateSuffix": null,
+                    "hasOnlyDefaultVariant": false,
+                    "hasOutOfStockVariants": false,
+                    "hasVariantsThatRequiresComponents": false,
+                    "requiresSellingPlan": false,
+                    "isGiftCard": false,
+                    "legacyResourceId": "123456789",
+                    "priceRangeV2": {
+                        "minVariantPrice": {
+                            "amount": "19.99",
+                            "currencyCode": "USD"
+                        },
+                        "maxVariantPrice": {
+                            "amount": "49.99",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "compareAtPriceRange": {
+                        "minVariantCompareAtPrice": {
+                            "amount": "29.99",
+                            "currencyCode": "USD"
+                        },
+                        "maxVariantCompareAtPrice": {
+                            "amount": "59.99",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "featuredMedia": {
+                        "id": "gid://shopify/MediaImage/111111111",
+                        "alt": "Test product image",
+                        "mediaContentType": "IMAGE",
+                        "preview": {
+                            "image": {
+                                "url": "https://cdn.shopify.com/test-product.jpg",
+                                "altText": "Test product image"
+                            }
+                        }
+                    },
+                    "seo": {
+                        "title": "Test Product - Best Quality",
+                        "description": "Shop the best test product"
+                    },
+                    "category": {
+                        "id": "gid://shopify/TaxonomyCategory/1",
+                        "name": "T-Shirts",
+                        "fullName": "Apparel & Accessories > Clothing > Shirts & Tops > T-Shirts"
+                    },
+                    "variantsCount": {
+                        "count": 3
+                    },
+                    "mediaCount": {
+                        "count": 5
+                    }
+                }
+            ],
+            "pageInfo": {
+                "hasNextPage": true,
+                "endCursor": "eyJsYXN0X2lkIjoxMjM0NTY3ODksImxhc3RfdmFsdWUiOiIyMDI0LTAxLTIwVDE0OjQ1OjAwWiJ9"
+            }
+        }
+    }
+}
