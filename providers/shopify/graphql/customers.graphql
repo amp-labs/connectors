@@ -4,8 +4,7 @@ query Customers($first: Int!, $after: String, $query: String) {
       id
       firstName
       lastName
-      email
-      phone
+      displayName
       createdAt
       updatedAt
       state
@@ -16,9 +15,22 @@ query Customers($first: Int!, $after: String, $query: String) {
       taxExemptions
       locale
       numberOfOrders
+      lifetimeDuration
+      canDelete
       amountSpent {
         amount
         currencyCode
+      }
+      defaultEmailAddress {
+        emailAddress
+        marketingState
+        marketingOptInLevel
+        marketingOptInLevelAtCreation
+      }
+      defaultPhoneNumber {
+        phoneNumber
+        marketingState
+        marketingOptInLevel
       }
       defaultAddress {
         id
@@ -34,17 +46,11 @@ query Customers($first: Int!, $after: String, $query: String) {
         zip
         phone
         company
+        formattedArea
       }
-      emailMarketingConsent {
-        marketingState
-        marketingOptInLevel
-        consentUpdatedAt
-      }
-      smsMarketingConsent {
-        marketingState
-        marketingOptInLevel
-        consentUpdatedAt
-        consentCollectedFrom
+      image {
+        url
+        altText
       }
     }
     pageInfo {
