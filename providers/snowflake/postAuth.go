@@ -57,6 +57,7 @@ func (c *Connector) ensureStreamConsumptionTable(ctx context.Context) error {
 	// We never actually insert data - the INSERT ... WHERE 0 = 1 pattern
 	// advances the stream offset without writing anything.
 	// Using VARCHAR to match METADATA$ROW_ID type from streams.
+	//nolint:gosec // fqName is derived from constant StreamConsumptionTable, not user input
 	createSQL := fmt.Sprintf(`
 		CREATE TABLE IF NOT EXISTS %s (
 			_placeholder VARCHAR
@@ -147,6 +148,11 @@ func (c *Connector) ensureStream(ctx context.Context, objectName string, cfg *ob
 func (c *Connector) createDynamicTable(ctx context.Context, tableName, query, targetLag string) error {
 	fqName := c.getFullyQualifiedName(tableName)
 
+	// tableName is generated internally via getDynamicTableName() with random suffix.
+	// targetLag defaults to constant or comes from validated config.
+	// warehouse is from authenticated connection parameters.
+	// query is intentionally raw SQL - that's the purpose of this Dynamic Table feature.
+	//nolint:gosec // identifiers are system-controlled, not from external user input
 	createSQL := fmt.Sprintf(`
 		CREATE DYNAMIC TABLE IF NOT EXISTS %s
 		TARGET_LAG = '%s'
@@ -173,6 +179,7 @@ func (c *Connector) createStream(ctx context.Context, streamName, dynamicTableNa
 	fqStreamName := c.getFullyQualifiedName(streamName)
 	fqDTName := c.getFullyQualifiedName(dynamicTableName)
 
+	//nolint:gosec // names are generated internally via getStreamName/getDynamicTableName, not user input
 	createSQL := fmt.Sprintf(`
 		CREATE STREAM IF NOT EXISTS %s
 		ON DYNAMIC TABLE %s
@@ -190,6 +197,7 @@ func (c *Connector) createStream(ctx context.Context, streamName, dynamicTableNa
 // validateQuery validates a SQL query by running EXPLAIN.
 // This checks syntax and permissions without executing the query.
 func (c *Connector) validateQuery(ctx context.Context, query string) error {
+	//nolint:gosec // query is the user's SQL definition - intentional raw SQL for Dynamic Table feature
 	explainQuery := "EXPLAIN " + query
 
 	rows, err := c.handle.db.QueryContext(ctx, explainQuery)
