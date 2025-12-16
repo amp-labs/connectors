@@ -290,6 +290,7 @@ func TestObjects_ToMetadataMap(t *testing.T) {
 				t.Errorf("ToMetadataMap() got %d entries, want %d", len(got), len(tt.want))
 				t.Errorf("got: %v", got)
 				t.Errorf("want: %v", tt.want)
+
 				return
 			}
 

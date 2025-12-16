@@ -24,9 +24,7 @@ const DefaultPageSize = 2000
 // readMode represents the type of read operation to perform.
 type readMode int
 
-var (
-	errStreamOrDynamicTableNotConfigured = errors.New("stream or dynamic table not configured")
-)
+var errStreamOrDynamicTableNotConfigured = errors.New("stream or dynamic table not configured")
 
 // CDC metadata columns from Snowflake streams.
 const (
@@ -140,7 +138,8 @@ func (c *Connector) AcknowledgeStreamConsumption(ctx context.Context, objectName
 	// IMPORTANT: We must SELECT from stream columns (using METADATA$ROW_ID) so that
 	// Snowflake actually scans the stream data. The "WHERE 0 = 1" filter is evaluated
 	// AFTER reading, which advances the stream offset without inserting any rows.
-	//nolint:gosec // table names are from validated config, not user input
+	// nosemgrep: go.lang.security.audit.database.string-formatted-query.string-formatted-query
+	// table names are from validated config, not user input
 	consumeSQL := fmt.Sprintf(`
 		INSERT INTO %s (_placeholder)
 		SELECT %s FROM %s WHERE 0 = 1
