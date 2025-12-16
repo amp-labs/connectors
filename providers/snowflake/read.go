@@ -113,7 +113,6 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 // triggers the offset advancement when the DML transaction commits.
 //
 // The consumption table is created during EnsureObjects.
-// nosemgrep: go.lang.security.audit.database.string-formatted-query.string-formatted-query
 func (c *Connector) AcknowledgeStreamConsumption(ctx context.Context, objectName string) error {
 	// Get object config
 	objConfig, ok := c.objects.Get(objectName)
@@ -143,7 +142,7 @@ func (c *Connector) AcknowledgeStreamConsumption(ctx context.Context, objectName
 	consumeSQL := fmt.Sprintf(`
 		INSERT INTO %s (_placeholder)
 		SELECT %s FROM %s WHERE 0 = 1
-	`, consumptionTable, metadataRowID, streamName)
+	`, consumptionTable, metadataRowID, streamName) // nosemgrep
 
 	_, err := c.handle.db.ExecContext(ctx, consumeSQL)
 	if err != nil {

@@ -50,7 +50,6 @@ func (c *Connector) EnsureObjects(ctx context.Context) (*Objects, error) {
 // ensureStreamConsumptionTable creates the stream consumption table if it doesn't exist.
 // This table is used by AcknowledgeStreamConsumption to advance stream offsets
 // without actually storing any data (using INSERT ... WHERE 0 = 1).
-// nosemgrep: go.lang.security.audit.database.string-formatted-query.string-formatted-query
 func (c *Connector) ensureStreamConsumptionTable(ctx context.Context) error {
 	fqName := c.getFullyQualifiedName(StreamConsumptionTable)
 
@@ -60,10 +59,10 @@ func (c *Connector) ensureStreamConsumptionTable(ctx context.Context) error {
 	// Using VARCHAR to match METADATA$ROW_ID type from streams.
 	// fqName is derived from constant StreamConsumptionTable, not user input
 	createSQL := fmt.Sprintf(`
-		CREATE TABLE IF NOT EXISTS %s (
-			_placeholder VARCHAR
+	CREATE TABLE IF NOT EXISTS %s (
+		_placeholder VARCHAR
 		)
-	`, strings.ToUpper(fqName))
+		`, strings.ToUpper(fqName)) // nosemgrep
 
 	_, err := c.handle.db.ExecContext(ctx, createSQL)
 	if err != nil {
@@ -146,7 +145,6 @@ func (c *Connector) ensureStream(ctx context.Context, objectName string, cfg *ob
 
 // createDynamicTable creates a Dynamic Table from a SQL query.
 // The Dynamic Table will automatically refresh based on the target lag.
-// nosemgrep: go.lang.security.audit.database.string-formatted-query.string-formatted-query
 func (c *Connector) createDynamicTable(ctx context.Context, tableName, query, targetLag string) error {
 	fqName := c.getFullyQualifiedName(tableName)
 
@@ -159,7 +157,7 @@ func (c *Connector) createDynamicTable(ctx context.Context, tableName, query, ta
 		TARGET_LAG = '%s'
 		WAREHOUSE = %s
 		AS %s
-	`, strings.ToUpper(fqName), targetLag, strings.ToUpper(c.handle.warehouse), query)
+	`, strings.ToUpper(fqName), targetLag, strings.ToUpper(c.handle.warehouse), query) // nosemgrep
 
 	_, err := c.handle.db.ExecContext(ctx, createSQL)
 	if err != nil {
@@ -176,7 +174,6 @@ func (c *Connector) createDynamicTable(ctx context.Context, tableName, query, ta
 //
 // IMPORTANT: Streams become stale if not consumed within the data retention period
 // (default 1 day, up to 90 days for Enterprise). Schedule syncs accordingly.
-// nosemgrep: go.lang.security.audit.database.string-formatted-query.string-formatted-query
 func (c *Connector) createStream(ctx context.Context, streamName, dynamicTableName string) error {
 	fqStreamName := c.getFullyQualifiedName(streamName)
 	fqDTName := c.getFullyQualifiedName(dynamicTableName)
@@ -186,7 +183,7 @@ func (c *Connector) createStream(ctx context.Context, streamName, dynamicTableNa
 		CREATE STREAM IF NOT EXISTS %s
 		ON DYNAMIC TABLE %s
 		SHOW_INITIAL_ROWS = FALSE
-	`, strings.ToUpper(fqStreamName), strings.ToUpper(fqDTName))
+	`, strings.ToUpper(fqStreamName), strings.ToUpper(fqDTName)) // nosemgrep
 
 	_, err := c.handle.db.ExecContext(ctx, createSQL)
 	if err != nil {
@@ -198,10 +195,9 @@ func (c *Connector) createStream(ctx context.Context, streamName, dynamicTableNa
 
 // validateQuery validates a SQL query by running EXPLAIN.
 // This checks syntax and permissions without executing the query.
-// nosemgrep: go.lang.security.audit.database.string-formatted-query.string-formatted-query
 func (c *Connector) validateQuery(ctx context.Context, query string) error {
 	// query is the user's SQL definition - intentional raw SQL for Dynamic Table feature
-	explainQuery := "EXPLAIN " + query
+	explainQuery := "EXPLAIN " + query // nosemgrep
 
 	rows, err := c.handle.db.QueryContext(ctx, explainQuery)
 	if err != nil {
