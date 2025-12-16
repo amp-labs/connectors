@@ -1,0 +1,55 @@
+query Customers($first: Int!, $after: String, $query: String) {
+  customers(first: $first, after: $after, query: $query) {
+    nodes {
+      id
+      firstName
+      lastName
+      email
+      phone
+      createdAt
+      updatedAt
+      state
+      note
+      tags
+      verifiedEmail
+      taxExempt
+      taxExemptions
+      locale
+      numberOfOrders
+      amountSpent {
+        amount
+        currencyCode
+      }
+      defaultAddress {
+        id
+        firstName
+        lastName
+        address1
+        address2
+        city
+        province
+        provinceCode
+        country
+        countryCodeV2
+        zip
+        phone
+        company
+      }
+      emailMarketingConsent {
+        marketingState
+        marketingOptInLevel
+        consentUpdatedAt
+      }
+      smsMarketingConsent {
+        marketingState
+        marketingOptInLevel
+        consentUpdatedAt
+        consentCollectedFrom
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
