@@ -32,7 +32,7 @@ const (
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
-	metadataResult, err := metadata.Schemas.Select(c.ModuleID, objectNames)
+	metadataResult, err := metadata.Schemas.Select(common.ModuleRoot, objectNames)
 	if err != nil {
 		return nil, err
 	}

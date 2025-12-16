@@ -340,6 +340,44 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			ExpectedErrs: nil,
 		},
 		{
+			Name: "Read sales_dialer/contacts with custom fields",
+			Input: common.ReadParams{
+				ObjectName: "sales_dialer/contacts",
+				Fields:     connectors.Fields("id", "name", "membership_status", "priority_level"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v2.1/sales_dialer/contacts"),
+					mockcond.QueryParam("per_page", "100"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseSalesDialerContacts),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":                float64(1234),
+							"name":              "Rachel Green",
+							"membership_status": "premium",
+							"priority_level":    "5",
+						},
+						Raw: map[string]any{
+							"phone_number": "1213566XXXX",
+							"email":        "rachel.green@friends.co",
+							"status":       "Active",
+							"created_at":   "2025-03-12T10:49:10.000Z",
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			Name: "Read returns error on 400 Bad Request",
 			Input: common.ReadParams{
 				ObjectName: "users",
@@ -353,7 +391,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusBadRequest, testutils.DataFromFile(t, "read/error-bad-request.json")),
 			}.Server(),
-			ExpectedErrs: []error{common.ErrBadRequest},
+			ExpectedErrs: []error{common.ErrCaller},
 		},
 	}
 

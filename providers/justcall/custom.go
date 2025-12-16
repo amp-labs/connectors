@@ -55,9 +55,9 @@ func (c *Connector) requestCustomFields(
 }
 
 func (c *Connector) getCustomFieldsURL() (*urlbuilder.URL, error) {
-	modulePath := metadata.Schemas.LookupModuleURLPath(c.ModuleID)
+	modulePath := metadata.Schemas.LookupModuleURLPath(common.ModuleRoot)
 
-	return urlbuilder.New(c.BaseURL, modulePath, "/sales_dialer/contacts/custom-fields")
+	return urlbuilder.New(c.ProviderInfo().BaseURL, modulePath, "/sales_dialer/contacts/custom-fields")
 }
 
 // customFieldsResponse represents the response from custom-fields endpoint.
