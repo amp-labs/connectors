@@ -3,14 +3,21 @@ package shopify
 import (
 	"bytes"
 	"context"
+	"embed"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 )
+
+var perPage = 100 //nolint:gochecknoglobals
+
+//go:embed graphql/*.graphql
+var queryFS embed.FS
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := c.getDiscoveryEndpoint()
@@ -120,4 +127,98 @@ func getFieldValueType(field string) common.ValueType {
 	default:
 		return common.ValueTypeOther
 	}
+}
+
+// buildReadRequest constructs a GraphQL query request for reading objects.
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	url, err := c.getDiscoveryEndpoint()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build URL: %w", err)
+	}
+
+	query, err := getQuery(params.ObjectName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get query for object %s: %w", params.ObjectName, err)
+	}
+
+	// Create request body with query and variables
+	requestBody := map[string]any{
+		"query": query,
+	}
+
+	variables := buildGraphQLVariables(params)
+	if len(variables) > 0 {
+		requestBody["variables"] = variables
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
+}
+
+// parseReadResponse parses the GraphQL response and extracts records.
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		records(params.ObjectName),
+		nextRecordsURL(params.ObjectName),
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}
+
+// getQuery loads the GraphQL query from the embedded filesystem.
+func getQuery(objectName string) (string, error) {
+	filePath := fmt.Sprintf("graphql/%s.graphql", objectName)
+
+	queryBytes, err := queryFS.ReadFile(filePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to read query file %s: %w", filePath, err)
+	}
+
+	return string(queryBytes), nil
+}
+
+// buildGraphQLVariables creates GraphQL variables for pagination and filtering.
+func buildGraphQLVariables(params common.ReadParams) map[string]any {
+	variables := make(map[string]any)
+
+	variables["first"] = perPage
+
+	if params.NextPage != "" {
+		variables["after"] = params.NextPage.String()
+	}
+
+	// Build Shopify search query for date filtering
+	// Shopify uses a query string format: "updated_at:>2024-01-01"
+	queryParts := []string{}
+
+	if !params.Since.IsZero() {
+		queryParts = append(queryParts, fmt.Sprintf("updated_at:>='%s'", params.Since.Format(time.RFC3339)))
+	}
+
+	if !params.Until.IsZero() {
+		queryParts = append(queryParts, fmt.Sprintf("updated_at:<='%s'", params.Until.Format(time.RFC3339)))
+	}
+
+	if len(queryParts) > 0 {
+		variables["query"] = strings.Join(queryParts, " AND ")
+	}
+
+	return variables
 }
