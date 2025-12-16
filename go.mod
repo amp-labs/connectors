@@ -4,6 +4,7 @@ go 1.25.0
 
 require (
 	github.com/PuerkitoBio/goquery v1.11.0
+	github.com/amp-labs/amp-common v0.0.0-20251214035454-f8368b6f0abb
 	github.com/antchfx/xmlquery v1.5.0
 	github.com/aws/aws-sdk-go-v2 v1.41.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.5
@@ -33,7 +34,6 @@ require (
 )
 
 require (
-	github.com/amp-labs/amp-common v0.0.0-20251214035454-f8368b6f0abb // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/antchfx/xpath v1.3.5 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.16 // indirect
