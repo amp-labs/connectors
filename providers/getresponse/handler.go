@@ -1,7 +1,9 @@
 package getresponse
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -174,5 +176,125 @@ func makeNextRecordsURL(requestURL *url.URL) common.NextPageFunc {
 		url.WithQueryParam(pageKey, strconv.Itoa(nextPage))
 
 		return url.String(), nil
+	}
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		url.AddPath(params.RecordId)
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(ctx context.Context, params common.WriteParams, request *http.Request, response *common.JSONHTTPResponse) (*common.WriteResult, error) {
+
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	// GetResponse API returns the object directly at the root level (not wrapped in "data")
+	// According to swagger.json, 200 responses return the object schema directly
+	// For 202 Accepted (create operations), there's no body, which is handled above
+	data, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		// If conversion fails, return success with empty data (some endpoints may return empty)
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	recordId := parseRecordId(c, params.ObjectName, data)
+
+	return &common.WriteResult{Success: true, Data: data, RecordId: recordId}, nil
+}
+
+// parseRecordId extracts the record ID from GetResponse response data.
+// GetResponse uses object-specific ID fields (e.g., contactId, campaignId, addressId).
+// This function uses the schemas (generated from swagger.json) to dynamically find the ID field.
+func parseRecordId(c *Connector, objectName string, data map[string]any) string {
+	// First, try to get the ID field name from the schemas (generated from swagger.json)
+	idFieldName := getIDFieldNameFromSchemas(c, objectName)
+
+	// Try the ID field from schemas first
+	if idFieldName != "" {
+		if idValue, exists := data[idFieldName]; exists {
+			return convertIDToString(idValue)
+		}
+	}
+
+	// Last resort: try case-insensitive search for any field ending with "id"
+	for key, value := range data {
+		if strings.HasSuffix(strings.ToLower(key), "id") {
+			return convertIDToString(value)
+		}
+	}
+
+	return ""
+}
+
+// getIDFieldNameFromSchemas returns the ID field name for a given object by looking it up
+// in the schemas (which are generated from swagger.json).
+// This ensures we use the same field names as defined in the API specification.
+func getIDFieldNameFromSchemas(c *Connector, objectName string) string {
+	// Try to get object metadata from schemas
+	objectMetadata, err := metadata.Schemas.SelectOne(c.Module(), objectName)
+	if err != nil {
+		// If schema lookup fails, return empty string to fall back to other methods
+		return ""
+	}
+
+	// Search through the fields to find one that ends with "Id" (case-insensitive)
+	// GetResponse uses object-specific ID fields like contactId, campaignId, etc.
+	for fieldName := range objectMetadata.Fields {
+		fieldNameLower := strings.ToLower(fieldName)
+		// Check if field name ends with "id" (e.g., contactId, campaignId)
+		if strings.HasSuffix(fieldNameLower, "id") {
+			// Prefer exact match over generic "id"
+			if fieldNameLower != "id" {
+				return fieldName
+			}
+		}
+	}
+
+	// If no specific ID field found, check for generic "id"
+	if _, hasID := objectMetadata.Fields["id"]; hasID {
+		return "id"
+	}
+
+	return ""
+}
+
+// convertIDToString converts various ID types to string.
+func convertIDToString(idValue any) string {
+	switch v := idValue.(type) {
+	case string:
+		return v
+	case float64:
+		return strconv.Itoa(int(v))
+	case int:
+		return strconv.Itoa(v)
+	case int64:
+		return strconv.FormatInt(v, 10)
+	default:
+		return ""
 	}
 }
