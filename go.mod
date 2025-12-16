@@ -3,6 +3,7 @@ module github.com/amp-labs/connectors
 go 1.25.0
 
 require (
+	github.com/amp-labs/amp-common v0.0.0-20251208224147-7dc8b73a6f4e
 	github.com/PuerkitoBio/goquery v1.11.0
 	github.com/amp-labs/amp-common v0.0.0-20251214035454-f8368b6f0abb
 	github.com/antchfx/xmlquery v1.5.0
