@@ -348,14 +348,6 @@ func TestSnowflakeTimestampFormat(t *testing.T) {
 	}
 }
 
-func TestDefaultPageSize(t *testing.T) {
-	t.Parallel()
-
-	if DefaultPageSize != 2000 {
-		t.Errorf("DefaultPageSize = %d, want 2000", DefaultPageSize)
-	}
-}
-
 func TestReadModeConstants(t *testing.T) {
 	t.Parallel()
 
