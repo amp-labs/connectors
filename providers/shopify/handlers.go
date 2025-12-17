@@ -14,6 +14,10 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 )
 
+// perPage is the default number of records per page for Shopify GraphQL API.
+// Shopify allows up to 250 records per request, but 100 is chosen as a balanced default
+// to avoid rate limiting while maintaining reasonable performance.
+// See: https://shopify.dev/docs/api/usage/pagination-graphql
 var perPage = 100 //nolint:gochecknoglobals
 
 //go:embed graphql/*.graphql
@@ -198,7 +202,12 @@ func getQuery(objectName string) (string, error) {
 func buildGraphQLVariables(params common.ReadParams) map[string]any {
 	variables := make(map[string]any)
 
-	variables["first"] = perPage
+	pageSize := perPage
+	if params.PageSize > 0 {
+		pageSize = params.PageSize
+	}
+
+	variables["first"] = pageSize
 
 	if params.NextPage != "" {
 		variables["after"] = params.NextPage.String()
