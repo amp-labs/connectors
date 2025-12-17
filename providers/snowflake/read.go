@@ -19,7 +19,7 @@ import (
 const SnowflakeTimestampFormat = "2006-01-02 15:04:05.000000"
 
 // DefaultPageSize is the default number of rows to fetch per page.
-const DefaultPageSize = 2000
+const DefaultPageSize = 10000
 
 // readMode represents the type of read operation to perform.
 type readMode int
@@ -212,10 +212,22 @@ func (c *Connector) readFromStream(
 		pageSize = DefaultPageSize
 	}
 
-	// Build the query to read from stream with CDC metadata (no OFFSET, stream manages cursor)
-	query := c.buildStreamQuery(streamName, objConfig, pageSize)
+	// Parse offset from NextPage token (default 0)
+	offset := 0
 
-	rows, err := c.handle.db.QueryContext(ctx, query)
+	if params.NextPage != "" {
+		parsed, err := strconv.Atoi(string(params.NextPage))
+		if err != nil {
+			return nil, fmt.Errorf("invalid NextPage token: %w", err)
+		}
+
+		offset = parsed
+	}
+
+	// Build the query to read from stream with CDC metadata
+	query, args := c.buildStreamQuery(streamName, objConfig, pageSize, offset)
+
+	rows, err := c.handle.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query stream: %w", err)
 	}
@@ -237,12 +249,16 @@ func (c *Connector) readFromStream(
 		}
 	}
 
-	// Streams don't use NextPage tokens - the stream itself manages the cursor
-	// via AcknowledgeStreamConsumption
+	// Calculate next page token
+	var nextPage common.NextPageToken
+	if !done {
+		nextPage = common.NextPageToken(strconv.Itoa(offset + pageSize))
+	}
+
 	return &common.ReadResult{
 		Rows:     int64(len(resultRows)),
 		Data:     resultRows,
-		NextPage: "",
+		NextPage: nextPage,
 		Done:     done,
 	}, nil
 }
@@ -278,10 +294,9 @@ func (c *Connector) readFromDynamicTable(
 	}
 
 	// Build SELECT query with time filtering and pagination.
-	// Uses SnowflakeTimestampFormat for consistent timestamp formatting.
-	query := c.buildDynamicTableQuery(tableName, params, objConfig, pageSize, offset)
+	query, args := c.buildDynamicTableQuery(tableName, params, objConfig, pageSize, offset)
 
-	rows, err := c.handle.db.QueryContext(ctx, query)
+	rows, err := c.handle.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query dynamic table: %w", err)
 	}
@@ -311,18 +326,22 @@ func (c *Connector) readFromDynamicTable(
 }
 
 // buildStreamQuery builds the SQL query for reading from a stream.
-// Streams don't use OFFSET - the stream itself manages the cursor via acknowledgment.
+// Returns the query string and args for prepared statement execution.
 func (c *Connector) buildStreamQuery(
 	streamName string,
 	objConfig *objectConfig,
 	pageSize int,
-) string {
+	offset int,
+) (string, []any) {
 	// Always select all columns plus CDC metadata for streams.
 	// Fields filtering is done at the result processing level.
 	// We need SELECT * here because:
 	// 1. We don't know the columns at query build time (they're discovered from the stream)
 	// 2. We need all columns for the Raw field in ReadResultRow
 	// 3. Field filtering is applied post-query in processRows
+	//
+	// Note: Table/column names cannot be parameterized in SQL, only values can.
+	// The streamName and primaryKey are from validated internal config, not user input.
 	//nolint:unqueryvet // SELECT * required for dynamic column discovery
 	query := fmt.Sprintf(`SELECT *, %s, %s, %s FROM %s`,
 		metadataAction, metadataIsUpdate, metadataRowID, streamName)
@@ -330,46 +349,48 @@ func (c *Connector) buildStreamQuery(
 	// Order by primary key for consistent ordering within the batch
 	query = fmt.Sprintf(`%s ORDER BY "%s" ASC`, query, objConfig.dynamicTable.primaryKey)
 
-	// Add LIMIT only - no OFFSET needed, stream manages cursor via acknowledgment
-	query = fmt.Sprintf("%s LIMIT %d", query, pageSize)
+	// Add LIMIT and OFFSET for pagination using prepared statement placeholders
+	query += " LIMIT ? OFFSET ?"
 
-	return query
+	return query, []any{pageSize, offset}
 }
 
 // buildDynamicTableQuery builds the SQL query for reading from a dynamic table.
-// Uses SnowflakeTimestampFormat for consistent timestamp formatting.
+// Returns the query string and args for prepared statement execution.
 func (c *Connector) buildDynamicTableQuery(
 	tableName string,
 	params common.ReadParams,
 	objConfig *objectConfig,
 	pageSize int,
 	offset int,
-) string {
+) (string, []any) {
 	// Always select all columns; field filtering is done at result processing level.
 	// We need SELECT * here because:
 	// 1. We don't know the columns at query build time (they're discovered from the table)
 	// 2. We need all columns for the Raw field in ReadResultRow
 	// 3. Field filtering is applied post-query in processRows
+	//
+	// Note: Table/column names cannot be parameterized in SQL, only values can.
+	// The tableName and column names are from validated internal config, not user input.
 	//nolint:unqueryvet // SELECT * required for dynamic column discovery
 	query := `SELECT * FROM ` + tableName
 
-	// Build WHERE conditions for time filtering.
-	// Using SnowflakeTimestampFormat ensures consistent formatting that Snowflake auto-detects.
+	// Build WHERE conditions for time filtering using prepared statement placeholders.
 	// Times are converted to UTC for consistent comparison regardless of local timezone.
 	var conditions []string
 
+	var args []any
+
 	if !params.Since.IsZero() {
 		conditions = append(conditions,
-			fmt.Sprintf(`"%s" >= '%s'`,
-				objConfig.dynamicTable.timestampColumn,
-				params.Since.UTC().Format(SnowflakeTimestampFormat)))
+			fmt.Sprintf(`"%s" >= ?`, objConfig.dynamicTable.timestampColumn))
+		args = append(args, params.Since.UTC().Format(SnowflakeTimestampFormat))
 	}
 
 	if !params.Until.IsZero() {
 		conditions = append(conditions,
-			fmt.Sprintf(`"%s" <= '%s'`,
-				objConfig.dynamicTable.timestampColumn,
-				params.Until.UTC().Format(SnowflakeTimestampFormat)))
+			fmt.Sprintf(`"%s" <= ?`, objConfig.dynamicTable.timestampColumn))
+		args = append(args, params.Until.UTC().Format(SnowflakeTimestampFormat))
 	}
 
 	if len(conditions) > 0 {
@@ -379,10 +400,11 @@ func (c *Connector) buildDynamicTableQuery(
 	// Order by primary key for consistent pagination across calls
 	query = fmt.Sprintf(`%s ORDER BY "%s" ASC`, query, objConfig.dynamicTable.primaryKey)
 
-	// Add LIMIT and OFFSET for pagination
-	query = fmt.Sprintf("%s LIMIT %d OFFSET %d", query, pageSize, offset)
+	// Add LIMIT and OFFSET for pagination using prepared statement placeholders
+	query += " LIMIT ? OFFSET ?"
+	args = append(args, pageSize, offset)
 
-	return query
+	return query, args
 }
 
 // processRows converts SQL rows to ReadResultRows.

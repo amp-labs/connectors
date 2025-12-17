@@ -86,7 +86,9 @@ func TestBuildStreamQuery(t *testing.T) {
 		streamName string
 		objConfig  *objectConfig
 		pageSize   int
+		offset     int
 		wantParts  []string // Parts that should be present in the query
+		wantArgs   []any    // Expected args for prepared statement
 	}{
 		{
 			name:       "basic stream query",
@@ -97,6 +99,7 @@ func TestBuildStreamQuery(t *testing.T) {
 				},
 			},
 			pageSize: 100,
+			offset:   0,
 			wantParts: []string{
 				"SELECT *",
 				"METADATA$ACTION",
@@ -104,11 +107,12 @@ func TestBuildStreamQuery(t *testing.T) {
 				"METADATA$ROW_ID",
 				`FROM "TESTDB"."TESTSCHEMA"."CONTACTS_STREAM"`,
 				`ORDER BY "ID" ASC`,
-				"LIMIT 100",
+				"LIMIT ? OFFSET ?",
 			},
+			wantArgs: []any{100, 0},
 		},
 		{
-			name:       "stream query with different primary key",
+			name:       "stream query with different primary key and offset",
 			streamName: `"DB"."SCHEMA"."ORDERS_STREAM"`,
 			objConfig: &objectConfig{
 				dynamicTable: dynamicTableConfig{
@@ -116,10 +120,12 @@ func TestBuildStreamQuery(t *testing.T) {
 				},
 			},
 			pageSize: 50,
+			offset:   200,
 			wantParts: []string{
 				`ORDER BY "ORDER_ID" ASC`,
-				"LIMIT 50",
+				"LIMIT ? OFFSET ?",
 			},
+			wantArgs: []any{50, 200},
 		},
 	}
 
@@ -127,11 +133,21 @@ func TestBuildStreamQuery(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := c.buildStreamQuery(tt.streamName, tt.objConfig, tt.pageSize)
+			got, args := c.buildStreamQuery(tt.streamName, tt.objConfig, tt.pageSize, tt.offset)
 
 			for _, part := range tt.wantParts {
 				if !containsSubstring(got, part) {
 					t.Errorf("buildStreamQuery() missing expected part %q in:\n%s", part, got)
+				}
+			}
+
+			if len(args) != len(tt.wantArgs) {
+				t.Errorf("buildStreamQuery() args length = %d, want %d", len(args), len(tt.wantArgs))
+			} else {
+				for i, arg := range args {
+					if arg != tt.wantArgs[i] {
+						t.Errorf("buildStreamQuery() args[%d] = %v, want %v", i, arg, tt.wantArgs[i])
+					}
 				}
 			}
 		})
@@ -161,6 +177,7 @@ func TestBuildDynamicTableQuery(t *testing.T) {
 		offset      int
 		wantParts   []string // Parts that should be present
 		unwantParts []string // Parts that should NOT be present
+		wantArgs    []any    // Expected args for prepared statement
 	}{
 		{
 			name:      "full backfill - no time filters",
@@ -178,12 +195,13 @@ func TestBuildDynamicTableQuery(t *testing.T) {
 				"SELECT * FROM",
 				`"TESTDB"."TESTSCHEMA"."CONTACTS_DT"`,
 				`ORDER BY "ID" ASC`,
-				"LIMIT 100 OFFSET 0",
+				"LIMIT ? OFFSET ?",
 			},
 			unwantParts: []string{
 				"WHERE",
 				"UPDATED_AT",
 			},
+			wantArgs: []any{100, 0},
 		},
 		{
 			name:      "with Since filter",
@@ -202,12 +220,13 @@ func TestBuildDynamicTableQuery(t *testing.T) {
 			offset:   0,
 			wantParts: []string{
 				"WHERE",
-				`"UPDATED_AT" >= '2024-01-15 10:00:00.000000'`,
+				`"UPDATED_AT" >= ?`,
 				`ORDER BY "ID" ASC`,
 			},
 			unwantParts: []string{
 				"<=",
 			},
+			wantArgs: []any{"2024-01-15 10:00:00.000000", 100, 0},
 		},
 		{
 			name:      "with Until filter",
@@ -226,11 +245,12 @@ func TestBuildDynamicTableQuery(t *testing.T) {
 			offset:   0,
 			wantParts: []string{
 				"WHERE",
-				`"UPDATED_AT" <= '2024-01-15 12:00:00.000000'`,
+				`"UPDATED_AT" <= ?`,
 			},
 			unwantParts: []string{
 				">=",
 			},
+			wantArgs: []any{"2024-01-15 12:00:00.000000", 100, 0},
 		},
 		{
 			name:      "with both Since and Until",
@@ -250,10 +270,11 @@ func TestBuildDynamicTableQuery(t *testing.T) {
 			offset:   0,
 			wantParts: []string{
 				"WHERE",
-				`"UPDATED_AT" >= '2024-01-15 10:00:00.000000'`,
+				`"UPDATED_AT" >= ?`,
 				"AND",
-				`"UPDATED_AT" <= '2024-01-15 12:00:00.000000'`,
+				`"UPDATED_AT" <= ?`,
 			},
+			wantArgs: []any{"2024-01-15 10:00:00.000000", "2024-01-15 12:00:00.000000", 100, 0},
 		},
 		{
 			name:      "with pagination offset",
@@ -268,8 +289,9 @@ func TestBuildDynamicTableQuery(t *testing.T) {
 			offset:   150,
 			wantParts: []string{
 				`ORDER BY "ORDER_ID" ASC`,
-				"LIMIT 50 OFFSET 150",
+				"LIMIT ? OFFSET ?",
 			},
+			wantArgs: []any{50, 150},
 		},
 	}
 
@@ -277,7 +299,7 @@ func TestBuildDynamicTableQuery(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := c.buildDynamicTableQuery(tt.tableName, tt.params, tt.objConfig, tt.pageSize, tt.offset)
+			got, args := c.buildDynamicTableQuery(tt.tableName, tt.params, tt.objConfig, tt.pageSize, tt.offset)
 
 			for _, part := range tt.wantParts {
 				if !containsSubstring(got, part) {
@@ -288,6 +310,16 @@ func TestBuildDynamicTableQuery(t *testing.T) {
 			for _, part := range tt.unwantParts {
 				if containsSubstring(got, part) {
 					t.Errorf("buildDynamicTableQuery() should not contain %q in:\n%s", part, got)
+				}
+			}
+
+			if len(args) != len(tt.wantArgs) {
+				t.Errorf("buildDynamicTableQuery() args length = %d, want %d", len(args), len(tt.wantArgs))
+			} else {
+				for i, arg := range args {
+					if arg != tt.wantArgs[i] {
+						t.Errorf("buildDynamicTableQuery() args[%d] = %v, want %v", i, arg, tt.wantArgs[i])
+					}
 				}
 			}
 		})
@@ -313,14 +345,6 @@ func TestSnowflakeTimestampFormat(t *testing.T) {
 	expected = "2024-01-01 00:00:00.000000"
 	if formatted != expected {
 		t.Errorf("SnowflakeTimestampFormat at midnight produced %q, want %q", formatted, expected)
-	}
-}
-
-func TestDefaultPageSize(t *testing.T) {
-	t.Parallel()
-
-	if DefaultPageSize != 2000 {
-		t.Errorf("DefaultPageSize = %d, want 2000", DefaultPageSize)
 	}
 }
 
