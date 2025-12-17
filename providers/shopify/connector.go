@@ -40,23 +40,16 @@ func constructor(base *components.Connector) (*Connector, error) {
 		},
 	)
 
-	// Create endpoint registry for supported operations
-	registry, err := components.NewEndpointRegistry(supportedOperations())
-	if err != nil {
-		return nil, err
-	}
-
 	// Set the reader for the connector
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
-		registry,
+		components.NewEmptyEndpointRegistry(),
 		connector.ProviderContext.Module(),
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
 			ErrorHandler: interpreter.ErrorHandler{
 
-				
 				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 			}.Handle,
 		},
