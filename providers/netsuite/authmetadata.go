@@ -87,40 +87,43 @@ type suiteQLQuery struct {
 	Query string `json:"q"`
 }
 
+type timezoneResponse struct {
+	Items []timezoneItem `json:"items"`
+}
+
+type timezoneItem struct {
+	// NetSuite inconsistently returns the timezone field - sometimes as "timezone"
+	// (matching our alias) and sometimes as "expr1" (ignoring the alias).
+	Timezone string `json:"timezone"`
+	Expr1    string `json:"expr1"`
+}
+
+func (t timezoneItem) getTimezone() string {
+	if t.Timezone != "" {
+		return t.Timezone
+	}
+
+	return t.Expr1
+}
+
 func parseTimezoneResponse(resp *common.JSONHTTPResponse) (*time.Location, error) {
 	body, ok := resp.Body()
 	if !ok {
 		return nil, ErrEmptyResponseBody
 	}
 
-	items, err := jsonquery.New(body).ArrayRequired("items")
+	tzResp, err := jsonquery.ParseNode[timezoneResponse](body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get items from response: %w", err)
+		return nil, fmt.Errorf("failed to parse timezone response: %w", err)
 	}
 
-	if len(items) == 0 {
+	if len(tzResp.Items) == 0 {
 		return nil, ErrNoTimezoneData
 	}
 
-	// NetSuite inconsistently returns the timezone field - sometimes as "timezone"
-	// (matching our alias) and sometimes as "expr1" (ignoring the alias).
-	// We check both field names to handle this inconsistency.
-	item := jsonquery.New(items[0])
-
-	timezonePtr, err := item.StringOptional("timezone")
-	if err != nil {
-		return nil, fmt.Errorf("failed to get timezone from response: %w", err)
-	}
-
-	var timezone string
-	if timezonePtr != nil && *timezonePtr != "" {
-		timezone = *timezonePtr
-	} else {
-		// Fall back to checking "expr1" if "timezone" field is not present
-		timezone, err = item.StringRequired("expr1")
-		if err != nil {
-			return nil, fmt.Errorf("failed to get timezone from response: %w", err)
-		}
+	timezone := tzResp.Items[0].getTimezone()
+	if timezone == "" {
+		return nil, ErrNoTimezoneData
 	}
 
 	// Parse the timezone string (e.g., "America/Los_Angeles") into a time.Location
