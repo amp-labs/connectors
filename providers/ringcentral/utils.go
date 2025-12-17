@@ -2,6 +2,7 @@ package ringcentral
 
 import (
 	"fmt"
+	"net/http"
 	"reflect"
 	"strconv"
 	"strings"
@@ -17,6 +18,7 @@ import (
 type ObjectsOperationURLs struct {
 	ReadPath             string
 	WritePath            string
+	UpdateMethod         string
 	RecordsField         string
 	usesCursorPagination bool
 	usesOffsetPagination bool
@@ -26,32 +28,44 @@ type ObjectsOperationURLs struct {
 var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	"caller-blocking/phone-numbers": {
 		ReadPath:     "restapi/v1.0/account/~/extension/~/caller-blocking/phone-numbers",
+		WritePath:    "restapi/v1.0/account/~/extension/~/caller-blocking/phone-numbers",
 		RecordsField: records,
+	},
+	"telephony/call-out": {
+		WritePath: "restapi/v1.0/account/~/telephony/call-out",
 	},
 	"forwarding-number": {
 		ReadPath:     "restapi/v1.0/account/~/extension/~/forwarding-number",
+		WritePath:    "restapi/v1.0/account/~/extension/~/forwarding-number",
 		RecordsField: records,
 	},
 	"answering-rule": {
 		ReadPath:     "restapi/v1.0/account/~/extension/~/answering-rule",
+		WritePath:    "restapi/v1.0/account/~/extension/~/answering-rule",
 		RecordsField: records,
 	},
 	"company-answering-rule": { // needs updating name
 		ReadPath:     "restapi/v1.0/account/~/answering-rule",
+		WritePath:    "restapi/v1.0/account/~/answering-rule",
 		RecordsField: records,
 	},
 	"comm-handling/states": {
 		ReadPath:             "restapi/v2/accounts/~/extensions/~/comm-handling/states",
+		WritePath:            "restapi/v2/accounts/~/extensions/~/comm-handling/states",
 		RecordsField:         records,
+		UpdateMethod:         http.MethodPatch,
 		usesOffsetPagination: true,
 	},
 	"comm-handling/voice/state-rules": {
 		ReadPath:             "restapi/v2/accounts/~/extensions/~/comm-handling/voice/state-rules",
+		WritePath:            "restapi/v2/accounts/~/extensions/~/comm-handling/voice/state-rules",
 		RecordsField:         records,
 		usesOffsetPagination: true,
 	},
 	"comm-handling/voice/interaction-rules": {
 		ReadPath:             "restapi/v2/accounts/~/extensions/~/comm-handling/voice/interaction-rules",
+		WritePath:            "restapi/v2/accounts/~/extensions/~/comm-handling/voice/interaction-rules",
+		UpdateMethod:         http.MethodPatch,
 		RecordsField:         records,
 		usesOffsetPagination: true,
 	},
@@ -62,6 +76,7 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"call-flip-numbers": {
 		ReadPath:     "restapi/v2/accounts/~/extensions/~/call-flip-numbers",
+		WritePath:    "restapi/v2/accounts/~/extensions/~/call-flip-numbers",
 		RecordsField: records,
 	},
 	"call-log": {
@@ -97,11 +112,16 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"call-monitoring-groups": {
 		ReadPath:     "restapi/v1.0/account/~/call-monitoring-groups",
+		WritePath:    "restapi/v1.0/account/~/call-monitoring-groups",
 		RecordsField: records,
 	},
 	"call-queues": {
 		ReadPath:     "restapi/v1.0/account/~/call-queues",
+		WritePath:    "restapi/v1.0/account/~/call-queues",
 		RecordsField: records,
+	},
+	"client-info/sip-provision": {
+		WritePath: "restapi/v1.0/client-info/sip-provision",
 	},
 	"custom-greetings": {
 		ReadPath:     "restapi/v1.0/account/~/call-recording/custom-greetings",
@@ -117,23 +137,44 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"ivr-menus": {
 		ReadPath:     "restapi/v1.0/account/~/ivr-menus",
+		WritePath:    "restapi/v1.0/account/~/ivr-menus",
 		RecordsField: records,
+	},
+	"ring-out": {
+		WritePath: "restapi/v1.0/account/accountId/extension/extensionId/ring-out",
+	},
+	"fax": {
+		WritePath: "restapi/v1.0/account/~/extension/~/fax",
 	},
 	"fax-cover-page": {
 		ReadPath:     "restapi/v1.0/dictionary/fax-cover-page",
 		RecordsField: records,
 	},
+	"message-store-report": {
+		WritePath: "restapi/v1.0/account/~/message-store-report",
+	},
 	"message-store": {
 		ReadPath:     "restapi/v1.0/account/~/extension/~/message-store",
+		WritePath:    "restapi/v1.0/account/~/extension/~/message-store",
+		UpdateMethod: http.MethodPatch,
 		RecordsField: records,
 	},
 	"message-sync": {
 		ReadPath:     "restapi/v1.0/account/~/extension/~/message-sync",
 		RecordsField: records,
 	},
-
+	"company-pager": {
+		WritePath: "restapi/v1.0/account/~/extension/~/company-pager",
+	},
+	"sms": {
+		WritePath: "restapi/v1.0/account/~/extension/~/sms",
+	},
+	"mms": {
+		WritePath: "restapi/v1.0/account/~/extension/~/mms",
+	},
 	"a2p-sms/batches": {
 		ReadPath:             "restapi/v1.0/account/~/a2p-sms/batches",
+		WritePath:            "restapi/v1.0/account/~/a2p-sms/batches",
 		RecordsField:         records,
 		usesOffsetPagination: true,
 	},
@@ -144,15 +185,20 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"message-store-templates": {
 		ReadPath:     "restapi/v1.0/account/~/message-store-templates",
+		WritePath:    "restapi/v1.0/account/~/message-store-templates",
 		RecordsField: records,
 	},
 	"user-message-store-templates": {
 		ReadPath:     "restapi/v1.0/account/~/extension/~/message-store-templates",
+		WritePath:    "restapi/v1.0/account/~/extension/~/message-store-templates",
 		RecordsField: records,
 	},
 	"sms/consents": {
 		ReadPath:     "restapi/v2/accounts/~/sms/consents",
 		RecordsField: records,
+	},
+	"adaptive-cards": {
+		WritePath: "team-messaging/v1/adaptive-cards",
 	},
 	"sms-registration-brands": {
 		ReadPath:     "restapi/v1.0/account/~/sms-registration-brands",
@@ -160,6 +206,7 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"events": {
 		ReadPath:             "team-messaging/v1/events",
+		WritePath:            "team-messaging/v1/events",
 		RecordsField:         records,
 		usesCursorPagination: true,
 	},
@@ -178,10 +225,12 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"conversations": {
 		ReadPath:     "team-messaging/v1/conversations",
+		WritePath:    "team-messaging/v1/conversations",
 		RecordsField: records,
 	},
-	"data-export-tasks": {
+	"data-export": {
 		ReadPath:     "team-messaging/v1/data-export",
+		WritePath:    "team-messaging/v1/data-export",
 		RecordsField: "tasks",
 	},
 	"webhooks": {
@@ -190,8 +239,13 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"teams": {
 		ReadPath:             "team-messaging/v1/teams",
+		WritePath:            "team-messaging/v1/teams",
 		RecordsField:         records,
 		usesCursorPagination: true,
+	},
+	"bridges": {
+		WritePath:    "rcvideo/v2/account/~/extension/~/bridges",
+		UpdateMethod: http.MethodPatch,
 	},
 	"delegators": {
 		ReadPath:     "rcvideo/v1/accounts/~/extensions/~/delegators",
@@ -221,6 +275,8 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"webinars": {
 		ReadPath:             "webinar/configuration/v1/webinars",
+		WritePath:            "webinar/configuration/v1/webinars",
+		UpdateMethod:         http.MethodPatch,
 		RecordsField:         records,
 		usesCursorPagination: true,
 	},
@@ -256,18 +312,22 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"webinar/subscriptions": {
 		ReadPath:     "webinar/notifications/v1/subscriptions",
+		WritePath:    "webinar/notifications/v1/subscriptions",
 		RecordsField: records,
 	},
 	"custom-fields": {
 		ReadPath:     "restapi/v1.0/account/~/custom-fields",
+		WritePath:    "restapi/v1.0/account/~/custom-fields",
 		RecordsField: records,
 	},
 	"sites": {
 		ReadPath:     "restapi/v1.0/account/~/sites",
+		WritePath:    "restapi/v1.0/account/~/sites",
 		RecordsField: records,
 	},
 	"accounts/phone-numbers": {
 		ReadPath:     "restapi/v2/accounts/~/phone-numbers",
+		WritePath:    "restapi/v2/accounts/~/phone-numbers/bulk-add",
 		RecordsField: records,
 	},
 	"extension/phone-number": {
@@ -324,11 +384,16 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"emergency-locations": {
 		ReadPath:     "restapi/v1.0/account/~/emergency-locations",
+		WritePath:    "restapi/v1.0/account/~/emergency-locations",
 		RecordsField: records,
 	},
 	"user/emergency-locations": {
 		ReadPath:     "restapi/v1.0/account/~/extension/~/emergency-locations",
+		WritePath:    "restapi/v1.0/account/~/extension/~/emergency-locations",
 		RecordsField: records,
+	},
+	"batch-provisioning/users": {
+		WritePath: "restapi/v2/accounts/~/batch-provisioning/users",
 	},
 	"users": {
 		ReadPath:     "restapi/v1.0/account/~/emergency-address-auto-update/users",
@@ -336,18 +401,22 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"wireless-points": {
 		ReadPath:     "restapi/v1.0/account/~/emergency-address-auto-update/wireless-points",
+		WritePath:    "/restapi/v1.0/account/~/emergency-address-auto-update/wireless-points",
 		RecordsField: records,
 	},
 	"networks": {
 		ReadPath:     "restapi/v1.0/account/~/emergency-address-auto-update/networks",
+		WritePath:    "restapi/v1.0/account/~/emergency-address-auto-update/networks",
 		RecordsField: records,
 	},
 	"devices": {
 		ReadPath:     "restapi/v1.0/account/~/emergency-address-auto-update/devices",
+		WritePath:    "restapi/v1.0/account/~/device",
 		RecordsField: records,
 	},
 	"switches": {
 		ReadPath:     "restapi/v1.0/account/~/emergency-address-auto-update/switches",
+		WritePath:    "restapi/v1.0/account/~/emergency-address-auto-update/switches",
 		RecordsField: records,
 	},
 	"extension/devices": {
@@ -356,11 +425,15 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"extensions": {
 		ReadPath:     "restapi/v1.0/account/~/extension",
+		WritePath:    "restapi/v1.0/account/~/extension",
 		RecordsField: records,
 	},
 	"user/templates": {
 		ReadPath:     "restapi/v1.0/account/~/templates",
 		RecordsField: records,
+	},
+	"scim/users": {
+		WritePath: "scim/v2/Users",
 	},
 	"resourecTpes": {
 		ReadPath:     "scim/v2/ResourceTypes",
@@ -376,6 +449,7 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"contacts": {
 		ReadPath:     "restapi/v1.0/account/~/extension/~/address-book/contact",
+		WritePath:    "restapi/v1.0/account/~/extension/~/address-book/contact",
 		RecordsField: records,
 	},
 	"favorite/contacts": {
@@ -396,6 +470,7 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"user/assigned-role": {
 		ReadPath:     "restapi/v1.0/account/~/extension/~/assigned-role",
+		WritePath:    "restapi/v1.0/account/~/extension/~/assigned-role",
 		RecordsField: records,
 	},
 	"user-role": {
@@ -404,6 +479,7 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"company/user-role": {
 		ReadPath:     "restapi/v1.0/account/~/user-role",
+		WritePath:    "restapi/v1.0/account/~/user-role",
 		RecordsField: records,
 	},
 	"assignable-roles": {
@@ -416,6 +492,7 @@ var pathURLs = map[string]ObjectsOperationURLs{ // nolint: gochecknoglobals
 	},
 	"subscriptions": {
 		ReadPath:     "restapi/v1.0/subscription",
+		WritePath:    "restapi/v1.0/subscription",
 		RecordsField: records,
 	},
 }
@@ -537,12 +614,17 @@ func nextRecordsURL(objectName string, url *urlbuilder.URL) common.NextPageFunc 
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{"*"}
+	writeSupport := []string{"*"}
 
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
