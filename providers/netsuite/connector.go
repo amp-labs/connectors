@@ -44,6 +44,14 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		return nil, err
 	}
 
+	// Load instance timezone from metadata (populated by GetPostAuthInfo).
+	// This is used to convert UTC timestamps to the instance's local time when querying.
+	if tz, ok := params.Metadata["sessionTimezone"]; ok && tz != "" {
+		if loc, err := time.LoadLocation(tz); err == nil {
+			connector.instanceTimezone = loc
+		}
+	}
+
 	switch connector.Module() { //nolint:exhaustive
 	case providers.ModuleNetsuiteRESTAPI:
 		adapter, err := restapi.NewAdapter(params)
