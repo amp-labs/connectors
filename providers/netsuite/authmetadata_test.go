@@ -53,6 +53,21 @@ func TestGetPostAuthInfo(t *testing.T) {
 		"totalResults": 1
 	}`)
 
+	// Response with "timezone" field instead of "expr1" (NetSuite inconsistency)
+	timezoneFieldResponse := []byte(`{
+		"links": [],
+		"count": 1,
+		"hasMore": false,
+		"items": [
+			{
+				"links": [],
+				"timezone": "America/Chicago"
+			}
+		],
+		"offset": 0,
+		"totalResults": 1
+	}`)
+
 	// Empty items response (should fall back to default)
 	emptyItemsResponse := []byte(`{
 		"links": [],
@@ -92,6 +107,20 @@ func TestGetPostAuthInfo(t *testing.T) {
 			expected: &common.PostAuthInfo{
 				CatalogVars: &map[string]string{
 					"sessionTimezone":          "America/New_York",
+					"sessionTimezoneIsDefault": "false",
+				},
+			},
+			expectedErrs: nil,
+		},
+		{
+			name: "Successfully retrieves timezone from 'timezone' field instead of 'expr1'",
+			server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, timezoneFieldResponse),
+			}.Server(),
+			expected: &common.PostAuthInfo{
+				CatalogVars: &map[string]string{
+					"sessionTimezone":          "America/Chicago",
 					"sessionTimezoneIsDefault": "false",
 				},
 			},

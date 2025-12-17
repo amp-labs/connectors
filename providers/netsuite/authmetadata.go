@@ -102,11 +102,25 @@ func parseTimezoneResponse(resp *common.JSONHTTPResponse) (*time.Location, error
 		return nil, ErrNoTimezoneData
 	}
 
-	// NetSuite returns the column as "expr1" when using SESSIONTIMEZONE without an alias,
-	// even though we specify "AS timezone" in the query.
-	timezone, err := jsonquery.New(items[0]).StringRequired("expr1")
+	// NetSuite inconsistently returns the timezone field - sometimes as "timezone"
+	// (matching our alias) and sometimes as "expr1" (ignoring the alias).
+	// We check both field names to handle this inconsistency.
+	item := jsonquery.New(items[0])
+
+	timezonePtr, err := item.StringOptional("timezone")
 	if err != nil {
 		return nil, fmt.Errorf("failed to get timezone from response: %w", err)
+	}
+
+	var timezone string
+	if timezonePtr != nil && *timezonePtr != "" {
+		timezone = *timezonePtr
+	} else {
+		// Fall back to checking "expr1" if "timezone" field is not present
+		timezone, err = item.StringRequired("expr1")
+		if err != nil {
+			return nil, fmt.Errorf("failed to get timezone from response: %w", err)
+		}
 	}
 
 	// Parse the timezone string (e.g., "America/Los_Angeles") into a time.Location
