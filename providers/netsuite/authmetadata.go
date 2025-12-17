@@ -28,22 +28,16 @@ const DefaultTimezone = "America/Los_Angeles"
 // This is called after authentication to discover instance-specific configuration.
 func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error) {
 	timezone, err := c.retrieveInstanceTimezone(ctx)
+	logging.With(ctx, "provider", "netsuite", "step", "get_post_auth_info")
 
 	isDefault := "false"
-	errMsg := ""
 
 	if err != nil {
 		// Fall back to Pacific time if we can't retrieve the timezone.
 		// This is a reasonable default since Netsuite server times are
 		// generally known to be in PT.
-		logging.Logger(ctx).Warn("failed to retrieve NetSuite instance timezone, using default",
-			"error", err.Error(),
-			"defaultTimezone", DefaultTimezone,
-		)
-
 		timezone, _ = time.LoadLocation(DefaultTimezone)
 		isDefault = "true"
-		errMsg = err.Error()
 	}
 
 	c.instanceTimezone = timezone
@@ -51,7 +45,6 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 	catalogVars := map[string]string{
 		"sessionTimezone":          timezone.String(),
 		"sessionTimezoneIsDefault": isDefault,
-		"sessionTimezoneError":     errMsg,
 	}
 
 	return &common.PostAuthInfo{
