@@ -30,6 +30,7 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 	timezone, err := c.retrieveInstanceTimezone(ctx)
 
 	isDefault := "false"
+	errMsg := ""
 
 	if err != nil {
 		// Fall back to Pacific time if we can't retrieve the timezone.
@@ -42,6 +43,7 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 
 		timezone, _ = time.LoadLocation(DefaultTimezone)
 		isDefault = "true"
+		errMsg = err.Error()
 	}
 
 	c.instanceTimezone = timezone
@@ -49,6 +51,7 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 	catalogVars := map[string]string{
 		"sessionTimezone":          timezone.String(),
 		"sessionTimezoneIsDefault": isDefault,
+		"sessionTimezoneError":     errMsg,
 	}
 
 	return &common.PostAuthInfo{

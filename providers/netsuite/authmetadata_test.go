@@ -94,6 +94,7 @@ func TestGetPostAuthInfo(t *testing.T) {
 				CatalogVars: &map[string]string{
 					"sessionTimezone":          "America/Los_Angeles",
 					"sessionTimezoneIsDefault": "false",
+					"sessionTimezoneError":     "",
 				},
 			},
 			expectedErrs: nil,
@@ -108,6 +109,7 @@ func TestGetPostAuthInfo(t *testing.T) {
 				CatalogVars: &map[string]string{
 					"sessionTimezone":          "America/New_York",
 					"sessionTimezoneIsDefault": "false",
+					"sessionTimezoneError":     "",
 				},
 			},
 			expectedErrs: nil,
@@ -122,6 +124,7 @@ func TestGetPostAuthInfo(t *testing.T) {
 				CatalogVars: &map[string]string{
 					"sessionTimezone":          "America/Chicago",
 					"sessionTimezoneIsDefault": "false",
+					"sessionTimezoneError":     "",
 				},
 			},
 			expectedErrs: nil,
@@ -136,6 +139,7 @@ func TestGetPostAuthInfo(t *testing.T) {
 				CatalogVars: &map[string]string{
 					"sessionTimezone":          "America/Los_Angeles",
 					"sessionTimezoneIsDefault": "true",
+					"sessionTimezoneError":     "no timezone data returned",
 				},
 			},
 			expectedErrs: nil,
@@ -150,6 +154,7 @@ func TestGetPostAuthInfo(t *testing.T) {
 				CatalogVars: &map[string]string{
 					"sessionTimezone":          "America/Los_Angeles",
 					"sessionTimezoneIsDefault": "true",
+					"sessionTimezoneError":     "failed to execute timezone query: HTTP status 500: server error",
 				},
 			},
 			expectedErrs: nil,
