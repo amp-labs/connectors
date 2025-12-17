@@ -364,18 +364,27 @@ func ParseSchemas(rawSchemas map[string][]byte) (SchemaRegistry, error) {
 	return parsed, nil
 }
 
-// extractSpecialFieldsFromRaw extracts ID and updated timestamp field names from raw JSON schema.
-// This is used before compilation since the compiler may not preserve custom x-amp extensions.
-func extractSpecialFieldsFromRaw(rawSchema []byte) (idField, updatedField string) {
+// extractSpecialFieldsFromRaw extracts ID, updated timestamp field names, and association metadata
+// from raw JSON schema. This is used before compilation since the compiler may not preserve custom
+// x-amp extensions.
+//
+//nolint:cyclop,funlen,gocognit,nestif // Complexity from schema parsing and validation
+func extractSpecialFieldsFromRaw(rawSchema []byte) (
+	idField string,
+	updatedField string,
+	associations map[string]*AssociationSchema,
+) {
 	var schemaMap map[string]any
 	if err := json.Unmarshal(rawSchema, &schemaMap); err != nil {
-		return "", ""
+		return "", "", nil
 	}
 
 	properties, ok := schemaMap["properties"].(map[string]any)
 	if !ok {
-		return "", ""
+		return "", "", nil
 	}
+
+	associations = make(map[string]*AssociationSchema)
 
 	for fieldName, fieldDef := range properties {
 		fieldMap, ok := fieldDef.(map[string]any)
@@ -392,9 +401,53 @@ func extractSpecialFieldsFromRaw(rawSchema []byte) (idField, updatedField string
 		if val, exists := fieldMap["x-amp-updated-field"]; exists && isTrueValue(val) {
 			updatedField = fieldName
 		}
+
+		// Check for x-amp-association extension
+		if assocVal, exists := fieldMap["x-amp-association"]; exists {
+			assocMap, ok := assocVal.(map[string]any)
+			if !ok {
+				continue
+			}
+
+			// Parse association metadata
+			assoc := &AssociationSchema{}
+
+			if assocType, ok := assocMap["associationType"].(string); ok {
+				assoc.AssociationType = assocType
+			}
+
+			if targetObj, ok := assocMap["targetObject"].(string); ok {
+				assoc.TargetObject = targetObj
+			}
+
+			if targetField, ok := assocMap["targetField"].(string); ok {
+				assoc.TargetField = targetField
+			}
+
+			if junctionObj, ok := assocMap["junctionObject"].(string); ok {
+				assoc.JunctionObject = junctionObj
+			}
+
+			if junctionFrom, ok := assocMap["junctionFromField"].(string); ok {
+				assoc.JunctionFromField = junctionFrom
+			}
+
+			if junctionTo, ok := assocMap["junctionToField"].(string); ok {
+				assoc.JunctionToField = junctionTo
+			}
+
+			if fkField, ok := assocMap["foreignKeyField"].(string); ok {
+				assoc.ForeignKeyField = fkField
+			}
+
+			// Validate required fields based on association type
+			if assoc.AssociationType != "" && assoc.TargetObject != "" {
+				associations[fieldName] = assoc
+			}
+		}
 	}
 
-	return idField, updatedField
+	return idField, updatedField, associations
 }
 
 // isTrueValue checks if a value represents a "true" boolean or string.
@@ -448,7 +501,11 @@ func validateRecord(schema *jsonschema.Schema, record map[string]any) error {
 // schemaToObjectMetadata converts a JSON schema to ObjectMetadata.
 //
 //nolint:cyclop,funlen,gocognit // Complex schema traversal, type mapping, and field extraction
-func schemaToObjectMetadata(objectName string, schema *jsonschema.Schema) *common.ObjectMetadata {
+func schemaToObjectMetadata(
+	objectName string,
+	schema *jsonschema.Schema,
+	_ map[string]*AssociationSchema, // associations is unused but kept for future use
+) *common.ObjectMetadata {
 	if schema == nil {
 		return nil
 	}
@@ -566,6 +623,12 @@ func schemaToObjectMetadata(objectName string, schema *jsonschema.Schema) *commo
 
 		// Apply required fields map
 		isRequired := requiredFields[fieldName]
+
+		// Note: Association metadata is stored in the storage layer and will be used
+		// during Read operations for expansion. FieldMetadata doesn't currently have
+		// an Association field (that's in FieldDefinition), so we skip it here.
+		// The association data is still available via c.storage.GetAssociations()
+		// for use during read expansion and write validation.
 
 		fields[fieldName] = common.FieldMetadata{
 			DisplayName:  fieldDisplayName,

@@ -22,16 +22,14 @@ type parameters struct {
 	// err holds any error encountered during parameter initialization.
 	err error
 
-	// observers holds callback functions that are notified of data modifications.
-	observers []func(action string, record map[string]any)
-
 	// storage holds the configured storage backend instance.
 	storage Storage
+
 	// storageFactory creates a new storage backend with the given configuration.
 	storageFactory func(
 		schemas SchemaRegistry,
 		idFields, updatedFields map[string]string,
-		observers []func(action string, record map[string]any),
+		associations map[string]map[string]*AssociationSchema,
 	) (Storage, error)
 }
 
@@ -53,13 +51,6 @@ func (p parameters) ValidateParams() error {
 
 // Option is a function that configures the connector parameters.
 type Option = func(*parameters)
-
-// WithObserver adds an observer for modifications to the schema.
-func WithObserver(f func(action string, record map[string]any)) Option {
-	return func(p *parameters) {
-		p.observers = append(p.observers, f)
-	}
-}
 
 // WithClient wraps an HTTP client in a JSONHTTPClient.
 func WithClient(client *http.Client) Option {
@@ -111,12 +102,13 @@ func WithStorage(storage Storage) Option {
 }
 
 // WithStorageFactory configures the connector with a factory function for creating storage backends.
-// The factory function receives schema information and observers, allowing for dynamic storage initialization.
-// This is useful when storage needs to be created with specific runtime configuration.
+// The factory function receives schema information, field mappings, and association metadata,
+// allowing for dynamic storage initialization. This is useful when storage needs to be created
+// with specific runtime configuration.
 func WithStorageFactory(f func(
 	schemas SchemaRegistry,
 	idFields, updatedFields map[string]string,
-	observers []func(action string, record map[string]any),
+	associations map[string]map[string]*AssociationSchema,
 ) (Storage, error),
 ) Option {
 	return func(p *parameters) {

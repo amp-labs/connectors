@@ -59,11 +59,15 @@ type Connector struct {
 
 // Compile-time interface checks.
 var (
-	_ connectors.Connector               = (*Connector)(nil)
-	_ connectors.ReadConnector           = (*Connector)(nil)
-	_ connectors.WriteConnector          = (*Connector)(nil)
-	_ connectors.DeleteConnector         = (*Connector)(nil)
-	_ connectors.ObjectMetadataConnector = (*Connector)(nil)
+	_ connectors.Connector                  = (*Connector)(nil)
+	_ connectors.ReadConnector              = (*Connector)(nil)
+	_ connectors.WriteConnector             = (*Connector)(nil)
+	_ connectors.DeleteConnector            = (*Connector)(nil)
+	_ connectors.ObjectMetadataConnector    = (*Connector)(nil)
+	_ connectors.SubscribeConnector         = (*Connector)(nil)
+	_ connectors.RegisterSubscribeConnector = (*Connector)(nil)
+	_ connectors.WebhookVerifierConnector   = (*Connector)(nil)
+	_ connectors.ConfigurationConnector     = (*Connector)(nil)
 )
 
 // NewConnector creates a new deepmock connector instance.
@@ -90,7 +94,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 
 	// Extract special fields from raw schemas before compilation
 	// (compilation may not preserve custom x-amp extensions)
-	idFields, updatedFields := extractSpecialFields(finalSchemas)
+	idFields, updatedFields, associations := extractSpecialFields(finalSchemas)
 
 	var store Storage
 
@@ -99,12 +103,12 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	case params.storage != nil:
 		store = params.storage
 	case params.storageFactory != nil:
-		store, err = params.storageFactory(parsedSchemas, idFields, updatedFields, params.observers)
+		store, err = params.storageFactory(parsedSchemas, idFields, updatedFields, associations)
 		if err != nil {
 			return nil, err
 		}
 	default:
-		store = NewStorage(parsedSchemas, idFields, updatedFields, params.observers)
+		store = NewStorage(parsedSchemas, idFields, updatedFields, associations)
 	}
 
 	return &Connector{
@@ -139,7 +143,7 @@ func (c *Connector) Provider() providers.Provider {
 
 // Read retrieves records for an object with pagination and filtering.
 //
-//nolint:cyclop,funlen // Complexity from pagination, filtering, field selection logic
+//nolint:cyclop,funlen,gocognit // Complexity from pagination, filtering, field selection logic
 func (c *Connector) Read(_ context.Context, params common.ReadParams) (*common.ReadResult, error) {
 	// Validate parameters
 	if err := params.ValidateParams(true); err != nil {
@@ -188,6 +192,24 @@ func (c *Connector) Read(_ context.Context, params common.ReadParams) (*common.R
 
 	pageRecords := records[start:end]
 
+	// Expand associations if requested
+	var associationsMap map[string]map[string][]common.Association
+
+	if len(params.AssociatedObjects) > 0 {
+		var err error
+
+		associationsMap, err = c.expandAssociations(params.ObjectName, pageRecords, params.AssociatedObjects)
+		if err != nil {
+			return nil, fmt.Errorf("failed to expand associations: %w", err)
+		}
+	}
+
+	// Get the ID field name for extracting record IDs
+	idField := c.storage.GetIdFields()[ObjectName(params.ObjectName)]
+	if idField == "" {
+		idField = "id"
+	}
+
 	// Build result rows
 	rows := make([]common.ReadResultRow, len(pageRecords))
 	for index, record := range pageRecords {
@@ -210,10 +232,24 @@ func (c *Connector) Read(_ context.Context, params common.ReadParams) (*common.R
 			}
 		}
 
-		rows[index] = common.ReadResultRow{
+		// Build the row
+		row := common.ReadResultRow{
 			Fields: fields,
 			Raw:    record, // Always include full record in Raw
 		}
+
+		// Add associations if present
+		if associationsMap != nil {
+			recordID, ok := record[idField]
+			if ok {
+				recordIDStr := fmt.Sprintf("%v", recordID)
+				if recordAssocs, exists := associationsMap[recordIDStr]; exists {
+					row.Associations = recordAssocs
+				}
+			}
+		}
+
+		rows[index] = row
 	}
 
 	// Calculate next page token
@@ -262,8 +298,10 @@ func (c *Connector) Write(_ context.Context, params common.WriteParams) (*common
 	)
 
 	// Determine operation (create vs update)
+	var actionType string
 	if params.RecordId == "" {
 		// CREATE operation
+		actionType = "create"
 		idField := c.storage.GetIdFields()[ObjectName(params.ObjectName)]
 		updatedField := c.storage.GetUpdatedFields()[ObjectName(params.ObjectName)]
 
@@ -289,6 +327,7 @@ func (c *Connector) Write(_ context.Context, params common.WriteParams) (*common
 		finalRecord = recordMap
 	} else {
 		// UPDATE operation
+		actionType = "update"
 		recordID = params.RecordId
 
 		// Retrieve existing record
@@ -320,8 +359,13 @@ func (c *Connector) Write(_ context.Context, params common.WriteParams) (*common
 		return nil, fmt.Errorf("validation failed: %w", err)
 	}
 
-	// Store record
-	if err := c.storage.Store(params.ObjectName, recordID, finalRecord); err != nil {
+	// Validate association foreign keys (ensures referential integrity)
+	if err := c.validateAssociations(params.ObjectName, finalRecord); err != nil {
+		return nil, err // Error already includes descriptive message
+	}
+
+	// Store record with action type (create or update)
+	if err := c.storage.Store(params.ObjectName, recordID, finalRecord, actionType); err != nil {
 		return nil, fmt.Errorf("failed to store record: %w", err)
 	}
 
@@ -374,7 +418,10 @@ func (c *Connector) ListObjectMetadata(
 			continue
 		}
 
-		metadata := schemaToObjectMetadata(objectName, schema)
+		// Get associations for this object (if any)
+		associations := c.storage.GetAssociations()[ObjectName(objectName)]
+
+		metadata := schemaToObjectMetadata(objectName, schema, associations)
 		if metadata == nil {
 			result.AppendError(objectName, fmt.Errorf("%w for %s", ErrSchemaConversion, objectName))
 
@@ -390,6 +437,10 @@ func (c *Connector) ListObjectMetadata(
 // GenerateRandomRecord generates a random record conforming to the object's schema.
 func (c *Connector) GenerateRandomRecord(objectName string) (map[string]any, error) {
 	return c.generateRandomRecordWithDepth(objectName, 0)
+}
+
+func (c *Connector) DefaultPageSize() int {
+	return defaultPageSize
 }
 
 // generateRandomRecordWithDepth generates a random record with depth limiting for recursion.
@@ -1045,14 +1096,20 @@ func selectSchemas(
 	}
 }
 
-// extractSpecialFields extracts ID and updated timestamp field names from all raw schemas.
-// Returns two maps: objectName -> idField and objectName -> updatedField.
-func extractSpecialFields(schemas map[string][]byte) (idFields, updatedFields map[string]string) {
+// extractSpecialFields extracts ID, updated timestamp field names, and association metadata from all raw schemas.
+// Returns three maps: objectName -> idField, objectName -> updatedField,
+// and objectName -> (fieldName -> AssociationSchema).
+func extractSpecialFields(schemas map[string][]byte) (
+	idFields map[string]string,
+	updatedFields map[string]string,
+	associations map[string]map[string]*AssociationSchema,
+) {
 	idFields = make(map[string]string)
 	updatedFields = make(map[string]string)
+	associations = make(map[string]map[string]*AssociationSchema)
 
 	for objectName, rawSchema := range schemas {
-		idField, updatedField := extractSpecialFieldsFromRaw(rawSchema)
+		idField, updatedField, assocs := extractSpecialFieldsFromRaw(rawSchema)
 		if idField != "" {
 			idFields[objectName] = idField
 		}
@@ -1060,7 +1117,11 @@ func extractSpecialFields(schemas map[string][]byte) (idFields, updatedFields ma
 		if updatedField != "" {
 			updatedFields[objectName] = updatedField
 		}
+
+		if len(assocs) > 0 {
+			associations[objectName] = assocs
+		}
 	}
 
-	return idFields, updatedFields
+	return idFields, updatedFields, associations
 }
