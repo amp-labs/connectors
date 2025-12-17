@@ -19,7 +19,7 @@ import (
 const SnowflakeTimestampFormat = "2006-01-02 15:04:05.000000"
 
 // DefaultPageSize is the default number of rows to fetch per page.
-const DefaultPageSize = 2000
+const DefaultPageSize = 10000
 
 // readMode represents the type of read operation to perform.
 type readMode int
