@@ -342,12 +342,14 @@ func constructIDFieldFromObjectName(objectName string) string {
 		if len(parts) > 0 {
 			var builder strings.Builder
 			builder.WriteString(parts[0])
+
 			for i := 1; i < len(parts); i++ {
 				if len(parts[i]) > 0 {
 					builder.WriteString(strings.ToUpper(parts[i][:1]) + parts[i][1:])
 				}
 			}
 			builder.WriteString("Id")
+
 			return builder.String()
 		}
 	}
