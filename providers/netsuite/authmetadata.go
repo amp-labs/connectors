@@ -12,6 +12,8 @@ import (
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
+// Reference: https://timdietrich.me/blog/netsuite-suiteql-dates-times/
+
 var (
 	ErrFailedToGetTimezone = errors.New("failed to get timezone from NetSuite instance")
 	ErrEmptyResponseBody   = errors.New("empty response body")
