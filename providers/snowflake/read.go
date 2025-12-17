@@ -133,7 +133,7 @@ func (c *Connector) AcknowledgeStreamConsumption(ctx context.Context, objectName
 
 	// Use INSERT ... SELECT ... WHERE 0 = 1 to advance the stream offset.
 	// Per Snowflake docs: "query the stream but include a WHERE clause that filters
-	// out all of the change data (e.g. WHERE 0 = 1)".
+	// out all the change data (e.g. WHERE 0 = 1)".
 	//
 	// IMPORTANT: We must SELECT from stream columns (using METADATA$ROW_ID) so that
 	// Snowflake actually scans the stream data. The "WHERE 0 = 1" filter is evaluated
@@ -402,6 +402,7 @@ func (c *Connector) buildDynamicTableQuery(
 
 	// Add LIMIT and OFFSET for pagination using prepared statement placeholders
 	query += " LIMIT ? OFFSET ?"
+
 	args = append(args, pageSize, offset)
 
 	return query, args
