@@ -41,11 +41,6 @@ func nextRecordsURL(objectName string) common.NextPageFunc {
 			return "", nil
 		}
 
-		endCursor, err := jsonquery.New(pageInfo).StrWithDefault("endCursor", "")
-		if err != nil {
-			return "", err
-		}
-
-		return endCursor, nil
+		return jsonquery.New(pageInfo).StrWithDefault("endCursor", "")
 	}
 }
