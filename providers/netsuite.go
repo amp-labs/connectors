@@ -85,6 +85,13 @@ func init() {
 						ModuleNetsuiteSuiteQL: ModuleDependency{},
 					},
 				},
+				{
+					Name: "sessionTimezoneIsDefault",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleNetsuiteRESTAPI: ModuleDependency{},
+						ModuleNetsuiteSuiteQL: ModuleDependency{},
+					},
+				},
 			},
 		},
 	})
