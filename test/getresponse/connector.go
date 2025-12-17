@@ -37,7 +37,7 @@ func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 		Endpoint: oauth2.Endpoint{
 			AuthURL:   "https://app.getresponse.com/oauth2_authorize.html",
 			TokenURL:  "https://api.getresponse.com/v3/token",
-			AuthStyle: oauth2.AuthStyleInParams,
+			AuthStyle: oauth2.AuthStyleAutoDetect,
 		},
 	}
 
