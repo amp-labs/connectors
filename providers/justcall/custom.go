@@ -3,6 +3,7 @@ package justcall
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -70,9 +71,16 @@ type customFieldsResponse struct {
 
 // customFieldDefinition represents a custom field definition.
 type customFieldDefinition struct {
-	Key   int    `json:"key"`
-	Label string `json:"label"`
-	Type  string `json:"type"`
+	Key     int                      `json:"key"`
+	Label   string                   `json:"label"`
+	Type    string                   `json:"type"`
+	Options []customFieldOptionValue `json:"options,omitempty"`
+}
+
+// customFieldOptionValue represents an option value for enum/dropdown fields.
+type customFieldOptionValue struct {
+	ID    int    `json:"id,omitempty"`
+	Value string `json:"value"`
 }
 
 // getValueType maps JustCall field types to common.ValueType.
@@ -86,9 +94,35 @@ func (f customFieldDefinition) getValueType() common.ValueType {
 		return common.ValueTypeDate
 	case "boolean":
 		return common.ValueTypeBoolean
+	case "dropdown":
+		return common.ValueTypeSingleSelect
+	case "multiSelect":
+		return common.ValueTypeMultiSelect
 	default:
 		return common.ValueTypeOther
 	}
+}
+
+// getValues returns the list of possible values for enum fields.
+func (f customFieldDefinition) getValues() common.FieldValues {
+	if len(f.Options) == 0 {
+		return nil
+	}
+
+	values := make(common.FieldValues, len(f.Options))
+	for i, option := range f.Options {
+		value := option.Value
+		if option.ID != 0 {
+			value = fmt.Sprintf("%d", option.ID)
+		}
+
+		values[i] = common.FieldValue{
+			Value:        value,
+			DisplayValue: option.Value,
+		}
+	}
+
+	return values
 }
 
 // flattenCustomFields moves custom fields from the custom_fields array to the root level.

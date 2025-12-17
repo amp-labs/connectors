@@ -58,6 +58,7 @@ func (c *Connector) ListObjectMetadata(
 				DisplayName:  field.Label,
 				ValueType:    field.getValueType(),
 				ProviderType: field.Type,
+				Values:       field.getValues(),
 			})
 		}
 

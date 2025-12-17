@@ -38,19 +38,25 @@ func main() {
 
 	// Check if custom fields were successfully retrieved
 	if err, hasError := metadata.Errors["sales_dialer/contacts"]; hasError {
-		fmt.Println("\n⚠️  Note: Custom fields endpoint returned an error.")
-		fmt.Println("\n   Why this happens:")
-		fmt.Println("   - Sales Dialer is a premium feature that must be enabled in the JustCall account")
-		fmt.Println("   - The /sales_dialer/contacts/custom-fields endpoint requires Sales Dialer to be active")
-		fmt.Println("   - If Sales Dialer is not enabled, the API returns HTTP 400 with a generic error")
-		fmt.Println("\n   Why we assume it will work once enabled:")
-		fmt.Println("   - The endpoint exists in the JustCall API documentation")
-		fmt.Println("   - The endpoint path and response structure match the OpenAPI specification")
-		fmt.Println("   - The implementation follows the same pattern as other connectors (Copper, Sellsy, Capsule)")
-		fmt.Println("   - Unit tests with mock data confirm the implementation is correct")
-		fmt.Printf("\n   Error: %v\n", err)
-		fmt.Println("\n   The metadata still shows built-in fields, which is correct behavior.")
-		fmt.Println("   Once Sales Dialer is enabled and custom fields are configured, they will appear here.")
+		fmt.Printf(`
+⚠️  Note: Custom fields endpoint returned an error.
+
+   Why this happens:
+   - Sales Dialer is a premium feature that must be enabled in the JustCall account
+   - The /sales_dialer/contacts/custom-fields endpoint requires Sales Dialer to be active
+   - If Sales Dialer is not enabled, the API returns HTTP 400 with a generic error
+
+   Why we assume it will work once enabled:
+   - The endpoint exists in the JustCall API documentation
+   - The endpoint path and response structure match the OpenAPI specification
+   - The implementation follows the same pattern as other connectors (Copper, Sellsy, Capsule)
+   - Unit tests with mock data confirm the implementation is correct
+
+   Error: %v
+
+   The metadata still shows built-in fields, which is correct behavior.
+   Once Sales Dialer is enabled and custom fields are configured, they will appear here.
+`, err)
 	} else {
 		fmt.Println("\n✅ Custom fields were successfully retrieved!")
 	}
@@ -86,20 +92,25 @@ func main() {
 		Fields:     connectors.Fields(fields...),
 	})
 	if err != nil {
-		fmt.Printf("\n⚠️  Read failed: %v\n", err)
-		fmt.Println("\n   Why this happens:")
-		fmt.Println("   - Sales Dialer must be enabled in the JustCall account")
-		fmt.Println("   - The /sales_dialer/contacts endpoint requires Sales Dialer to be active")
-		fmt.Println("   - If Sales Dialer is not enabled, the API returns HTTP 400")
-		fmt.Println("\n   Why we assume it will work once enabled:")
-		fmt.Println("   - The endpoint is documented in JustCall API: https://developer.justcall.io/reference")
-		fmt.Println("   - The response structure matches the OpenAPI spec (includes custom_fields array)")
-		fmt.Println("   - Unit tests with mock data verify the flattening logic works correctly")
-		fmt.Println("   - The implementation follows established patterns from other connectors")
-		fmt.Println("\n   Once Sales Dialer is enabled and contacts exist, custom fields will be:")
-		fmt.Println("   - Automatically included in read responses")
-		fmt.Println("   - Flattened to root level using their label names")
-		fmt.Println("   - Requestable by label name (e.g., 'membership_status', 'priority_level')")
+		fmt.Printf(`
+⚠️  Read failed: %v
+
+   Why this happens:
+   - Sales Dialer must be enabled in the JustCall account
+   - The /sales_dialer/contacts endpoint requires Sales Dialer to be active
+   - If Sales Dialer is not enabled, the API returns HTTP 400
+
+   Why we assume it will work once enabled:
+   - The endpoint is documented in JustCall API: https://developer.justcall.io/reference
+   - The response structure matches the OpenAPI spec (includes custom_fields array)
+   - Unit tests with mock data verify the flattening logic works correctly
+   - The implementation follows established patterns from other connectors
+
+   Once Sales Dialer is enabled and contacts exist, custom fields will be:
+   - Automatically included in read responses
+   - Flattened to root level using their label names
+   - Requestable by label name (e.g., 'membership_status', 'priority_level')
+`, err)
 		return
 	}
 

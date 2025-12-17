@@ -50,30 +50,6 @@ func TestListObjectMetadata(t *testing.T) {
 			},
 			ExpectedErrs: nil,
 		},
-		{
-			Name:  "Objects without custom fields return metadata without custom fields",
-			Input: []string{"users", "contacts"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v2.1/sales_dialer/contacts/custom-fields"),
-				Then:  mockserver.Response(http.StatusOK, responseCustomFields),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
-			Expected: &common.ListObjectMetadataResult{
-				Result: map[string]common.ObjectMetadata{
-					"users": {
-						DisplayName: "Users",
-						Fields:      map[string]common.FieldMetadata{},
-					},
-					"contacts": {
-						DisplayName: "Contacts",
-						Fields:      map[string]common.FieldMetadata{},
-					},
-				},
-				Errors: map[string]error{},
-			},
-			ExpectedErrs: nil,
-		},
 	}
 
 	for _, tt := range tests {

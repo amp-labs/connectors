@@ -359,8 +359,9 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{
-							"id":                float64(1234),
-							"name":              "Rachel Green",
+							"id":   float64(1234),
+							"name": "Rachel Green",
+							// Custom fields (flattened from custom_fields array)
 							"membership_status": "premium",
 							"priority_level":    "5",
 						},
@@ -369,6 +370,23 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 							"email":        "rachel.green@friends.co",
 							"status":       "Active",
 							"created_at":   "2025-03-12T10:49:10.000Z",
+							// Verify custom_fields array is preserved in Raw (paranoia test)
+							// Note: membership_status and priority_level should NOT be in Raw
+							// (they are flattened to Fields only, not duplicated in Raw)
+							"custom_fields": []any{
+								map[string]any{
+									"key":   float64(1090960),
+									"label": "membership_status",
+									"type":  "string",
+									"value": "premium",
+								},
+								map[string]any{
+									"key":   float64(1090961),
+									"label": "priority_level",
+									"type":  "number",
+									"value": "5",
+								},
+							},
 						},
 					},
 				},
