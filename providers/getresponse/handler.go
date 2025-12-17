@@ -430,7 +430,12 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 	return req, nil
 }
 
-func (c *Connector) parseDeleteResponse(ctx context.Context, params common.DeleteParams, request *http.Request, response *common.JSONHTTPResponse) (*common.DeleteResult, error) {
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context,
+	params common.DeleteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
 	if response.Code != http.StatusOK && response.Code != http.StatusNoContent {
 		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, response.Code)
 	}
