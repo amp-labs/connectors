@@ -77,6 +77,15 @@ func init() {
 					},
 				},
 			},
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "sessionTimezone",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleNetsuiteRESTAPI: ModuleDependency{},
+						ModuleNetsuiteSuiteQL: ModuleDependency{},
+					},
+				},
+			},
 		},
 	})
 }
