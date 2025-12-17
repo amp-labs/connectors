@@ -250,36 +250,58 @@ func parseRecordIdFromNode(c *Connector, objectName string, body *ajson.Node) st
 	// First, try to get the ID field name from the schemas (generated from swagger.json)
 	// This handles ALL cases including exceptions like "multimedia" -> "imageId"
 	idFieldName := getIDFieldNameFromSchemas(c, objectName)
-
-	// Try the ID field from schemas first using jsonquery.TextWithDefault
-	// This automatically handles string/int conversions and returns empty string if not found
-	if idFieldName != "" {
-		if recordID, err := jsonquery.New(body).TextWithDefault(idFieldName, ""); err == nil && recordID != "" {
-			return recordID
-		}
+	if recordID := tryExtractIDFromField(body, idFieldName); recordID != "" {
+		return recordID
 	}
 
 	// Second: try constructing ID field name from objectName (e.g., "contacts" -> "contactId")
 	// This handles most cases but may not work for hyphenated objects or exceptions
 	constructedIDField := constructIDFieldFromObjectName(objectName)
-	if constructedIDField != "" {
-		if recordID, err := jsonquery.New(body).TextWithDefault(constructedIDField, ""); err == nil && recordID != "" {
-			return recordID
-		}
+	if recordID := tryExtractIDFromField(body, constructedIDField); recordID != "" {
+		return recordID
 	}
 
 	// Last resort: try case-insensitive search for any field ending with "id"
-	// Prefer fields that match the object name to avoid grabbing nested object IDs (e.g., campaignId in a contact)
-	objectNameLower := strings.ToLower(objectName)
-	singularLower := strings.ToLower(naming.NewSingularString(objectName).String())
+	return extractIDFromMapPattern(body, objectName)
+}
 
-	// Convert to map for pattern matching (needed for case-insensitive search)
+// tryExtractIDFromField attempts to extract an ID from a specific field name using jsonquery.TextWithDefault.
+// Returns empty string if the field doesn't exist or extraction fails.
+func tryExtractIDFromField(body *ajson.Node, fieldName string) string {
+	if fieldName == "" {
+		return ""
+	}
+
+	recordID, err := jsonquery.New(body).TextWithDefault(fieldName, "")
+	if err != nil || recordID == "" {
+		return ""
+	}
+
+	return recordID
+}
+
+// extractIDFromMapPattern extracts ID by pattern matching in the converted map.
+// This is the last resort when schema lookup and construction both fail.
+func extractIDFromMapPattern(body *ajson.Node, objectName string) string {
 	data, err := jsonquery.Convertor.ObjectToMap(body)
 	if err != nil {
 		return ""
 	}
 
+	objectNameLower := strings.ToLower(objectName)
+	singularLower := strings.ToLower(naming.NewSingularString(objectName).String())
+
 	// First, try to find an ID field that matches the object name pattern
+	if recordID := findMatchingIDField(data, objectNameLower, singularLower); recordID != "" {
+		return recordID
+	}
+
+	// Absolute last resort: return the first field ending with "id"
+	return findFirstIDField(data)
+}
+
+// findMatchingIDField searches for an ID field that matches the object name pattern.
+func findMatchingIDField(data map[string]any, objectNameLower, singularLower string) string {
 	for key, value := range data {
 		keyLower := strings.ToLower(key)
 		if strings.HasSuffix(keyLower, "id") {
@@ -290,7 +312,11 @@ func parseRecordIdFromNode(c *Connector, objectName string, body *ajson.Node) st
 		}
 	}
 
-	// Absolute last resort: return the first field ending with "id"
+	return ""
+}
+
+// findFirstIDField returns the first field ending with "id" as a last resort.
+func findFirstIDField(data map[string]any) string {
 	for key, value := range data {
 		if strings.HasSuffix(strings.ToLower(key), "id") {
 			return convertIDToString(value)
@@ -304,7 +330,7 @@ func parseRecordIdFromNode(c *Connector, objectName string, body *ajson.Node) st
 // This is a fallback when schema lookup fails. It handles:
 // - Simple objects: "contacts" -> "contactId"
 // - Hyphenated objects: "click-tracks" -> "clickTrackId" (camelCase conversion)
-// Note: This may not work for exceptions like "multimedia" -> "imageId" or "landing-pages-sites" -> "lpsId"
+// Note: This may not work for exceptions like "multimedia" -> "imageId" or "landing-pages-sites" -> "lpsId".
 func constructIDFieldFromObjectName(objectName string) string {
 	// Convert to singular form
 	singular := naming.NewSingularString(objectName).String()
@@ -314,17 +340,20 @@ func constructIDFieldFromObjectName(objectName string) string {
 	if strings.Contains(singular, "-") {
 		parts := strings.Split(singular, "-")
 		if len(parts) > 0 {
-			result := parts[0]
+			var builder strings.Builder
+			builder.WriteString(parts[0])
 			for i := 1; i < len(parts); i++ {
 				if len(parts[i]) > 0 {
-					result += strings.ToUpper(parts[i][:1]) + parts[i][1:]
+					builder.WriteString(strings.ToUpper(parts[i][:1]) + parts[i][1:])
 				}
 			}
-			return result + "Id"
+			builder.WriteString("Id")
+			return builder.String()
 		}
 	}
 
 	// For simple objects, just add "Id"
+
 	return singular + "Id"
 }
 
