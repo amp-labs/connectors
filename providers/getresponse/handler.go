@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -202,8 +204,12 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
 }
 
-func (c *Connector) parseWriteResponse(ctx context.Context, params common.WriteParams, request *http.Request, response *common.JSONHTTPResponse) (*common.WriteResult, error) {
-
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
 	body, ok := response.Body()
 	if !ok {
 		return &common.WriteResult{
@@ -214,34 +220,77 @@ func (c *Connector) parseWriteResponse(ctx context.Context, params common.WriteP
 	// GetResponse API returns the object directly at the root level (not wrapped in "data")
 	// According to swagger.json, 200 responses return the object schema directly
 	// For 202 Accepted (create operations), there's no body, which is handled above
+
+	// Extract record ID directly from ajson node using jsonquery.TextWithDefault
+	// This avoids type conversion issues and handles string/int ID types automatically
+	recordId := parseRecordIdFromNode(c, params.ObjectName, body)
+
+	// Convert to map[string]any for WriteResult.Data (still needed for the result)
 	data, err := jsonquery.Convertor.ObjectToMap(body)
 	if err != nil {
-		// If conversion fails, return success with empty data (some endpoints may return empty)
-		return &common.WriteResult{
-			Success: true,
-		}, nil
+		// If conversion fails, return the error
+		return nil, fmt.Errorf("failed to convert response body to map: %w", err)
 	}
-
-	recordId := parseRecordId(c, params.ObjectName, data)
 
 	return &common.WriteResult{Success: true, Data: data, RecordId: recordId}, nil
 }
 
-// parseRecordId extracts the record ID from GetResponse response data.
+// parseRecordIdFromNode extracts the record ID directly from ajson.Node.
+// This avoids type conversion issues with map[string]any and uses jsonquery.TextWithDefault
+// to automatically handle string/int ID types.
+//
 // GetResponse uses object-specific ID fields (e.g., contactId, campaignId, addressId).
 // This function uses the schemas (generated from swagger.json) to dynamically find the ID field.
-func parseRecordId(c *Connector, objectName string, data map[string]any) string {
+//
+// The function handles:
+//   - Simple objects: "contacts" -> "contactId" (via schema lookup)
+//   - Hyphenated objects: "click-tracks" -> "clickTrackId" (via schema lookup or camelCase construction)
+//   - Exceptions: "multimedia" -> "imageId", "landing-pages-sites" -> "lpsId" (via schema lookup)
+func parseRecordIdFromNode(c *Connector, objectName string, body *ajson.Node) string {
 	// First, try to get the ID field name from the schemas (generated from swagger.json)
+	// This handles ALL cases including exceptions like "multimedia" -> "imageId"
 	idFieldName := getIDFieldNameFromSchemas(c, objectName)
 
-	// Try the ID field from schemas first
+	// Try the ID field from schemas first using jsonquery.TextWithDefault
+	// This automatically handles string/int conversions and returns empty string if not found
 	if idFieldName != "" {
-		if idValue, exists := data[idFieldName]; exists {
-			return convertIDToString(idValue)
+		if recordID, err := jsonquery.New(body).TextWithDefault(idFieldName, ""); err == nil && recordID != "" {
+			return recordID
+		}
+	}
+
+	// Second: try constructing ID field name from objectName (e.g., "contacts" -> "contactId")
+	// This handles most cases but may not work for hyphenated objects or exceptions
+	constructedIDField := constructIDFieldFromObjectName(objectName)
+	if constructedIDField != "" {
+		if recordID, err := jsonquery.New(body).TextWithDefault(constructedIDField, ""); err == nil && recordID != "" {
+			return recordID
 		}
 	}
 
 	// Last resort: try case-insensitive search for any field ending with "id"
+	// Prefer fields that match the object name to avoid grabbing nested object IDs (e.g., campaignId in a contact)
+	objectNameLower := strings.ToLower(objectName)
+	singularLower := strings.ToLower(naming.NewSingularString(objectName).String())
+
+	// Convert to map for pattern matching (needed for case-insensitive search)
+	data, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return ""
+	}
+
+	// First, try to find an ID field that matches the object name pattern
+	for key, value := range data {
+		keyLower := strings.ToLower(key)
+		if strings.HasSuffix(keyLower, "id") {
+			// Check if the key contains the object name (singular or plural) to avoid nested IDs
+			if strings.Contains(keyLower, singularLower) || strings.Contains(keyLower, objectNameLower) {
+				return convertIDToString(value)
+			}
+		}
+	}
+
+	// Absolute last resort: return the first field ending with "id"
 	for key, value := range data {
 		if strings.HasSuffix(strings.ToLower(key), "id") {
 			return convertIDToString(value)
@@ -249,6 +298,34 @@ func parseRecordId(c *Connector, objectName string, data map[string]any) string 
 	}
 
 	return ""
+}
+
+// constructIDFieldFromObjectName constructs an ID field name from the object name.
+// This is a fallback when schema lookup fails. It handles:
+// - Simple objects: "contacts" -> "contactId"
+// - Hyphenated objects: "click-tracks" -> "clickTrackId" (camelCase conversion)
+// Note: This may not work for exceptions like "multimedia" -> "imageId" or "landing-pages-sites" -> "lpsId"
+func constructIDFieldFromObjectName(objectName string) string {
+	// Convert to singular form
+	singular := naming.NewSingularString(objectName).String()
+
+	// Handle hyphenated objects: convert to camelCase
+	// e.g., "click-track" -> "clickTrack"
+	if strings.Contains(singular, "-") {
+		parts := strings.Split(singular, "-")
+		if len(parts) > 0 {
+			result := parts[0]
+			for i := 1; i < len(parts); i++ {
+				if len(parts[i]) > 0 {
+					result += strings.ToUpper(parts[i][:1]) + parts[i][1:]
+				}
+			}
+			return result + "Id"
+		}
+	}
+
+	// For simple objects, just add "Id"
+	return singular + "Id"
 }
 
 // getIDFieldNameFromSchemas returns the ID field name for a given object by looking it up
@@ -297,4 +374,38 @@ func convertIDToString(idValue any) string {
 	default:
 		return ""
 	}
+}
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
+	if err != nil {
+		return nil, err
+	}
+
+	// Add RecordId to the path for delete operations
+	// Format: DELETE /v3/{object}/{recordId}
+	if params.RecordId != "" {
+		url.AddPath(params.RecordId)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+func (c *Connector) parseDeleteResponse(ctx context.Context, params common.DeleteParams, request *http.Request, response *common.JSONHTTPResponse) (*common.DeleteResult, error) {
+	if response.Code != http.StatusOK && response.Code != http.StatusNoContent {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, response.Code)
+	}
+
+	// Response body is not used.
+	return &common.DeleteResult{Success: true}, nil
 }
