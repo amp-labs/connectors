@@ -19,6 +19,7 @@ func TestRead(t *testing.T) {
 	responseProductsWithNextPage := testutils.DataFromFile(t, "read/products-with-next-page.json")
 	responseCustomers := testutils.DataFromFile(t, "read/customers.json")
 	responseOrders := testutils.DataFromFile(t, "read/orders.json")
+	responseErrorInvalidQuery := testutils.DataFromFile(t, "read/error-invalid-query.json")
 
 	tests := []testroutines.Read{
 		{
@@ -31,6 +32,17 @@ func TestRead(t *testing.T) {
 			Input:        common.ReadParams{ObjectName: "products"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingFields},
+		},
+		{
+			Name:  "Error response with invalid query",
+			Input: common.ReadParams{ObjectName: "products", Fields: connectors.Fields("id")},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, responseErrorInvalidQuery),
+			}.Server(),
+			ExpectedErrs: []error{
+				common.ErrBadRequest,
+			},
 		},
 		{
 			Name:  "Successfully read products",
