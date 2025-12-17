@@ -3,7 +3,6 @@ query Orders($first: Int!, $after: String, $query: String) {
     nodes {
       id
       name
-      number
       confirmationNumber
       email
       phone
@@ -170,16 +169,11 @@ query Orders($first: Int!, $after: String, $query: String) {
       customer {
         id
         displayName
-        defaultEmailAddress {
-          emailAddress
-        }
-        defaultPhoneNumber {
-          phoneNumber
-        }
+        email
+        phone
       }
       risk {
         recommendation
-        assessmentExplanation
       }
       app {
         name

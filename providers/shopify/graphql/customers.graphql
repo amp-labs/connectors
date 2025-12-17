@@ -21,17 +21,8 @@ query Customers($first: Int!, $after: String, $query: String) {
         amount
         currencyCode
       }
-      defaultEmailAddress {
-        emailAddress
-        marketingState
-        marketingOptInLevel
-        marketingOptInLevelAtCreation
-      }
-      defaultPhoneNumber {
-        phoneNumber
-        marketingState
-        marketingOptInLevel
-      }
+      email
+      phone
       defaultAddress {
         id
         firstName
