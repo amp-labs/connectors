@@ -40,8 +40,8 @@ func main() {
 		PageSize:   2,
 	})
 
-	// Test 3: Read products with Since filter (incremental sync)
-	slog.Info("=== Test 3: Reading products with Since filter (incremental sync) ===")
+	// Test 3: Read products with Since filter
+	slog.Info("=== Test 3: Reading products with Since filter ===")
 
 	since := time.Now().AddDate(0, 0, -30)
 	slog.Info("Filtering products updated since", "since", since.Format(time.RFC3339))
