@@ -17,7 +17,7 @@ const defaultSOQLPageSize = 2000
 func getParentFieldMap() map[string]map[string]string {
 	return map[string]map[string]string{
 		"opportunity": {
-			"account": "AccountId",
+			"accounts": "AccountId",
 		},
 	}
 }
