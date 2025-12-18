@@ -1,0 +1,1985 @@
+{
+  "Errors": {},
+  "Result": {
+    "customers": {
+      "DisplayName": "Customers",
+      "Fields": {
+        "addresses": {
+          "DisplayName": "addresses",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "addressesV2": {
+          "DisplayName": "addressesV2",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MailingAddressConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "amountSpent": {
+          "DisplayName": "amountSpent",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyV2",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "canDelete": {
+          "DisplayName": "canDelete",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "companyContactProfiles": {
+          "DisplayName": "companyContactProfiles",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "createdAt": {
+          "DisplayName": "createdAt",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "DateTime",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "dataSaleOptOut": {
+          "DisplayName": "dataSaleOptOut",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "defaultAddress": {
+          "DisplayName": "defaultAddress",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MailingAddress",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "displayName": {
+          "DisplayName": "displayName",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "events": {
+          "DisplayName": "events",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "EventConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "firstName": {
+          "DisplayName": "firstName",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ID",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "image": {
+          "DisplayName": "image",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Image",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "lastName": {
+          "DisplayName": "lastName",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "lastOrder": {
+          "DisplayName": "lastOrder",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Order",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "legacyResourceId": {
+          "DisplayName": "legacyResourceId",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "UnsignedInt64",
+          "ReadOnly": null,
+          "ValueType": "int",
+          "Values": []
+        },
+        "lifetimeDuration": {
+          "DisplayName": "lifetimeDuration",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "locale": {
+          "DisplayName": "locale",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "market": {
+          "DisplayName": "market",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Market",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "mergeable": {
+          "DisplayName": "mergeable",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "CustomerMergeable",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "metafield": {
+          "DisplayName": "metafield",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Metafield",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "metafields": {
+          "DisplayName": "metafields",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MetafieldConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "multipassIdentifier": {
+          "DisplayName": "multipassIdentifier",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "note": {
+          "DisplayName": "note",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "numberOfOrders": {
+          "DisplayName": "numberOfOrders",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "UnsignedInt64",
+          "ReadOnly": null,
+          "ValueType": "int",
+          "Values": []
+        },
+        "orders": {
+          "DisplayName": "orders",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "OrderConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "paymentMethods": {
+          "DisplayName": "paymentMethods",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "CustomerPaymentMethodConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "productSubscriberStatus": {
+          "DisplayName": "productSubscriberStatus",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "CustomerProductSubscriberStatus",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "state": {
+          "DisplayName": "state",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "CustomerState",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "statistics": {
+          "DisplayName": "statistics",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "CustomerStatistics",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "storeCreditAccounts": {
+          "DisplayName": "storeCreditAccounts",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "StoreCreditAccountConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "subscriptionContracts": {
+          "DisplayName": "subscriptionContracts",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "SubscriptionContractConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "tags": {
+          "DisplayName": "tags",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "taxExempt": {
+          "DisplayName": "taxExempt",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "taxExemptions": {
+          "DisplayName": "taxExemptions",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "updatedAt": {
+          "DisplayName": "updatedAt",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "DateTime",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "verifiedEmail": {
+          "DisplayName": "verifiedEmail",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "orders": {
+      "DisplayName": "Orders",
+      "Fields": {
+        "additionalFees": {
+          "DisplayName": "additionalFees",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "agreements": {
+          "DisplayName": "agreements",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "SalesAgreementConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "alerts": {
+          "DisplayName": "alerts",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "app": {
+          "DisplayName": "app",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "OrderApp",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "billingAddress": {
+          "DisplayName": "billingAddress",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MailingAddress",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "billingAddressMatchesShippingAddress": {
+          "DisplayName": "billingAddressMatchesShippingAddress",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "canMarkAsPaid": {
+          "DisplayName": "canMarkAsPaid",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "canNotifyCustomer": {
+          "DisplayName": "canNotifyCustomer",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "cancelReason": {
+          "DisplayName": "cancelReason",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "OrderCancelReason",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "cancellation": {
+          "DisplayName": "cancellation",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "OrderCancellation",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "cancelledAt": {
+          "DisplayName": "cancelledAt",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "DateTime",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "capturable": {
+          "DisplayName": "capturable",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "cartDiscountAmountSet": {
+          "DisplayName": "cartDiscountAmountSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "channelInformation": {
+          "DisplayName": "channelInformation",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ChannelInformation",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "clientIp": {
+          "DisplayName": "clientIp",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "closed": {
+          "DisplayName": "closed",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "closedAt": {
+          "DisplayName": "closedAt",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "DateTime",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "confirmationNumber": {
+          "DisplayName": "confirmationNumber",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "confirmed": {
+          "DisplayName": "confirmed",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "createdAt": {
+          "DisplayName": "createdAt",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "DateTime",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "currencyCode": {
+          "DisplayName": "currencyCode",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "CurrencyCode",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "currentCartDiscountAmountSet": {
+          "DisplayName": "currentCartDiscountAmountSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "currentShippingPriceSet": {
+          "DisplayName": "currentShippingPriceSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "currentSubtotalLineItemsQuantity": {
+          "DisplayName": "currentSubtotalLineItemsQuantity",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Int",
+          "ReadOnly": null,
+          "ValueType": "int",
+          "Values": []
+        },
+        "currentSubtotalPriceSet": {
+          "DisplayName": "currentSubtotalPriceSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "currentTaxLines": {
+          "DisplayName": "currentTaxLines",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "currentTotalAdditionalFeesSet": {
+          "DisplayName": "currentTotalAdditionalFeesSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "currentTotalDiscountsSet": {
+          "DisplayName": "currentTotalDiscountsSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "currentTotalDutiesSet": {
+          "DisplayName": "currentTotalDutiesSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "currentTotalPriceSet": {
+          "DisplayName": "currentTotalPriceSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "currentTotalTaxSet": {
+          "DisplayName": "currentTotalTaxSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "currentTotalWeight": {
+          "DisplayName": "currentTotalWeight",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "UnsignedInt64",
+          "ReadOnly": null,
+          "ValueType": "int",
+          "Values": []
+        },
+        "customAttributes": {
+          "DisplayName": "customAttributes",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "customer": {
+          "DisplayName": "customer",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Customer",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "customerAcceptsMarketing": {
+          "DisplayName": "customerAcceptsMarketing",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "customerJourneySummary": {
+          "DisplayName": "customerJourneySummary",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "CustomerJourneySummary",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "customerLocale": {
+          "DisplayName": "customerLocale",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "discountApplications": {
+          "DisplayName": "discountApplications",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "DiscountApplicationConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "discountCode": {
+          "DisplayName": "discountCode",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "discountCodes": {
+          "DisplayName": "discountCodes",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "displayAddress": {
+          "DisplayName": "displayAddress",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MailingAddress",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "displayFinancialStatus": {
+          "DisplayName": "displayFinancialStatus",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "OrderDisplayFinancialStatus",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "displayFulfillmentStatus": {
+          "DisplayName": "displayFulfillmentStatus",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "OrderDisplayFulfillmentStatus",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "disputes": {
+          "DisplayName": "disputes",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "dutiesIncluded": {
+          "DisplayName": "dutiesIncluded",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "edited": {
+          "DisplayName": "edited",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "email": {
+          "DisplayName": "email",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "estimatedTaxes": {
+          "DisplayName": "estimatedTaxes",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "events": {
+          "DisplayName": "events",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "EventConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "fulfillable": {
+          "DisplayName": "fulfillable",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "fulfillmentOrders": {
+          "DisplayName": "fulfillmentOrders",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "FulfillmentOrderConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "fulfillments": {
+          "DisplayName": "fulfillments",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "fulfillmentsCount": {
+          "DisplayName": "fulfillmentsCount",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Count",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "fullyPaid": {
+          "DisplayName": "fullyPaid",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "hasTimelineComment": {
+          "DisplayName": "hasTimelineComment",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ID",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "legacyResourceId": {
+          "DisplayName": "legacyResourceId",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "UnsignedInt64",
+          "ReadOnly": null,
+          "ValueType": "int",
+          "Values": []
+        },
+        "lineItems": {
+          "DisplayName": "lineItems",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "LineItemConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "localizedFields": {
+          "DisplayName": "localizedFields",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "LocalizedFieldConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "merchantBusinessEntity": {
+          "DisplayName": "merchantBusinessEntity",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "BusinessEntity",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "merchantEditable": {
+          "DisplayName": "merchantEditable",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "merchantEditableErrors": {
+          "DisplayName": "merchantEditableErrors",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "merchantOfRecordApp": {
+          "DisplayName": "merchantOfRecordApp",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "OrderApp",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "metafield": {
+          "DisplayName": "metafield",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Metafield",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "metafields": {
+          "DisplayName": "metafields",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MetafieldConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "netPaymentSet": {
+          "DisplayName": "netPaymentSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "nonFulfillableLineItems": {
+          "DisplayName": "nonFulfillableLineItems",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "LineItemConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "note": {
+          "DisplayName": "note",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "originalTotalAdditionalFeesSet": {
+          "DisplayName": "originalTotalAdditionalFeesSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "originalTotalDutiesSet": {
+          "DisplayName": "originalTotalDutiesSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "originalTotalPriceSet": {
+          "DisplayName": "originalTotalPriceSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "paymentCollectionDetails": {
+          "DisplayName": "paymentCollectionDetails",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "OrderPaymentCollectionDetails",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "paymentGatewayNames": {
+          "DisplayName": "paymentGatewayNames",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "paymentTerms": {
+          "DisplayName": "paymentTerms",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "PaymentTerms",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "phone": {
+          "DisplayName": "phone",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "poNumber": {
+          "DisplayName": "poNumber",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "presentmentCurrencyCode": {
+          "DisplayName": "presentmentCurrencyCode",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "CurrencyCode",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "processedAt": {
+          "DisplayName": "processedAt",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "DateTime",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "publication": {
+          "DisplayName": "publication",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Publication",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "purchasingEntity": {
+          "DisplayName": "purchasingEntity",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "PurchasingEntity",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "refundDiscrepancySet": {
+          "DisplayName": "refundDiscrepancySet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "refundable": {
+          "DisplayName": "refundable",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "refunds": {
+          "DisplayName": "refunds",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "registeredSourceUrl": {
+          "DisplayName": "registeredSourceUrl",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "URL",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "requiresShipping": {
+          "DisplayName": "requiresShipping",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "restockable": {
+          "DisplayName": "restockable",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "retailLocation": {
+          "DisplayName": "retailLocation",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Location",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "returnStatus": {
+          "DisplayName": "returnStatus",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "OrderReturnStatus",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "returns": {
+          "DisplayName": "returns",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ReturnConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "risk": {
+          "DisplayName": "risk",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "OrderRiskSummary",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "shippingAddress": {
+          "DisplayName": "shippingAddress",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MailingAddress",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "shippingLine": {
+          "DisplayName": "shippingLine",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ShippingLine",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "shippingLines": {
+          "DisplayName": "shippingLines",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ShippingLineConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "shopifyProtect": {
+          "DisplayName": "shopifyProtect",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ShopifyProtectOrderSummary",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "sourceIdentifier": {
+          "DisplayName": "sourceIdentifier",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "sourceName": {
+          "DisplayName": "sourceName",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "staffMember": {
+          "DisplayName": "staffMember",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "StaffMember",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "statusPageUrl": {
+          "DisplayName": "statusPageUrl",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "URL",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "subtotalLineItemsQuantity": {
+          "DisplayName": "subtotalLineItemsQuantity",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Int",
+          "ReadOnly": null,
+          "ValueType": "int",
+          "Values": []
+        },
+        "subtotalPriceSet": {
+          "DisplayName": "subtotalPriceSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "suggestedRefund": {
+          "DisplayName": "suggestedRefund",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "SuggestedRefund",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "tags": {
+          "DisplayName": "tags",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "taxExempt": {
+          "DisplayName": "taxExempt",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "taxLines": {
+          "DisplayName": "taxLines",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "taxesIncluded": {
+          "DisplayName": "taxesIncluded",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "test": {
+          "DisplayName": "test",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "totalCapturableSet": {
+          "DisplayName": "totalCapturableSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "totalCashRoundingAdjustment": {
+          "DisplayName": "totalCashRoundingAdjustment",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "CashRoundingAdjustment",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "totalDiscountsSet": {
+          "DisplayName": "totalDiscountsSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "totalOutstandingSet": {
+          "DisplayName": "totalOutstandingSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "totalPriceSet": {
+          "DisplayName": "totalPriceSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "totalReceivedSet": {
+          "DisplayName": "totalReceivedSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "totalRefundedSet": {
+          "DisplayName": "totalRefundedSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "totalRefundedShippingSet": {
+          "DisplayName": "totalRefundedShippingSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "totalShippingPriceSet": {
+          "DisplayName": "totalShippingPriceSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "totalTaxSet": {
+          "DisplayName": "totalTaxSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "totalTipReceivedSet": {
+          "DisplayName": "totalTipReceivedSet",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MoneyBag",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "totalWeight": {
+          "DisplayName": "totalWeight",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "UnsignedInt64",
+          "ReadOnly": null,
+          "ValueType": "int",
+          "Values": []
+        },
+        "transactions": {
+          "DisplayName": "transactions",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "transactionsCount": {
+          "DisplayName": "transactionsCount",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Count",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "unpaid": {
+          "DisplayName": "unpaid",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "updatedAt": {
+          "DisplayName": "updatedAt",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "DateTime",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "products": {
+      "DisplayName": "Products",
+      "Fields": {
+        "availablePublicationsCount": {
+          "DisplayName": "availablePublicationsCount",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Count",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "bundleComponents": {
+          "DisplayName": "bundleComponents",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ProductBundleComponentConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "category": {
+          "DisplayName": "category",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "TaxonomyCategory",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "collections": {
+          "DisplayName": "collections",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "CollectionConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "combinedListing": {
+          "DisplayName": "combinedListing",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "CombinedListing",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "combinedListingRole": {
+          "DisplayName": "combinedListingRole",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "CombinedListingsRole",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "compareAtPriceRange": {
+          "DisplayName": "compareAtPriceRange",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ProductCompareAtPriceRange",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "contextualPricing": {
+          "DisplayName": "contextualPricing",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ProductContextualPricing",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "createdAt": {
+          "DisplayName": "createdAt",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "DateTime",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "defaultCursor": {
+          "DisplayName": "defaultCursor",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "description": {
+          "DisplayName": "description",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "descriptionHtml": {
+          "DisplayName": "descriptionHtml",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "HTML",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "events": {
+          "DisplayName": "events",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "EventConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "featuredMedia": {
+          "DisplayName": "featuredMedia",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Media",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "feedback": {
+          "DisplayName": "feedback",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ResourceFeedback",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "giftCardTemplateSuffix": {
+          "DisplayName": "giftCardTemplateSuffix",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "handle": {
+          "DisplayName": "handle",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "hasOnlyDefaultVariant": {
+          "DisplayName": "hasOnlyDefaultVariant",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "hasOutOfStockVariants": {
+          "DisplayName": "hasOutOfStockVariants",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "hasVariantsThatRequiresComponents": {
+          "DisplayName": "hasVariantsThatRequiresComponents",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ID",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "inCollection": {
+          "DisplayName": "inCollection",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "isGiftCard": {
+          "DisplayName": "isGiftCard",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "legacyResourceId": {
+          "DisplayName": "legacyResourceId",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "UnsignedInt64",
+          "ReadOnly": null,
+          "ValueType": "int",
+          "Values": []
+        },
+        "media": {
+          "DisplayName": "media",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MediaConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "mediaCount": {
+          "DisplayName": "mediaCount",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Count",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "metafield": {
+          "DisplayName": "metafield",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Metafield",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "metafields": {
+          "DisplayName": "metafields",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "MetafieldConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "onlineStorePreviewUrl": {
+          "DisplayName": "onlineStorePreviewUrl",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "URL",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "onlineStoreUrl": {
+          "DisplayName": "onlineStoreUrl",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "URL",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "options": {
+          "DisplayName": "options",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "priceRangeV2": {
+          "DisplayName": "priceRangeV2",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ProductPriceRangeV2",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "productType": {
+          "DisplayName": "productType",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "publishedAt": {
+          "DisplayName": "publishedAt",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "DateTime",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "publishedInContext": {
+          "DisplayName": "publishedInContext",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "publishedOnCurrentPublication": {
+          "DisplayName": "publishedOnCurrentPublication",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "publishedOnPublication": {
+          "DisplayName": "publishedOnPublication",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "requiresSellingPlan": {
+          "DisplayName": "requiresSellingPlan",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "resourcePublicationOnCurrentPublication": {
+          "DisplayName": "resourcePublicationOnCurrentPublication",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ResourcePublicationV2",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "resourcePublications": {
+          "DisplayName": "resourcePublications",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ResourcePublicationConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "resourcePublicationsCount": {
+          "DisplayName": "resourcePublicationsCount",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Count",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "resourcePublicationsV2": {
+          "DisplayName": "resourcePublicationsV2",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ResourcePublicationV2Connection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "restrictedForResource": {
+          "DisplayName": "restrictedForResource",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "RestrictedForResource",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "sellingPlanGroups": {
+          "DisplayName": "sellingPlanGroups",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "SellingPlanGroupConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "sellingPlanGroupsCount": {
+          "DisplayName": "sellingPlanGroupsCount",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Count",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "seo": {
+          "DisplayName": "seo",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "SEO",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "status": {
+          "DisplayName": "status",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ProductStatus",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "tags": {
+          "DisplayName": "tags",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "templateSuffix": {
+          "DisplayName": "templateSuffix",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "title": {
+          "DisplayName": "title",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "totalInventory": {
+          "DisplayName": "totalInventory",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Int",
+          "ReadOnly": null,
+          "ValueType": "int",
+          "Values": []
+        },
+        "tracksInventory": {
+          "DisplayName": "tracksInventory",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Boolean",
+          "ReadOnly": null,
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "translations": {
+          "DisplayName": "translations",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ValueType": "",
+          "Values": []
+        },
+        "unpublishedPublications": {
+          "DisplayName": "unpublishedPublications",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "PublicationConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "updatedAt": {
+          "DisplayName": "updatedAt",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "DateTime",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        },
+        "variants": {
+          "DisplayName": "variants",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "ProductVariantConnection",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "variantsCount": {
+          "DisplayName": "variantsCount",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "Count",
+          "ReadOnly": null,
+          "ValueType": "other",
+          "Values": []
+        },
+        "vendor": {
+          "DisplayName": "vendor",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "String",
+          "ReadOnly": null,
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    }
+  }
+}

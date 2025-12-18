@@ -1,0 +1,20 @@
+time=2025-12-17T16:54:39.197+05:00 level=DEBUG msg="loading credentials file" path=./shopify-creds.json
+time=2025-12-17T16:54:39.202+05:00 level=INFO msg="=== Test 1: Reading products (basic) ==="
+time=2025-12-17T16:54:40.227+05:00 level=INFO msg="Products result" rows=17 done=true hasNextPage=false
+time=2025-12-17T16:54:40.228+05:00 level=INFO msg="Sample record (first)" fields="map[handle:the-inventory-not-tracked-snowboard id:gid://shopify/Product/15350981067121 status:ACTIVE title:The Inventory Not Tracked Snowboard updatedat:2025-12-09T02:08:53Z]"
+time=2025-12-17T16:54:40.228+05:00 level=INFO msg="=== Test 2: Reading products with PageSize=2 (pagination) ==="
+time=2025-12-17T16:54:40.718+05:00 level=INFO msg="Products (page 1) result" rows=2 done=false hasNextPage=true
+time=2025-12-17T16:54:40.718+05:00 level=INFO msg="Sample record (first)" fields="map[id:gid://shopify/Product/15350981067121 title:The Inventory Not Tracked Snowboard]"
+time=2025-12-17T16:54:40.718+05:00 level=INFO msg="=== Test 2b: Fetching next page ==="
+time=2025-12-17T16:54:41.346+05:00 level=INFO msg="Products (page 2) result" rows=2 done=false hasNextPage=true
+time=2025-12-17T16:54:41.346+05:00 level=INFO msg="Sample record (first)" fields="map[id:gid://shopify/Product/15350981132657 title:The Minimal Snowboard]"
+time=2025-12-17T16:54:41.346+05:00 level=INFO msg="=== Test 3: Reading products with Since filter (incremental sync) ==="
+time=2025-12-17T16:54:41.346+05:00 level=INFO msg="Filtering products updated since" since=2025-11-17T16:54:41+05:00
+time=2025-12-17T16:54:41.975+05:00 level=INFO msg="Products (incremental) result" rows=17 done=true hasNextPage=false
+time=2025-12-17T16:54:41.975+05:00 level=INFO msg="Sample record (first)" fields="map[id:gid://shopify/Product/15350981067121 title:The Inventory Not Tracked Snowboard updatedat:2025-12-09T02:08:53Z]"
+time=2025-12-17T16:54:41.975+05:00 level=INFO msg="=== Test 4: Reading orders ==="
+time=2025-12-17T16:54:42.380+05:00 level=INFO msg="Orders result" rows=0 done=true hasNextPage=false
+time=2025-12-17T16:54:42.380+05:00 level=INFO msg="=== Test 5: Reading customers ==="
+time=2025-12-17T16:54:42.833+05:00 level=INFO msg="Customers result" rows=3 done=true hasNextPage=false
+time=2025-12-17T16:54:42.833+05:00 level=INFO msg="Sample record (first)" fields="map[email:karine.ruby@example.com firstname:Karine id:gid://shopify/Customer/26652364767601 lastname:Ruby]"
+time=2025-12-17T16:54:42.833+05:00 level=INFO msg="=== All tests passed! ==="
