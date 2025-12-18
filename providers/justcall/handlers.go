@@ -151,32 +151,12 @@ var objectsWithPUTOnly = map[string]bool{ //nolint:gochecknoglobals
 // Uses POST for create, PUT for update. Some objects use special endpoints.
 // Reference: https://developer.justcall.io/reference/introduction
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	var (
-		url    *urlbuilder.URL
-		err    error
-		method = http.MethodPost
-	)
-
-	// Determine the URL path
-	if specialPath, ok := objectsWithSpecialWritePath[params.ObjectName]; ok {
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, specialPath)
-	} else if objectsWithPathID[params.ObjectName] && params.RecordId != "" {
-		// Objects like calls need ID in path: /calls/{id}
-		path, pathErr := metadata.Schemas.FindURLPath(common.ModuleRoot, params.ObjectName)
-		if pathErr != nil {
-			return nil, pathErr
-		}
-
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path, params.RecordId)
-	} else {
-		url, err = c.buildURL(params.ObjectName)
-	}
-
+	url, err := c.buildWriteURL(params)
 	if err != nil {
 		return nil, err
 	}
 
-	// Determine HTTP method
+	method := http.MethodPost
 	if params.RecordId != "" || objectsWithPUTOnly[params.ObjectName] {
 		method = http.MethodPut
 	}
@@ -194,6 +174,27 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	req.Header.Set("Content-Type", "application/json")
 
 	return req, nil
+}
+
+// buildWriteURL constructs the URL for write operations.
+// Handles special paths, path-based IDs, and standard metadata paths.
+func (c *Connector) buildWriteURL(params common.WriteParams) (*urlbuilder.URL, error) {
+	// Check for special write paths (e.g., /texts/new, /contacts/status)
+	if specialPath, ok := objectsWithSpecialWritePath[params.ObjectName]; ok {
+		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, specialPath)
+	}
+
+	// Objects like calls need ID in path: /calls/{id}
+	if objectsWithPathID[params.ObjectName] && params.RecordId != "" {
+		path, err := metadata.Schemas.FindURLPath(common.ModuleRoot, params.ObjectName)
+		if err != nil {
+			return nil, err
+		}
+
+		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path, params.RecordId)
+	}
+
+	return c.buildURL(params.ObjectName)
 }
 
 func (c *Connector) parseWriteResponse(
