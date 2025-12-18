@@ -193,7 +193,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 							"mailbox__c": {
 								DisplayName:  "MailBox",
-								ValueType:    "other",
+								ValueType:    "string",
 								ProviderType: "email",
 								ReadOnly:     goutils.Pointer(false),
 								IsCustom:     goutils.Pointer(true),
@@ -296,7 +296,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 							"photourl": {
 								DisplayName:  "Photo URL",
-								ValueType:    "other",
+								ValueType:    "string",
 								ProviderType: "url",
 								ReadOnly:     goutils.Pointer(true),
 								IsCustom:     goutils.Pointer(false),
