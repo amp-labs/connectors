@@ -218,7 +218,7 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
 
 	// Based on type property map value to Ampersand value type.
 	switch f.Type {
-	case "string", "textarea":
+	case "string", "textarea", "url", "email":
 		valueType = common.ValueTypeString
 	case "boolean":
 		valueType = common.ValueTypeBoolean
