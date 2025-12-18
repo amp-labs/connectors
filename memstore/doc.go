@@ -1,8 +1,8 @@
-// Package deepmock provides an in-memory mock connector with JSON Schema validation.
+// Package memstore provides an in-memory mock connector with JSON Schema validation.
 //
 // # Overview
 //
-// The deepmock connector extends the basic mock connector with the following capabilities:
+// The memstore connector extends the basic mock connector with the following capabilities:
 //   - JSON Schema Draft 2020-12 validation for all data operations
 //   - Custom schema extensions for identifying ID and timestamp fields
 //   - Thread-safe in-memory storage with deep copying to prevent mutations
@@ -11,7 +11,7 @@
 //
 // # Differences from Mock Connector
 //
-// Unlike the standard mock connector, deepmock:
+// Unlike the standard mock connector, memstore:
 //   - Validates all data against JSON schemas before storage
 //   - Automatically handles ID generation and timestamp management
 //   - Provides deep copies of records to ensure data isolation
@@ -53,7 +53,7 @@
 //
 // # Custom Schema Extensions
 //
-// The deepmock connector recognizes two custom schema extensions:
+// The memstore connector recognizes two custom schema extensions:
 //
 //   - x-amp-id-field: Marks a field as the record identifier. This field will be
 //     automatically generated if not provided during creation. Supports string (UUID)
@@ -85,16 +85,16 @@
 //	}
 //
 //	// Create connector with required schemas parameter
-//	connector, err := deepmock.NewConnector(schemas)
+//	connector, err := memstore.NewConnector(schemas)
 //	if err != nil {
 //	    log.Fatal(err)
 //	}
 //
 //	// Create connector with custom HTTP client
 //	customClient := &http.Client{Timeout: 10 * time.Second}
-//	connector, err = deepmock.NewConnector(
+//	connector, err = memstore.NewConnector(
 //	    schemas,
-//	    deepmock.WithClient(customClient),
+//	    memstore.WithClient(customClient),
 //	)
 //	if err != nil {
 //	    log.Fatal(err)
@@ -116,4 +116,4 @@
 //
 //	// Generate random record
 //	randomUser, err := connector.GenerateRandomRecord("user")
-package deepmock
+package memstore

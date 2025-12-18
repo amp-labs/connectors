@@ -1,4 +1,4 @@
-package deepmock
+package memstore
 
 import (
 	"encoding/json"
@@ -45,7 +45,7 @@ type SubscriptionContext struct {
 
 // Storage defines the interface for persisting and retrieving mock API records.
 // It provides a flexible abstraction layer that allows different storage backends
-// (in-memory, file-based, database-backed) to be used with the deepmock connector.
+// (in-memory, file-based, database-backed) to be used with the memstore connector.
 //
 // All implementations must be thread-safe and support concurrent reads and writes.
 // Records are organized by object name (e.g., "contact", "account") and identified

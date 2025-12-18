@@ -1,4 +1,4 @@
-package deepmock
+package memstore
 
 // SchemaConfig holds the object name and raw JSON schema bytes.
 type SchemaConfig struct {

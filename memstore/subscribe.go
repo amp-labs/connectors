@@ -1,4 +1,4 @@
-package deepmock
+package memstore
 
 import (
 	"context"
@@ -14,7 +14,7 @@ import (
 var _ connectors.SubscribeConnector = (*Connector)(nil)
 
 // RegistrationParams contains the parameters for registering a webhook endpoint.
-// For deepmock, this is a simple container for metadata that can be used to
+// For memstore, this is a simple container for metadata that can be used to
 // track registration-specific information.
 type RegistrationParams struct {
 	Metadata map[string]any `json:"metadata"`
@@ -30,7 +30,7 @@ type RegistrationResult struct {
 // This is the first step in the subscription flow, establishing a reference
 // that can be used by subsequent Subscribe calls.
 //
-// For deepmock, this is a lightweight operation that generates a unique
+// For memstore, this is a lightweight operation that generates a unique
 // registration reference and returns success. The metadata from the request
 // is preserved in the result for tracking purposes.
 //
@@ -63,7 +63,7 @@ func (c *Connector) Register(
 // This is typically called when a subscription is no longer needed and should
 // clean up any resources associated with the registration.
 //
-// For deepmock, this validates that the registration result has the correct
+// For memstore, this validates that the registration result has the correct
 // structure but performs no actual cleanup since registrations are stateless.
 //
 // Returns an error if the result is nil or has an invalid type.
@@ -110,7 +110,7 @@ type SubscribeResult struct {
 	Subscription *SubscriptionContext `json:"subscription"`
 }
 
-// Subscribe creates a new subscription for the deepmock connector.
+// Subscribe creates a new subscription for the memstore connector.
 // This registers the subscription with the storage layer so that the notify
 // callback will be invoked when matching storage operations occur.
 //
@@ -346,7 +346,7 @@ func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 }
 
 // VerifyWebhookMessage verifies a webhook message signature.
-// For deepmock, this always returns true since it's a test connector without
+// For memstore, this always returns true since it's a test connector without
 // real webhook security requirements.
 //
 // In a real connector implementation, this would validate:
@@ -358,7 +358,7 @@ func (c *Connector) VerifyWebhookMessage(
 	_ *common.WebhookRequest,
 	_ *common.VerificationParams,
 ) (bool, error) {
-	// Always verify successfully for deepmock - this is a test connector
+	// Always verify successfully for memstore - this is a test connector
 	return true, nil
 }
 

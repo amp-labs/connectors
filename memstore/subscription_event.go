@@ -1,4 +1,4 @@
-package deepmock
+package memstore
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-// SubscriptionEvent implements the common.SubscriptionEvent interface for deepmock test events.
+// SubscriptionEvent implements the common.SubscriptionEvent interface for memstore test events.
 type SubscriptionEvent struct {
 	// EventTypeValue is the type of event (create, update, delete)
 	EventTypeValue common.SubscriptionEventType `mapstructure:"eventType"`
@@ -30,7 +30,7 @@ func (e *SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 }
 
 // RawEventName returns the raw event name from the provider.
-// For deepmock, this is the same as EventType.
+// For memstore, this is the same as EventType.
 func (e *SubscriptionEvent) RawEventName() (string, error) {
 	return string(e.EventTypeValue), nil
 }
@@ -45,7 +45,7 @@ func (e *SubscriptionEvent) ObjectName() (string, error) {
 }
 
 // Workspace returns the workspace identifier.
-// For deepmock, we don't have workspaces, so return empty string.
+// For memstore, we don't have workspaces, so return empty string.
 func (e *SubscriptionEvent) Workspace() (string, error) {
 	return "", nil
 }

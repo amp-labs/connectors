@@ -1,4 +1,4 @@
-package deepmock
+package memstore
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 )
 
-// parameters holds the configuration for the deepmock connector.
+// parameters holds the configuration for the memstore connector.
 type parameters struct {
 	paramsbuilder.AuthClient
 

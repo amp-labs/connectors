@@ -1,10 +1,10 @@
-# DeepMock Connector Examples
+# MemStore Connector Examples
 
-This directory contains practical examples demonstrating the DeepMock connector's capabilities for testing and development purposes.
+This directory contains practical examples demonstrating the MemStore connector's capabilities for testing and development purposes.
 
 ## Overview
 
-The DeepMock connector is a powerful testing utility that provides in-memory CRUD operations with full JSON Schema validation. It's designed for:
+The MemStore connector is a powerful testing utility that provides in-memory CRUD operations with full JSON Schema validation. It's designed for:
 - **Testing integrations** without external dependencies
 - **Rapid prototyping** of connector workflows
 - **Demonstration** of Ampersand connector patterns
@@ -13,7 +13,7 @@ The DeepMock connector is a powerful testing utility that provides in-memory CRU
 ## Directory Structure
 
 ```
-test/deepmock/
+test/memstore/
 ├── README.md              # This file
 ├── connector.go           # Helper with CRM-style sample schemas
 ├── write/
@@ -53,7 +53,7 @@ The examples use realistic CRM-style schemas defined in `connector.go`:
 Demonstrates creating and updating records:
 
 ```bash
-cd test/deepmock/write
+cd test/memstore/write
 go run write.go
 ```
 
@@ -74,7 +74,7 @@ go run write.go
 Demonstrates querying and filtering records:
 
 ```bash
-cd test/deepmock/read
+cd test/memstore/read
 go run read.go
 ```
 
@@ -95,7 +95,7 @@ go run read.go
 Demonstrates schema introspection:
 
 ```bash
-cd test/deepmock/metadata
+cd test/memstore/metadata
 go run metadata.go
 ```
 
@@ -131,7 +131,7 @@ var taskSchemaJSON = []byte(`{
     "required": ["title"]
 }`)
 
-// Add to GetDeepMockConnector:
+// Add to GetMemStoreConnector:
 schemas := map[string][]byte{
     "contacts":  contactSchemaJSON,
     "companies": companySchemaJSON,
@@ -217,7 +217,7 @@ Example:
 ## Key Features Demonstrated
 
 ### 1. Thread-Safe Operations
-All examples can be run concurrently. The DeepMock connector uses internal locking to ensure data consistency.
+All examples can be run concurrently. The MemStore connector uses internal locking to ensure data consistency.
 
 ### 2. Schema Validation
 Every write operation validates data against the JSON Schema, ensuring:
@@ -259,7 +259,7 @@ Incremental reads using timestamp fields:
 ### Integration Testing
 ```go
 func TestSalesforceSync(t *testing.T) {
-    conn := deepmocktest.GetDeepMockConnector(ctx)
+    conn := memstoretest.GetMemStoreConnector(ctx)
 
     // Create test data
     contact := conn.GenerateRandomRecord("contacts")
@@ -274,7 +274,7 @@ func TestSalesforceSync(t *testing.T) {
 ```
 
 ### Development Workflow
-Use DeepMock to develop connector features without external dependencies:
+Use MemStore to develop connector features without external dependencies:
 1. Define schema matching target provider
 2. Generate test data with `GenerateRandomRecord()`
 3. Implement and test your logic
@@ -309,11 +309,11 @@ _, err := conn.Write(ctx, common.WriteParams{
 
 - **JSON Schema Documentation**: https://json-schema.org/draft/2020-12/json-schema-validation.html
 - **Ampersand Connector Interface**: See `common/ReadConnector`, `common/WriteConnector`
-- **DeepMock Implementation**: See `deepmock/connector.go` for full implementation details
+- **MemStore Implementation**: See `memstore/connector.go` for full implementation details
 
 ## Support
 
 For questions or issues:
-- Review the unit tests in `deepmock/connector_test.go` for comprehensive examples
-- Check the DeepMock connector implementation in `deepmock/`
+- Review the unit tests in `memstore/connector_test.go` for comprehensive examples
+- Check the MemStore connector implementation in `memstore/`
 - Refer to other connector test examples in `test/`
