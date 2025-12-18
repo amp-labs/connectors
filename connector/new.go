@@ -30,9 +30,11 @@ import (
 	"github.com/amp-labs/connectors/providers/chargebee"
 	"github.com/amp-labs/connectors/providers/chilipiper"
 	"github.com/amp-labs/connectors/providers/chorus"
+	"github.com/amp-labs/connectors/providers/ciscowebex"
 	"github.com/amp-labs/connectors/providers/claricopilot"
 	"github.com/amp-labs/connectors/providers/clickup"
 	"github.com/amp-labs/connectors/providers/closecrm"
+	"github.com/amp-labs/connectors/providers/cloudtalk"
 	"github.com/amp-labs/connectors/providers/constantcontact"
 	"github.com/amp-labs/connectors/providers/copper"
 	"github.com/amp-labs/connectors/providers/customerapp"
@@ -122,10 +124,10 @@ func New(provider providers.Provider, params common.ConnectorParams) (connectors
 }
 
 var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nolint:gochecknoglobals
-	providers.AcuityScheduling:        wrapper(newAcuitySchedulingConnector),
-	providers.Aircall:                 wrapper(newAircallConnector),
 	providers.AWS:                     wrapper(newAWSConnector),
+	providers.AcuityScheduling:        wrapper(newAcuitySchedulingConnector),
 	providers.Aha:                     wrapper(newAhaConnector),
+	providers.Aircall:                 wrapper(newAircallConnector),
 	providers.Amplitude:               wrapper(newAmplitudeConnector),
 	providers.Apollo:                  wrapper(newApolloConnector),
 	providers.Asana:                   wrapper(newAsanaConnector),
@@ -140,15 +142,17 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Braze:                   wrapper(newBrazeConnector),
 	providers.Breakcold:               wrapper(newBreakcoldConnector),
 	providers.Brevo:                   wrapper(newBrevoConnector),
+	providers.Calendly:                wrapper(newCalendlyConnector),
 	providers.CampaignMonitor:         wrapper(newCampaignMonitorConnector),
 	providers.Capsule:                 wrapper(newCapsuleConnector),
-	providers.Calendly:                wrapper(newCalendlyConnector),
 	providers.Chargebee:               wrapper(newChargebeeConnector),
 	providers.ChiliPiper:              wrapper(newChiliPiperConnector),
 	providers.Chorus:                  wrapper(newChorusConnector),
+	providers.CiscoWebex:              wrapper(newCiscoWebexConnector),
 	providers.ClariCopilot:            wrapper(newClariCopilotConnector),
 	providers.ClickUp:                 wrapper(newClickUpConnector),
 	providers.Close:                   wrapper(newCloseConnector),
+	providers.CloudTalk:               wrapper(newCloudTalkConnector),
 	providers.ConstantContact:         wrapper(newConstantContactConnector),
 	providers.Copper:                  wrapper(newCopperConnector),
 	providers.CustomerJourneysApp:     wrapper(newCustomerJourneysAppConnector),
@@ -197,8 +201,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Monday:                  wrapper(newMondayConnector),
 	providers.Netsuite:                wrapper(newNetsuiteConnector),
 	providers.Nutshell:                wrapper(newNutshellConnector),
-	providers.Outreach:                wrapper(newOutreachConnector),
 	providers.Outplay:                 wrapper(newOutplayConnector),
+	providers.Outreach:                wrapper(newOutreachConnector),
 	providers.Paddle:                  wrapper(newPaddleConnector),
 	providers.Pinterest:               wrapper(newPinterestConnector),
 	providers.Pipedrive:               wrapper(newPipedriveConnector),
@@ -431,6 +435,12 @@ func newCloseConnector(
 	return closecrm.NewConnector(
 		closecrm.WithAuthenticatedClient(params.AuthenticatedClient),
 	)
+}
+
+func newCloudTalkConnector(
+	params common.ConnectorParams,
+) (*cloudtalk.Connector, error) {
+	return cloudtalk.NewConnector(params)
 }
 
 func newKlaviyoConnector(
@@ -863,6 +873,11 @@ func newJobberConnector(params common.ConnectorParams,
 func newChorusConnector(params common.ConnectorParams,
 ) (*chorus.Connector, error) {
 	return chorus.NewConnector(params)
+}
+
+func newCiscoWebexConnector(params common.ConnectorParams,
+) (*ciscowebex.Connector, error) {
+	return ciscowebex.NewConnector(params)
 }
 
 func newChargebeeConnector(params common.ConnectorParams,
