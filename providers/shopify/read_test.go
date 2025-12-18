@@ -21,6 +21,10 @@ func TestRead(t *testing.T) {
 	responseOrders := testutils.DataFromFile(t, "read/orders.json")
 	responseErrorInvalidQuery := testutils.DataFromFile(t, "read/error-invalid-query.json")
 
+	requestProducts := testutils.DataFromFile(t, "read/request/products.json")
+	requestCustomers := testutils.DataFromFile(t, "read/request/customers.json")
+	requestOrders := testutils.DataFromFile(t, "read/request/orders.json")
+
 	tests := []testroutines.Read{
 		{
 			Name:         "Read object must be included",
@@ -49,8 +53,11 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{ObjectName: "products", Fields: connectors.Fields("id", "title")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/admin/api/2025-01/graphql.json"),
-				Then:  mockserver.Response(http.StatusOK, responseProducts),
+				If: mockcond.And{
+					mockcond.Path("/admin/api/2025-01/graphql.json"),
+					mockcond.Body(string(requestProducts)),
+				},
+				Then: mockserver.Response(http.StatusOK, responseProducts),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -91,8 +98,11 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{ObjectName: "products", Fields: connectors.Fields("id", "title")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/admin/api/2025-01/graphql.json"),
-				Then:  mockserver.Response(http.StatusOK, responseProductsWithNextPage),
+				If: mockcond.And{
+					mockcond.Path("/admin/api/2025-01/graphql.json"),
+					mockcond.Body(string(requestProducts)),
+				},
+				Then: mockserver.Response(http.StatusOK, responseProductsWithNextPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -121,8 +131,11 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{ObjectName: "customers", Fields: connectors.Fields("id", "firstname", "displayname")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/admin/api/2025-01/graphql.json"),
-				Then:  mockserver.Response(http.StatusOK, responseCustomers),
+				If: mockcond.And{
+					mockcond.Path("/admin/api/2025-01/graphql.json"),
+					mockcond.Body(string(requestCustomers)),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCustomers),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -152,8 +165,11 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{ObjectName: "orders", Fields: connectors.Fields("id", "name")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/admin/api/2025-01/graphql.json"),
-				Then:  mockserver.Response(http.StatusOK, responseOrders),
+				If: mockcond.And{
+					mockcond.Path("/admin/api/2025-01/graphql.json"),
+					mockcond.Body(string(requestOrders)),
+				},
+				Then: mockserver.Response(http.StatusOK, responseOrders),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
