@@ -10,8 +10,8 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/deepmock"
-	deepmocktest "github.com/amp-labs/connectors/test/deepmock"
+	"github.com/amp-labs/connectors/memstore"
+	memstoretest "github.com/amp-labs/connectors/test/memstore"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -24,9 +24,9 @@ func main() {
 	defer cancel()
 
 	// Get configured connector
-	conn := deepmocktest.GetDeepMockConnector(ctx)
+	conn := memstoretest.GetMemStoreConnector(ctx)
 
-	slog.Info("=== DeepMock Write Operations Examples ===")
+	slog.Info("=== MemStore Write Operations Examples ===")
 	fmt.Println()
 
 	// Run test functions
@@ -40,7 +40,7 @@ func main() {
 }
 
 // testCreateContact demonstrates creating a contact using GenerateRandomRecord
-func testCreateContact(ctx context.Context, conn *deepmock.Connector) {
+func testCreateContact(ctx context.Context, conn *memstore.Connector) {
 	slog.Info("Creating contact using GenerateRandomRecord")
 
 	// Generate random contact data
@@ -66,7 +66,7 @@ func testCreateContact(ctx context.Context, conn *deepmock.Connector) {
 }
 
 // testCreateCompany demonstrates creating a company with explicit field values
-func testCreateCompany(ctx context.Context, conn *deepmock.Connector) {
+func testCreateCompany(ctx context.Context, conn *memstore.Connector) {
 	slog.Info("Creating company with explicit field values")
 
 	companyData := map[string]any{
@@ -91,7 +91,7 @@ func testCreateCompany(ctx context.Context, conn *deepmock.Connector) {
 }
 
 // testCreateDeal demonstrates creating a deal with relationships to contacts and companies
-func testCreateDeal(ctx context.Context, conn *deepmock.Connector) {
+func testCreateDeal(ctx context.Context, conn *memstore.Connector) {
 	slog.Info("Creating deal with relationships")
 
 	// First, create a contact and company to reference
@@ -152,7 +152,7 @@ func testCreateDeal(ctx context.Context, conn *deepmock.Connector) {
 }
 
 // testUpdateContact demonstrates updating an existing contact
-func testUpdateContact(ctx context.Context, conn *deepmock.Connector) {
+func testUpdateContact(ctx context.Context, conn *memstore.Connector) {
 	slog.Info("Creating and then updating a contact")
 
 	// Create initial contact
@@ -198,7 +198,7 @@ func testUpdateContact(ctx context.Context, conn *deepmock.Connector) {
 }
 
 // testBulkCreate demonstrates creating multiple records in a loop
-func testBulkCreate(ctx context.Context, conn *deepmock.Connector) {
+func testBulkCreate(ctx context.Context, conn *memstore.Connector) {
 	slog.Info("Creating multiple contacts in bulk")
 
 	contacts := []map[string]any{

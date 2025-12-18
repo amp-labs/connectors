@@ -1,4 +1,4 @@
-package deepmock
+package memstore
 
 import (
 	"errors"

@@ -1,4 +1,4 @@
-package deepmock
+package memstore
 
 import (
 	"context"
@@ -108,7 +108,7 @@ var (
 //   }
 //
 //   // Create connector with struct schemas
-//   conn, err := deepmock.NewConnector(deepmock.WithStructSchemas(map[string]interface{}{
+//   conn, err := memstore.NewConnector(memstore.WithStructSchemas(map[string]interface{}{
 //       "users": &User{},
 //   }))
 //

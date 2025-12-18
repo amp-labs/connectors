@@ -9,8 +9,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors/deepmock"
-	deepmocktest "github.com/amp-labs/connectors/test/deepmock"
+	"github.com/amp-labs/connectors/memstore"
+	memstoretest "github.com/amp-labs/connectors/test/memstore"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -23,9 +23,9 @@ func main() {
 	defer cancel()
 
 	// Get configured connector
-	conn := deepmocktest.GetDeepMockConnector(ctx)
+	conn := memstoretest.GetMemStoreConnector(ctx)
 
-	slog.Info("=== DeepMock Metadata Operations Examples ===")
+	slog.Info("=== MemStore Metadata Operations Examples ===")
 	fmt.Println()
 
 	// Run test functions
@@ -37,7 +37,7 @@ func main() {
 }
 
 // testListObjectMetadata demonstrates getting metadata for all configured objects
-func testListObjectMetadata(ctx context.Context, conn *deepmock.Connector) {
+func testListObjectMetadata(ctx context.Context, conn *memstore.Connector) {
 	slog.Info("Listing metadata for all objects")
 
 	objectNames := []string{"contacts", "companies", "deals"}
@@ -69,7 +69,7 @@ func testListObjectMetadata(ctx context.Context, conn *deepmock.Connector) {
 }
 
 // testInspectFieldMetadata demonstrates detailed inspection of field metadata
-func testInspectFieldMetadata(ctx context.Context, conn *deepmock.Connector) {
+func testInspectFieldMetadata(ctx context.Context, conn *memstore.Connector) {
 	slog.Info("Inspecting detailed field metadata")
 
 	// Get metadata for contacts
@@ -166,7 +166,7 @@ func testInspectFieldMetadata(ctx context.Context, conn *deepmock.Connector) {
 }
 
 // testSchemaValidation demonstrates how metadata reflects schema constraints
-func testSchemaValidation(ctx context.Context, conn *deepmock.Connector) {
+func testSchemaValidation(ctx context.Context, conn *memstore.Connector) {
 	slog.Info("Demonstrating schema validation through metadata")
 
 	result, err := conn.ListObjectMetadata(ctx, []string{"contacts", "companies", "deals"})

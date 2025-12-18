@@ -1,16 +1,16 @@
-package deepmock
+package memstore
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 
-	"github.com/amp-labs/connectors/deepmock"
+	"github.com/amp-labs/connectors/memstore"
 )
 
 // mustParseSchema is a helper function to parse JSON schema into InputSchema
-func mustParseSchema(jsonSchema string) *deepmock.InputSchema {
-	var schema deepmock.InputSchema
+func mustParseSchema(jsonSchema string) *memstore.InputSchema {
+	var schema memstore.InputSchema
 	if err := json.Unmarshal([]byte(jsonSchema), &schema); err != nil {
 		panic(fmt.Sprintf("failed to parse schema: %v", err))
 	}
@@ -155,7 +155,7 @@ var dealSchemaJSON = mustParseSchema(`{
 	"required": ["title"]
 }`)
 
-// GetDeepMockConnector returns a configured deepmock connector with sample CRM schemas.
+// GetMemStoreConnector returns a configured memstore connector with sample CRM schemas.
 // This connector can be used for testing and demonstration purposes.
 //
 // The connector includes three object types:
@@ -165,20 +165,20 @@ var dealSchemaJSON = mustParseSchema(`{
 //
 // Example usage:
 //
-//	conn := GetDeepMockConnector(ctx)
+//	conn := GetMemStoreConnector(ctx)
 //	record := conn.GenerateRandomRecord("contacts")
 //	result, err := conn.Write(ctx, common.WriteParams{
 //	    ObjectName: "contacts",
 //	    RecordData: record,
 //	})
-func GetDeepMockConnector(_ context.Context) *deepmock.Connector {
-	schemas := map[string]*deepmock.InputSchema{
+func GetMemStoreConnector(_ context.Context) *memstore.Connector {
+	schemas := map[string]*memstore.InputSchema{
 		"contacts":  contactSchemaJSON,
 		"companies": companySchemaJSON,
 		"deals":     dealSchemaJSON,
 	}
 
-	conn, err := deepmock.NewConnector(deepmock.WithSchemas(schemas))
+	conn, err := memstore.NewConnector(memstore.WithSchemas(schemas))
 	if err != nil {
 		panic(err)
 	}

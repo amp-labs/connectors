@@ -1,4 +1,4 @@
-package deepmock
+package memstore
 
 import (
 	"encoding/json"
@@ -351,7 +351,7 @@ func ParseSchemas(rawSchemas map[string][]byte) (SchemaRegistry, error) {
 
 	for objectName, rawSchema := range rawSchemas {
 		// Compile the schema with a unique URI
-		uri := "http://deepmock.memory.store/" + objectName
+		uri := "http://memory.store/" + objectName
 
 		schema, err := compiler.Compile(rawSchema, uri)
 		if err != nil {

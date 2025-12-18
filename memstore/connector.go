@@ -1,4 +1,4 @@
-package deepmock
+package memstore
 
 import (
 	"context"
@@ -70,7 +70,7 @@ var (
 	_ connectors.ConfigurationConnector     = (*Connector)(nil)
 )
 
-// NewConnector creates a new deepmock connector instance.
+// NewConnector creates a new memstore connector instance.
 //
 //nolint:cyclop // Complexity inherent to initialization logic with multiple configuration paths
 func NewConnector(opts ...Option) (*Connector, error) {
@@ -123,7 +123,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 
 // String returns the connector name.
 func (c *Connector) String() string {
-	return "deepmock"
+	return "memstore"
 }
 
 // JSONHTTPClient returns the JSON HTTP client.
@@ -138,7 +138,7 @@ func (c *Connector) HTTPClient() *common.HTTPClient {
 
 // Provider returns the provider information.
 func (c *Connector) Provider() providers.Provider {
-	return providers.DeepMock
+	return providers.MemStore
 }
 
 // Read retrieves records for an object with pagination and filtering.

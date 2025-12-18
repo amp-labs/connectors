@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/deepmock"
 	"github.com/amp-labs/connectors/internal/datautils"
-	deepmocktest "github.com/amp-labs/connectors/test/deepmock"
+	"github.com/amp-labs/connectors/memstore"
+	memstoretest "github.com/amp-labs/connectors/test/memstore"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
@@ -27,12 +27,12 @@ func main() {
 	defer cancel()
 
 	// Get configured connector
-	conn := deepmocktest.GetDeepMockConnector(ctx)
+	conn := memstoretest.GetMemStoreConnector(ctx)
 
 	// Create sample data for testing
 	setupSampleData(ctx, conn)
 
-	slog.Info("=== DeepMock Read Operations Examples ===")
+	slog.Info("=== MemStore Read Operations Examples ===")
 	fmt.Println()
 
 	// Run test functions
@@ -45,7 +45,7 @@ func main() {
 }
 
 // setupSampleData creates sample records for testing read operations
-func setupSampleData(ctx context.Context, conn *deepmock.Connector) {
+func setupSampleData(ctx context.Context, conn *memstore.Connector) {
 	slog.Info("Setting up sample data for read operations")
 
 	// Create 25 contacts for pagination testing
@@ -136,7 +136,7 @@ func setupSampleData(ctx context.Context, conn *deepmock.Connector) {
 }
 
 // testReadContacts demonstrates reading all contacts with field filtering
-func testReadContacts(ctx context.Context, conn *deepmock.Connector) {
+func testReadContacts(ctx context.Context, conn *memstore.Connector) {
 	slog.Info("Reading contacts with field filtering")
 
 	result, err := conn.Read(ctx, common.ReadParams{
@@ -163,7 +163,7 @@ func testReadContacts(ctx context.Context, conn *deepmock.Connector) {
 }
 
 // testReadWithPagination demonstrates pagination with PageSize and NextPage token
-func testReadWithPagination(ctx context.Context, conn *deepmock.Connector) {
+func testReadWithPagination(ctx context.Context, conn *memstore.Connector) {
 	slog.Info("Reading contacts with pagination (PageSize=10)")
 
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
@@ -176,7 +176,7 @@ func testReadWithPagination(ctx context.Context, conn *deepmock.Connector) {
 }
 
 // testReadWithTimeFilter demonstrates incremental reads using Since parameter
-func testReadWithTimeFilter(ctx context.Context, conn *deepmock.Connector) {
+func testReadWithTimeFilter(ctx context.Context, conn *memstore.Connector) {
 	slog.Info("Reading deals with time filtering")
 
 	baseTime := time.Now().Unix()
@@ -219,7 +219,7 @@ func testReadWithTimeFilter(ctx context.Context, conn *deepmock.Connector) {
 }
 
 // testReadMultipleObjects demonstrates reading from different object types
-func testReadMultipleObjects(ctx context.Context, conn *deepmock.Connector) {
+func testReadMultipleObjects(ctx context.Context, conn *memstore.Connector) {
 	slog.Info("Reading from multiple object types")
 
 	// Read contacts

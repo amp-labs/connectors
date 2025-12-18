@@ -1,6 +1,6 @@
-package deepmock
+package memstore
 
-// This file defines error values that can be returned by the deepmock connector.
+// This file defines error values that can be returned by the memstore connector.
 //
 // These errors are organized into categories:
 //   - Schema errors: Issues with JSON schema definitions and validation
