@@ -47,18 +47,18 @@ func TestSoqlBuilderWithIDs(t *testing.T) {
 func TestSoqlBuilderWithParentAssociation(t *testing.T) {
 	t.Parallel()
 
-	// Test that AccountId is added to SOQL when account is requested as association
+	// Test that AccountId is added to SOQL when accounts is requested as association
 	soql := makeSOQL(common.ReadParams{
 		ObjectName:        "opportunity",
 		Fields:            datautils.NewSet("Name", "Amount"),
-		AssociatedObjects: []string{"account"},
+		AssociatedObjects: []string{"accounts"},
 	})
 
 	output := soql.String()
 	// AccountId should be included in the SELECT clause
 	// Note: field order may vary, so we just check for presence
 	assert.Assert(t, containsFieldInSOQL(output, "AccountId"),
-		"AccountId should be in SOQL query when account is requested as association")
+		"AccountId should be in SOQL query when accounts is requested as association")
 	assert.Assert(t, containsFieldInSOQL(output, "Name"), "Name should be in SOQL query")
 	assert.Assert(t, containsFieldInSOQL(output, "Amount"), "Amount should be in SOQL query")
 	assert.Assert(t, strings.Contains(output, "FROM opportunity"), "FROM clause should be present")
