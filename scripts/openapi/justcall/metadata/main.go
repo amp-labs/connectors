@@ -26,10 +26,8 @@ var ignoreEndpoints = []string{ //nolint:gochecknoglobals
 	// Utility endpoints
 	"/v2.1/phone-numbers/detect-spam",
 	"/v2.1/whatsapp/messages/check-reply",
-	// Analytics endpoints
+	// Analytics endpoints (account-level only - agent/number kept for users with date params)
 	"/v2.1/calls/analytics/account",
-	"/v2.1/calls/analytics/agents",
-	"/v2.1/calls/analytics/numbers",
 	"/v2.1/sales_dialer/analytics",
 	// Scheduling endpoints
 	"/v2.1/appointments/available-slots",
