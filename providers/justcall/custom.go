@@ -3,9 +3,9 @@ package justcall
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -79,8 +79,8 @@ type customFieldDefinition struct {
 
 // customFieldOptionValue represents an option value for enum/dropdown fields.
 type customFieldOptionValue struct {
-	ID    int    `json:"id,omitempty"`
-	Value string `json:"value"`
+	ID    naming.Text `json:"id,omitempty"`
+	Value string      `json:"value"`
 }
 
 // getValueType maps JustCall field types to common.ValueType.
@@ -112,8 +112,8 @@ func (f customFieldDefinition) getValues() common.FieldValues {
 	values := make(common.FieldValues, len(f.Options))
 	for i, option := range f.Options {
 		value := option.Value
-		if option.ID != 0 {
-			value = fmt.Sprintf("%d", option.ID)
+		if len(option.ID) != 0 {
+			value = option.ID.String()
 		}
 
 		values[i] = common.FieldValue{
