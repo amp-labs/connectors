@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log/slog"
-	"os"
 	"os/signal"
 	"syscall"
 	"time"
@@ -12,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/shopify"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
 func main() {
@@ -23,77 +23,50 @@ func main() {
 
 	conn := shopify.GetShopifyConnector(ctx)
 
-	// Test reading products
-	slog.Info("Reading products...")
+	// Test 1: Read all products with pagination
+	slog.Info("=== Test 1: Reading all products (with pagination) ===")
 
-	res, err := conn.Read(ctx, common.ReadParams{
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "products",
 		Fields:     connectors.Fields("id", "title", "handle", "status", "updatedAt"),
 	})
-	if err != nil {
-		utils.Fail("error reading products from Shopify", "error", err)
-	}
 
-	slog.Info("Products result", "rows", res.Rows, "done", res.Done)
-	utils.DumpJSON(res, os.Stdout)
+	// Test 2: Read products with small page size to verify pagination
+	slog.Info("=== Test 2: Reading products with PageSize=2 ===")
 
-	// Test reading products with pagination
-	slog.Info("Reading products with PageSize=2...")
-
-	res, err = conn.Read(ctx, common.ReadParams{
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "products",
 		Fields:     connectors.Fields("id", "title"),
 		PageSize:   2,
 	})
-	if err != nil {
-		utils.Fail("error reading products with pagination", "error", err)
-	}
 
-	slog.Info("Products page 1", "rows", res.Rows, "done", res.Done, "hasNextPage", res.NextPage != "")
-	utils.DumpJSON(res, os.Stdout)
-
-	// Test reading products with Since filter
-	slog.Info("Reading products with Since filter...")
+	// Test 3: Read products with Since filter (incremental sync)
+	slog.Info("=== Test 3: Reading products with Since filter (incremental sync) ===")
 
 	since := time.Now().AddDate(0, 0, -30)
+	slog.Info("Filtering products updated since", "since", since.Format(time.RFC3339))
 
-	res, err = conn.Read(ctx, common.ReadParams{
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "products",
 		Fields:     connectors.Fields("id", "title", "updatedAt"),
 		Since:      since,
 	})
-	if err != nil {
-		utils.Fail("error reading products with Since filter", "error", err)
-	}
 
-	slog.Info("Products since", "since", since.Format(time.RFC3339), "rows", res.Rows)
-	utils.DumpJSON(res, os.Stdout)
+	// Test 4: Read all orders
+	slog.Info("=== Test 4: Reading all orders ===")
 
-	// Test reading orders
-	slog.Info("Reading orders...")
-
-	res, err = conn.Read(ctx, common.ReadParams{
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "orders",
 		Fields:     connectors.Fields("id", "name", "email", "updatedAt"),
 	})
-	if err != nil {
-		utils.Fail("error reading orders from Shopify", "error", err)
-	}
 
-	slog.Info("Orders result", "rows", res.Rows, "done", res.Done)
-	utils.DumpJSON(res, os.Stdout)
+	// Test 5: Read all customers
+	slog.Info("=== Test 5: Reading all customers ===")
 
-	// Test reading customers
-	slog.Info("Reading customers...")
-
-	res, err = conn.Read(ctx, common.ReadParams{
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "customers",
 		Fields:     connectors.Fields("id", "firstName", "lastName", "email"),
 	})
-	if err != nil {
-		utils.Fail("error reading customers from Shopify", "error", err)
-	}
 
-	slog.Info("Customers result", "rows", res.Rows, "done", res.Done)
-	utils.DumpJSON(res, os.Stdout)
+	slog.Info("=== All tests completed successfully ===")
 }
