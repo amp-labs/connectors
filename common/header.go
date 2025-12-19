@@ -70,7 +70,7 @@ func WithHeaderUnauthorizedHandler(
 // This is useful for handling the case where the server has invalidated the token, and the client
 // needs to forcefully refresh. It's optional.
 func WithHeaderIsUnauthorizedHandler(
-	f func(rsp *http.Response) bool,
+	f func(rsp *http.Response) (bool, error),
 ) HeaderAuthClientOption {
 	return func(params *headerClientParams) {
 		params.isUnauthorized = f
@@ -96,7 +96,7 @@ type headerClientParams struct {
 	dynamicHeaders DynamicHeadersGenerator
 	debug          func(req *http.Request, rsp *http.Response)
 	unauthorized   func(hdrs []Header, req *http.Request, rsp *http.Response) (*http.Response, error)
-	isUnauthorized func(rsp *http.Response) bool
+	isUnauthorized func(rsp *http.Response) (bool, error)
 }
 
 func (p *headerClientParams) prepare() *headerClientParams {
@@ -125,7 +125,7 @@ type headerAuthClient struct {
 	dynamicHeaders DynamicHeadersGenerator
 	debug          func(req *http.Request, rsp *http.Response)
 	unauthorized   func(hdrs []Header, req *http.Request, rsp *http.Response) (*http.Response, error)
-	isUnauthorized func(rsp *http.Response) bool
+	isUnauthorized func(rsp *http.Response) (bool, error)
 }
 
 func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
@@ -168,12 +168,12 @@ func (c *headerAuthClient) CloseIdleConnections() {
 	c.client.CloseIdleConnections()
 }
 
-func (c *headerAuthClient) isUnauthorizedResponse(rsp *http.Response) bool {
+func (c *headerAuthClient) isUnauthorizedResponse(rsp *http.Response) (bool, error) {
 	if c.isUnauthorized != nil {
 		return c.isUnauthorized(rsp)
 	}
 
-	return rsp.StatusCode == http.StatusUnauthorized
+	return rsp.StatusCode == http.StatusUnauthorized, nil
 }
 
 // handleUnauthorizedResponse handles 401 responses or custom unauthorized conditions.
@@ -181,7 +181,12 @@ func (c *headerAuthClient) handleUnauthorizedResponse(
 	req *http.Request,
 	rsp *http.Response,
 ) (*http.Response, error) {
-	if c.isUnauthorizedResponse(rsp) {
+	unauthorized, err := c.isUnauthorizedResponse(rsp)
+	if err != nil {
+		return nil, err
+	}
+
+	if unauthorized {
 		if c.unauthorized != nil {
 			return c.unauthorized(c.headers, req, rsp)
 		}

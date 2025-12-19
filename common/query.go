@@ -114,7 +114,7 @@ func WithQueryParamUnauthorizedHandler(
 // This is useful for handling the case where the server has invalidated the token, and the client
 // needs to forcefully refresh. It's optional.
 func WithQueryParamIsUnauthorizedHandler(
-	f func(rsp *http.Response) bool,
+	f func(rsp *http.Response) (bool, error),
 ) QueryParamAuthClientOption {
 	return func(params *queryParamClientParams) {
 		params.isUnauthorized = f
@@ -150,7 +150,7 @@ type queryParamClientParams struct {
 	params         []QueryParam
 	debug          func(req *http.Request, rsp *http.Response)
 	unauthorized   func(params []QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error)
-	isUnauthorized func(rsp *http.Response) bool
+	isUnauthorized func(rsp *http.Response) (bool, error)
 }
 
 func (p *queryParamClientParams) prepare() *queryParamClientParams {
@@ -180,7 +180,7 @@ type queryParamAuthClient struct {
 	params         QueryParams
 	debug          func(req *http.Request, rsp *http.Response)
 	unauthorized   func(params []QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error)
-	isUnauthorized func(rsp *http.Response) bool
+	isUnauthorized func(rsp *http.Response) (bool, error)
 }
 
 func (c *queryParamAuthClient) Do(req *http.Request) (*http.Response, error) {
@@ -211,12 +211,12 @@ func (c *queryParamAuthClient) CloseIdleConnections() {
 	c.client.CloseIdleConnections()
 }
 
-func (c *queryParamAuthClient) isUnauthorizedResponse(rsp *http.Response) bool {
+func (c *queryParamAuthClient) isUnauthorizedResponse(rsp *http.Response) (bool, error) {
 	if c.isUnauthorized != nil {
 		return c.isUnauthorized(rsp)
 	}
 
-	return rsp.StatusCode == http.StatusUnauthorized
+	return rsp.StatusCode == http.StatusUnauthorized, nil
 }
 
 // handleUnauthorizedResponse handles 401 responses or custom unauthorized conditions.
@@ -224,7 +224,12 @@ func (c *queryParamAuthClient) handleUnauthorizedResponse(
 	req *http.Request,
 	rsp *http.Response,
 ) (*http.Response, error) {
-	if c.isUnauthorizedResponse(rsp) {
+	isUnauthorized, err := c.isUnauthorizedResponse(rsp)
+	if err != nil {
+		return nil, err
+	}
+
+	if isUnauthorized {
 		if c.unauthorized != nil {
 			return c.unauthorized(c.params, req, rsp)
 		}
