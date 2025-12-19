@@ -231,3 +231,188 @@ func buildGraphQLVariables(params common.ReadParams) map[string]any {
 
 	return variables
 }
+
+// buildWriteRequest constructs a GraphQL mutation request for creating or updating objects.
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	url, err := c.getDiscoveryEndpoint()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build URL: %w", err)
+	}
+
+	mutationName := getMutationName(params)
+
+	mutation, err := getMutation(mutationName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get mutation for %s: %w", mutationName, err)
+	}
+
+	// Build request body with mutation and variables
+	requestBody := map[string]any{
+		"query": mutation,
+		"variables": map[string]any{
+			"input": params.RecordData,
+		},
+	}
+
+	// For updates, inject the record ID into variables
+	injectRecordID(params, requestBody)
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
+}
+
+// parseWriteResponse parses the GraphQL mutation response and extracts the created/updated record.
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	if _, ok := response.Body(); !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	// Check for GraphQL userErrors in the response
+	writeResp, err := common.UnmarshalJSON[WriteResponse](response)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse write response: %w", err)
+	}
+
+	// Check for userErrors based on the mutation type
+	mutationKey := getMutationKey(params)
+	if mutationData, exists := writeResp.Data[mutationKey]; exists {
+		// Parse userErrors from the mutation data
+		if userErrors := parseUserErrors(mutationData); len(userErrors) > 0 {
+			var errMsgs []string
+			for _, ue := range userErrors {
+				errMsgs = append(errMsgs, ue.Message)
+			}
+
+			return nil, fmt.Errorf("%w: %s", common.ErrBadRequest, strings.Join(errMsgs, "; "))
+		}
+
+		// Extract record ID and object data from the response
+		recordID, objectData := extractRecordData(mutationData, params.ObjectName)
+
+		return &common.WriteResult{
+			Success:  true,
+			RecordId: recordID,
+			Data:     objectData,
+		}, nil
+	}
+
+	// Fallback: return success without record ID
+	return &common.WriteResult{
+		Success: true,
+	}, nil
+}
+
+// getMutationName determines the mutation name based on object and operation type.
+// If RecordId is present, it's an update; otherwise, it's a create.
+func getMutationName(params common.WriteParams) string {
+	// Convert plural object name to singular for mutation name
+	// e.g., "customers" -> "customer"
+	singular := naming.NewSingularString(params.ObjectName).String()
+
+	if params.RecordId != "" {
+		return singular + "Update"
+	}
+
+	return singular + "Create"
+}
+
+// getMutationKey returns the GraphQL response key for the mutation.
+// e.g., "customerCreate" or "customerUpdate"
+func getMutationKey(params common.WriteParams) string {
+	singular := naming.NewSingularString(params.ObjectName).String()
+
+	if params.RecordId != "" {
+		return singular + "Update"
+	}
+
+	return singular + "Create"
+}
+
+// getMutation loads the GraphQL mutation from the embedded filesystem.
+func getMutation(mutationName string) (string, error) {
+	filePath := fmt.Sprintf("graphql/mutation_%s.graphql", mutationName)
+
+	mutationBytes, err := queryFS.ReadFile(filePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to read mutation file %s: %w", filePath, err)
+	}
+
+	return string(mutationBytes), nil
+}
+
+// injectRecordID adds the record ID to the request for update operations.
+// Shopify update mutations typically require the ID as a separate variable or in the input.
+func injectRecordID(params common.WriteParams, requestBody map[string]any) {
+	if params.RecordId == "" {
+		return
+	}
+
+	vars, ok := requestBody["variables"].(map[string]any)
+	if !ok {
+		return
+	}
+
+	// For Shopify updates, the ID is typically passed as a separate "id" variable
+	vars["id"] = params.RecordId
+}
+
+// parseUserErrors extracts userErrors from the mutation response.
+func parseUserErrors(mutationData map[string]any) []UserError {
+	userErrorsRaw, ok := mutationData["userErrors"].([]any)
+	if !ok || len(userErrorsRaw) == 0 {
+		return nil
+	}
+
+	var userErrors []UserError
+
+	for _, ueRaw := range userErrorsRaw {
+		ue, ok := ueRaw.(map[string]any)
+		if !ok {
+			continue
+		}
+
+		message, _ := ue["message"].(string)
+		if message != "" {
+			userErrors = append(userErrors, UserError{Message: message})
+		}
+	}
+
+	return userErrors
+}
+
+// extractRecordData extracts the record ID and object data from the mutation response.
+func extractRecordData(mutationData map[string]any, objectName string) (string, map[string]any) {
+	// Get the singular object name for the response key
+	singular := naming.NewSingularString(objectName).String()
+
+	// The response contains the object under its singular name (e.g., "customer")
+	obj, ok := mutationData[singular].(map[string]any)
+	if !ok {
+		return "", nil
+	}
+
+	recordID := ""
+	if id, ok := obj["id"].(string); ok {
+		recordID = id
+	}
+
+	return recordID, obj
+}
