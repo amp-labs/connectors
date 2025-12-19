@@ -1,0 +1,23 @@
+{
+  "data": {
+    "customerUpdate": {
+      "userErrors": [],
+      "customer": {
+        "id": "gid://shopify/Customer/1018520244",
+        "email": "steve.lastnameson@example.com",
+        "phone": "+16465555555",
+        "firstName": "Tobi",
+        "lastName": "Lutke",
+        "displayName": "Tobi Lutke",
+        "createdAt": "2024-11-05T14:29:24Z",
+        "updatedAt": "2024-11-06T10:15:00Z",
+        "state": "ENABLED",
+        "note": null,
+        "tags": [],
+        "taxExempt": false,
+        "verifiedEmail": true,
+        "locale": "en"
+      }
+    }
+  }
+}
