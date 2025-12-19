@@ -247,15 +247,12 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	// Build request body with mutation and variables
-	requestBody := map[string]any{
-		"query": mutation,
-		"variables": map[string]any{
-			"input": params.RecordData,
-		},
-	}
+	variables := buildWriteVariables(params)
 
-	// For updates, inject the record ID into variables
-	injectRecordID(params, requestBody)
+	requestBody := map[string]any{
+		"query":     mutation,
+		"variables": variables,
+	}
 
 	jsonBody, err := json.Marshal(requestBody)
 	if err != nil {
@@ -323,6 +320,19 @@ func (c *Connector) parseWriteResponse(
 // getMutationName determines the mutation name based on object and operation type.
 // If RecordId is present, it's an update; otherwise, it's a create.
 func getMutationName(params common.WriteParams) string {
+	if params.ObjectName == "customerAddresses" {
+		if params.RecordId != "" {
+			return "customerAddressUpdate"
+		}
+
+		return "customerAddressCreate"
+	}
+
+	// Handle customerDefaultAddress - always an update operation
+	if params.ObjectName == "customerDefaultAddress" {
+		return "customerUpdateDefaultAddress"
+	}
+
 	// Convert plural object name to singular for mutation name
 	// e.g., "customers" -> "customer"
 	singular := naming.NewSingularString(params.ObjectName).String()
@@ -337,6 +347,20 @@ func getMutationName(params common.WriteParams) string {
 // getMutationKey returns the GraphQL response key for the mutation.
 // e.g., "customerCreate" or "customerUpdate"
 func getMutationKey(params common.WriteParams) string {
+	// Handle customerAddresses as a special case
+	if params.ObjectName == "customerAddresses" {
+		if params.RecordId != "" {
+			return "customerAddressUpdate"
+		}
+
+		return "customerAddressCreate"
+	}
+
+	// Handle customerDefaultAddress
+	if params.ObjectName == "customerDefaultAddress" {
+		return "customerUpdateDefaultAddress"
+	}
+
 	singular := naming.NewSingularString(params.ObjectName).String()
 
 	if params.RecordId != "" {
@@ -358,20 +382,91 @@ func getMutation(mutationName string) (string, error) {
 	return string(mutationBytes), nil
 }
 
-// injectRecordID adds the record ID to the request for update operations.
-// Shopify update mutations typically require the ID as a separate variable or in the input.
-func injectRecordID(params common.WriteParams, requestBody map[string]any) {
-	if params.RecordId == "" {
-		return
+// buildWriteVariables constructs the variables for GraphQL mutations.
+func buildWriteVariables(params common.WriteParams) map[string]any {
+	if params.ObjectName == "customerAddresses" {
+		return buildCustomerAddressVariables(params)
 	}
 
-	vars, ok := requestBody["variables"].(map[string]any)
+	// Handle customerDefaultAddress - uses $customerId and $addressId
+	if params.ObjectName == "customerDefaultAddress" {
+		return buildCustomerDefaultAddressVariables(params)
+	}
+
+	variables := map[string]any{
+		"input": params.RecordData,
+	}
+
+	if params.RecordId != "" {
+		injectIDIntoInput(variables, params.RecordId)
+	}
+
+	return variables
+}
+
+// buildCustomerAddressVariables builds variables for customerAddress mutations.
+func buildCustomerAddressVariables(params common.WriteParams) map[string]any {
+	recordData, ok := params.RecordData.(map[string]any)
 	if !ok {
+		return map[string]any{}
+	}
+
+	variables := make(map[string]any)
+
+	// Extract customerId
+	if customerId, exists := recordData["customerId"]; exists {
+		variables["customerId"] = customerId
+	}
+
+	// Extract address data
+	if address, exists := recordData["address"]; exists {
+		variables["address"] = address
+	}
+
+	// Extract setAsDefault
+	if setAsDefault, exists := recordData["setAsDefault"]; exists {
+		variables["setAsDefault"] = setAsDefault
+	}
+
+	// For updates, include addressId
+	if params.RecordId != "" {
+		variables["addressId"] = params.RecordId
+	}
+
+	return variables
+}
+
+// buildCustomerDefaultAddressVariables builds variables for customerUpdateDefaultAddress mutation.
+func buildCustomerDefaultAddressVariables(params common.WriteParams) map[string]any {
+	recordData, ok := params.RecordData.(map[string]any)
+	if !ok {
+		return map[string]any{}
+	}
+
+	variables := make(map[string]any)
+
+	// Extract customerId
+	if customerId, exists := recordData["customerId"]; exists {
+		variables["customerId"] = customerId
+	}
+
+	// Extract addressId
+	if addressId, exists := recordData["addressId"]; exists {
+		variables["addressId"] = addressId
+	}
+
+	return variables
+}
+
+// injectIDIntoInput adds the record ID inside the input for update operations.
+func injectIDIntoInput(variables map[string]any, recordID string) {
+	input, ok := variables["input"].(map[string]any)
+	if !ok {
+		// If input is not a map, try to convert RecordData
 		return
 	}
 
-	// For Shopify updates, the ID is typically passed as a separate "id" variable
-	vars["id"] = params.RecordId
+	input["id"] = recordID
 }
 
 // parseUserErrors extracts userErrors from the mutation response.
@@ -400,6 +495,41 @@ func parseUserErrors(mutationData map[string]any) []UserError {
 
 // extractRecordData extracts the record ID and object data from the mutation response.
 func extractRecordData(mutationData map[string]any, objectName string) (string, map[string]any) {
+	// Handle customerAddresses - response key is "address"
+	if objectName == "customerAddresses" {
+		obj, ok := mutationData["address"].(map[string]any)
+		if !ok {
+			return "", nil
+		}
+
+		recordID := ""
+		if id, ok := obj["id"].(string); ok {
+			recordID = id
+		}
+
+		return recordID, obj
+	}
+
+	// Handle customerDefaultAddress - response is customer.defaultAddress
+	if objectName == "customerDefaultAddress" {
+		customer, ok := mutationData["customer"].(map[string]any)
+		if !ok {
+			return "", nil
+		}
+
+		defaultAddress, ok := customer["defaultAddress"].(map[string]any)
+		if !ok {
+			return "", customer
+		}
+
+		recordID := ""
+		if id, ok := defaultAddress["id"].(string); ok {
+			recordID = id
+		}
+
+		return recordID, defaultAddress
+	}
+
 	// Get the singular object name for the response key
 	singular := naming.NewSingularString(objectName).String()
 
@@ -415,4 +545,128 @@ func extractRecordData(mutationData map[string]any, objectName string) (string, 
 	}
 
 	return recordID, obj
+}
+
+// =====================================================
+// Delete Handlers
+// =====================================================
+
+func (c *Connector) buildDeleteRequest(
+	ctx context.Context,
+	params common.DeleteParams,
+) (*http.Request, error) {
+	if err := params.ValidateParams(); err != nil {
+		return nil, err
+	}
+
+	url, err := c.getDiscoveryEndpoint()
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the mutation name for this delete operation
+	mutationName := getDeleteMutationName(params)
+
+	// Get the mutation content from embedded files
+	mutation, err := getMutation(mutationName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get mutation for %s: %w", mutationName, err)
+	}
+
+	// Build the variables for the delete mutation
+	variables := buildDeleteVariables(params)
+
+	// Construct the GraphQL request body
+	requestBody := map[string]any{
+		"query":     mutation,
+		"variables": variables,
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context,
+	params common.DeleteParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	// Parse the response into our WriteResponse structure (same format)
+	response, err := common.UnmarshalJSON[WriteResponse](resp)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the mutation key for extracting data
+	mutationKey := getDeleteMutationName(params)
+
+	// Extract the mutation-specific data
+	mutationData, ok := response.Data[mutationKey]
+	if !ok {
+		return nil, fmt.Errorf("no data found for mutation %s", mutationKey)
+	}
+
+	// Check for user errors
+	userErrors := parseUserErrors(mutationData)
+	if len(userErrors) > 0 {
+		errorMessages := make([]string, len(userErrors))
+		for i, ue := range userErrors {
+			errorMessages[i] = ue.Message
+		}
+
+		return nil, fmt.Errorf("%w: %s", common.ErrBadRequest, strings.Join(errorMessages, "; "))
+	}
+
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
+}
+
+// getDeleteMutationName determines the mutation name for delete operations.
+func getDeleteMutationName(params common.DeleteParams) string {
+	if params.ObjectName == "customerAddresses" {
+		return "customerAddressDelete"
+	}
+
+	// Convert plural object name to singular for mutation name
+	// e.g., "customers" -> "customerDelete"
+	singular := naming.NewSingularString(params.ObjectName).String()
+
+	return singular + "Delete"
+}
+
+// buildDeleteVariables constructs the variables for delete mutations.
+// For customerAddresses, RecordId should be in format "customerId|addressId".
+func buildDeleteVariables(params common.DeleteParams) map[string]any {
+	// Handle customerAddresses - requires customerId and addressId
+	// RecordId format: "customerId|addressId" (using | as separator to avoid conflict with gid:// format)
+	if params.ObjectName == "customerAddresses" {
+		parts := strings.SplitN(params.RecordId, "|", 2)
+		if len(parts) == 2 {
+			return map[string]any{
+				"customerId": parts[0],
+				"addressId":  parts[1],
+			}
+		}
+
+		// Fallback: assume RecordId is just the addressId (will fail without customerId)
+		return map[string]any{
+			"addressId": params.RecordId,
+		}
+	}
+
+	// Standard delete uses $id variable
+	return map[string]any{
+		"id": params.RecordId,
+	}
 }
