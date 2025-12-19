@@ -1,0 +1,26 @@
+{
+  "data": {
+    "customerUpdateDefaultAddress": {
+      "customer": {
+        "id": "gid://shopify/Customer/624407574",
+        "defaultAddress": {
+          "id": "gid://shopify/MailingAddress/1053318591?model_name=CustomerAddress",
+          "address1": "124 Amoebobacterieae St",
+          "address2": null,
+          "city": "Ottawa",
+          "company": null,
+          "country": "Canada",
+          "countryCodeV2": "CA",
+          "firstName": "Steve",
+          "lastName": "Lastname",
+          "phone": null,
+          "province": "Ontario",
+          "provinceCode": "ON",
+          "zip": "A1A 4A1",
+          "formattedArea": "Ottawa ON, Canada"
+        }
+      },
+      "userErrors": []
+    }
+  }
+}
