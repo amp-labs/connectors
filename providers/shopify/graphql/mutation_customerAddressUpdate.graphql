@@ -1,0 +1,24 @@
+mutation customerAddressUpdate($customerId: ID!, $addressId: ID!, $address: MailingAddressInput!, $setAsDefault: Boolean) {
+  customerAddressUpdate(customerId: $customerId, addressId: $addressId, address: $address, setAsDefault: $setAsDefault) {
+    userErrors {
+      field
+      message
+    }
+    address {
+      id
+      address1
+      address2
+      city
+      company
+      country
+      countryCodeV2
+      firstName
+      lastName
+      phone
+      province
+      provinceCode
+      zip
+      formattedArea
+    }
+  }
+}

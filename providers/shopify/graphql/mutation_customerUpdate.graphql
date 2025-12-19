@@ -1,5 +1,5 @@
-mutation customerCreate($input: CustomerInput!) {
-  customerCreate(input: $input) {
+mutation customerUpdate($input: CustomerInput!) {
+  customerUpdate(input: $input) {
     userErrors {
       field
       message
