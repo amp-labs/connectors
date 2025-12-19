@@ -1,0 +1,15 @@
+{
+  "responseData": {
+    "data": [
+      {
+        "id": "123",
+        "name": "John Doe",
+        "email": "john.doe@example.com"
+      }
+    ],
+    "itemsCount": 1,
+    "pageNumber": 1,
+    "pageCount": 1,
+    "limit": 50
+  }
+}

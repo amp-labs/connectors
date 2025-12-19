@@ -1,8 +1,11 @@
 package aircall
 
 import (
+	"net/http"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
@@ -22,6 +25,7 @@ type Connector struct {
 	components.SchemaProvider
 	components.Reader
 	components.Writer
+	components.Deleter
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -42,7 +46,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
-			ErrorHandler:  common.InterpretError,
+			ErrorHandler:  interpretError,
 		},
 	)
 
@@ -53,9 +57,28 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
-			ErrorHandler:  common.InterpretError,
+			ErrorHandler:  interpretError,
+		},
+	)
+
+	connector.Deleter = deleter.NewHTTPDeleter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.DeleteHandlers{
+			BuildRequest:  connector.buildDeleteRequest,
+			ParseResponse: connector.parseDeleteResponse,
+			ErrorHandler:  interpretError,
 		},
 	)
 
 	return connector, nil
+}
+
+func interpretError(res *http.Response, body []byte) error {
+	if res.StatusCode == http.StatusNotFound {
+		return common.NewHTTPError(res.StatusCode, body, common.GetResponseHeaders(res), common.ErrNotFound)
+	}
+
+	return common.InterpretError(res, body)
 }

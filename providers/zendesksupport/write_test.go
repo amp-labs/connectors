@@ -57,7 +57,7 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Parameter brands is required"), // nolint:goerr113
+				errors.New("Parameter brands is required"),
 			},
 		},
 		{
@@ -69,8 +69,8 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("[RecordInvalid]Record validation errors"),               // nolint:goerr113
-				errors.New("[DuplicateValue]Subdomain: nk2 has already been taken"), // nolint:goerr113
+				errors.New("[RecordInvalid]Record validation errors"),
+				errors.New("[DuplicateValue]Subdomain: nk2 has already been taken"),
 			},
 		},
 		{
@@ -82,10 +82,10 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("[RecordInvalid]Record validation errors"),        // nolint:goerr113
-				errors.New("[InvalidValue]Subdomain: is invalid"),            // nolint:goerr113
-				errors.New("[InvalidFormat]Email is not properly formatted"), // nolint:goerr113
-				errors.New("[BlankValue]Name: cannot be blank"),              // nolint:goerr113
+				errors.New("[RecordInvalid]Record validation errors"),
+				errors.New("[InvalidValue]Subdomain: is invalid"),
+				errors.New("[InvalidFormat]Email is not properly formatted"),
+				errors.New("[BlankValue]Name: cannot be blank"),
 			},
 		},
 		{

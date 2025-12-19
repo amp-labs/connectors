@@ -52,7 +52,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Email account not found!"), // nolint:goerr113
+				errors.New("Email account not found!"),
 			},
 		},
 		{
@@ -64,7 +64,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(`"clinet_id" is not allowed`), // nolint:goerr113
+				errors.New(`"clinet_id" is not allowed`),
 			},
 		},
 		{

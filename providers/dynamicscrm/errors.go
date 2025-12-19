@@ -20,9 +20,10 @@ type CRMResponseError struct {
 }
 
 type CRMError struct {
+	*EnhancedCRMError
+
 	Code    string `json:"code"`
 	Message string `json:"message"`
-	*EnhancedCRMError
 }
 
 type EnhancedCRMError struct {

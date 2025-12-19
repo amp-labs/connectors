@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package common
 
 import (
@@ -147,7 +148,11 @@ type customAuthClient struct {
 	isUnauthorized func(rsp *http.Response) bool
 }
 
-func (c *customAuthClient) getHeaders(req *http.Request) (Headers, error) {
+func (c *customAuthClient) CloseIdleConnections() {
+	c.client.CloseIdleConnections()
+}
+
+func (c *customAuthClient) getHeaders(req *http.Request) (Headers, error) { // nolint:funcorder
 	var hdrs Headers
 
 	if c.headers != nil {
@@ -166,7 +171,7 @@ func (c *customAuthClient) getHeaders(req *http.Request) (Headers, error) {
 	return hdrs, nil
 }
 
-func (c *customAuthClient) getQueryParams(req *http.Request) (QueryParams, error) {
+func (c *customAuthClient) getQueryParams(req *http.Request) (QueryParams, error) { // nolint:funcorder
 	var params QueryParams
 
 	if c.params != nil {
@@ -222,10 +227,6 @@ func (c *customAuthClient) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	return c.handleUnauthorizedResponse(req2, rsp)
-}
-
-func (c *customAuthClient) CloseIdleConnections() {
-	c.client.CloseIdleConnections()
 }
 
 func (c *customAuthClient) isUnauthorizedResponse(rsp *http.Response) bool {

@@ -46,7 +46,7 @@ var (
 func constructErrMessage(a any) (string, error) {
 	s, ok := a.([]map[string]any)
 	if !ok {
-		return "", errors.New("failed to convert the response message to an error type") // nolint:goerr113
+		return "", errors.New("failed to convert the response message to an error type") // nolint:err113
 	}
 
 	return fmt.Sprint(s[0]["reasons"]), nil

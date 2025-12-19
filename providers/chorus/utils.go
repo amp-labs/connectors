@@ -1,6 +1,7 @@
 package chorus
 
 import (
+	"maps"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -11,6 +12,7 @@ import (
 
 const PageSize = 100
 
+// IncrementalObjectQueryParam
 // Below objects supports incremental reading but having different query pram values.
 // Ref: https://api-docs.chorus.ai/#4dc74394-9852-4b6b-9555-cb8ce951557b for scorecards object.
 // Ref: https://api-docs.chorus.ai/#3d962146-73fc-42db-afda-a943971ab1c4 for emails object.
@@ -29,6 +31,7 @@ var PaginationObject = datautils.NewSet( //nolint:gochecknoglobals
 
 const objectEngagement = "engagements"
 
+// MarshalledData
 // chorus object has a special field named "attributes" which holds all the important fields.
 // Therefore, nested "values" will be removed and fields inside the "values" field will be moved
 // to the top level of the object.
@@ -137,9 +140,7 @@ func flattenRecord(arr *ajson.Node) (map[string]any, error) {
 	delete(original, keyValuesObject)
 
 	// Fields from values are moved to the top level.
-	for key, value := range nested {
-		original[key] = value
-	}
+	maps.Copy(original, nested)
 
 	return original, nil
 }

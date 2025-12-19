@@ -1,0 +1,17 @@
+{
+    "notFoundIds": null,
+    "items": [
+        {
+            "id": "Y2lzY29zcGFyazovL3VzL",
+            "emails": [
+                "testuser@example.com"
+            ],
+            "displayName": "testuser",
+            "nickName": "testuser",
+            "firstName": "test",
+            "lastName": "user",
+            "orgId": "Y2lzY29zcGFyazovL3",
+            "type": "person"
+        }
+    ]
+}

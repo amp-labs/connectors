@@ -43,6 +43,75 @@ query Issues($filter: IssueFilter, $first: Int, $after: String) {
       customerTicketCount
       description
       descriptionState
+      {{- if .assignee}}
+      assignee {
+        id
+        name
+        email
+        active
+        createdAt
+        updatedAt
+        avatarUrl
+      }
+      {{- end}}
+      {{- if .team}}
+      team {
+        id
+        name
+        description
+        issueCount
+      }
+      {{- end}}
+      {{- if .creator}}
+      creator {
+        active
+        createdAt
+        email
+        id
+        lastSeen
+        name
+        url
+        avatarUrl
+      }
+      {{- end}}
+      {{- if .state}}
+      state {
+        id
+        name
+        type
+        createdAt
+        description
+        position
+      }
+      {{- end}}
+      {{- if .parent}}
+      parent {
+        branchName
+        canceledAt
+        createdAt
+        description
+        dueDate
+        estimate
+        title
+        updatedAt
+        priority
+        id
+      }
+      {{- end}}
+      {{- if .attachments}}
+      attachments {
+        nodes {
+          id
+          title
+          url
+          subtitle
+          createdAt
+          metadata
+          source
+          sourceType
+        }
+      }
+      {{- end}}
     }
     pageInfo {
       hasPreviousPage
