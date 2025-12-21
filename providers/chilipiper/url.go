@@ -5,21 +5,24 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-const restAPIVersionPrefix = "api/fire-edge/v1/org"
+const (
+	restAPIVersionPrefix = "api/fire-edge/v1/org"
+	meetings             = "meetings/meetings"
+)
 
-func (conn *Connector) buildURL(objectName string, pageSize string) (string, error) {
+func (conn *Connector) buildURL(objectName string, pageSize string) (*urlbuilder.URL, error) {
 	if !supportedReadObjects.Has(objectName) {
-		return "", common.ErrObjectNotSupported
+		return nil, common.ErrObjectNotSupported
 	}
 
 	url, err := urlbuilder.New(conn.BaseURL, restAPIVersionPrefix, objectName)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	url.WithQueryParam(pageSizeKey, pageSize)
 
-	return url.String(), nil
+	return url, nil
 }
 
 func (conn *Connector) buildWriteURL(object string) (*urlbuilder.URL, error) {
