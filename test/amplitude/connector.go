@@ -13,16 +13,8 @@ import (
 func GetAmplitudeConnector(ctx context.Context) *amplitude.Connector {
 	reader := getAmplitudeJSONReader()
 
-	client, err := common.NewBasicAuthHTTPClient(ctx,
-		reader.Get(credscanning.Fields.Username),
-		reader.Get(credscanning.Fields.Password),
-	)
-	if err != nil {
-		utils.Fail(err.Error())
-	}
-
 	conn, err := amplitude.NewConnector(common.ConnectorParams{
-		AuthenticatedClient: client,
+		AuthenticatedClient: utils.NewBasicAuthClient(ctx, reader),
 	})
 	if err != nil {
 		utils.Fail("create amplitude connector", "error: ", err)
