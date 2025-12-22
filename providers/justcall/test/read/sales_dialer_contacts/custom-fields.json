@@ -1,0 +1,16 @@
+{
+  "status": "success",
+  "total": 2,
+  "data": [
+    {
+      "key": 1090960,
+      "label": "membership_status",
+      "type": "string"
+    },
+    {
+      "key": 1090961,
+      "label": "priority_level",
+      "type": "number"
+    }
+  ]
+}
