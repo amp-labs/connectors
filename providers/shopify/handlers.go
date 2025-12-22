@@ -18,6 +18,10 @@ import (
 const (
 	objectCustomerAddresses      = "customerAddresses"
 	objectCustomerDefaultAddress = "customerDefaultAddress"
+	objectProducts               = "products"
+	objectProductOptions         = "productOptions"
+	objectProductPublish         = "productPublish"
+	objectProductUnpublish       = "productUnpublish"
 	compositeIDParts             = 2
 )
 
@@ -333,9 +337,24 @@ func getMutationName(params common.WriteParams) string {
 		return "customerAddressCreate"
 	}
 
-	// Handle customerDefaultAddress - always an update operation
+	// Handle customerDefaultAddress - always an update operation.
 	if params.ObjectName == objectCustomerDefaultAddress {
 		return "customerUpdateDefaultAddress"
+	}
+
+	// Handle productOptions - always a create operation.
+	if params.ObjectName == objectProductOptions {
+		return "productOptionsCreate"
+	}
+
+	// Handle productPublish - publish a product to sales channels.
+	if params.ObjectName == objectProductPublish {
+		return "productPublish"
+	}
+
+	// Handle productUnpublish - unpublish a product from sales channels.
+	if params.ObjectName == objectProductUnpublish {
+		return "productUnpublish"
 	}
 
 	// Convert plural object name to singular for mutation name, e.g., "customers" -> "customer"
@@ -350,7 +369,7 @@ func getMutationName(params common.WriteParams) string {
 
 // getMutationKey returns the GraphQL response key for the mutation.
 func getMutationKey(params common.WriteParams) string {
-	// Handle customerAddresses as a special case
+	// Handle customerAddresses as a special case.
 	if params.ObjectName == objectCustomerAddresses {
 		if params.RecordId != "" {
 			return "customerAddressUpdate"
@@ -359,9 +378,24 @@ func getMutationKey(params common.WriteParams) string {
 		return "customerAddressCreate"
 	}
 
-	// Handle customerDefaultAddress
+	// Handle customerDefaultAddress.
 	if params.ObjectName == objectCustomerDefaultAddress {
 		return "customerUpdateDefaultAddress"
+	}
+
+	// Handle productOptions.
+	if params.ObjectName == objectProductOptions {
+		return "productOptionsCreate"
+	}
+
+	// Handle productPublish.
+	if params.ObjectName == objectProductPublish {
+		return "productPublish"
+	}
+
+	// Handle productUnpublish.
+	if params.ObjectName == objectProductUnpublish {
+		return "productUnpublish"
 	}
 
 	singular := naming.NewSingularString(params.ObjectName).String()
@@ -391,9 +425,29 @@ func buildWriteVariables(params common.WriteParams) map[string]any {
 		return buildCustomerAddressVariables(params)
 	}
 
-	// Handle customerDefaultAddress, uses $customerId and $addressId
+	// Handle customerDefaultAddress, uses $customerId and $addressId.
 	if params.ObjectName == objectCustomerDefaultAddress {
 		return buildCustomerDefaultAddressVariables(params)
+	}
+
+	// Handle productOptions - uses $productId, $options, and optional $variantStrategy.
+	if params.ObjectName == objectProductOptions {
+		return buildProductOptionsVariables(params)
+	}
+
+	// Handle productPublish - uses $id and $productPublications.
+	if params.ObjectName == objectProductPublish {
+		return buildProductPublishVariables(params)
+	}
+
+	// Handle productUnpublish - uses $id and $productPublications.
+	if params.ObjectName == objectProductUnpublish {
+		return buildProductPublishVariables(params)
+	}
+
+	// Handle products - uses $product for create, $input for update.
+	if params.ObjectName == objectProducts {
+		return buildProductVariables(params)
 	}
 
 	variables := map[string]any{
@@ -455,6 +509,69 @@ func buildCustomerDefaultAddressVariables(params common.WriteParams) map[string]
 	return variables
 }
 
+// buildProductVariables builds variables for product create/update mutations.
+func buildProductVariables(params common.WriteParams) map[string]any {
+	if params.RecordId != "" {
+		// Update uses $input with id inside.
+		variables := map[string]any{
+			"input": params.RecordData,
+		}
+
+		injectIDIntoInput(variables, params.RecordId)
+
+		return variables
+	}
+
+	// Create uses $product.
+	return map[string]any{
+		"product": params.RecordData,
+	}
+}
+
+// buildProductOptionsVariables builds variables for productOptionsCreate mutation.
+func buildProductOptionsVariables(params common.WriteParams) map[string]any {
+	recordData, ok := params.RecordData.(map[string]any)
+	if !ok {
+		return map[string]any{}
+	}
+
+	variables := make(map[string]any)
+
+	if productId, exists := recordData["productId"]; exists {
+		variables["productId"] = productId
+	}
+
+	if options, exists := recordData["options"]; exists {
+		variables["options"] = options
+	}
+
+	if variantStrategy, exists := recordData["variantStrategy"]; exists {
+		variables["variantStrategy"] = variantStrategy
+	}
+
+	return variables
+}
+
+// buildProductPublishVariables builds variables for productPublish/productUnpublish mutations.
+func buildProductPublishVariables(params common.WriteParams) map[string]any {
+	recordData, ok := params.RecordData.(map[string]any)
+	if !ok {
+		return map[string]any{}
+	}
+
+	variables := make(map[string]any)
+
+	if id, exists := recordData["id"]; exists {
+		variables["id"] = id
+	}
+
+	if productPublications, exists := recordData["productPublications"]; exists {
+		variables["productPublications"] = productPublications
+	}
+
+	return variables
+}
+
 // injectIDIntoInput adds the record ID inside the input for update operations.
 func injectIDIntoInput(variables map[string]any, recordID string) {
 	input, ok := variables["input"].(map[string]any)
@@ -505,7 +622,7 @@ func extractRecordData(mutationData map[string]any, objectName string) (string, 
 		return recordID, obj
 	}
 
-	// Handle customerDefaultAddress - response is customer.defaultAddress
+	// Handle customerDefaultAddress - response is customer.defaultAddress.
 	if objectName == objectCustomerDefaultAddress {
 		customer, ok := mutationData["customer"].(map[string]any)
 		if !ok {
@@ -525,7 +642,17 @@ func extractRecordData(mutationData map[string]any, objectName string) (string, 
 		return recordID, defaultAddress
 	}
 
-	// Get the singular object name for the response key
+	// Handle productOptions - response is product with options.
+	if objectName == objectProductOptions {
+		return extractProductData(mutationData)
+	}
+
+	// Handle productPublish/productUnpublish - response is product.
+	if objectName == objectProductPublish || objectName == objectProductUnpublish {
+		return extractProductData(mutationData)
+	}
+
+	// Get the singular object name for the response key.
 	singular := naming.NewSingularString(objectName).String()
 
 	obj, ok := mutationData[singular].(map[string]any)
@@ -539,6 +666,21 @@ func extractRecordData(mutationData map[string]any, objectName string) (string, 
 	}
 
 	return recordID, obj
+}
+
+// extractProductData extracts product ID and data from mutation response.
+func extractProductData(mutationData map[string]any) (string, map[string]any) {
+	product, ok := mutationData["product"].(map[string]any)
+	if !ok {
+		return "", nil
+	}
+
+	recordID := ""
+	if id, ok := product["id"].(string); ok {
+		recordID = id
+	}
+
+	return recordID, product
 }
 
 // =====================================================
@@ -627,7 +769,12 @@ func getDeleteMutationName(params common.DeleteParams) string {
 		return "customerAddressDelete"
 	}
 
-	// Convert plural object name to singular for mutation name, e.g., "customers" -> "customerDelete"
+	// Handle productOptions deletion.
+	if params.ObjectName == objectProductOptions {
+		return "productOptionsDelete"
+	}
+
+	// Convert plural object name to singular for mutation name, e.g., "customers" -> "customerDelete".
 	singular := naming.NewSingularString(params.ObjectName).String()
 
 	return singular + "Delete"
@@ -647,6 +794,23 @@ func buildDeleteVariables(params common.DeleteParams) map[string]any {
 
 		return map[string]any{
 			"addressId": params.RecordId,
+		}
+	}
+
+	// RecordId format for productOptions: "productId|optionId1,optionId2,...".
+	if params.ObjectName == objectProductOptions {
+		parts := strings.SplitN(params.RecordId, "|", compositeIDParts)
+		if len(parts) == compositeIDParts {
+			optionIds := strings.Split(parts[1], ",")
+
+			return map[string]any{
+				"productId": parts[0],
+				"options":   optionIds,
+			}
+		}
+
+		return map[string]any{
+			"options": []string{params.RecordId},
 		}
 	}
 
