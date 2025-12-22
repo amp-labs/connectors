@@ -26,9 +26,11 @@ func MainFn() int {
 
 	conn := shopify.GetShopifyConnector(ctx)
 
-	// Generate unique email to avoid conflicts
+	// Generate unique email and phone to avoid conflicts
 	timestamp := time.Now().Unix()
 	testEmail := fmt.Sprintf("testcustomer%d@example.com", timestamp)
+	// Generate unique phone using last 7 digits of timestamp
+	testPhone := fmt.Sprintf("+1646555%04d", timestamp%10000)
 
 	// Test 1: Create a Customer
 	slog.Info("=== Test 1: Creating a customer ===")
@@ -39,7 +41,7 @@ func MainFn() int {
 			"email":     testEmail,
 			"firstName": "Test",
 			"lastName":  "Customer",
-			"phone":     "+16465551234",
+			"phone":     testPhone,
 			"note":      "Integration test customer - safe to delete",
 		},
 	})
@@ -185,26 +187,10 @@ func MainFn() int {
 	slog.Info("Default address updated successfully")
 	utils.DumpJSON(defaultAddressResult, os.Stdout)
 
-	// Test 7: Delete the second address
-	slog.Info("=== Test 7: Deleting the second address ===")
+	// Test 7: Delete the first address (not the default anymore after Test 6)
+	slog.Info("=== Test 7: Deleting the first address (non-default) ===")
 
 	// For customerAddresses delete, RecordId format is "customerId|addressId"
-	secondAddressDeleteId := customerID + "|" + secondAddressID
-	deleteSecondAddressResult, err := conn.Delete(ctx, common.DeleteParams{
-		ObjectName: "customerAddresses",
-		RecordId:   secondAddressDeleteId,
-	})
-	if err != nil {
-		slog.Error("Error deleting second address", "error", err)
-		return 1
-	}
-
-	slog.Info("Second address deleted successfully")
-	utils.DumpJSON(deleteSecondAddressResult, os.Stdout)
-
-	// Test 8: Delete the first address
-	slog.Info("=== Test 8: Deleting the first address ===")
-
 	firstAddressDeleteId := customerID + "|" + addressID
 	deleteFirstAddressResult, err := conn.Delete(ctx, common.DeleteParams{
 		ObjectName: "customerAddresses",
@@ -218,8 +204,11 @@ func MainFn() int {
 	slog.Info("First address deleted successfully")
 	utils.DumpJSON(deleteFirstAddressResult, os.Stdout)
 
-	// Test 9: Delete the customer
-	slog.Info("=== Test 9: Deleting the customer ===")
+	// Note: Second address is now the default and only address, so we skip deleting it.
+	// Deleting the customer will clean up remaining addresses.
+
+	// Test 8: Delete the customer
+	slog.Info("=== Test 8: Deleting the customer ===")
 
 	deleteCustomerResult, err := conn.Delete(ctx, common.DeleteParams{
 		ObjectName: "customers",
