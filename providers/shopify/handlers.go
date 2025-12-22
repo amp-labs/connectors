@@ -349,7 +349,6 @@ func getMutationName(params common.WriteParams) string {
 }
 
 // getMutationKey returns the GraphQL response key for the mutation.
-// It returns the mutation name, e.g., "customerCreate" or "customerUpdate".
 func getMutationKey(params common.WriteParams) string {
 	// Handle customerAddresses as a special case
 	if params.ObjectName == objectCustomerAddresses {
@@ -636,8 +635,7 @@ func getDeleteMutationName(params common.DeleteParams) string {
 
 // buildDeleteVariables constructs the variables for delete mutations.
 func buildDeleteVariables(params common.DeleteParams) map[string]any {
-	// Handle customerAddresses, requires customerId and addressId
-	// RecordId format: "customerId|addressId" (using | as separator to avoid conflict with gid:// format)
+	// RecordId format: "customerId|addressId".
 	if params.ObjectName == objectCustomerAddresses {
 		parts := strings.SplitN(params.RecordId, "|", compositeIDParts)
 		if len(parts) == compositeIDParts {
