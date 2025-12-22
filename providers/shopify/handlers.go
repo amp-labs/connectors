@@ -608,79 +608,47 @@ func parseUserErrors(mutationData map[string]any) []UserError {
 
 // extractRecordData extracts the record ID and object data from the mutation response.
 func extractRecordData(mutationData map[string]any, objectName string) (string, map[string]any) {
-	if objectName == objectCustomerAddresses {
-		obj, ok := mutationData["address"].(map[string]any)
-		if !ok {
-			return "", nil
-		}
+	switch objectName {
+	case objectCustomerAddresses:
+		return extractFromKey(mutationData, "address")
+	case objectCustomerDefaultAddress:
+		return extractCustomerDefaultAddress(mutationData)
+	case objectProductOptions, objectProductPublish, objectProductUnpublish:
+		return extractFromKey(mutationData, "product")
+	default:
+		singular := naming.NewSingularString(objectName).String()
 
-		recordID := ""
-		if id, ok := obj["id"].(string); ok {
-			recordID = id
-		}
-
-		return recordID, obj
+		return extractFromKey(mutationData, singular)
 	}
+}
 
-	// Handle customerDefaultAddress - response is customer.defaultAddress.
-	if objectName == objectCustomerDefaultAddress {
-		customer, ok := mutationData["customer"].(map[string]any)
-		if !ok {
-			return "", nil
-		}
-
-		defaultAddress, ok := customer["defaultAddress"].(map[string]any)
-		if !ok {
-			return "", customer
-		}
-
-		recordID := ""
-		if id, ok := defaultAddress["id"].(string); ok {
-			recordID = id
-		}
-
-		return recordID, defaultAddress
-	}
-
-	// Handle productOptions - response is product with options.
-	if objectName == objectProductOptions {
-		return extractProductData(mutationData)
-	}
-
-	// Handle productPublish/productUnpublish - response is product.
-	if objectName == objectProductPublish || objectName == objectProductUnpublish {
-		return extractProductData(mutationData)
-	}
-
-	// Get the singular object name for the response key.
-	singular := naming.NewSingularString(objectName).String()
-
-	obj, ok := mutationData[singular].(map[string]any)
+// extractFromKey extracts record ID and data from a specific key in the mutation response.
+func extractFromKey(mutationData map[string]any, key string) (string, map[string]any) {
+	obj, ok := mutationData[key].(map[string]any)
 	if !ok {
 		return "", nil
 	}
 
-	recordID := ""
-	if id, ok := obj["id"].(string); ok {
-		recordID = id
-	}
+	recordID, _ := obj["id"].(string)
 
 	return recordID, obj
 }
 
-// extractProductData extracts product ID and data from mutation response.
-func extractProductData(mutationData map[string]any) (string, map[string]any) {
-	product, ok := mutationData["product"].(map[string]any)
+// extractCustomerDefaultAddress extracts data from customerDefaultAddress mutation response.
+func extractCustomerDefaultAddress(mutationData map[string]any) (string, map[string]any) {
+	customer, ok := mutationData["customer"].(map[string]any)
 	if !ok {
 		return "", nil
 	}
 
-	recordID := ""
-	if id, ok := product["id"].(string); ok {
-		recordID = id
+	defaultAddress, ok := customer["defaultAddress"].(map[string]any)
+	if !ok {
+		return "", customer
 	}
 
-	return recordID, product
+	recordID, _ := defaultAddress["id"].(string)
+
+	return recordID, defaultAddress
 }
 
 // =====================================================
@@ -774,7 +742,7 @@ func getDeleteMutationName(params common.DeleteParams) string {
 		return "productOptionsDelete"
 	}
 
-	// Convert plural object name to singular for mutation name, e.g., "customers" -> "customerDelete".
+	// Convert plural object name to singular for mutation name.
 	singular := naming.NewSingularString(params.ObjectName).String()
 
 	return singular + "Delete"
@@ -801,11 +769,11 @@ func buildDeleteVariables(params common.DeleteParams) map[string]any {
 	if params.ObjectName == objectProductOptions {
 		parts := strings.SplitN(params.RecordId, "|", compositeIDParts)
 		if len(parts) == compositeIDParts {
-			optionIds := strings.Split(parts[1], ",")
+			optionIDs := strings.Split(parts[1], ",")
 
 			return map[string]any{
 				"productId": parts[0],
-				"options":   optionIds,
+				"options":   optionIDs,
 			}
 		}
 
