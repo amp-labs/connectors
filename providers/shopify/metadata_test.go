@@ -13,6 +13,8 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
+const testApiPath = "/" + apiPath
+
 func TestListObjectMetadata(t *testing.T) {
 	t.Parallel()
 
@@ -22,7 +24,7 @@ func TestListObjectMetadata(t *testing.T) {
 			Input: []string{"products"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/admin/api/2025-01/graphql.json"),
+				If:    mockcond.Path(testApiPath),
 				Then:  mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "metadata/product.json")),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -53,7 +55,7 @@ func TestListObjectMetadata(t *testing.T) {
 			Input: []string{"orders"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/admin/api/2025-01/graphql.json"),
+				If:    mockcond.Path(testApiPath),
 				Then:  mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "metadata/order.json")),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -89,7 +91,7 @@ func TestListObjectMetadata(t *testing.T) {
 			Input: []string{"customers"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/admin/api/2025-01/graphql.json"),
+				If:    mockcond.Path(testApiPath),
 				Then:  mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "metadata/customer.json")),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,

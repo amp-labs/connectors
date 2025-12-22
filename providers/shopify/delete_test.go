@@ -43,7 +43,7 @@ func TestDelete(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/admin/api/2025-01/graphql.json"),
+					mockcond.Path(testApiPath),
 					mockcond.Body(string(requestCustomerDelete)),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCustomerDelete),
@@ -64,7 +64,7 @@ func TestDelete(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/admin/api/2025-01/graphql.json"),
+					mockcond.Path(testApiPath),
 					mockcond.Body(string(requestAddressDelete)),
 				},
 				Then: mockserver.Response(http.StatusOK, responseAddressDelete),

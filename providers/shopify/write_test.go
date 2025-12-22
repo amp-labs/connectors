@@ -55,7 +55,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/admin/api/2025-01/graphql.json"),
+					mockcond.Path(testApiPath),
 					mockcond.Body(string(requestCustomerCreate)),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCustomerCreate),
@@ -99,7 +99,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/admin/api/2025-01/graphql.json"),
+					mockcond.Path(testApiPath),
 					mockcond.Body(string(requestCustomerUpdate)),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCustomerUpdate),
@@ -137,7 +137,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/admin/api/2025-01/graphql.json"),
+					mockcond.Path(testApiPath),
 					mockcond.Body(string(requestAddressCreate)),
 				},
 				Then: mockserver.Response(http.StatusOK, responseAddressCreate),
@@ -174,7 +174,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/admin/api/2025-01/graphql.json"),
+					mockcond.Path(testApiPath),
 					mockcond.Body(string(requestAddressUpdate)),
 				},
 				Then: mockserver.Response(http.StatusOK, responseAddressUpdate),
@@ -202,7 +202,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/admin/api/2025-01/graphql.json"),
+					mockcond.Path(testApiPath),
 					mockcond.Body(string(requestDefaultAddressUpdate)),
 				},
 				Then: mockserver.Response(http.StatusOK, responseDefaultAddressUpdate),

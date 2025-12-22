@@ -54,7 +54,7 @@ func TestRead(t *testing.T) {
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/admin/api/2025-01/graphql.json"),
+					mockcond.Path(testApiPath),
 					mockcond.Body(string(requestProducts)),
 				},
 				Then: mockserver.Response(http.StatusOK, responseProducts),
@@ -99,7 +99,7 @@ func TestRead(t *testing.T) {
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/admin/api/2025-01/graphql.json"),
+					mockcond.Path(testApiPath),
 					mockcond.Body(string(requestProducts)),
 				},
 				Then: mockserver.Response(http.StatusOK, responseProductsWithNextPage),
@@ -132,7 +132,7 @@ func TestRead(t *testing.T) {
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/admin/api/2025-01/graphql.json"),
+					mockcond.Path(testApiPath),
 					mockcond.Body(string(requestCustomers)),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCustomers),
@@ -166,7 +166,7 @@ func TestRead(t *testing.T) {
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/admin/api/2025-01/graphql.json"),
+					mockcond.Path(testApiPath),
 					mockcond.Body(string(requestOrders)),
 				},
 				Then: mockserver.Response(http.StatusOK, responseOrders),
