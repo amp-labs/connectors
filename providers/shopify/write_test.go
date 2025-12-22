@@ -22,12 +22,18 @@ func TestWrite(t *testing.T) { //nolint:funlen
 	responseAddressCreate := testutils.DataFromFile(t, "write/response-address-create.json")
 	responseAddressUpdate := testutils.DataFromFile(t, "write/response-address-update.json")
 	responseDefaultAddressUpdate := testutils.DataFromFile(t, "write/response-default-address-update.json")
+	responseProductCreate := testutils.DataFromFile(t, "write/response-product-create.json")
+	responseProductUpdate := testutils.DataFromFile(t, "write/response-product-update.json")
+	responseProductOptionsCreate := testutils.DataFromFile(t, "write/response-product-options-create.json")
 
 	requestCustomerCreate := testutils.DataFromFile(t, "write/request-customer-create.json")
 	requestCustomerUpdate := testutils.DataFromFile(t, "write/request-customer-update.json")
 	requestAddressCreate := testutils.DataFromFile(t, "write/request-address-create.json")
 	requestAddressUpdate := testutils.DataFromFile(t, "write/request-address-update.json")
 	requestDefaultAddressUpdate := testutils.DataFromFile(t, "write/request-default-address-update.json")
+	requestProductCreate := testutils.DataFromFile(t, "write/request-product-create.json")
+	requestProductUpdate := testutils.DataFromFile(t, "write/request-product-update.json")
+	requestProductOptionsCreate := testutils.DataFromFile(t, "write/request-product-options-create.json")
 
 	tests := []testroutines.Write{
 		{
@@ -213,6 +219,100 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				RecordId: "gid://shopify/MailingAddress/1053318591?model_name=CustomerAddress",
 				Data: map[string]any{
 					"id": "gid://shopify/MailingAddress/1053318591?model_name=CustomerAddress",
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Successful product create",
+			Input: common.WriteParams{
+				ObjectName: "products",
+				RecordData: map[string]any{
+					"title":       "Cool socks",
+					"productType": "Apparel",
+					"vendor":      "TestVendor",
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path(testApiPath),
+					mockcond.Body(string(requestProductCreate)),
+				},
+				Then: mockserver.Response(http.StatusOK, responseProductCreate),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "gid://shopify/Product/1072482054",
+				Data: map[string]any{
+					"id": "gid://shopify/Product/1072482054",
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Successful product update",
+			Input: common.WriteParams{
+				ObjectName: "products",
+				RecordId:   "gid://shopify/Product/1072482054",
+				RecordData: map[string]any{
+					"title":  "Updated Cool socks",
+					"status": "ACTIVE",
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path(testApiPath),
+					mockcond.Body(string(requestProductUpdate)),
+				},
+				Then: mockserver.Response(http.StatusOK, responseProductUpdate),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "gid://shopify/Product/1072482054",
+				Data: map[string]any{
+					"id": "gid://shopify/Product/1072482054",
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Successful product options create",
+			Input: common.WriteParams{
+				ObjectName: "productOptions",
+				RecordData: map[string]any{
+					"productId": "gid://shopify/Product/1072482054",
+					"options": []map[string]any{
+						{
+							"name": "Color",
+							"values": []map[string]any{
+								{"name": "Blue"},
+								{"name": "Red"},
+							},
+						},
+					},
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path(testApiPath),
+					mockcond.Body(string(requestProductOptionsCreate)),
+				},
+				Then: mockserver.Response(http.StatusOK, responseProductOptionsCreate),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "gid://shopify/Product/1072482054",
+				Data: map[string]any{
+					"id": "gid://shopify/Product/1072482054",
 				},
 			},
 			ExpectedErrs: nil,
