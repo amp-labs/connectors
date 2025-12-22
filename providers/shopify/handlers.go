@@ -5,6 +5,7 @@ import (
 	"context"
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -13,6 +14,14 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 )
+
+const (
+	objectCustomerAddresses      = "customerAddresses"
+	objectCustomerDefaultAddress = "customerDefaultAddress"
+	compositeIDParts             = 2
+)
+
+var ErrMutationDataNotFound = errors.New("no data found for mutation")
 
 // perPage is the default number of records per page for Shopify GraphQL API.
 // Shopify allows up to 250 records per request, but 100 is chosen as a balanced default
@@ -316,7 +325,7 @@ func (c *Connector) parseWriteResponse(
 
 // getMutationName determines the mutation name based on object and operation type.
 func getMutationName(params common.WriteParams) string {
-	if params.ObjectName == "customerAddresses" {
+	if params.ObjectName == objectCustomerAddresses {
 		if params.RecordId != "" {
 			return "customerAddressUpdate"
 		}
@@ -325,7 +334,7 @@ func getMutationName(params common.WriteParams) string {
 	}
 
 	// Handle customerDefaultAddress - always an update operation
-	if params.ObjectName == "customerDefaultAddress" {
+	if params.ObjectName == objectCustomerDefaultAddress {
 		return "customerUpdateDefaultAddress"
 	}
 
@@ -340,10 +349,10 @@ func getMutationName(params common.WriteParams) string {
 }
 
 // getMutationKey returns the GraphQL response key for the mutation.
-// It returns the mutation name, e.g., "customerCreate" or "customerUpdate"
+// It returns the mutation name, e.g., "customerCreate" or "customerUpdate".
 func getMutationKey(params common.WriteParams) string {
 	// Handle customerAddresses as a special case
-	if params.ObjectName == "customerAddresses" {
+	if params.ObjectName == objectCustomerAddresses {
 		if params.RecordId != "" {
 			return "customerAddressUpdate"
 		}
@@ -352,7 +361,7 @@ func getMutationKey(params common.WriteParams) string {
 	}
 
 	// Handle customerDefaultAddress
-	if params.ObjectName == "customerDefaultAddress" {
+	if params.ObjectName == objectCustomerDefaultAddress {
 		return "customerUpdateDefaultAddress"
 	}
 
@@ -379,12 +388,12 @@ func getMutation(mutationName string) (string, error) {
 
 // buildWriteVariables constructs the variables for GraphQL mutations.
 func buildWriteVariables(params common.WriteParams) map[string]any {
-	if params.ObjectName == "customerAddresses" {
+	if params.ObjectName == objectCustomerAddresses {
 		return buildCustomerAddressVariables(params)
 	}
 
 	// Handle customerDefaultAddress, uses $customerId and $addressId
-	if params.ObjectName == "customerDefaultAddress" {
+	if params.ObjectName == objectCustomerDefaultAddress {
 		return buildCustomerDefaultAddressVariables(params)
 	}
 
@@ -483,7 +492,7 @@ func parseUserErrors(mutationData map[string]any) []UserError {
 
 // extractRecordData extracts the record ID and object data from the mutation response.
 func extractRecordData(mutationData map[string]any, objectName string) (string, map[string]any) {
-	if objectName == "customerAddresses" {
+	if objectName == objectCustomerAddresses {
 		obj, ok := mutationData["address"].(map[string]any)
 		if !ok {
 			return "", nil
@@ -498,7 +507,7 @@ func extractRecordData(mutationData map[string]any, objectName string) (string, 
 	}
 
 	// Handle customerDefaultAddress - response is customer.defaultAddress
-	if objectName == "customerDefaultAddress" {
+	if objectName == objectCustomerDefaultAddress {
 		customer, ok := mutationData["customer"].(map[string]any)
 		if !ok {
 			return "", nil
@@ -595,7 +604,7 @@ func (c *Connector) parseDeleteResponse(
 
 	mutationData, ok := response.Data[mutationKey]
 	if !ok {
-		return nil, fmt.Errorf("no data found for mutation %s", mutationKey)
+		return nil, fmt.Errorf("%w: %s", ErrMutationDataNotFound, mutationKey)
 	}
 
 	userErrors := parseUserErrors(mutationData)
@@ -615,7 +624,7 @@ func (c *Connector) parseDeleteResponse(
 
 // getDeleteMutationName determines the mutation name for delete operations.
 func getDeleteMutationName(params common.DeleteParams) string {
-	if params.ObjectName == "customerAddresses" {
+	if params.ObjectName == objectCustomerAddresses {
 		return "customerAddressDelete"
 	}
 
@@ -629,9 +638,9 @@ func getDeleteMutationName(params common.DeleteParams) string {
 func buildDeleteVariables(params common.DeleteParams) map[string]any {
 	// Handle customerAddresses, requires customerId and addressId
 	// RecordId format: "customerId|addressId" (using | as separator to avoid conflict with gid:// format)
-	if params.ObjectName == "customerAddresses" {
-		parts := strings.SplitN(params.RecordId, "|", 2)
-		if len(parts) == 2 {
+	if params.ObjectName == objectCustomerAddresses {
+		parts := strings.SplitN(params.RecordId, "|", compositeIDParts)
+		if len(parts) == compositeIDParts {
 			return map[string]any{
 				"customerId": parts[0],
 				"addressId":  parts[1],
