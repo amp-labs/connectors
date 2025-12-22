@@ -191,6 +191,60 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 									DisplayValue: "travel",
 								}},
 							},
+							"mailbox__c": {
+								DisplayName:  "MailBox",
+								ValueType:    "string",
+								ProviderType: "email",
+								ReadOnly:     goutils.Pointer(false),
+								IsCustom:     goutils.Pointer(true),
+								IsRequired:   goutils.Pointer(false),
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Compound fields appear as both flat and nested bracket notation fields",
+			Input: []string{"Organization"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.Body(`{"allOrNone":false,"compositeRequest":[{
+					"referenceId":"Organization",
+					"method":"GET",
+					"url":"/services/data/v60.0/sobjects/Organization/describe"
+				}]}`),
+				Then: mockserver.Response(http.StatusOK, responseOrgMeta),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"organization": {
+						DisplayName: "Organization",
+						Fields: map[string]common.FieldMetadata{
+							// Flat field: Latitude appears as a top-level field.
+							"latitude": {
+								DisplayName:  "Latitude",
+								ValueType:    "float",
+								ProviderType: "double",
+								ReadOnly:     goutils.Pointer(false),
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(false),
+								Values:       nil,
+							},
+							// Nested field: Latitude is also a component of the Address compound field.
+							// It appears in bracket notation alongside the flat field.
+							"$['address']['latitude']": {
+								DisplayName:  "Latitude",
+								ValueType:    "float",
+								ProviderType: "double",
+								ReadOnly:     goutils.Pointer(false),
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(false),
+								Values:       nil,
+							},
 						},
 					},
 				},
@@ -236,6 +290,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Created By ID",
 								ValueType:    "other",
 								ProviderType: "reference",
+								ReadOnly:     goutils.Pointer(true),
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(false),
+							},
+							"photourl": {
+								DisplayName:  "Photo URL",
+								ValueType:    "string",
+								ProviderType: "url",
 								ReadOnly:     goutils.Pointer(true),
 								IsCustom:     goutils.Pointer(false),
 								IsRequired:   goutils.Pointer(false),

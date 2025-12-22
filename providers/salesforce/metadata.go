@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/amp-labs/amp-common/jsonpath"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
 )
@@ -156,6 +157,12 @@ type fieldResult struct {
 	Custom            *bool `json:"custom,omitempty"`
 	Nillable          *bool `json:"nillable,omitempty"`
 	DefaultedOnCreate *bool `json:"defaultedOnCreate,omitempty"`
+
+	// CompoundFieldName is the name of the parent compound field if this field is a component.
+	// For example, "BillingStreet" has CompoundFieldName "BillingAddress".
+	// Null/empty for non-component fields.
+	// See: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/compound_fields.htm
+	CompoundFieldName *string `json:"compoundFieldName,omitempty"`
 }
 
 type picklistValue struct {
@@ -166,9 +173,26 @@ type picklistValue struct {
 func (r describeSObjectResult) transformToFields() map[string]common.FieldMetadata {
 	fieldsMap := make(map[string]common.FieldMetadata)
 
+	// First pass: add all fields with their original names as flat fields.
+	// Even if they are components of a compound field.
 	for _, field := range r.Fields {
 		fieldName := strings.ToLower(field.Name)
 		fieldsMap[fieldName] = field.transformToFieldMetadata()
+	}
+
+	// Second pass: add nested fields using bracket notation.
+	// Fields with a CompoundFieldName are components of a compound field (e.g., BillingAddress).
+	// We add them as nested fields alongside the flat fields: $['compoundfield']['component']
+	for _, field := range r.Fields {
+		if field.CompoundFieldName == nil || *field.CompoundFieldName == "" {
+			continue
+		}
+
+		parentName := strings.ToLower(*field.CompoundFieldName)
+		childName := strings.ToLower(field.Name)
+		path := jsonpath.ToNestedPath(parentName, childName)
+
+		fieldsMap[path] = field.transformToFieldMetadata()
 	}
 
 	return fieldsMap
@@ -194,7 +218,7 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
 
 	// Based on type property map value to Ampersand value type.
 	switch f.Type {
-	case "string", "textarea":
+	case "string", "textarea", "url", "email":
 		valueType = common.ValueTypeString
 	case "boolean":
 		valueType = common.ValueTypeBoolean

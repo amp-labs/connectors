@@ -19,7 +19,7 @@ const (
 	// maxRecordsToFetchConcurrently was chosen for the broadest compatibility.
 	// If a consumer has a license that allows for more than 5 concurrent requests,
 	// we should make this configurable.
-	maxRecordsToFetchConcurrently = 5
+	maxRecordsToFetchConcurrently = 2
 
 	maxRecordsPerPage = 1000
 

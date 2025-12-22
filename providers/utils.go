@@ -284,7 +284,7 @@ func (i *ProviderInfo) defaultModuleOrRoot() common.ModuleID {
 type UnauthorizedHandler func(client common.AuthenticatedHTTPClient, event *UnauthorizedEvent) (*http.Response, error)
 
 // IsUnauthorizedDecider is a function called to determine if a response is unauthorized.
-type IsUnauthorizedDecider func(rsp *http.Response) bool
+type IsUnauthorizedDecider func(rsp *http.Response) (bool, error)
 
 // UnauthorizedEvent is the event that is triggered when an unauthorized response (http 401) is received.
 type UnauthorizedEvent struct {
