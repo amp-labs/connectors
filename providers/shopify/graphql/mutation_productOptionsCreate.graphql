@@ -1,0 +1,33 @@
+mutation productOptionsCreate($productId: ID!, $options: [OptionCreateInput!]!, $variantStrategy: ProductOptionCreateVariantStrategy) {
+  productOptionsCreate(productId: $productId, options: $options, variantStrategy: $variantStrategy) {
+    userErrors {
+      field
+      message
+      code
+    }
+    product {
+      id
+      options {
+        id
+        name
+        position
+        values
+        optionValues {
+          id
+          name
+          hasVariants
+        }
+      }
+      variants(first: 10) {
+        nodes {
+          id
+          title
+          selectedOptions {
+            name
+            value
+          }
+        }
+      }
+    }
+  }
+}

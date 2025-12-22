@@ -1,0 +1,13 @@
+mutation productUnpublish($id: ID!, $productPublications: [ProductPublicationInput!]!) {
+  productUnpublish(input: {id: $id, productPublications: $productPublications}) {
+    userErrors {
+      field
+      message
+    }
+    product {
+      id
+      title
+      status
+    }
+  }
+}
