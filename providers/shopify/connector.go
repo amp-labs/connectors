@@ -90,5 +90,5 @@ func constructor(base *components.Connector) (*Connector, error) {
 }
 
 func (c *Connector) getDiscoveryEndpoint() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, "admin/api/2025-01/graphql.json")
+	return urlbuilder.New(c.ProviderInfo().BaseURL, "admin/api/2025-10/graphql.json")
 }
