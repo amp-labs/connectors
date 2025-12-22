@@ -75,3 +75,40 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	return &objectMetadata, nil
 }
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	url, err := c.buildReadURL(params)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+}
+
+func (c *Connector) buildReadURL(params common.ReadParams) (string, error) { // nolint: cyclop
+	urlBuilder, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion+c.accountId, common.AddSuffixIfNotExists(params.ObjectName, ".json")) // nolint:lll
+	if err != nil {
+		return "", err
+	}
+
+	if params.NextPage != "" {
+		urlBuilder.WithQueryParam("page", params.NextPage.String())
+	}
+
+	return urlBuilder.String(), nil
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		records(params.ObjectName),
+		nextRecordsURL(),
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}

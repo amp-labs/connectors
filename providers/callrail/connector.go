@@ -4,6 +4,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
+	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -17,6 +18,7 @@ type Connector struct {
 	common.PostAuthInfo
 
 	components.SchemaProvider
+	components.Reader
 
 	accountId string
 }
@@ -44,6 +46,23 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.SingleObjectMetadataHandlers{
 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
 			ParseResponse: connector.parseSingleObjectMetadataResponse,
+		},
+	)
+
+	registry, err := components.NewEndpointRegistry(supportedOperations())
+	if err != nil {
+		return nil, err
+	}
+
+	// Set the read provider for the connector
+	connector.Reader = reader.NewHTTPReader(
+		connector.HTTPClient().Client,
+		registry,
+		common.ModuleRoot,
+		operations.ReadHandlers{
+			BuildRequest:  connector.buildReadRequest,
+			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  common.InterpretError,
 		},
 	)
 
