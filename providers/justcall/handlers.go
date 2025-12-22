@@ -284,25 +284,44 @@ func extractRecordID(node *ajson.Node) string {
 	query := jsonquery.New(node)
 
 	// Try root level ID
-	if id, err := query.TextWithDefault("id", ""); err == nil && id != "" {
+	if id := getIDFromQuery(query); id != "" {
 		return id
 	}
 
 	// Try in data object (for tags: data.id)
-	if dataNode, err := query.ObjectOptional("data"); err == nil && dataNode != nil {
-		if id, err := jsonquery.New(dataNode).TextWithDefault("id", ""); err == nil && id != "" {
-			return id
-		}
+	if id := getIDFromDataObject(query); id != "" {
+		return id
 	}
 
 	// Try in data array (for contacts: data[0].id)
-	if dataArray, err := query.ArrayOptional("data"); err == nil && len(dataArray) > 0 {
-		if id, err := jsonquery.New(dataArray[0]).TextWithDefault("id", ""); err == nil && id != "" {
-			return id
-		}
+	return getIDFromDataArray(query)
+}
+
+func getIDFromQuery(query *jsonquery.Query) string {
+	id, err := query.TextWithDefault("id", "")
+	if err != nil {
+		return ""
 	}
 
-	return ""
+	return id
+}
+
+func getIDFromDataObject(query *jsonquery.Query) string {
+	dataNode, err := query.ObjectOptional("data")
+	if err != nil || dataNode == nil {
+		return ""
+	}
+
+	return getIDFromQuery(jsonquery.New(dataNode))
+}
+
+func getIDFromDataArray(query *jsonquery.Query) string {
+	dataArray, err := query.ArrayOptional("data")
+	if err != nil || len(dataArray) == 0 {
+		return ""
+	}
+
+	return getIDFromQuery(jsonquery.New(dataArray[0]))
 }
 
 // deletableObjectsWithPathID lists objects where RecordId goes in the URL path for delete.
