@@ -1,0 +1,44 @@
+{
+  "data": {
+    "productOptionsCreate": {
+      "userErrors": [],
+      "product": {
+        "id": "gid://shopify/Product/1072482054",
+        "options": [
+          {
+            "id": "gid://shopify/ProductOption/1064576667",
+            "name": "Color",
+            "position": 1,
+            "values": ["Blue"],
+            "optionValues": [
+              {
+                "id": "gid://shopify/ProductOptionValue/1054672581",
+                "name": "Blue",
+                "hasVariants": true
+              },
+              {
+                "id": "gid://shopify/ProductOptionValue/1054672582",
+                "name": "Red",
+                "hasVariants": false
+              }
+            ]
+          }
+        ],
+        "variants": {
+          "nodes": [
+            {
+              "id": "gid://shopify/ProductVariant/1070325307",
+              "title": "Blue",
+              "selectedOptions": [
+                {
+                  "name": "Color",
+                  "value": "Blue"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}
