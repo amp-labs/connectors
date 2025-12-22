@@ -2,10 +2,15 @@ package cloudtalk
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/readhelper"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/cloudtalk/metadata"
 	"github.com/spyzhov/ajson"
@@ -23,22 +28,60 @@ type ResponseData struct {
 	ItemsCount int              `json:"itemsCount"`
 }
 
+type ResponseError struct {
+	Error string `json:"error"`
+}
+
+func (r *ResponseError) CombineErr(baseErr error) error {
+	if r.Error == "" {
+		return baseErr
+	}
+
+	return fmt.Errorf("%w: %s", baseErr, r.Error)
+}
+
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := c.getURL(params.ObjectName)
+	path, err := c.getURLPath(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-}
-
-func (c *Connector) getURL(objectName string) (string, error) {
-	path, err := metadata.Schemas.FindURLPath(c.ProviderContext.Module(), objectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return c.ProviderInfo().BaseURL + path, nil
+	// Pagination
+	// CloudTalk uses 1-based indexing for pages
+	page := "1"
+	if params.NextPage != "" {
+		page = params.NextPage.String()
+	}
+
+	url.WithQueryParam("page", page)
+
+	if params.PageSize > 0 {
+		url.WithQueryParam("limit", strconv.Itoa(params.PageSize))
+	}
+
+	// Filtering
+	if params.ObjectName == "calls" || params.ObjectName == "activity" {
+		// https://developers.cloudtalk.io/reference/list-calls#tag/Calls
+		// https://developers.cloudtalk.io/reference/list-activities
+		if !params.Since.IsZero() {
+			url.WithQueryParam("date_from", params.Since.Format(time.DateTime))
+		}
+
+		if !params.Until.IsZero() {
+			url.WithQueryParam("date_to", params.Until.Format(time.DateTime))
+		}
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) getURLPath(objectName string) (string, error) {
+	return metadata.Schemas.FindURLPath(c.ProviderContext.Module(), objectName)
 }
 
 func (c *Connector) parseReadResponse(
@@ -47,68 +90,35 @@ func (c *Connector) parseReadResponse(
 	req *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	node, ok := resp.Body()
-	if !ok {
-		return nil, common.ErrEmptyJSONHTTPResponse
-	}
-
-	data, err := extractReadData(node)
-	if err != nil {
-		return nil, err
-	}
-
-	nextPage, itemsCount, err := makeNextPageToken(node)
-	if err != nil {
-		return nil, err
-	}
-
-	return &common.ReadResult{
-		Rows:     itemsCount,
-		Data:     data,
-		NextPage: common.NextPageToken(nextPage),
-		Done:     nextPage == "",
-	}, nil
+	return common.ParseResultFiltered(
+		params,
+		resp,
+		common.MakeRecordsFunc("data", "responseData"),
+		makeFilterFunc(params),
+		common.MakeMarshaledDataFunc(nil),
+		params.Fields,
+	)
 }
 
-func extractReadData(node *ajson.Node) ([]common.ReadResultRow, error) {
-	// Extract data
-	dataNodes, err := jsonquery.New(node, "responseData").ArrayRequired("data")
-	if err != nil {
-		return nil, err
-	}
-
-	data := make([]common.ReadResultRow, len(dataNodes))
-	for i, n := range dataNodes {
-		m, err := jsonquery.Convertor.ObjectToMap(n)
-		if err != nil {
-			return nil, err
-		}
-
-		data[i] = common.ReadResultRow{
-			Fields: m,
-			Raw:    m,
-		}
-	}
-
-	return data, nil
+func makeFilterFunc(_ common.ReadParams) common.RecordsFilterFunc {
+	// CloudTalk only supports provider-side filtering for 'calls' and 'activity'.
+	// For other objects, the provider does not expose a timestamp field in the list response,
+	// so client-side filtering is not possible.
+	// We return an identity filter to perform a full read.
+	return readhelper.MakeIdentityFilterFunc(makeNextPageToken)
 }
 
-func makeNextPageToken(node *ajson.Node) (string, int64, error) {
+func makeNextPageToken(node *ajson.Node) (string, error) {
 	responseData := jsonquery.New(node, "responseData")
-
-	itemsCount, err := responseData.IntegerWithDefault("itemsCount", 0)
-	if err != nil {
-		return "", 0, err
-	}
 
 	pageNumber, err := responseData.IntegerWithDefault("pageNumber", 0)
 	if err != nil {
-		return "", 0, err
+		return "", err
 	}
 
 	pageCount, err := responseData.IntegerWithDefault("pageCount", 0)
 	if err != nil {
-		return "", 0, err
+		return "", err
 	}
 
 	var nextPage string
@@ -118,9 +128,22 @@ func makeNextPageToken(node *ajson.Node) (string, int64, error) {
 		nextPage = strconv.Itoa(int(pageNumber) + 1)
 	}
 
-	return nextPage, itemsCount, nil
+	return nextPage, nil
 }
 
-func interpretError(res *http.Response, body []byte) error {
-	return common.InterpretError(res, body)
-}
+var (
+	errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
+		interpreter.FormatTemplate{
+			MustKeys: []string{"error"},
+			Template: func() interpreter.ErrorDescriptor { return &ResponseError{} },
+		},
+	)
+
+	statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
+		http.StatusNotFound: common.ErrNotFound,
+	}
+
+	interpretError = interpreter.ErrorHandler{ // nolint:gochecknoglobals
+		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
+	}.Handle
+)

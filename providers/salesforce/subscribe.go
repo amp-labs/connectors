@@ -42,7 +42,7 @@ type SubscriptionRequest struct {
 // Registration is required prior to subscribing.
 //
 //nolint:funlen,cyclop,varnamelen
-func (c *Connector) Subscribe(
+func (c *Connector) Subscribe( // nolint:gocognit
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {

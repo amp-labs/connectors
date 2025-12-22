@@ -53,7 +53,7 @@ type oauthClientParams struct {
 	tokenUpdated   func(oldToken, newToken *oauth2.Token) error
 	unauthorized   func(token *oauth2.Token, req *http.Request, rsp *http.Response) (*http.Response, error)
 	debug          func(req *http.Request, rsp *http.Response)
-	isUnauthorized func(rsp *http.Response) bool
+	isUnauthorized func(rsp *http.Response) (bool, error)
 }
 
 // WithOAuthClient sets the http client to use for the connector. Its usage is optional.
@@ -102,7 +102,7 @@ func WithOAuthUnauthorizedHandler(
 // This is useful for handling the case where the server has invalidated the token, and the client
 // needs to forcefully refresh. It's optional.
 func WithOAuthIsUnauthorizedHandler(
-	f func(rsp *http.Response) bool,
+	f func(rsp *http.Response) (bool, error),
 ) OAuthOption {
 	return func(params *oauthClientParams) {
 		params.isUnauthorized = f
@@ -176,32 +176,7 @@ type oauth2Transport struct {
 	Base           http.RoundTripper
 	Debug          func(req *http.Request, rsp *http.Response)
 	Unauthorized   func(token *oauth2.Token, req *http.Request, rsp *http.Response) (*http.Response, error)
-	IsUnauthorized func(rsp *http.Response) bool
-}
-
-// getTokenFromSource retrieves a token from the TokenSource.
-func (t *oauth2Transport) getTokenFromSource(ctx context.Context) (*oauth2.Token, error) { // nolint:funcorder
-	srcCtx, ok := t.Source.(TokenSourceWithContext)
-	if ok {
-		return srcCtx.TokenWithContext(ctx)
-	}
-
-	return t.Source.Token()
-}
-
-// handleUnauthorizedResponse handles 401 responses or custom unauthorized conditions.
-func (t *oauth2Transport) handleUnauthorizedResponse( // nolint:funcorder
-	token *oauth2.Token,
-	req *http.Request,
-	rsp *http.Response,
-) (*http.Response, error) {
-	if rsp.StatusCode == http.StatusUnauthorized || (t.IsUnauthorized != nil && t.IsUnauthorized(rsp)) {
-		if t.Unauthorized != nil {
-			return t.Unauthorized(token, req, rsp)
-		}
-	}
-
-	return rsp, nil
+	IsUnauthorized func(rsp *http.Response) (bool, error)
 }
 
 func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
@@ -241,6 +216,44 @@ func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 
 	return t.handleUnauthorizedResponse(token, req2, rsp)
+}
+
+// getTokenFromSource retrieves a token from the TokenSource.
+func (t *oauth2Transport) getTokenFromSource(ctx context.Context) (*oauth2.Token, error) {
+	srcCtx, ok := t.Source.(TokenSourceWithContext)
+	if ok {
+		return srcCtx.TokenWithContext(ctx)
+	}
+
+	return t.Source.Token()
+}
+
+func (t *oauth2Transport) isUnauthorized(rsp *http.Response) (bool, error) {
+	if t.IsUnauthorized != nil {
+		return t.IsUnauthorized(rsp)
+	}
+
+	return rsp.StatusCode == http.StatusUnauthorized, nil
+}
+
+// handleUnauthorizedResponse handles 401 responses or custom unauthorized conditions.
+func (t *oauth2Transport) handleUnauthorizedResponse(
+	token *oauth2.Token,
+	req *http.Request,
+	rsp *http.Response,
+) (*http.Response, error) {
+	isUnauthorized, err := t.isUnauthorized(rsp)
+	if err != nil {
+		return nil, err
+	}
+
+	if isUnauthorized {
+		if t.Unauthorized != nil {
+			return t.Unauthorized(token, req, rsp)
+		}
+	}
+
+	return rsp, nil
 }
 
 func (t *oauth2Transport) base() http.RoundTripper {
