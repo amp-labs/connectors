@@ -22,11 +22,28 @@ type (
 )
 
 var (
-	_ common.SubscriptionEvent       = SubscriptionEvent{}
-	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
+	_ common.SubscriptionEvent          = SubscriptionEvent{}
+	_ common.SubscriptionUpdateEvent    = SubscriptionEvent{}
+	_ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 
 	errTypeMismatch = errors.New("type mismatch")
 )
+
+// CollapsedSubscriptionEvent represents the raw webhook payload from Outreach.
+// Unlike Salesforce or Zoho, Outreach sends individual events (one record per webhook),
+// so this implementation simply wraps the single event.
+type CollapsedSubscriptionEvent map[string]any
+
+// RawMap returns a copy of the raw event data.
+func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
+	return maps.Clone(e), nil
+}
+
+// SubscriptionEventList returns the event as a single-element list.
+// Outreach webhooks contain only one record per payload, so no fan-out is needed.
+func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.SubscriptionEvent, error) {
+	return []common.SubscriptionEvent{SubscriptionEvent(e)}, nil
+}
 
 const (
 	OutreachWebhookSignatureHeader = "Outreach-Webhook-Signature"
@@ -137,7 +154,7 @@ func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 		return common.SubscriptionEventTypeCreate, nil
 	case "updated":
 		return common.SubscriptionEventTypeUpdate, nil
-	case "deleted":
+	case "destroyed":
 		return common.SubscriptionEventTypeDelete, nil
 	default:
 		return common.SubscriptionEventTypeOther, nil
@@ -203,12 +220,16 @@ func (evt SubscriptionEvent) RecordId() (string, error) {
 		return "", fmt.Errorf("%w: expected %T got %T", errTypeMismatch, dataMap, data)
 	}
 
-	id, ok := dataMap["id"].(string)
-	if !ok {
-		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, id, dataMap["id"])
+	// Outreach sends numeric IDs in webhook payloads.
+	// JSON unmarshals numbers as float64, so we handle both string and numeric types.
+	switch id := dataMap["id"].(type) {
+	case string:
+		return id, nil
+	case float64:
+		return fmt.Sprintf("%.0f", id), nil
+	default:
+		return "", fmt.Errorf("%w: expected string or number, got %T", errTypeMismatch, dataMap["id"])
 	}
-
-	return id, nil
 }
 
 // Workspace returns an empty string as there is no workspace concept in Outreach.

@@ -10,6 +10,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/go-playground/validator"
@@ -53,7 +54,7 @@ func (c *Connector) Subscribe(
 	// Process all object+event combinations
 	for obj, events := range params.SubscriptionEvents {
 		for _, event := range events.Events {
-			currObj := obj
+			currObj := common.ObjectName(naming.NewSingularString(string(obj)).String())
 			currentEvent := event
 
 			callbacks = append(callbacks, func(ctx context.Context) error {
