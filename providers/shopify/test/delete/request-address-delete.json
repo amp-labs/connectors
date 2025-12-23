@@ -1,7 +1,0 @@
-{
-  "query": "mutation customerAddressDelete($customerId: ID!, $addressId: ID!) {\n  customerAddressDelete(customerId: $customerId, addressId: $addressId) {\n    deletedAddressId\n    userErrors {\n      field\n      message\n    }\n  }\n}\n",
-  "variables": {
-    "customerId": "gid://shopify/Customer/1018520244",
-    "addressId": "gid://shopify/MailingAddress/1053318591"
-  }
-}
