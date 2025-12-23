@@ -20,8 +20,6 @@ const (
 	objectCustomerDefaultAddress = "customerDefaultAddress"
 	objectProducts               = "products"
 	objectProductOptions         = "productOptions"
-	objectProductPublish         = "productPublish"
-	objectProductUnpublish       = "productUnpublish"
 	compositeIDParts             = 2
 )
 
@@ -347,16 +345,6 @@ func getMutationName(params common.WriteParams) string {
 		return "productOptionsCreate"
 	}
 
-	// Handle productPublish - publish a product to sales channels.
-	if params.ObjectName == objectProductPublish {
-		return "productPublish"
-	}
-
-	// Handle productUnpublish - unpublish a product from sales channels.
-	if params.ObjectName == objectProductUnpublish {
-		return "productUnpublish"
-	}
-
 	// Convert plural object name to singular for mutation name, e.g., "customers" -> "customer"
 	singular := naming.NewSingularString(params.ObjectName).String()
 
@@ -386,16 +374,6 @@ func getMutationKey(params common.WriteParams) string {
 	// Handle productOptions.
 	if params.ObjectName == objectProductOptions {
 		return "productOptionsCreate"
-	}
-
-	// Handle productPublish.
-	if params.ObjectName == objectProductPublish {
-		return "productPublish"
-	}
-
-	// Handle productUnpublish.
-	if params.ObjectName == objectProductUnpublish {
-		return "productUnpublish"
 	}
 
 	singular := naming.NewSingularString(params.ObjectName).String()
@@ -433,16 +411,6 @@ func buildWriteVariables(params common.WriteParams) map[string]any {
 	// Handle productOptions - uses $productId, $options, and optional $variantStrategy.
 	if params.ObjectName == objectProductOptions {
 		return buildProductOptionsVariables(params)
-	}
-
-	// Handle productPublish - uses $id and $productPublications.
-	if params.ObjectName == objectProductPublish {
-		return buildProductPublishVariables(params)
-	}
-
-	// Handle productUnpublish - uses $id and $productPublications.
-	if params.ObjectName == objectProductUnpublish {
-		return buildProductPublishVariables(params)
 	}
 
 	// Handle products - uses $product for create, $input for update.
@@ -552,26 +520,6 @@ func buildProductOptionsVariables(params common.WriteParams) map[string]any {
 	return variables
 }
 
-// buildProductPublishVariables builds variables for productPublish/productUnpublish mutations.
-func buildProductPublishVariables(params common.WriteParams) map[string]any {
-	recordData, ok := params.RecordData.(map[string]any)
-	if !ok {
-		return map[string]any{}
-	}
-
-	variables := make(map[string]any)
-
-	if id, exists := recordData["id"]; exists {
-		variables["id"] = id
-	}
-
-	if productPublications, exists := recordData["productPublications"]; exists {
-		variables["productPublications"] = productPublications
-	}
-
-	return variables
-}
-
 // injectIDIntoInput adds the record ID inside the input for update operations.
 func injectIDIntoInput(variables map[string]any, recordID string) {
 	input, ok := variables["input"].(map[string]any)
@@ -613,7 +561,7 @@ func extractRecordData(mutationData map[string]any, objectName string) (string, 
 		return extractFromKey(mutationData, "address")
 	case objectCustomerDefaultAddress:
 		return extractCustomerDefaultAddress(mutationData)
-	case objectProductOptions, objectProductPublish, objectProductUnpublish:
+	case objectProductOptions:
 		return extractFromKey(mutationData, "product")
 	default:
 		singular := naming.NewSingularString(objectName).String()
