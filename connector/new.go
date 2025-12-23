@@ -68,6 +68,7 @@ import (
 	"github.com/amp-labs/connectors/providers/intercom"
 	"github.com/amp-labs/connectors/providers/iterable"
 	"github.com/amp-labs/connectors/providers/jobber"
+	"github.com/amp-labs/connectors/providers/justcall"
 	"github.com/amp-labs/connectors/providers/kaseyavsax"
 	"github.com/amp-labs/connectors/providers/keap"
 	"github.com/amp-labs/connectors/providers/kit"
@@ -186,6 +187,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Intercom:                wrapper(newIntercomConnector),
 	providers.Iterable:                wrapper(newIterableConnector),
 	providers.Jobber:                  wrapper(newJobberConnector),
+	providers.JustCall:                wrapper(newJustCallConnector),
 	providers.KaseyaVSAX:              wrapper(newKaseyaVSAXConnector),
 	providers.Keap:                    wrapper(newKeapConnector),
 	providers.Kit:                     wrapper(newKitConnector),
@@ -868,6 +870,11 @@ func newPaddleConnector(params common.ConnectorParams,
 func newJobberConnector(params common.ConnectorParams,
 ) (*jobber.Connector, error) {
 	return jobber.NewConnector(params)
+}
+
+func newJustCallConnector(params common.ConnectorParams,
+) (*justcall.Connector, error) {
+	return justcall.NewConnector(params)
 }
 
 func newChorusConnector(params common.ConnectorParams,
