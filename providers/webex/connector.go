@@ -1,4 +1,4 @@
-package ciscowebex
+package webex
 
 import (
 	"github.com/amp-labs/connectors/common"
@@ -21,7 +21,7 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(providers.CiscoWebex, params, constructor)
+	return components.Initialize(providers.Webex, params, constructor)
 }
 
 func constructor(base *components.Connector) (*Connector, error) {

@@ -4,8 +4,8 @@ import (
 	"context"
 	"os"
 
-	connTest "github.com/amp-labs/connectors/test/ciscowebex"
 	"github.com/amp-labs/connectors/test/utils"
+	connTest "github.com/amp-labs/connectors/test/webex"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 
 func run() error {
 	ctx := context.Background()
-	connector := connTest.GetCiscoWebexConnector(ctx)
+	connector := connTest.GetWebexConnector(ctx)
 
 	m, err := connector.ListObjectMetadata(ctx, []string{"people", "roles", "groups"})
 	if err != nil {

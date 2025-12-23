@@ -8,9 +8,9 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
-	connTest "github.com/amp-labs/connectors/test/ciscowebex"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/testscenario"
+	connTest "github.com/amp-labs/connectors/test/webex"
 	"github.com/brianvoe/gofakeit/v6"
 )
 
@@ -28,7 +28,7 @@ func main() {
 
 	utils.SetupLogging()
 
-	conn := connTest.GetCiscoWebexConnector(ctx)
+	conn := connTest.GetWebexConnector(ctx)
 
 	email := gofakeit.Email()
 	updatedEmail := gofakeit.Email()
