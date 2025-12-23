@@ -16,14 +16,10 @@ func TestDelete(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	responseCustomerDelete := testutils.DataFromFile(t, "delete/response-customer-delete.json")
-	responseAddressDelete := testutils.DataFromFile(t, "delete/response-address-delete.json")
 	responseProductDelete := testutils.DataFromFile(t, "delete/response-product-delete.json")
-	responseProductOptionsDelete := testutils.DataFromFile(t, "delete/response-product-options-delete.json")
 
 	requestCustomerDelete := testutils.DataFromFile(t, "delete/request-customer-delete.json")
-	requestAddressDelete := testutils.DataFromFile(t, "delete/request-address-delete.json")
 	requestProductDelete := testutils.DataFromFile(t, "delete/request-product-delete.json")
-	requestProductOptionsDelete := testutils.DataFromFile(t, "delete/request-product-options-delete.json")
 
 	tests := []testroutines.Delete{
 		{
@@ -47,31 +43,10 @@ func TestDelete(t *testing.T) { //nolint:funlen
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path(testApiPath),
+					mockcond.Path("/admin/api/2025-10/graphql.json"),
 					mockcond.Body(string(requestCustomerDelete)),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCustomerDelete),
-			}.Server(),
-			Expected: &common.DeleteResult{
-				Success: true,
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name: "Successful customer address delete",
-			Input: common.DeleteParams{
-				ObjectName: "customerAddresses",
-				// Format: "customerId|addressId"
-				RecordId: "gid://shopify/Customer/1018520244|gid://shopify/MailingAddress/1053318591",
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPOST(),
-					mockcond.Path(testApiPath),
-					mockcond.Body(string(requestAddressDelete)),
-				},
-				Then: mockserver.Response(http.StatusOK, responseAddressDelete),
 			}.Server(),
 			Expected: &common.DeleteResult{
 				Success: true,
@@ -88,31 +63,10 @@ func TestDelete(t *testing.T) { //nolint:funlen
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path(testApiPath),
+					mockcond.Path("/admin/api/2025-10/graphql.json"),
 					mockcond.Body(string(requestProductDelete)),
 				},
 				Then: mockserver.Response(http.StatusOK, responseProductDelete),
-			}.Server(),
-			Expected: &common.DeleteResult{
-				Success: true,
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name: "Successful product options delete",
-			Input: common.DeleteParams{
-				ObjectName: "productOptions",
-				// Format: "productId|optionId1,optionId2,..."
-				RecordId: "gid://shopify/Product/1072482054|gid://shopify/ProductOption/1064576667",
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPOST(),
-					mockcond.Path(testApiPath),
-					mockcond.Body(string(requestProductOptionsDelete)),
-				},
-				Then: mockserver.Response(http.StatusOK, responseProductOptionsDelete),
 			}.Server(),
 			Expected: &common.DeleteResult{
 				Success: true,
