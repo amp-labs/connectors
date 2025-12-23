@@ -15,12 +15,6 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 )
 
-const (
-	objectCustomerAddresses      = "customerAddresses"
-	objectCustomerDefaultAddress = "customerDefaultAddress"
-	compositeIDParts             = 2
-)
-
 var ErrMutationDataNotFound = errors.New("no data found for mutation")
 
 // perPage is the default number of records per page for Shopify GraphQL API.
@@ -325,19 +319,6 @@ func (c *Connector) parseWriteResponse(
 
 // getMutationName determines the mutation name based on object and operation type.
 func getMutationName(params common.WriteParams) string {
-	if params.ObjectName == objectCustomerAddresses {
-		if params.RecordId != "" {
-			return "customerAddressUpdate"
-		}
-
-		return "customerAddressCreate"
-	}
-
-	// Handle customerDefaultAddress - always an update operation
-	if params.ObjectName == objectCustomerDefaultAddress {
-		return "customerUpdateDefaultAddress"
-	}
-
 	// Convert plural object name to singular for mutation name, e.g., "customers" -> "customer"
 	singular := naming.NewSingularString(params.ObjectName).String()
 
@@ -350,20 +331,6 @@ func getMutationName(params common.WriteParams) string {
 
 // getMutationKey returns the GraphQL response key for the mutation.
 func getMutationKey(params common.WriteParams) string {
-	// Handle customerAddresses as a special case
-	if params.ObjectName == objectCustomerAddresses {
-		if params.RecordId != "" {
-			return "customerAddressUpdate"
-		}
-
-		return "customerAddressCreate"
-	}
-
-	// Handle customerDefaultAddress
-	if params.ObjectName == objectCustomerDefaultAddress {
-		return "customerUpdateDefaultAddress"
-	}
-
 	singular := naming.NewSingularString(params.ObjectName).String()
 
 	if params.RecordId != "" {
@@ -387,69 +354,12 @@ func getMutation(mutationName string) (string, error) {
 
 // buildWriteVariables constructs the variables for GraphQL mutations.
 func buildWriteVariables(params common.WriteParams) map[string]any {
-	if params.ObjectName == objectCustomerAddresses {
-		return buildCustomerAddressVariables(params)
-	}
-
-	// Handle customerDefaultAddress, uses $customerId and $addressId
-	if params.ObjectName == objectCustomerDefaultAddress {
-		return buildCustomerDefaultAddressVariables(params)
-	}
-
 	variables := map[string]any{
 		"input": params.RecordData,
 	}
 
 	if params.RecordId != "" {
 		injectIDIntoInput(variables, params.RecordId)
-	}
-
-	return variables
-}
-
-// buildCustomerAddressVariables builds variables for customerAddress mutations.
-func buildCustomerAddressVariables(params common.WriteParams) map[string]any {
-	recordData, ok := params.RecordData.(map[string]any)
-	if !ok {
-		return map[string]any{}
-	}
-
-	variables := make(map[string]any)
-
-	if customerId, exists := recordData["customerId"]; exists {
-		variables["customerId"] = customerId
-	}
-
-	if address, exists := recordData["address"]; exists {
-		variables["address"] = address
-	}
-
-	if setAsDefault, exists := recordData["setAsDefault"]; exists {
-		variables["setAsDefault"] = setAsDefault
-	}
-
-	if params.RecordId != "" {
-		variables["addressId"] = params.RecordId
-	}
-
-	return variables
-}
-
-// buildCustomerDefaultAddressVariables builds variables for customerUpdateDefaultAddress mutation.
-func buildCustomerDefaultAddressVariables(params common.WriteParams) map[string]any {
-	recordData, ok := params.RecordData.(map[string]any)
-	if !ok {
-		return map[string]any{}
-	}
-
-	variables := make(map[string]any)
-
-	if customerId, exists := recordData["customerId"]; exists {
-		variables["customerId"] = customerId
-	}
-
-	if addressId, exists := recordData["addressId"]; exists {
-		variables["addressId"] = addressId
 	}
 
 	return variables
@@ -491,40 +401,6 @@ func parseUserErrors(mutationData map[string]any) []UserError {
 
 // extractRecordData extracts the record ID and object data from the mutation response.
 func extractRecordData(mutationData map[string]any, objectName string) (string, map[string]any) {
-	if objectName == objectCustomerAddresses {
-		obj, ok := mutationData["address"].(map[string]any)
-		if !ok {
-			return "", nil
-		}
-
-		recordID := ""
-		if id, ok := obj["id"].(string); ok {
-			recordID = id
-		}
-
-		return recordID, obj
-	}
-
-	// Handle customerDefaultAddress - response is customer.defaultAddress
-	if objectName == objectCustomerDefaultAddress {
-		customer, ok := mutationData["customer"].(map[string]any)
-		if !ok {
-			return "", nil
-		}
-
-		defaultAddress, ok := customer["defaultAddress"].(map[string]any)
-		if !ok {
-			return "", customer
-		}
-
-		recordID := ""
-		if id, ok := defaultAddress["id"].(string); ok {
-			recordID = id
-		}
-
-		return recordID, defaultAddress
-	}
-
 	// Get the singular object name for the response key
 	singular := naming.NewSingularString(objectName).String()
 
@@ -623,10 +499,6 @@ func (c *Connector) parseDeleteResponse(
 
 // getDeleteMutationName determines the mutation name for delete operations.
 func getDeleteMutationName(params common.DeleteParams) string {
-	if params.ObjectName == objectCustomerAddresses {
-		return "customerAddressDelete"
-	}
-
 	// Convert plural object name to singular for mutation name, e.g., "customers" -> "customerDelete"
 	singular := naming.NewSingularString(params.ObjectName).String()
 
@@ -635,21 +507,6 @@ func getDeleteMutationName(params common.DeleteParams) string {
 
 // buildDeleteVariables constructs the variables for delete mutations.
 func buildDeleteVariables(params common.DeleteParams) map[string]any {
-	// RecordId format: "customerId|addressId".
-	if params.ObjectName == objectCustomerAddresses {
-		parts := strings.SplitN(params.RecordId, "|", compositeIDParts)
-		if len(parts) == compositeIDParts {
-			return map[string]any{
-				"customerId": parts[0],
-				"addressId":  parts[1],
-			}
-		}
-
-		return map[string]any{
-			"addressId": params.RecordId,
-		}
-	}
-
 	return map[string]any{
 		"id": params.RecordId,
 	}

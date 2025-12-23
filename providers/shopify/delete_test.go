@@ -16,10 +16,8 @@ func TestDelete(t *testing.T) {
 	t.Parallel()
 
 	responseCustomerDelete := testutils.DataFromFile(t, "delete/response-customer-delete.json")
-	responseAddressDelete := testutils.DataFromFile(t, "delete/response-address-delete.json")
 
 	requestCustomerDelete := testutils.DataFromFile(t, "delete/request-customer-delete.json")
-	requestAddressDelete := testutils.DataFromFile(t, "delete/request-address-delete.json")
 
 	tests := []testroutines.Delete{
 		{
@@ -47,27 +45,6 @@ func TestDelete(t *testing.T) {
 					mockcond.Body(string(requestCustomerDelete)),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCustomerDelete),
-			}.Server(),
-			Expected: &common.DeleteResult{
-				Success: true,
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name: "Successful customer address delete",
-			Input: common.DeleteParams{
-				ObjectName: "customerAddresses",
-				// Format: "customerId|addressId"
-				RecordId: "gid://shopify/Customer/1018520244|gid://shopify/MailingAddress/1053318591",
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPOST(),
-					mockcond.Path("/admin/api/2025-10/graphql.json"),
-					mockcond.Body(string(requestAddressDelete)),
-				},
-				Then: mockserver.Response(http.StatusOK, responseAddressDelete),
 			}.Server(),
 			Expected: &common.DeleteResult{
 				Success: true,
