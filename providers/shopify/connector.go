@@ -13,6 +13,8 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
+const apiVersion = "2025-10"
+
 type Connector struct {
 	// Basic connector
 	*components.Connector
@@ -90,5 +92,5 @@ func constructor(base *components.Connector) (*Connector, error) {
 }
 
 func (c *Connector) getDiscoveryEndpoint() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, "admin/api/2025-10/graphql.json")
+	return urlbuilder.New(c.ProviderInfo().BaseURL, "admin/api", apiVersion, "graphql.json")
 }
