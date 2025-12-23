@@ -3,7 +3,7 @@ package providers
 const Segment Provider = "segment"
 
 func init() {
-	// Pylon configuration
+	// Segment configuration
 	SetInfo(Segment, ProviderInfo{
 		DisplayName: "Segment",
 		AuthType:    ApiKey,
