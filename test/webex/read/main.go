@@ -8,9 +8,9 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	connTest "github.com/amp-labs/connectors/test/ciscowebex"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/testscenario"
+	connTest "github.com/amp-labs/connectors/test/webex"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetCiscoWebexConnector(ctx)
+	conn := connTest.GetWebexConnector(ctx)
 
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "people",

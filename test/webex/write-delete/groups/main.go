@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/internal/datautils"
-	connTest "github.com/amp-labs/connectors/test/ciscowebex"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/testscenario"
+	connTest "github.com/amp-labs/connectors/test/webex"
 	"github.com/brianvoe/gofakeit/v6"
 )
 
@@ -23,7 +23,7 @@ func main() {
 
 	utils.SetupLogging()
 
-	conn := connTest.GetCiscoWebexConnector(ctx)
+	conn := connTest.GetWebexConnector(ctx)
 
 	displayName := gofakeit.Company() + " Group"
 	updatedDisplayName := gofakeit.Company() + " Group Updated"

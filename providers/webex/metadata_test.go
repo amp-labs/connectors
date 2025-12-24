@@ -1,4 +1,4 @@
-package ciscowebex
+package webex
 
 import (
 	"net/http"
