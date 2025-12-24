@@ -281,7 +281,7 @@ type ReadResultRow struct {
 	Associations map[string][]Association `json:"associations,omitempty"`
 	// Raw is the raw JSON response from the provider.
 	Raw map[string]any `json:"raw"`
-	// RecordId is the ID of the record. Currently only populated for hubspot GetRecord and GetRecordsWithId function
+	// RecordId is the ID of the record.
 	Id string `json:"id,omitempty"`
 }
 
