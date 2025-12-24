@@ -1,13 +1,19 @@
 package callrail
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 const (
@@ -111,4 +117,90 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	var (
+		paylod = params.RecordData
+		method = http.MethodPost
+		url    *urlbuilder.URL
+		err    error
+	)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion+c.accountId, common.AddSuffixIfNotExists(params.ObjectName, ".json")) // nolint:lll
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		url, err = urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion+c.accountId, params.ObjectName)
+		if err != nil {
+			return nil, err
+		}
+
+		url.AddPath(common.AddSuffixIfNotExists(params.RecordId, ".json"))
+
+		method = http.MethodPut
+	}
+
+	jsonData, err := json.Marshal(paylod)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+func retrieveRecordId(body *ajson.Node) (string, error) {
+	var idVal string
+
+	// 1. we try integer
+	recordID, err := jsonquery.New(body).IntegerWithDefault("id", 0)
+	if !errors.Is(err, jsonquery.ErrNotNumeric) {
+		return "", err
+	}
+
+	idVal = strconv.Itoa(int(recordID))
+
+	// 2. we try string
+	if recordID == 0 {
+		recordId, err := jsonquery.New(body).StrWithDefault("id", "")
+		if err != nil {
+			return "nil", err
+		}
+
+		idVal = recordId
+	}
+
+	return idVal, nil
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return nil, err
+	}
+
+	recordID, err := retrieveRecordId(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		Data:     data,
+		RecordId: recordID,
+	}, nil
 }
