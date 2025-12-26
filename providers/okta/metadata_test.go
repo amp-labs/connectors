@@ -75,8 +75,38 @@ func TestListObjectMetadata(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
+			Name:   "Successfully describe apps object",
+			Input:  []string{"apps"},
+			Server: mockserver.Dummy(),
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"apps": {
+						DisplayName: "Applications",
+						FieldsMap: map[string]string{
+							"id":          "id",
+							"name":        "name",
+							"label":       "label",
+							"status":      "status",
+							"created":     "created",
+							"lastUpdated": "lastUpdated",
+							"activated":   "activated",
+							"signOnMode":  "signOnMode",
+							"features":    "features",
+							"visibility":  "visibility",
+							"credentials": "credentials",
+							"settings":    "settings",
+							"_links":      "_links",
+						},
+					},
+				},
+				Errors: nil,
+			},
+			Comparator:   testroutines.ComparatorSubsetMetadata,
+			ExpectedErrs: nil,
+		},
+		{
 			Name:   "Successfully describe multiple objects",
-			Input:  []string{"users", "groups"},
+			Input:  []string{"users", "groups", "apps"},
 			Server: mockserver.Dummy(),
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
@@ -92,6 +122,13 @@ func TestListObjectMetadata(t *testing.T) {
 						FieldsMap: map[string]string{
 							"id":   "id",
 							"type": "type",
+						},
+					},
+					"apps": {
+						DisplayName: "Applications",
+						FieldsMap: map[string]string{
+							"id":    "id",
+							"label": "label",
 						},
 					},
 				},
