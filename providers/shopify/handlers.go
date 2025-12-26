@@ -525,7 +525,6 @@ func (c *Connector) parseDeleteResponse(
 
 // getDeleteMutationName determines the mutation name for delete operations.
 func getDeleteMutationName(params common.DeleteParams) string {
-	// Convert plural object name to singular for mutation name.
 	singular := naming.NewSingularString(params.ObjectName).String()
 
 	return singular + "Delete"

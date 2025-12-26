@@ -1,0 +1,21 @@
+{
+  "status": "success",
+  "data": [
+    {
+      "id": 9001,
+      "topic": "call.completed",
+      "url": "https://example.com/webhooks/call-completed",
+      "status": "active",
+      "created_at": "2024-01-15 10:00:00",
+      "updated_at": "2024-01-15 10:00:00"
+    },
+    {
+      "id": 9002,
+      "topic": "sms.received",
+      "url": "https://example.com/webhooks/sms-received",
+      "status": "active",
+      "created_at": "2024-02-20 15:30:00",
+      "updated_at": "2024-02-20 15:30:00"
+    }
+  ]
+}
