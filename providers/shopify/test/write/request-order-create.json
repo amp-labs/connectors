@@ -1,0 +1,13 @@
+{
+    "query": "mutation orderCreate($order: OrderCreateOrderInput!, $options: OrderCreateOptionsInput) {\n  orderCreate(order: $order, options: $options) {\n    userErrors {\n      field\n      message\n    }\n    order {\n      id\n      totalTaxSet {\n        shopMoney {\n          amount\n          currencyCode\n        }\n      }\n      lineItems(first: 5) {\n        nodes {\n          variant {\n            id\n          }\n          id\n          title\n          quantity\n          taxLines {\n            title\n            rate\n            priceSet {\n              shopMoney {\n                amount\n                currencyCode\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}",
+    "variables": {
+        "order": {
+            "lineItems": [
+                {
+                    "quantity": 1,
+                    "variantId": "gid://shopify/ProductVariant/43729076"
+                }
+            ]
+        }
+    }
+}
