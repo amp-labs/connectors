@@ -1,0 +1,124 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/api/v1",
+      "objects": {
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "root",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "activated": {
+              "displayName": "activated",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "statusChanged": {
+              "displayName": "statusChanged",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "lastLogin": {
+              "displayName": "lastLogin",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "passwordChanged": {
+              "displayName": "passwordChanged",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "profile": {
+              "displayName": "profile",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "credentials": {
+              "displayName": "credentials",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "_links": {
+              "displayName": "_links",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "groups": {
+          "displayName": "Groups",
+          "path": "/groups",
+          "responseKey": "root",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "lastMembershipUpdated": {
+              "displayName": "lastMembershipUpdated",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "objectClass": {
+              "displayName": "objectClass",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "profile": {
+              "displayName": "profile",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "_links": {
+              "displayName": "_links",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}
