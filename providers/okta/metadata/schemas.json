@@ -117,6 +117,78 @@
               "providerType": "object"
             }
           }
+        },
+        "apps": {
+          "displayName": "Applications",
+          "path": "/apps",
+          "responseKey": "root",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "label": {
+              "displayName": "label",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "activated": {
+              "displayName": "activated",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "signOnMode": {
+              "displayName": "signOnMode",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "features": {
+              "displayName": "features",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "credentials": {
+              "displayName": "credentials",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "settings": {
+              "displayName": "settings",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "_links": {
+              "displayName": "_links",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
         }
       }
     }
