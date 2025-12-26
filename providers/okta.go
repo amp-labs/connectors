@@ -33,10 +33,10 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
-			Read:      false,
+			Proxy:     true, // Proxy testing completed
+			Read:      true, // Read support with Link header pagination
 			Subscribe: false,
-			Write:     false,
+			Write:     true,  // Write support for user provisioning (create/update)
 		},
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
