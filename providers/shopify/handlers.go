@@ -15,7 +15,10 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 )
 
-const objectProducts = "products"
+const (
+	objectProducts = "products"
+	objectOrders   = "orders"
+)
 
 var ErrMutationDataNotFound = errors.New("no data found for mutation")
 
@@ -200,7 +203,7 @@ func getQuery(objectName string) (string, error) {
 		return "", fmt.Errorf("failed to read query file %s: %w", filePath, err)
 	}
 
-	return string(queryBytes), nil
+	return strings.TrimSpace(string(queryBytes)), nil
 }
 
 // buildGraphQLVariables creates GraphQL variables for pagination and filtering.
@@ -324,6 +327,10 @@ func getMutationName(params common.WriteParams) string {
 	// Convert plural object name to singular for mutation name, e.g., "customers" -> "customer"
 	singular := naming.NewSingularString(params.ObjectName).String()
 
+	if params.ObjectName == objectOrders && isCloseOrder(params) {
+		return "orderClose"
+	}
+
 	if params.RecordId != "" {
 		return singular + "Update"
 	}
@@ -334,6 +341,10 @@ func getMutationName(params common.WriteParams) string {
 // getMutationKey returns the GraphQL response key for the mutation.
 func getMutationKey(params common.WriteParams) string {
 	singular := naming.NewSingularString(params.ObjectName).String()
+
+	if params.ObjectName == objectOrders && isCloseOrder(params) {
+		return "orderClose"
+	}
 
 	if params.RecordId != "" {
 		return singular + "Update"
@@ -351,7 +362,7 @@ func getMutation(mutationName string) (string, error) {
 		return "", fmt.Errorf("failed to read mutation file %s: %w", filePath, err)
 	}
 
-	return string(mutationBytes), nil
+	return strings.TrimSpace(string(mutationBytes)), nil
 }
 
 // buildWriteVariables constructs the variables for GraphQL mutations.
@@ -359,6 +370,10 @@ func buildWriteVariables(params common.WriteParams) map[string]any {
 	// Handle products - uses $product for create, $input for update.
 	if params.ObjectName == objectProducts {
 		return buildProductVariables(params)
+	}
+
+	if params.ObjectName == objectOrders {
+		return buildOrderVariables(params)
 	}
 
 	variables := map[string]any{
@@ -535,4 +550,51 @@ func buildDeleteVariables(params common.DeleteParams) map[string]any {
 	return map[string]any{
 		"id": params.RecordId,
 	}
+}
+
+// buildOrderVariables builds variables for order create/update/close mutations.
+func buildOrderVariables(params common.WriteParams) map[string]any {
+	if params.RecordId != "" {
+		// Update or Close
+		if isCloseOrder(params) {
+			return map[string]any{
+				"input": map[string]any{
+					"id": params.RecordId,
+				},
+			}
+		}
+
+		// Update uses $input with id inside
+		variables := map[string]any{
+			"input": params.RecordData,
+		}
+
+		injectIDIntoInput(variables, params.RecordId)
+
+		return variables
+	}
+
+	// Create uses $order
+	return map[string]any{
+		"order": params.RecordData,
+	}
+}
+
+func isCloseOrder(params common.WriteParams) bool {
+	// Only applies if we have a RecordId (update context)
+	if params.RecordId == "" {
+		return false
+	}
+
+	data, ok := params.RecordData.(map[string]any)
+	if !ok {
+		return false
+	}
+
+	// Check if status is "closed"
+	if status, ok := data["status"].(string); ok && strings.ToLower(status) == "closed" {
+		return true
+	}
+
+	return false
 }
