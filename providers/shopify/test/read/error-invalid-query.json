@@ -1,0 +1,19 @@
+{
+  "errors": [
+    {
+      "message": "Field 'invalidField' doesn't exist on type 'Product'",
+      "locations": [
+        {
+          "line": 5,
+          "column": 7
+        }
+      ],
+      "path": ["query", "products", "nodes", "invalidField"],
+      "extensions": {
+        "code": "undefinedField",
+        "typeName": "Product",
+        "fieldName": "invalidField"
+      }
+    }
+  ]
+}

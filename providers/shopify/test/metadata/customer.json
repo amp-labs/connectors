@@ -1,0 +1,84 @@
+{
+    "data": {
+        "__type": {
+            "name": "Customer",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "ID",
+                            "kind": "SCALAR"
+                        }
+                    }
+                },
+                {
+                    "name": "firstName",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "lastName",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "email",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "phone",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "createdAt",
+                    "type": {
+                        "name": "DateTime",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "updatedAt",
+                    "type": {
+                        "name": "DateTime",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "numberOfOrders",
+                    "type": {
+                        "name": "UnsignedInt64",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "acceptsMarketing",
+                    "type": {
+                        "name": "Boolean",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                }
+            ]
+        }
+    }
+}
