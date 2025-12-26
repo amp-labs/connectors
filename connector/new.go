@@ -30,7 +30,6 @@ import (
 	"github.com/amp-labs/connectors/providers/chargebee"
 	"github.com/amp-labs/connectors/providers/chilipiper"
 	"github.com/amp-labs/connectors/providers/chorus"
-	"github.com/amp-labs/connectors/providers/ciscowebex"
 	"github.com/amp-labs/connectors/providers/claricopilot"
 	"github.com/amp-labs/connectors/providers/clickup"
 	"github.com/amp-labs/connectors/providers/closecrm"
@@ -68,6 +67,7 @@ import (
 	"github.com/amp-labs/connectors/providers/intercom"
 	"github.com/amp-labs/connectors/providers/iterable"
 	"github.com/amp-labs/connectors/providers/jobber"
+	"github.com/amp-labs/connectors/providers/justcall"
 	"github.com/amp-labs/connectors/providers/kaseyavsax"
 	"github.com/amp-labs/connectors/providers/keap"
 	"github.com/amp-labs/connectors/providers/kit"
@@ -106,6 +106,7 @@ import (
 	"github.com/amp-labs/connectors/providers/solarwinds"
 	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/teamleader"
+	"github.com/amp-labs/connectors/providers/webex"
 	"github.com/amp-labs/connectors/providers/xero"
 	"github.com/amp-labs/connectors/providers/zendeskchat"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
@@ -149,7 +150,6 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Chargebee:               wrapper(newChargebeeConnector),
 	providers.ChiliPiper:              wrapper(newChiliPiperConnector),
 	providers.Chorus:                  wrapper(newChorusConnector),
-	providers.CiscoWebex:              wrapper(newCiscoWebexConnector),
 	providers.ClariCopilot:            wrapper(newClariCopilotConnector),
 	providers.ClickUp:                 wrapper(newClickUpConnector),
 	providers.Close:                   wrapper(newCloseConnector),
@@ -187,6 +187,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Intercom:                wrapper(newIntercomConnector),
 	providers.Iterable:                wrapper(newIterableConnector),
 	providers.Jobber:                  wrapper(newJobberConnector),
+	providers.JustCall:                wrapper(newJustCallConnector),
 	providers.KaseyaVSAX:              wrapper(newKaseyaVSAXConnector),
 	providers.Keap:                    wrapper(newKeapConnector),
 	providers.Kit:                     wrapper(newKitConnector),
@@ -225,6 +226,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.SolarWindsServiceDesk:   wrapper(newSolarWindsConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
+	providers.Webex:                   wrapper(newWebexConnector),
 	providers.Xero:                    wrapper(newXeroConnector),
 	providers.ZendeskChat:             wrapper(newZendeskChatConnector),
 	providers.ZendeskSupport:          wrapper(newZendeskSupportConnector),
@@ -872,14 +874,19 @@ func newJobberConnector(params common.ConnectorParams,
 	return jobber.NewConnector(params)
 }
 
+func newJustCallConnector(params common.ConnectorParams,
+) (*justcall.Connector, error) {
+	return justcall.NewConnector(params)
+}
+
 func newChorusConnector(params common.ConnectorParams,
 ) (*chorus.Connector, error) {
 	return chorus.NewConnector(params)
 }
 
-func newCiscoWebexConnector(params common.ConnectorParams,
-) (*ciscowebex.Connector, error) {
-	return ciscowebex.NewConnector(params)
+func newWebexConnector(params common.ConnectorParams,
+) (*webex.Connector, error) {
+	return webex.NewConnector(params)
 }
 
 func newChargebeeConnector(params common.ConnectorParams,
