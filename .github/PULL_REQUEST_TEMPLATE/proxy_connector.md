@@ -1,3 +1,13 @@
+---
+template_name: "Enable Proxy"
+pr_title: "[{{ticket}}] feat({{provider}}): Enable Proxy"
+priority: 2
+fields:
+  - name: "ticket"
+    prompt: "Enter Linear ticket number"
+  - name: "provider"
+    prompt: "Enter provider name"
+---
 # Testing
 
 # Conventions
