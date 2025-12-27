@@ -116,11 +116,21 @@ type AuthMetadataConnector interface {
 type BatchRecordReaderConnector interface {
 	Connector
 
-	// GetRecordsByIds fetches full records from the provider for webhook-triggered events.
+	// GetRecordsByIds fetches full records from the provider for a specific set of IDs.
 	//
-	// This method is used during webhook processing to enrich events that require
-	// fetching the current full state of records from the provider API. It retrieves
-	// the full record data for the given object and record IDs.
+	// This method is primarily used during webhook processing to enrich events that
+	// require fetching the current full state of records from the provider API.
+	// In that lifecycle, webhook payloads often contain only partial data, making
+	// an explicit read necessary to produce complete, descriptive ReadResultRow values.
+	//
+	// More generally, this method represents a targeted read operation: it allows
+	// callers to retrieve a known set of records by ID without performing a full
+	// collection read. This is useful in non-webhook lifecycles as well, such as
+	// enriching read results with associated sub-objects, resolving references to
+	// related objects, or performing joined reads where supported by the provider.
+	//
+	// Compared to Read (which lists collections of records), GetRecordsByIds is a
+	// singular-by-identity read that operates over multiple explicit IDs.
 	//
 	// The connector should:
 	//   - Fetch only the specified recordIds
@@ -285,7 +295,7 @@ type RegisterSubscribeConnector interface {
 // implementing this interface are responsible for performing any scheduled
 // maintenance operations required to prevent subscription expiration.
 type SubscriptionMaintainerConnector interface {
-	Connector
+	SubscribeConnector
 
 	// RunScheduledMaintenance performs provider-specific maintenance for an
 	// existing subscription.
