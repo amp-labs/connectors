@@ -1,0 +1,82 @@
+{
+    "id": "evt_3SjBGCFNmqx06xsB1YgVNf9S",
+    "object": "event",
+    "api_version": "2025-12-15.clover",
+    "created": 1766894836,
+    "data": {
+        "object": {
+            "id": "pi_3SjBGCFNmqx06xsB1dzioiNL",
+            "object": "payment_intent",
+            "amount": 2000,
+            "amount_capturable": 0,
+            "amount_details": {
+                "tip": {}
+            },
+            "amount_received": 2000,
+            "application": null,
+            "application_fee_amount": null,
+            "automatic_payment_methods": null,
+            "canceled_at": null,
+            "cancellation_reason": null,
+            "capture_method": "automatic_async",
+            "client_secret": "pi_3SjBGCFNmqx06xsB1dzioiNL_secret_VCW5ujYkDgfEjcqLTebS1faBy",
+            "confirmation_method": "automatic",
+            "created": 1766894836,
+            "currency": "usd",
+            "customer": null,
+            "customer_account": null,
+            "description": "(created by Stripe CLI)",
+            "excluded_payment_method_types": null,
+            "last_payment_error": null,
+            "latest_charge": "ch_3SjBGCFNmqx06xsB16IyEMK6",
+            "livemode": false,
+            "metadata": {},
+            "next_action": null,
+            "on_behalf_of": null,
+            "payment_method": "pm_1SjBGCFNmqx06xsB7chz1Eq6",
+            "payment_method_configuration_details": null,
+            "payment_method_options": {
+                "card": {
+                    "installments": null,
+                    "mandate_options": null,
+                    "network": null,
+                    "request_three_d_secure": "automatic"
+                }
+            },
+            "payment_method_types": [
+                "card"
+            ],
+            "processing": null,
+            "receipt_email": null,
+            "review": null,
+            "setup_future_usage": null,
+            "shipping": {
+                "address": {
+                    "city": "San Francisco",
+                    "country": "US",
+                    "line1": "510 Townsend St",
+                    "line2": null,
+                    "postal_code": "94103",
+                    "state": "CA"
+                },
+                "carrier": null,
+                "name": "Jenny Rosen",
+                "phone": null,
+                "tracking_number": null
+            },
+            "source": null,
+            "statement_descriptor": null,
+            "statement_descriptor_suffix": null,
+            "status": "succeeded",
+            "transfer_data": null,
+            "transfer_group": null
+        }
+    },
+    "livemode": false,
+    "pending_webhooks": 1,
+    "request": {
+        "id": "req_uFMB19g2hy7rwp",
+        "idempotency_key": "6a7b2e8c-8e14-400f-9b4a-46352bbf932b"
+    },
+    "type": "payment_intent.succeeded"
+}
