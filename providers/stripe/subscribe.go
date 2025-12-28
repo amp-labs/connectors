@@ -65,8 +65,8 @@ func (c *Connector) Subscribe(
 	}
 
 	payload := &WebhookEndpointPayload{
-		URL:     req.WebhookEndPoint,
-		Enabled: allStripeEventNames,
+		URL:           req.WebhookEndPoint,
+		EnabledEvents: allStripeEventNames,
 	}
 
 	response, err := c.createWebhookEndpoint(ctx, payload)
@@ -368,7 +368,7 @@ func buildFormData(payload *WebhookEndpointPayload) url.Values {
 	formData := url.Values{}
 	formData.Set("url", payload.URL)
 
-	for _, event := range payload.Enabled {
+	for _, event := range payload.EnabledEvents {
 		formData.Add("enabled_events[]", event)
 	}
 

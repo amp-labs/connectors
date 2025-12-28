@@ -154,8 +154,8 @@ func (c *Connector) updateEndpointAfterPartialDelete(
 	}
 
 	payload := &WebhookEndpointPayload{
-		URL:     webhookURL,
-		Enabled: eventsToKeep,
+		URL:           webhookURL,
+		EnabledEvents: eventsToKeep,
 	}
 
 	_, err := c.updateWebhookEndpoint(ctx, endpointID, payload)

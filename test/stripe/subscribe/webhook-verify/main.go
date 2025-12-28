@@ -25,7 +25,7 @@ func main() {
 
 	conn := connTest.GetStripeConnector(ctx)
 
-	webhookURL := "https://060186c863bf.ngrok-free.app"
+	webhookURL := ""
 
 	subscribeParams := common.SubscribeParams{
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
@@ -112,9 +112,26 @@ func main() {
 			return
 		}
 
-		eventType, _ := event.EventType()
-		objectName, _ := event.ObjectName()
-		recordID, _ := event.RecordId()
+		eventType, err := event.EventType()
+		if err != nil {
+			slog.Error("Error getting event type", "error", err)
+			http.Error(w, "Invalid event type", http.StatusBadRequest)
+			return
+		}
+
+		objectName, err := event.ObjectName()
+		if err != nil {
+			slog.Error("Error getting object name", "error", err)
+			http.Error(w, "Invalid object name", http.StatusBadRequest)
+			return
+		}
+
+		recordID, err := event.RecordId()
+		if err != nil {
+			slog.Error("Error getting record id", "error", err)
+			http.Error(w, "Invalid record id", http.StatusBadRequest)
+			return
+		}
 
 		slog.Info("Webhook verified",
 			"type", eventType,

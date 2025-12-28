@@ -10,6 +10,7 @@ import (
 
 var _ connectors.BatchRecordReaderConnector = &Connector{}
 
+// GetRecordsByIds fetches full records from Stripe for a specific set of IDs.
 //
 //nolint:revive
 func (c *Connector) GetRecordsByIds(

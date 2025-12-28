@@ -40,8 +40,8 @@ func (c *Connector) UpdateSubscription(
 
 	// Update webhook endpoint
 	payload := &WebhookEndpointPayload{
-		URL:     req.WebhookEndPoint,
-		Enabled: mergedEventNames,
+		URL:           req.WebhookEndPoint,
+		EnabledEvents: mergedEventNames,
 	}
 
 	response, err := c.updateWebhookEndpoint(ctx, existingEndpoint.ID, payload)
