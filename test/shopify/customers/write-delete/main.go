@@ -23,7 +23,6 @@ func MainFn() int {
 	defer done()
 
 	utils.SetupLogging()
-
 	conn := shopify.GetShopifyConnector(ctx)
 
 	// Generate unique email and phone to avoid conflicts
@@ -91,7 +90,6 @@ func MainFn() int {
 	slog.Info("Customer deleted successfully")
 	utils.DumpJSON(deleteCustomerResult, os.Stdout)
 
-	slog.Info("=== All write tests completed successfully ===")
-
+	slog.Info("=== Customer write-delete completed successfully ===")
 	return 0
 }

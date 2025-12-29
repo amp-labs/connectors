@@ -23,7 +23,6 @@ func MainFn() int {
 	defer done()
 
 	utils.SetupLogging()
-
 	conn := shopify.GetShopifyConnector(ctx)
 
 	// Generate unique product title to avoid conflicts
@@ -90,6 +89,5 @@ func MainFn() int {
 	utils.DumpJSON(deleteResult, os.Stdout)
 
 	slog.Info("=== All product tests completed successfully ===")
-
 	return 0
 }
