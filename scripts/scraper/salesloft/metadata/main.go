@@ -282,6 +282,8 @@ func createField(fieldName, fieldType string) staticschema.FieldMetadataMapV2 {
 //	"uuid"
 //
 // ]
+// Number is mapped to float, just to be safe. However, it seems that it is in fact an integer.
+// Not exactly sure why two types exist, could be due to legacy or legitimate reason.
 func getFieldValueType(fieldType string) common.ValueType {
 	switch fieldType {
 	case "integer":
