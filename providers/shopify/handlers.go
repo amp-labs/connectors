@@ -203,7 +203,7 @@ func getQuery(objectName string) (string, error) {
 		return "", fmt.Errorf("failed to read query file %s: %w", filePath, err)
 	}
 
-	return strings.TrimSpace(string(queryBytes)), nil
+	return string(queryBytes), nil
 }
 
 // buildGraphQLVariables creates GraphQL variables for pagination and filtering.
@@ -362,7 +362,7 @@ func getMutation(mutationName string) (string, error) {
 		return "", fmt.Errorf("failed to read mutation file %s: %w", filePath, err)
 	}
 
-	return strings.TrimSpace(string(mutationBytes)), nil
+	return string(mutationBytes), nil
 }
 
 // buildWriteVariables constructs the variables for GraphQL mutations.
