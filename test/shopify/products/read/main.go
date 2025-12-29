@@ -37,7 +37,6 @@ func main() {
 	slog.Info("=== Reading products with Since filter ===")
 	since := time.Now().AddDate(0, 0, -30)
 	slog.Info("Filtering products updated since", "since", since.Format(time.RFC3339))
-
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "products",
 		Fields:     connectors.Fields("id", "title", "updatedAt"),
