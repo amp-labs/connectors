@@ -547,6 +547,13 @@ func getDeleteMutationName(params common.DeleteParams) string {
 
 // buildDeleteVariables constructs the variables for delete mutations.
 func buildDeleteVariables(params common.DeleteParams) map[string]any {
+	// orderDelete mutation expects variable name `orderId` rather than `id`.
+	if params.ObjectName == objectOrders {
+		return map[string]any{
+			"orderId": params.RecordId,
+		}
+	}
+
 	return map[string]any{
 		"id": params.RecordId,
 	}
