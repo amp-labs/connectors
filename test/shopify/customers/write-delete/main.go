@@ -23,6 +23,7 @@ func MainFn() int {
 	defer done()
 
 	utils.SetupLogging()
+
 	conn := shopify.GetShopifyConnector(ctx)
 
 	// Generate unique email and phone to avoid conflicts.
