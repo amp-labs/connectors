@@ -10,9 +10,11 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/salesloft"
-	"github.com/amp-labs/connectors/providers/salesloft/metadata"
+	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
+	"github.com/amp-labs/connectors/scripts/scraper/salesloft/internal/files"
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/iancoleman/strcase"
 )
@@ -90,15 +92,15 @@ func createIndex() {
 		log.Printf("Index completed %.2f%%\n", getPercentage(index, len(sections))) // nolint:forbidigo
 
 		// Update file after each iteration.
-		goutils.MustBeNil(metadata.FileManager.SaveIndex(registry))
+		goutils.MustBeNil(files.OutputSalesloft.SaveIndex(registry))
 	}
 }
 
 func createSchemas() {
-	index, err := metadata.FileManager.LoadIndex()
+	index, err := files.OutputSalesloft.LoadIndex()
 	goutils.MustBeNil(err)
 
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
+	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
 
 	filteredListDocs := getFilteredListDocs(index)
 	for i := range filteredListDocs { // nolint:varnamelen
@@ -121,10 +123,14 @@ func createSchemas() {
 				if len(fieldName) != 0 {
 					newDisplayName, isList := handleDisplayName(model.DisplayName)
 					if isList {
+						field := metadatadef.Field{
+							Name:         fieldName,
+							Type:         "",
+							ValueOptions: nil,
+						}
+
 						schemas.Add("", objectName, newDisplayName, urlPath, "data",
-							staticschema.FieldMetadataMapV1{
-								fieldName: fieldName,
-							}, &model.URL, nil)
+							utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), &model.URL, nil)
 					}
 				}
 			})
@@ -132,15 +138,15 @@ func createSchemas() {
 		log.Printf("Schemas completed %.2f%% [%v]\n", getPercentage(i, len(filteredListDocs)), objectName)
 
 		// Update file after each iteration.
-		goutils.MustBeNil(metadata.FileManager.FlushSchemas(schemas))
+		goutils.MustBeNil(files.OutputSalesloft.FlushSchemas(schemas))
 	}
 
 	// Finalized save.
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(files.OutputSalesloft.FlushSchemas(schemas))
 }
 
 func createQueryParamStats() {
-	index, err := metadata.FileManager.LoadIndex()
+	index, err := files.OutputSalesloft.LoadIndex()
 	goutils.MustBeNil(err)
 
 	registry := datautils.NamedLists[string]{}
@@ -161,7 +167,7 @@ func createQueryParamStats() {
 		log.Printf("Query param schemas completed %.2f%% [%v]\n", getPercentage(i, numObjects), modelName)
 	}
 
-	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	goutils.MustBeNil(files.OutputSalesloft.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 }
 
 /*

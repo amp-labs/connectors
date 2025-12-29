@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/salesloft/metadata"
+	"github.com/amp-labs/connectors/providers/salesloft/internal/metadata"
 )
 
 // Prints supported read objects in random order formatted for https://github.com/amp-labs/docs.
