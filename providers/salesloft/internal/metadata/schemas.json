@@ -9,12 +9,36 @@
           "path": "/account_stages",
           "responseKey": "data",
           "fields": {
-            "active": "active",
-            "created_at": "created_at",
-            "id": "id",
-            "name": "name",
-            "order": "order",
-            "updated_at": "updated_at"
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "order": {
+              "displayName": "order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/account-stages-index"
         },
@@ -23,8 +47,16 @@
           "path": "/account_team_member_roles",
           "responseKey": "data",
           "fields": {
-            "id": "id",
-            "name": "name"
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/account-team-member-roles-index"
         },
@@ -33,12 +65,36 @@
           "path": "/account_tiers",
           "responseKey": "data",
           "fields": {
-            "active": "active",
-            "created_at": "created_at",
-            "id": "id",
-            "name": "name",
-            "order": "order",
-            "updated_at": "updated_at"
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "order": {
+              "displayName": "order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/account-tiers-index"
         },
@@ -47,7 +103,11 @@
           "path": "/account_types",
           "responseKey": "data",
           "fields": {
-            "name": "name"
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/account-types-index"
         },
@@ -56,48 +116,216 @@
           "path": "/accounts",
           "responseKey": "data",
           "fields": {
-            "account_tier": "account_tier",
-            "archived_at": "archived_at",
-            "city": "city",
-            "company_stage": "company_stage",
-            "company_type": "company_type",
-            "conversational_name": "conversational_name",
-            "country": "country",
-            "counts": "counts",
-            "created_at": "created_at",
-            "creator": "creator",
-            "crm_id": "crm_id",
-            "crm_object_type": "crm_object_type",
-            "crm_url": "crm_url",
-            "custom_fields": "custom_fields",
-            "description": "description",
-            "do_not_contact": "do_not_contact",
-            "domain": "domain",
-            "founded": "founded",
-            "id": "id",
-            "industry": "industry",
-            "last_contacted_at": "last_contacted_at",
-            "last_contacted_by": "last_contacted_by",
-            "last_contacted_person": "last_contacted_person",
-            "last_contacted_type": "last_contacted_type",
-            "linkedin_url": "linkedin_url",
-            "locale": "locale",
-            "name": "name",
-            "owner": "owner",
-            "owner_crm_id": "owner_crm_id",
-            "phone": "phone",
-            "postal_code": "postal_code",
-            "prospector_engagement_level": "prospector_engagement_level",
-            "prospector_engagement_score": "prospector_engagement_score",
-            "revenue_range": "revenue_range",
-            "size": "size",
-            "state": "state",
-            "street": "street",
-            "tags": "tags",
-            "twitter_handle": "twitter_handle",
-            "updated_at": "updated_at",
-            "user_relationships": "user_relationships",
-            "website": "website"
+            "account_tier": {
+              "displayName": "account_tier",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "archived_at": {
+              "displayName": "archived_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "city": {
+              "displayName": "city",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_stage": {
+              "displayName": "company_stage",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "company_type": {
+              "displayName": "company_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "conversational_name": {
+              "displayName": "conversational_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "country": {
+              "displayName": "country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "counts": {
+              "displayName": "counts",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "creator": {
+              "displayName": "creator",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "crm_id": {
+              "displayName": "crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "crm_object_type": {
+              "displayName": "crm_object_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "crm_url": {
+              "displayName": "crm_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "do_not_contact": {
+              "displayName": "do_not_contact",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "domain": {
+              "displayName": "domain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "founded": {
+              "displayName": "founded",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "industry": {
+              "displayName": "industry",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_contacted_at": {
+              "displayName": "last_contacted_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "last_contacted_by": {
+              "displayName": "last_contacted_by",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "last_contacted_person": {
+              "displayName": "last_contacted_person",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "last_contacted_type": {
+              "displayName": "last_contacted_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "linkedin_url": {
+              "displayName": "linkedin_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "locale": {
+              "displayName": "locale",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "owner_crm_id": {
+              "displayName": "owner_crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone": {
+              "displayName": "phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "postal_code": {
+              "displayName": "postal_code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "prospector_engagement_level": {
+              "displayName": "prospector_engagement_level",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "prospector_engagement_score": {
+              "displayName": "prospector_engagement_score",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "revenue_range": {
+              "displayName": "revenue_range",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "size": {
+              "displayName": "size",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "street": {
+              "displayName": "street",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "twitter_handle": {
+              "displayName": "twitter_handle",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "user_relationships": {
+              "displayName": "user_relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "website": {
+              "displayName": "website",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/accounts-index"
         },
@@ -106,10 +334,26 @@
           "path": "/action_details/call_instructions",
           "responseKey": "data",
           "fields": {
-            "created_at": "created_at",
-            "id": "id",
-            "instructions": "instructions",
-            "updated_at": "updated_at"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "instructions": {
+              "displayName": "instructions",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/action-details-call-instructions-index"
         },
@@ -118,20 +362,76 @@
           "path": "/actions",
           "responseKey": "data",
           "fields": {
-            "action_details": "action_details",
-            "cadence": "cadence",
-            "created_at": "created_at",
-            "due": "due",
-            "due_on": "due_on",
-            "id": "id",
-            "multitouch_group_id": "multitouch_group_id",
-            "person": "person",
-            "status": "status",
-            "step": "step",
-            "task": "task",
-            "type": "type",
-            "updated_at": "updated_at",
-            "user": "user"
+            "action_details": {
+              "displayName": "action_details",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "cadence": {
+              "displayName": "cadence",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "due": {
+              "displayName": "due",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "due_on": {
+              "displayName": "due_on",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "multitouch_group_id": {
+              "displayName": "multitouch_group_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "person": {
+              "displayName": "person",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "step": {
+              "displayName": "step",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "task": {
+              "displayName": "task",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/actions-index"
         },
@@ -140,24 +440,96 @@
           "path": "/activities/calls",
           "responseKey": "data",
           "fields": {
-            "action": "action",
-            "cadence": "cadence",
-            "called_person": "called_person",
-            "connected": "connected",
-            "created_at": "created_at",
-            "crm_activity": "crm_activity",
-            "disposition": "disposition",
-            "duration": "duration",
-            "id": "id",
-            "note": "note",
-            "positive": "positive",
-            "recordings": "recordings",
-            "sentiment": "sentiment",
-            "step": "step",
-            "task": "task",
-            "to": "to",
-            "updated_at": "updated_at",
-            "user": "user"
+            "action": {
+              "displayName": "action",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "cadence": {
+              "displayName": "cadence",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "called_person": {
+              "displayName": "called_person",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "connected": {
+              "displayName": "connected",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "crm_activity": {
+              "displayName": "crm_activity",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "disposition": {
+              "displayName": "disposition",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "duration": {
+              "displayName": "duration",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "note": {
+              "displayName": "note",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "positive": {
+              "displayName": "positive",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "recordings": {
+              "displayName": "recordings",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "sentiment": {
+              "displayName": "sentiment",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "step": {
+              "displayName": "step",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "task": {
+              "displayName": "task",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "to": {
+              "displayName": "to",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/activities-calls-index"
         },
@@ -166,34 +538,146 @@
           "path": "/activities/emails",
           "responseKey": "data",
           "fields": {
-            "action": "action",
-            "additional_recipients": "additional_recipients",
-            "body": "body",
-            "bounced": "bounced",
-            "cadence": "cadence",
-            "click_tracking": "click_tracking",
-            "counts": "counts",
-            "created_at": "created_at",
-            "crm_activity": "crm_activity",
-            "draft_with_ai": "draft_with_ai",
-            "email_template": "email_template",
-            "error_message": "error_message",
-            "headers": "headers",
-            "id": "id",
-            "mailing": "mailing",
-            "message_id": "message_id",
-            "personalization": "personalization",
-            "recipient": "recipient",
-            "recipient_email_address": "recipient_email_address",
-            "send_after": "send_after",
-            "sent_at": "sent_at",
-            "status": "status",
-            "step": "step",
-            "subject": "subject",
-            "task": "task",
-            "updated_at": "updated_at",
-            "user": "user",
-            "view_tracking": "view_tracking"
+            "action": {
+              "displayName": "action",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "additional_recipients": {
+              "displayName": "additional_recipients",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "body": {
+              "displayName": "body",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "bounced": {
+              "displayName": "bounced",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "cadence": {
+              "displayName": "cadence",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "click_tracking": {
+              "displayName": "click_tracking",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "counts": {
+              "displayName": "counts",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "crm_activity": {
+              "displayName": "crm_activity",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "draft_with_ai": {
+              "displayName": "draft_with_ai",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "email_template": {
+              "displayName": "email_template",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "error_message": {
+              "displayName": "error_message",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "headers": {
+              "displayName": "headers",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "mailing": {
+              "displayName": "mailing",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "message_id": {
+              "displayName": "message_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "personalization": {
+              "displayName": "personalization",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recipient": {
+              "displayName": "recipient",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "recipient_email_address": {
+              "displayName": "recipient_email_address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "send_after": {
+              "displayName": "send_after",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "sent_at": {
+              "displayName": "sent_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "step": {
+              "displayName": "step",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "task": {
+              "displayName": "task",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "view_tracking": {
+              "displayName": "view_tracking",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/activities-emails-index"
         },
@@ -202,19 +686,71 @@
           "path": "/activity_histories",
           "responseKey": "data",
           "fields": {
-            "created_at": "created_at",
-            "dynamic_data": "dynamic_data",
-            "failed_dynamic_resources": "failed_dynamic_resources",
-            "id": "id",
-            "occurred_at": "occurred_at",
-            "pinned_at": "pinned_at",
-            "resource_id": "resource_id",
-            "resource_type": "resource_type",
-            "static_data": "static_data",
-            "tags": "tags",
-            "type": "type",
-            "updated_at": "updated_at",
-            "user_guid": "user_guid"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "dynamic_data": {
+              "displayName": "dynamic_data",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "failed_dynamic_resources": {
+              "displayName": "failed_dynamic_resources",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "occurred_at": {
+              "displayName": "occurred_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "pinned_at": {
+              "displayName": "pinned_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "resource_id": {
+              "displayName": "resource_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "resource_type": {
+              "displayName": "resource_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "static_data": {
+              "displayName": "static_data",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "user_guid": {
+              "displayName": "user_guid",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/activity-histories-index"
         },
@@ -223,25 +759,101 @@
           "path": "/audit_reports",
           "responseKey": "data",
           "fields": {
-            "actions": "actions",
-            "audited_user_guids": "audited_user_guids",
-            "completed_on": "completed_on",
-            "data_source": "data_source",
-            "download_url": "download_url",
-            "email_notification": "email_notification",
-            "error": "error",
-            "id": "id",
-            "name": "name",
-            "record_ids": "record_ids",
-            "record_type": "record_type",
-            "requested_on": "requested_on",
-            "requestor_email": "requestor_email",
-            "requestor_name": "requestor_name",
-            "since": "since",
-            "started_on": "started_on",
-            "status": "status",
-            "until": "until",
-            "user_guid": "user_guid"
+            "actions": {
+              "displayName": "actions",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "audited_user_guids": {
+              "displayName": "audited_user_guids",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_on": {
+              "displayName": "completed_on",
+              "valueType": "date",
+              "providerType": "date"
+            },
+            "data_source": {
+              "displayName": "data_source",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "download_url": {
+              "displayName": "download_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email_notification": {
+              "displayName": "email_notification",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "error": {
+              "displayName": "error",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "record_ids": {
+              "displayName": "record_ids",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "record_type": {
+              "displayName": "record_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "requested_on": {
+              "displayName": "requested_on",
+              "valueType": "date",
+              "providerType": "date"
+            },
+            "requestor_email": {
+              "displayName": "requestor_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "requestor_name": {
+              "displayName": "requestor_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "since": {
+              "displayName": "since",
+              "valueType": "date",
+              "providerType": "date"
+            },
+            "started_on": {
+              "displayName": "started_on",
+              "valueType": "date",
+              "providerType": "date"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "until": {
+              "displayName": "until",
+              "valueType": "date",
+              "providerType": "date"
+            },
+            "user_guid": {
+              "displayName": "user_guid",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/audit-reports-index"
         },
@@ -250,20 +862,76 @@
           "path": "/bulk_jobs",
           "responseKey": "data",
           "fields": {
-            "created_at": "created_at",
-            "errors": "errors",
-            "finished_at": "finished_at",
-            "id": "id",
-            "marked_ready_at": "marked_ready_at",
-            "name": "name",
-            "processed": "processed",
-            "ready_to_execute": "ready_to_execute",
-            "scopes": "scopes",
-            "started_at": "started_at",
-            "state": "state",
-            "total": "total",
-            "type": "type",
-            "updated_at": "updated_at"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "errors": {
+              "displayName": "errors",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "finished_at": {
+              "displayName": "finished_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "marked_ready_at": {
+              "displayName": "marked_ready_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "processed": {
+              "displayName": "processed",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ready_to_execute": {
+              "displayName": "ready_to_execute",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "scopes": {
+              "displayName": "scopes",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "started_at": {
+              "displayName": "started_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "total": {
+              "displayName": "total",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/bulk-jobs-index"
         },
@@ -272,19 +940,71 @@
           "path": "/cadence_memberships",
           "responseKey": "data",
           "fields": {
-            "added_at": "added_at",
-            "cadence": "cadence",
-            "counts": "counts",
-            "created_at": "created_at",
-            "current_state": "current_state",
-            "currently_on_cadence": "currently_on_cadence",
-            "id": "id",
-            "latest_action": "latest_action",
-            "person": "person",
-            "person_deleted": "person_deleted",
-            "step": "step",
-            "updated_at": "updated_at",
-            "user": "user"
+            "added_at": {
+              "displayName": "added_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "cadence": {
+              "displayName": "cadence",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "counts": {
+              "displayName": "counts",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "current_state": {
+              "displayName": "current_state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "currently_on_cadence": {
+              "displayName": "currently_on_cadence",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "latest_action": {
+              "displayName": "latest_action",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "person": {
+              "displayName": "person",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "person_deleted": {
+              "displayName": "person_deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "step": {
+              "displayName": "step",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/cadence-memberships-index"
         },
@@ -293,36 +1013,156 @@
           "path": "/cadences",
           "responseKey": "data",
           "fields": {
-            "added_stage": "added_stage",
-            "archived": "archived",
-            "archived_at": "archived_at",
-            "archived_by": "archived_by",
-            "bounced_stage": "bounced_stage",
-            "cadence_framework_id": "cadence_framework_id",
-            "cadence_function": "cadence_function",
-            "cadence_priority": "cadence_priority",
-            "counts": "counts",
-            "created_at": "created_at",
-            "creator": "creator",
-            "current_state": "current_state",
-            "draft": "draft",
-            "external_identifier": "external_identifier",
-            "finished_stage": "finished_stage",
-            "groups": "groups",
-            "id": "id",
-            "knowledge_library_document_ids": "knowledge_library_document_ids",
-            "latest_active_date": "latest_active_date",
-            "name": "name",
-            "opt_out_link_included": "opt_out_link_included",
-            "override_contact_restrictions": "override_contact_restrictions",
-            "owner": "owner",
-            "remove_bounces_enabled": "remove_bounces_enabled",
-            "remove_replies_enabled": "remove_replies_enabled",
-            "replied_stage": "replied_stage",
-            "shared": "shared",
-            "tags": "tags",
-            "team_cadence": "team_cadence",
-            "updated_at": "updated_at"
+            "added_stage": {
+              "displayName": "added_stage",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "archived_at": {
+              "displayName": "archived_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "archived_by": {
+              "displayName": "archived_by",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "bounced_stage": {
+              "displayName": "bounced_stage",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "cadence_framework_id": {
+              "displayName": "cadence_framework_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "cadence_function": {
+              "displayName": "cadence_function",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "cadence_priority": {
+              "displayName": "cadence_priority",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "counts": {
+              "displayName": "counts",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "creator": {
+              "displayName": "creator",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "current_state": {
+              "displayName": "current_state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "draft": {
+              "displayName": "draft",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "external_identifier": {
+              "displayName": "external_identifier",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "finished_stage": {
+              "displayName": "finished_stage",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "groups": {
+              "displayName": "groups",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "knowledge_library_document_ids": {
+              "displayName": "knowledge_library_document_ids",
+              "valueType": "other",
+              "providerType": "integer[]"
+            },
+            "latest_active_date": {
+              "displayName": "latest_active_date",
+              "valueType": "date",
+              "providerType": "date"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "opt_out_link_included": {
+              "displayName": "opt_out_link_included",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "override_contact_restrictions": {
+              "displayName": "override_contact_restrictions",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "remove_bounces_enabled": {
+              "displayName": "remove_bounces_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "remove_replies_enabled": {
+              "displayName": "remove_replies_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "replied_stage": {
+              "displayName": "replied_stage",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "shared": {
+              "displayName": "shared",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "team_cadence": {
+              "displayName": "team_cadence",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/cadences-index"
         },
@@ -331,35 +1171,151 @@
           "path": "/calendar/events",
           "responseKey": "data",
           "fields": {
-            "all_day": "all_day",
-            "attendees": "attendees",
-            "body_html": "body_html",
-            "busy": "busy",
-            "calendar_id": "calendar_id",
-            "canceled_at": "canceled_at",
-            "conference_data": "conference_data",
-            "created_at": "created_at",
-            "creator": "creator",
-            "description": "description",
-            "end_time": "end_time",
-            "extended_properties": "extended_properties",
-            "html_link": "html_link",
-            "i_cal_uid": "i_cal_uid",
-            "id": "id",
-            "last_occurrence_at": "last_occurrence_at",
-            "location": "location",
-            "organizer": "organizer",
-            "provider": "provider",
-            "recurrence": "recurrence",
-            "recurring": "recurring",
-            "recurring_interval": "recurring_interval",
-            "series_master_event_id": "series_master_event_id",
-            "start_time": "start_time",
-            "status": "status",
-            "tenant_id": "tenant_id",
-            "title": "title",
-            "updated_at": "updated_at",
-            "user_guid": "user_guid"
+            "all_day": {
+              "displayName": "all_day",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "attendees": {
+              "displayName": "attendees",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "body_html": {
+              "displayName": "body_html",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "busy": {
+              "displayName": "busy",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "calendar_id": {
+              "displayName": "calendar_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "canceled_at": {
+              "displayName": "canceled_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "conference_data": {
+              "displayName": "conference_data",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "creator": {
+              "displayName": "creator",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "end_time": {
+              "displayName": "end_time",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "extended_properties": {
+              "displayName": "extended_properties",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "html_link": {
+              "displayName": "html_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "i_cal_uid": {
+              "displayName": "i_cal_uid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_occurrence_at": {
+              "displayName": "last_occurrence_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "organizer": {
+              "displayName": "organizer",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "provider": {
+              "displayName": "provider",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recurrence": {
+              "displayName": "recurrence",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "recurring": {
+              "displayName": "recurring",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "recurring_interval": {
+              "displayName": "recurring_interval",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "series_master_event_id": {
+              "displayName": "series_master_event_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_time": {
+              "displayName": "start_time",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tenant_id": {
+              "displayName": "tenant_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "user_guid": {
+              "displayName": "user_guid",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/calendar-events-index"
         },
@@ -368,10 +1324,26 @@
           "path": "/calendar_availabilities",
           "responseKey": "data",
           "fields": {
-            "calendar_available_times": "calendar_available_times",
-            "calendar_date": "calendar_date",
-            "meeting_duration": "meeting_duration",
-            "total_available_count": "total_available_count"
+            "calendar_available_times": {
+              "displayName": "calendar_available_times",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "calendar_date": {
+              "displayName": "calendar_date",
+              "valueType": "date",
+              "providerType": "date"
+            },
+            "meeting_duration": {
+              "displayName": "meeting_duration",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "total_available_count": {
+              "displayName": "total_available_count",
+              "valueType": "int",
+              "providerType": "integer"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/calendar-availabilities-index"
         },
@@ -380,23 +1352,91 @@
           "path": "/call_data_records",
           "responseKey": "data",
           "fields": {
-            "call": "call",
-            "call_type": "call_type",
-            "call_uuid": "call_uuid",
-            "called_person": "called_person",
-            "created_at": "created_at",
-            "dialer_recording": "dialer_recording",
-            "direction": "direction",
-            "duration": "duration",
-            "ended_at": "ended_at",
-            "from": "from",
-            "id": "id",
-            "recording": "recording",
-            "started_at": "started_at",
-            "status": "status",
-            "to": "to",
-            "updated_at": "updated_at",
-            "user": "user"
+            "call": {
+              "displayName": "call",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "call_type": {
+              "displayName": "call_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "call_uuid": {
+              "displayName": "call_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "called_person": {
+              "displayName": "called_person",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "dialer_recording": {
+              "displayName": "dialer_recording",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "direction": {
+              "displayName": "direction",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "duration": {
+              "displayName": "duration",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ended_at": {
+              "displayName": "ended_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "from": {
+              "displayName": "from",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "recording": {
+              "displayName": "recording",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "started_at": {
+              "displayName": "started_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "to": {
+              "displayName": "to",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/call-data-records-index"
         },
@@ -405,11 +1445,31 @@
           "path": "/call_dispositions",
           "responseKey": "data",
           "fields": {
-            "created_at": "created_at",
-            "crm_value": "crm_value",
-            "id": "id",
-            "name": "name",
-            "updated_at": "updated_at"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "crm_value": {
+              "displayName": "crm_value",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/call-dispositions-index"
         },
@@ -418,10 +1478,26 @@
           "path": "/call_sentiments",
           "responseKey": "data",
           "fields": {
-            "created_at": "created_at",
-            "id": "id",
-            "name": "name",
-            "updated_at": "updated_at"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/call-sentiments-index"
         },
@@ -430,28 +1506,116 @@
           "path": "/conversations",
           "responseKey": "data",
           "fields": {
-            "account": "account",
-            "call_id": "call_id",
-            "created_at": "created_at",
-            "duration": "duration",
-            "event_end_date": "event_end_date",
-            "event_start_date": "event_start_date",
-            "id": "id",
-            "is_api": "is_api",
-            "language_code": "language_code",
-            "media_type": "media_type",
-            "organization_id": "organization_id",
-            "owner_id": "owner_id",
-            "person": "person",
-            "platform": "platform",
-            "recording": "recording",
-            "started_recording_at": "started_recording_at",
-            "title": "title",
-            "transcription": "transcription",
-            "transcription_artifact": "transcription_artifact",
-            "transcription_sentences": "transcription_sentences",
-            "updated_at": "updated_at",
-            "user_guid": "user_guid"
+            "account": {
+              "displayName": "account",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "call_id": {
+              "displayName": "call_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "duration": {
+              "displayName": "duration",
+              "valueType": "float",
+              "providerType": "number"
+            },
+            "event_end_date": {
+              "displayName": "event_end_date",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "event_start_date": {
+              "displayName": "event_start_date",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "uuid"
+            },
+            "is_api": {
+              "displayName": "is_api",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "language_code": {
+              "displayName": "language_code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "media_type": {
+              "displayName": "media_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "organization_id": {
+              "displayName": "organization_id",
+              "valueType": "string",
+              "providerType": "uuid"
+            },
+            "owner_id": {
+              "displayName": "owner_id",
+              "valueType": "string",
+              "providerType": "uuid"
+            },
+            "person": {
+              "displayName": "person",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "platform": {
+              "displayName": "platform",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recording": {
+              "displayName": "recording",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "started_recording_at": {
+              "displayName": "started_recording_at",
+              "valueType": "float",
+              "providerType": "number"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "transcription": {
+              "displayName": "transcription",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "transcription_artifact": {
+              "displayName": "transcription_artifact",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "transcription_sentences": {
+              "displayName": "transcription_sentences",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "user_guid": {
+              "displayName": "user_guid",
+              "valueType": "string",
+              "providerType": "uuid"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/conversations-find-all"
         },
@@ -460,13 +1624,41 @@
           "path": "/crm_account_team_members",
           "responseKey": "data",
           "fields": {
-            "account_access_level": "account_access_level",
-            "account_crm_id": "account_crm_id",
-            "crm_id": "crm_id",
-            "id": "id",
-            "team_member_role": "team_member_role",
-            "user_crm_id": "user_crm_id",
-            "user_crm_name": "user_crm_name"
+            "account_access_level": {
+              "displayName": "account_access_level",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "account_crm_id": {
+              "displayName": "account_crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "crm_id": {
+              "displayName": "crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "team_member_role": {
+              "displayName": "team_member_role",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_crm_id": {
+              "displayName": "user_crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_crm_name": {
+              "displayName": "user_crm_name",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/crm-account-team-members-index"
         },
@@ -475,18 +1667,66 @@
           "path": "/crm_activities",
           "responseKey": "data",
           "fields": {
-            "activity_type": "activity_type",
-            "created_at": "created_at",
-            "crm_id": "crm_id",
-            "crm_record_type": "crm_record_type",
-            "custom_crm_fields": "custom_crm_fields",
-            "description": "description",
-            "error": "error",
-            "id": "id",
-            "person": "person",
-            "subject": "subject",
-            "updated_at": "updated_at",
-            "user": "user"
+            "activity_type": {
+              "displayName": "activity_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "crm_id": {
+              "displayName": "crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "crm_record_type": {
+              "displayName": "crm_record_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_crm_fields": {
+              "displayName": "custom_crm_fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "error": {
+              "displayName": "error",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "person": {
+              "displayName": "person",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/crm-activities-index"
         },
@@ -495,17 +1735,61 @@
           "path": "/crm_activity_fields",
           "responseKey": "data",
           "fields": {
-            "created_at": "created_at",
-            "crm_object_type": "crm_object_type",
-            "field": "field",
-            "field_type": "field_type",
-            "id": "id",
-            "picklist_values": "picklist_values",
-            "salesforce_object_type": "salesforce_object_type",
-            "source": "source",
-            "title": "title",
-            "updated_at": "updated_at",
-            "value": "value"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "crm_object_type": {
+              "displayName": "crm_object_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "field": {
+              "displayName": "field",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "field_type": {
+              "displayName": "field_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "picklist_values": {
+              "displayName": "picklist_values",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "salesforce_object_type": {
+              "displayName": "salesforce_object_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "source": {
+              "displayName": "source",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "value": {
+              "displayName": "value",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/crm-activity-fields-index"
         },
@@ -514,10 +1798,26 @@
           "path": "/crm_team_members_with_roles",
           "responseKey": "data",
           "fields": {
-            "account_email": "account_email",
-            "account_name": "account_name",
-            "team_member_role": "team_member_role",
-            "user_crm_id": "user_crm_id"
+            "account_email": {
+              "displayName": "account_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "account_name": {
+              "displayName": "account_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "team_member_role": {
+              "displayName": "team_member_role",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_crm_id": {
+              "displayName": "user_crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/crm-team-members-with-roles-index"
         },
@@ -526,15 +1826,51 @@
           "path": "/crm_users",
           "responseKey": "data",
           "fields": {
-            "created_at": "created_at",
-            "crm_id": "crm_id",
-            "crm_username": "crm_username",
-            "first_name": "first_name",
-            "id": "id",
-            "last_name": "last_name",
-            "name": "name",
-            "updated_at": "updated_at",
-            "user": "user"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "crm_id": {
+              "displayName": "crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "crm_username": {
+              "displayName": "crm_username",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/crm-users-index"
         },
@@ -543,12 +1879,36 @@
           "path": "/custom_fields",
           "responseKey": "data",
           "fields": {
-            "created_at": "created_at",
-            "field_type": "field_type",
-            "id": "id",
-            "name": "name",
-            "updated_at": "updated_at",
-            "value_type": "value_type"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "field_type": {
+              "displayName": "field_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "value_type": {
+              "displayName": "value_type",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/custom-fields-index"
         },
@@ -557,8 +1917,16 @@
           "path": "/custom_roles",
           "responseKey": "data",
           "fields": {
-            "id": "id",
-            "name": "name"
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/custom-roles-index"
         },
@@ -567,13 +1935,41 @@
           "path": "/data_control/requests",
           "responseKey": "data",
           "fields": {
-            "dry_run": "dry_run",
-            "events": "events",
-            "id": "id",
-            "metadata": "metadata",
-            "request_type": "request_type",
-            "team_id": "team_id",
-            "user_guid": "user_guid"
+            "dry_run": {
+              "displayName": "dry_run",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "events": {
+              "displayName": "events",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "metadata": {
+              "displayName": "metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "request_type": {
+              "displayName": "request_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "team_id": {
+              "displayName": "team_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "user_guid": {
+              "displayName": "user_guid",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/data-control-requests-index"
         },
@@ -582,15 +1978,51 @@
           "path": "/email_template_attachments",
           "responseKey": "data",
           "fields": {
-            "attachment_content_type": "attachment_content_type",
-            "attachment_file_size": "attachment_file_size",
-            "attachment_fingerprint": "attachment_fingerprint",
-            "attachment_id": "attachment_id",
-            "download_url": "download_url",
-            "email_template": "email_template",
-            "id": "id",
-            "name": "name",
-            "scanned": "scanned"
+            "attachment_content_type": {
+              "displayName": "attachment_content_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "attachment_file_size": {
+              "displayName": "attachment_file_size",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "attachment_fingerprint": {
+              "displayName": "attachment_fingerprint",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "attachment_id": {
+              "displayName": "attachment_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "download_url": {
+              "displayName": "download_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email_template": {
+              "displayName": "email_template",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "scanned": {
+              "displayName": "scanned",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/email-template-attachments-index"
         },
@@ -599,25 +2031,101 @@
           "path": "/email_templates",
           "responseKey": "data",
           "fields": {
-            "_links": "_links",
-            "archived_at": "archived_at",
-            "body": "body",
-            "body_preview": "body_preview",
-            "cadence_template": "cadence_template",
-            "click_tracking_enabled": "click_tracking_enabled",
-            "counts": "counts",
-            "created_at": "created_at",
-            "groups": "groups",
-            "id": "id",
-            "last_used_at": "last_used_at",
-            "open_tracking_enabled": "open_tracking_enabled",
-            "shared": "shared",
-            "subject": "subject",
-            "tags": "tags",
-            "team_template": "team_template",
-            "template_owner": "template_owner",
-            "title": "title",
-            "updated_at": "updated_at"
+            "_links": {
+              "displayName": "_links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "archived_at": {
+              "displayName": "archived_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "body": {
+              "displayName": "body",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "body_preview": {
+              "displayName": "body_preview",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "cadence_template": {
+              "displayName": "cadence_template",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "click_tracking_enabled": {
+              "displayName": "click_tracking_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "counts": {
+              "displayName": "counts",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "groups": {
+              "displayName": "groups",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "last_used_at": {
+              "displayName": "last_used_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "open_tracking_enabled": {
+              "displayName": "open_tracking_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "shared": {
+              "displayName": "shared",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "team_template": {
+              "displayName": "team_template",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "template_owner": {
+              "displayName": "template_owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/email-templates-index"
         },
@@ -626,12 +2134,36 @@
           "path": "/external/configurations",
           "responseKey": "data",
           "fields": {
-            "deleted": "deleted",
-            "external_type": "external_type",
-            "id": "id",
-            "object_type": "object_type",
-            "source_id": "source_id",
-            "source_type": "source_type"
+            "deleted": {
+              "displayName": "deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "external_type": {
+              "displayName": "external_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "object_type": {
+              "displayName": "object_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "source_id": {
+              "displayName": "source_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "source_type": {
+              "displayName": "source_type",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/external-configurations-index"
         },
@@ -640,14 +2172,46 @@
           "path": "/external/mappings",
           "responseKey": "data",
           "fields": {
-            "deleted": "deleted",
-            "external_id": "external_id",
-            "external_type": "external_type",
-            "id": "id",
-            "inserted_at": "inserted_at",
-            "object_id": "object_id",
-            "object_type": "object_type",
-            "tenant_id": "tenant_id"
+            "deleted": {
+              "displayName": "deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "external_id": {
+              "displayName": "external_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "external_type": {
+              "displayName": "external_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "inserted_at": {
+              "displayName": "inserted_at",
+              "valueType": "date",
+              "providerType": "date"
+            },
+            "object_id": {
+              "displayName": "object_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "object_type": {
+              "displayName": "object_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tenant_id": {
+              "displayName": "tenant_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/external-mappings-index"
         },
@@ -656,10 +2220,26 @@
           "path": "/groups",
           "responseKey": "data",
           "fields": {
-            "accessible_groups": "accessible_groups",
-            "id": "id",
-            "name": "name",
-            "parent_id": "parent_id"
+            "accessible_groups": {
+              "displayName": "accessible_groups",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parent_id": {
+              "displayName": "parent_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/groups-index"
         },
@@ -668,15 +2248,51 @@
           "path": "/imports",
           "responseKey": "data",
           "fields": {
-            "created_at": "created_at",
-            "current_people_count": "current_people_count",
-            "errors_list": "errors_list",
-            "id": "id",
-            "import_type": "import_type",
-            "imported_people_count": "imported_people_count",
-            "name": "name",
-            "updated_at": "updated_at",
-            "user_id": "user_id"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "current_people_count": {
+              "displayName": "current_people_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "errors_list": {
+              "displayName": "errors_list",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "import_type": {
+              "displayName": "import_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "imported_people_count": {
+              "displayName": "imported_people_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/imports-index"
         },
@@ -685,18 +2301,66 @@
           "path": "/integrations/signals/registrations",
           "responseKey": "data",
           "fields": {
-            "attribution": "attribution",
-            "created_at": "created_at",
-            "data_shape": "data_shape",
-            "description": "description",
-            "globally_installed_at": "globally_installed_at",
-            "id": "id",
-            "indicators": "indicators",
-            "integration": "integration",
-            "integration_slug": "integration_slug",
-            "owner_user_guid": "owner_user_guid",
-            "signal_name": "signal_name",
-            "type": "type"
+            "attribution": {
+              "displayName": "attribution",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "data_shape": {
+              "displayName": "data_shape",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "globally_installed_at": {
+              "displayName": "globally_installed_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "indicators": {
+              "displayName": "indicators",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "integration": {
+              "displayName": "integration",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "integration_slug": {
+              "displayName": "integration_slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner_user_guid": {
+              "displayName": "owner_user_guid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "signal_name": {
+              "displayName": "signal_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-index"
         },
@@ -705,21 +2369,81 @@
           "path": "/integrations/signals/registrations/plays",
           "responseKey": "data",
           "fields": {
-            "attributes": "attributes",
-            "created_at": "created_at",
-            "description": "description",
-            "enabled_at": "enabled_at",
-            "id": "id",
-            "identifier": "identifier",
-            "indicators": "indicators",
-            "integration": "integration",
-            "label": "label",
-            "name": "name",
-            "owner_tenant_id": "owner_tenant_id",
-            "owner_user_guid": "owner_user_guid",
-            "signal_registration": "signal_registration",
-            "signal_type": "signal_type",
-            "state": "state"
+            "attributes": {
+              "displayName": "attributes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "date",
+              "providerType": "date"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "enabled_at": {
+              "displayName": "enabled_at",
+              "valueType": "date",
+              "providerType": "date"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "identifier": {
+              "displayName": "identifier",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "indicators": {
+              "displayName": "indicators",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "integration": {
+              "displayName": "integration",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "label": {
+              "displayName": "label",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "owner_tenant_id": {
+              "displayName": "owner_tenant_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "owner_user_guid": {
+              "displayName": "owner_user_guid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "signal_registration": {
+              "displayName": "signal_registration",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "signal_type": {
+              "displayName": "signal_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-plays-index"
         },
@@ -728,53 +2452,241 @@
           "path": "/meetings",
           "responseKey": "data",
           "fields": {
-            "account_id": "account_id",
-            "all_day": "all_day",
-            "attendees": "attendees",
-            "booked_by_meetings_settings": "booked_by_meetings_settings",
-            "booked_by_user": "booked_by_user",
-            "cadence": "cadence",
-            "calendar_id": "calendar_id",
-            "calendar_type": "calendar_type",
-            "canceled_at": "canceled_at",
-            "count_towards_meetings_attended_metric": "count_towards_meetings_attended_metric",
-            "count_towards_meetings_booked_metric": "count_towards_meetings_booked_metric",
-            "created_at": "created_at",
-            "created_on_demand": "created_on_demand",
-            "crm": "crm",
-            "crm_custom_fields": "crm_custom_fields",
-            "crm_references": "crm_references",
-            "description": "description",
-            "end_time": "end_time",
-            "event_id": "event_id",
-            "event_source": "event_source",
-            "guests": "guests",
-            "i_cal_uid": "i_cal_uid",
-            "id": "id",
-            "last_occurrence_at": "last_occurrence_at",
-            "location": "location",
-            "meeting_type": "meeting_type",
-            "meeting_type_id": "meeting_type_id",
-            "no_show": "no_show",
-            "notes": "notes",
-            "owned_by_meetings_settings": "owned_by_meetings_settings",
-            "owned_by_user": "owned_by_user",
-            "person": "person",
-            "recipient_email": "recipient_email",
-            "recipient_name": "recipient_name",
-            "recurrence": "recurrence",
-            "recurring": "recurring",
-            "recurring_interval": "recurring_interval",
-            "reschedule_guid": "reschedule_guid",
-            "reschedule_status": "reschedule_status",
-            "start_time": "start_time",
-            "status": "status",
-            "step": "step",
-            "strict_attribution": "strict_attribution",
-            "task_id": "task_id",
-            "title": "title",
-            "undo_completion_count": "undo_completion_count",
-            "updated_at": "updated_at"
+            "account_id": {
+              "displayName": "account_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "all_day": {
+              "displayName": "all_day",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "attendees": {
+              "displayName": "attendees",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "booked_by_meetings_settings": {
+              "displayName": "booked_by_meetings_settings",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "booked_by_user": {
+              "displayName": "booked_by_user",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "cadence": {
+              "displayName": "cadence",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "calendar_id": {
+              "displayName": "calendar_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "calendar_type": {
+              "displayName": "calendar_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "canceled_at": {
+              "displayName": "canceled_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "count_towards_meetings_attended_metric": {
+              "displayName": "count_towards_meetings_attended_metric",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "count_towards_meetings_booked_metric": {
+              "displayName": "count_towards_meetings_booked_metric",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "created_on_demand": {
+              "displayName": "created_on_demand",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "crm": {
+              "displayName": "crm",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "crm_custom_fields": {
+              "displayName": "crm_custom_fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "crm_references": {
+              "displayName": "crm_references",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "end_time": {
+              "displayName": "end_time",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "event_id": {
+              "displayName": "event_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "event_source": {
+              "displayName": "event_source",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "guests": {
+              "displayName": "guests",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "i_cal_uid": {
+              "displayName": "i_cal_uid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "last_occurrence_at": {
+              "displayName": "last_occurrence_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "meeting_type": {
+              "displayName": "meeting_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "meeting_type_id": {
+              "displayName": "meeting_type_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "no_show": {
+              "displayName": "no_show",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owned_by_meetings_settings": {
+              "displayName": "owned_by_meetings_settings",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "owned_by_user": {
+              "displayName": "owned_by_user",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "person": {
+              "displayName": "person",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "recipient_email": {
+              "displayName": "recipient_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recipient_name": {
+              "displayName": "recipient_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recurrence": {
+              "displayName": "recurrence",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "recurring": {
+              "displayName": "recurring",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "recurring_interval": {
+              "displayName": "recurring_interval",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reschedule_guid": {
+              "displayName": "reschedule_guid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reschedule_status": {
+              "displayName": "reschedule_status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_time": {
+              "displayName": "start_time",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "step": {
+              "displayName": "step",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "strict_attribution": {
+              "displayName": "strict_attribution",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "task_id": {
+              "displayName": "task_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "undo_completion_count": {
+              "displayName": "undo_completion_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/meetings-index"
         },
@@ -783,15 +2695,51 @@
           "path": "/notes",
           "responseKey": "data",
           "fields": {
-            "associated_type": "associated_type",
-            "associated_with": "associated_with",
-            "call": "call",
-            "content": "content",
-            "created_at": "created_at",
-            "crm_activity_metadata": "crm_activity_metadata",
-            "id": "id",
-            "updated_at": "updated_at",
-            "user": "user"
+            "associated_type": {
+              "displayName": "associated_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "associated_with": {
+              "displayName": "associated_with",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "call": {
+              "displayName": "call",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "content": {
+              "displayName": "content",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "crm_activity_metadata": {
+              "displayName": "crm_activity_metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/notes-index"
         },
@@ -800,39 +2748,171 @@
           "path": "/opportunities",
           "responseKey": "data",
           "fields": {
-            "account": "account",
-            "account_crm_id": "account_crm_id",
-            "account_name": "account_name",
-            "amount": "amount",
-            "close_date": "close_date",
-            "created_at": "created_at",
-            "created_by_crm_id": "created_by_crm_id",
-            "created_date": "created_date",
-            "creator": "creator",
-            "crm_id": "crm_id",
-            "crm_last_updated_date": "crm_last_updated_date",
-            "crm_type": "crm_type",
-            "crm_url": "crm_url",
-            "currency_iso_code": "currency_iso_code",
-            "custom_fields": "custom_fields",
-            "id": "id",
-            "is_closed": "is_closed",
-            "is_won": "is_won",
-            "most_recent_cadence": "most_recent_cadence",
-            "most_recent_step": "most_recent_step",
-            "most_recent_step_account": "most_recent_step_account",
-            "most_recent_step_number": "most_recent_step_number",
-            "name": "name",
-            "opportunity_type": "opportunity_type",
-            "opportunity_window_person_id": "opportunity_window_person_id",
-            "opportunity_window_started_at": "opportunity_window_started_at",
-            "owner": "owner",
-            "owner_crm_id": "owner_crm_id",
-            "owner_crm_name": "owner_crm_name",
-            "probability": "probability",
-            "stage_name": "stage_name",
-            "tags": "tags",
-            "updated_at": "updated_at"
+            "account": {
+              "displayName": "account",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "account_crm_id": {
+              "displayName": "account_crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "account_name": {
+              "displayName": "account_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "amount": {
+              "displayName": "amount",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "close_date": {
+              "displayName": "close_date",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "created_by_crm_id": {
+              "displayName": "created_by_crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_date": {
+              "displayName": "created_date",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "creator": {
+              "displayName": "creator",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "crm_id": {
+              "displayName": "crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "crm_last_updated_date": {
+              "displayName": "crm_last_updated_date",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "crm_type": {
+              "displayName": "crm_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "crm_url": {
+              "displayName": "crm_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "currency_iso_code": {
+              "displayName": "currency_iso_code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_closed": {
+              "displayName": "is_closed",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_won": {
+              "displayName": "is_won",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "most_recent_cadence": {
+              "displayName": "most_recent_cadence",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "most_recent_step": {
+              "displayName": "most_recent_step",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "most_recent_step_account": {
+              "displayName": "most_recent_step_account",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "most_recent_step_number": {
+              "displayName": "most_recent_step_number",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "opportunity_type": {
+              "displayName": "opportunity_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "opportunity_window_person_id": {
+              "displayName": "opportunity_window_person_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "opportunity_window_started_at": {
+              "displayName": "opportunity_window_started_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "owner_crm_id": {
+              "displayName": "owner_crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner_crm_name": {
+              "displayName": "owner_crm_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "probability": {
+              "displayName": "probability",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "stage_name": {
+              "displayName": "stage_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/opportunities-index"
         },
@@ -841,14 +2921,46 @@
           "path": "/opportunity_people",
           "responseKey": "data",
           "fields": {
-            "created_at": "created_at",
-            "crm_id": "crm_id",
-            "id": "id",
-            "opportunity_crm_id": "opportunity_crm_id",
-            "opportunity_id": "opportunity_id",
-            "person_crm_id": "person_crm_id",
-            "person_id": "person_id",
-            "updated_at": "updated_at"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "crm_id": {
+              "displayName": "crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "opportunity_crm_id": {
+              "displayName": "opportunity_crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "opportunity_id": {
+              "displayName": "opportunity_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "person_crm_id": {
+              "displayName": "person_crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "person_id": {
+              "displayName": "person_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/opportunity-people-index"
         },
@@ -857,12 +2969,36 @@
           "path": "/opportunity_stages",
           "responseKey": "data",
           "fields": {
-            "active": "active",
-            "created_at": "created_at",
-            "id": "id",
-            "name": "name",
-            "order": "order",
-            "updated_at": "updated_at"
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "order": {
+              "displayName": "order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/opportunity-stages-index"
         },
@@ -871,9 +3007,21 @@
           "path": "/pending_emails",
           "responseKey": "data",
           "fields": {
-            "id": "id",
-            "mailbox": "mailbox",
-            "mime_email_payload": "mime_email_payload"
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "mailbox": {
+              "displayName": "mailbox",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mime_email_payload": {
+              "displayName": "mime_email_payload",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/pending-emails-index"
         },
@@ -882,66 +3030,306 @@
           "path": "/people",
           "responseKey": "data",
           "fields": {
-            "account": "account",
-            "account_crm_id": "account_crm_id",
-            "bouncing": "bouncing",
-            "cadences": "cadences",
-            "city": "city",
-            "contact_restrictions": "contact_restrictions",
-            "country": "country",
-            "counts": "counts",
-            "created_at": "created_at",
-            "crm_id": "crm_id",
-            "crm_object_type": "crm_object_type",
-            "crm_url": "crm_url",
-            "custom_fields": "custom_fields",
-            "display_name": "display_name",
-            "do_not_contact": "do_not_contact",
-            "email_address": "email_address",
-            "eu_resident": "eu_resident",
-            "external_source": "external_source",
-            "first_name": "first_name",
-            "full_email_address": "full_email_address",
-            "home_phone": "home_phone",
-            "hot_lead": "hot_lead",
-            "id": "id",
-            "import": "import",
-            "job_function": "job_function",
-            "job_seniority": "job_seniority",
-            "last_completed_step": "last_completed_step",
-            "last_completed_step_cadence": "last_completed_step_cadence",
-            "last_contacted_at": "last_contacted_at",
-            "last_contacted_by": "last_contacted_by",
-            "last_contacted_type": "last_contacted_type",
-            "last_name": "last_name",
-            "last_replied_at": "last_replied_at",
-            "linkedin_url": "linkedin_url",
-            "locale": "locale",
-            "locale_utc_offset": "locale_utc_offset",
-            "mobile_phone": "mobile_phone",
-            "most_recent_cadence": "most_recent_cadence",
-            "owner": "owner",
-            "owner_crm_id": "owner_crm_id",
-            "person_company_industry": "person_company_industry",
-            "person_company_name": "person_company_name",
-            "person_company_website": "person_company_website",
-            "person_stage": "person_stage",
-            "personal_email_address": "personal_email_address",
-            "personal_website": "personal_website",
-            "phone": "phone",
-            "phone_extension": "phone_extension",
-            "secondary_email_address": "secondary_email_address",
-            "starred": "starred",
-            "state": "state",
-            "success_count": "success_count",
-            "tags": "tags",
-            "title": "title",
-            "twitter_handle": "twitter_handle",
-            "untouched": "untouched",
-            "updated_at": "updated_at",
-            "work_city": "work_city",
-            "work_country": "work_country",
-            "work_state": "work_state"
+            "account": {
+              "displayName": "account",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "account_crm_id": {
+              "displayName": "account_crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "bouncing": {
+              "displayName": "bouncing",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "cadences": {
+              "displayName": "cadences",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "city": {
+              "displayName": "city",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_restrictions": {
+              "displayName": "contact_restrictions",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "country": {
+              "displayName": "country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "counts": {
+              "displayName": "counts",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "crm_id": {
+              "displayName": "crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "crm_object_type": {
+              "displayName": "crm_object_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "crm_url": {
+              "displayName": "crm_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "display_name": {
+              "displayName": "display_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "do_not_contact": {
+              "displayName": "do_not_contact",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "email_address": {
+              "displayName": "email_address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "eu_resident": {
+              "displayName": "eu_resident",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "external_source": {
+              "displayName": "external_source",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "full_email_address": {
+              "displayName": "full_email_address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "home_phone": {
+              "displayName": "home_phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hot_lead": {
+              "displayName": "hot_lead",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "import": {
+              "displayName": "import",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "job_function": {
+              "displayName": "job_function",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "job_seniority": {
+              "displayName": "job_seniority",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_completed_step": {
+              "displayName": "last_completed_step",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "last_completed_step_cadence": {
+              "displayName": "last_completed_step_cadence",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "last_contacted_at": {
+              "displayName": "last_contacted_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "last_contacted_by": {
+              "displayName": "last_contacted_by",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "last_contacted_type": {
+              "displayName": "last_contacted_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_replied_at": {
+              "displayName": "last_replied_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "linkedin_url": {
+              "displayName": "linkedin_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "locale": {
+              "displayName": "locale",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "locale_utc_offset": {
+              "displayName": "locale_utc_offset",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "mobile_phone": {
+              "displayName": "mobile_phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "most_recent_cadence": {
+              "displayName": "most_recent_cadence",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "owner_crm_id": {
+              "displayName": "owner_crm_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "person_company_industry": {
+              "displayName": "person_company_industry",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "person_company_name": {
+              "displayName": "person_company_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "person_company_website": {
+              "displayName": "person_company_website",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "person_stage": {
+              "displayName": "person_stage",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "personal_email_address": {
+              "displayName": "personal_email_address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "personal_website": {
+              "displayName": "personal_website",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone": {
+              "displayName": "phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone_extension": {
+              "displayName": "phone_extension",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "secondary_email_address": {
+              "displayName": "secondary_email_address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "starred": {
+              "displayName": "starred",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "success_count": {
+              "displayName": "success_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "twitter_handle": {
+              "displayName": "twitter_handle",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "untouched": {
+              "displayName": "untouched",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "work_city": {
+              "displayName": "work_city",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "work_country": {
+              "displayName": "work_country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "work_state": {
+              "displayName": "work_state",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/people-index"
         },
@@ -950,12 +3338,36 @@
           "path": "/person_stages",
           "responseKey": "data",
           "fields": {
-            "active": "active",
-            "created_at": "created_at",
-            "id": "id",
-            "name": "name",
-            "order": "order",
-            "updated_at": "updated_at"
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "order": {
+              "displayName": "order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/person-stages-index"
         },
@@ -964,9 +3376,21 @@
           "path": "/phone_number_assignments",
           "responseKey": "data",
           "fields": {
-            "id": "id",
-            "number": "number",
-            "user": "user"
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "number": {
+              "displayName": "number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/phone-number-assignments-index"
         },
@@ -975,10 +3399,26 @@
           "path": "/phone_numbers/caller_ids",
           "responseKey": "data",
           "fields": {
-            "account_name": "account_name",
-            "display_name": "display_name",
-            "person": "person",
-            "title": "title"
+            "account_name": {
+              "displayName": "account_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "display_name": {
+              "displayName": "display_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "person": {
+              "displayName": "person",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/phone-numbers-caller-ids-index"
         },
@@ -987,12 +3427,36 @@
           "path": "/saved_list_views",
           "responseKey": "data",
           "fields": {
-            "id": "id",
-            "is_default": "is_default",
-            "name": "name",
-            "shared": "shared",
-            "view": "view",
-            "view_params": "view_params"
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_default": {
+              "displayName": "is_default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shared": {
+              "displayName": "shared",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "view": {
+              "displayName": "view",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "view_params": {
+              "displayName": "view_params",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/saved-list-views-index"
         },
@@ -1001,18 +3465,66 @@
           "path": "/steps",
           "responseKey": "data",
           "fields": {
-            "cadence": "cadence",
-            "created_at": "created_at",
-            "day": "day",
-            "details": "details",
-            "disabled": "disabled",
-            "display_name": "display_name",
-            "id": "id",
-            "multitouch_enabled": "multitouch_enabled",
-            "name": "name",
-            "step_number": "step_number",
-            "type": "type",
-            "updated_at": "updated_at"
+            "cadence": {
+              "displayName": "cadence",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "day": {
+              "displayName": "day",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "details": {
+              "displayName": "details",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "disabled": {
+              "displayName": "disabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "display_name": {
+              "displayName": "display_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "multitouch_enabled": {
+              "displayName": "multitouch_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "step_number": {
+              "displayName": "step_number",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/steps-index"
         },
@@ -1021,19 +3533,71 @@
           "path": "/successes",
           "responseKey": "data",
           "fields": {
-            "counts": "counts",
-            "created_at": "created_at",
-            "id": "id",
-            "latest_action": "latest_action",
-            "latest_cadence": "latest_cadence",
-            "latest_call": "latest_call",
-            "latest_email": "latest_email",
-            "latest_step": "latest_step",
-            "person": "person",
-            "succeeded_at": "succeeded_at",
-            "success_window_started_at": "success_window_started_at",
-            "updated_at": "updated_at",
-            "user": "user"
+            "counts": {
+              "displayName": "counts",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "latest_action": {
+              "displayName": "latest_action",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "latest_cadence": {
+              "displayName": "latest_cadence",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "latest_call": {
+              "displayName": "latest_call",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "latest_email": {
+              "displayName": "latest_email",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "latest_step": {
+              "displayName": "latest_step",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "person": {
+              "displayName": "person",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "succeeded_at": {
+              "displayName": "succeeded_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "success_window_started_at": {
+              "displayName": "success_window_started_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/successes-index"
         },
@@ -1042,8 +3606,16 @@
           "path": "/tags",
           "responseKey": "data",
           "fields": {
-            "id": "id",
-            "name": "name"
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/tags-index"
         },
@@ -1052,23 +3624,91 @@
           "path": "/tasks",
           "responseKey": "data",
           "fields": {
-            "completed_at": "completed_at",
-            "completed_by": "completed_by",
-            "created_at": "created_at",
-            "created_by_user": "created_by_user",
-            "current_state": "current_state",
-            "description": "description",
-            "due_at": "due_at",
-            "due_date": "due_date",
-            "expires_after": "expires_after",
-            "id": "id",
-            "opportunity": "opportunity",
-            "person": "person",
-            "remind_at": "remind_at",
-            "subject": "subject",
-            "task_type": "task_type",
-            "updated_at": "updated_at",
-            "user": "user"
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "completed_by": {
+              "displayName": "completed_by",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "created_by_user": {
+              "displayName": "created_by_user",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "current_state": {
+              "displayName": "current_state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "due_at": {
+              "displayName": "due_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "due_date": {
+              "displayName": "due_date",
+              "valueType": "date",
+              "providerType": "date"
+            },
+            "expires_after": {
+              "displayName": "expires_after",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "opportunity": {
+              "displayName": "opportunity",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "person": {
+              "displayName": "person",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "remind_at": {
+              "displayName": "remind_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "task_type": {
+              "displayName": "task_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/tasks-index"
         },
@@ -1077,12 +3717,36 @@
           "path": "/team_template_attachments",
           "responseKey": "data",
           "fields": {
-            "attachment_file_size": "attachment_file_size",
-            "attachment_id": "attachment_id",
-            "download_url": "download_url",
-            "id": "id",
-            "name": "name",
-            "team_template": "team_template"
+            "attachment_file_size": {
+              "displayName": "attachment_file_size",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "attachment_id": {
+              "displayName": "attachment_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "download_url": {
+              "displayName": "download_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "team_template": {
+              "displayName": "team_template",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/team-template-attachments-index"
         },
@@ -1091,23 +3755,91 @@
           "path": "/team_templates",
           "responseKey": "data",
           "fields": {
-            "_links": "_links",
-            "archived_at": "archived_at",
-            "body": "body",
-            "body_preview": "body_preview",
-            "click_tracking_enabled": "click_tracking_enabled",
-            "counts": "counts",
-            "created_at": "created_at",
-            "groups": "groups",
-            "id": "id",
-            "last_modified_at": "last_modified_at",
-            "last_modified_user": "last_modified_user",
-            "last_used_at": "last_used_at",
-            "open_tracking_enabled": "open_tracking_enabled",
-            "subject": "subject",
-            "tags": "tags",
-            "title": "title",
-            "updated_at": "updated_at"
+            "_links": {
+              "displayName": "_links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "archived_at": {
+              "displayName": "archived_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "body": {
+              "displayName": "body",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "body_preview": {
+              "displayName": "body_preview",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "click_tracking_enabled": {
+              "displayName": "click_tracking_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "counts": {
+              "displayName": "counts",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "groups": {
+              "displayName": "groups",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_modified_at": {
+              "displayName": "last_modified_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "last_modified_user": {
+              "displayName": "last_modified_user",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "last_used_at": {
+              "displayName": "last_used_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "open_tracking_enabled": {
+              "displayName": "open_tracking_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/team-templates-index"
         },
@@ -1116,13 +3848,41 @@
           "path": "/transcriptions",
           "responseKey": "data",
           "fields": {
-            "conversation": "conversation",
-            "created_at": "created_at",
-            "id": "id",
-            "language_code": "language_code",
-            "transcription_artifact": "transcription_artifact",
-            "transcription_sentences": "transcription_sentences",
-            "updated_at": "updated_at"
+            "conversation": {
+              "displayName": "conversation",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "uuid"
+            },
+            "language_code": {
+              "displayName": "language_code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "transcription_artifact": {
+              "displayName": "transcription_artifact",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "transcription_sentences": {
+              "displayName": "transcription_sentences",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/conversations-transcriptions-find-all-transcripts"
         },
@@ -1131,10 +3891,26 @@
           "path": "/users",
           "responseKey": "data",
           "fields": {
-            "email": "email",
-            "guid": "guid",
-            "id": "id",
-            "name": "name"
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "guid": {
+              "displayName": "guid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/users-index"
         },
@@ -1143,13 +3919,41 @@
           "path": "/webhook_subscriptions",
           "responseKey": "data",
           "fields": {
-            "callback_token": "callback_token",
-            "callback_url": "callback_url",
-            "enabled": "enabled",
-            "event_type": "event_type",
-            "id": "id",
-            "tenant_id": "tenant_id",
-            "user_guid": "user_guid"
+            "callback_token": {
+              "displayName": "callback_token",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "callback_url": {
+              "displayName": "callback_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "enabled": {
+              "displayName": "enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "event_type": {
+              "displayName": "event_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "tenant_id": {
+              "displayName": "tenant_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "user_guid": {
+              "displayName": "user_guid",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "docs": "https://developers.salesloft.com/docs/api/webhook-subscriptions-index"
         }

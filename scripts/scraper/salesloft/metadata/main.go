@@ -7,13 +7,12 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
-	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/salesloft"
-	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/scripts/scraper/salesloft/internal/files"
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/iancoleman/strcase"
@@ -111,26 +110,24 @@ func createSchemas() {
 		urlPath := formatObjectURL(endpointPath)
 		objectName, _ := strings.CutPrefix(urlPath, "/")
 
-		doc.Find(`.openapi-tabs__schema-container .openapi-schema__property`).
-			Each(func(i int, property *goquery.Selection) {
+		doc.Find(`.openapi-tabs__schema-container .openapi-schema__container`).
+			Each(func(i int, listItem *goquery.Selection) {
+				property := listItem.Find(".openapi-schema__property")
+				fieldName := property.Text()
+				propertyType := listItem.Find(".openapi-schema__name")
+				fieldType := propertyType.Text()
+
 				// Sometimes there are nested fields we ignore them
 				// Only the first most field represents top level fields of response payload
-				if !scrapper.Query.IsVisible(property) {
+				if !scrapper.Query.IsVisible(listItem) || !scrapper.Query.IsVisible(property) {
 					return
 				}
 
-				fieldName := property.Text()
 				if len(fieldName) != 0 {
 					newDisplayName, isList := handleDisplayName(model.DisplayName)
 					if isList {
-						field := metadatadef.Field{
-							Name:         fieldName,
-							Type:         "",
-							ValueOptions: nil,
-						}
-
 						schemas.Add("", objectName, newDisplayName, urlPath, "data",
-							utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), &model.URL, nil)
+							createField(fieldName, fieldType), &model.URL, nil)
 					}
 				}
 			})
@@ -234,15 +231,15 @@ func handleDisplayName(name string) (displayName string, isListResource bool) {
 
 	if stripped, ok := strings.CutPrefix(name, "List "); ok {
 		return naming.CapitalizeFirstLetterEveryWord(stripped), true
-	} else {
-		// This one is special case. Just hard coded, mapped display name.
-		if name == "Retrieve a list of Requests" {
-			return "Requests", true
-		}
+	}
 
-		if ok = strings.HasPrefix(name, "Fetch "); ok {
-			return "", false
-		}
+	// This one is special case. Just hard coded, mapped display name.
+	if name == "Retrieve a list of Requests" {
+		return "Requests", true
+	}
+
+	if ok := strings.HasPrefix(name, "Fetch "); ok {
+		return "", false
 	}
 
 	return name, true
@@ -252,4 +249,55 @@ func queryHTML(sourceURL string) *goquery.Document {
 	const waitInterval = 2 // seconds
 
 	return scrapper.QueryLoadableHTML(sourceURL, waitInterval)
+}
+
+func createField(fieldName, fieldType string) staticschema.FieldMetadataMapV2 {
+	fieldType = strings.Trim(fieldType, " ")
+
+	return staticschema.FieldMetadataMapV2{
+		fieldName: staticschema.FieldMetadata{
+			DisplayName:  fieldName,
+			ValueType:    getFieldValueType(fieldType),
+			ProviderType: fieldType,
+			Values:       nil,
+		},
+	}
+}
+
+// Existing values at the time of writing:
+// [
+//
+//	"object",
+//	"object[]",
+//	"boolean",
+//	"date",
+//	"date-time",
+//	"integer",
+//	"integer[]",
+//	"number",
+//	"object",
+//	"object[]",
+//	"string",
+//	"string[]",
+//	"uuid"
+//
+// ]
+func getFieldValueType(fieldType string) common.ValueType {
+	switch fieldType {
+	case "integer":
+		return common.ValueTypeInt
+	case "number":
+		return common.ValueTypeFloat
+	case "boolean":
+		return common.ValueTypeBoolean
+	case "string", "uuid":
+		return common.ValueTypeString
+	case "date":
+		return common.ValueTypeDate
+	case "date-time":
+		return common.ValueTypeDateTime
+	default:
+		// object, array
+		return common.ValueTypeOther
+	}
 }
