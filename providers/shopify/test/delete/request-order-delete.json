@@ -1,6 +1,6 @@
 {
     "query": "mutation OrderDelete($orderId: ID!) {\n  orderDelete(orderId: $orderId) {\n    deletedId\n    userErrors {\n      field\n      message\n      code\n    }\n  }\n}",
     "variables": {
-        "id": "gid://shopify/Order/123456789"
+        "orderId": "gid://shopify/Order/123456789"
     }
 }
