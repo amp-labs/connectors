@@ -9,27 +9,26 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	if err := config.ValidateParams(true); err != nil {
+func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+	if err := params.ValidateParams(true); err != nil {
 		return nil, err
 	}
 
-	url, err := c.buildReadURL(config)
+	url, err := c.buildReadURL(params)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, url.String())
+	resp, err := c.Client.Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
 
-	return common.ParseResult(
-		rsp,
-		getRecords,
+	return common.ParseResult(resp,
+		common.MakeRecordsFunc("data"),
 		makeNextRecordsURL(url),
-		common.GetMarshaledData,
-		config.Fields,
+		common.MakeMarshaledDataFunc(flattenCustomEmbed),
+		params.Fields,
 	)
 }
 
@@ -40,7 +39,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	url, err := c.getURL(config.ObjectName)
+	url, err := c.getObjectURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}

@@ -1,16 +1,23 @@
 package salesloft
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
+
+	responseCustomFieldsFirstPage := testutils.DataFromFile(t, "read/custom-fields/first-page.json")
+	responseCustomFieldsSecondPage := testutils.DataFromFile(t, "read/custom-fields/last-page.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -97,9 +104,35 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name:       "Successfully describe object people",
-			Input:      []string{"people"},
-			Server:     mockserver.Dummy(),
+			Name:  "Successfully describe object people with custom fields",
+			Input: []string{"people"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				// Custom fields are intentionally split across two pages to simulate
+				// a provider account with more than 100 custom fields.
+				//
+				// This verifies that the connector:
+				//   - Uses the maximum page size (per_page=100)
+				//   - Follows pagination correctly
+				//   - Aggregates custom fields from all pages before describing the object
+				Cases: mockserver.Cases{{
+					If: mockcond.And{
+						mockcond.MethodGET(),
+						mockcond.Path("/v2/custom_fields"),
+						mockcond.QueryParam("per_page", "100"),
+						mockcond.QueryParamsMissing("page"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseCustomFieldsFirstPage),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodGET(),
+						mockcond.Path("/v2/custom_fields"),
+						mockcond.QueryParam("per_page", "100"),
+						mockcond.QueryParam("page", "2"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseCustomFieldsSecondPage),
+				}},
+			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
@@ -110,6 +143,25 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "city",
 								ValueType:    "string",
 								ProviderType: "string",
+							},
+							// All fields below originate from custom field definitions.
+							"hobby": {
+								DisplayName:  "hobby",
+								ValueType:    "string",
+								ProviderType: "text",
+								IsCustom:     goutils.Pointer(true),
+							},
+							"test-field": {
+								DisplayName:  "test-field",
+								ValueType:    "string",
+								ProviderType: "text",
+								IsCustom:     goutils.Pointer(true),
+							},
+							"mails": {
+								DisplayName:  "mails",
+								ValueType:    "string",
+								ProviderType: "text",
+								IsCustom:     goutils.Pointer(true),
 							},
 						},
 					},

@@ -23,8 +23,8 @@ func main() {
 	conn := msTest.GetSalesloftConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "people",
-		Fields:     connectors.Fields("display_name", "email_address", "hobby"),
+		ObjectName: "notes",
+		Fields:     connectors.Fields("content"),
 	})
 	if err != nil {
 		utils.Fail("error reading from provider", "error", err)
