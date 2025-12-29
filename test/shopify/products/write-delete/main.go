@@ -23,7 +23,6 @@ func MainFn() int {
 	defer done()
 
 	utils.SetupLogging()
-
 	conn := shopify.GetShopifyConnector(ctx)
 
 	// Generate unique product title to avoid conflicts
@@ -48,11 +47,9 @@ func MainFn() int {
 		return 1
 	}
 
-	slog.Info("Product created successfully")
-	utils.DumpJSON(productResult, os.Stdout)
-
 	productID := productResult.RecordId
-	slog.Info("Product ID", "id", productID)
+	slog.Info("Product created successfully", "id", productID)
+	utils.DumpJSON(productResult, os.Stdout)
 
 	// Test 2: Update the Product
 	slog.Info("=== Test 2: Updating the product ===")
@@ -88,8 +85,6 @@ func MainFn() int {
 
 	slog.Info("Product deleted successfully")
 	utils.DumpJSON(deleteResult, os.Stdout)
-
-	slog.Info("=== All product tests completed successfully ===")
 
 	return 0
 }

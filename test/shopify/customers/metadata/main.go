@@ -11,10 +11,9 @@ import (
 
 func main() {
 	ctx := context.Background()
-
 	conn := shopify.GetShopifyConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"products", "orders", "customers"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"customers"})
 	if err != nil {
 		log.Fatal("Error fetching metadata: ", err)
 	}

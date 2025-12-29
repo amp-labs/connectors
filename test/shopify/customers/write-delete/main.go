@@ -23,13 +23,11 @@ func MainFn() int {
 	defer done()
 
 	utils.SetupLogging()
-
 	conn := shopify.GetShopifyConnector(ctx)
 
 	// Generate unique email and phone to avoid conflicts
 	timestamp := time.Now().Unix()
 	testEmail := fmt.Sprintf("testcustomer%d@example.com", timestamp)
-	// Generate unique phone using last 7 digits of timestamp
 	testPhone := fmt.Sprintf("+1646555%04d", timestamp%10000)
 
 	// Test 1: Create a Customer
@@ -50,11 +48,9 @@ func MainFn() int {
 		return 1
 	}
 
-	slog.Info("Customer created successfully")
-	utils.DumpJSON(customerResult, os.Stdout)
-
 	customerID := customerResult.RecordId
-	slog.Info("Customer ID", "id", customerID)
+	slog.Info("Customer created successfully", "id", customerID)
+	utils.DumpJSON(customerResult, os.Stdout)
 
 	// Test 2: Update the Customer
 	slog.Info("=== Test 2: Updating the customer ===")
@@ -90,8 +86,6 @@ func MainFn() int {
 
 	slog.Info("Customer deleted successfully")
 	utils.DumpJSON(deleteCustomerResult, os.Stdout)
-
-	slog.Info("=== All write tests completed successfully ===")
 
 	return 0
 }
