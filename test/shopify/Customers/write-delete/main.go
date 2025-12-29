@@ -18,10 +18,6 @@ func main() {
 	os.Exit(MainFn())
 }
 
-// Write + Delete scenario:
-//  1. Create a temporary customer
-//  2. Update it
-//  3. Delete it (cleanup)
 func MainFn() int {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
