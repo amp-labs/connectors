@@ -25,13 +25,12 @@ func MainFn() int {
 	utils.SetupLogging()
 	conn := shopify.GetShopifyConnector(ctx)
 
-	// Generate unique email and phone to avoid conflicts
+	// Generate unique email and phone to avoid conflicts.
 	timestamp := time.Now().Unix()
 	testEmail := fmt.Sprintf("testcustomer%d@example.com", timestamp)
-	// Generate unique phone using last 7 digits of timestamp
 	testPhone := fmt.Sprintf("+1646555%04d", timestamp%10000)
 
-	// Test 1: Create a Customer
+	// Test 1: Create
 	slog.Info("=== Test 1: Creating a customer ===")
 
 	customerResult, err := conn.Write(ctx, common.WriteParams{
@@ -49,13 +48,11 @@ func MainFn() int {
 		return 1
 	}
 
-	slog.Info("Customer created successfully")
+	customerID := customerResult.RecordId
+	slog.Info("Customer created", "id", customerID)
 	utils.DumpJSON(customerResult, os.Stdout)
 
-	customerID := customerResult.RecordId
-	slog.Info("Customer ID", "id", customerID)
-
-	// Test 2: Update the Customer
+	// Test 2: Update
 	slog.Info("=== Test 2: Updating the customer ===")
 
 	updateResult, err := conn.Write(ctx, common.WriteParams{
@@ -72,10 +69,10 @@ func MainFn() int {
 		return 1
 	}
 
-	slog.Info("Customer updated successfully")
+	slog.Info("Customer updated")
 	utils.DumpJSON(updateResult, os.Stdout)
 
-	// Test 3: Delete the customer
+	// Test 3: Delete (cleanup)
 	slog.Info("=== Test 3: Deleting the customer ===")
 
 	deleteCustomerResult, err := conn.Delete(ctx, common.DeleteParams{
@@ -87,9 +84,8 @@ func MainFn() int {
 		return 1
 	}
 
-	slog.Info("Customer deleted successfully")
+	slog.Info("Customer deleted")
 	utils.DumpJSON(deleteCustomerResult, os.Stdout)
 
-	slog.Info("=== Customer write-delete completed successfully ===")
 	return 0
 }

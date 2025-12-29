@@ -390,7 +390,6 @@ func buildWriteVariables(params common.WriteParams) map[string]any {
 // buildProductVariables builds variables for product create/update mutations.
 func buildProductVariables(params common.WriteParams) map[string]any {
 	if params.RecordId != "" {
-		// Update uses $input with id inside.
 		variables := map[string]any{
 			"input": params.RecordData,
 		}
@@ -400,7 +399,6 @@ func buildProductVariables(params common.WriteParams) map[string]any {
 		return variables
 	}
 
-	// Create uses $product.
 	return map[string]any{
 		"product": params.RecordData,
 	}
