@@ -11,6 +11,7 @@ import (
 
 func main() {
 	ctx := context.Background()
+
 	conn := shopify.GetShopifyConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"customers"})
@@ -24,4 +25,3 @@ func main() {
 
 	utils.DumpJSON(m, os.Stdout)
 }
-

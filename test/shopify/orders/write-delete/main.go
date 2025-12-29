@@ -18,9 +18,6 @@ func main() {
 	os.Exit(MainFn())
 }
 
-// MainFn runs a real end-to-end scenario against Shopify:
-// create order -> update -> close -> delete.
-//
 // Note: creating an order requires a ProductVariant ID. To keep this runnable
 // out of the box, we create a temporary product first and use its first variant.
 func MainFn() int {
