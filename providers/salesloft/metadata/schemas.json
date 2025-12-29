@@ -42,6 +42,15 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/account-tiers-index"
         },
+        "account_types": {
+          "displayName": "Distinct Account Types",
+          "path": "/account_types",
+          "responseKey": "data",
+          "fields": {
+            "name": "name"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/account-types-index"
+        },
         "accounts": {
           "displayName": "Accounts",
           "path": "/accounts",
@@ -78,6 +87,8 @@
             "owner_crm_id": "owner_crm_id",
             "phone": "phone",
             "postal_code": "postal_code",
+            "prospector_engagement_level": "prospector_engagement_level",
+            "prospector_engagement_score": "prospector_engagement_score",
             "revenue_range": "revenue_range",
             "size": "size",
             "state": "state",
@@ -170,6 +181,7 @@
             "headers": "headers",
             "id": "id",
             "mailing": "mailing",
+            "message_id": "message_id",
             "personalization": "personalization",
             "recipient": "recipient",
             "recipient_email_address": "recipient_email_address",
@@ -205,6 +217,33 @@
             "user_guid": "user_guid"
           },
           "docs": "https://developers.salesloft.com/docs/api/activity-histories-index"
+        },
+        "audit_reports": {
+          "displayName": "Generated Audit Reports",
+          "path": "/audit_reports",
+          "responseKey": "data",
+          "fields": {
+            "actions": "actions",
+            "audited_user_guids": "audited_user_guids",
+            "completed_on": "completed_on",
+            "data_source": "data_source",
+            "download_url": "download_url",
+            "email_notification": "email_notification",
+            "error": "error",
+            "id": "id",
+            "name": "name",
+            "record_ids": "record_ids",
+            "record_type": "record_type",
+            "requested_on": "requested_on",
+            "requestor_email": "requestor_email",
+            "requestor_name": "requestor_name",
+            "since": "since",
+            "started_on": "started_on",
+            "status": "status",
+            "until": "until",
+            "user_guid": "user_guid"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/audit-reports-index"
         },
         "bulk_jobs": {
           "displayName": "Bulk Jobs",
@@ -243,6 +282,7 @@
             "latest_action": "latest_action",
             "person": "person",
             "person_deleted": "person_deleted",
+            "step": "step",
             "updated_at": "updated_at",
             "user": "user"
           },
@@ -270,6 +310,7 @@
             "finished_stage": "finished_stage",
             "groups": "groups",
             "id": "id",
+            "knowledge_library_document_ids": "knowledge_library_document_ids",
             "latest_active_date": "latest_active_date",
             "name": "name",
             "opt_out_link_included": "opt_out_link_included",
@@ -312,6 +353,7 @@
             "recurrence": "recurrence",
             "recurring": "recurring",
             "recurring_interval": "recurring_interval",
+            "series_master_event_id": "series_master_event_id",
             "start_time": "start_time",
             "status": "status",
             "tenant_id": "tenant_id",
@@ -320,6 +362,18 @@
             "user_guid": "user_guid"
           },
           "docs": "https://developers.salesloft.com/docs/api/calendar-events-index"
+        },
+        "calendar_availabilities": {
+          "displayName": "Get calendar availabilities",
+          "path": "/calendar_availabilities",
+          "responseKey": "data",
+          "fields": {
+            "calendar_available_times": "calendar_available_times",
+            "calendar_date": "calendar_date",
+            "meeting_duration": "meeting_duration",
+            "total_available_count": "total_available_count"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/calendar-availabilities-index"
         },
         "call_data_records": {
           "displayName": "Call Data Records",
@@ -352,6 +406,7 @@
           "responseKey": "data",
           "fields": {
             "created_at": "created_at",
+            "crm_value": "crm_value",
             "id": "id",
             "name": "name",
             "updated_at": "updated_at"
@@ -423,6 +478,7 @@
             "activity_type": "activity_type",
             "created_at": "created_at",
             "crm_id": "crm_id",
+            "crm_record_type": "crm_record_type",
             "custom_crm_fields": "custom_crm_fields",
             "description": "description",
             "error": "error",
@@ -453,6 +509,18 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/crm-activity-fields-index"
         },
+        "crm_team_members_with_roles": {
+          "displayName": "Crm Account Team Members With Roles",
+          "path": "/crm_team_members_with_roles",
+          "responseKey": "data",
+          "fields": {
+            "account_email": "account_email",
+            "account_name": "account_name",
+            "team_member_role": "team_member_role",
+            "user_crm_id": "user_crm_id"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/crm-team-members-with-roles-index"
+        },
         "crm_users": {
           "displayName": "Crm Users",
           "path": "/crm_users",
@@ -460,6 +528,7 @@
           "fields": {
             "created_at": "created_at",
             "crm_id": "crm_id",
+            "crm_username": "crm_username",
             "first_name": "first_name",
             "id": "id",
             "last_name": "last_name",
@@ -671,6 +740,7 @@
             "count_towards_meetings_attended_metric": "count_towards_meetings_attended_metric",
             "count_towards_meetings_booked_metric": "count_towards_meetings_booked_metric",
             "created_at": "created_at",
+            "created_on_demand": "created_on_demand",
             "crm": "crm",
             "crm_custom_fields": "crm_custom_fields",
             "crm_references": "crm_references",
@@ -686,6 +756,7 @@
             "meeting_type": "meeting_type",
             "meeting_type_id": "meeting_type_id",
             "no_show": "no_show",
+            "notes": "notes",
             "owned_by_meetings_settings": "owned_by_meetings_settings",
             "owned_by_user": "owned_by_user",
             "person": "person",
@@ -717,6 +788,7 @@
             "call": "call",
             "content": "content",
             "created_at": "created_at",
+            "crm_activity_metadata": "crm_activity_metadata",
             "id": "id",
             "updated_at": "updated_at",
             "user": "user"
@@ -770,6 +842,7 @@
           "responseKey": "data",
           "fields": {
             "created_at": "created_at",
+            "crm_id": "crm_id",
             "id": "id",
             "opportunity_crm_id": "opportunity_crm_id",
             "opportunity_id": "opportunity_id",
@@ -826,12 +899,14 @@
             "do_not_contact": "do_not_contact",
             "email_address": "email_address",
             "eu_resident": "eu_resident",
+            "external_source": "external_source",
             "first_name": "first_name",
             "full_email_address": "full_email_address",
             "home_phone": "home_phone",
             "hot_lead": "hot_lead",
             "id": "id",
             "import": "import",
+            "job_function": "job_function",
             "job_seniority": "job_seniority",
             "last_completed_step": "last_completed_step",
             "last_completed_step_cadence": "last_completed_step_cadence",
@@ -1023,6 +1098,7 @@
             "click_tracking_enabled": "click_tracking_enabled",
             "counts": "counts",
             "created_at": "created_at",
+            "groups": "groups",
             "id": "id",
             "last_modified_at": "last_modified_at",
             "last_modified_user": "last_modified_user",
