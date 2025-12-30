@@ -55,7 +55,12 @@ func (c *Connector) retrieveAccountId(ctx context.Context) (string, *common.JSON
 		return "", nil, common.ErrMissingExpectedValues
 	}
 
-	accountId, ok := res.Accounts[0]["numeric_id"].(float64)
+	numericId, exists := res.Accounts[0]["numeric_id"]
+	if !exists {
+		return "", nil, fmt.Errorf("failed to get numeric Id of an account: %w", common.ErrMissingExpectedValues)
+	}
+
+	accountId, ok := numericId.(float64)
 	if !ok {
 		return "", nil, common.ErrMissingExpectedValues
 	}
