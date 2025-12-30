@@ -51,13 +51,17 @@ func (c *Connector) String() string {
 	return c.Provider() + ".Connector"
 }
 
-func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
-	path, _ := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
+func (c *Connector) getObjectURL(objectName string) (*urlbuilder.URL, error) {
+	path, _ := metadata.Schemas.FindURLPath(c.Module.ID, objectName)
 	if len(path) == 0 {
 		// Fallback, try objectName as a URL.
 		path = objectName
 	}
 
+	return c.getURL(path)
+}
+
+func (c *Connector) getURL(path string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, ApiVersion, path)
 }
 
