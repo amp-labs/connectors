@@ -13,8 +13,15 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// Salesloft supports custom fields only for 3 objects.
-// https://developers.salesloft.com/docs/api/custom-fields-create/
+// Salesloft supports custom fields for only three object types.
+// The Custom Fields API uses **singular** object names,
+// while the read/write endpoints use **plural** object names.
+//
+// This mapping translates between the two naming conventions:
+//   - key:   object name used by the Custom Fields API (singular)
+//   - value: object name used by read/write endpoints (plural)
+//
+// See: https://developers.salesloft.com/docs/api/custom-fields-create/
 var objectsWithCustomFields = datautils.Map[string, string]{ // nolint:gochecknoglobals
 	"person":      "people",
 	"company":     "companies",
