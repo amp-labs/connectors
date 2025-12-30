@@ -6,7 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/salesloft/metadata"
+	"github.com/amp-labs/connectors/providers/salesloft/internal/metadata"
 )
 
 const ApiVersion = "v2"

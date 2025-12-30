@@ -14,10 +14,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportedObjectsByRead[c.Module.ID].Has(config.ObjectName) {
-		return nil, common.ErrOperationNotSupportedForObject
-	}
-
 	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
