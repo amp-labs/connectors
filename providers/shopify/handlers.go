@@ -15,9 +15,15 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 )
 
-const objectProducts = "products"
+const (
+	objectCustomers = "customers"
+	objectProducts  = "products"
+)
 
-var ErrMutationDataNotFound = errors.New("no data found for mutation")
+var (
+	ErrMutationDataNotFound   = errors.New("no data found for mutation")
+	ErrUnsupportedWriteObject = errors.New("unsupported object for write operation")
+)
 
 // perPage is the default number of records per page for Shopify GraphQL API.
 // Shopify allows up to 250 records per request, but 100 is chosen as a balanced default
@@ -348,10 +354,18 @@ func getMutation(mutationName string) (string, error) {
 
 // buildWriteVariables constructs the variables for GraphQL mutations.
 func buildWriteVariables(params common.WriteParams) (map[string]any, error) {
-	if params.ObjectName == objectProducts {
+	switch params.ObjectName {
+	case objectCustomers:
+		return buildCustomerVariables(params)
+	case objectProducts:
 		return buildProductVariables(params)
+	default:
+		return nil, fmt.Errorf("%w: %s", ErrUnsupportedWriteObject, params.ObjectName)
 	}
+}
 
+// buildCustomerVariables builds variables for customer create/update mutations.
+func buildCustomerVariables(params common.WriteParams) (map[string]any, error) {
 	record, err := params.GetRecord()
 	if err != nil {
 		return nil, err
