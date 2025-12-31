@@ -26,6 +26,11 @@
       "url": "https://developers.salesloft.com/docs/api/account-tiers-show"
     },
     {
+      "name": "account-types-index",
+      "displayName": "List distinct account types",
+      "url": "https://developers.salesloft.com/docs/api/account-types-index"
+    },
+    {
       "name": "account-upserts-create",
       "displayName": "Upsert an account",
       "url": "https://developers.salesloft.com/docs/api/account-upserts-create"
@@ -111,9 +116,29 @@
       "url": "https://developers.salesloft.com/docs/api/activity-histories-index"
     },
     {
+      "name": "audit-reports-create",
+      "displayName": "Create a new audit report",
+      "url": "https://developers.salesloft.com/docs/api/audit-reports-create"
+    },
+    {
+      "name": "audit-reports-index",
+      "displayName": "List generated audit reports",
+      "url": "https://developers.salesloft.com/docs/api/audit-reports-index"
+    },
+    {
+      "name": "audit-reports-show",
+      "displayName": "Fetch an audit report",
+      "url": "https://developers.salesloft.com/docs/api/audit-reports-show"
+    },
+    {
       "name": "bulk-jobs-create",
       "displayName": "Create a bulk job",
       "url": "https://developers.salesloft.com/docs/api/bulk-jobs-create"
+    },
+    {
+      "name": "bulk-jobs-destroy",
+      "displayName": "Cancel a bulk job",
+      "url": "https://developers.salesloft.com/docs/api/bulk-jobs-destroy"
     },
     {
       "name": "bulk-jobs-index",
@@ -196,9 +221,24 @@
       "url": "https://developers.salesloft.com/docs/api/cadences-show"
     },
     {
+      "name": "calendar-availabilities-index",
+      "displayName": "Get calendar availabilities",
+      "url": "https://developers.salesloft.com/docs/api/calendar-availabilities-index"
+    },
+    {
+      "name": "calendar-events-create",
+      "displayName": "Create a Meeting",
+      "url": "https://developers.salesloft.com/docs/api/calendar-events-create"
+    },
+    {
       "name": "calendar-events-index",
       "displayName": "List calendar events",
       "url": "https://developers.salesloft.com/docs/api/calendar-events-index"
+    },
+    {
+      "name": "calendar-events-update",
+      "displayName": "Update a meeting",
+      "url": "https://developers.salesloft.com/docs/api/calendar-events-update"
     },
     {
       "name": "calendar-events-upsert-create",
@@ -221,9 +261,19 @@
       "url": "https://developers.salesloft.com/docs/api/call-dispositions-index"
     },
     {
+      "name": "call-dispositions-show",
+      "displayName": "Fetch a call disposition",
+      "url": "https://developers.salesloft.com/docs/api/call-dispositions-show"
+    },
+    {
       "name": "call-sentiments-index",
       "displayName": "List call sentiments",
       "url": "https://developers.salesloft.com/docs/api/call-sentiments-index"
+    },
+    {
+      "name": "call-sentiments-show",
+      "displayName": "Fetch a call sentiment",
+      "url": "https://developers.salesloft.com/docs/api/call-sentiments-show"
     },
     {
       "name": "conversations-calls-create",
@@ -289,6 +339,11 @@
       "name": "crm-activity-fields-index",
       "displayName": "List crm activity fields",
       "url": "https://developers.salesloft.com/docs/api/crm-activity-fields-index"
+    },
+    {
+      "name": "crm-team-members-with-roles-index",
+      "displayName": "List CRM Account Team Members With Roles",
+      "url": "https://developers.salesloft.com/docs/api/crm-team-members-with-roles-index"
     },
     {
       "name": "crm-users-index",
@@ -726,11 +781,6 @@
       "url": "https://developers.salesloft.com/docs/api/phone-numbers-recording-settings-show"
     },
     {
-      "name": "profiles-index",
-      "displayName": "Fetch current user's profile",
-      "url": "https://developers.salesloft.com/docs/api/profiles-index"
-    },
-    {
       "name": "saved-list-views-create",
       "displayName": "Create a saved list view",
       "url": "https://developers.salesloft.com/docs/api/saved-list-views-create"
@@ -789,6 +839,11 @@
       "name": "tasks-create",
       "displayName": "Create a Task",
       "url": "https://developers.salesloft.com/docs/api/tasks-create"
+    },
+    {
+      "name": "tasks-destroy",
+      "displayName": "Delete a task",
+      "url": "https://developers.salesloft.com/docs/api/tasks-destroy"
     },
     {
       "name": "tasks-index",

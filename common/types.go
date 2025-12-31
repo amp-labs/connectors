@@ -486,6 +486,25 @@ func NewListObjectMetadataResult() *ListObjectMetadataResult {
 	}
 }
 
+func (r ListObjectMetadataResult) GetObjectMetadata(objectName string) *ObjectMetadata {
+	object, ok := r.Result[objectName]
+	if !ok {
+		return nil
+	}
+
+	if object.Fields != nil {
+		return NewObjectMetadata(object.DisplayName, object.Fields)
+	}
+
+	// Metadata uses old format and stores data at FieldsMap.
+	object.Fields = make(FieldsMetadata)
+	if object.FieldsMap == nil {
+		object.FieldsMap = make(map[string]string)
+	}
+
+	return &object
+}
+
 // AppendError will associate an error with the object.
 // It is possible that single object may have multiple errors.
 func (r ListObjectMetadataResult) AppendError(objectName string, err error) {
