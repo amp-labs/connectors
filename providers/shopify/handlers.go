@@ -579,8 +579,12 @@ func buildDeleteVariables(params common.DeleteParams) map[string]any {
 	}
 }
 
+// A closed order is one where merchants fulfill or cancel all LineItem
+// objects and complete all financial transactions.
+// Once closed, the order indicates that no further work is required.
+// https://shopify.dev/docs/api/admin-graphql/latest/mutations/orderclose
 func isCloseOrder(params common.WriteParams) bool {
-	// Only applies if we have a RecordId (update context)
+	// Only applies if we have a RecordId
 	if params.RecordId == "" {
 		return false
 	}
