@@ -1,0 +1,9 @@
+{
+    "query": "mutation OrderUpdate($input: OrderInput!) {\n  orderUpdate(input: $input) {\n    order {\n      id\n      note\n      shippingAddress {\n        address1\n        city\n        province\n        zip\n        country\n      }\n    }\n    userErrors {\n      field\n      message\n    }\n  }\n}",
+    "variables": {
+        "input": {
+            "id": "gid://shopify/Order/123456789",
+            "note": "Updated note"
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+  "query": "mutation customerUpdate($input: CustomerInput!) {\n  customerUpdate(input: $input) {\n    userErrors {\n      field\n      message\n    }\n    customer {\n      id\n      email\n      phone\n      firstName\n      lastName\n      displayName\n      createdAt\n      updatedAt\n      state\n      note\n      tags\n      taxExempt\n      verifiedEmail\n      locale\n    }\n  }\n}\n",
+  "variables": {
+    "input": {
+      "firstName": "Tobi",
+      "id": "gid://shopify/Customer/1018520244",
+      "lastName": "Lutke"
+    }
+  }
+}

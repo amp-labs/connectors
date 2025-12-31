@@ -1,0 +1,20 @@
+mutation OrderClose($input: OrderCloseInput!) {
+  orderClose(input: $input) {
+    order {
+      canMarkAsPaid
+      cancelReason
+      cancelledAt
+      clientIp
+      confirmed
+      customer {
+        displayName
+        email
+      }
+      discountCodes
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}

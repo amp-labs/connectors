@@ -1,0 +1,13 @@
+{
+    "data": {
+        "orderUpdate": {
+            "userErrors": [],
+            "order": {
+                "id": "gid://shopify/Order/123456789",
+                "name": "#1001",
+                "createdAt": "2023-01-01T00:00:00Z",
+                "updatedAt": "2023-01-02T00:00:00Z"
+            }
+        }
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "data": {
+        "orderDelete": {
+            "deletedId": "gid://shopify/Order/123456789",
+            "userErrors": []
+        }
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "data": {
+        "orderClose": {
+            "userErrors": [],
+            "order": {
+                "id": "gid://shopify/Order/123456789",
+                "name": "#1001",
+                "closed": true,
+                "closedAt": "2023-01-03T00:00:00Z"
+            }
+        }
+    }
+}

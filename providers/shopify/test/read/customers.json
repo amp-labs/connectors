@@ -1,0 +1,65 @@
+{
+    "data": {
+        "customers": {
+            "nodes": [
+                {
+                    "id": "gid://shopify/Customer/111111111",
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "displayName": "John Doe",
+                    "createdAt": "2024-01-10T08:00:00Z",
+                    "updatedAt": "2024-01-15T12:00:00Z",
+                    "state": "ENABLED",
+                    "note": null,
+                    "tags": ["VIP", "Wholesale"],
+                    "verifiedEmail": true,
+                    "taxExempt": false,
+                    "taxExemptions": [],
+                    "locale": "en",
+                    "numberOfOrders": "5",
+                    "lifetimeDuration": "about 1 year",
+                    "canDelete": false,
+                    "amountSpent": {
+                        "amount": "500.00",
+                        "currencyCode": "USD"
+                    },
+                    "defaultEmailAddress": {
+                        "emailAddress": "john.doe@example.com",
+                        "marketingState": "SUBSCRIBED",
+                        "marketingOptInLevel": "SINGLE_OPT_IN",
+                        "marketingOptInLevelAtCreation": "SINGLE_OPT_IN"
+                    },
+                    "defaultPhoneNumber": {
+                        "phoneNumber": "+1234567890",
+                        "marketingState": "NOT_SUBSCRIBED",
+                        "marketingOptInLevel": "UNKNOWN"
+                    },
+                    "defaultAddress": {
+                        "id": "gid://shopify/MailingAddress/222222222",
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "address1": "123 Main St",
+                        "address2": "Apt 4",
+                        "city": "New York",
+                        "province": "New York",
+                        "provinceCode": "NY",
+                        "country": "United States",
+                        "countryCodeV2": "US",
+                        "zip": "10001",
+                        "phone": "+1234567890",
+                        "company": "Acme Inc",
+                        "formattedArea": "New York NY, United States"
+                    },
+                    "image": {
+                        "url": "https://cdn.shopify.com/avatar.png",
+                        "altText": null
+                    }
+                }
+            ],
+            "pageInfo": {
+                "hasNextPage": false,
+                "endCursor": null
+            }
+        }
+    }
+}

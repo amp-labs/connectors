@@ -1,0 +1,92 @@
+{
+    "data": {
+        "__type": {
+            "name": "Order",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "ID",
+                            "kind": "SCALAR"
+                        }
+                    }
+                },
+                {
+                    "name": "name",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "email",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "phone",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "createdAt",
+                    "type": {
+                        "name": "DateTime",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "updatedAt",
+                    "type": {
+                        "name": "DateTime",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "totalPrice",
+                    "type": {
+                        "name": "Money",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "subtotalPrice",
+                    "type": {
+                        "name": "Money",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "cancelled",
+                    "type": {
+                        "name": "Boolean",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "fullyPaid",
+                    "type": {
+                        "name": "Boolean",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    }
+                }
+            ]
+        }
+    }
+}

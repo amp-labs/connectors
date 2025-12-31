@@ -1,0 +1,187 @@
+query Orders($first: Int!, $after: String, $query: String) {
+  orders(first: $first, after: $after, query: $query) {
+    nodes {
+      id
+      name
+      confirmationNumber
+      email
+      phone
+      createdAt
+      updatedAt
+      processedAt
+      closedAt
+      cancelledAt
+      cancelReason
+      closed
+      confirmed
+      edited
+      test
+      unpaid
+      fullyPaid
+      capturable
+      refundable
+      restockable
+      fulfillable
+      merchantEditable
+      requiresShipping
+      taxesIncluded
+      taxExempt
+      dutiesIncluded
+      estimatedTaxes
+      displayFinancialStatus
+      displayFulfillmentStatus
+      returnStatus
+      currencyCode
+      presentmentCurrencyCode
+      legacyResourceId
+      note
+      tags
+      poNumber
+      discountCode
+      discountCodes
+      customerAcceptsMarketing
+      customerLocale
+      billingAddressMatchesShippingAddress
+      totalPriceSet {
+        shopMoney {
+          amount
+          currencyCode
+        }
+        presentmentMoney {
+          amount
+          currencyCode
+        }
+      }
+      currentTotalPriceSet {
+        shopMoney {
+          amount
+          currencyCode
+        }
+      }
+      subtotalPriceSet {
+        shopMoney {
+          amount
+          currencyCode
+        }
+      }
+      currentSubtotalPriceSet {
+        shopMoney {
+          amount
+          currencyCode
+        }
+      }
+      totalDiscountsSet {
+        shopMoney {
+          amount
+          currencyCode
+        }
+      }
+      currentTotalDiscountsSet {
+        shopMoney {
+          amount
+          currencyCode
+        }
+      }
+      totalShippingPriceSet {
+        shopMoney {
+          amount
+          currencyCode
+        }
+      }
+      totalTaxSet {
+        shopMoney {
+          amount
+          currencyCode
+        }
+      }
+      currentTotalTaxSet {
+        shopMoney {
+          amount
+          currencyCode
+        }
+      }
+      totalRefundedSet {
+        shopMoney {
+          amount
+          currencyCode
+        }
+      }
+      netPaymentSet {
+        shopMoney {
+          amount
+          currencyCode
+        }
+      }
+      totalReceivedSet {
+        shopMoney {
+          amount
+          currencyCode
+        }
+      }
+      totalOutstandingSet {
+        shopMoney {
+          amount
+          currencyCode
+        }
+      }
+      totalCapturableSet {
+        shopMoney {
+          amount
+          currencyCode
+        }
+      }
+      originalTotalPriceSet {
+        shopMoney {
+          amount
+          currencyCode
+        }
+      }
+      shippingAddress {
+        firstName
+        lastName
+        address1
+        address2
+        city
+        province
+        provinceCode
+        country
+        countryCodeV2
+        zip
+        phone
+        company
+        formattedArea
+      }
+      billingAddress {
+        firstName
+        lastName
+        address1
+        address2
+        city
+        province
+        provinceCode
+        country
+        countryCodeV2
+        zip
+        phone
+        company
+        formattedArea
+      }
+      customer {
+        id
+        displayName
+        email
+        phone
+      }
+      risk {
+        recommendation
+      }
+      app {
+        name
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

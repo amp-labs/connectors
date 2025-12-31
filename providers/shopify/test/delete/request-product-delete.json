@@ -1,0 +1,1 @@
+{"query":"mutation productDelete($id: ID!) {\n  productDelete(input: {id: $id}) {\n    deletedProductId\n    userErrors {\n      field\n      message\n    }\n  }\n}\n","variables":{"id":"gid://shopify/Product/1072482054"}}

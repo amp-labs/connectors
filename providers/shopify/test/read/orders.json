@@ -1,0 +1,197 @@
+{
+    "data": {
+        "orders": {
+            "nodes": [
+                {
+                    "id": "gid://shopify/Order/555555555",
+                    "name": "#1001",
+                    "number": 1001,
+                    "confirmationNumber": "XPAV284CT",
+                    "email": "customer@example.com",
+                    "phone": "+1234567890",
+                    "createdAt": "2024-01-20T10:00:00Z",
+                    "updatedAt": "2024-01-20T10:30:00Z",
+                    "processedAt": "2024-01-20T10:00:00Z",
+                    "closedAt": null,
+                    "cancelledAt": null,
+                    "cancelReason": null,
+                    "closed": false,
+                    "confirmed": true,
+                    "edited": false,
+                    "test": false,
+                    "unpaid": false,
+                    "fullyPaid": true,
+                    "capturable": false,
+                    "refundable": true,
+                    "restockable": true,
+                    "fulfillable": true,
+                    "merchantEditable": true,
+                    "requiresShipping": true,
+                    "taxesIncluded": false,
+                    "taxExempt": false,
+                    "dutiesIncluded": false,
+                    "estimatedTaxes": false,
+                    "displayFinancialStatus": "PAID",
+                    "displayFulfillmentStatus": "UNFULFILLED",
+                    "returnStatus": "NO_RETURN",
+                    "currencyCode": "USD",
+                    "presentmentCurrencyCode": "USD",
+                    "legacyResourceId": "555555555",
+                    "note": "Please gift wrap this order",
+                    "tags": ["VIP", "Priority"],
+                    "poNumber": null,
+                    "discountCode": "SAVE10",
+                    "discountCodes": ["SAVE10"],
+                    "customerAcceptsMarketing": true,
+                    "customerLocale": "en",
+                    "billingAddressMatchesShippingAddress": true,
+                    "totalPriceSet": {
+                        "shopMoney": {
+                            "amount": "125.99",
+                            "currencyCode": "USD"
+                        },
+                        "presentmentMoney": {
+                            "amount": "125.99",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "currentTotalPriceSet": {
+                        "shopMoney": {
+                            "amount": "125.99",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "subtotalPriceSet": {
+                        "shopMoney": {
+                            "amount": "109.99",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "currentSubtotalPriceSet": {
+                        "shopMoney": {
+                            "amount": "109.99",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "totalDiscountsSet": {
+                        "shopMoney": {
+                            "amount": "10.00",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "currentTotalDiscountsSet": {
+                        "shopMoney": {
+                            "amount": "10.00",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "totalShippingPriceSet": {
+                        "shopMoney": {
+                            "amount": "5.99",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "totalTaxSet": {
+                        "shopMoney": {
+                            "amount": "10.01",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "currentTotalTaxSet": {
+                        "shopMoney": {
+                            "amount": "10.01",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "totalRefundedSet": {
+                        "shopMoney": {
+                            "amount": "0.00",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "netPaymentSet": {
+                        "shopMoney": {
+                            "amount": "125.99",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "totalReceivedSet": {
+                        "shopMoney": {
+                            "amount": "125.99",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "totalOutstandingSet": {
+                        "shopMoney": {
+                            "amount": "0.00",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "totalCapturableSet": {
+                        "shopMoney": {
+                            "amount": "0.00",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "originalTotalPriceSet": {
+                        "shopMoney": {
+                            "amount": "135.99",
+                            "currencyCode": "USD"
+                        }
+                    },
+                    "shippingAddress": {
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "address1": "123 Main St",
+                        "address2": "Apt 4",
+                        "city": "New York",
+                        "province": "New York",
+                        "provinceCode": "NY",
+                        "country": "United States",
+                        "countryCodeV2": "US",
+                        "zip": "10001",
+                        "phone": "+1234567890",
+                        "company": null,
+                        "formattedArea": "New York NY, United States"
+                    },
+                    "billingAddress": {
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "address1": "123 Main St",
+                        "address2": "Apt 4",
+                        "city": "New York",
+                        "province": "New York",
+                        "provinceCode": "NY",
+                        "country": "United States",
+                        "countryCodeV2": "US",
+                        "zip": "10001",
+                        "phone": "+1234567890",
+                        "company": null,
+                        "formattedArea": "New York NY, United States"
+                    },
+                    "customer": {
+                        "id": "gid://shopify/Customer/111111111",
+                        "displayName": "John Doe",
+                        "defaultEmailAddress": {
+                            "emailAddress": "customer@example.com"
+                        },
+                        "defaultPhoneNumber": {
+                            "phoneNumber": "+1234567890"
+                        }
+                    },
+                    "risk": {
+                        "recommendation": "ACCEPT",
+                        "assessmentExplanation": "No fraud indicators detected"
+                    },
+                    "app": {
+                        "name": "Online Store"
+                    }
+                }
+            ],
+            "pageInfo": {
+                "hasNextPage": false,
+                "endCursor": null
+            }
+        }
+    }
+}
