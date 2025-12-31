@@ -292,28 +292,29 @@ func (c *Connector) parseWriteResponse(
 	}
 
 	mutationKey := getMutationKey(params)
-	if mutationData, exists := writeResp.Data[mutationKey]; exists {
-		if userErrors := parseUserErrors(mutationData); len(userErrors) > 0 {
-			var errMsgs []string
-			for _, ue := range userErrors {
-				errMsgs = append(errMsgs, ue.Message)
-			}
-
-			return nil, fmt.Errorf("%w: %s", common.ErrBadRequest, strings.Join(errMsgs, "; "))
-		}
-
-		// Extract record ID and object data from the response
-		recordID, objectData := extractRecordData(mutationData, params.ObjectName)
-
+	mutationData, exists := writeResp.Data[mutationKey]
+	if !exists {
 		return &common.WriteResult{
-			Success:  true,
-			RecordId: recordID,
-			Data:     objectData,
+			Success: true,
 		}, nil
 	}
 
+	if userErrors := parseUserErrors(mutationData); len(userErrors) > 0 {
+		var errMsgs []string
+		for _, ue := range userErrors {
+			errMsgs = append(errMsgs, ue.Message)
+		}
+
+		return nil, fmt.Errorf("%w: %s", common.ErrBadRequest, strings.Join(errMsgs, "; "))
+	}
+
+	// Extract record ID and object data from the response
+	recordID, objectData := extractRecordData(mutationData, params.ObjectName)
+
 	return &common.WriteResult{
-		Success: true,
+		Success:  true,
+		RecordId: recordID,
+		Data:     objectData,
 	}, nil
 }
 
