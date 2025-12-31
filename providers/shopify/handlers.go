@@ -18,6 +18,7 @@ import (
 const (
 	objectCustomers = "customers"
 	objectProducts  = "products"
+	objectOrders    = "orders"
 )
 
 var (
@@ -333,6 +334,10 @@ func (c *Connector) parseWriteResponse(
 func getMutationKey(params common.WriteParams) string {
 	singular := naming.NewSingularString(params.ObjectName).String()
 
+	if params.ObjectName == objectOrders && isCloseOrder(params) {
+		return "orderClose"
+	}
+
 	if params.RecordId != "" {
 		return singular + "Update"
 	}
@@ -359,6 +364,8 @@ func buildWriteVariables(params common.WriteParams) (map[string]any, error) {
 		return buildCustomerVariables(params)
 	case objectProducts:
 		return buildProductVariables(params)
+	case objectOrders:
+		return buildOrderVariables(params)
 	default:
 		return nil, fmt.Errorf("%w: %s", ErrUnsupportedWriteObject, params.ObjectName)
 	}
@@ -397,6 +404,35 @@ func buildProductVariables(params common.WriteParams) (map[string]any, error) {
 
 	return map[string]any{
 		"product": record,
+	}, nil
+}
+
+// buildOrderVariables builds variables for order create/update/close mutations.
+func buildOrderVariables(params common.WriteParams) (map[string]any, error) {
+	record, err := params.GetRecord()
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		if isCloseOrder(params) {
+			return map[string]any{
+				"input": map[string]any{
+					"id": params.RecordId,
+				},
+			}, nil
+		}
+
+		// Update uses $input with id inside
+		record["id"] = params.RecordId
+
+		return map[string]any{
+			"input": record,
+		}, nil
+	}
+
+	return map[string]any{
+		"order": record,
 	}, nil
 }
 
@@ -531,7 +567,37 @@ func getDeleteMutationName(params common.DeleteParams) string {
 
 // buildDeleteVariables constructs the variables for delete mutations.
 func buildDeleteVariables(params common.DeleteParams) map[string]any {
+	// orderDelete mutation expects variable name `orderId` rather than `id`.
+	if params.ObjectName == objectOrders {
+		return map[string]any{
+			"orderId": params.RecordId,
+		}
+	}
+
 	return map[string]any{
 		"id": params.RecordId,
 	}
+}
+
+// A closed order is one where merchants fulfill or cancel all LineItem
+// objects and complete all financial transactions.
+// Once closed, the order indicates that no further work is required.
+// https://shopify.dev/docs/api/admin-graphql/latest/mutations/orderclose
+func isCloseOrder(params common.WriteParams) bool {
+	// Only applies if we have a RecordId
+	if params.RecordId == "" {
+		return false
+	}
+
+	data, ok := params.RecordData.(map[string]any)
+	if !ok {
+		return false
+	}
+
+	// Check if status is "closed"
+	if status, ok := data["status"].(string); ok && strings.ToLower(status) == "closed" {
+		return true
+	}
+
+	return false
 }
