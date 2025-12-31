@@ -348,6 +348,10 @@ func getMutation(mutationName string) (string, error) {
 
 // buildWriteVariables constructs the variables for GraphQL mutations.
 func buildWriteVariables(params common.WriteParams) (map[string]any, error) {
+	if params.ObjectName == objectProducts {
+		return buildProductVariables(params)
+	}
+
 	record, err := params.GetRecord()
 	if err != nil {
 		return nil, err
@@ -359,6 +363,26 @@ func buildWriteVariables(params common.WriteParams) (map[string]any, error) {
 
 	return map[string]any{
 		"input": record,
+	}, nil
+}
+
+// buildProductVariables builds variables for product create/update mutations.
+func buildProductVariables(params common.WriteParams) (map[string]any, error) {
+	record, err := params.GetRecord()
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		record["id"] = params.RecordId
+
+		return map[string]any{
+			"input": record,
+		}, nil
+	}
+
+	return map[string]any{
+		"product": record,
 	}, nil
 }
 
