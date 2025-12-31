@@ -33,7 +33,7 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      true,
+			Read:      true, // adding deep connector integration test validation
 			Subscribe: false,
 			Write:     true,
 		},
