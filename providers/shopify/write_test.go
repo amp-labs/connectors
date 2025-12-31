@@ -54,7 +54,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/admin/api/2025-10/graphql.json"),
-					mockcond.Body(string(requestCustomerCreate)),
+					mockcond.BodyBytes(requestCustomerCreate),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCustomerCreate),
 			}.Server(),
@@ -98,7 +98,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/admin/api/2025-10/graphql.json"),
-					mockcond.Body(string(requestCustomerUpdate)),
+					mockcond.BodyBytes(requestCustomerUpdate),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCustomerUpdate),
 			}.Server(),

@@ -2,16 +2,15 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/shopify"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/brianvoe/gofakeit/v6"
 )
 
 func main() {
@@ -27,9 +26,8 @@ func MainFn() int {
 	conn := shopify.GetShopifyConnector(ctx)
 
 	// Generate unique email and phone to avoid conflicts.
-	timestamp := time.Now().Unix()
-	testEmail := fmt.Sprintf("testcustomer%d@example.com", timestamp)
-	testPhone := fmt.Sprintf("+1646555%04d", timestamp%10000)
+	testEmail := gofakeit.Email()
+	testPhone := gofakeit.Phone()
 
 	// Test 1: Create
 	slog.Info("=== Test 1: Creating a customer ===")

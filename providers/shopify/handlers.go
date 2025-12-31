@@ -244,15 +244,18 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
 
-	mutationName := getMutationName(params)
+	mutationKey := getMutationKey(params)
 
-	mutation, err := getMutation(mutationName)
+	mutation, err := getMutation(mutationKey)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get mutation for %s: %w", mutationName, err)
+		return nil, fmt.Errorf("failed to get mutation for %s: %w", mutationKey, err)
 	}
 
 	// Build request body with mutation and variables
-	variables := buildWriteVariables(params)
+	variables, err := buildWriteVariables(params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build write variables: %w", err)
+	}
 
 	requestBody := map[string]any{
 		"query":     mutation,
@@ -294,44 +297,33 @@ func (c *Connector) parseWriteResponse(
 	}
 
 	mutationKey := getMutationKey(params)
-	if mutationData, exists := writeResp.Data[mutationKey]; exists {
-		if userErrors := parseUserErrors(mutationData); len(userErrors) > 0 {
-			var errMsgs []string
-			for _, ue := range userErrors {
-				errMsgs = append(errMsgs, ue.Message)
-			}
-
-			return nil, fmt.Errorf("%w: %s", common.ErrBadRequest, strings.Join(errMsgs, "; "))
-		}
-
-		// Extract record ID and object data from the response
-		recordID, objectData := extractRecordData(mutationData, params.ObjectName)
-
+	mutationData, exists := writeResp.Data[mutationKey]
+	if !exists {
 		return &common.WriteResult{
-			Success:  true,
-			RecordId: recordID,
-			Data:     objectData,
+			Success: true,
 		}, nil
 	}
 
+	if userErrors := parseUserErrors(mutationData); len(userErrors) > 0 {
+		var errMsgs []string
+		for _, ue := range userErrors {
+			errMsgs = append(errMsgs, ue.Message)
+		}
+
+		return nil, fmt.Errorf("%w: %s", common.ErrBadRequest, strings.Join(errMsgs, "; "))
+	}
+
+	// Extract record ID and object data from the response
+	recordID, objectData := extractRecordData(mutationData, params.ObjectName)
+
 	return &common.WriteResult{
-		Success: true,
+		Success:  true,
+		RecordId: recordID,
+		Data:     objectData,
 	}, nil
 }
 
-// getMutationName determines the mutation name based on object and operation type.
-func getMutationName(params common.WriteParams) string {
-	// Convert plural object name to singular for mutation name, e.g., "customers" -> "customer"
-	singular := naming.NewSingularString(params.ObjectName).String()
-
-	if params.RecordId != "" {
-		return singular + "Update"
-	}
-
-	return singular + "Create"
-}
-
-// getMutationKey returns the GraphQL response key for the mutation.
+// getMutationKey returns the mutation name and GraphQL response key.
 func getMutationKey(params common.WriteParams) string {
 	singular := naming.NewSingularString(params.ObjectName).String()
 
@@ -355,48 +347,19 @@ func getMutation(mutationName string) (string, error) {
 }
 
 // buildWriteVariables constructs the variables for GraphQL mutations.
-func buildWriteVariables(params common.WriteParams) map[string]any {
-	// Handle products - uses $product for create, $input for update.
-	if params.ObjectName == objectProducts {
-		return buildProductVariables(params)
-	}
-
-	variables := map[string]any{
-		"input": params.RecordData,
+func buildWriteVariables(params common.WriteParams) (map[string]any, error) {
+	record, err := params.GetRecord()
+	if err != nil {
+		return nil, err
 	}
 
 	if params.RecordId != "" {
-		injectIDIntoInput(variables, params.RecordId)
-	}
-
-	return variables
-}
-
-// buildProductVariables builds variables for product create/update mutations.
-func buildProductVariables(params common.WriteParams) map[string]any {
-	if params.RecordId != "" {
-		variables := map[string]any{
-			"input": params.RecordData,
-		}
-
-		injectIDIntoInput(variables, params.RecordId)
-
-		return variables
+		record["id"] = params.RecordId
 	}
 
 	return map[string]any{
-		"product": params.RecordData,
-	}
-}
-
-// injectIDIntoInput adds the record ID inside the input for update operations.
-func injectIDIntoInput(variables map[string]any, recordID string) {
-	input, ok := variables["input"].(map[string]any)
-	if !ok {
-		return
-	}
-
-	input["id"] = recordID
+		"input": record,
+	}, nil
 }
 
 // parseUserErrors extracts userErrors from the mutation response.
