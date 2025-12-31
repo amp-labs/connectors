@@ -24,3 +24,23 @@ type Field struct {
 		} `json:"ofType"`
 	} `json:"type"`
 }
+
+// WriteResponse represents the GraphQL mutation response structure.
+// // nolint
+type WriteResponse struct {
+	Data map[string]map[string]any `json:"data"`
+}
+
+// UserError represents an error returned by a Shopify mutation.
+// nolint
+type UserError struct {
+	Field   []string `json:"field"`
+	Message string   `json:"message"`
+}
+
+// MutationData is a helper struct for parsing mutation responses.
+// nolint
+type MutationData struct {
+	UserErrors []UserError
+	Object     map[string]any
+}

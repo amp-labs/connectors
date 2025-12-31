@@ -5,6 +5,7 @@ import (
 	"context"
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -13,6 +14,8 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 )
+
+var ErrMutationDataNotFound = errors.New("no data found for mutation")
 
 // perPage is the default number of records per page for Shopify GraphQL API.
 // Shopify allows up to 250 records per request, but 100 is chosen as a balanced default
@@ -230,4 +233,266 @@ func buildGraphQLVariables(params common.ReadParams) map[string]any {
 	}
 
 	return variables
+}
+
+// buildWriteRequest constructs a GraphQL mutation request for creating or updating objects.
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	url, err := c.getDiscoveryEndpoint()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build URL: %w", err)
+	}
+
+	mutationKey := getMutationKey(params)
+
+	mutation, err := getMutation(mutationKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get mutation for %s: %w", mutationKey, err)
+	}
+
+	// Build request body with mutation and variables
+	variables, err := buildWriteVariables(params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build write variables: %w", err)
+	}
+
+	requestBody := map[string]any{
+		"query":     mutation,
+		"variables": variables,
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
+}
+
+// parseWriteResponse parses the GraphQL mutation response and extracts the created/updated record.
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	if _, ok := response.Body(); !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	// Check for GraphQL userErrors in the response
+	writeResp, err := common.UnmarshalJSON[WriteResponse](response)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse write response: %w", err)
+	}
+
+	mutationKey := getMutationKey(params)
+	mutationData, exists := writeResp.Data[mutationKey]
+	if !exists {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	if userErrors := parseUserErrors(mutationData); len(userErrors) > 0 {
+		var errMsgs []string
+		for _, ue := range userErrors {
+			errMsgs = append(errMsgs, ue.Message)
+		}
+
+		return nil, fmt.Errorf("%w: %s", common.ErrBadRequest, strings.Join(errMsgs, "; "))
+	}
+
+	// Extract record ID and object data from the response
+	recordID, objectData := extractRecordData(mutationData, params.ObjectName)
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Data:     objectData,
+	}, nil
+}
+
+// getMutationKey returns the mutation name and GraphQL response key.
+func getMutationKey(params common.WriteParams) string {
+	singular := naming.NewSingularString(params.ObjectName).String()
+
+	if params.RecordId != "" {
+		return singular + "Update"
+	}
+
+	return singular + "Create"
+}
+
+// getMutation loads the GraphQL mutation from the embedded filesystem.
+func getMutation(mutationName string) (string, error) {
+	filePath := fmt.Sprintf("graphql/mutation_%s.graphql", mutationName)
+
+	mutationBytes, err := queryFS.ReadFile(filePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to read mutation file %s: %w", filePath, err)
+	}
+
+	return string(mutationBytes), nil
+}
+
+// buildWriteVariables constructs the variables for GraphQL mutations.
+func buildWriteVariables(params common.WriteParams) (map[string]any, error) {
+	record, err := params.GetRecord()
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		record["id"] = params.RecordId
+	}
+
+	return map[string]any{
+		"input": record,
+	}, nil
+}
+
+// parseUserErrors extracts userErrors from the mutation response.
+func parseUserErrors(mutationData map[string]any) []UserError {
+	userErrorsRaw, ok := mutationData["userErrors"].([]any)
+	if !ok || len(userErrorsRaw) == 0 {
+		return nil
+	}
+
+	var userErrors []UserError
+
+	for _, ueRaw := range userErrorsRaw {
+		ue, ok := ueRaw.(map[string]any)
+		if !ok {
+			continue
+		}
+
+		message, _ := ue["message"].(string)
+		if message != "" {
+			userErrors = append(userErrors, UserError{Message: message})
+		}
+	}
+
+	return userErrors
+}
+
+// extractRecordData extracts the record ID and object data from the mutation response.
+func extractRecordData(mutationData map[string]any, objectName string) (string, map[string]any) {
+	// Get the singular object name for the response key
+	singular := naming.NewSingularString(objectName).String()
+
+	obj, ok := mutationData[singular].(map[string]any)
+	if !ok {
+		return "", nil
+	}
+
+	recordID := ""
+	if id, ok := obj["id"].(string); ok {
+		recordID = id
+	}
+
+	return recordID, obj
+}
+
+// =====================================================
+// Delete Handlers
+// =====================================================
+
+func (c *Connector) buildDeleteRequest(
+	ctx context.Context,
+	params common.DeleteParams,
+) (*http.Request, error) {
+	if err := params.ValidateParams(); err != nil {
+		return nil, err
+	}
+
+	url, err := c.getDiscoveryEndpoint()
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the mutation name for this delete operation
+	mutationName := getDeleteMutationName(params)
+
+	mutation, err := getMutation(mutationName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get mutation for %s: %w", mutationName, err)
+	}
+
+	// Build the variables for the delete mutation
+	variables := buildDeleteVariables(params)
+
+	requestBody := map[string]any{
+		"query":     mutation,
+		"variables": variables,
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context,
+	params common.DeleteParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	response, err := common.UnmarshalJSON[WriteResponse](resp)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the mutation key for extracting data
+	mutationKey := getDeleteMutationName(params)
+
+	mutationData, ok := response.Data[mutationKey]
+	if !ok {
+		return nil, fmt.Errorf("%w: %s", ErrMutationDataNotFound, mutationKey)
+	}
+
+	userErrors := parseUserErrors(mutationData)
+	if len(userErrors) > 0 {
+		errorMessages := make([]string, len(userErrors))
+		for i, ue := range userErrors {
+			errorMessages[i] = ue.Message
+		}
+
+		return nil, fmt.Errorf("%w: %s", common.ErrBadRequest, strings.Join(errorMessages, "; "))
+	}
+
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
+}
+
+// getDeleteMutationName determines the mutation name for delete operations.
+func getDeleteMutationName(params common.DeleteParams) string {
+	// Convert plural object name to singular for mutation name, e.g., "customers" -> "customerDelete"
+	singular := naming.NewSingularString(params.ObjectName).String()
+
+	return singular + "Delete"
+}
+
+// buildDeleteVariables constructs the variables for delete mutations.
+func buildDeleteVariables(params common.DeleteParams) map[string]any {
+	return map[string]any{
+		"id": params.RecordId,
+	}
 }
