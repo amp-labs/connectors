@@ -242,11 +242,11 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
 
-	mutationName := getMutationName(params)
+	mutationKey := getMutationKey(params)
 
-	mutation, err := getMutation(mutationName)
+	mutation, err := getMutation(mutationKey)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get mutation for %s: %w", mutationName, err)
+		return nil, fmt.Errorf("failed to get mutation for %s: %w", mutationKey, err)
 	}
 
 	// Build request body with mutation and variables
@@ -318,19 +318,7 @@ func (c *Connector) parseWriteResponse(
 	}, nil
 }
 
-// getMutationName determines the mutation name based on object and operation type.
-func getMutationName(params common.WriteParams) string {
-	// Convert plural object name to singular for mutation name, e.g., "customers" -> "customer"
-	singular := naming.NewSingularString(params.ObjectName).String()
-
-	if params.RecordId != "" {
-		return singular + "Update"
-	}
-
-	return singular + "Create"
-}
-
-// getMutationKey returns the GraphQL response key for the mutation.
+// getMutationKey returns the mutation name and GraphQL response key.
 func getMutationKey(params common.WriteParams) string {
 	singular := naming.NewSingularString(params.ObjectName).String()
 
