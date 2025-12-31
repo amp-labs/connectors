@@ -19,9 +19,13 @@ func TestWrite(t *testing.T) { //nolint:funlen
 	responseCustomerCreate := testutils.DataFromFile(t, "write/response-customer-create.json")
 	responseCustomerCreateError := testutils.DataFromFile(t, "write/response-customer-create-error.json")
 	responseCustomerUpdate := testutils.DataFromFile(t, "write/response-customer-update.json")
+	responseProductCreate := testutils.DataFromFile(t, "write/response-product-create.json")
+	responseProductUpdate := testutils.DataFromFile(t, "write/response-product-update.json")
 
 	requestCustomerCreate := testutils.DataFromFile(t, "write/request-customer-create.json")
 	requestCustomerUpdate := testutils.DataFromFile(t, "write/request-customer-update.json")
+	requestProductCreate := testutils.DataFromFile(t, "write/request-product-create.json")
+	requestProductUpdate := testutils.DataFromFile(t, "write/request-product-update.json")
 
 	tests := []testroutines.Write{
 		{
@@ -104,6 +108,64 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				RecordId: "gid://shopify/Customer/1018520244",
 				Data: map[string]any{
 					"id": "gid://shopify/Customer/1018520244",
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Successful product create",
+			Input: common.WriteParams{
+				ObjectName: "products",
+				RecordData: map[string]any{
+					"title":       "Cool socks",
+					"productType": "Apparel",
+					"vendor":      "TestVendor",
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/admin/api/2025-10/graphql.json"),
+					mockcond.Body(string(requestProductCreate)),
+				},
+				Then: mockserver.Response(http.StatusOK, responseProductCreate),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "gid://shopify/Product/1072482054",
+				Data: map[string]any{
+					"id": "gid://shopify/Product/1072482054",
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Successful product update",
+			Input: common.WriteParams{
+				ObjectName: "products",
+				RecordId:   "gid://shopify/Product/1072482054",
+				RecordData: map[string]any{
+					"title":  "Updated Cool socks",
+					"status": "ACTIVE",
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/admin/api/2025-10/graphql.json"),
+					mockcond.Body(string(requestProductUpdate)),
+				},
+				Then: mockserver.Response(http.StatusOK, responseProductUpdate),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "gid://shopify/Product/1072482054",
+				Data: map[string]any{
+					"id": "gid://shopify/Product/1072482054",
 				},
 			},
 			ExpectedErrs: nil,

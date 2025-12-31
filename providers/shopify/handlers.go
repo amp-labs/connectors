@@ -15,7 +15,15 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 )
 
-var ErrMutationDataNotFound = errors.New("no data found for mutation")
+const (
+	objectCustomers = "customers"
+	objectProducts  = "products"
+)
+
+var (
+	ErrMutationDataNotFound   = errors.New("no data found for mutation")
+	ErrUnsupportedWriteObject = errors.New("unsupported object for write operation")
+)
 
 // perPage is the default number of records per page for Shopify GraphQL API.
 // Shopify allows up to 250 records per request, but 100 is chosen as a balanced default
@@ -346,6 +354,18 @@ func getMutation(mutationName string) (string, error) {
 
 // buildWriteVariables constructs the variables for GraphQL mutations.
 func buildWriteVariables(params common.WriteParams) (map[string]any, error) {
+	switch params.ObjectName {
+	case objectCustomers:
+		return buildCustomerVariables(params)
+	case objectProducts:
+		return buildProductVariables(params)
+	default:
+		return nil, fmt.Errorf("%w: %s", ErrUnsupportedWriteObject, params.ObjectName)
+	}
+}
+
+// buildCustomerVariables builds variables for customer create/update mutations.
+func buildCustomerVariables(params common.WriteParams) (map[string]any, error) {
 	record, err := params.GetRecord()
 	if err != nil {
 		return nil, err
@@ -357,6 +377,26 @@ func buildWriteVariables(params common.WriteParams) (map[string]any, error) {
 
 	return map[string]any{
 		"input": record,
+	}, nil
+}
+
+// buildProductVariables builds variables for product create/update mutations.
+func buildProductVariables(params common.WriteParams) (map[string]any, error) {
+	record, err := params.GetRecord()
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		record["id"] = params.RecordId
+
+		return map[string]any{
+			"input": record,
+		}, nil
+	}
+
+	return map[string]any{
+		"product": record,
 	}, nil
 }
 
@@ -484,7 +524,6 @@ func (c *Connector) parseDeleteResponse(
 
 // getDeleteMutationName determines the mutation name for delete operations.
 func getDeleteMutationName(params common.DeleteParams) string {
-	// Convert plural object name to singular for mutation name, e.g., "customers" -> "customerDelete"
 	singular := naming.NewSingularString(params.ObjectName).String()
 
 	return singular + "Delete"

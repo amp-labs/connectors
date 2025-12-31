@@ -12,12 +12,14 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestDelete(t *testing.T) {
+func TestDelete(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	responseCustomerDelete := testutils.DataFromFile(t, "delete/response-customer-delete.json")
+	responseProductDelete := testutils.DataFromFile(t, "delete/response-product-delete.json")
 
 	requestCustomerDelete := testutils.DataFromFile(t, "delete/request-customer-delete.json")
+	requestProductDelete := testutils.DataFromFile(t, "delete/request-product-delete.json")
 
 	tests := []testroutines.Delete{
 		{
@@ -45,6 +47,26 @@ func TestDelete(t *testing.T) {
 					mockcond.Body(string(requestCustomerDelete)),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCustomerDelete),
+			}.Server(),
+			Expected: &common.DeleteResult{
+				Success: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Successful product delete",
+			Input: common.DeleteParams{
+				ObjectName: "products",
+				RecordId:   "gid://shopify/Product/1072482054",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/admin/api/2025-10/graphql.json"),
+					mockcond.Body(string(requestProductDelete)),
+				},
+				Then: mockserver.Response(http.StatusOK, responseProductDelete),
 			}.Server(),
 			Expected: &common.DeleteResult{
 				Success: true,
