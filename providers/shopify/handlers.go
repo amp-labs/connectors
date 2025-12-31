@@ -305,6 +305,7 @@ func (c *Connector) parseWriteResponse(
 
 	mutationKey := getMutationKey(params)
 	mutationData, exists := writeResp.Data[mutationKey]
+
 	if !exists {
 		return &common.WriteResult{
 			Success: true,
