@@ -250,7 +250,10 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	// Build request body with mutation and variables
-	variables := buildWriteVariables(params)
+	variables, err := buildWriteVariables(params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build write variables: %w", err)
+	}
 
 	requestBody := map[string]any{
 		"query":     mutation,
@@ -342,26 +345,19 @@ func getMutation(mutationName string) (string, error) {
 }
 
 // buildWriteVariables constructs the variables for GraphQL mutations.
-func buildWriteVariables(params common.WriteParams) map[string]any {
-	variables := map[string]any{
-		"input": params.RecordData,
+func buildWriteVariables(params common.WriteParams) (map[string]any, error) {
+	record, err := params.GetRecord()
+	if err != nil {
+		return nil, err
 	}
 
 	if params.RecordId != "" {
-		injectIDIntoInput(variables, params.RecordId)
+		record["id"] = params.RecordId
 	}
 
-	return variables
-}
-
-// injectIDIntoInput adds the record ID inside the input for update operations.
-func injectIDIntoInput(variables map[string]any, recordID string) {
-	input, ok := variables["input"].(map[string]any)
-	if !ok {
-		return
-	}
-
-	input["id"] = recordID
+	return map[string]any{
+		"input": record,
+	}, nil
 }
 
 // parseUserErrors extracts userErrors from the mutation response.
