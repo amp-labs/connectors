@@ -11,7 +11,7 @@ func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*co
 		return nil, err
 	}
 
-	url, err := c.getURL(config.ObjectName)
+	url, err := c.getObjectURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
