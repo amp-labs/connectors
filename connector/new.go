@@ -83,6 +83,7 @@ import (
 	"github.com/amp-labs/connectors/providers/monday"
 	"github.com/amp-labs/connectors/providers/netsuite"
 	"github.com/amp-labs/connectors/providers/nutshell"
+	"github.com/amp-labs/connectors/providers/okta"
 	"github.com/amp-labs/connectors/providers/outplay"
 	"github.com/amp-labs/connectors/providers/outreach"
 	"github.com/amp-labs/connectors/providers/paddle"
@@ -202,6 +203,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Monday:                  wrapper(newMondayConnector),
 	providers.Netsuite:                wrapper(newNetsuiteConnector),
 	providers.Nutshell:                wrapper(newNutshellConnector),
+	providers.Okta:                    wrapper(newOktaConnector),
 	providers.Outplay:                 wrapper(newOutplayConnector),
 	providers.Outreach:                wrapper(newOutreachConnector),
 	providers.Paddle:                  wrapper(newPaddleConnector),
@@ -569,6 +571,12 @@ func newNutshellConnector(
 	params common.ConnectorParams,
 ) (*nutshell.Connector, error) {
 	return nutshell.NewConnector(params)
+}
+
+func newOktaConnector(
+	params common.ConnectorParams,
+) (*okta.Connector, error) {
+	return okta.NewConnector(params)
 }
 
 func newHeyReachConnector(
