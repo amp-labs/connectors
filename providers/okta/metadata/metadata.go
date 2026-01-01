@@ -12,8 +12,8 @@ var (
 	//go:embed schemas.json
 	schemaContent []byte
 
-	FileManager = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV2](
+	FileManager = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV2]( // nolint:gochecknoglobals
 		schemaContent, fileconv.NewSiblingFileLocator())
 
-	Schemas = FileManager.MustLoadSchemas()
+	Schemas = FileManager.MustLoadSchemas() // nolint:gochecknoglobals
 )
