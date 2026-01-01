@@ -150,7 +150,7 @@ func (c *Connector) deleteNotifications(ctx context.Context, channelIDs string) 
 	return nil
 }
 
-//nolint:funlen,cyclop
+//nolint:funlen,cyclop,gocognit
 func (c *Connector) putOrPostSubscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -197,6 +197,9 @@ func (c *Connector) putOrPostSubscribe(
 
 	var mutex sync.Mutex
 
+	// Track successfully processed objects for potential rollback
+	successfulObjects := make(map[common.ObjectName]struct{})
+
 	// iterate over all objects and events to build the payload
 	callbacks := make([]simultaneously.Job, 0, len(params.SubscriptionEvents))
 
@@ -231,6 +234,7 @@ func (c *Connector) putOrPostSubscribe(
 			mutex.Lock()
 			watchObject.Events = append(watchObject.Events, mappedEvents...) // nolint:wsl_v5
 			watchObject.NotificationCondition = append(watchObject.NotificationCondition, notificationConditions...)
+			successfulObjects[objName] = struct{}{}
 			mutex.Unlock()
 
 			return nil
@@ -243,8 +247,42 @@ func (c *Connector) putOrPostSubscribe(
 
 	payload.Watch = append(payload.Watch, watchObject)
 
+	// Check for partial success: some objects succeeded but some failed
 	if subscriptionErr != nil {
-		return nil, fmt.Errorf("error preparing to subscribe: %w", subscriptionErr)
+		if len(successfulObjects) == 0 {
+			// No objects succeeded, just return the error
+			return nil, fmt.Errorf("error preparing to subscribe: %w", subscriptionErr)
+		}
+ 
+		// Partial success: some objects succeeded, some failed
+		// We need to attempt rollback of any subscriptions that might have been created
+		// First, attempt to create the subscription with successful objects
+		res, apiErr := c.putOrPostSubscription(ctx, payload, putOrPost)
+		if apiErr != nil {
+			// API call failed, nothing to rollback
+			return nil, fmt.Errorf("error preparing to subscribe: %w", subscriptionErr)
+		}
+
+		// Subscription was created, now rollback since we have partial success
+		rollbackErr := c.deleteNotifications(ctx, channelId)
+		if rollbackErr != nil {
+			// Rollback failed - return partial result with failed_to_rollback status
+			successfulObjectNames := make([]common.ObjectName, 0, len(successfulObjects))
+			for objName := range successfulObjects {
+				successfulObjectNames = append(successfulObjectNames, objName)
+			}
+
+			return &common.SubscriptionResult{
+				Result:  res,
+				Objects: successfulObjectNames,
+				Status:  common.SubscriptionStatusFailedToRollback,
+			}, errors.Join(subscriptionErr, fmt.Errorf("failed to rollback subscription: %w", rollbackErr))
+		}
+
+		// Rollback succeeded, return the original error
+		return &common.SubscriptionResult{
+			Status: common.SubscriptionStatusFailed,
+		}, fmt.Errorf("error preparing to subscribe (rolled back): %w", subscriptionErr)
 	}
 
 	res, err := c.putOrPostSubscription(ctx, payload, putOrPost)
