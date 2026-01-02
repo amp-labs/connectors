@@ -7,7 +7,9 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/stripe/metadata"
+	"github.com/spyzhov/ajson"
 )
 
 // Read retrieves a list of items for a given object.
@@ -35,9 +37,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, config.ObjectName)
 
 	return common.ParseResult(res,
-		common.ExtractOptionalRecordsFromPath(responseFieldName),
+		makeGetRecords(responseFieldName),
 		makeNextRecordsURL(url),
-		common.GetMarshaledData,
+		common.MakeMarshaledDataFunc(flattenMetadata),
 		config.Fields,
 	)
 }
@@ -75,6 +77,15 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	return url, nil
+}
+
+// makeGetRecords creates a NodeRecordsFunc that extracts records from the API response
+// using the specified field name. The field name corresponds to the array field in
+// Stripe's response that contains the list of records.
+func makeGetRecords(responseFieldName string) common.NodeRecordsFunc {
+	return func(node *ajson.Node) ([]*ajson.Node, error) {
+		return jsonquery.New(node).ArrayOptional(responseFieldName)
+	}
 }
 
 var incrementalObjects = datautils.NewSet( // nolint:gochecknoglobals
