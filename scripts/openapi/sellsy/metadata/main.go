@@ -1,19 +1,19 @@
 package main
 
 import (
-	"log/slog"
 	"strings"
 
-	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
-	"github.com/amp-labs/connectors/internal/metadatadef"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/intercom"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/filters"
+	mapping "github.com/amp-labs/connectors/scripts/openapi/internal/api/map"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/merging"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/output"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/pipeline"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/reducers"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/spec"
 	"github.com/amp-labs/connectors/scripts/openapi/sellsy/internal/files"
-	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
-	"github.com/amp-labs/connectors/tools/fileconv/api3"
-	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
 // nolint:gochecknoglobals
@@ -30,7 +30,6 @@ var (
 		"/settings/accounting-charts",
 		"/settings/email",
 	}
-	objectEndpoints = map[string]string{}
 	searchEndpoints = []string{
 		"*/search",
 	}
@@ -38,104 +37,68 @@ var (
 		// Singular object.
 		"/estimates/search",
 	}
-	searchObjectEndpoints = map[string]string{
-		"/accounting-codes/search":                   "accounting-codes",
-		"/activities/crm/search":                     "crm",
-		"/activities/search":                         "activities",
-		"/calendar-events/search":                    "calendar-events",
-		"/comments/search":                           "comments",
-		"/companies/search":                          "companies",
-		"/contacts/search":                           "contacts",
-		"/credit-notes/search":                       "credit-notes",
-		"/custom-activities/search":                  "custom-activities",
-		"/custom-fields/search":                      "custom-fields",
-		"/deposit-invoices/search":                   "deposit-invoices",
-		"/documents/models/search":                   "documents/models",
-		"/individuals/search":                        "individuals",
-		"/invoices/search":                           "invoices",
-		"/items/barcodes/search":                     "barcodes",
-		"/items/search":                              "items",
-		"/mandates/search":                           "mandates",
-		"/notifications/search":                      "notifications",
-		"/ocr/pur-invoice/search":                    "pur-invoice",
-		"/opportunities/pipelines/search":            "pipelines",
-		"/opportunities/search":                      "opportunities",
-		"/opportunities/sources/search":              "sources",
-		"/opportunities/steps/search":                "steps",
-		"/orders/search":                             "orders",
-		"/payments/methods/search":                   "methods",
-		"/payments/search":                           "payments",
-		"/phone-calls/search":                        "phone-calls",
-		"/proposals/models/search":                   "proposals/models",
-		"/staffs/search":                             "staffs",
-		"/subscriptions/payment-installments/search": "payment-installments",
-		"/subscriptions/search":                      "subscriptions",
-		"/tasks/search":                              "tasks",
-		"/taxes/search":                              "taxes",
-		"/webhooks/search":                           "webhooks",
-	}
 )
 
 func main() {
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
-	registry := datautils.NamedLists[string]{}
-
-	objects := Objects()
-	for _, object := range objects {
-		if object.Problem != nil {
-			slog.Error("schema not extracted",
-				"objectName", object.ObjectName,
-				"error", object.Problem,
-			)
-		}
-
-		for _, field := range object.Fields {
-			schemas.Add(common.ModuleRoot, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
-				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
-		}
-
-		for _, queryParam := range object.QueryParams {
-			registry.Add(queryParam, object.ObjectName)
-		}
+	params := []api.ListOption{
+		api.List.WithAutoSelectArrayItems(),
+		api.List.WithArrayLocator(
+			api.ArrayLocationFromMap(intercom.ObjectNameToResponseField),
+		),
 	}
 
-	goutils.MustBeNil(files.OutputSellsy.FlushSchemas(schemas))
-	goutils.MustBeNil(files.OutputSellsy.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	explorer, err := files.OpenAPIFile.Extractor()
+	goutils.MustBeNil(err)
 
-	slog.Info("Completed.")
+	getSchemas, err := explorer.ExtractListSchemas(api.GET, params...)
+	goutils.MustBeNil(err)
+	postSchemas, err := explorer.ExtractListSchemas(api.POST, params...)
+	goutils.MustBeNil(err)
+
+	// Select objects with GET operation.
+	listPipeline := pipeline.NewSchemaPipe(getSchemas).
+		Filter(filters.KeepWithPath(filters.AndPathMatcher{
+			filters.NoIDPath{},
+			filters.NewDenyPathStrategy(ignoreEndpoints),
+		})).
+		Reduce(reducers.ShortestNameFromURL)
+
+	// Select objects with POST operation that ends with "/search"
+	searchPipeline := pipeline.NewSchemaPipe(postSchemas).
+		Filter(filters.KeepWithPath(filters.AndPathMatcher{
+			filters.NoIDPath{},
+			filters.NewAllowPathStrategy(searchEndpoints),
+			filters.NewDenyPathStrategy(ignoreSearchEndpoints),
+		})).
+		Reduce(reducers.ShortestNameFromURL).
+		Map(normalizeSearchObjectName)
+
+	// When object has both search (POST) and normal (GET) read endpoints,
+	// we choose search which allows incremental read.
+	allObjectsPipe := pipeline.Combine(
+		listPipeline, searchPipeline,
+		merging.CombineByObjectName,
+		merging.ChooseRight,
+	)
+
+	// Format display name.
+	// (Despite the source GET/POST endpoint, the formating is the same).
+	allObjectsPipe = allObjectsPipe.
+		Map(mapping.DisplayNameFromObjectName).
+		Map(mapping.DisplayNameFormat(
+			mapping.SlashesToSpaceSeparated,
+			mapping.CamelCaseToSpaceSeparated,
+			mapping.CapitalizeFirstLetterEveryWord,
+		))
+
+	goutils.MustBeNil(output.WriteMetadata(files.OutputSellsyDir, allObjectsPipe))
+	goutils.MustBeNil(output.WriteQueryParamStats(files.OutputSellsyDir, allObjectsPipe))
+	goutils.MustBeNil(output.WriteEndpoints(files.OutputSellsyDir, &allObjectsPipe, nil, nil, nil))
 }
 
-func Objects() []metadatadef.Schema {
-	explorer, err := files.InputSellsy.GetExplorer(
-		api3.WithDisplayNamePostProcessors(
-			api3.SlashesToSpaceSeparated,
-			api3.CamelCaseToSpaceSeparated,
-			api3.CapitalizeFirstLetterEveryWord,
-		),
-		api3.WithArrayItemAutoSelection(),
-	)
-	goutils.MustBeNil(err)
+func normalizeSearchObjectName(schema spec.Schema) spec.Schema {
+	// Remove search suffix if any.
+	schema.ObjectName, _ = strings.CutSuffix(schema.ObjectName, "/search")
 
-	readObjects, err := explorer.ReadObjectsGet(
-		api3.NewDenyPathStrategy(ignoreEndpoints),
-		objectEndpoints, nil, nil,
-	)
-	goutils.MustBeNil(err)
-
-	searchObjects, err := explorer.ReadObjectsPost(
-		api3.AndPathMatcher{
-			api3.NewAllowPathStrategy(searchEndpoints),
-			api3.NewDenyPathStrategy(ignoreSearchEndpoints),
-		},
-		searchObjectEndpoints, nil,
-		api3.CustomMappingObjectCheck(intercom.ObjectNameToResponseField),
-	)
-	goutils.MustBeNil(err)
-
-	for _, searchObject := range searchObjects {
-		searchObject.ObjectName, _ = strings.CutSuffix(searchObject.ObjectName, "/search")
-	}
-
-	// Search objects take precedence
-	return readObjects.Combine(searchObjects)
+	return schema
 }
