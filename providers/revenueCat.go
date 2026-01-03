@@ -14,7 +14,7 @@ func init() {
 				Name:        "Authorization",
 				ValuePrefix: "Bearer ",
 			},
-			DocsURL: "https://www.revenuecat.com/docs/api-v2",
+			DocsURL: "https://www.revenuecat.com/docs",
 		},
 		//nolint:all
 		Media: &Media{
