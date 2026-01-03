@@ -1,5 +1,16 @@
 # Contributing to Connectors
 
+## Standards
+### Git Hook for PR Template Enforcement
+
+If you are contributing using Git directly (not Graphite), we require installing a **Git pre-push hook** to ensure PRs follow the project's feature template standards.
+
+Install the hook by running:
+```bash
+make git-hooks-install
+```
+For detailed instructions, examples, and screenshots of the workflow, see the [Git PR Template README](./scripts/git/README.md)
+
 ## Prerequisites
 
 1. To test connectors, you'll need your own developer account and instance with the provider you're testing (like
