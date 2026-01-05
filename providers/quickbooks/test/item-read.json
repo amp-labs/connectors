@@ -1,0 +1,18 @@
+{
+  "QueryResponse": {
+    "startPosition": 1,
+    "maxResults": 1000,
+    "Item": [
+      {
+        "Name": "Services",
+        "Type": "Service",
+        "Active": true,
+        "domain": "QBO",
+        "sparse": false,
+        "Level": "0"
+      }
+    ]
+  },
+  "time": "2015-07-13T12:35:57.651-07:00"
+}
+
