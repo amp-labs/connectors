@@ -18,6 +18,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 
 	accountResponse := testutils.DataFromFile(t, "account-read.json")
 	customerResponse := testutils.DataFromFile(t, "customer-read.json")
+	itemResponse := testutils.DataFromFile(t, "item-read.json")
+	accountEmptyResponse := testutils.DataFromFile(t, "account-read-empty.json")
+	errorResponse := testutils.DataFromFile(t, "error-bad-request.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -67,6 +70,133 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							"FullyQualifiedName":      "string",
 							"BillWithParent":          "boolean",
 							"Job":                     "boolean",
+						}),
+						FieldsMap: nil,
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Successfully describe Item object with metadata",
+			Input: []string{"item"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.QueryParam("query", "SELECT * FROM Item STARTPOSITION 0 MAXRESULTS 1"),
+				Then:  mockserver.Response(http.StatusOK, itemResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"item": {
+						DisplayName: "Item",
+						Fields: buildFieldMetadata(map[string]string{
+							"Name":   "string",
+							"Type":   "string",
+							"Active": "boolean",
+							"domain": "string",
+							"sparse": "boolean",
+							"Level":  "string",
+						}),
+						FieldsMap: nil,
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Metadata fetch with empty results returns error",
+			Input: []string{"account"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.QueryParam("query", "SELECT * FROM Account STARTPOSITION 0 MAXRESULTS 1"),
+				Then:  mockserver.Response(http.StatusOK, accountEmptyResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{},
+				Errors: map[string]error{
+					"account": common.ErrMissingExpectedValues,
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Metadata fetch with error response",
+			Input: []string{"account"},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, errorResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{},
+				Errors: map[string]error{
+					"account": mockutils.ExpectedSubsetErrors{
+						common.ErrCaller,
+					},
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Successfully describe multiple objects including Item",
+			Input: []string{"account", "customer", "item"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.QueryParam("query", "SELECT * FROM Account STARTPOSITION 0 MAXRESULTS 1"),
+					Then: mockserver.Response(http.StatusOK, accountResponse),
+				}, {
+					If:   mockcond.QueryParam("query", "SELECT * FROM Customer STARTPOSITION 0 MAXRESULTS 1"),
+					Then: mockserver.Response(http.StatusOK, customerResponse),
+				}, {
+					If:   mockcond.QueryParam("query", "SELECT * FROM Item STARTPOSITION 0 MAXRESULTS 1"),
+					Then: mockserver.Response(http.StatusOK, itemResponse),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"account": {
+						DisplayName: "Account",
+						Fields: buildFieldMetadata(map[string]string{
+							"AccountSubType":     "string",
+							"AccountType":        "string",
+							"Active":             "boolean",
+							"Classification":     "string",
+							"domain":             "string",
+							"sparse":             "boolean",
+							"FullyQualifiedName": "string",
+							"Name":               "string",
+						}),
+						FieldsMap: nil,
+					},
+					"customer": {
+						DisplayName: "Customer",
+						Fields: buildFieldMetadata(map[string]string{
+							"domain":                  "string",
+							"FamilyName":              "string",
+							"DisplayName":             "string",
+							"PreferredDeliveryMethod": "string",
+							"GivenName":               "string",
+							"FullyQualifiedName":      "string",
+							"BillWithParent":          "boolean",
+							"Job":                     "boolean",
+						}),
+						FieldsMap: nil,
+					},
+					"item": {
+						DisplayName: "Item",
+						Fields: buildFieldMetadata(map[string]string{
+							"Name":   "string",
+							"Type":   "string",
+							"Active": "boolean",
+							"domain": "string",
+							"sparse": "boolean",
+							"Level":  "string",
 						}),
 						FieldsMap: nil,
 					},
