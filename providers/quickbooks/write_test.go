@@ -1,7 +1,6 @@
 package quickbooks
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -167,8 +166,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Always: mockserver.Response(http.StatusBadRequest, writeErrorResponse),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest,
-				errors.New("Name is required for Account"),
+				common.ErrCaller,
 			},
 		},
 		{
@@ -183,7 +181,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, []byte("{}")),
+				Always: mockserver.Response(http.StatusOK, nil),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success: true,

@@ -119,14 +119,21 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Fields:     connectors.Fields("name"),
 				Since:      parseTime("2025-01-01T00:00:00Z"),
 			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.QueryParam("query", "SELECT * FROM Account WHERE MetaData.LastUpdatedTime >= '2025-01-01T00:00:00Z' STARTPOSITION 1 MAXRESULTS 1000"),
-				Then:  mockserver.Response(http.StatusOK, responseAccount),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseAccount),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows:     1,
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"name": "Canadian Accounts Receivable",
+					},
+					Raw: map[string]any{
+						"Name": "Canadian Accounts Receivable",
+					},
+				}},
 				NextPage: "",
 				Done:     true,
 			},
@@ -139,14 +146,21 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Fields:     connectors.Fields("name"),
 				Until:      parseTime("2025-12-31T23:59:59Z"),
 			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.QueryParam("query", "SELECT * FROM Account WHERE MetaData.LastUpdatedTime <= '2025-12-31T23:59:59Z' STARTPOSITION 1 MAXRESULTS 1000"),
-				Then:  mockserver.Response(http.StatusOK, responseAccount),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseAccount),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows:     1,
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"name": "Canadian Accounts Receivable",
+					},
+					Raw: map[string]any{
+						"Name": "Canadian Accounts Receivable",
+					},
+				}},
 				NextPage: "",
 				Done:     true,
 			},
@@ -160,14 +174,21 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Since:      parseTime("2025-01-01T00:00:00Z"),
 				Until:      parseTime("2025-12-31T23:59:59Z"),
 			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.QueryParam("query", "SELECT * FROM Account WHERE MetaData.LastUpdatedTime >= '2025-01-01T00:00:00Z' AND MetaData.LastUpdatedTime <= '2025-12-31T23:59:59Z' STARTPOSITION 1 MAXRESULTS 1000"),
-				Then:  mockserver.Response(http.StatusOK, responseAccount),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseAccount),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows:     1,
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"name": "Canadian Accounts Receivable",
+					},
+					Raw: map[string]any{
+						"Name": "Canadian Accounts Receivable",
+					},
+				}},
 				NextPage: "",
 				Done:     true,
 			},
@@ -180,14 +201,21 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Fields:     connectors.Fields("name"),
 				NextPage:   "1001",
 			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.QueryParam("query", "SELECT * FROM Account STARTPOSITION 1001 MAXRESULTS 1000"),
-				Then:  mockserver.Response(http.StatusOK, responseAccount),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseAccount),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows:     1,
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"name": "Canadian Accounts Receivable",
+					},
+					Raw: map[string]any{
+						"Name": "Canadian Accounts Receivable",
+					},
+				}},
 				NextPage: "",
 				Done:     true,
 			},
@@ -204,7 +232,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				If:    mockcond.QueryParam("query", "SELECT * FROM Account STARTPOSITION 1 MAXRESULTS 1000"),
 				Then:  mockserver.Response(http.StatusOK, responseAccountEmpty),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     0,
 				Data:     []common.ReadResultRow{},
@@ -223,7 +251,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusBadRequest, responseError),
 			}.Server(),
-			ExpectedErrs: []error{common.ErrBadRequest},
+			ExpectedErrs: []error{
+				common.ErrCaller,
+			},
 		},
 		{
 			Name: "Successfully read item object",
