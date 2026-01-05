@@ -114,7 +114,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				If:    mockcond.QueryParam("query", "SELECT * FROM Account STARTPOSITION 0 MAXRESULTS 1"),
 				Then:  mockserver.Response(http.StatusOK, accountEmptyResponse),
 			}.Server(),
-			ExpectedErrs: []error{common.ErrMissingExpectedValues},
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{},
+				Errors: map[string]error{
+					"account": common.ErrMissingExpectedValues,
+				},
+			},
+			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Metadata fetch with error response",
@@ -123,7 +130,16 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusBadRequest, errorResponse),
 			}.Server(),
-			ExpectedErrs: []error{common.ErrBadRequest},
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{},
+				Errors: map[string]error{
+					"account": mockutils.ExpectedSubsetErrors{
+						common.ErrCaller,
+					},
+				},
+			},
+			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Successfully describe multiple objects including Item",
