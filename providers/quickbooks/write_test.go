@@ -127,8 +127,8 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.WriteParams{
 				ObjectName: "account",
 				RecordData: map[string]any{
-					"Name":         "Test Account",
-					"AccountType":  "Expense",
+					"Name":           "Test Account",
+					"AccountType":    "Expense",
 					"AccountSubType": "OfficeExpenses",
 				},
 			},
@@ -142,14 +142,14 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Success:  true,
 				RecordId: "88",
 				Data: map[string]any{
-					"Name":          "Test Account",
-					"AccountType":   "Expense",
+					"Name":           "Test Account",
+					"AccountType":    "Expense",
 					"AccountSubType": "OfficeExpenses",
-					"Active":        true,
-					"domain":        "QBO",
-					"sparse":        false,
-					"Id":            "88",
-					"SyncToken":     "0",
+					"Active":         true,
+					"domain":         "QBO",
+					"sparse":         false,
+					"Id":             "88",
+					"SyncToken":      "0",
 				},
 			},
 			ExpectedErrs: nil,
@@ -176,8 +176,8 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.WriteParams{
 				ObjectName: "account",
 				RecordData: map[string]any{
-					"Name":         "Test Account",
-					"AccountType":  "Expense",
+					"Name":           "Test Account",
+					"AccountType":    "Expense",
 					"AccountSubType": "OfficeExpenses",
 				},
 			},
