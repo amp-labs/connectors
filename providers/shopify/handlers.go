@@ -134,8 +134,12 @@ func getFieldValueType(field string) common.ValueType {
 	switch strings.ToLower(field) {
 	case "float", "decimal", "money":
 		return common.ValueTypeFloat
-	case "string", "id", "url", "html", "date", "datetime":
+	case "string", "id", "url", "html":
 		return common.ValueTypeString
+	case "date":
+		return common.ValueTypeDate
+	case "datetime":
+		return common.ValueTypeDateTime
 	case "boolean":
 		return common.ValueTypeBoolean
 	case "int", "unsignedint64":
