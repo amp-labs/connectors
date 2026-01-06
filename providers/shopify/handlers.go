@@ -600,9 +600,7 @@ func isCloseOrder(params common.WriteParams) bool {
 	}
 
 	// Check if status is "closed"
-	if status, ok := data["status"].(string); ok && strings.ToLower(status) == "closed" {
-		return true
-	}
+	status, ok := data["status"].(string)
 
-	return false
+	return ok && strings.ToLower(status) == "closed"
 }
