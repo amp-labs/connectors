@@ -79,6 +79,10 @@ var (
 	// ErrCursorGone is returned when a cursor used for pagination is no longer valid.
 	ErrCursorGone = errors.New("pagination cursor gone or expired")
 
+	// ErrResultsLimitExceeded is returned when a search query exceeds the provider's
+	// maximum result limit (e.g., HubSpot's 10,000 record search limit).
+	ErrResultsLimitExceeded = errors.New("results limit exceeded")
+
 	// ErrMissingExpectedValues is returned when response data doesn't have values expected for processing.
 	ErrMissingExpectedValues = errors.New("response data is missing expected values")
 
