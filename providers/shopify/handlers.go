@@ -594,8 +594,8 @@ func isCloseOrder(params common.WriteParams) bool {
 		return false
 	}
 
-	data, ok := params.RecordData.(map[string]any)
-	if !ok {
+	data, err := params.GetRecord()
+	if err != nil {
 		return false
 	}
 
