@@ -19,12 +19,12 @@ func init() {
 		//nolint:all
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://www.revenuecat.com/docs/img/logo-rc-small.svg",
-				LogoURL: "https://www.revenuecat.com/docs/img/logo-rc-small.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1767679120/media/revenueCat_1767679120.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1767680482/media/revenueCat_1767680481.png",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://www.revenuecat.com/docs/img/logo-rc-small.svg",
-				LogoURL: "https://www.revenuecat.com/docs/img/logo-rc-small.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1767679120/media/revenueCat_1767679120.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1767680783/media/revenueCat_1767680782.svg",
 			},
 		},
 		Support: Support{
