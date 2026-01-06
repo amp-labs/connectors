@@ -17,6 +17,7 @@ const (
 	// 10K but we are using 9K to be safe.
 	// See: https://developers.hubspot.com/docs/api/crm/search#limitations
 	searchResultsLimit = 9000
+	searchPageSize     = 200
 )
 
 // Search uses the POST /search endpoint to filter object records and return the result.
@@ -169,7 +170,7 @@ func BuildSort(field ObjectField, dir SortDirection) SortBy {
 
 func makeFilterBody(config SearchParams) map[string]any {
 	filterBody := map[string]any{
-		"limit": DefaultPageSize,
+		"limit": searchPageSize,
 	}
 
 	if config.FilterGroups != nil {
