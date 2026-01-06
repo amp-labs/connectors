@@ -38,5 +38,13 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					DisplayName: "Product Id",
+					Name:        "productId",
+				},
+			},
+		},
 	})
 }
