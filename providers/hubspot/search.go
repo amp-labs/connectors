@@ -40,7 +40,12 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 	// HubSpot's search API returns a 400 error if you try to paginate beyond 10,000 records.
 	// By detecting this proactively, we can return a specific error that callers can handle.
 	if err := checkSearchResultsLimit(config.NextPage); err != nil {
-		return nil, fmt.Errorf("%w: requested offset %s exceeds limit %d", common.ErrResultsLimitExceeded, config.NextPage, searchResultsLimit)
+		return nil, fmt.Errorf(
+			"%w: requested offset %s exceeds limit %d",
+			common.ErrResultsLimitExceeded,
+			config.NextPage,
+			searchResultsLimit,
+		)
 	}
 
 	if crmObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
@@ -205,7 +210,7 @@ func checkSearchResultsLimit(nextPage common.NextPageToken) error {
 
 	// The NextPage token for HubSpot search is a numeric offset (as a string).
 	offset, err := strconv.Atoi(string(nextPage))
-	if err != nil {
+	if err != nil { //nolint: nilerr
 		// If we can't parse the offset, it's not a numeric token (shouldn't happen for search).
 		// Let the API call proceed and fail with a proper error if needed.
 		return nil
