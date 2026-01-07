@@ -11,10 +11,7 @@ import (
 )
 
 const (
-	restAPIVersion   = "api/v2"
-	limitQuery       = "page[size]"
-	metadataPageSize = "1"
-	pageSize         = "100"
+	restAPIVersion = "api/v2"
 )
 
 type Response struct {
@@ -39,9 +36,6 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	if err != nil {
 		return nil, err
 	}
-
-	// Limit response to 1 record data.
-	url.WithQueryParam(limitQuery, metadataPageSize)
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }

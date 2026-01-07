@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -268,5 +269,18 @@ func nextRecordsURL() common.NextPageFunc {
 		}
 
 		return *nextURL, nil
+	}
+}
+
+func supportedOperations() components.EndpointRegistryInput {
+	readSupport := []string{"*"}
+
+	return components.EndpointRegistryInput{
+		common.ModuleRoot: {
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
+				Support:  components.ReadSupport,
+			},
+		},
 	}
 }
