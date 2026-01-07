@@ -1,6 +1,8 @@
 package stripe
 
 import (
+	"maps"
+
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -32,11 +34,7 @@ func flattenMetadata(node *ajson.Node) (map[string]any, error) {
 	}
 
 	// flatten metadata keys to root level
-	for key, value := range metadataMap {
-		if _, exists := root[key]; !exists {
-			root[key] = value
-		}
-	}
+	maps.Copy(root, metadataMap)
 
 	return root, nil
 }

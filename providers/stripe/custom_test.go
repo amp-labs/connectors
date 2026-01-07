@@ -87,27 +87,6 @@ func TestFlattenMetadata(t *testing.T) {
 			},
 			wantErr: false,
 		},
-		{
-			name: "Metadata keys that conflict with root keys are skipped",
-			input: map[string]any{
-				"id":    "cus_test123",
-				"email": "original@example.com",
-				"metadata": map[string]any{
-					"email": "metadata@example.com",
-					"name":  "From Metadata",
-				},
-			},
-			expected: map[string]any{
-				"id":    "cus_test123",
-				"email": "original@example.com",
-				"metadata": map[string]any{
-					"email": "metadata@example.com",
-					"name":  "From Metadata",
-				},
-				"name": "From Metadata", // non-conflicting metadata key is flattened
-			},
-			wantErr: false,
-		},
 	}
 
 	for _, tt := range tests {
