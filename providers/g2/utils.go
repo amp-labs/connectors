@@ -2,6 +2,7 @@ package g2
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -92,24 +93,33 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
+	cfg, exists := readObjCfg[params.ObjectName]
+	if !exists {
+		return nil, common.ErrObjectNotSupported
+	}
+
 	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, path)
 	if err != nil {
 		return nil, err
 	}
 
-	url.WithQueryParam(limitQuery, pageSize)
+	// Add fields query values
+	if cfg.fieldsQuery != "" {
+		url.WithQueryParam(cfg.fieldsQuery, strings.Join(params.Fields.List(), ","))
+	}
 
-	if !params.Since.IsZero() {
-		// G2 API limits the smallest filter you can use here is a day. You can't use timestamp.
-		// Test this when have the API Key. So we will be retrieving data in days.
-		if params.ObjectName == PathBuyerIntent {
-			url.WithQueryParam("dimension_filter[day_gteq]", params.Since.Format(time.DateOnly))
+	// Add page size query values
+	if cfg.pageSizeQuery != "" {
+		var pageSize = "100"
+		if cfg.maximumPerPage != "" {
+			pageSize = cfg.maximumPerPage
 		}
 
-		if params.ObjectName == PathCategories {
-			url.WithQueryParam("filter[updated_at_gt]", params.Since.Format(time.RFC3339))
-		}
+		url.WithQueryParam(cfg.pageSizeQuery, pageSize)
+	}
 
+	if !params.Since.IsZero() && cfg.sinceQuery != "" {
+		url.WithQueryParam(cfg.sinceQuery, params.Since.Format(cfg.sinceValueFormat))
 	}
 
 	return url, nil
@@ -124,72 +134,109 @@ type ObjectConfig struct {
 	sinceValueFormat string
 }
 
-var readObjCfg = []map[string]ObjectConfig{
-	{
-		PathBuyerIntent: {
-			fieldsQuery:      "dimensions",
-			sinceQuery:       "dimension_filters[day_gteq]",
-			pageSizeQuery:    "page[size]",
-			maximumPerPage:   "100",
-			sinceValueFormat: time.DateOnly,
-		},
-		PathCategories: {
-			fieldsQuery:      "fields[categories]",
-			sinceQuery:       "filter[updated_at_gt]",
-			untilQuery:       "filter[updated_at_lt]",
-			sinceValueFormat: time.RFC3339,
-		},
-		PathCompetitors: {
-			fieldsQuery:    "fields[products]",
-			pageSizeQuery:  "per",
-			maximumPerPage: "50",
-		},
-		PathDiscussions: {
-			fieldsQuery: "fields[discussions]",
-		},
-		PathDownloads: {
-			fieldsQuery:      "fields[downloads]",
-			sinceQuery:       "filter[updated_at_gt]",
-			untilQuery:       "filter[updated_at_lt]",
-			sinceValueFormat: time.RFC3339,
-		},
-		PathIntegrationReviews: { //needs incremental read live test
-			fieldsQuery: "fields[integration_reviews]",
-		},
-		PathCategoriesFeatures: {
-			fieldsQuery:      "fields[product_features]",
-			sinceQuery:       "filter[updated_at_gt]",
-			untilQuery:       "filter[updated_at_lt]",
-			sinceValueFormat: time.RFC3339,
-		},
-		PathFeatures: {
-			fieldsQuery:      "fields[product_features]",
-			sinceQuery:       "filter[updated_at_gt]",
-			untilQuery:       "filter[updated_at_lt]",
-			sinceValueFormat: time.RFC3339,
-		},
-		PathProductsFeatures: {
-			fieldsQuery:      "fields[product_features]",
-			sinceQuery:       "filter[updated_at_gt]",
-			untilQuery:       "filter[updated_at_lt]",
-			sinceValueFormat: time.RFC3339,
-		},
-		PathProductMappings: {
-			fieldsQuery:      "fields[product_mappings]",
-			sinceQuery:       "filter[updated_at_gt]",
-			untilQuery:       "filter[updated_at_lt]",
-			sinceValueFormat: time.RFC3339,
-		},
-		PathVideos: {
-			fieldsQuery:      "fields[product_videos]",
-			sinceQuery:       "filter[updated_at_gt]",
-			untilQuery:       "filter[updated_at_lt]",
-			sinceValueFormat: time.RFC3339,
-		},
-		PathProducts: {
-			fieldsQuery:   "fields[products]",
-			pageSizeQuery: "page[size]",
-		},
+var readObjCfg = map[string]ObjectConfig{
+	PathBuyerIntent: {
+		fieldsQuery:      "dimensions",
+		sinceQuery:       "dimension_filters[day_gteq]",
+		pageSizeQuery:    "page[size]",
+		maximumPerPage:   "100",
+		sinceValueFormat: time.DateOnly,
+	},
+	PathCategories: {
+		fieldsQuery:      "fields[categories]",
+		sinceQuery:       "filter[updated_at_gt]",
+		untilQuery:       "filter[updated_at_lt]",
+		sinceValueFormat: time.RFC3339,
+	},
+	PathCompetitors: {
+		fieldsQuery:    "fields[products]",
+		pageSizeQuery:  "per",
+		maximumPerPage: "50",
+	},
+	PathDiscussions: {
+		fieldsQuery: "fields[discussions]",
+	},
+	PathDownloads: {
+		fieldsQuery:      "fields[downloads]",
+		sinceQuery:       "filter[updated_at_gt]",
+		untilQuery:       "filter[updated_at_lt]",
+		sinceValueFormat: time.RFC3339,
+	},
+	PathIntegrationReviews: { //needs incremental read live test
+		fieldsQuery: "fields[integration_reviews]",
+	},
+	PathCategoriesFeatures: {
+		fieldsQuery:      "fields[product_features]",
+		sinceQuery:       "filter[updated_at_gt]",
+		untilQuery:       "filter[updated_at_lt]",
+		sinceValueFormat: time.RFC3339,
+	},
+	PathFeatures: {
+		fieldsQuery:      "fields[product_features]",
+		sinceQuery:       "filter[updated_at_gt]",
+		untilQuery:       "filter[updated_at_lt]",
+		sinceValueFormat: time.RFC3339,
+	},
+	PathProductsFeatures: {
+		fieldsQuery:      "fields[product_features]",
+		sinceQuery:       "filter[updated_at_gt]",
+		untilQuery:       "filter[updated_at_lt]",
+		sinceValueFormat: time.RFC3339,
+	},
+	PathProductMappings: {
+		fieldsQuery:      "fields[product_mappings]",
+		sinceQuery:       "filter[updated_at_gt]",
+		untilQuery:       "filter[updated_at_lt]",
+		sinceValueFormat: time.RFC3339,
+	},
+	PathVideos: {
+		fieldsQuery:      "fields[product_videos]",
+		sinceQuery:       "filter[updated_at_gt]",
+		untilQuery:       "filter[updated_at_lt]",
+		sinceValueFormat: time.RFC3339,
+	},
+	PathProducts: {
+		fieldsQuery:   "fields[products]",
+		pageSizeQuery: "page[size]",
+	},
+	PathQuestions: {
+		fieldsQuery:      "fields[questions]",
+		sinceQuery:       "filter[updated_at_gt]",
+		untilQuery:       "filter[updated_at_lt]",
+		sinceValueFormat: time.RFC3339,
+	},
+	PathReviews: {
+		fieldsQuery:      "fields[reviews]",
+		sinceQuery:       "filter[updated_at_gt]",
+		untilQuery:       "filter[updated_at_lt]",
+		sinceValueFormat: time.RFC3339,
+	},
+	PathScreenshots: {
+		fieldsQuery:      "fields[screenshots]",
+		sinceQuery:       "filter[updated_at_gt]",
+		untilQuery:       "filter[updated_at_lt]",
+		sinceValueFormat: time.RFC3339,
+	},
+	PathProductScreenshots: {
+		fieldsQuery:      "fields[screenshots]",
+		sinceQuery:       "filter[updated_at_gt]",
+		untilQuery:       "filter[updated_at_lt]",
+		sinceValueFormat: time.RFC3339,
+	},
+	PathSnippets: {
+		fieldsQuery: "fields[snippets]",
+	},
+	PathVendors: {
+		fieldsQuery:      "fields[vendors]",
+		sinceQuery:       "filter[updated_at_gt]",
+		untilQuery:       "filter[updated_at_lt]",
+		sinceValueFormat: time.RFC3339,
+	},
+	PathVideoReviews: {
+		fieldsQuery:      "fields[video_reviews]",
+		sinceQuery:       "filter[updated_at_gt]",
+		untilQuery:       "filter[updated_at_lt]",
+		sinceValueFormat: time.RFC3339,
 	},
 }
 
