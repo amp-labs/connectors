@@ -17,6 +17,7 @@ const (
 	// 10K but we are using 9K to be safe.
 	// See: https://developers.hubspot.com/docs/api/crm/search#limitations
 	searchResultsLimit = 9000
+
 	// searchPageSize is the page size for search API requests.
 	// Search endpoints support up to 200 records per page (unlike read endpoints which max at 100).
 	searchPageSize = "200"
