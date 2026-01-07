@@ -1,0 +1,23 @@
+{
+  "data": {
+    "customerCreate": {
+      "userErrors": [],
+      "customer": {
+        "id": "gid://shopify/Customer/1073340122",
+        "email": "steve.lastnameson@example.com",
+        "phone": "+16465555555",
+        "firstName": "Steve",
+        "lastName": null,
+        "displayName": "Steve",
+        "createdAt": "2024-11-05T14:29:24Z",
+        "updatedAt": "2024-11-05T14:29:24Z",
+        "state": "DISABLED",
+        "note": null,
+        "tags": [],
+        "taxExempt": false,
+        "verifiedEmail": false,
+        "locale": "en"
+      }
+    }
+  }
+}

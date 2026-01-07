@@ -99,6 +99,7 @@ import (
 	"github.com/amp-labs/connectors/providers/seismic"
 	"github.com/amp-labs/connectors/providers/sellsy"
 	"github.com/amp-labs/connectors/providers/servicenow"
+	"github.com/amp-labs/connectors/providers/shopify"
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/snapchatads"
 	"github.com/amp-labs/connectors/providers/snowflake"
@@ -218,6 +219,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Seismic:                 wrapper(newSeismicConnector),
 	providers.Sellsy:                  wrapper(newSellsyConnector),
 	providers.ServiceNow:              wrapper(newServiceNowConnector),
+	providers.Shopify:                 wrapper(newShopifyConnector),
 	providers.Smartlead:               wrapper(newSmartleadConnector),
 	providers.SnapchatAds:             wrapper(newSnapchatAdsConnector),
 	providers.Snowflake:               wrapper(newSnowflakeConnector),
@@ -935,6 +937,12 @@ func newAcuitySchedulingConnector(
 	params common.ConnectorParams,
 ) (*acuityscheduling.Connector, error) {
 	return acuityscheduling.NewConnector(params)
+}
+
+func newShopifyConnector(
+	params common.ConnectorParams,
+) (*shopify.Connector, error) {
+	return shopify.NewConnector(params)
 }
 
 func newKaseyaVSAXConnector(

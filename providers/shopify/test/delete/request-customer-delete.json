@@ -1,0 +1,6 @@
+{
+  "query": "mutation customerDelete($id: ID!) {\n  customerDelete(input: {id: $id}) {\n    deletedCustomerId\n    userErrors {\n      field\n      message\n    }\n  }\n}\n",
+  "variables": {
+    "id": "gid://shopify/Customer/1073340122"
+  }
+}

@@ -1,0 +1,80 @@
+query Products($first: Int!, $after: String, $query: String) {
+  products(first: $first, after: $after, query: $query) {
+    nodes {
+      id
+      title
+      handle
+      description
+      descriptionHtml
+      vendor
+      productType
+      status
+      tags
+      totalInventory
+      tracksInventory
+      createdAt
+      updatedAt
+      publishedAt
+      onlineStoreUrl
+      onlineStorePreviewUrl
+      templateSuffix
+      giftCardTemplateSuffix
+      hasOnlyDefaultVariant
+      hasOutOfStockVariants
+      hasVariantsThatRequiresComponents
+      requiresSellingPlan
+      isGiftCard
+      legacyResourceId
+      priceRangeV2 {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+        maxVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      compareAtPriceRange {
+        minVariantCompareAtPrice {
+          amount
+          currencyCode
+        }
+        maxVariantCompareAtPrice {
+          amount
+          currencyCode
+        }
+      }
+      featuredMedia {
+        id
+        alt
+        mediaContentType
+        preview {
+          image {
+            url
+            altText
+          }
+        }
+      }
+      seo {
+        title
+        description
+      }
+      category {
+        id
+        name
+        fullName
+      }
+      variantsCount {
+        count
+      }
+      mediaCount {
+        count
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

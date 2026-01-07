@@ -1,0 +1,8 @@
+{
+    "query": "mutation OrderClose($input: OrderCloseInput!) {\n  orderClose(input: $input) {\n    order {\n      canMarkAsPaid\n      cancelReason\n      cancelledAt\n      clientIp\n      confirmed\n      customer {\n        displayName\n        email\n      }\n      discountCodes\n    }\n    userErrors {\n      field\n      message\n    }\n  }\n}",
+    "variables": {
+        "input": {
+            "id": "gid://shopify/Order/123456789"
+        }
+    }
+}
