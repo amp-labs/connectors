@@ -10,7 +10,7 @@
       ]
     }
   ],
-  "limit": "100",
+  "limit": "200",
   "properties": [
     "email"
   ],
