@@ -150,6 +150,8 @@ func redactSensitiveRequestHeaders(hdrs []Header) Headers {
 		switch {
 		case strings.EqualFold(hdr.Key, "Authorization"):
 			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
+		case strings.EqualFold(hdr.Key, "X-Shopify-Access-Token"):
+			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
 		case strings.EqualFold(hdr.Key, "Proxy-Authorization"):
 			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
 		case strings.EqualFold(hdr.Key, "x-amz-security-token"):
