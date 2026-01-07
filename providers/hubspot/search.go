@@ -210,10 +210,10 @@ func checkSearchResultsLimit(nextPage common.NextPageToken) error {
 
 	// The NextPage token for HubSpot search is a numeric offset (as a string).
 	offset, err := strconv.Atoi(string(nextPage))
-	if err != nil { //nolint: nilerr
+	if err != nil {
 		// If we can't parse the offset, it's not a numeric token (shouldn't happen for search).
 		// Let the API call proceed and fail with a proper error if needed.
-		return nil
+		return nil //nolint:nilerr
 	}
 
 	if offset >= searchResultsLimit {
