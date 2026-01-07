@@ -215,8 +215,28 @@ type WriteParams struct {
 	Headers []WriteHeader // optional
 }
 
+// GetRecord converts WriteParams.RecordData into a map-based Record.
+//
+// If RecordData is already a map[string]any, it is returned directly.
+// Otherwise, the value is serialized to JSON and deserialized back into a map.
 func (p WriteParams) GetRecord() (Record, error) {
 	return RecordDataToMap(p.RecordData)
+}
+
+// IsCreate reports whether the Write is creating a new record.
+//
+// Write is considered a Create when no record identifier is provided.
+// Callers should prefer IsCreate over negating IsUpdate for clarity.
+func (p WriteParams) IsCreate() bool {
+	return p.RecordId == ""
+}
+
+// IsUpdate reports whether the write operation is an update rather than a Create.
+//
+// Write is considered an update when a non-empty RecordId is provided.
+// Callers should prefer IsUpdate over negating IsCreate for clarity.
+func (p WriteParams) IsUpdate() bool {
+	return p.RecordId != ""
 }
 
 // RecordDataToMap converts WriteParams.RecordData into a map[string]any.
