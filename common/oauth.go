@@ -423,6 +423,18 @@ func configureRequestWithToken(
 	customHeader *TokenHeaderAttachment,
 ) {
 	if customHeader != nil {
+		// Custom header attachment.
+		//
+		// RFC 6750 defines the "Bearer" token type and associates it with the
+		// "Bearer" HTTP authentication scheme, which is why the standard form is:
+		//   Authorization: Bearer <token>
+		// https://datatracker.ietf.org/doc/html/rfc6750#section-6.1.1
+		//
+		// In practice, the string placed before the token (the prefix) corresponds
+		// to the authentication scheme used for that token type. This code does not
+		// derive the prefix from token_type dynamically; instead, ProviderInfo
+		// supplies a fixed prefix for connectors that deviate from the standard
+		// Bearer scheme or require nonstandard headers.
 		req.Header.Set(
 			customHeader.Name,
 			customHeader.Prefix+token.AccessToken,
