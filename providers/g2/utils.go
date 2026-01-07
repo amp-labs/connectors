@@ -74,7 +74,7 @@ func inferValueTypeFromData(value any) common.ValueType {
 	}
 }
 
-func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
+func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error) { // nolint: cyclop
 	var (
 		url *urlbuilder.URL
 		err error
@@ -111,7 +111,8 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 
 	// Add page size query values
 	if cfg.pageSizeQuery != "" {
-		var pageSize = "100"
+		pageSize := "100"
+
 		if cfg.maximumPerPage != "" {
 			pageSize = cfg.maximumPerPage
 		}
@@ -135,7 +136,7 @@ type ObjectConfig struct {
 	sinceValueFormat string
 }
 
-var readObjCfg = map[string]ObjectConfig{
+var readObjCfg = map[string]ObjectConfig{ // nolint: gochecknoglobals
 	PathBuyerIntent: {
 		fieldsQuery:      "dimensions",
 		sinceQuery:       "dimension_filters[day_gteq]",
@@ -163,7 +164,7 @@ var readObjCfg = map[string]ObjectConfig{
 		untilQuery:       "filter[updated_at_lt]",
 		sinceValueFormat: time.RFC3339,
 	},
-	PathIntegrationReviews: { //needs incremental read live test
+	PathIntegrationReviews: { // needs incremental read live test
 		fieldsQuery: "fields[integration_reviews]",
 	},
 	PathCategoriesFeatures: {
