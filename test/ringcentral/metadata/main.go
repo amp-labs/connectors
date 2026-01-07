@@ -26,7 +26,7 @@ func main() {
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"comm-handling/states", "contacts", "meetings"})
 	if err != nil {
-		utils.Fail("error listing metadata for Pipedrive", "error", err)
+		utils.Fail("error listing metadata for RingCentral", "error", err)
 	}
 
 	// Print the results

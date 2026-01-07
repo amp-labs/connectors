@@ -2,13 +2,33 @@ package ringcentral
 
 import (
 	"context"
+	_ "embed"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
+
+var (
+	// JSON file containing object read,write details.
+	//
+	//go:embed objectCfg.json
+	objectCfg []byte
+
+	pathURLs = make(map[string]ObjectsOperationURLs) //nolint: gochecknoglobals
+)
+
+func init() {
+	logger := logging.Logger(context.TODO())
+	if err := json.Unmarshal(objectCfg, &pathURLs); err != nil {
+		logger.Error("ringcentral: couldn't unmarshal object configuration json file", "err", err)
+	}
+}
 
 type Response struct {
 	Records              []map[string]any `json:"records"`
@@ -68,7 +88,8 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	records, err := GetFieldByJSONTag(data, recordField)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("couldn't fetch records for object: %s expecting record field %s: %w",
+			objectName, recordField, err)
 	}
 
 	if len(records) == 0 {

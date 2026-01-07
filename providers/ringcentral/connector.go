@@ -18,9 +18,7 @@ type Connector struct {
 }
 
 const (
-	restAPIV1 = "restapi/v1.0/account"
-	restAPIV2 = "restapi/v2/accounts"
-	records   = "records"
+	records = "records"
 )
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
