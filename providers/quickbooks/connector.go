@@ -29,7 +29,10 @@ type Connector struct {
 	components.Reader
 	components.Writer
 
-	realmID string // QuickBooks Company ID
+	// QuickBooks Company ID
+	realmID string
+	// GraphQL base URL (for testing)
+	graphQLBaseURL string
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
