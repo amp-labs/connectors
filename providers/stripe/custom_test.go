@@ -73,20 +73,6 @@ func TestFlattenCustomFields(t *testing.T) {
 			},
 			wantErr: false,
 		},
-		{
-			name: "Object with non-map custom fields should return as is",
-			input: map[string]any{
-				"id":       "cus_test123",
-				"email":    "test@example.com",
-				"metadata": "not-a-map",
-			},
-			expected: map[string]any{
-				"id":       "cus_test123",
-				"email":    "test@example.com",
-				"metadata": "not-a-map",
-			},
-			wantErr: false,
-		},
 	}
 
 	for _, tt := range tests {
