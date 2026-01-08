@@ -299,7 +299,7 @@ func TestMailWrite(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: []error{common.ErrMissingRecordData},
 		},
 		{
-			Name:  "Create contact group",
+			Name:  "Create Draft",
 			Input: common.WriteParams{ObjectName: "drafts", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -328,7 +328,7 @@ func TestMailWrite(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Update contact group",
+			Name: "Update Draft",
 			Input: common.WriteParams{
 				ObjectName: "drafts",
 				RecordData: "dummy",

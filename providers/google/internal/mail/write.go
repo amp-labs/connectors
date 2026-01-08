@@ -19,7 +19,7 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 
 	method := http.MethodPost
 
-	if params.RecordId != "" {
+	if params.IsUpdate() {
 		url.AddPath(params.RecordId)
 
 		method = http.MethodPut
