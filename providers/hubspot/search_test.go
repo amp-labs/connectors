@@ -32,12 +32,12 @@ func TestCheckSearchResultsLimit(t *testing.T) {
 		},
 		{
 			name:        "Offset at limit returns error",
-			nextPage:    "9000",
+			nextPage:    "10000",
 			expectError: true,
 		},
 		{
 			name:        "Offset above limit returns error",
-			nextPage:    "9001",
+			nextPage:    "10001",
 			expectError: true,
 		},
 		{
@@ -79,7 +79,7 @@ func TestSearchResultsLimitConstant(t *testing.T) {
 	t.Parallel()
 
 	// Ensure the limit constant matches HubSpot's documented limit
-	if searchResultsLimit != 9000 {
-		t.Errorf("searchResultsLimit should be 9000, got %d", searchResultsLimit)
+	if searchResultsLimit != 10000 {
+		t.Errorf("searchResultsLimit should be 10000, got %d", searchResultsLimit)
 	}
 }

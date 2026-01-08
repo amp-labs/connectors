@@ -13,10 +13,9 @@ import (
 
 const (
 	// searchResultsLimit is the maximum number of records that can be returned by the search endpoint.
-	// HubSpot's search API returns a 400 error if you try to paginate beyond this limit. It is technically
-	// 10K but we are using 9K to be safe.
+	// HubSpot's search API returns a 400 error if you try to paginate beyond this limit.
 	// See: https://developers.hubspot.com/docs/api/crm/search#limitations
-	searchResultsLimit = 9000
+	searchResultsLimit = 10000
 
 	// searchPageSize is the page size for search API requests.
 	// Search endpoints support up to 200 records per page (unlike read endpoints which max at 100).
