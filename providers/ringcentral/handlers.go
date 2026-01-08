@@ -114,12 +114,12 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return urlbuilder.New(params.NextPage.String())
 	}
 
-	objectPaths, exists := pathURLs[params.ObjectName]
+	endpointPath, exists := pathURLs[params.ObjectName]
 	if !exists {
-		return urlbuilder.New(c.ProviderInfo().BaseURL, "restapi/v1.0", params.ObjectName)
+		endpointPath.ReadPath = params.ObjectName
 	}
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, objectPaths.ReadPath)
+	return urlbuilder.New(c.ProviderInfo().BaseURL, endpointPath.ReadPath)
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
