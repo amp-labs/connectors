@@ -29,9 +29,7 @@ type Connector struct {
 	components.Reader
 	components.Writer
 
-	// QuickBooks Company ID
 	realmID string
-	// GraphQL base URL (for testing)
 	graphQLBaseURL string
 }
 

@@ -21,6 +21,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 	itemResponse := testutils.DataFromFile(t, "item-read.json")
 	accountEmptyResponse := testutils.DataFromFile(t, "account-read-empty.json")
 	errorResponse := testutils.DataFromFile(t, "error-bad-request.json")
+	graphQLResponse := testutils.DataFromFile(t, "custom-fields/graphql-response.json")
+	graphQLEmptyResponse := testutils.DataFromFile(t, "custom-fields/graphql-empty.json")
+	graphQLErrorResponse := testutils.DataFromFile(t, "custom-fields/graphql-error.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -57,7 +60,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							"FullyQualifiedName": "string",
 							"Name":               "string",
 						}),
-						FieldsMap: nil,
 					},
 					"customer": {
 						DisplayName: "Customer",
@@ -71,7 +73,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							"BillWithParent":          "boolean",
 							"Job":                     "boolean",
 						}),
-						FieldsMap: nil,
 					},
 				},
 				Errors: nil,
@@ -99,7 +100,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							"sparse": "boolean",
 							"Level":  "string",
 						}),
-						FieldsMap: nil,
 					},
 				},
 				Errors: nil,
@@ -172,7 +172,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							"FullyQualifiedName": "string",
 							"Name":               "string",
 						}),
-						FieldsMap: nil,
 					},
 					"customer": {
 						DisplayName: "Customer",
@@ -186,7 +185,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							"BillWithParent":          "boolean",
 							"Job":                     "boolean",
 						}),
-						FieldsMap: nil,
 					},
 					"item": {
 						DisplayName: "Item",
@@ -198,7 +196,217 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							"sparse": "boolean",
 							"Level":  "string",
 						}),
-						FieldsMap: nil,
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Successfully describe Customer with custom fields",
+			Input: []string{"customer"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.QueryParam("query", "SELECT * FROM Customer STARTPOSITION 0 MAXRESULTS 1"),
+					Then: mockserver.Response(http.StatusOK, customerResponse),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/graphql"),
+					},
+					Then: mockserver.Response(http.StatusOK, graphQLResponse),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"customer": {
+						DisplayName: "Customer",
+						Fields: buildFieldMetadataWithCustomFields(map[string]string{
+							"domain":                  "string",
+							"FamilyName":              "string",
+							"DisplayName":             "string",
+							"PreferredDeliveryMethod": "string",
+							"GivenName":               "string",
+							"FullyQualifiedName":      "string",
+							"BillWithParent":          "boolean",
+							"Job":                     "boolean",
+							"ProjectCode":             "string",
+							"Department":              "string",
+							"BudgetAmount":            "float",
+							"StartDate":               "datetime",
+							"Status":                  "singleSelect",
+						}),
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Successfully describe Customer and Account with custom fields (mixed objects)",
+			Input: []string{"customer", "account"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.QueryParam("query", "SELECT * FROM Customer STARTPOSITION 0 MAXRESULTS 1"),
+					Then: mockserver.Response(http.StatusOK, customerResponse),
+				}, {
+					If:   mockcond.QueryParam("query", "SELECT * FROM Account STARTPOSITION 0 MAXRESULTS 1"),
+					Then: mockserver.Response(http.StatusOK, accountResponse),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/graphql"),
+					},
+					Then: mockserver.Response(http.StatusOK, graphQLResponse),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"customer": {
+						DisplayName: "Customer",
+						Fields: buildFieldMetadataWithCustomFields(map[string]string{
+							"domain":                  "string",
+							"FamilyName":              "string",
+							"DisplayName":             "string",
+							"PreferredDeliveryMethod": "string",
+							"GivenName":               "string",
+							"FullyQualifiedName":      "string",
+							"BillWithParent":          "boolean",
+							"Job":                     "boolean",
+							"ProjectCode":             "string",
+							"Department":              "string",
+							"BudgetAmount":            "float",
+							"StartDate":               "datetime",
+							"Status":                  "singleSelect",
+						}),
+					},
+					"account": {
+						DisplayName: "Account",
+						Fields: buildFieldMetadata(map[string]string{
+							"AccountSubType":     "string",
+							"AccountType":        "string",
+							"Active":             "boolean",
+							"Classification":     "string",
+							"domain":             "string",
+							"sparse":             "boolean",
+							"FullyQualifiedName": "string",
+							"Name":               "string",
+						}),
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "GraphQL failure gracefully degrades to base metadata",
+			Input: []string{"customer"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.QueryParam("query", "SELECT * FROM Customer STARTPOSITION 0 MAXRESULTS 1"),
+					Then: mockserver.Response(http.StatusOK, customerResponse),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/graphql"),
+					},
+					Then: mockserver.Response(http.StatusInternalServerError),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"customer": {
+						DisplayName: "Customer",
+						Fields: buildFieldMetadata(map[string]string{
+							"domain":                  "string",
+							"FamilyName":              "string",
+							"DisplayName":             "string",
+							"PreferredDeliveryMethod": "string",
+							"GivenName":               "string",
+							"FullyQualifiedName":      "string",
+							"BillWithParent":          "boolean",
+							"Job":                     "boolean",
+						}),
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Empty custom fields response returns base metadata only",
+			Input: []string{"customer"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.QueryParam("query", "SELECT * FROM Customer STARTPOSITION 0 MAXRESULTS 1"),
+					Then: mockserver.Response(http.StatusOK, customerResponse),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/graphql"),
+					},
+					Then: mockserver.Response(http.StatusOK, graphQLEmptyResponse),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"customer": {
+						DisplayName: "Customer",
+						Fields: buildFieldMetadata(map[string]string{
+							"domain":                  "string",
+							"FamilyName":              "string",
+							"DisplayName":             "string",
+							"PreferredDeliveryMethod": "string",
+							"GivenName":               "string",
+							"FullyQualifiedName":      "string",
+							"BillWithParent":          "boolean",
+							"Job":                     "boolean",
+						}),
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "GraphQL errors in response return error",
+			Input: []string{"customer"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.QueryParam("query", "SELECT * FROM Customer STARTPOSITION 0 MAXRESULTS 1"),
+					Then: mockserver.Response(http.StatusOK, customerResponse),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/graphql"),
+					},
+					Then: mockserver.Response(http.StatusOK, graphQLErrorResponse),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"customer": {
+						DisplayName: "Customer",
+						Fields: buildFieldMetadata(map[string]string{
+							"domain":                  "string",
+							"FamilyName":              "string",
+							"DisplayName":             "string",
+							"PreferredDeliveryMethod": "string",
+							"GivenName":               "string",
+							"FullyQualifiedName":      "string",
+							"BillWithParent":          "boolean",
+							"Job":                     "boolean",
+						}),
 					},
 				},
 				Errors: nil,
@@ -219,16 +427,34 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 }
 
 func buildFieldMetadata(fields map[string]string) map[string]common.FieldMetadata {
+	return buildFieldMetadataWithProviderTypes(fields, nil)
+}
+
+func buildFieldMetadataWithCustomFields(fields map[string]string) map[string]common.FieldMetadata {
+	providerTypes := map[string]string{
+		"ProjectCode":  "StringType",
+		"Department":   "StringType",
+		"BudgetAmount": "NumberType",
+		"StartDate":    "DateType",
+		"Status":       "ListType",
+	}
+	return buildFieldMetadataWithProviderTypes(fields, providerTypes)
+}
+
+func buildFieldMetadataWithProviderTypes(fields map[string]string, providerTypes map[string]string) map[string]common.FieldMetadata {
 	result := make(map[string]common.FieldMetadata)
 	for name, typ := range fields {
+		providerType := ""
+		if providerTypes != nil {
+			providerType = providerTypes[name]
+		}
 		result[name] = common.FieldMetadata{
 			DisplayName:  name,
 			ValueType:    common.ValueType(typ),
-			ProviderType: "",
+			ProviderType: providerType,
 			Values:       nil,
 		}
 	}
-
 	return result
 }
 
@@ -243,8 +469,8 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		return nil, err
 	}
 
-	// for testing we want to redirect calls to our mock server
 	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
+	connector.graphQLBaseURL = serverURL + "/graphql"
 
 	return connector, nil
 }
