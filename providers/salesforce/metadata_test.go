@@ -124,7 +124,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 							"phone": {
 								DisplayName:  "Phone",
-								ValueType:    "other",
+								ValueType:    "string",
 								ProviderType: "phone",
 								ReadOnly:     goutils.Pointer(false),
 								IsCustom:     goutils.Pointer(false),
@@ -167,7 +167,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						Fields: map[string]common.FieldMetadata{
 							"id": {
 								DisplayName:  "Record ID",
-								ValueType:    "other",
+								ValueType:    "string",
 								ProviderType: "id",
 								ReadOnly:     goutils.Pointer(true),
 								IsCustom:     goutils.Pointer(false),
@@ -242,7 +242,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 							"createdbyid": {
 								DisplayName:  "Created By ID",
-								ValueType:    "other",
+								ValueType:    "string",
 								ProviderType: "reference",
 								ReadOnly:     goutils.Pointer(true),
 								IsCustom:     goutils.Pointer(false),
