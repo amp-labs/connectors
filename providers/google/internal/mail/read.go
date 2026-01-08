@@ -29,10 +29,40 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 
 	// Add pagination query parameters.
 	if paginatedObjects.Has(params.ObjectName) {
-		url.WithQueryParam("maxResults", defaultPageSize)
+		pageSize := params.PageSizeOrDefaultStr(defaultPageSize)
+		url.WithQueryParam("maxResults", pageSize)
 
 		if params.NextPage != "" {
 			url.WithQueryParam("pageToken", params.NextPage.String())
+		}
+	}
+
+	// nolint:lll
+	//
+	// Gmail does not expose first-class timestamp filters on list endpoints.
+	// Time-based incremental reads must be implemented using the Gmail search DSL
+	// via the `q` parameter (e.g. `after:` / `before:`).
+	//
+	// Although some sources suggest Unix timestamps may work, this behavior is not
+	// clearly documented and has been reported as inconsistent:
+	// https://stackoverflow.com/questions/56455757/gmail-api-messages-list-q-aftertimestamp-doe-not-work-properly/56482916#56482916
+	//
+	// The officially documented and UI-supported format uses year/month/day:
+	// https://support.google.com/mail/answer/7190
+	//
+	// The following collection endpoints support the `q` search parameter and
+	// therefore can be time-filtered:
+	// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list
+	// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.drafts/list
+	// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.threads/list
+	if datautils.NewSet("drafts", "messages", "threads").Has(params.ObjectName) {
+		query := newTimeQuery().
+			WithSince(params.Since).
+			WithUntil(params.Until).
+			String()
+
+		if query != "" {
+			url.WithQueryParam("q", query)
 		}
 	}
 

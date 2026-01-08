@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -190,6 +191,14 @@ type ReadParams struct {
 
 	// PageSize specifies the # of records to request when making a read request.
 	PageSize int // optional
+}
+
+func (p ReadParams) PageSizeOrDefaultStr(defaultPageSize string) string {
+	if p.PageSize <= 0 {
+		return defaultPageSize
+	}
+
+	return strconv.Itoa(p.PageSize)
 }
 
 type WriteHeader struct {

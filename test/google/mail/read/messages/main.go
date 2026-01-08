@@ -2,15 +2,15 @@ package main
 
 import (
 	"context"
-	"log/slog"
-	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/google"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
 func main() {
@@ -23,15 +23,20 @@ func main() {
 
 	conn := connTest.GetGoogleMailConnector(ctx)
 
-	res, err := conn.Read(ctx, common.ReadParams{
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "messages",
 		Fields:     connectors.Fields("threadId"),
-		NextPage:   "18013444488202970482",
+		Since:      timestamp("2026-01-06T00:00:00"),
+		Until:      timestamp("2026-01-07T00:00:00"),
+		PageSize:   2,
 	})
+}
+
+func timestamp(timeText string) time.Time {
+	result, err := time.Parse("2006-01-02T15:04:05", timeText)
 	if err != nil {
-		utils.Fail("error reading from connector", "error", err)
+		utils.Fail("bad timestamp", "error", err)
 	}
 
-	slog.Info("Reading...")
-	utils.DumpJSON(res, os.Stdout)
+	return result
 }
