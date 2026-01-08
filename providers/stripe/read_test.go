@@ -208,7 +208,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read customer with metadata flattened to root level",
+			Name: "Read customer with custom fields flattened to root level",
 			Input: common.ReadParams{
 				ObjectName: "customers",
 				Fields:     connectors.Fields("id", "email", "order_id", "user_id", "internal_ref"),

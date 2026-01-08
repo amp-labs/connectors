@@ -39,7 +39,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	return common.ParseResult(res,
 		makeGetRecords(responseFieldName),
 		makeNextRecordsURL(url),
-		common.MakeMarshaledDataFunc(flattenMetadata),
+		common.MakeMarshaledDataFunc(flattenCustomFields),
 		config.Fields,
 	)
 }

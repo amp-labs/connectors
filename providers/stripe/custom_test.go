@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFlattenMetadata(t *testing.T) {
+func TestFlattenCustomFields(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -19,7 +19,7 @@ func TestFlattenMetadata(t *testing.T) {
 		wantErr  bool
 	}{
 		{
-			name: "Object with metadata should flatten metadata to root level",
+			name: "Object with custom fields should flatten custom fields to root level",
 			input: map[string]any{
 				"id":    "cus_test123",
 				"email": "test@example.com",
@@ -46,7 +46,7 @@ func TestFlattenMetadata(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Object without metadata should return as is",
+			name: "Object without custom fields should return as is",
 			input: map[string]any{
 				"id":    "cus_test123",
 				"email": "test@example.com",
@@ -60,7 +60,7 @@ func TestFlattenMetadata(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Object with empty metadata should return as is",
+			name: "Object with empty custom fields should return as is",
 			input: map[string]any{
 				"id":       "cus_test123",
 				"email":    "test@example.com",
@@ -74,7 +74,7 @@ func TestFlattenMetadata(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Object with non-map metadata should return as is",
+			name: "Object with non-map custom fields should return as is",
 			input: map[string]any{
 				"id":       "cus_test123",
 				"email":    "test@example.com",
@@ -100,7 +100,7 @@ func TestFlattenMetadata(t *testing.T) {
 			node, err := ajson.Unmarshal(jsonBytes)
 			require.NoError(t, err)
 
-			result, err := flattenMetadata(node)
+			result, err := flattenCustomFields(node)
 
 			if tt.wantErr {
 				assert.Error(t, err)
