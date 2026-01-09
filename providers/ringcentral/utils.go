@@ -17,6 +17,7 @@ import (
 type ObjectsOperationURLs struct {
 	ReadPath             string `json:"read_path"`
 	WritePath            string `json:"write_path"`
+	UpdateMethod         string `json:"update_method"`
 	RecordsField         string `json:"records_field"`
 	UsesCursorPagination bool   `json:"uses_cursor_pagination"`
 	UsesOffsetPagination bool   `json:"uses_offset_pagination"`
@@ -140,12 +141,17 @@ func nextRecordsURL(objectName string, url *urlbuilder.URL) common.NextPageFunc 
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{"*"}
+	writeSupport := []string{"*"}
 
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
