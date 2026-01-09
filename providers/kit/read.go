@@ -29,7 +29,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	if err != nil {
 		return nil, err
 	}
+
 	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, config.ObjectName)
+
 	return common.ParseResult(rsp,
 		makeGetRecords(responseFieldName),
 		makeNextRecordsURL(url),
@@ -46,6 +48,7 @@ func makeGetRecords(responseFieldName string) common.NodeRecordsFunc {
 		return jsonquery.New(node).ArrayOptional(responseFieldName)
 	}
 }
+
 func (c *Connector) buildURL(config common.ReadParams) (*urlbuilder.URL, error) {
 	if len(config.NextPage) != 0 {
 		// Next page.
