@@ -2,14 +2,13 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"log/slog"
 	"os"
 
 	"github.com/amp-labs/connectors/common"
 	g2Conn "github.com/amp-labs/connectors/providers/g2"
 	"github.com/amp-labs/connectors/test/g2"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
@@ -51,14 +50,7 @@ func testCreatingNewProductMapping(ctx context.Context, conn *g2Conn.Connector) 
 		return err
 	}
 
-	// Print the results
-	jsonStr, err := json.MarshalIndent(res, "", "  ")
-	if err != nil {
-		return fmt.Errorf("error marshalling JSON: %w", err)
-	}
-
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
+	utils.DumpJSON(res, os.Stdout)
 
 	return nil
 }
@@ -86,14 +78,7 @@ func testCreatingReview(ctx context.Context, conn *g2Conn.Connector) error {
 		return err
 	}
 
-	// Print the results
-	jsonStr, err := json.MarshalIndent(res, "", "  ")
-	if err != nil {
-		return fmt.Errorf("error marshalling JSON: %w", err)
-	}
-
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
+	utils.DumpJSON(res, os.Stdout)
 
 	return nil
 }
