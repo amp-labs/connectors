@@ -17,6 +17,7 @@ import (
 type ObjectsOperationURLs struct {
 	ReadPath             string `json:"read_path"`
 	WritePath            string `json:"write_path"`
+	UpdateMethod         string `json:"update_method"`
 	RecordsField         string `json:"records_field"`
 	UsesCursorPagination bool   `json:"uses_cursor_pagination"`
 	UsesOffsetPagination bool   `json:"uses_offset_pagination"`
