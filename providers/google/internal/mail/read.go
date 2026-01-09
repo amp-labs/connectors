@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
@@ -29,7 +30,7 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 
 	// Add pagination query parameters.
 	if paginatedObjects.Has(params.ObjectName) {
-		pageSize := params.PageSizeOrDefaultStr(defaultPageSize)
+		pageSize := readhelper.PageSizeWithDefaultStr(params, defaultPageSize)
 		url.WithQueryParam("maxResults", pageSize)
 
 		if params.NextPage != "" {

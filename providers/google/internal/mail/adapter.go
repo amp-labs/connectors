@@ -1,8 +1,6 @@
 package mail
 
 import (
-	"strings"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -56,8 +54,6 @@ func (a *Adapter) getReadURL(objectName string) (*urlbuilder.URL, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	path = strings.ReplaceAll(path, "{userId}", "me")
 
 	return urlbuilder.New(a.ModuleInfo().BaseURL, apiVersion, path)
 }
