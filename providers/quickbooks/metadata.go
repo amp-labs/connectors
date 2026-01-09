@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-// ListObjectMetadata overrides the base SchemaProvider to enhance metadata with custom fields
+// ListObjectMetadata overrides the base SchemaProvider to enhance metadata with custom fields.
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context,
 	objectNames []string,
@@ -27,6 +27,7 @@ func (c *Connector) ListObjectMetadata(
 		// Graceful degradation: return base metadata if GraphQL fails
 		slog.Warn("Failed to fetch custom field definitions, continuing with base metadata only",
 			"error", err)
+
 		return baseResult, nil
 	}
 

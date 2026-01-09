@@ -2,7 +2,6 @@ package quickbooks
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
@@ -24,8 +23,8 @@ var objectsWithCustomFields = datautils.NewStringSet( //nolint:gochecknoglobals
 )
 
 type graphQLRequest struct {
-	Query     string                 `json:"query"`
-	Variables map[string]interface{} `json:"variables,omitempty"`
+	Query     string         `json:"query"`
+	Variables map[string]any `json:"variables,omitempty"`
 }
 
 type graphQLCustomFieldsResponse struct {
@@ -55,6 +54,7 @@ func (c *Connector) getGraphQLBaseURL() string {
 	if c.graphQLBaseURL != "" {
 		return c.graphQLBaseURL
 	}
+
 	return defaultGraphQLBaseURL
 }
 
@@ -70,23 +70,21 @@ func (c *Connector) fetchCustomFieldDefinitions(ctx context.Context) ([]customFi
 
 	jsonResp, err := c.JSONHTTPClient().Post(ctx, c.getGraphQLBaseURL(), graphQLRequest{Query: query})
 	if err != nil {
-		return nil, fmt.Errorf("%w: GraphQL request failed: %v", common.ErrResolvingCustomFields, err)
+		return nil, fmt.Errorf("%w: GraphQL request failed: %w", common.ErrResolvingCustomFields, err)
 	}
 
 	graphQLResp, err := common.UnmarshalJSON[graphQLCustomFieldsResponse](jsonResp)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to decode GraphQL response: %v", common.ErrResolvingCustomFields, err)
+		return nil, fmt.Errorf("%w: failed to decode GraphQL response: %w", common.ErrResolvingCustomFields, err)
 	}
 
 	if len(graphQLResp.Errors) > 0 {
 		errorMessages := make([]string, len(graphQLResp.Errors))
-		for i, err := range graphQLResp.Errors {
-			errorMessages[i] = err.Message
+		for i, gqlErr := range graphQLResp.Errors {
+			errorMessages[i] = gqlErr.Message
 		}
-		return nil, fmt.Errorf("%w: GraphQL errors: %v", common.ErrResolvingCustomFields, errors.Join(
-			errors.New("GraphQL query failed"),
-			fmt.Errorf("errors: %v", errorMessages),
-		))
+
+		return nil, fmt.Errorf("%w: GraphQL errors: %v", common.ErrResolvingCustomFields, errorMessages)
 	}
 
 	return graphQLResp.Data.AppFoundationsCustomFieldDefinitions, nil
@@ -102,7 +100,7 @@ func filterCustomFieldsByObject(fields []customFieldDefinition, objectName strin
 	return fields
 }
 
-// getFieldValueType maps QuickBooks custom field type to common.ValueType
+// getFieldValueType maps QuickBooks custom field type to common.ValueType.
 func getFieldValueType(field customFieldDefinition) common.ValueType {
 	switch field.Type {
 	case "StringType":

@@ -29,7 +29,7 @@ type Connector struct {
 	components.Reader
 	components.Writer
 
-	realmID string
+	realmID        string
 	graphQLBaseURL string
 }
 
