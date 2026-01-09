@@ -57,6 +57,17 @@ func PathsConfig(productID, objectName string) (string, error) {
 	}
 }
 
+func writePath(productId, objectName string) (string, error) {
+	switch objectName {
+	case "product_mappings":
+		return "product_mappings", nil
+	case "review":
+		return fmt.Sprintf("users/me/products/%s/review", productId), nil
+	default:
+		return "", common.ErrObjectNotSupported
+	}
+}
+
 func inferValueTypeFromData(value any) common.ValueType {
 	if value == nil {
 		return common.ValueTypeOther
@@ -275,12 +286,17 @@ func nextRecordsURL() common.NextPageFunc {
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{"*"}
+	writeSupport := []string{"*"}
 
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
