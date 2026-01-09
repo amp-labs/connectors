@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/google/internal/calendar"
 	"github.com/amp-labs/connectors/providers/google/internal/contacts"
+	"github.com/amp-labs/connectors/providers/google/internal/mail"
 )
 
 // Connector for Google provider.
@@ -20,6 +21,7 @@ type Connector struct {
 
 	Calendar *calendar.Adapter
 	Contacts *contacts.Adapter
+	Mail     *mail.Adapter
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -50,6 +52,15 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		connector.Contacts = adapter
 	}
 
+	if connector.Module() == providers.ModuleGoogleMail {
+		adapter, err := mail.NewAdapter(params)
+		if err != nil {
+			return nil, err
+		}
+
+		connector.Mail = adapter
+	}
+
 	return connector, nil
 }
 
@@ -62,6 +73,10 @@ func (c Connector) ListObjectMetadata(
 
 	if c.Contacts != nil {
 		return c.Contacts.ListObjectMetadata(ctx, objectNames)
+	}
+
+	if c.Mail != nil {
+		return c.Mail.ListObjectMetadata(ctx, objectNames)
 	}
 
 	return nil, common.ErrNotImplemented
@@ -110,5 +125,9 @@ func (c Connector) setUnitTestBaseURL(url string) {
 
 	if c.Contacts != nil {
 		c.Contacts.SetUnitTestBaseURL(url)
+	}
+
+	if c.Mail != nil {
+		c.Mail.SetUnitTestBaseURL(url)
 	}
 }
