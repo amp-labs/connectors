@@ -95,8 +95,6 @@ func filterCustomFieldsByObject(fields []customFieldDefinition, objectName strin
 		return []customFieldDefinition{}
 	}
 
-	// Return all custom fields for objects that support them
-	// Can be refined later if GraphQL provides associatedEntities field
 	return fields
 }
 
