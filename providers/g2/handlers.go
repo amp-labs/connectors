@@ -27,9 +27,9 @@ type record struct {
 	Relationships map[string]any `json:"relationships"`
 }
 
-var restAPIVersion string = "api/v2" //nolint: gochecknoglobals
-
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
+	restAPIVersion := "api/v2"
+
 	path, err := PathsConfig(c.productId, objectName)
 	if err != nil {
 		return nil, err
