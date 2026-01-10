@@ -11,7 +11,6 @@ import (
 )
 
 const (
-	restAPIVersion   = "api/v2"
 	limitQuery       = "page[size]"
 	metadataPageSize = "1"
 )
@@ -28,10 +27,18 @@ type record struct {
 	Relationships map[string]any `json:"relationships"`
 }
 
+var restAPIVersion string = "api/v2" //nolint: gochecknoglobals
+
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	path, err := PathsConfig(c.productId, objectName)
 	if err != nil {
 		return nil, err
+	}
+
+	// We couldn't test on the product's buyer_intent API
+	// we used this sandbox object and since it's a replica of the product it should work fine.
+	if objectName == PathSandboxBuyerIntent {
+		restAPIVersion = "api/sandbox"
 	}
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, path)

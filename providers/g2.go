@@ -12,7 +12,7 @@ func init() {
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
 				Name:        "Authorization",
-				ValuePrefix: "Token token=",
+				ValuePrefix: "Bearer ",
 			},
 			DocsURL: "https://data.g2.com/api/docs?shell#g2-v2-api",
 		},

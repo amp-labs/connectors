@@ -8,6 +8,7 @@ import (
 
 const (
 	PathBuyerIntent        = "buyer_intent"
+	PathSandboxBuyerIntent = "sandbox/buyer_intent"
 	PathCompetitors        = "competitors"
 	PathDiscussions        = "discussions"
 	PathReviews            = "reviews"
@@ -45,6 +46,9 @@ func PathsConfig(productID, objectName string) (string, error) {
 		PathQuestions, PathVendors:
 		return objectName, nil
 
+	// This is added for testing only, wont be shared as an object.
+	case PathSandboxBuyerIntent:
+		return fmt.Sprintf("/products/%s/buyer_intent", productID), nil
 	default:
 		return "", common.ErrObjectNotSupported
 	}

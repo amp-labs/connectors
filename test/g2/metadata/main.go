@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"os"
 
 	"github.com/amp-labs/connectors/test/g2"
 	"github.com/amp-labs/connectors/test/utils"
@@ -18,14 +18,12 @@ func run() error {
 	ctx := context.Background()
 	connector := g2.NewConnector(ctx)
 
-	m, err := connector.ListObjectMetadata(ctx, []string{"buyer_intent", "snippets", "categories"})
+	m, err := connector.ListObjectMetadata(ctx, []string{"sandbox/buyer_intent", "buyer_intent", "categories"})
 	if err != nil {
 		return err
 	}
 
-	// Print the results
-	fmt.Println("Results: ", m.Result)
-	fmt.Println("Errors: ", m.Errors)
+	utils.DumpJSON(m, os.Stdout)
 
 	return nil
 }

@@ -14,14 +14,14 @@ func NewConnector(ctx context.Context) *g2.Connector {
 	filePath := credscanning.LoadPath(providers.G2)
 	reader := utils.MustCreateProvCredJSON(filePath, false)
 
-	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, "Authorization", "Token token="+reader.Get(credscanning.Fields.ApiKey))
+	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, "Authorization", "Bearer "+reader.Get(credscanning.Fields.ApiKey))
 	if err != nil {
 		utils.Fail("error creating client", "error", err)
 	}
 
 	conn, err := g2.NewConnector(
 		common.ConnectorParams{AuthenticatedClient: client, Metadata: map[string]string{
-			"productId": "xxxxxxxx",
+			"productId": "1",
 		}},
 	)
 	if err != nil {
