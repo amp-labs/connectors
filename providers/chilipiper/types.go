@@ -19,6 +19,7 @@ var supportedReadObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"workspace",
 	"team",
 	"distribution",
+	"meetings/meetings", // beta version
 	"workspace/users",
 )
 
