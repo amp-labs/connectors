@@ -91,7 +91,7 @@ func TestUpdateSubscription(t *testing.T) {
 				},
 				PreviousResult: &common.SubscriptionResult{
 					Result: &SubscriptionResult{
-						Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+						Subscriptions: map[common.ObjectName]WebhookResponse{
 							"account": {
 								ID:            "we_123:account",
 								EnabledEvents: []string{"account.created"},
@@ -136,7 +136,7 @@ func TestUpdateSubscription(t *testing.T) {
 				},
 				PreviousResult: &common.SubscriptionResult{
 					Result: &SubscriptionResult{
-						Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+						Subscriptions: map[common.ObjectName]WebhookResponse{
 							"balance": {
 								ID:            "we_123:balance",
 								EnabledEvents: []string{"balance.created"},
@@ -175,7 +175,7 @@ func TestUpdateSubscription(t *testing.T) {
 				},
 				PreviousResult: &common.SubscriptionResult{
 					Result: &SubscriptionResult{
-						Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+						Subscriptions: map[common.ObjectName]WebhookResponse{
 							"account": {
 								ID:            "we_123:account",
 								EnabledEvents: []string{"account.created", "account.updated"},
@@ -256,7 +256,7 @@ func TestValidatePreviousResult(t *testing.T) {
 			name: "Valid result",
 			previousResult: &common.SubscriptionResult{
 				Result: &SubscriptionResult{
-					Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+					Subscriptions: map[common.ObjectName]WebhookResponse{
 						"account": {
 							ID:            "we_123:account",
 							EnabledEvents: []string{"account.updated"},
@@ -293,20 +293,20 @@ func TestGetExistingEndpoint(t *testing.T) {
 
 	tests := []struct {
 		name          string
-		subscriptions map[common.ObjectName]WebhookEndpointResponse
+		subscriptions map[common.ObjectName]WebhookResponse
 		expectedErr   error
 		expectedID    string
 		description   string
 	}{
 		{
 			name:          "Empty subscriptions",
-			subscriptions: map[common.ObjectName]WebhookEndpointResponse{},
+			subscriptions: map[common.ObjectName]WebhookResponse{},
 			expectedErr:   errMissingParams,
 			description:   "Test extracting endpoint from empty subscriptions",
 		},
 		{
 			name: "Single subscription with composite ID",
-			subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+			subscriptions: map[common.ObjectName]WebhookResponse{
 				"account": {
 					ID:            "we_123:account",
 					EnabledEvents: []string{"account.updated"},
@@ -318,7 +318,7 @@ func TestGetExistingEndpoint(t *testing.T) {
 		},
 		{
 			name: "Multiple subscriptions with same endpoint",
-			subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+			subscriptions: map[common.ObjectName]WebhookResponse{
 				"account": {
 					ID:            "we_123:account",
 					EnabledEvents: []string{"account.updated"},
@@ -334,7 +334,7 @@ func TestGetExistingEndpoint(t *testing.T) {
 		},
 		{
 			name: "Backward compatible - no colon in ID",
-			subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+			subscriptions: map[common.ObjectName]WebhookResponse{
 				"account": {
 					ID:            "we_123",
 					EnabledEvents: []string{"account.updated"},
@@ -382,7 +382,7 @@ func TestBuildMergedEventNames(t *testing.T) {
 		{
 			name: "Keep existing events and add new",
 			prevState: &SubscriptionResult{
-				Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+				Subscriptions: map[common.ObjectName]WebhookResponse{
 					"balance": {
 						ID:            "we_123:balance",
 						EnabledEvents: []string{"balance.created"},
@@ -406,7 +406,7 @@ func TestBuildMergedEventNames(t *testing.T) {
 		{
 			name: "Update existing object events",
 			prevState: &SubscriptionResult{
-				Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+				Subscriptions: map[common.ObjectName]WebhookResponse{
 					"account": {
 						ID:            "we_123:account",
 						EnabledEvents: []string{"account.created"},
@@ -434,7 +434,7 @@ func TestBuildMergedEventNames(t *testing.T) {
 		{
 			name: "All sample events",
 			prevState: &SubscriptionResult{
-				Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+				Subscriptions: map[common.ObjectName]WebhookResponse{
 					"account": {
 						ID:            "we_123:account",
 						EnabledEvents: []string{"account.application.authorized", "account.application.deauthorized", "account.updated"},

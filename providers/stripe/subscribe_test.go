@@ -221,14 +221,14 @@ func TestBuildSubscriptionResult(t *testing.T) {
 
 	tests := []struct {
 		name               string
-		response           *WebhookEndpointResponse
+		response           *WebhookResponse
 		subscriptionEvents map[common.ObjectName]common.ObjectEvents
 		expectedCount      int
 		description        string
 	}{
 		{
 			name: "Single object",
-			response: &WebhookEndpointResponse{
+			response: &WebhookResponse{
 				ID:            "we_123",
 				EnabledEvents: []string{"account.created"},
 			},
@@ -242,7 +242,7 @@ func TestBuildSubscriptionResult(t *testing.T) {
 		},
 		{
 			name: "Multiple objects",
-			response: &WebhookEndpointResponse{
+			response: &WebhookResponse{
 				ID:            "we_123",
 				EnabledEvents: []string{"account.created", "charge.created"},
 			},
@@ -259,7 +259,7 @@ func TestBuildSubscriptionResult(t *testing.T) {
 		},
 		{
 			name: "Multiple objects with pass-through events",
-			response: &WebhookEndpointResponse{
+			response: &WebhookResponse{
 				ID: "we_123",
 				EnabledEvents: []string{
 					"account.application.authorized",
@@ -357,7 +357,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 				Body: body,
 			},
 			params: &common.VerificationParams{
-				Param: &StripeVerificationParams{
+				Param: &VerificationParams{
 					Secret: secret,
 				},
 			},
@@ -374,7 +374,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 				Body: body,
 			},
 			params: &common.VerificationParams{
-				Param: &StripeVerificationParams{
+				Param: &VerificationParams{
 					Secret: secret,
 				},
 			},
@@ -388,7 +388,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 				Body:    body,
 			},
 			params: &common.VerificationParams{
-				Param: &StripeVerificationParams{
+				Param: &VerificationParams{
 					Secret: secret,
 				},
 			},
@@ -399,7 +399,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 			name:    "Nil request",
 			request: nil,
 			params: &common.VerificationParams{
-				Param: &StripeVerificationParams{
+				Param: &VerificationParams{
 					Secret: secret,
 				},
 			},
@@ -415,7 +415,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 				Body: body,
 			},
 			params: &common.VerificationParams{
-				Param: &StripeVerificationParams{
+				Param: &VerificationParams{
 					Secret: "",
 				},
 			},
@@ -431,7 +431,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 				Body: body,
 			},
 			params: &common.VerificationParams{
-				Param: &StripeVerificationParams{
+				Param: &VerificationParams{
 					Secret: secret,
 				},
 			},
@@ -447,7 +447,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 				Body: body,
 			},
 			params: &common.VerificationParams{
-				Param: &StripeVerificationParams{
+				Param: &VerificationParams{
 					Secret: "wrong_secret",
 				},
 			},

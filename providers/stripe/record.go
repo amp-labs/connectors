@@ -11,6 +11,7 @@ import (
 var _ connectors.BatchRecordReaderConnector = &Connector{}
 
 // GetRecordsByIds fetches full records from Stripe for a specific set of IDs.
+// TODO: Implement GetRecordsByIds.
 //
 //nolint:revive
 func (c *Connector) GetRecordsByIds(
@@ -20,5 +21,5 @@ func (c *Connector) GetRecordsByIds(
 	_ []string,
 	_ []string,
 ) ([]common.ReadResultRow, error) {
-	return nil, fmt.Errorf("%w", errNotYetImplemented)
+	return nil, fmt.Errorf("%w", common.ErrNotImplemented)
 }

@@ -4,21 +4,22 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"regexp"
 	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
-)
-
-const (
-	minEventTypeParts = 2
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 var (
-	_ common.SubscriptionEvent       = SubscriptionEvent{}
-	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
-
-	errTypeMismatch = errors.New("type mismatch")
+	_               common.SubscriptionEvent          = SubscriptionEvent{}
+	_               common.SubscriptionUpdateEvent    = SubscriptionEvent{}
+	_               common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
+	errTypeMismatch                                   = errors.New("type mismatch")
+	// eventTypeRegex validates Stripe event types which must have at least 2 parts separated by dots.
+	// Examples: "setup_intent.created", "customer.subscription.created".
+	eventTypeRegex = regexp.MustCompile(`^[^.]+(\.[^.]+)+$`)
 )
 
 // SubscriptionEvent represents a webhook event from Stripe.
@@ -27,8 +28,6 @@ type SubscriptionEvent map[string]any
 // CollapsedSubscriptionEvent represents the raw webhook payload from Stripe.
 // Stripe sends one event per webhook, so this implementation simply wraps the single event.
 type CollapsedSubscriptionEvent map[string]any
-
-var _ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 
 // RawMap returns a copy of the raw event data.
 func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
@@ -83,10 +82,11 @@ func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 		return common.SubscriptionEventTypeOther, fmt.Errorf("error getting raw event name: %w", err)
 	}
 
-	parts := strings.Split(eventType, ".")
-	if len(parts) < minEventTypeParts {
+	if !eventTypeRegex.MatchString(eventType) {
 		return common.SubscriptionEventTypeOther, nil
 	}
+
+	parts := strings.Split(eventType, ".")
 
 	action := strings.ToLower(parts[len(parts)-1])
 
@@ -146,27 +146,12 @@ func (evt SubscriptionEvent) RawMap() (map[string]any, error) {
 func (evt SubscriptionEvent) RecordId() (string, error) {
 	m := evt.asMap()
 
-	data, err := m.Get("data")
+	node, err := jsonquery.Convertor.NodeFromMap(m)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to convert event to node: %w", err)
 	}
 
-	dataMap, isDataMap := data.(map[string]any)
-	if !isDataMap {
-		return "", fmt.Errorf("%w: expected map[string]any, got %T", errTypeMismatch, data)
-	}
-
-	obj, isObjMap := dataMap["object"].(map[string]any)
-	if !isObjMap {
-		return "", fmt.Errorf("%w: expected map[string]any for data.object, got %T", errTypeMismatch, dataMap["object"])
-	}
-
-	id, isString := obj["id"].(string)
-	if !isString {
-		return "", fmt.Errorf("%w: expected string for data.object.id, got %T", errTypeMismatch, obj["id"])
-	}
-
-	return id, nil
+	return jsonquery.New(node, "data", "object").StringRequired("id")
 }
 
 // Workspace returns an empty string as Stripe doesn't have a workspace concept.
@@ -182,10 +167,11 @@ func (evt SubscriptionEvent) extractObjectNameFromEventType() (string, error) {
 		return "", err
 	}
 
-	parts := strings.Split(eventType, ".")
-	if len(parts) < minEventTypeParts {
+	if !eventTypeRegex.MatchString(eventType) {
 		return "", fmt.Errorf("%w: %s", errInvalidEventTypeFormat, eventType)
 	}
+
+	parts := strings.Split(eventType, ".")
 
 	objectName := strings.Join(parts[:len(parts)-1], ".")
 

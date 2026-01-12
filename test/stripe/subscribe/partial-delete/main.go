@@ -63,7 +63,7 @@ func main() {
 
 	partialDeleteResult := common.SubscriptionResult{
 		Result: &stripe.SubscriptionResult{
-			Subscriptions: map[common.ObjectName]stripe.WebhookEndpointResponse{
+			Subscriptions: map[common.ObjectName]stripe.WebhookResponse{
 				"account": subscribeResult.Result.(*stripe.SubscriptionResult).Subscriptions["account"],
 			},
 		},
@@ -103,7 +103,7 @@ func main() {
 
 	partialChargeDeleteResult := common.SubscriptionResult{
 		Result: &stripe.SubscriptionResult{
-			Subscriptions: map[common.ObjectName]stripe.WebhookEndpointResponse{
+			Subscriptions: map[common.ObjectName]stripe.WebhookResponse{
 				"charge": {
 					ID:            chargeEndpoint.ID,
 					EnabledEvents: []string{"charge.succeeded"},
@@ -137,7 +137,7 @@ func main() {
 
 	remainingDeleteResult := common.SubscriptionResult{
 		Result: &stripe.SubscriptionResult{
-			Subscriptions: map[common.ObjectName]stripe.WebhookEndpointResponse{
+			Subscriptions: map[common.ObjectName]stripe.WebhookResponse{
 				"balance": subscriptionResult.Subscriptions["balance"],
 				"charge": {
 					ID:            chargeEndpoint.ID,
@@ -190,7 +190,7 @@ func main() {
 
 	lastEventDeleteResult := common.SubscriptionResult{
 		Result: &stripe.SubscriptionResult{
-			Subscriptions: map[common.ObjectName]stripe.WebhookEndpointResponse{
+			Subscriptions: map[common.ObjectName]stripe.WebhookResponse{
 				"balance": newBalanceEndpoint,
 			},
 		},

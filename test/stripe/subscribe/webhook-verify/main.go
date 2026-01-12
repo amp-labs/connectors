@@ -87,7 +87,7 @@ func main() {
 		}
 
 		params := &common.VerificationParams{
-			Param: &stripe.StripeVerificationParams{
+			Param: &stripe.VerificationParams{
 				Secret: webhookSecret,
 			},
 		}

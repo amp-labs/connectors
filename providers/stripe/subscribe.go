@@ -28,7 +28,7 @@ func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
 func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	return &common.SubscriptionResult{
 		Result: &SubscriptionResult{
-			Subscriptions: make(map[common.ObjectName]WebhookEndpointResponse),
+			Subscriptions: make(map[common.ObjectName]WebhookResponse),
 		},
 	}
 }
@@ -64,7 +64,7 @@ func (c *Connector) Subscribe(
 		return nil, fmt.Errorf("%w: no events to subscribe to", errMissingParams)
 	}
 
-	payload := &WebhookEndpointPayload{
+	payload := &WebhookPayload{
 		URL:           req.WebhookEndPoint,
 		EnabledEvents: allStripeEventNames,
 	}
@@ -120,10 +120,10 @@ func extractBaseEndpointID(compositeID string) string {
 // each object gets a copy of the endpoint response, but with only its own events in EnabledEvents.
 // The ID is made unique per object by concatenating endpointID:objectName.
 func buildSubscriptionResult(
-	response *WebhookEndpointResponse,
+	response *WebhookResponse,
 	subscriptionEvents map[common.ObjectName]common.ObjectEvents,
 ) (*common.SubscriptionResult, error) {
-	subscriptionsMap := make(map[common.ObjectName]WebhookEndpointResponse)
+	subscriptionsMap := make(map[common.ObjectName]WebhookResponse)
 
 	for obj, events := range subscriptionEvents {
 		// Filter enabled events to only include events for this object
@@ -177,7 +177,7 @@ func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error
 }
 
 // GetWebhookEndpoint fetches a webhook endpoint by ID.
-func (c *Connector) GetWebhookEndpoint(ctx context.Context, endpointID string) (*WebhookEndpointResponse, error) {
+func (c *Connector) GetWebhookEndpoint(ctx context.Context, endpointID string) (*WebhookResponse, error) {
 	endpointURL, err := c.getWebhookEndpointURL()
 	if err != nil {
 		return nil, err
@@ -191,7 +191,7 @@ func (c *Connector) GetWebhookEndpoint(ctx context.Context, endpointID string) (
 	}
 
 	// Use common UnmarshalJSON utility
-	result, err := common.UnmarshalJSON[WebhookEndpointResponse](resp)
+	result, err := common.UnmarshalJSON[WebhookResponse](resp)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal webhook endpoint response: %w", err)
 	}
@@ -265,14 +265,14 @@ func getExpectedObjectTypeFromMetadata(objectName string) (string, error) {
 }
 
 // parseWebhookEndpointResponse parses and validates the webhook endpoint response.
-func parseWebhookEndpointResponse(httpResp *http.Response, bodyBytes []byte) (*WebhookEndpointResponse, error) {
+func parseWebhookEndpointResponse(httpResp *http.Response, bodyBytes []byte) (*WebhookResponse, error) {
 	// Use common JSON parsing utilities
 	jsonResp, err := common.ParseJSONResponse(httpResp, bodyBytes)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse JSON response: %w", err)
 	}
 
-	result, err := common.UnmarshalJSON[WebhookEndpointResponse](jsonResp)
+	result, err := common.UnmarshalJSON[WebhookResponse](jsonResp)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal webhook endpoint response: %w", err)
 	}
@@ -292,8 +292,8 @@ func parseWebhookEndpointResponse(httpResp *http.Response, bodyBytes []byte) (*W
 
 func (c *Connector) createWebhookEndpoint(
 	ctx context.Context,
-	payload *WebhookEndpointPayload,
-) (*WebhookEndpointResponse, error) {
+	payload *WebhookPayload,
+) (*WebhookResponse, error) {
 	endpointURL, err := c.getWebhookEndpointURL()
 	if err != nil {
 		return nil, err
@@ -317,8 +317,8 @@ func (c *Connector) getWebhookEndpointURL() (*urlbuilder.URL, error) {
 func (c *Connector) updateWebhookEndpoint(
 	ctx context.Context,
 	endpointID string,
-	payload *WebhookEndpointPayload,
-) (*WebhookEndpointResponse, error) {
+	payload *WebhookPayload,
+) (*WebhookResponse, error) {
 	endpointURL, err := c.getWebhookEndpointURL()
 	if err != nil {
 		return nil, err
@@ -364,7 +364,7 @@ func (c *Connector) executeFormPostRequest(
 	return httpResp, bodyBytes, nil
 }
 
-func buildFormData(payload *WebhookEndpointPayload) url.Values {
+func buildFormData(payload *WebhookPayload) url.Values {
 	formData := url.Values{}
 	formData.Set("url", payload.URL)
 
@@ -391,7 +391,7 @@ func (c *Connector) VerifyWebhookMessage(
 		return false, fmt.Errorf("%w: request and params cannot be nil", errMissingParams)
 	}
 
-	verificationParams, err := common.AssertType[*StripeVerificationParams](params.Param)
+	verificationParams, err := common.AssertType[*VerificationParams](params.Param)
 	if err != nil {
 		return false, fmt.Errorf("%w: %w", errMissingParams, err)
 	}

@@ -16,7 +16,7 @@ type SubscriptionRequest struct {
 	WebhookEndPoint string `json:"webhook_end_point" validate:"required"`
 }
 
-// WebhookEndpointPayload is the payload sent to Stripe when creating or updating
+// WebhookPayload is the payload sent to Stripe when creating or updating
 // a webhook endpoint.
 //
 // For more details, see:
@@ -28,7 +28,7 @@ type SubscriptionRequest struct {
 //	  "url": "https://example.com/api/stripe/webhook",
 //	  "enabled_events": ["customer.created", "customer.updated"]
 //	}
-type WebhookEndpointPayload struct {
+type WebhookPayload struct {
 	// URL is the endpoint's URL. See: https://docs.stripe.com/api/webhook_endpoints/create
 	URL string `json:"url" validate:"required"`
 	// EnabledEvents are the events to enable for this endpoint.
@@ -37,7 +37,7 @@ type WebhookEndpointPayload struct {
 	EnabledEvents []string `json:"enabled_events" validate:"required"`
 }
 
-// WebhookEndpointResponse is the response from Stripe when creating, retrieving,
+// WebhookResponse is the response from Stripe when creating, retrieving,
 // or updating a webhook endpoint.
 //
 // For more details on the webhook endpoint object, see:
@@ -62,7 +62,7 @@ type WebhookEndpointPayload struct {
 //		"status": "enabled",
 //		"url": "https://example.com/my/webhook/endpoint"
 //	  }
-type WebhookEndpointResponse struct {
+type WebhookResponse struct {
 	ID            string   `json:"id"`
 	Object        string   `json:"object"`
 	URL           string   `json:"url"`
@@ -74,14 +74,14 @@ type WebhookEndpointResponse struct {
 // SubscriptionResult contains the result of a subscription operation, mapping
 // object names to their webhook endpoint responses.
 type SubscriptionResult struct {
-	Subscriptions map[common.ObjectName]WebhookEndpointResponse `json:"subscriptions"`
+	Subscriptions map[common.ObjectName]WebhookResponse `json:"subscriptions"`
 }
 
-// StripeVerificationParams contains the parameters needed to verify Stripe webhook signatures.
+// VerificationParams contains the parameters needed to verify Stripe webhook signatures.
 //
 // For more details on webhook signature verification, see:
 // https://docs.stripe.com/webhooks
-type StripeVerificationParams struct {
+type VerificationParams struct {
 	// Secret is the webhook signing secret used to verify the HMAC signature of incoming
 	// webhook requests. This secret is provided by Stripe when creating a webhook endpoint.
 	// See: https://docs.stripe.com/webhooks?verify=verify-manually

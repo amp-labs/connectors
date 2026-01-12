@@ -30,7 +30,7 @@ func TestDeleteSubscription(t *testing.T) {
 			Name: "Empty subscriptions",
 			Input: common.SubscriptionResult{
 				Result: &SubscriptionResult{
-					Subscriptions: map[common.ObjectName]WebhookEndpointResponse{},
+					Subscriptions: map[common.ObjectName]WebhookResponse{},
 				},
 			},
 			Server:       mockserver.Dummy(),
@@ -40,7 +40,7 @@ func TestDeleteSubscription(t *testing.T) {
 			Name: "Delete all events - deletes endpoint",
 			Input: common.SubscriptionResult{
 				Result: &SubscriptionResult{
-					Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+					Subscriptions: map[common.ObjectName]WebhookResponse{
 						"account": {
 							ID:            "we_123:account",
 							EnabledEvents: []string{"account.application.authorized", "account.updated"},
@@ -73,7 +73,7 @@ func TestDeleteSubscription(t *testing.T) {
 			Name: "Delete partial events - updates endpoint",
 			Input: common.SubscriptionResult{
 				Result: &SubscriptionResult{
-					Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+					Subscriptions: map[common.ObjectName]WebhookResponse{
 						"account": {
 							ID:            "we_123:account",
 							EnabledEvents: []string{"account.application.authorized", "account.updated"},
@@ -149,7 +149,7 @@ func TestValidateSubscriptionResult(t *testing.T) {
 			name: "Empty subscriptions",
 			input: common.SubscriptionResult{
 				Result: &SubscriptionResult{
-					Subscriptions: map[common.ObjectName]WebhookEndpointResponse{},
+					Subscriptions: map[common.ObjectName]WebhookResponse{},
 				},
 			},
 			expectedErr: errMissingParams,
@@ -159,7 +159,7 @@ func TestValidateSubscriptionResult(t *testing.T) {
 			name: "Valid result",
 			input: common.SubscriptionResult{
 				Result: &SubscriptionResult{
-					Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+					Subscriptions: map[common.ObjectName]WebhookResponse{
 						"account": {
 							ID:            "we_123:account",
 							EnabledEvents: []string{"account.updated"},
@@ -204,7 +204,7 @@ func TestExtractEndpointInfo(t *testing.T) {
 		{
 			name: "Single object with composite ID",
 			input: &SubscriptionResult{
-				Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+				Subscriptions: map[common.ObjectName]WebhookResponse{
 					"account": {
 						ID:            "we_123:account",
 						EnabledEvents: []string{"account.updated"},
@@ -218,7 +218,7 @@ func TestExtractEndpointInfo(t *testing.T) {
 		{
 			name: "Multiple objects with same endpoint",
 			input: &SubscriptionResult{
-				Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+				Subscriptions: map[common.ObjectName]WebhookResponse{
 					"account": {
 						ID:            "we_123:account",
 						EnabledEvents: []string{"account.updated"},
@@ -236,7 +236,7 @@ func TestExtractEndpointInfo(t *testing.T) {
 		{
 			name: "Backward compatible - no colon in ID",
 			input: &SubscriptionResult{
-				Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+				Subscriptions: map[common.ObjectName]WebhookResponse{
 					"account": {
 						ID:            "we_123",
 						EnabledEvents: []string{"account.updated"},
@@ -250,7 +250,7 @@ func TestExtractEndpointInfo(t *testing.T) {
 		{
 			name: "Different endpoint IDs",
 			input: &SubscriptionResult{
-				Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+				Subscriptions: map[common.ObjectName]WebhookResponse{
 					"account": {
 						ID:            "we_123:account",
 						EnabledEvents: []string{"account.updated"},
@@ -305,7 +305,7 @@ func TestCollectEventsToRemove(t *testing.T) {
 		{
 			name: "Single object with multiple events",
 			subscriptionData: &SubscriptionResult{
-				Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+				Subscriptions: map[common.ObjectName]WebhookResponse{
 					"account": {
 						ID:            "we_123:account",
 						EnabledEvents: []string{"account.application.authorized", "account.updated"},
@@ -322,7 +322,7 @@ func TestCollectEventsToRemove(t *testing.T) {
 		{
 			name: "Multiple objects with different events",
 			subscriptionData: &SubscriptionResult{
-				Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+				Subscriptions: map[common.ObjectName]WebhookResponse{
 					"account": {
 						ID:            "we_123:account",
 						EnabledEvents: []string{"account.application.authorized", "account.updated"},
@@ -345,7 +345,7 @@ func TestCollectEventsToRemove(t *testing.T) {
 		{
 			name: "Multiple objects with overlapping events",
 			subscriptionData: &SubscriptionResult{
-				Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+				Subscriptions: map[common.ObjectName]WebhookResponse{
 					"account": {
 						ID:            "we_123:account",
 						EnabledEvents: []string{"account.updated"},
@@ -366,7 +366,7 @@ func TestCollectEventsToRemove(t *testing.T) {
 		{
 			name: "All sample events",
 			subscriptionData: &SubscriptionResult{
-				Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+				Subscriptions: map[common.ObjectName]WebhookResponse{
 					"account": {
 						ID: "we_123:account",
 						EnabledEvents: []string{
@@ -512,27 +512,27 @@ func TestGetWebhookURL(t *testing.T) {
 
 	tests := []struct {
 		name             string
-		currentEndpoint  *WebhookEndpointResponse
+		currentEndpoint  *WebhookResponse
 		subscriptionData *SubscriptionResult
 		expectedURL      string
 		description      string
 	}{
 		{
 			name: "URL from current endpoint",
-			currentEndpoint: &WebhookEndpointResponse{
+			currentEndpoint: &WebhookResponse{
 				URL: "https://webhook.site/test",
 			},
 			subscriptionData: &SubscriptionResult{
-				Subscriptions: map[common.ObjectName]WebhookEndpointResponse{},
+				Subscriptions: map[common.ObjectName]WebhookResponse{},
 			},
 			expectedURL: "https://webhook.site/test",
 			description: "Test extracting URL from current endpoint",
 		},
 		{
 			name:            "URL from subscription data fallback",
-			currentEndpoint: &WebhookEndpointResponse{URL: ""},
+			currentEndpoint: &WebhookResponse{URL: ""},
 			subscriptionData: &SubscriptionResult{
-				Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+				Subscriptions: map[common.ObjectName]WebhookResponse{
 					"account": {
 						ID:  "we_123:account",
 						URL: "https://webhook.site/fallback",
@@ -544,9 +544,9 @@ func TestGetWebhookURL(t *testing.T) {
 		},
 		{
 			name:            "Empty URL when both are empty",
-			currentEndpoint: &WebhookEndpointResponse{URL: ""},
+			currentEndpoint: &WebhookResponse{URL: ""},
 			subscriptionData: &SubscriptionResult{
-				Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+				Subscriptions: map[common.ObjectName]WebhookResponse{
 					"account": {
 						ID:  "we_123:account",
 						URL: "",
@@ -558,11 +558,11 @@ func TestGetWebhookURL(t *testing.T) {
 		},
 		{
 			name: "Prefer current endpoint URL over subscription data",
-			currentEndpoint: &WebhookEndpointResponse{
+			currentEndpoint: &WebhookResponse{
 				URL: "https://webhook.site/current",
 			},
 			subscriptionData: &SubscriptionResult{
-				Subscriptions: map[common.ObjectName]WebhookEndpointResponse{
+				Subscriptions: map[common.ObjectName]WebhookResponse{
 					"account": {
 						ID:  "we_123:account",
 						URL: "https://webhook.site/subscription",

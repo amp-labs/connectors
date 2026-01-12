@@ -145,7 +145,7 @@ func (c *Connector) updateEndpointAfterPartialDelete(
 	ctx context.Context,
 	endpointID string,
 	eventsToKeep []string,
-	currentEndpoint *WebhookEndpointResponse,
+	currentEndpoint *WebhookResponse,
 	subscriptionData *SubscriptionResult,
 ) error {
 	webhookURL := getWebhookURL(currentEndpoint, subscriptionData)
@@ -153,7 +153,7 @@ func (c *Connector) updateEndpointAfterPartialDelete(
 		return fmt.Errorf("%w: webhook URL is required for partial delete", errMissingParams)
 	}
 
-	payload := &WebhookEndpointPayload{
+	payload := &WebhookPayload{
 		URL:           webhookURL,
 		EnabledEvents: eventsToKeep,
 	}
@@ -168,7 +168,7 @@ func (c *Connector) updateEndpointAfterPartialDelete(
 
 // getWebhookURL extracts the webhook URL from the current endpoint.
 func getWebhookURL(
-	currentEndpoint *WebhookEndpointResponse,
+	currentEndpoint *WebhookResponse,
 	subscriptionData *SubscriptionResult,
 ) string {
 	if currentEndpoint.URL != "" {

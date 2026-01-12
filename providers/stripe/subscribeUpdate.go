@@ -39,7 +39,7 @@ func (c *Connector) UpdateSubscription(
 	}
 
 	// Update webhook endpoint
-	payload := &WebhookEndpointPayload{
+	payload := &WebhookPayload{
 		URL:           req.WebhookEndPoint,
 		EnabledEvents: mergedEventNames,
 	}
@@ -81,9 +81,9 @@ func validatePreviousResult(previousResult *common.SubscriptionResult) (*Subscri
 
 // getExistingEndpoint extracts the real endpoint ID from subscriptions.
 // Since IDs are stored as "endpointID:objectName", we extract the base endpoint ID.
-func getExistingEndpoint(subscriptions map[common.ObjectName]WebhookEndpointResponse) (WebhookEndpointResponse, error) {
+func getExistingEndpoint(subscriptions map[common.ObjectName]WebhookResponse) (WebhookResponse, error) {
 	if len(subscriptions) == 0 {
-		return WebhookEndpointResponse{}, fmt.Errorf("%w: no existing subscriptions", errMissingParams)
+		return WebhookResponse{}, fmt.Errorf("%w: no existing subscriptions", errMissingParams)
 	}
 
 	for _, endpoint := range subscriptions {
@@ -95,7 +95,7 @@ func getExistingEndpoint(subscriptions map[common.ObjectName]WebhookEndpointResp
 		return result, nil
 	}
 
-	return WebhookEndpointResponse{}, fmt.Errorf("%w: unable to extract existing endpoint", errMissingParams)
+	return WebhookResponse{}, fmt.Errorf("%w: unable to extract existing endpoint", errMissingParams)
 }
 
 // buildMergedEventNames builds a merged event list by keeping events from objects not being updated
