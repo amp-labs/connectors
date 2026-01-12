@@ -9,28 +9,6 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-func getRecords(objectName string) common.RecordsFunc {
-	return func(node *ajson.Node) ([]map[string]any, error) {
-		queryResponse, err := jsonquery.New(node).ObjectRequired("QueryResponse")
-
-		if err != nil || queryResponse == nil {
-			return nil, err
-		}
-
-		responseKey := objectNameToResponseField.Get(objectName)
-
-		rcds, err := jsonquery.New(queryResponse).ArrayRequired(naming.CapitalizeFirstLetter(responseKey))
-		if err != nil || rcds == nil {
-			// some endpoints return an empty object instead of an empty array when there are no records
-			return []map[string]any{}, nil //nolint:nilerr
-		}
-
-		return jsonquery.Convertor.ArrayToMap(rcds)
-	}
-}
-
-// getNodeRecords returns a function that extracts records as ajson.Node slices.
-// This is used with MakeMarshaledDataFunc for custom field transformation.
 func getNodeRecords(objectName string) common.NodeRecordsFunc {
 	return func(node *ajson.Node) ([]*ajson.Node, error) {
 		queryResponse, err := jsonquery.New(node).ObjectRequired("QueryResponse")
