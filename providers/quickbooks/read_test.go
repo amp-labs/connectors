@@ -18,13 +18,14 @@ func parseTime(s string) time.Time {
 	return t
 }
 
-func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
+func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	responseAccount := testutils.DataFromFile(t, "account-read.json")
 	responseAccountWithNextPage := testutils.DataFromFile(t, "account-read-with-next-page.json")
 	responseAccountEmpty := testutils.DataFromFile(t, "account-read-empty.json")
 	responseCustomer := testutils.DataFromFile(t, "customer-read.json")
+	responseCustomerWithCustomFields := testutils.DataFromFile(t, "custom-fields/customer-read-with-custom-fields.json")
 	responseItem := testutils.DataFromFile(t, "item-read.json")
 	responseError := testutils.DataFromFile(t, "error-bad-request.json")
 
@@ -282,6 +283,77 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"domain": "QBO",
 						"sparse": false,
 						"Level":  "0",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read customer with custom fields extracts custom field values to Fields",
+			Input: common.ReadParams{
+				ObjectName: "customer",
+				Fields:     connectors.Fields("displayName", "projectCode", "budgetAmount", "startDate"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.QueryParam("query", "SELECT * FROM Customer STARTPOSITION 1 MAXRESULTS 1000"),
+					mockcond.QueryParam("include", "enhancedAllCustomFields"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCustomerWithCustomFields),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"displayname":  "Amy's Bird Sanctuary",
+						"projectcode":  "PROJ-001",
+						"budgetamount": float64(50000),
+						"startdate":    "2024-01-15",
+					},
+					Raw: map[string]any{
+						"Id":          "1",
+						"DisplayName": "Amy's Bird Sanctuary",
+					},
+				}, {
+					Fields: map[string]any{
+						"displayname": "Bob's Burgers",
+						"projectcode": "PROJ-002",
+					},
+					Raw: map[string]any{
+						"Id":          "2",
+						"DisplayName": "Bob's Burgers",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read account does not request custom fields",
+			Input: common.ReadParams{
+				ObjectName: "account",
+				Fields:     connectors.Fields("name"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				// Note: no include=enhancedAllCustomFields for account (not in objectsWithCustomFields)
+				If:   mockcond.QueryParam("query", "SELECT * FROM Account STARTPOSITION 1 MAXRESULTS 1000"),
+				Then: mockserver.Response(http.StatusOK, responseAccount),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"name": "Canadian Accounts Receivable",
+					},
+					Raw: map[string]any{
+						"Name": "Canadian Accounts Receivable",
 					},
 				}},
 				NextPage: "",
