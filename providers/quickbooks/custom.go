@@ -6,6 +6,8 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 const defaultGraphQLBaseURL = "https://qb.api.intuit.com/graphql"
@@ -112,4 +114,66 @@ func getFieldValueType(field customFieldDefinition) common.ValueType {
 	default:
 		return common.ValueTypeOther
 	}
+}
+
+func (c *Connector) attachReadCustomFields(objectName string) common.RecordTransformer {
+	return func(node *ajson.Node) (map[string]any, error) {
+		if !objectsWithCustomFields.Has(objectName) {
+			return jsonquery.Convertor.ObjectToMap(node)
+		}
+
+		return enhanceRecordWithCustomFields(node)
+	}
+}
+
+// enhanceRecordWithCustomFields flattens the CustomField array values to top-level keys.
+func enhanceRecordWithCustomFields(node *ajson.Node) (map[string]any, error) {
+	object, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil {
+		return nil, err
+	}
+
+	customFieldsResponse, err := jsonquery.ParseNode[readCustomFieldsResponse](node)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, field := range customFieldsResponse.CustomFields {
+		if field.Name != "" {
+			object[field.Name] = extractCustomFieldValue(field)
+		}
+	}
+
+	return object, nil
+}
+
+func extractCustomFieldValue(field readCustomField) any {
+	switch field.Type {
+	case "StringType":
+		return field.StringValue
+	case "NumberType":
+		return field.NumberValue
+	case "DateType":
+		return field.DateValue
+	default:
+		if field.StringValue != "" {
+			return field.StringValue
+		}
+
+		return nil
+	}
+}
+
+type readCustomFieldsResponse struct {
+	CustomFields []readCustomField `json:"CustomField"`
+}
+
+// nolint:tagliatelle
+type readCustomField struct {
+	DefinitionId string `json:"DefinitionId"`
+	Name         string `json:"Name"`
+	Type         string `json:"Type"`
+	StringValue  string `json:"StringValue,omitempty"`
+	NumberValue  any    `json:"NumberValue,omitempty"`
+	DateValue    string `json:"DateValue,omitempty"`
 }
