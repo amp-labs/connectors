@@ -43,7 +43,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"bulk_send_job": {
-						DisplayName: "Bulk_send_job",
+						DisplayName: "Bulk Send Job",
 						Fields: map[string]common.FieldMetadata{
 							"bulk_send_job_id": {
 								DisplayName:  "bulk_send_job_id",

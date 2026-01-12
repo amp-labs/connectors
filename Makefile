@@ -7,14 +7,7 @@
 # successful only if no such files exist.
 .PHONY: lint
 lint: custom-gcl
-	@output="$$(./custom-gcl run -c .golangci.yml 2>&1)"; \
-	echo "$$output"; \
-	if echo "$$output" | grep -Eq "build linters|module.* not found"; then \
-		echo "❌ GolangCI-Lint plugin build failed. Try 'make linter-rebuild'."; \
-		exit 1; \
-	fi; \
-	gci list . | sed 's/^/BadFormat: /'; \
-	[ $$(gci list . | wc -c) -eq 0 ]
+	. scripts/bash/linter.sh
 
 
 # Build custom golangci-lint binary with linter plugins nogoroutine, modulelinter.
@@ -22,7 +15,7 @@ lint: custom-gcl
 custom-gcl:
 	@if [ ! -f custom-gcl ]; then \
 		echo "Building custom golangci-lint binary with nogoroutine & module linter..."; \
-		golangci-lint custom; \
+		golangci-lint custom --verbose || exit 1; \
 	fi
 
 # Builds custom golangci-lint binary printing the details.

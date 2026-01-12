@@ -41,6 +41,7 @@ func loadHTMLPage(url string, wait int64) (string, error) {
 
 	// Run Chrome headless and extract the final rendered HTML.
 	var htmlContent string
+
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(url),
 		// Wait for JavaScript to load content

@@ -17,6 +17,8 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	createCustomerResponse := testutils.DataFromFile(t, "create-customer.json")
 	createPurchaseResponse := testutils.DataFromFile(t, "create-purchase.json")
+	createAccountResponse := testutils.DataFromFile(t, "create-account.json")
+	writeErrorResponse := testutils.DataFromFile(t, "write-error.json")
 
 	tests := []testroutines.Write{
 		{
@@ -118,6 +120,87 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				},
 			},
 			ExpectedErrs: nil,
+		},
+		{
+			Name: "Successfully creation of Account",
+			Input: common.WriteParams{
+				ObjectName: "account",
+				RecordData: map[string]any{
+					"Name":           "Test Account",
+					"AccountType":    "Expense",
+					"AccountSubType": "OfficeExpenses",
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, createAccountResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "88",
+				Data: map[string]any{
+					"Name":           "Test Account",
+					"AccountType":    "Expense",
+					"AccountSubType": "OfficeExpenses",
+					"Active":         true,
+					"domain":         "QBO",
+					"sparse":         false,
+					"Id":             "88",
+					"SyncToken":      "0",
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Write with validation error",
+			Input: common.WriteParams{
+				ObjectName: "account",
+				RecordData: map[string]any{
+					"AccountType": "Expense",
+				},
+			},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, writeErrorResponse),
+			}.Server(),
+			ExpectedErrs: []error{
+				common.ErrCaller,
+			},
+		},
+		{
+			Name: "Write with empty response body",
+			Input: common.WriteParams{
+				ObjectName: "account",
+				RecordData: map[string]any{
+					"Name":           "Test Account",
+					"AccountType":    "Expense",
+					"AccountSubType": "OfficeExpenses",
+				},
+			},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, nil),
+			}.Server(),
+			Expected: &common.WriteResult{
+				Success: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Write with HTTP error response",
+			Input: common.WriteParams{
+				ObjectName: "account",
+				RecordData: map[string]any{
+					"Name": "Test Account",
+				},
+			},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusInternalServerError, []byte(`{"error": "Internal Server Error"}`)),
+			}.Server(),
+			ExpectedErrs: []error{common.ErrServer},
 		},
 	}
 

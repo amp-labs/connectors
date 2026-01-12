@@ -12,14 +12,6 @@ type FileLocator interface {
 	AbsPathTo(filename string) string
 }
 
-// NewSiblingFileLocator creates locator, which is capable of resolving full path to files
-// located under the same directory where this constructor was called.
-func NewSiblingFileLocator() *LevelFileLocator {
-	// One is added to count this method call.
-	// Sibling is not relative to this method but to the caller.
-	return NewLevelFileLocator(LevelSibling + 1)
-}
-
 type CallLevel int
 
 const (
@@ -29,6 +21,14 @@ const (
 
 type LevelFileLocator struct {
 	directory string
+}
+
+// NewSiblingFileLocator creates locator, which is capable of resolving full path to files
+// located under the same directory where this constructor was called.
+func NewSiblingFileLocator() *LevelFileLocator {
+	// One is added to count this method call.
+	// Sibling is not relative to this method but to the caller.
+	return NewLevelFileLocator(LevelSibling + 1)
 }
 
 // NewLevelFileLocator creates locator, which is capable of resolving full path to files

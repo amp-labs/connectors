@@ -22,6 +22,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseEmptyAccounts := testutils.DataFromFile(t, "read/accounts/empty.json")
 	responseCustomersFirstPage := testutils.DataFromFile(t, "read/customers/1-first-page.json")
 	responseCustomersLastPage := testutils.DataFromFile(t, "read/customers/2-last-page.json")
+	responseCustomersWithMetadata := testutils.DataFromFile(t, "read/customers/with-metadata.json")
 	responsePaymentsExpandedCustomer := testutils.DataFromFile(t, "read/payment_intents/expand_customer.json")
 	responseInvoices := testutils.DataFromFile(t, "read/invoices/incremental.json")
 
@@ -47,7 +48,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New( // nolint:goerr113
+				errors.New(
 					"Received unknown parameter: pineapple"),
 			},
 		},
@@ -203,6 +204,47 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				NextPage: testroutines.URLTestServer + "/v1/invoices?" +
 					"created[gte]=1753116395&limit=100&starting_after=in_1RnN00ES6gLOjP91auKbmxwS",
 				Done: false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read customer with custom fields flattened to root level",
+			Input: common.ReadParams{
+				ObjectName: "customers",
+				Fields:     connectors.Fields("id", "email", "order_id", "user_id", "internal_ref"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1/customers"),
+					mockcond.QueryParam("limit", "100"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCustomersWithMetadata),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":           "cus_test123",
+						"email":        "test@example.com",
+						"order_id":     "6735",
+						"user_id":      "456",
+						"internal_ref": "REF-2024-001",
+					},
+					Raw: map[string]any{
+						"id":    "cus_test123",
+						"email": "test@example.com",
+						"name":  "Test Customer",
+						"metadata": map[string]any{
+							"order_id":     "6735",
+							"user_id":      "456",
+							"internal_ref": "REF-2024-001",
+						},
+					},
+				}},
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},

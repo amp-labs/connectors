@@ -48,7 +48,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(`error.lists.deleteFailed(5052803)`), // nolint:goerr113
+				errors.New(`error.lists.deleteFailed(5052803)`),
 			},
 		},
 		{

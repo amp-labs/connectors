@@ -39,7 +39,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Issue does not exist or you do not have permission to see it"), // nolint:goerr113
+				errors.New("Issue does not exist or you do not have permission to see it"),
 			},
 		},
 		{

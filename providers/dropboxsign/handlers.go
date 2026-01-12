@@ -34,7 +34,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 ) (*common.ObjectMetadata, error) {
 	objectMetadata := common.ObjectMetadata{
 		Fields:      make(map[string]common.FieldMetadata),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
+		DisplayName: naming.CapitalizeFirstLetterEveryWord(naming.SeparateUnderscoreWords(objectName)),
 	}
 
 	res, err := common.UnmarshalJSON[map[string]any](response)

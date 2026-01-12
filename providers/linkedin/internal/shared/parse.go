@@ -1,4 +1,4 @@
-package shared
+package shared //nolint:revive
 
 import (
 	"strconv"

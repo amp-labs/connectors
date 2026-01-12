@@ -1,0 +1,10 @@
+{
+  "query": "mutation CreateCustomer($input: CustomerInput!) {\n  customersCreate: createCustomer(input: {customer: $input}) {\n    customer {\n      id\n      legacyId\n      createdAt\n      email\n      company\n      firstName\n      lastName\n      phoneNumber\n    }\n  }\n}\n",
+  "variables": {
+    "input": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@example.com"
+    }
+  }
+}

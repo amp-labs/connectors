@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -25,12 +24,11 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "people",
-		Fields:     connectors.Fields("display_name", "email_address"),
+		Fields:     connectors.Fields("display_name", "email_address", "hobby"),
 	})
 	if err != nil {
-		utils.Fail("error reading from Salesloft", "error", err)
+		utils.Fail("error reading from provider", "error", err)
 	}
 
-	fmt.Println("Reading people..")
 	utils.DumpJSON(res, os.Stdout)
 }

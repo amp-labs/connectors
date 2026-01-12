@@ -15,7 +15,6 @@ func main() {
 	conn := loxo.GetLoxoConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"companies", "countries", "deals", "activity_types", "people", "person_events"})
-
 	if err != nil {
 		log.Fatal(err)
 	}

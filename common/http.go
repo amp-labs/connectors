@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package common
 
 import (
@@ -57,14 +58,14 @@ func (h Header) ApplyToRequest(req *http.Request) {
 	}
 }
 
+func (h Header) String() string {
+	return fmt.Sprintf("%s: %s", h.Key, h.Value)
+}
+
 func (h Header) equals(other Header) bool {
 	return textproto.CanonicalMIMEHeaderKey(h.Key) == textproto.CanonicalMIMEHeaderKey(other.Key) &&
 		h.Value == other.Value &&
 		h.Mode == other.Mode
-}
-
-func (h Header) String() string {
-	return fmt.Sprintf("%s: %s", h.Key, h.Value)
 }
 
 var HeaderFormURLEncoded = Header{ // nolint:gochecknoglobals
@@ -133,7 +134,7 @@ type HTTPClient struct {
 }
 
 // getURL returns the base prefixed URL.
-func (h *HTTPClient) getURL(url string) (string, error) {
+func (h *HTTPClient) getURL(url string) (string, error) { // nolint:funcorder
 	return getURL(h.Base, url)
 }
 
@@ -148,6 +149,8 @@ func redactSensitiveRequestHeaders(hdrs []Header) Headers {
 	for _, hdr := range hdrs {
 		switch {
 		case strings.EqualFold(hdr.Key, "Authorization"):
+			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
+		case strings.EqualFold(hdr.Key, "X-Shopify-Access-Token"):
 			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
 		case strings.EqualFold(hdr.Key, "Proxy-Authorization"):
 			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})

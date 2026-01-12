@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package common
 
 import (
@@ -77,6 +78,10 @@ var (
 
 	// ErrCursorGone is returned when a cursor used for pagination is no longer valid.
 	ErrCursorGone = errors.New("pagination cursor gone or expired")
+
+	// ErrResultsLimitExceeded is returned when a search query exceeds the provider's
+	// maximum result limit (e.g., HubSpot's 10,000 record search limit).
+	ErrResultsLimitExceeded = errors.New("results limit exceeded")
 
 	// ErrMissingExpectedValues is returned when response data doesn't have values expected for processing.
 	ErrMissingExpectedValues = errors.New("response data is missing expected values")
@@ -161,6 +166,16 @@ type ReadParams struct {
 	//		Note: Only supported when reading Lead Activities (not other endpoints).
 	//		Example: "1,6,12" (for visitWebpage, fillOutForm, emailClicked)
 	//		Reference: https://developer.adobe.com/marketo-apis/api/mapi/#tag/Activities
+	//  * GetResponse: An ampersand-style filter string that maps directly to GetResponse's
+	//      bracket-notation query parameters. Supports both `query[...]` and `sort[...]`.
+	//      Multiple filters can be separated by '&'.
+	//      Examples:
+	//          - "query[name]=campaign_name"
+	//          - "query[isDefault]=true"
+	//          - "sort[name]=ASC"
+	//          - "sort[createdOn]=DESC"
+	//          - "query[name]=test&sort[createdOn]=DESC"
+	//      Reference: https://apireference.getresponse.com/#operation/getCampaignList
 	Filter string // optional
 
 	// AssociatedObjects specifies a list of related objects to fetch along with the main object.
@@ -200,8 +215,28 @@ type WriteParams struct {
 	Headers []WriteHeader // optional
 }
 
+// GetRecord converts WriteParams.RecordData into a map-based Record.
+//
+// If RecordData is already a map[string]any, it is returned directly.
+// Otherwise, the value is serialized to JSON and deserialized back into a map.
 func (p WriteParams) GetRecord() (Record, error) {
 	return RecordDataToMap(p.RecordData)
+}
+
+// IsCreate reports whether the Write is creating a new record.
+//
+// Write is considered a Create when no record identifier is provided.
+// Callers should prefer IsCreate over negating IsUpdate for clarity.
+func (p WriteParams) IsCreate() bool {
+	return p.RecordId == ""
+}
+
+// IsUpdate reports whether the write operation is an update rather than a Create.
+//
+// Write is considered an update when a non-empty RecordId is provided.
+// Callers should prefer IsUpdate over negating IsCreate for clarity.
+func (p WriteParams) IsUpdate() bool {
+	return p.RecordId != ""
 }
 
 // RecordDataToMap converts WriteParams.RecordData into a map[string]any.
@@ -270,7 +305,7 @@ type ReadResultRow struct {
 	Associations map[string][]Association `json:"associations,omitempty"`
 	// Raw is the raw JSON response from the provider.
 	Raw map[string]any `json:"raw"`
-	// RecordId is the ID of the record. Currently only populated for hubspot GetRecord and GetRecordsWithId function
+	// RecordId is the ID of the record.
 	Id string `json:"id,omitempty"`
 }
 
@@ -475,6 +510,25 @@ func NewListObjectMetadataResult() *ListObjectMetadataResult {
 	}
 }
 
+func (r ListObjectMetadataResult) GetObjectMetadata(objectName string) *ObjectMetadata {
+	object, ok := r.Result[objectName]
+	if !ok {
+		return nil
+	}
+
+	if object.Fields != nil {
+		return NewObjectMetadata(object.DisplayName, object.Fields)
+	}
+
+	// Metadata uses old format and stores data at FieldsMap.
+	object.Fields = make(FieldsMetadata)
+	if object.FieldsMap == nil {
+		object.FieldsMap = make(map[string]string)
+	}
+
+	return &object
+}
+
 // AppendError will associate an error with the object.
 // It is possible that single object may have multiple errors.
 func (r ListObjectMetadataResult) AppendError(objectName string, err error) {
@@ -495,12 +549,6 @@ type ObjectMetadata struct {
 	FieldsMap map[string]string
 }
 
-// AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
-func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
-	m.Fields[fieldName] = fieldMetadata
-	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
-}
-
 // NewObjectMetadata constructs ObjectMetadata.
 // This will automatically infer fields map from field metadata map. This construct exists for such convenience.
 func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadata {
@@ -509,6 +557,17 @@ func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadat
 		Fields:      fields,
 		FieldsMap:   inferDeprecatedFieldsMap(fields),
 	}
+}
+
+// AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
+func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
+	m.Fields[fieldName] = fieldMetadata
+	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
+}
+
+func (m *ObjectMetadata) RemoveFieldMetadata(fieldName string) {
+	delete(m.Fields, fieldName)
+	delete(m.FieldsMap, fieldName)
 }
 
 type FieldMetadata struct {
@@ -591,7 +650,7 @@ type SubscriptionUpdateEvent interface {
 	UpdatedFields() ([]string, error)
 }
 
-// Some providers send multiple events in a single webhook payload.
+// CollapsedSubscriptionEvent some providers send multiple events in a single webhook payload.
 // This interface is used to extract individual events to SubscriptionEvent type
 // from a collapsed event for webhook parsing and processing.
 type CollapsedSubscriptionEvent interface {
@@ -631,13 +690,13 @@ type RegistrationResult struct {
 type RegistrationStatus string
 
 const (
-	// registration is pending and not yet complete.
+	// RegistrationStatusPending registration is pending and not yet complete.
 	RegistrationStatusPending RegistrationStatus = "pending"
-	// registration returned error, and all intermittent steps are rolled back.
+	// RegistrationStatusFailed registration returned error, and all intermittent steps are rolled back.
 	RegistrationStatusFailed RegistrationStatus = "failed"
-	// successful registration.
+	// RegistrationStatusSuccess successful registration.
 	RegistrationStatusSuccess RegistrationStatus = "success"
-	// registration returned error, and failed to rollback some intermittent steps.
+	// RegistrationStatusFailedToRollback registration returned error, and failed to rollback some intermittent steps.
 	RegistrationStatusFailedToRollback RegistrationStatus = "failed_to_rollback"
 )
 
@@ -666,23 +725,45 @@ func (n ObjectName) String() string {
 }
 
 type SubscribeParams struct {
+	// Request contains provider-specific parameters that are unique to each subscription.
+	// These parameters can be either optional or required depending on the provider's API requirements.
+	// Each provider defines its own request structure (e.g., webhook URL, secret, unique reference, etc.)
+	// that must be provided when creating subscriptions. The structure is provider-specific and should
+	// match the provider's expected request format for subscription operations.
 	Request any
 	// RegistrationResult is the result of the Connector.Register call.
 	// Connector.Subscribe requires information from the registration.
 	// Not all providers require registration, so this is optional.
 	// eg) Salesforce and HubSpot require registration because
 	RegistrationResult *RegistrationResult
+	// SubscriptionEvents is a normalized view representing the exact subscription state
+	// that should be maintained in the provider's system. This field specifies which
+	// objects and events the caller wants to subscribe to, using a provider-agnostic
+	// format. Connector.Subscribe method will translate these normalized events to its own event
+	// naming conventions when creating subscriptions. This represents the desired
+	// state, which may differ from the actual state returned in SubscriptionResult.ObjectEvents
+	// if some subscription operations fail or are rolled back.
 	SubscriptionEvents map[ObjectName]ObjectEvents
 }
 
 type SubscriptionResult struct { // this corresponds to each API call.
-	Result       any
+	// Result contains the provider's original response data in its raw form.
+	// This field preserves the complete, unmodified response from the provider's API,
+	// allowing callers to access all original metadata, IDs, timestamps, and other
+	// provider-specific information that may not be represented in the transformed ObjectEvents.
+	// The structure of Result is provider-specific and should match the provider's actual API response format.
+	Result any
+	// ObjectEvents represents the transformed view of the subscription state after the operation.
+	// This field contains a normalized, provider-agnostic representation of which objects and events
+	// are currently subscribed in the provider's system. It reflects the exact state after
+	// creating, updating, or deleting subscriptions, and may differ from the requested subscriptions
+	// if some operations failed or were rolled back. This transformed view is useful for tracking
+	// the actual subscription state without needing to parse provider-specific response formats.
 	ObjectEvents map[ObjectName]ObjectEvents
 	Status       SubscriptionStatus
 
-	// Below fields are deprecated, and will be removed in a future release.
+	// Below fields are soon to be DEPRECATED, and will be removed in a future release.
 	// Use ObjectEvents instead.
-
 	Objects []ObjectName
 	Events  []SubscriptionEventType
 	// ["create", "update", "delete"]
@@ -696,12 +777,12 @@ type SubscriptionResult struct { // this corresponds to each API call.
 type SubscriptionStatus string
 
 const (
-	// registration is pending and not yet complete.
+	// SubscriptionStatusPending registration is pending and not yet complete.
 	SubscriptionStatusPending SubscriptionStatus = "pending"
-	// registration returned error, and all intermittent steps are rolled back.
+	// SubscriptionStatusFailed registration returned error, and all intermittent steps are rolled back.
 	SubscriptionStatusFailed SubscriptionStatus = "failed"
-	// successful registration.
+	// SubscriptionStatusSuccess successful registration.
 	SubscriptionStatusSuccess SubscriptionStatus = "success"
-	// registration returned error, and failed to rollback some intermittent steps.
+	// SubscriptionStatusFailedToRollback registration returned error, and failed to rollback some intermittent steps.
 	SubscriptionStatusFailedToRollback SubscriptionStatus = "failed_to_rollback"
 )

@@ -1,0 +1,21 @@
+{
+    "totalResults": 2,
+    "startIndex": 1,
+    "itemsPerPage": 2,
+    "groups": [
+        {
+            "id": "Y2lzY29zcyZj",
+            "displayName": "Site1",
+            "orgId": "Y2lzY29zcGF",
+            "created": "2025-12-05T21:16:52.911Z",
+            "lastModified": "2025-12-05T21:33:48.280Z"
+        },
+        {
+            "id": "Y2lzY29zcyZk",
+            "displayName": "Site2",
+            "orgId": "Y2lzY29zcGF",
+            "created": "2025-12-05T21:10:00.000Z",
+            "lastModified": "2025-12-05T21:20:00.000Z"
+        }
+    ]
+}

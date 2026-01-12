@@ -127,7 +127,7 @@ func (e *executor) recoverPanic() {
 }
 
 // formatPanicError converts a panic value into a formatted error with stack trace.
-func formatPanicError(r interface{}) error {
+func formatPanicError(r any) error {
 	if e, ok := r.(error); ok {
 		return fmt.Errorf("%w: %w\n%s", ErrPanicRecovered, e, debug.Stack())
 	}

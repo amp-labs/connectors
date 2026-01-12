@@ -30,6 +30,7 @@ var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
 
 type DescriptiveResponseError struct {
 	descrDetailsError
+
 	Details map[string][]descrDetailsError `json:"details"`
 }
 
