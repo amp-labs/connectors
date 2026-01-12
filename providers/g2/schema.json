@@ -1,0 +1,859 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "buyer_intent": {
+          "displayName": "Buyer Intent",
+          "path": "/api/v2/products/{subject_product_id}/buyer_intent",
+          "responseKey": "",
+          "fields": {
+            "category_id": {
+              "displayName": "category_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_domain": {
+              "displayName": "company_domain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_id": {
+              "displayName": "company_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_intent_score": {
+              "displayName": "company_intent_score",
+              "valueType": "int",
+              "providerType": "number"
+            },
+            "company_name": {
+              "displayName": "company_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_state": {
+              "displayName": "company_state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "day": {
+              "displayName": "day",
+              "valueType": "datetime",
+              "providerType": "date"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_id": {
+              "displayName": "product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject_product_id": {
+              "displayName": "subject_product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject_product_slug": {
+              "displayName": "subject_product_slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "total_activity": {
+              "displayName": "total_activity",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "visitor_id": {
+              "displayName": "visitor_id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "categories": {
+          "displayName": "Categories",
+          "path": "/api/v2/categories",
+          "responseKey": "",
+          "fields": {
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "slug": {
+              "displayName": "slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "competitors": {
+          "displayName": "Competitors",
+          "path": "/api/v2/products/{product_id}/competitors",
+          "responseKey": "",
+          "fields": {
+            "detail_description": {
+              "displayName": "detail_description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "domain": {
+              "displayName": "domain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "g2_url": {
+              "displayName": "g2_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "image_url": {
+              "displayName": "image_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "public_detail_url": {
+              "displayName": "public_detail_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "review_count": {
+              "displayName": "review_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "slug": {
+              "displayName": "slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "star_rating": {
+              "displayName": "star_rating",
+              "valueType": "int",
+              "providerType": "number"
+            },
+            "write_review_url": {
+              "displayName": "write_review_url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "data_subscriptions": {
+          "displayName": "Data Subscriptions",
+          "path": "/api/v2/partners/{partner_id}/data_subscriptions",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "payload": {
+              "displayName": "payload",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "schedule": {
+              "displayName": "schedule",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "target": {
+              "displayName": "target",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "topic": {
+              "displayName": "topic",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "discussions": {
+          "displayName": "Discussions",
+          "path": "/api/v2/products/{product_id}/discussions",
+          "responseKey": "",
+          "fields": {
+            "attribution": {
+              "displayName": "attribution",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "comments_count": {
+              "displayName": "comments_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "comments_present": {
+              "displayName": "comments_present",
+              "valueType": "bool",
+              "providerType": "boolean"
+            },
+            "content": {
+              "displayName": "content",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_public": {
+              "displayName": "is_public",
+              "valueType": "bool",
+              "providerType": "boolean"
+            },
+            "official_response_present": {
+              "displayName": "official_response_present",
+              "valueType": "bool",
+              "providerType": "boolean"
+            },
+            "product_id": {
+              "displayName": "product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_name": {
+              "displayName": "product_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "report_url": {
+              "displayName": "report_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "seeded": {
+              "displayName": "seeded",
+              "valueType": "bool",
+              "providerType": "boolean"
+            },
+            "slug": {
+              "displayName": "slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vendor_question": {
+              "displayName": "vendor_question",
+              "valueType": "bool",
+              "providerType": "boolean"
+            },
+            "verified_current_user": {
+              "displayName": "verified_current_user",
+              "valueType": "bool",
+              "providerType": "boolean"
+            },
+            "votes_down": {
+              "displayName": "votes_down",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "votes_total": {
+              "displayName": "votes_total",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "votes_up": {
+              "displayName": "votes_up",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "downloads": {
+          "displayName": "Downloads",
+          "path": "/api/v2/products/{product_id}/downloads",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "file_name": {
+              "displayName": "file_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_id": {
+              "displayName": "product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "integration_reviews": {
+          "displayName": "Integration Reviews",
+          "path": "/api/v2/products/{product_id}/integration_reviews",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "nps": {
+              "displayName": "nps",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "primary_product_name": {
+              "displayName": "primary_product_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_name": {
+              "displayName": "product_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "user_name": {
+              "displayName": "user_name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "product_mappings": {
+          "displayName": "Product Mappings",
+          "path": "/api/v2/product_mappings",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted_at": {
+              "displayName": "deleted_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "external_id": {
+              "displayName": "external_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "match_score": {
+              "displayName": "match_score",
+              "valueType": "int",
+              "providerType": "number"
+            },
+            "partner_product_name": {
+              "displayName": "partner_product_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_id": {
+              "displayName": "product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_name": {
+              "displayName": "product_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "product_ratings": {
+          "displayName": "Product Ratings",
+          "path": "/api/v2/product_ratings/{product_id}",
+          "responseKey": "",
+          "fields": {
+            "ease_of_setup": {
+              "displayName": "ease_of_setup",
+              "valueType": "int",
+              "providerType": "number"
+            },
+            "ease_of_use": {
+              "displayName": "ease_of_use",
+              "valueType": "int",
+              "providerType": "number"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "quality_of_support": {
+              "displayName": "quality_of_support",
+              "valueType": "int",
+              "providerType": "number"
+            }
+          }
+        },
+        "products": {
+          "displayName": "Products",
+          "path": "/api/v2/users/me/products",
+          "responseKey": "",
+          "fields": {
+            "domain": {
+              "displayName": "domain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "image_url": {
+              "displayName": "image_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "slug": {
+              "displayName": "slug",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "questions": {
+          "displayName": "Questions",
+          "path": "/api/v2/questions/{id}",
+          "responseKey": "",
+          "fields": {
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "input_type": {
+              "displayName": "input_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_required": {
+              "displayName": "is_required",
+              "valueType": "bool",
+              "providerType": "boolean"
+            },
+            "question_type": {
+              "displayName": "question_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "text_template": {
+              "displayName": "text_template",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
+          }
+        },
+        "reviews": {
+          "displayName": "Reviews",
+          "path": "/api/v2/products/{product_id}/reviews",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "screenshots": {
+          "displayName": "Screenshots",
+          "path": "/api/v2/screenshots/{id}",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "file_name": {
+              "displayName": "file_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_id": {
+              "displayName": "product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "snippets": {
+          "displayName": "Snippets",
+          "path": "/api/v2/products/{product_id}/snippets",
+          "responseKey": "",
+          "fields": {
+            "company_name": {
+              "displayName": "company_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_segment": {
+              "displayName": "company_segment",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "content": {
+              "displayName": "content",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "industry": {
+              "displayName": "industry",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "review_url": {
+              "displayName": "review_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "star_rating": {
+              "displayName": "star_rating",
+              "valueType": "int",
+              "providerType": "number"
+            },
+            "stars_image_url": {
+              "displayName": "stars_image_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "submitted_at": {
+              "displayName": "submitted_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "vendors": {
+          "displayName": "Vendors",
+          "path": "/api/v2/vendors/{id}",
+          "responseKey": "",
+          "fields": {
+            "company_website": {
+              "displayName": "company_website",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "public_products_count": {
+              "displayName": "public_products_count",
+              "valueType": "int",
+              "providerType": "number"
+            },
+            "slug": {
+              "displayName": "slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            }
+          }
+        },
+        "video_reviews": {
+          "displayName": "Video Reviews",
+          "path": "/api/v2/products/{product_id}/video_reviews",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "file_name": {
+              "displayName": "file_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_id": {
+              "displayName": "product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "thumbnail_url": {
+              "displayName": "thumbnail_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "video_id": {
+              "displayName": "video_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "video_provider": {
+              "displayName": "video_provider",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "video_transcript_text": {
+              "displayName": "video_transcript_text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "video_type": {
+              "displayName": "video_type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "videos": {
+          "displayName": "Videos",
+          "path": "/api/v2/products/{product_id}/videos",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_id": {
+              "displayName": "product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "thumbnail_url": {
+              "displayName": "thumbnail_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "video_id": {
+              "displayName": "video_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "video_provider": {
+              "displayName": "video_provider",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "video_type": {
+              "displayName": "video_type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
