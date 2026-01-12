@@ -8,10 +8,12 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/logging"
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/stripe"
 	connTest "github.com/amp-labs/connectors/test/stripe"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
 func main() {
@@ -22,68 +24,54 @@ func main() {
 
 	conn := connTest.GetStripeConnector(ctx)
 
-	webhookURL := "https://play.svix.com/in/e_Tqq6rWtd3gm9urmVm7zu7OBT6aW"
+	webhookURLField := credscanning.Field{
+		Name:      "webhookURL",
+		PathJSON:  "webhookURL",
+		SuffixENV: "WEBHOOK_URL",
+	}
+	filePath := credscanning.LoadPath(providers.Stripe)
+	reader := utils.MustCreateProvCredJSON(filePath, false, webhookURLField)
+	webhookURL := reader.Get(webhookURLField)
 
-	subscribeParams := common.SubscribeParams{
-		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-			"account": {
-				Events:            []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
-				PassThroughEvents: []string{"account.application.authorized", "account.application.deauthorized"},
-			},
-			"balance": {
-				PassThroughEvents: []string{"balance.available"},
-			},
-			"billing_portal": {
-				PassThroughEvents: []string{"billing_portal.configuration.created"},
-			},
-			"charge": {
-				PassThroughEvents: []string{"charge.dispute.funds_withdrawn", "charge.succeeded"},
-			},
-		},
-		Request: &stripe.SubscriptionRequest{
-			WebhookEndPoint: webhookURL,
-		},
+	if webhookURL == "" {
+		slog.Error("Webhook URL is required. Add 'webhookURL' field to stripe credentials JSON file")
+		os.Exit(1)
 	}
 
-	slog.Info("Creating subscriptions...")
-	subscribeResult, err := conn.Subscribe(ctx, subscribeParams)
-	if err != nil {
-		logging.Logger(ctx).Error("Error subscribing", "error", err)
-		return
-	}
-
-	utils.DumpJSON(subscribeResult, os.Stdout)
-
-	slog.Info("Updating subscriptions...")
-	updateParams := common.SubscribeParams{
-		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-			"account": {
-				Events:            []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
-				PassThroughEvents: []string{"account.application.authorized"},
-			},
-			"charge": {
-				PassThroughEvents: []string{"charge.succeeded"},
-			},
+	initialEvents := map[common.ObjectName]common.ObjectEvents{
+		"account": {
+			Events:            []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
+			PassThroughEvents: []string{"account.application.authorized", "account.application.deauthorized"},
 		},
-		Request: &stripe.SubscriptionRequest{
-			WebhookEndPoint: webhookURL,
+		"balance": {
+			PassThroughEvents: []string{"balance.available"},
+		},
+		"billing_portal": {
+			PassThroughEvents: []string{"billing_portal.configuration.created"},
+		},
+		"charge": {
+			PassThroughEvents: []string{"charge.dispute.funds_withdrawn", "charge.succeeded"},
 		},
 	}
 
-	updateResult, err := conn.UpdateSubscription(ctx, updateParams, subscribeResult)
-	if err != nil {
-		logging.Logger(ctx).Error("Error updating subscription", "error", err)
-		return
+	updateEvents := map[common.ObjectName]common.ObjectEvents{
+		"account": {
+			Events:            []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
+			PassThroughEvents: []string{"account.application.authorized"},
+		},
+		"charge": {
+			PassThroughEvents: []string{"charge.succeeded"},
+		},
 	}
 
-	utils.DumpJSON(updateResult, os.Stdout)
-
-	slog.Info("Deleting subscriptions...")
-	err = conn.DeleteSubscription(ctx, *subscribeResult)
-	if err != nil {
-		logging.Logger(ctx).Error("Error deleting subscription", "error", err)
-		return
+	suite := testscenario.SubscribeTestSuite{
+		WebhookURL: webhookURL,
+		BuildRequest: func(url string) any {
+			return &stripe.SubscriptionRequest{
+				WebhookEndPoint: url,
+			}
+		},
 	}
 
-	slog.Info("Delete subscription successful")
+	testscenario.ValidateSubscribeUpdateDelete(ctx, conn, initialEvents, updateEvents, suite)
 }

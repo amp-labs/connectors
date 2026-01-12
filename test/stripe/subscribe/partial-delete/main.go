@@ -1,16 +1,50 @@
 package main
 
+// This test validates partial deletion of webhook subscriptions.
+//
+// Test Overview:
+// This script tests that subscriptions can be partially deleted and that the provider
+// correctly maintains the remaining subscription state after each deletion step.
+//
+// Test Pattern:
+// The test creates a large set of subscriptions initially (A, B, C), then progressively
+// prunes it by deleting subsets of events/objects and validating what remains after
+// each deletion. The progression follows this pattern:
+//
+//	Subscribe(A, B, C)
+//	Delete(A) + Validate(B, C remain)
+//	Delete(part of C) + Validate(remaining C and B remain)
+//	Delete(remaining B and C)
+//
+// After the main sequence, the test validates edge cases:
+//   - Deleting the last event should delete the entire endpoint
+//   - Creating a new subscription after endpoint deletion should create a new endpoint
+//
+// Test Flow Summary:
+//  1. Subscribe to: account, balance, charge objects with various events
+//  2. Delete account subscription → validate account events removed, balance & charge remain
+//  3. Delete charge.succeeded event → validate charge.succeeded removed, other events remain
+//  4. Delete remaining subscriptions (balance + charge.dispute.funds_withdrawn)
+//
+// The SubscriptionEvents are the core data - you specify what to subscribe to.
+// The validation logic checks the provider state to ensure deletions work correctly.
+
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/stripe"
 	connTest "github.com/amp-labs/connectors/test/stripe"
 	"github.com/amp-labs/connectors/test/utils"
@@ -24,251 +58,232 @@ func main() {
 
 	conn := connTest.GetStripeConnector(ctx)
 
-	webhookURL := "https://play.svix.com/in/e_Tqq6rWtd3gm9urmVm7zu7OBT6aW"
+	webhookURLField := credscanning.Field{
+		Name:      "webhookURL",
+		PathJSON:  "webhookURL",
+		SuffixENV: "WEBHOOK_URL",
+	}
+	filePath := credscanning.LoadPath(providers.Stripe)
+	reader := utils.MustCreateProvCredJSON(filePath, false, webhookURLField)
+	webhookURL := reader.Get(webhookURLField)
+
+	if webhookURL == "" {
+		slog.Error("Webhook URL is required. Add 'webhookURL' field to stripe credentials JSON file")
+		os.Exit(1)
+	}
+
+	// Initial subscription: account, balance, charge
+	initialEvents := map[common.ObjectName]common.ObjectEvents{
+		"account": {
+			Events:            []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
+			PassThroughEvents: []string{"account.application.authorized", "account.application.deauthorized"},
+		},
+		"balance": {
+			PassThroughEvents: []string{"balance.available"},
+		},
+		"charge": {
+			PassThroughEvents: []string{"charge.dispute.funds_withdrawn", "charge.succeeded"},
+		},
+	}
+
+	// track endpoint ID for validation
+	var accountEndpointID string
+
+	steps := []partialDeleteStep{
+		{
+			Name: "Delete account subscription",
+			BuildDeleteResult: func(current *common.SubscriptionResult) *common.SubscriptionResult {
+				stripeResult := current.Result.(*stripe.SubscriptionResult)
+				accountEndpoint := stripeResult.Subscriptions["account"]
+				accountEndpointID = extractEndpointID(accountEndpoint.ID)
+
+				return &common.SubscriptionResult{
+					Result: &stripe.SubscriptionResult{
+						Subscriptions: map[common.ObjectName]stripe.WebhookResponse{
+							"account": accountEndpoint,
+						},
+					},
+				}
+			},
+			Validate: func(ctx context.Context, conn connectors.SubscribeConnector, current *common.SubscriptionResult) error {
+				stripeConn := conn.(*stripe.Connector)
+				endpoint, err := stripeConn.GetWebhookEndpoint(ctx, accountEndpointID)
+				if err != nil {
+					return fmt.Errorf("error fetching endpoint: %w", err)
+				}
+
+				hasAccount := datautils.NewStringSet(endpoint.EnabledEvents...).Has("account.updated") ||
+					datautils.NewStringSet(endpoint.EnabledEvents...).Has("account.application.authorized")
+				if hasAccount {
+					return fmt.Errorf("account events should be removed, but found: %v", endpoint.EnabledEvents)
+				}
+
+				slog.Info("Account events successfully removed")
+				utils.DumpJSON(endpoint, os.Stdout)
+				return nil
+			},
+		},
+		{
+			Name: "Delete charge.succeeded event",
+			BuildDeleteResult: func(current *common.SubscriptionResult) *common.SubscriptionResult {
+				stripeResult := current.Result.(*stripe.SubscriptionResult)
+				chargeEndpoint := stripeResult.Subscriptions["charge"]
+
+				return &common.SubscriptionResult{
+					Result: &stripe.SubscriptionResult{
+						Subscriptions: map[common.ObjectName]stripe.WebhookResponse{
+							"charge": {
+								ID:            chargeEndpoint.ID,
+								EnabledEvents: []string{"charge.succeeded"},
+							},
+						},
+					},
+				}
+			},
+			Validate: func(ctx context.Context, conn connectors.SubscribeConnector, current *common.SubscriptionResult) error {
+				stripeConn := conn.(*stripe.Connector)
+				endpoint, err := stripeConn.GetWebhookEndpoint(ctx, accountEndpointID)
+				if err != nil {
+					return fmt.Errorf("error fetching endpoint: %w", err)
+				}
+
+				if datautils.NewStringSet(endpoint.EnabledEvents...).Has("charge.succeeded") {
+					return fmt.Errorf("charge.succeeded should be removed, but found: %v", endpoint.EnabledEvents)
+				}
+
+				slog.Info("charge.succeeded successfully removed")
+				utils.DumpJSON(endpoint, os.Stdout)
+				return nil
+			},
+		},
+		{
+			Name: "Delete remaining subscriptions",
+			BuildDeleteResult: func(current *common.SubscriptionResult) *common.SubscriptionResult {
+				stripeResult := current.Result.(*stripe.SubscriptionResult)
+				chargeEndpoint := stripeResult.Subscriptions["charge"]
+
+				return &common.SubscriptionResult{
+					Result: &stripe.SubscriptionResult{
+						Subscriptions: map[common.ObjectName]stripe.WebhookResponse{
+							"balance": stripeResult.Subscriptions["balance"],
+							"charge": {
+								ID:            chargeEndpoint.ID,
+								EnabledEvents: []string{"charge.dispute.funds_withdrawn"},
+							},
+						},
+					},
+				}
+			},
+			Validate: nil, // no validation needed for final deletion
+		},
+	}
+
+	suite := partialDeleteTestSuite{
+		WebhookURL: webhookURL,
+		BuildRequest: func(url string) any {
+			return &stripe.SubscriptionRequest{
+				WebhookEndPoint: url,
+			}
+		},
+		Steps: steps,
+		OnSubscribe: func(result *common.SubscriptionResult) {
+			stripeResult := result.Result.(*stripe.SubscriptionResult)
+			if len(stripeResult.Subscriptions) != 3 {
+				logging.Logger(ctx).Error("Expected 3 subscriptions", "count", len(stripeResult.Subscriptions))
+				utils.Fail("expected 3 subscriptions", "count", len(stripeResult.Subscriptions))
+			}
+			slog.Info("3 subscriptions created successfully")
+		},
+	}
+
+	// run the main partial delete scenario
+	validatePartialDelete(ctx, conn, initialEvents, suite)
+
+}
+
+type partialDeleteStep struct {
+	Name              string
+	BuildDeleteResult func(current *common.SubscriptionResult) *common.SubscriptionResult
+	Validate          func(ctx context.Context, conn connectors.SubscribeConnector, current *common.SubscriptionResult) error
+}
+
+type partialDeleteTestSuite struct {
+	WebhookURL string
+
+	BuildRequest func(webhookURL string) any
+
+	Steps []partialDeleteStep
+
+	OnSubscribe func(result *common.SubscriptionResult)
+}
+
+func validatePartialDelete(
+	ctx context.Context,
+	conn connectors.SubscribeConnector,
+	initialEvents map[common.ObjectName]common.ObjectEvents,
+	suite partialDeleteTestSuite,
+) {
+	slog.Info("> TEST Partial Delete")
 
 	subscribeParams := common.SubscribeParams{
-		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-			"account": {
-				Events:            []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
-				PassThroughEvents: []string{"account.application.authorized", "account.application.deauthorized"},
-			},
-			"balance": {
-				PassThroughEvents: []string{"balance.available"},
-			},
-			"charge": {
-				PassThroughEvents: []string{"charge.dispute.funds_withdrawn", "charge.succeeded"},
-			},
-		},
-		Request: &stripe.SubscriptionRequest{
-			WebhookEndPoint: webhookURL,
-		},
+		SubscriptionEvents: initialEvents,
+		Request:            suite.BuildRequest(suite.WebhookURL),
 	}
 
-	slog.Info("Creating subscriptions...")
-	subscribeResult, err := conn.Subscribe(ctx, subscribeParams)
+	currentResult, err := conn.Subscribe(ctx, subscribeParams)
 	if err != nil {
 		logging.Logger(ctx).Error("Error subscribing", "error", err)
-		return
+		utils.Fail("error subscribing", "error", err)
 	}
 
-	subscriptionResult := subscribeResult.Result.(*stripe.SubscriptionResult)
-	if len(subscriptionResult.Subscriptions) != 3 {
-		logging.Logger(ctx).Error("Expected 3 subscriptions", "count", len(subscriptionResult.Subscriptions))
-		return
-	}
-	slog.Info("Created 3 subscriptions successfully")
-	utils.DumpJSON(subscribeResult, os.Stdout)
-
-	slog.Info("Deleting account subscription...")
-
-	partialDeleteResult := common.SubscriptionResult{
-		Result: &stripe.SubscriptionResult{
-			Subscriptions: map[common.ObjectName]stripe.WebhookResponse{
-				"account": subscribeResult.Result.(*stripe.SubscriptionResult).Subscriptions["account"],
-			},
-		},
+	if currentResult == nil {
+		utils.Fail("subscription result is nil")
 	}
 
-	err = conn.DeleteSubscription(ctx, partialDeleteResult)
-	if err != nil {
-		logging.Logger(ctx).Error("Error deleting account subscription", "error", err)
-		return
+	utils.DumpJSON(currentResult, os.Stdout)
+
+	if suite.OnSubscribe != nil {
+		suite.OnSubscribe(currentResult)
 	}
 
-	slog.Info("Verifying remaining subscriptions...")
+	// EXECUTE DELETION STEPS
+	for i, step := range suite.Steps {
+		time.Sleep(5 * time.Second)
+		stepName := step.Name
+		if stepName == "" {
+			stepName = fmt.Sprintf("Step %d", i+1)
+		}
 
-	accountEndpoint := subscriptionResult.Subscriptions["account"]
-	realEndpointID := accountEndpoint.ID
-	if idx := strings.LastIndex(realEndpointID, ":"); idx != -1 {
-		realEndpointID = realEndpointID[:idx]
+		slog.Info("> Deleting partial subscription", "step", stepName)
+
+		deleteResult := step.BuildDeleteResult(currentResult)
+		if deleteResult == nil {
+			utils.Fail("BuildDeleteResult returned nil", "step", stepName)
+		}
+
+		err := conn.DeleteSubscription(ctx, *deleteResult)
+		if err != nil {
+			logging.Logger(ctx).Error("Error deleting partial subscription", "error", err, "step", stepName)
+			utils.Fail("error deleting partial subscription", "error", err, "step", stepName)
+		}
+
+		if step.Validate != nil {
+
+			if err := step.Validate(ctx, conn, currentResult); err != nil {
+				logging.Logger(ctx).Error("Validation failed", "error", err, "step", stepName)
+				utils.Fail("validation failed", "error", err, "step", stepName)
+			}
+			slog.Info("Validation passed", "step", stepName)
+		}
 	}
 
-	endpoint, err := conn.GetWebhookEndpoint(ctx, realEndpointID)
-	if err != nil {
-		logging.Logger(ctx).Error("Error fetching endpoint", "error", err)
-		return
+	slog.Info("> Successful test completion")
+}
+
+// extract endpoint ID from Stripe subscription ID
+func extractEndpointID(subID string) string {
+	if idx := strings.LastIndex(subID, ":"); idx != -1 {
+		return subID[:idx]
 	}
-
-	hasAccount := datautils.NewStringSet(endpoint.EnabledEvents...).Has("account.updated") || datautils.NewStringSet(endpoint.EnabledEvents...).Has("account.application.authorized")
-	if hasAccount {
-		logging.Logger(ctx).Error("✗ Account events should be removed", "events", endpoint.EnabledEvents)
-		return
-	}
-	slog.Info("Account events successfully removed")
-	utils.DumpJSON(endpoint, os.Stdout)
-
-	slog.Info("Deleting charge.succeeded event...")
-
-	chargeEndpoint := subscriptionResult.Subscriptions["charge"]
-
-	partialChargeDeleteResult := common.SubscriptionResult{
-		Result: &stripe.SubscriptionResult{
-			Subscriptions: map[common.ObjectName]stripe.WebhookResponse{
-				"charge": {
-					ID:            chargeEndpoint.ID,
-					EnabledEvents: []string{"charge.succeeded"},
-				},
-			},
-		},
-	}
-
-	err = conn.DeleteSubscription(ctx, partialChargeDeleteResult)
-	if err != nil {
-		logging.Logger(ctx).Error("Error deleting charge.succeeded event", "error", err)
-		return
-	}
-
-	slog.Info("Verifying remaining events...")
-
-	endpoint, err = conn.GetWebhookEndpoint(ctx, realEndpointID)
-	if err != nil {
-		logging.Logger(ctx).Error("Error fetching endpoint", "error", err)
-		return
-	}
-
-	if datautils.NewStringSet(endpoint.EnabledEvents...).Has("charge.succeeded") {
-		logging.Logger(ctx).Error("✗ charge.succeeded should be removed", "events", endpoint.EnabledEvents)
-		return
-	}
-	slog.Info("charge.succeeded successfully removed")
-	utils.DumpJSON(endpoint, os.Stdout)
-
-	slog.Info("Deleting remaining subscriptions...")
-
-	remainingDeleteResult := common.SubscriptionResult{
-		Result: &stripe.SubscriptionResult{
-			Subscriptions: map[common.ObjectName]stripe.WebhookResponse{
-				"balance": subscriptionResult.Subscriptions["balance"],
-				"charge": {
-					ID:            chargeEndpoint.ID,
-					EnabledEvents: []string{"charge.dispute.funds_withdrawn"},
-				},
-			},
-		},
-	}
-
-	err = conn.DeleteSubscription(ctx, remainingDeleteResult)
-	if err != nil {
-		logging.Logger(ctx).Error("Error deleting remaining subscriptions", "error", err)
-		return
-	}
-
-	slog.Info("Testing deletion of last event (should delete entire endpoint)...")
-
-	newSubscribeParams := common.SubscribeParams{
-		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-			"balance": {
-				PassThroughEvents: []string{"balance.available"},
-			},
-		},
-		Request: &stripe.SubscriptionRequest{
-			WebhookEndPoint: webhookURL,
-		},
-	}
-
-	newSubscribeResult, err := conn.Subscribe(ctx, newSubscribeParams)
-	if err != nil {
-		logging.Logger(ctx).Error("Error creating new subscription", "error", err)
-		return
-	}
-
-	newSubscriptionResult := newSubscribeResult.Result.(*stripe.SubscriptionResult)
-	if len(newSubscriptionResult.Subscriptions) != 1 {
-		logging.Logger(ctx).Error("✗ Expected 1 subscription", "count", len(newSubscriptionResult.Subscriptions))
-		return
-	}
-	slog.Info("Created new subscription successfully")
-	utils.DumpJSON(newSubscribeResult, os.Stdout)
-
-	newBalanceEndpoint := newSubscriptionResult.Subscriptions["balance"]
-	newEndpointID := newBalanceEndpoint.ID
-	if idx := strings.LastIndex(newEndpointID, ":"); idx != -1 {
-		newEndpointID = newEndpointID[:idx]
-	}
-
-	slog.Info("Deleting last remaining event (balance.available)...")
-
-	lastEventDeleteResult := common.SubscriptionResult{
-		Result: &stripe.SubscriptionResult{
-			Subscriptions: map[common.ObjectName]stripe.WebhookResponse{
-				"balance": newBalanceEndpoint,
-			},
-		},
-	}
-
-	err = conn.DeleteSubscription(ctx, lastEventDeleteResult)
-	if err != nil {
-		logging.Logger(ctx).Error("Error deleting last event", "error", err)
-		return
-	}
-
-	slog.Info("Verifying endpoint was deleted...")
-
-	_, err = conn.GetWebhookEndpoint(ctx, newEndpointID)
-	if err == nil {
-		logging.Logger(ctx).Error("✗ Endpoint still exists after deleting last event")
-		return
-	}
-	slog.Info("Endpoint successfully deleted (as expected)")
-
-	slog.Info("Creating new subscription after deletion (should create new endpoint)...")
-
-	finalSubscribeParams := common.SubscribeParams{
-		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-			"charge": {
-				PassThroughEvents: []string{"charge.succeeded"},
-			},
-		},
-		Request: &stripe.SubscriptionRequest{
-			WebhookEndPoint: webhookURL,
-		},
-	}
-
-	finalSubscribeResult, err := conn.Subscribe(ctx, finalSubscribeParams)
-	if err != nil {
-		logging.Logger(ctx).Error("Error creating final subscription", "error", err)
-		return
-	}
-
-	finalSubscriptionResult := finalSubscribeResult.Result.(*stripe.SubscriptionResult)
-	if len(finalSubscriptionResult.Subscriptions) != 1 {
-		logging.Logger(ctx).Error("✗ Expected 1 subscription", "count", len(finalSubscriptionResult.Subscriptions))
-		return
-	}
-	slog.Info("Created final subscription successfully")
-	utils.DumpJSON(finalSubscribeResult, os.Stdout)
-
-	finalChargeEndpoint := finalSubscriptionResult.Subscriptions["charge"]
-	finalEndpointID := finalChargeEndpoint.ID
-	if idx := strings.LastIndex(finalEndpointID, ":"); idx != -1 {
-		finalEndpointID = finalEndpointID[:idx]
-	}
-
-	slog.Info("Verifying new endpoint was created...")
-
-	finalEndpoint, err := conn.GetWebhookEndpoint(ctx, finalEndpointID)
-	if err != nil {
-		logging.Logger(ctx).Error("✗ Error fetching new endpoint", "error", err)
-		return
-	}
-	slog.Info("New endpoint verified")
-	utils.DumpJSON(finalEndpoint, os.Stdout)
-
-	if finalEndpointID == newEndpointID {
-		logging.Logger(ctx).Warn("New endpoint has same ID as deleted endpoint", "endpointID", finalEndpointID)
-	} else {
-		slog.Info("New endpoint created with different ID", "oldEndpointID", newEndpointID, "newEndpointID", finalEndpointID)
-	}
-
-	slog.Info("Cleaning up - deleting final subscription...")
-
-	err = conn.DeleteSubscription(ctx, *finalSubscribeResult)
-	if err != nil {
-		logging.Logger(ctx).Error("Error deleting final subscription", "error", err)
-		return
-	}
-
-	slog.Info("Final subscription deleted successfully")
-
-	slog.Info("Partial delete test completed")
+	return subID
 }

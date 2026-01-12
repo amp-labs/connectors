@@ -2,19 +2,20 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"io"
 	"log/slog"
 	"net/http"
+	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/stripe"
 	connTest "github.com/amp-labs/connectors/test/stripe"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
 func main() {
@@ -25,7 +26,27 @@ func main() {
 
 	conn := connTest.GetStripeConnector(ctx)
 
-	webhookURL := ""
+	// The webhookURL must be a publicly accessible URL that Stripe can reach.
+	// Since this server runs locally on port 8080, use a tunneling tool like ngrok
+	// to expose the local server to the internet. Example:
+	//   1. Start ngrok: ngrok http 8080
+	//   2. Copy the ngrok HTTPS URL (e.g., https://abc123.ngrok.io)
+	//   3. Set this URL in the credentials JSON file as 'webhookURL'
+	//   4. Ensure the URL ends with the path you want (e.g., https://abc123.ngrok.io/)
+	//   5. trigger a webhook event
+	webhookURLField := credscanning.Field{
+		Name:      "webhookURL",
+		PathJSON:  "webhookURL",
+		SuffixENV: "WEBHOOK_URL",
+	}
+	filePath := credscanning.LoadPath(providers.Stripe)
+	reader := utils.MustCreateProvCredJSON(filePath, false, webhookURLField)
+	webhookURL := reader.Get(webhookURLField)
+
+	if webhookURL == "" {
+		slog.Error("Webhook URL is required. Add 'webhookURL' field to stripe credentials JSON file")
+		os.Exit(1)
+	}
 
 	subscribeParams := common.SubscribeParams{
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
@@ -52,12 +73,21 @@ func main() {
 		return
 	}
 
-	stripeResult := subscribeResult.Result.(*stripe.SubscriptionResult)
+	if subscribeResult == nil {
+		slog.Error("Subscription result is nil")
+		return
+	}
+
+	stripeResult, ok := subscribeResult.Result.(*stripe.SubscriptionResult)
+	if !ok || stripeResult == nil {
+		slog.Error("Invalid subscription result type")
+		return
+	}
+
 	if len(stripeResult.Subscriptions) == 0 {
 		slog.Error("No subscriptions created")
 		return
 	}
-
 	var webhookSecret string
 	for _, endpoint := range stripeResult.Subscriptions {
 		if endpoint.Secret != "" {
@@ -65,7 +95,6 @@ func main() {
 			break
 		}
 	}
-	fmt.Println(webhookSecret)
 	if webhookSecret == "" {
 		slog.Error("No webhook secret found in subscription result")
 		return
@@ -73,75 +102,18 @@ func main() {
 
 	slog.Info("Webhook server ready")
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		body, err := io.ReadAll(r.Body)
-		if err != nil {
-			slog.Error("Error reading request body", "error", err)
-			http.Error(w, "Error reading body", http.StatusBadRequest)
-			return
-		}
+	verificationParams := &common.VerificationParams{
+		Param: &stripe.VerificationParams{
+			Secret: webhookSecret,
+		},
+	}
 
-		request := &common.WebhookRequest{
-			Headers: r.Header,
-			Body:    body,
-		}
-
-		params := &common.VerificationParams{
-			Param: &stripe.VerificationParams{
-				Secret: webhookSecret,
-			},
-		}
-
-		valid, err := conn.VerifyWebhookMessage(ctx, request, params)
-		if err != nil {
-			slog.Error("Verification failed", "error", err)
-			http.Error(w, "Verification failed", http.StatusUnauthorized)
-			return
-		}
-
-		if !valid {
-			slog.Error("Invalid signature")
-			http.Error(w, "Invalid signature", http.StatusUnauthorized)
-			return
-		}
-
-		var event stripe.SubscriptionEvent
-		if err := json.Unmarshal(body, &event); err != nil {
-			slog.Error("Error unmarshaling event", "error", err)
-			http.Error(w, "Invalid event format", http.StatusBadRequest)
-			return
-		}
-
-		eventType, err := event.EventType()
-		if err != nil {
-			slog.Error("Error getting event type", "error", err)
-			http.Error(w, "Invalid event type", http.StatusBadRequest)
-			return
-		}
-
-		objectName, err := event.ObjectName()
-		if err != nil {
-			slog.Error("Error getting object name", "error", err)
-			http.Error(w, "Invalid object name", http.StatusBadRequest)
-			return
-		}
-
-		recordID, err := event.RecordId()
-		if err != nil {
-			slog.Error("Error getting record id", "error", err)
-			http.Error(w, "Invalid record id", http.StatusBadRequest)
-			return
-		}
-
-		slog.Info("Webhook verified",
-			"type", eventType,
-			"object", objectName,
-			"id", recordID,
-		)
-
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("OK"))
+	handler := testscenario.CreateWebhookHandler(ctx, conn, verificationParams, func(body []byte) error {
+		slog.Info("Webhook verified and processed", "bodySize", len(body))
+		return nil
 	})
+
+	http.HandleFunc("/", handler)
 
 	slog.Info("Starting webhook server on :8080/")
 	slog.Info("Press Ctrl+C to stop")
@@ -156,12 +128,10 @@ func main() {
 	<-ctx.Done()
 	_ = server.Shutdown(context.Background())
 
-	if subscribeResult != nil {
-		slog.Info("Cleaning up subscription...")
-		if err := conn.DeleteSubscription(context.Background(), *subscribeResult); err != nil {
-			slog.Error("Error deleting subscription", "error", err)
-		} else {
-			slog.Info("Subscription deleted")
-		}
+	slog.Info("Cleaning up subscription...")
+	if err := conn.DeleteSubscription(context.Background(), *subscribeResult); err != nil {
+		slog.Error("Error deleting subscription", "error", err)
+	} else {
+		slog.Info("Subscription deleted")
 	}
 }
