@@ -243,6 +243,115 @@ func GetMarshalledDataWithId(records []map[string]any, fields []string) ([]ReadR
 	return data, nil
 }
 
+// extractIdFromRecord extracts the ID value from a record map.
+// It handles both string and numeric (float64) ID types, converting numbers to strings.
+// Returns empty string if the ID field is missing or has an unsupported type.
+func extractIdFromRecord(record map[string]any, idFieldName string) string {
+	idValue, exists := record[idFieldName]
+	if !exists {
+		return ""
+	}
+
+	switch id := idValue.(type) {
+	case string:
+		return id
+	case float64:
+		// JSON numbers are parsed as float64, convert to string without decimal places
+		return fmt.Sprintf("%.0f", id)
+	default:
+		return ""
+	}
+}
+
+// MakeGetMarshaledDataWithId constructs a MarshalFunc that converts records into ReadResultRow slices
+// with the Id field populated. It uses the provided idFieldMapping to determine which field
+// contains the record ID for each object type.
+//
+// The idFieldMapping should be a DefaultMap that returns the ID field name for a given object name.
+// Most APIs use "id" as the default, so a typical mapping would be:
+//
+//	idFieldMapping := datautils.NewDefaultMap(datautils.Map[string, string]{
+//	    "specialObject": "objectId",  // exceptions
+//	}, func(_ string) string { return "id" })  // default fallback
+//
+// This function gracefully handles missing ID fields by leaving ReadResultRow.Id empty,
+// allowing backwards compatibility with existing connectors.
+func MakeGetMarshaledDataWithId(
+	objectName string,
+	idFieldMapping datautils.DefaultMap[string, string],
+) MarshalFunc {
+	return func(records []map[string]any, fields []string) ([]ReadResultRow, error) {
+		idFieldName := idFieldMapping.Get(objectName)
+		data := make([]ReadResultRow, len(records))
+
+		for i, record := range records {
+			data[i] = ReadResultRow{
+				Fields: ExtractLowercaseFieldsFromRaw(fields, record),
+				Raw:    record,
+				Id:     extractIdFromRecord(record, idFieldName),
+			}
+		}
+
+		return data, nil
+	}
+}
+
+// MakeMarshaledDataFuncWithId constructs a MarshalFromNodeFunc that converts records into ReadResultRow slices
+// with the Id field populated. It combines the functionality of MakeMarshaledDataFunc with ID extraction.
+//
+// The nodeRecordFunc parameter allows custom record transformation (e.g., flattening nested fields).
+// If nil, it defaults to standard ajson-to-map conversion.
+//
+// The idFieldMapping should be a DefaultMap that returns the ID field name for a given object name.
+// Most APIs use "id" as the default, so a typical mapping would be:
+//
+//	idFieldMapping := datautils.NewDefaultMap(datautils.Map[string, string]{
+//	    "specialObject": "objectId",  // exceptions
+//	}, func(_ string) string { return "id" })  // default fallback
+//
+// This function gracefully handles missing ID fields by leaving ReadResultRow.Id empty,
+// allowing backwards compatibility with existing connectors.
+func MakeMarshaledDataFuncWithId(
+	nodeRecordFunc RecordTransformer,
+	objectName string,
+	idFieldMapping datautils.DefaultMap[string, string],
+) MarshalFromNodeFunc {
+	return func(records []*ajson.Node, fields []string) ([]ReadResultRow, error) {
+		idFieldName := idFieldMapping.Get(objectName)
+
+		if nodeRecordFunc == nil {
+			// Default method converts ajson.Node to map[string]any.
+			// If conversion is not enough and data should be altered
+			// non-nil RecordTransformer should've been given.
+			nodeRecordFunc = func(node *ajson.Node) (map[string]any, error) {
+				return jsonquery.Convertor.ObjectToMap(node)
+			}
+		}
+
+		data := make([]ReadResultRow, len(records))
+
+		for index, nodeRecord := range records {
+			raw, err := jsonquery.Convertor.ObjectToMap(nodeRecord)
+			if err != nil {
+				return nil, err
+			}
+
+			record, err := nodeRecordFunc(nodeRecord)
+			if err != nil {
+				return nil, err
+			}
+
+			data[index] = ReadResultRow{
+				Fields: ExtractLowercaseFieldsFromRaw(fields, record),
+				Raw:    raw,
+				Id:     extractIdFromRecord(raw, idFieldName),
+			}
+		}
+
+		return data, nil
+	}
+}
+
 // MakeMarshaledDataFunc constructs a MarshalFromNodeFunc that converts records into ReadResultRow slices.
 // It applies an optional RecordTransformer to each record; if nil, it defaults to ajson-to-map conversion.
 // Typically used to flatten, normalize records or enhance them with custom fields.
