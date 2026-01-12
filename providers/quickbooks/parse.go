@@ -29,6 +29,31 @@ func getRecords(objectName string) common.RecordsFunc {
 	}
 }
 
+// getNodeRecords returns a function that extracts records as ajson.Node slices.
+// This is used with MakeMarshaledDataFunc for custom field transformation.
+func getNodeRecords(objectName string) common.NodeRecordsFunc {
+	return func(node *ajson.Node) ([]*ajson.Node, error) {
+		queryResponse, err := jsonquery.New(node).ObjectRequired("QueryResponse")
+
+		if err != nil || queryResponse == nil {
+			return nil, err
+		}
+
+		responseKey := objectNameToResponseField.Get(objectName)
+
+		rcds, err := jsonquery.New(queryResponse).ArrayOptional(naming.CapitalizeFirstLetter(responseKey))
+		if err != nil {
+			return nil, err
+		}
+
+		if rcds == nil {
+			return []*ajson.Node{}, nil
+		}
+
+		return rcds, nil
+	}
+}
+
 func nextRecordsURL() common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		queryRes, err := jsonquery.New(node).ObjectRequired("QueryResponse")
