@@ -25,6 +25,12 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, err
 	}
 
+	if objectName == "meetings" {
+		// This will add query parameters to include additional data fields
+		// in the meetings API response.
+		addMeetingsQueryParams(url)
+	}
+
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
