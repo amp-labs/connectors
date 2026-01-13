@@ -85,6 +85,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
+	if params.ObjectName == "meetings" {
+		addMeetingsQueryParams(url)
+	}
+
 	if !params.Since.IsZero() {
 		url.WithQueryParam("created_after", params.Since.Format(time.RFC3339))
 	}
