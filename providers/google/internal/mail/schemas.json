@@ -1,7 +1,7 @@
 {
   "modules": {
-    "mail": {
-      "id": "mail",
+    "gmail": {
+      "id": "gmail",
       "path": "",
       "objects": {
         "delegates": {

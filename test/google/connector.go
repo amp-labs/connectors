@@ -20,7 +20,7 @@ func GetGoogleContactsConnector(ctx context.Context) *google.Connector {
 }
 
 func GetGoogleMailConnector(ctx context.Context) *google.Connector {
-	return getGoogleConnector(ctx, providers.ModuleGoogleMail)
+	return getGoogleConnector(ctx, providers.ModuleGoogleGmail)
 }
 
 func getGoogleConnector(ctx context.Context, moduleID common.ModuleID) *google.Connector {

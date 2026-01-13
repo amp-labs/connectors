@@ -62,7 +62,7 @@ func main() {
 				},
 			}
 
-			schemas.Add(providers.ModuleGoogleMail, objectName, object.DisplayName, urlPath,
+			schemas.Add(providers.ModuleGoogleGmail, objectName, object.DisplayName, urlPath,
 				object.ResponseKey, fieldMetadataMap, nil, object.Custom)
 		}
 

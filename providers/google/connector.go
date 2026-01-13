@@ -52,7 +52,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		connector.Contacts = adapter
 	}
 
-	if connector.Module() == providers.ModuleGoogleMail {
+	if connector.Module() == providers.ModuleGoogleGmail {
 		adapter, err := mail.NewAdapter(params)
 		if err != nil {
 			return nil, err
