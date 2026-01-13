@@ -17,7 +17,11 @@ extend-exclude = [
     "*.yaml",
     "*.yml",
     "*.csv",
-    "*.xml"
+    "*.xml",
+    # Test files (contain mock data with intentional strings)
+    "*_test.go",
+    # Files with external API field names (non-standard spellings)
+    "providers/salesforce/metadata.go"
 ]
 
 ignore-hidden = true
@@ -32,39 +36,27 @@ check-filename = true
 check-file = true
 unicode = true
 locale = "en"
-# Ignore UUIDs and hex strings
+# Ignore UUIDs, hex strings, and random ID-like strings
 extend-ignore-re = [
     "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
-    "[0-9a-fA-F]{24,}"
+    "[0-9a-fA-F]{24,}",
+    # Random alphanumeric ID strings (like cf_9RsqbFDfApgIOJsiSCwRuKw5gdVibt6H7qEvn4nQDjN)
+    "[a-zA-Z0-9_]{30,}"
 ]
 extend-ignore-identifiers-re = [
     "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
-    "[0-9a-fA-F]{24,}"
+    "[0-9a-fA-F]{24,}",
+    "[a-zA-Z0-9_]{30,}"
 ]
 
 [default.extend-words]
-# Locale codes (e.g., bs-BA, ar-BA)
-ba = "ba"
-BA = "BA"
-# Common in IDs
-ot = "ot"
-OT = "OT"
-fo = "fo"
-# SQL/filter operators (NOT IN)
-NIN = "NIN"
-# Variable abbreviations
-ue = "ue"
 # API endpoint names (external APIs)
 vists = "vists"
-# Random strings in IDs
-Fot = "Fot"
+# SQL/filter operators (NOT IN)
+NIN = "NIN"
 
 [default.extend-identifiers]
-ba = "ba"
-BA = "BA"
-ot = "ot"
-OT = "OT"
-tpe = "tpe"
+# Variable abbreviations (ue = user errors)
 ue = "ue"
+ueRaw = "ueRaw"
 NIN = "NIN"
-Fot = "Fot"
