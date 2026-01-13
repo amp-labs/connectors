@@ -37,6 +37,9 @@ type Connector struct {
 	components.Reader
 
 	// productId represents either subject_product_id or product_id.
+	// reading buyer_intent requires subject_product_id.
+	// reading other objects like reviews, competitors, discussions
+	// requires product_id.
 	productId string
 }
 
@@ -46,7 +49,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		return nil, err
 	}
 
-	connector.productId = params.Metadata["productId"]
+	connector.productId = params.Metadata["subjectProductId"]
 
 	return connector, nil
 }
@@ -55,7 +58,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
 		RequireMetadata: common.RequireMetadata{
-			ExpectedMetadataKeys: []string{"productId"},
+			ExpectedMetadataKeys: []string{"subjectProductId"},
 		},
 	}
 

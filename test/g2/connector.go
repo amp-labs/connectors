@@ -21,7 +21,7 @@ func NewConnector(ctx context.Context) *g2.Connector {
 
 	conn, err := g2.NewConnector(
 		common.ConnectorParams{AuthenticatedClient: client, Metadata: map[string]string{
-			"productId": "jira",
+			"subjectProductId": "jira",
 		}},
 	)
 	if err != nil {
