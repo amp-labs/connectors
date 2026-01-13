@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/batch"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/custom"
 )
 
@@ -25,6 +26,7 @@ type Connector struct {
 	// These delegate specialized subsets of Hubspot CRM functionality to keep Connector modular and prevent code bloat.
 	customAdapter *custom.Adapter // used for connectors.UpsertMetadataConnector capabilities.
 	batchAdapter  *batch.Adapter  // used for connectors.BatchWriteConnector capabilities.
+	crmAdapter    *crm.Adapter    // used for connectors.DeleteConnector capabilities.
 }
 
 const (
@@ -64,6 +66,16 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	conn.customAdapter = custom.NewAdapter(conn.Client, conn.moduleInfo)
 	conn.batchAdapter = batch.NewAdapter(conn.Client.HTTPClient, conn.moduleInfo)
+
+	connectorParams, err := newParams(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	conn.crmAdapter, err = crm.NewAdapter(connectorParams)
+	if err != nil {
+		return nil, err
+	}
 
 	return conn, nil
 }
