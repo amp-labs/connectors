@@ -99,7 +99,8 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	url.WithQueryParam("query", query)
 
 	// Include custom fields for supported objects.
-	// See Endpoints section: https://developer.intuit.com/app/developer/qbo/docs/workflows/create-custom-fields/get-started
+	// See Endpoints section:
+	// https://developer.intuit.com/app/developer/qbo/docs/workflows/create-custom-fields/get-started
 	if objectsWithCustomFields.Has(params.ObjectName) {
 		url.WithQueryParam("include", "enhancedAllCustomFields")
 	}
