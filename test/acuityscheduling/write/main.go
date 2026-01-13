@@ -54,6 +54,7 @@ func testCreatingClients(ctx context.Context, conn *cc.Connector) error {
 	}
 
 	slog.Info("Creating clients...")
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return err
@@ -81,6 +82,7 @@ func testCreatingCertificates(ctx context.Context, conn *cc.Connector) error {
 	}
 
 	slog.Info("Creating certificates...")
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return err
@@ -111,6 +113,7 @@ func testCreatingAppointments(ctx context.Context, conn *cc.Connector) error {
 	}
 
 	slog.Info("Creating appointments...")
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return err

@@ -36,6 +36,7 @@ func main() {
 
 	// Additional validation: Check all objects have metadata defined
 	slog.Info("Verifying metadata exists for all objects")
+
 	allObjects := []string{"calls", "users", "contacts", "numbers", "teams", "tags"}
 
 	for _, objectName := range allObjects {

@@ -290,6 +290,7 @@ func NewStorage(
 	// Convert association maps to typed maps and deep copy
 	for objectName, fieldAssocs := range associations {
 		store.associations[ObjectName(objectName)] = make(map[string]*AssociationSchema, len(fieldAssocs))
+
 		for fieldName, assoc := range fieldAssocs {
 			// Deep copy the AssociationSchema
 			assocCopy := *assoc
@@ -685,6 +686,7 @@ func (s *storage) GetAssociations() map[ObjectName]map[string]*AssociationSchema
 
 	for objectName, fieldAssocs := range s.associations {
 		out[objectName] = make(map[string]*AssociationSchema, len(fieldAssocs))
+
 		for fieldName, assoc := range fieldAssocs {
 			// Deep copy the AssociationSchema to prevent external modifications
 			assocCopy := *assoc

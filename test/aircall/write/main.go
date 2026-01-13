@@ -34,6 +34,7 @@ func main() {
 
 		// Test 1: Create a new contact
 		slog.Info(fmt.Sprintf("Step 1: Creating contact %d", i))
+
 		recordID, err := testCreateContact(ctx, conn, i)
 		if err != nil {
 			slog.Error(fmt.Sprintf("Failed to create contact %d", i), "error", err)
@@ -42,6 +43,7 @@ func main() {
 
 		// Test 2: Update the contact
 		slog.Info(fmt.Sprintf("Step 2: Updating contact %d", i), "recordId", recordID)
+
 		if err := testUpdateContact(ctx, conn, recordID, i); err != nil {
 			slog.Error(fmt.Sprintf("Failed to update contact %d", i), "error", err)
 			continue
@@ -52,6 +54,7 @@ func main() {
 
 	// Test Tag operations
 	slog.Info("=== Testing Tag Operations ===")
+
 	tagID, err := testCreateTag(ctx, conn)
 	if err != nil {
 		slog.Error("Failed to create tag", "error", err)

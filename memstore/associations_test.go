@@ -389,6 +389,7 @@ func TestJunctionTableAssociation_Expansion(t *testing.T) {
 
 	// Verify expanded contact data
 	expandedContactIDs := make([]string, 0)
+
 	for _, assoc := range deal.Associations["contacts"] {
 		contactData := assoc.Raw
 		expandedContactIDs = append(expandedContactIDs, contactData["id"].(string))

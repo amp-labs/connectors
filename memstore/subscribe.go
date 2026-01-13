@@ -440,6 +440,7 @@ func (c *Connector) GetRecordsByIds(
 		filteredFields := record
 		if len(fields) > 0 {
 			filteredFields = make(map[string]any, len(fields))
+
 			for _, field := range fields {
 				if value, exists := record[field]; exists {
 					filteredFields[field] = value

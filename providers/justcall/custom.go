@@ -110,6 +110,7 @@ func (f customFieldDefinition) getValues() common.FieldValues {
 	}
 
 	values := make(common.FieldValues, len(f.Options))
+
 	for i, option := range f.Options {
 		value := option.Value
 		if len(option.ID) != 0 {

@@ -18,6 +18,7 @@ func main() {
 	defer done()
 
 	utils.SetupLogging()
+
 	conn := shopify.GetShopifyConnector(ctx)
 
 	slog.Info("=== Reading all orders ===")
