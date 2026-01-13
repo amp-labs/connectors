@@ -13,27 +13,27 @@ import (
 )
 
 const (
-	PathBuyerIntent        string = "buyer_intent"
-	PathBuyerIntentSandBox        = "sandbox/buyer_intent"
-	PathCompetitors        string = "competitors"
-	PathDiscussions        string = "discussions"
-	PathDownloads          string = "downloads"
-	PathReviews            string = "reviews"
-	PathProductScreenshots string = "product/screenshots"
-	PathSnippets           string = "snippets"
-	PathIntegrationReviews string = "integration_reviews"
-	PathFeatures           string = "features"
-	PathVideos             string = "videos"
-	PathVideoReviews       string = "video_reviews"
+	pathBuyerIntent        string = "buyer_intent"
+	pathBuyerIntentSandBox string = "sandbox/buyer_intent"
+	pathCompetitors        string = "competitors"
+	pathDiscussions        string = "discussions"
+	pathDownloads          string = "downloads"
+	pathReviews            string = "reviews"
+	pathProductScreenshots string = "product/screenshots"
+	pathSnippets           string = "snippets"
+	pathIntegrationReviews string = "integration_reviews"
+	pathFeatures           string = "features"
+	pathVideos             string = "videos"
+	pathVideoReviews       string = "video_reviews"
 
-	PathCategories         string = "categories"
-	PathProducts           string = "products"
-	PathCategoriesFeatures string = "categories/features"
-	PathProductsFeatures   string = "products/features"
-	PathProductMappings    string = "product_mappings"
-	PathScreenshots        string = "screenshots"
-	PathQuestions          string = "questions"
-	PathVendors            string = "vendors"
+	pathCategories         string = "categories"
+	pathProducts           string = "products"
+	pathCategoriesFeatures string = "categories/features"
+	pathProductsFeatures   string = "products/features"
+	pathProductMappings    string = "product_mappings"
+	pathScreenshots        string = "screenshots"
+	pathQuestions          string = "questions"
+	pathVendors            string = "vendors"
 
 	maxPageSize = "100"
 )
@@ -48,111 +48,111 @@ type ObjectConfig struct {
 }
 
 var readObjCfg = map[string]ObjectConfig{ // nolint: gochecknoglobals
-	PathBuyerIntent: {
+	pathBuyerIntent: {
 		fieldsQuery:      "dimensions",
 		sinceQuery:       "dimension_filters[time_gteq]",
 		pageSizeQuery:    "page[size]",
 		maximumPerPage:   "100",
 		sinceValueFormat: time.RFC3339,
 	},
-	PathBuyerIntentSandBox: {
+	pathBuyerIntentSandBox: {
 		fieldsQuery:      "dimensions",
 		sinceQuery:       "dimension_filters[time_gteq]",
 		pageSizeQuery:    "page[size]",
 		maximumPerPage:   "50",
 		sinceValueFormat: time.RFC3339,
 	},
-	PathCategories: {
+	pathCategories: {
 		fieldsQuery:      "fields[categories]",
 		sinceQuery:       "filter[updated_at_gt]",
 		untilQuery:       "filter[updated_at_lt]",
 		sinceValueFormat: time.RFC3339,
 	},
-	PathCompetitors: {
+	pathCompetitors: {
 		fieldsQuery:    "fields[products]",
 		pageSizeQuery:  "per",
 		maximumPerPage: "50",
 	},
-	PathDiscussions: {
+	pathDiscussions: {
 		fieldsQuery: "fields[discussions]",
 	},
-	PathDownloads: {
+	pathDownloads: {
 		fieldsQuery:      "fields[downloads]",
 		sinceQuery:       "filter[updated_at_gt]",
 		untilQuery:       "filter[updated_at_lt]",
 		sinceValueFormat: time.RFC3339,
 	},
-	PathIntegrationReviews: { // needs incremental read live test
+	pathIntegrationReviews: { // needs incremental read live test
 		fieldsQuery: "fields[integration_reviews]",
 	},
-	PathCategoriesFeatures: {
+	pathCategoriesFeatures: {
 		fieldsQuery:      "fields[product_features]",
 		sinceQuery:       "filter[updated_at_gt]",
 		untilQuery:       "filter[updated_at_lt]",
 		sinceValueFormat: time.RFC3339,
 	},
-	PathFeatures: {
+	pathFeatures: {
 		fieldsQuery:      "fields[product_features]",
 		sinceQuery:       "filter[updated_at_gt]",
 		untilQuery:       "filter[updated_at_lt]",
 		sinceValueFormat: time.RFC3339,
 	},
-	PathProductsFeatures: {
+	pathProductsFeatures: {
 		fieldsQuery:      "fields[product_features]",
 		sinceQuery:       "filter[updated_at_gt]",
 		untilQuery:       "filter[updated_at_lt]",
 		sinceValueFormat: time.RFC3339,
 	},
-	PathProductMappings: {
+	pathProductMappings: {
 		fieldsQuery:      "fields[product_mappings]",
 		sinceQuery:       "filter[updated_at_gt]",
 		untilQuery:       "filter[updated_at_lt]",
 		sinceValueFormat: time.RFC3339,
 	},
-	PathVideos: {
+	pathVideos: {
 		fieldsQuery:      "fields[product_videos]",
 		sinceQuery:       "filter[updated_at_gt]",
 		untilQuery:       "filter[updated_at_lt]",
 		sinceValueFormat: time.RFC3339,
 	},
-	PathProducts: {
+	pathProducts: {
 		fieldsQuery:   "fields[products]",
 		pageSizeQuery: "page[size]",
 	},
-	PathQuestions: {
+	pathQuestions: {
 		fieldsQuery:      "fields[questions]",
 		sinceQuery:       "filter[updated_at_gt]",
 		untilQuery:       "filter[updated_at_lt]",
 		sinceValueFormat: time.RFC3339,
 	},
-	PathReviews: {
+	pathReviews: {
 		fieldsQuery:      "fields[reviews]",
 		sinceQuery:       "filter[updated_at_gt]",
 		untilQuery:       "filter[updated_at_lt]",
 		sinceValueFormat: time.RFC3339,
 	},
-	PathScreenshots: {
+	pathScreenshots: {
 		fieldsQuery:      "fields[screenshots]",
 		sinceQuery:       "filter[updated_at_gt]",
 		untilQuery:       "filter[updated_at_lt]",
 		sinceValueFormat: time.RFC3339,
 	},
-	PathProductScreenshots: {
+	pathProductScreenshots: {
 		fieldsQuery:      "fields[screenshots]",
 		sinceQuery:       "filter[updated_at_gt]",
 		untilQuery:       "filter[updated_at_lt]",
 		sinceValueFormat: time.RFC3339,
 	},
-	PathSnippets: {
+	pathSnippets: {
 		fieldsQuery: "fields[snippets]",
 	},
-	PathVendors: {
+	pathVendors: {
 		fieldsQuery:      "fields[vendors]",
 		sinceQuery:       "filter[updated_at_gt]",
 		untilQuery:       "filter[updated_at_lt]",
 		sinceValueFormat: time.RFC3339,
 	},
-	PathVideoReviews: {
+	pathVideoReviews: {
 		fieldsQuery:      "fields[video_reviews]",
 		sinceQuery:       "filter[updated_at_gt]",
 		untilQuery:       "filter[updated_at_lt]",
@@ -166,18 +166,17 @@ var readObjCfg = map[string]ObjectConfig{ // nolint: gochecknoglobals
 func PathsConfig(productID, objectName string) (string, error) {
 	switch objectName {
 	// Product-specific paths - require productID
-	case PathBuyerIntent, PathCompetitors, PathDiscussions, PathReviews,
-		PathProductScreenshots, PathSnippets, PathIntegrationReviews,
-		PathFeatures, PathVideos, PathVideoReviews:
+	case pathBuyerIntent, pathCompetitors, pathDiscussions, pathReviews,
+		pathProductScreenshots, pathSnippets, pathIntegrationReviews,
+		pathFeatures, pathVideos, pathVideoReviews:
 		return fmt.Sprintf("products/%s/%s", productID, objectName), nil
 
 	// Paths - don't require productID
-	case PathCategories, PathProducts, PathCategoriesFeatures,
-		PathProductsFeatures, PathProductMappings, PathScreenshots,
-		PathQuestions, PathVendors:
+	case pathCategories, pathProducts, pathCategoriesFeatures,
+		pathProductsFeatures, pathProductMappings, pathScreenshots,
+		pathQuestions, pathVendors:
 		return objectName, nil
-	// for testing only
-	case PathBuyerIntentSandBox:
+	case pathBuyerIntentSandBox:
 		return fmt.Sprintf("products/%s/buyer_intent", productID), nil
 	default:
 		return "", common.ErrObjectNotSupported
@@ -200,7 +199,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return url, nil
 	}
 
-	path, err := PathsConfig(c.subjectProductId, params.ObjectName)
+	path, err := PathsConfig(c.productId, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +209,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return nil, common.ErrObjectNotSupported
 	}
 
-	if params.ObjectName == PathBuyerIntentSandBox {
+	if params.ObjectName == pathBuyerIntentSandBox {
 		restAPIVersion = "api/sandbox"
 	}
 

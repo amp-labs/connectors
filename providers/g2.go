@@ -42,7 +42,7 @@ func init() {
 			Input: []MetadataItemInput{
 				{
 					DisplayName: "Subject Product Id",
-					Name:        "subject_product_id",
+					Name:        "subjectProductId",
 				},
 			},
 		},

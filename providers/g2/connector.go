@@ -36,8 +36,8 @@ type Connector struct {
 	components.SchemaProvider
 	components.Reader
 
-	// subjectProductId represents either subject_product_id or product_id.
-	subjectProductId string
+	// productId represents either subject_product_id or product_id.
+	productId string
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -46,7 +46,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		return nil, err
 	}
 
-	connector.subjectProductId = params.Metadata["subject_product_id"]
+	connector.productId = params.Metadata["subjectProductId"]
 
 	return connector, nil
 }
@@ -55,7 +55,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
 		RequireMetadata: common.RequireMetadata{
-			ExpectedMetadataKeys: []string{"subject_product_id"},
+			ExpectedMetadataKeys: []string{"subjectProductId"},
 		},
 	}
 
@@ -71,7 +71,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
 		registry,
-		common.ModuleRoot,
+		connector.Module(),
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
