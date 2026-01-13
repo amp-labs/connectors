@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -50,29 +51,29 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Result: map[string]common.ObjectMetadata{
 					"account": {
 						DisplayName: "Account",
-						Fields: buildFieldMetadata(map[string]string{
-							"AccountSubType":     "string",
-							"AccountType":        "string",
-							"Active":             "boolean",
-							"Classification":     "string",
-							"domain":             "string",
-							"sparse":             "boolean",
-							"FullyQualifiedName": "string",
-							"Name":               "string",
-						}),
+						Fields: common.FieldsMetadata{
+							"AccountSubType":     {DisplayName: "AccountSubType", ValueType: "string"},
+							"AccountType":        {DisplayName: "AccountType", ValueType: "string"},
+							"Active":             {DisplayName: "Active", ValueType: "boolean"},
+							"Classification":     {DisplayName: "Classification", ValueType: "string"},
+							"domain":             {DisplayName: "domain", ValueType: "string"},
+							"sparse":             {DisplayName: "sparse", ValueType: "boolean"},
+							"FullyQualifiedName": {DisplayName: "FullyQualifiedName", ValueType: "string"},
+							"Name":               {DisplayName: "Name", ValueType: "string"},
+						},
 					},
 					"customer": {
 						DisplayName: "Customer",
-						Fields: buildFieldMetadata(map[string]string{
-							"domain":                  "string",
-							"FamilyName":              "string",
-							"DisplayName":             "string",
-							"PreferredDeliveryMethod": "string",
-							"GivenName":               "string",
-							"FullyQualifiedName":      "string",
-							"BillWithParent":          "boolean",
-							"Job":                     "boolean",
-						}),
+						Fields: common.FieldsMetadata{
+							"domain":                  {DisplayName: "domain", ValueType: "string"},
+							"FamilyName":              {DisplayName: "FamilyName", ValueType: "string"},
+							"DisplayName":             {DisplayName: "DisplayName", ValueType: "string"},
+							"PreferredDeliveryMethod": {DisplayName: "PreferredDeliveryMethod", ValueType: "string"},
+							"GivenName":               {DisplayName: "GivenName", ValueType: "string"},
+							"FullyQualifiedName":      {DisplayName: "FullyQualifiedName", ValueType: "string"},
+							"BillWithParent":          {DisplayName: "BillWithParent", ValueType: "boolean"},
+							"Job":                     {DisplayName: "Job", ValueType: "boolean"},
+						},
 					},
 				},
 				Errors: nil,
@@ -92,14 +93,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Result: map[string]common.ObjectMetadata{
 					"item": {
 						DisplayName: "Item",
-						Fields: buildFieldMetadata(map[string]string{
-							"Name":   "string",
-							"Type":   "string",
-							"Active": "boolean",
-							"domain": "string",
-							"sparse": "boolean",
-							"Level":  "string",
-						}),
+						Fields: common.FieldsMetadata{
+							"Name":   {DisplayName: "Name", ValueType: "string"},
+							"Type":   {DisplayName: "Type", ValueType: "string"},
+							"Active": {DisplayName: "Active", ValueType: "boolean"},
+							"domain": {DisplayName: "domain", ValueType: "string"},
+							"sparse": {DisplayName: "sparse", ValueType: "boolean"},
+							"Level":  {DisplayName: "Level", ValueType: "string"},
+						},
 					},
 				},
 				Errors: nil,
@@ -162,40 +163,40 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Result: map[string]common.ObjectMetadata{
 					"account": {
 						DisplayName: "Account",
-						Fields: buildFieldMetadata(map[string]string{
-							"AccountSubType":     "string",
-							"AccountType":        "string",
-							"Active":             "boolean",
-							"Classification":     "string",
-							"domain":             "string",
-							"sparse":             "boolean",
-							"FullyQualifiedName": "string",
-							"Name":               "string",
-						}),
+						Fields: common.FieldsMetadata{
+							"AccountSubType":     {DisplayName: "AccountSubType", ValueType: "string"},
+							"AccountType":        {DisplayName: "AccountType", ValueType: "string"},
+							"Active":             {DisplayName: "Active", ValueType: "boolean"},
+							"Classification":     {DisplayName: "Classification", ValueType: "string"},
+							"domain":             {DisplayName: "domain", ValueType: "string"},
+							"sparse":             {DisplayName: "sparse", ValueType: "boolean"},
+							"FullyQualifiedName": {DisplayName: "FullyQualifiedName", ValueType: "string"},
+							"Name":               {DisplayName: "Name", ValueType: "string"},
+						},
 					},
 					"customer": {
 						DisplayName: "Customer",
-						Fields: buildFieldMetadata(map[string]string{
-							"domain":                  "string",
-							"FamilyName":              "string",
-							"DisplayName":             "string",
-							"PreferredDeliveryMethod": "string",
-							"GivenName":               "string",
-							"FullyQualifiedName":      "string",
-							"BillWithParent":          "boolean",
-							"Job":                     "boolean",
-						}),
+						Fields: common.FieldsMetadata{
+							"domain":                  {DisplayName: "domain", ValueType: "string"},
+							"FamilyName":              {DisplayName: "FamilyName", ValueType: "string"},
+							"DisplayName":             {DisplayName: "DisplayName", ValueType: "string"},
+							"PreferredDeliveryMethod": {DisplayName: "PreferredDeliveryMethod", ValueType: "string"},
+							"GivenName":               {DisplayName: "GivenName", ValueType: "string"},
+							"FullyQualifiedName":      {DisplayName: "FullyQualifiedName", ValueType: "string"},
+							"BillWithParent":          {DisplayName: "BillWithParent", ValueType: "boolean"},
+							"Job":                     {DisplayName: "Job", ValueType: "boolean"},
+						},
 					},
 					"item": {
 						DisplayName: "Item",
-						Fields: buildFieldMetadata(map[string]string{
-							"Name":   "string",
-							"Type":   "string",
-							"Active": "boolean",
-							"domain": "string",
-							"sparse": "boolean",
-							"Level":  "string",
-						}),
+						Fields: common.FieldsMetadata{
+							"Name":   {DisplayName: "Name", ValueType: "string"},
+							"Type":   {DisplayName: "Type", ValueType: "string"},
+							"Active": {DisplayName: "Active", ValueType: "boolean"},
+							"domain": {DisplayName: "domain", ValueType: "string"},
+							"sparse": {DisplayName: "sparse", ValueType: "boolean"},
+							"Level":  {DisplayName: "Level", ValueType: "string"},
+						},
 					},
 				},
 				Errors: nil,
@@ -223,21 +224,23 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Result: map[string]common.ObjectMetadata{
 					"customer": {
 						DisplayName: "Customer",
-						Fields: buildFieldMetadataWithCustomFields(map[string]string{
-							"domain":                  "string",
-							"FamilyName":              "string",
-							"DisplayName":             "string",
-							"PreferredDeliveryMethod": "string",
-							"GivenName":               "string",
-							"FullyQualifiedName":      "string",
-							"BillWithParent":          "boolean",
-							"Job":                     "boolean",
-							"ProjectCode":             "string",
-							"Department":              "string",
-							"BudgetAmount":            "float",
-							"StartDate":               "datetime",
-							"Status":                  "singleSelect",
-						}),
+						Fields: common.FieldsMetadata{
+							// Base fields from REST API response
+							"domain":                  {DisplayName: "domain", ValueType: "string"},
+							"FamilyName":              {DisplayName: "FamilyName", ValueType: "string"},
+							"DisplayName":             {DisplayName: "DisplayName", ValueType: "string"},
+							"PreferredDeliveryMethod": {DisplayName: "PreferredDeliveryMethod", ValueType: "string"},
+							"GivenName":               {DisplayName: "GivenName", ValueType: "string"},
+							"FullyQualifiedName":      {DisplayName: "FullyQualifiedName", ValueType: "string"},
+							"BillWithParent":          {DisplayName: "BillWithParent", ValueType: "boolean"},
+							"Job":                     {DisplayName: "Job", ValueType: "boolean"},
+							// Custom fields from GraphQL response
+							"ProjectCode":  {DisplayName: "ProjectCode", ValueType: "string", ProviderType: "StringType", IsCustom: goutils.Pointer(true)},
+							"Department":   {DisplayName: "Department", ValueType: "string", ProviderType: "StringType", IsCustom: goutils.Pointer(true)},
+							"BudgetAmount": {DisplayName: "BudgetAmount", ValueType: "float", ProviderType: "NumberType", IsCustom: goutils.Pointer(true)},
+							"StartDate":    {DisplayName: "StartDate", ValueType: "datetime", ProviderType: "DateType", IsCustom: goutils.Pointer(true)},
+							"Status":       {DisplayName: "Status", ValueType: "singleSelect", ProviderType: "ListType", IsCustom: goutils.Pointer(true)},
+						},
 					},
 				},
 				Errors: nil,
@@ -268,34 +271,36 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Result: map[string]common.ObjectMetadata{
 					"customer": {
 						DisplayName: "Customer",
-						Fields: buildFieldMetadataWithCustomFields(map[string]string{
-							"domain":                  "string",
-							"FamilyName":              "string",
-							"DisplayName":             "string",
-							"PreferredDeliveryMethod": "string",
-							"GivenName":               "string",
-							"FullyQualifiedName":      "string",
-							"BillWithParent":          "boolean",
-							"Job":                     "boolean",
-							"ProjectCode":             "string",
-							"Department":              "string",
-							"BudgetAmount":            "float",
-							"StartDate":               "datetime",
-							"Status":                  "singleSelect",
-						}),
+						Fields: common.FieldsMetadata{
+							// Base fields from REST API response
+							"domain":                  {DisplayName: "domain", ValueType: "string"},
+							"FamilyName":              {DisplayName: "FamilyName", ValueType: "string"},
+							"DisplayName":             {DisplayName: "DisplayName", ValueType: "string"},
+							"PreferredDeliveryMethod": {DisplayName: "PreferredDeliveryMethod", ValueType: "string"},
+							"GivenName":               {DisplayName: "GivenName", ValueType: "string"},
+							"FullyQualifiedName":      {DisplayName: "FullyQualifiedName", ValueType: "string"},
+							"BillWithParent":          {DisplayName: "BillWithParent", ValueType: "boolean"},
+							"Job":                     {DisplayName: "Job", ValueType: "boolean"},
+							// Custom fields from GraphQL response
+							"ProjectCode":  {DisplayName: "ProjectCode", ValueType: "string", ProviderType: "StringType", IsCustom: goutils.Pointer(true)},
+							"Department":   {DisplayName: "Department", ValueType: "string", ProviderType: "StringType", IsCustom: goutils.Pointer(true)},
+							"BudgetAmount": {DisplayName: "BudgetAmount", ValueType: "float", ProviderType: "NumberType", IsCustom: goutils.Pointer(true)},
+							"StartDate":    {DisplayName: "StartDate", ValueType: "datetime", ProviderType: "DateType", IsCustom: goutils.Pointer(true)},
+							"Status":       {DisplayName: "Status", ValueType: "singleSelect", ProviderType: "ListType", IsCustom: goutils.Pointer(true)},
+						},
 					},
 					"account": {
 						DisplayName: "Account",
-						Fields: buildFieldMetadata(map[string]string{
-							"AccountSubType":     "string",
-							"AccountType":        "string",
-							"Active":             "boolean",
-							"Classification":     "string",
-							"domain":             "string",
-							"sparse":             "boolean",
-							"FullyQualifiedName": "string",
-							"Name":               "string",
-						}),
+						Fields: common.FieldsMetadata{
+							"AccountSubType":     {DisplayName: "AccountSubType", ValueType: "string"},
+							"AccountType":        {DisplayName: "AccountType", ValueType: "string"},
+							"Active":             {DisplayName: "Active", ValueType: "boolean"},
+							"Classification":     {DisplayName: "Classification", ValueType: "string"},
+							"domain":             {DisplayName: "domain", ValueType: "string"},
+							"sparse":             {DisplayName: "sparse", ValueType: "boolean"},
+							"FullyQualifiedName": {DisplayName: "FullyQualifiedName", ValueType: "string"},
+							"Name":               {DisplayName: "Name", ValueType: "string"},
+						},
 					},
 				},
 				Errors: nil,
@@ -323,16 +328,16 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Result: map[string]common.ObjectMetadata{
 					"customer": {
 						DisplayName: "Customer",
-						Fields: buildFieldMetadata(map[string]string{
-							"domain":                  "string",
-							"FamilyName":              "string",
-							"DisplayName":             "string",
-							"PreferredDeliveryMethod": "string",
-							"GivenName":               "string",
-							"FullyQualifiedName":      "string",
-							"BillWithParent":          "boolean",
-							"Job":                     "boolean",
-						}),
+						Fields: common.FieldsMetadata{
+							"domain":                  {DisplayName: "domain", ValueType: "string"},
+							"FamilyName":              {DisplayName: "FamilyName", ValueType: "string"},
+							"DisplayName":             {DisplayName: "DisplayName", ValueType: "string"},
+							"PreferredDeliveryMethod": {DisplayName: "PreferredDeliveryMethod", ValueType: "string"},
+							"GivenName":               {DisplayName: "GivenName", ValueType: "string"},
+							"FullyQualifiedName":      {DisplayName: "FullyQualifiedName", ValueType: "string"},
+							"BillWithParent":          {DisplayName: "BillWithParent", ValueType: "boolean"},
+							"Job":                     {DisplayName: "Job", ValueType: "boolean"},
+						},
 					},
 				},
 				Errors: nil,
@@ -360,16 +365,16 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Result: map[string]common.ObjectMetadata{
 					"customer": {
 						DisplayName: "Customer",
-						Fields: buildFieldMetadata(map[string]string{
-							"domain":                  "string",
-							"FamilyName":              "string",
-							"DisplayName":             "string",
-							"PreferredDeliveryMethod": "string",
-							"GivenName":               "string",
-							"FullyQualifiedName":      "string",
-							"BillWithParent":          "boolean",
-							"Job":                     "boolean",
-						}),
+						Fields: common.FieldsMetadata{
+							"domain":                  {DisplayName: "domain", ValueType: "string"},
+							"FamilyName":              {DisplayName: "FamilyName", ValueType: "string"},
+							"DisplayName":             {DisplayName: "DisplayName", ValueType: "string"},
+							"PreferredDeliveryMethod": {DisplayName: "PreferredDeliveryMethod", ValueType: "string"},
+							"GivenName":               {DisplayName: "GivenName", ValueType: "string"},
+							"FullyQualifiedName":      {DisplayName: "FullyQualifiedName", ValueType: "string"},
+							"BillWithParent":          {DisplayName: "BillWithParent", ValueType: "boolean"},
+							"Job":                     {DisplayName: "Job", ValueType: "boolean"},
+						},
 					},
 				},
 				Errors: nil,
@@ -397,16 +402,16 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Result: map[string]common.ObjectMetadata{
 					"customer": {
 						DisplayName: "Customer",
-						Fields: buildFieldMetadata(map[string]string{
-							"domain":                  "string",
-							"FamilyName":              "string",
-							"DisplayName":             "string",
-							"PreferredDeliveryMethod": "string",
-							"GivenName":               "string",
-							"FullyQualifiedName":      "string",
-							"BillWithParent":          "boolean",
-							"Job":                     "boolean",
-						}),
+						Fields: common.FieldsMetadata{
+							"domain":                  {DisplayName: "domain", ValueType: "string"},
+							"FamilyName":              {DisplayName: "FamilyName", ValueType: "string"},
+							"DisplayName":             {DisplayName: "DisplayName", ValueType: "string"},
+							"PreferredDeliveryMethod": {DisplayName: "PreferredDeliveryMethod", ValueType: "string"},
+							"GivenName":               {DisplayName: "GivenName", ValueType: "string"},
+							"FullyQualifiedName":      {DisplayName: "FullyQualifiedName", ValueType: "string"},
+							"BillWithParent":          {DisplayName: "BillWithParent", ValueType: "boolean"},
+							"Job":                     {DisplayName: "Job", ValueType: "boolean"},
+						},
 					},
 				},
 				Errors: nil,
@@ -424,38 +429,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			})
 		})
 	}
-}
-
-func buildFieldMetadata(fields map[string]string) map[string]common.FieldMetadata {
-	return buildFieldMetadataWithProviderTypes(fields, nil)
-}
-
-func buildFieldMetadataWithCustomFields(fields map[string]string) map[string]common.FieldMetadata {
-	providerTypes := map[string]string{
-		"ProjectCode":  "StringType",
-		"Department":   "StringType",
-		"BudgetAmount": "NumberType",
-		"StartDate":    "DateType",
-		"Status":       "ListType",
-	}
-	return buildFieldMetadataWithProviderTypes(fields, providerTypes)
-}
-
-func buildFieldMetadataWithProviderTypes(fields map[string]string, providerTypes map[string]string) map[string]common.FieldMetadata {
-	result := make(map[string]common.FieldMetadata)
-	for name, typ := range fields {
-		providerType := ""
-		if providerTypes != nil {
-			providerType = providerTypes[name]
-		}
-		result[name] = common.FieldMetadata{
-			DisplayName:  name,
-			ValueType:    common.ValueType(typ),
-			ProviderType: providerType,
-			Values:       nil,
-		}
-	}
-	return result
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
