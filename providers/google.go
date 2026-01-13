@@ -13,9 +13,9 @@ const (
 	// ModuleGoogleContacts is the module used for listing contacts from People API.
 	// https://developers.google.com/people
 	ModuleGoogleContacts common.ModuleID = "contacts"
-	// ModuleGoogleMail is the module used for listing emails from Gmail API.
+	// ModuleGoogleGmail is the module used for listing emails from Gmail API.
 	// https://developers.google.com/workspace/gmail/api/reference/rest
-	ModuleGoogleMail common.ModuleID = "mail"
+	ModuleGoogleGmail common.ModuleID = "gmail"
 )
 
 //nolint:funlen
@@ -55,9 +55,9 @@ func init() {
 					Write:     false,
 				},
 			},
-			ModuleGoogleMail: {
+			ModuleGoogleGmail: {
 				BaseURL:     "https://gmail.googleapis.com/gmail",
-				DisplayName: "Google Mail (Gmail)",
+				DisplayName: "Gmail",
 				Support: Support{
 					Read:      true,
 					Subscribe: false,

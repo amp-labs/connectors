@@ -221,7 +221,7 @@ func constructTestContactsConnector(serverURL string) (*Connector, error) {
 }
 
 func constructTestMailConnector(serverURL string) (*Connector, error) {
-	return constructTestConnector(serverURL, providers.ModuleGoogleMail)
+	return constructTestConnector(serverURL, providers.ModuleGoogleGmail)
 }
 
 func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connector, error) {
