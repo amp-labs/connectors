@@ -12,5 +12,4 @@ func addMeetingsQueryParams(url *urlbuilder.URL) {
 	url.WithQueryParam("include_crm_matches", "true")
 	url.WithQueryParam("include_summary", "true")
 	url.WithQueryParam("include_transcript", "true")
-
 }
