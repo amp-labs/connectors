@@ -104,6 +104,10 @@ var (
 // https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_field_conversion_single_event.htm.
 type SubscriptionEvent map[string]any
 
+func (s SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadData) error {
+	return nil
+}
+
 func (s SubscriptionEvent) asMap() (common.StringMap, error) { // nolint:funcorder
 	return extractChangeEventHeader(s)
 }
