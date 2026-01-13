@@ -19,6 +19,7 @@ func main() {
 	defer done()
 
 	utils.SetupLogging()
+
 	conn := shopify.GetShopifyConnector(ctx)
 
 	slog.Info("=== Reading all products (with pagination) ===")
@@ -35,6 +36,7 @@ func main() {
 	})
 
 	slog.Info("=== Reading products with Since filter ===")
+
 	since := time.Now().AddDate(0, 0, -30)
 	slog.Info("Filtering products updated since", "since", since.Format(time.RFC3339))
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{

@@ -53,6 +53,7 @@ func main() {
 
 	// Test Campaign operations (if supported)
 	slog.Info("=== Step 4: Testing Campaign Write Operations ===")
+
 	campaignID2, err := testCreateCampaign(ctx, conn)
 	if err != nil {
 		slog.Warn("Campaign creation may not be supported or failed", "error", err)
@@ -101,6 +102,7 @@ func getDefaultCampaign(ctx context.Context, conn *getresponse.Connector) (strin
 	}
 
 	slog.Info("Found default campaign", "campaignId", campaignID, "name", res.Data[0].Raw["name"])
+
 	return campaignID, nil
 }
 
@@ -262,6 +264,7 @@ func testCreateCampaign(ctx context.Context, conn *getresponse.Connector) (strin
 		slog.Warn("No recordId returned from create operation (expected for 202 Accepted)")
 		// Wait for the campaign to be indexed
 		time.Sleep(3 * time.Second)
+
 		return findCampaignByName(ctx, conn, campaignName)
 	}
 

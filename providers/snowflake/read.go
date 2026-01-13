@@ -384,12 +384,14 @@ func (c *Connector) buildDynamicTableQuery(
 	if !params.Since.IsZero() {
 		conditions = append(conditions,
 			fmt.Sprintf(`"%s" >= ?`, objConfig.dynamicTable.timestampColumn))
+
 		args = append(args, params.Since.UTC().Format(SnowflakeTimestampFormat))
 	}
 
 	if !params.Until.IsZero() {
 		conditions = append(conditions,
 			fmt.Sprintf(`"%s" <= ?`, objConfig.dynamicTable.timestampColumn))
+
 		args = append(args, params.Until.UTC().Format(SnowflakeTimestampFormat))
 	}
 

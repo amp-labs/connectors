@@ -14,6 +14,7 @@ func mustParseSchema(jsonSchema string) *memstore.InputSchema {
 	if err := json.Unmarshal([]byte(jsonSchema), &schema); err != nil {
 		panic(fmt.Sprintf("failed to parse schema: %v", err))
 	}
+
 	return &schema
 }
 

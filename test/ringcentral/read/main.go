@@ -27,6 +27,7 @@ func main() {
 	if err != nil {
 		utils.Fail("error creating ringcentral connector", "error", err)
 	}
+
 	if err := readContacts(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}

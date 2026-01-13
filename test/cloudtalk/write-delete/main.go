@@ -26,12 +26,14 @@ func main() {
 	conn := testCloudTalk.GetCloudTalkConnector(ctx)
 
 	slog.Info("Testing write/delete for contacts")
+
 	if err := testWriteDeleteContacts(ctx, conn); err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
 
 	slog.Info("Testing write/delete for tags")
+
 	if err := testWriteDeleteTags(ctx, conn); err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)
@@ -41,6 +43,7 @@ func main() {
 func testWriteDeleteTags(ctx context.Context, conn *cloudtalk.Connector) error {
 	// 1. Create Tag
 	slog.Info("Creating tag...")
+
 	createParams := common.WriteParams{
 		ObjectName: "tags",
 		RecordData: map[string]any{
@@ -105,6 +108,7 @@ func testWriteDeleteTags(ctx context.Context, conn *cloudtalk.Connector) error {
 func testWriteDeleteContacts(ctx context.Context, conn *cloudtalk.Connector) error {
 	// 1. Create Contact
 	slog.Info("Creating contact...")
+
 	createParams := common.WriteParams{
 		ObjectName: "contacts",
 		RecordData: map[string]any{

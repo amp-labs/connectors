@@ -212,6 +212,7 @@ func (c *Connector) Read(_ context.Context, params common.ReadParams) (*common.R
 
 	// Build result rows
 	rows := make([]common.ReadResultRow, len(pageRecords))
+
 	for index, record := range pageRecords {
 		// Build fields map with lowercase keys
 		// If specific fields are requested, only include those fields
@@ -517,6 +518,7 @@ func (c *Connector) generateRandomRecordWithDepth(objectName string, depth int) 
 					"fieldSchema", string(fieldSchemaJSON),
 					"attempt", attempt+1,
 				)
+
 				record[fieldName] = gofakeit.Word()
 
 				continue
@@ -929,6 +931,7 @@ func (c *Connector) generateNestedObject(
 				"depth", depth,
 				"required", required[propName],
 			)
+
 			obj[propName] = gofakeit.Word()
 
 			continue

@@ -53,6 +53,7 @@ func main() {
 
 	// Verify the contact was deleted by trying to read it
 	time.Sleep(2 * time.Second)
+
 	if err := verifyContactDeleted(ctx, conn, contactID); err != nil {
 		slog.Warn("Contact deletion verification failed", "error", err)
 	} else {
@@ -107,6 +108,7 @@ func getDefaultCampaign(ctx context.Context, conn *getresponse.Connector) (strin
 	}
 
 	slog.Info("Found default campaign", "campaignId", campaignID, "name", res.Data[0].Raw["name"])
+
 	return campaignID, nil
 }
 
@@ -145,6 +147,7 @@ func testCreateContactForDelete(ctx context.Context, conn *getresponse.Connector
 		slog.Info("No recordId returned from create operation (expected for 202 Accepted), searching by email")
 		// Wait for the contact to be indexed
 		time.Sleep(3 * time.Second)
+
 		return findContactByEmail(ctx, conn, email)
 	}
 
@@ -233,6 +236,7 @@ func verifyContactDeleted(ctx context.Context, conn *getresponse.Connector, cont
 
 	// Contact not found in results, deletion likely successful
 	slog.Info("Contact not found in read results, deletion verified")
+
 	return nil
 }
 
@@ -267,6 +271,7 @@ func testCreateCampaignForDelete(ctx context.Context, conn *getresponse.Connecto
 		slog.Info("No recordId returned from create operation (expected for 202 Accepted), searching by name")
 		// Wait for the campaign to be indexed
 		time.Sleep(3 * time.Second)
+
 		return findCampaignByName(ctx, conn, campaignName)
 	}
 

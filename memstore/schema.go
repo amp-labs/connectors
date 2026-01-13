@@ -588,6 +588,7 @@ func schemaToObjectMetadata(
 		var values []common.FieldValue
 		if enumVals, ok := fieldMap["enum"].([]any); ok && len(enumVals) > 0 {
 			values = make([]common.FieldValue, 0, len(enumVals))
+
 			for _, enumVal := range enumVals {
 				// Convert enum value to string for both Value and DisplayValue
 				valStr := fmt.Sprintf("%v", enumVal)

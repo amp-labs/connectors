@@ -101,6 +101,7 @@ func testCreateDeal(ctx context.Context, conn *memstore.Connector) {
 		"lastName":  "Doe",
 		"status":    "active",
 	}
+
 	contactResult, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "contacts",
 		RecordData: contactData,
@@ -115,6 +116,7 @@ func testCreateDeal(ctx context.Context, conn *memstore.Connector) {
 		"industry":      "technology",
 		"employeeCount": 25,
 	}
+
 	companyResult, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "companies",
 		RecordData: companyData,
@@ -233,6 +235,7 @@ func testBulkCreate(ctx context.Context, conn *memstore.Connector) {
 			slog.Error("Failed to create contact in bulk", "index", i, "error", err)
 			continue
 		}
+
 		recordIds = append(recordIds, result.RecordId)
 		slog.Info("Bulk contact created", "index", i, "recordId", result.RecordId)
 	}
@@ -249,5 +252,6 @@ func printJSON(label string, data any) {
 		slog.Error("Failed to marshal JSON", "error", err)
 		return
 	}
+
 	fmt.Printf("%s:\n%s\n", label, string(jsonData))
 }

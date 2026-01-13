@@ -190,10 +190,12 @@ func readObjects(ctx context.Context, conn ConnectorCRUD, objectName string, fie
 			Fields:     fields,
 			NextPage:   res.NextPage,
 		}
+
 		nextRes, err := conn.Read(ctx, params)
 		if err != nil {
 			utils.Fail("error reading next page from provider", "error", err)
 		}
+
 		res.Data = append(res.Data, nextRes.Data...)
 		res.NextPage = nextRes.NextPage
 	}
