@@ -1,16 +1,21 @@
-package salesforce
+package core
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/xquery"
 )
 
-var ErrCannotReadMetadata = errors.New("cannot read object metadata, it is possible you don't have the correct permissions set") // nolint:lll
+func NewErrorHandler() *interpreter.ErrorHandler {
+	return &interpreter.ErrorHandler{
+		JSON: &interpreter.DirectFaultyResponder{Callback: interpretJSONError},
+		XML:  &interpreter.DirectFaultyResponder{Callback: interpretXMLError},
+	}
+}
 
 type jsonError struct {
 	Message   string `json:"message"`
@@ -25,7 +30,7 @@ func createError(baseErr error, sfErr jsonError, res *http.Response) error {
 	return baseErr
 }
 
-func (c *Connector) interpretJSONError(res *http.Response, body []byte) error { // nolint:cyclop
+func interpretJSONError(res *http.Response, body []byte) error { // nolint:cyclop
 	var errs []jsonError
 	if err := json.Unmarshal(body, &errs); err != nil {
 		return fmt.Errorf("json.Unmarshal failed: %w", err)
@@ -66,7 +71,7 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error { 
 	return common.InterpretError(res, body)
 }
 
-func (c *Connector) interpretXMLError(res *http.Response, body []byte) error {
+func interpretXMLError(res *http.Response, body []byte) error {
 	xml, err := xquery.NewXML(body)
 	if err != nil {
 		// Response body cannot be understood in the form of valid XML structure.
