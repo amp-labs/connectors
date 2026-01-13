@@ -194,7 +194,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					},
 				}},
 				// This is a non-sensitive JWT for pagination (does not grant access).
-				NextPage: "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiOjQ5NTM3MDc2MDE3NzYyMzgzNjAsInRvdGFsIjoxNzksInBhZ2VOdW1iZXIiOjAsInBhZ2VTaXplIjoxMDAsInRpbWUiOiItMDItLTA5LTEzVDA5OjMwOjAwWiIsImV4cCI6MTcxNjYyNjE0Nn0.o6SIJZFyjlxDC8m3HJM_TBn39M6WakXpbMXFXX3It9I", // nosemgrep: generic.secrets.security.detected-jwt-token.detected-jwt-token
+				NextPage: "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiOjQ5NTM3MDc2MDE3NzYyMzgzNjAsInRvdGFsIjoxNzksInBhZ2VOdW1iZXIiOjAsInBhZ2VTaXplIjoxMDAsInRpbWUiOiIyMDIyLTA5LTEzVDA5OjMwOjAwWiIsImV4cCI6MTcxNjYyNjE0Nn0.o6SIJZFyjlxDC8m3HJM_TBn39M6WakXpbMXFXX3Iy9I", // nosemgrep: generic.secrets.security.detected-jwt-token.detected-jwt-token
 				Done:     false,
 			},
 			ExpectedErrs: nil,

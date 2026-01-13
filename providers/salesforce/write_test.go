@@ -42,7 +42,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("No such column 'AccountNumber' on sobject of type Account"),
+				errors.New("No such column 'AccountNumer' on sobject of type Account"),
 			},
 		},
 		{

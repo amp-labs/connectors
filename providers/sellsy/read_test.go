@@ -47,7 +47,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Le contenu de la requête est invalid: le champ 'filters' est manquant."), // nolint:lll
+				errors.New("Le contenu de la requête est invalide: le champ 'filters' est manquant."), // nolint:lll
 			},
 		},
 		{
