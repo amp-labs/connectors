@@ -1768,7 +1768,7 @@
       "get": {
         "tags": ["Campaigns"],
         "summary": "Get Campaigns",
-        "description": "Returns a list of campaign records.  Required Permissions: Read-Only Campaigns, Read-Write Campaigns<br><br><b>Note: This endpoint has been superceded.</b>  Use <a href=\"/rest-api/endpoint-reference/asset-endpoint-reference/#/Smart_Campaigns/getAllSmartCampaignsGET\">Get Smart Campaigns</a> endpoint instead.",
+        "description": "Returns a list of campaign records.  Required Permissions: Read-Only Campaigns, Read-Write Campaigns<br><br><b>Note: This endpoint has been superseded.</b>  Use <a href=\"/rest-api/endpoint-reference/asset-endpoint-reference/#/Smart_Campaigns/getAllSmartCampaignsGET\">Get Smart Campaigns</a> endpoint instead.",
         "operationId": "getCampaignsUsingGET",
         "consumes": ["application/json"],
         "produces": ["application/json"],
@@ -1844,7 +1844,7 @@
       "get": {
         "tags": ["Campaigns"],
         "summary": "Get Campaign By Id",
-        "description": "Returns the record of a campaign by its id.  Required Permissions: Read-Only Campaigns, Read-Write Campaigns<br><br><b>Note: This endpoint has been superceded.</b>  Use <a href=\"/rest-api/endpoint-reference/asset-endpoint-reference/#!/Smart_Campaigns/getSmartCampaignByIdUsingGET\">Get Smart Campaign by Id</a> endpoint instead.",
+        "description": "Returns the record of a campaign by its id.  Required Permissions: Read-Only Campaigns, Read-Write Campaigns<br><br><b>Note: This endpoint has been superseded.</b>  Use <a href=\"/rest-api/endpoint-reference/asset-endpoint-reference/#!/Smart_Campaigns/getSmartCampaignByIdUsingGET\">Get Smart Campaign by Id</a> endpoint instead.",
         "operationId": "getCampaignByIdUsingGET",
         "consumes": ["application/json"],
         "produces": ["application/json"],
@@ -2730,7 +2730,7 @@
       "get": {
         "tags": ["Leads"],
         "summary": "Describe Lead",
-        "description": "Returns metadata about lead objects in the target instance, including a list of all fields available for interaction via the APIs.  Required Permissions: Read-Only Lead, Read-Write Lead<br><br><b>Note: This endpoint has been superceded.</b>  Use <a href=\"/rest-api/endpoint-reference/lead-database-endpoint-reference/#!/Leads/describeUsingGET_6\">Describe Lead2</a> endpoint instead.",
+        "description": "Returns metadata about lead objects in the target instance, including a list of all fields available for interaction via the APIs.  Required Permissions: Read-Only Lead, Read-Write Lead<br><br><b>Note: This endpoint has been superseded.</b>  Use <a href=\"/rest-api/endpoint-reference/lead-database-endpoint-reference/#!/Leads/describeUsingGET_6\">Describe Lead2</a> endpoint instead.",
         "operationId": "describeUsingGET_2",
         "consumes": ["application/json"],
         "produces": ["application/json"],
@@ -3158,7 +3158,7 @@
       "get": {
         "tags": ["Leads"],
         "summary": "Describe Program Member",
-        "description": "Returns metadata about program member objects in the target instance, including a list of all fields available for interaction via the APIs.  Required Permissions: Read-Only Lead, Read-Write Lead<br><br><b>Note: This endpoint has been superceded.</b>  Use <a href=\"/rest-api/endpoint-reference/lead-database-endpoint-reference/#!/Program_Members/describeProgramMemberUsingGET2\">Describe Program Member</a> endpoint instead.",
+        "description": "Returns metadata about program member objects in the target instance, including a list of all fields available for interaction via the APIs.  Required Permissions: Read-Only Lead, Read-Write Lead<br><br><b>Note: This endpoint has been superseded.</b>  Use <a href=\"/rest-api/endpoint-reference/lead-database-endpoint-reference/#!/Program_Members/describeProgramMemberUsingGET2\">Describe Program Member</a> endpoint instead.",
         "operationId": "describeProgramMemberUsingGET",
         "consumes": ["application/json"],
         "produces": ["application/json"],
@@ -3458,7 +3458,7 @@
       "post": {
         "tags": ["Leads"],
         "summary": "Change Lead Program Status",
-        "description": "Changes the program status of a list of leads in a target program.  Only existing members of the program may have their status changed with this API.  Required Permissions: Read-Write Lead<br><br><b>Note: This endpoint has been superceded.</b>  Use <a href=\"/rest-api/endpoint-reference/lead-database-endpoint-reference/#/Program_Members/syncProgramMemberStatusUsingPOST\">Sync Program Member Status</a> endpoint instead.",
+        "description": "Changes the program status of a list of leads in a target program.  Only existing members of the program may have their status changed with this API.  Required Permissions: Read-Write Lead<br><br><b>Note: This endpoint has been superseded.</b>  Use <a href=\"/rest-api/endpoint-reference/lead-database-endpoint-reference/#/Program_Members/syncProgramMemberStatusUsingPOST\">Sync Program Member Status</a> endpoint instead.",
         "operationId": "changeLeadProgramStatusUsingPOST",
         "consumes": ["application/json"],
         "produces": ["application/json"],
@@ -3543,7 +3543,7 @@
       "post": {
         "tags": ["Leads"],
         "summary": "Associate Lead",
-        "description": "Associates a known Marketo lead record to a munchkin cookie and its associated web acitvity history.  Required Permissions: Read-Write Lead",
+        "description": "Associates a known Marketo lead record to a munchkin cookie and its associated web activity history.  Required Permissions: Read-Write Lead",
         "operationId": "associateLeadUsingPOST",
         "consumes": ["application/json"],
         "produces": ["application/json"],
@@ -4723,7 +4723,7 @@
           {
             "in": "query",
             "name": "filterValues",
-            "description": "Comma seperated list of search values.",
+            "description": "Comma separated list of search values.",
             "required": true,
             "type": "array",
             "items": { "type": "string" }
@@ -8111,7 +8111,7 @@
         },
         "cookie": {
           "type": "string",
-          "description": "Munchkin cookie value used to associate new lead with anonymous activities.  e.g. id:123-XYZ-456&token:_mch-marketo.com-1594662481190-60776"
+          "description": "Munchkin cookie value used to associate new lead with anonymous activities.  e.g. id:123-XYZ-456&token:_much-marketo.com-1594662481190-60776"
         }
       },
       "description": "Form field data.  May have any number of fields depending on the fields available in the form."
@@ -8697,7 +8697,7 @@
         "count": {
           "type": "integer",
           "format": "int32",
-          "description": "Number of occurences of the error"
+          "description": "Number of occurrences of the error"
         },
         "errorCode": {
           "type": "string",

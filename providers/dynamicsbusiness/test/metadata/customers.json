@@ -84,7 +84,7 @@
           "captions": [
             {
               "languageCode": 1036,
-              "caption": "Ligne adresse 1"
+              "caption": "Ligne address 1"
             },
             {
               "languageCode": 1033,
@@ -101,7 +101,7 @@
           "captions": [
             {
               "languageCode": 1036,
-              "caption": "Ligne adresse 2"
+              "caption": "Ligne address 2"
             },
             {
               "languageCode": 1033,
@@ -203,7 +203,7 @@
           "captions": [
             {
               "languageCode": 1036,
-              "caption": "Adresse e-mail"
+              "caption": "Address e-mail"
             },
             {
               "languageCode": 1033,
@@ -517,7 +517,7 @@
             },
             {
               "languageCode": 2058,
-              "caption": "Dimensiones predeterminadas"
+              "caption": "Dimensions predeterminadas"
             }
           ]
         },
@@ -543,7 +543,7 @@
           "captions": [
             {
               "languageCode": 1036,
-              "caption": "Informations sur les contacts"
+              "caption": "Information sure les contacts"
             },
             {
               "languageCode": 1033,
@@ -551,7 +551,7 @@
             },
             {
               "languageCode": 2058,
-              "caption": "Información de contactos"
+              "caption": "Información de contacts"
             }
           ]
         },

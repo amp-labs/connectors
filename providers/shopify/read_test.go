@@ -121,7 +121,7 @@ func TestRead(t *testing.T) {
 						},
 					},
 				},
-				NextPage: "eyJsYXN0X2lkIjoxMjM0NTY3ODksImxhc3RfdmFsdWUiOiIyMDI0LTAxLTIwVDE0OjQ1OjAwWiJ9",
+				NextPage: "eyJsYXN0X2lkIjoxMjM0NTY3ODksImxhc3RfdmFsdWUiOiItMDI0LTAxLTIwVDE0OjQ1OjAwWiJ9",
 				Done:     false,
 			},
 			ExpectedErrs: nil,

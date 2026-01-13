@@ -1189,7 +1189,7 @@
                 <Member Name="meetingRequest" Value="1" />
                 <Member Name="meetingCancelled" Value="2" />
                 <Member Name="meetingAccepted" Value="3" />
-                <Member Name="meetingTenativelyAccepted" Value="4" />
+                <Member Name="meetingTentativelyAccepted" Value="4" />
                 <Member Name="meetingDeclined" Value="5" />
             </EnumType>
             <EnumType Name="meetingRequestType">
@@ -4538,7 +4538,7 @@
             </EnumType>
             <EnumType Name="notificationDeliveryPreference">
                 <Member Name="unknown" Value="0" />
-                <Member Name="deliverImmedietly" Value="1" />
+                <Member Name="deliverImmediately" Value="1" />
                 <Member Name="deliverAfterCampaignEnd" Value="2" />
                 <Member Name="unknownFutureValue" Value="3" />
             </EnumType>
@@ -4705,7 +4705,7 @@
                 <Member Name="excluded" Value="7" />
                 <Member Name="unknownFutureValue" Value="8" />
             </EnumType>
-            <EnumType Name="targettedUserType">
+            <EnumType Name="targetedUserType">
                 <Member Name="unknown" Value="0" />
                 <Member Name="clicked" Value="1" />
                 <Member Name="compromised" Value="2" />
@@ -4879,7 +4879,7 @@
                 <Member Name="icmpV6" Value="58" />
                 <Member Name="ipv6NoNextHeader" Value="59" />
                 <Member Name="ipv6DestinationOptions" Value="60" />
-                <Member Name="nd" Value="77" />
+                <Member Name="and" Value="77" />
                 <Member Name="raw" Value="255" />
                 <Member Name="ipx" Value="1000" />
                 <Member Name="spx" Value="1256" />
@@ -5174,7 +5174,7 @@
                 <Member Name="meeting" Value="2" />
                 <Member Name="unknownFutureValue" Value="3" />
             </EnumType>
-            <EnumType Name="clonableTeamParts" IsFlags="true">
+            <EnumType Name="cloneableTeamParts" IsFlags="true">
                 <Member Name="apps" Value="1" />
                 <Member Name="tabs" Value="2" />
                 <Member Name="settings" Value="4" />
@@ -6520,7 +6520,7 @@
                 <Property Name="serialNumber" Type="Edm.String" />
                 <Property Name="subscriberCarrier" Type="Edm.String" />
                 <Property Name="totalStorageSpaceInBytes" Type="Edm.Int64" Nullable="false" />
-                <Property Name="udid" Type="Edm.String" />
+                <Property Name="uuid" Type="Edm.String" />
                 <Property Name="userDisplayName" Type="Edm.String" />
                 <Property Name="userId" Type="Edm.String" />
                 <Property Name="userPrincipalName" Type="Edm.String" />
@@ -13114,13 +13114,13 @@
             </ComplexType>
             <ComplexType Name="accessPackageAssignmentRequestorSettings">
                 <Property Name="allowCustomAssignmentSchedule" Type="Edm.Boolean" />
-                <Property Name="enableOnBehalfRequestorsToAddAccess" Type="Edm.Boolean" />
-                <Property Name="enableOnBehalfRequestorsToRemoveAccess" Type="Edm.Boolean" />
-                <Property Name="enableOnBehalfRequestorsToUpdateAccess" Type="Edm.Boolean" />
+                <Property Name="enableOnBehalfRequestersToAddAccess" Type="Edm.Boolean" />
+                <Property Name="enableOnBehalfRequestersToRemoveAccess" Type="Edm.Boolean" />
+                <Property Name="enableOnBehalfRequestersToUpdateAccess" Type="Edm.Boolean" />
                 <Property Name="enableTargetsToSelfAddAccess" Type="Edm.Boolean" />
                 <Property Name="enableTargetsToSelfRemoveAccess" Type="Edm.Boolean" />
                 <Property Name="enableTargetsToSelfUpdateAccess" Type="Edm.Boolean" />
-                <Property Name="onBehalfRequestors" Type="Collection(graph.subjectSet)" />
+                <Property Name="onBehalfRequesters" Type="Collection(graph.subjectSet)" />
             </ComplexType>
             <ComplexType Name="accessPackageAssignmentRequestRequirements">
                 <Property Name="allowCustomAssignmentSchedule" Type="Edm.Boolean" />
@@ -14710,7 +14710,7 @@
                 <Property Name="codeIntegrityPolicy" Type="Edm.String" />
                 <Property Name="contentNamespaceUrl" Type="Edm.String" />
                 <Property Name="contentVersion" Type="Edm.String" />
-                <Property Name="dataExcutionPolicy" Type="Edm.String" />
+                <Property Name="dataExecutionPolicy" Type="Edm.String" />
                 <Property Name="deviceHealthAttestationStatus" Type="Edm.String" />
                 <Property Name="earlyLaunchAntiMalwareDriverProtection" Type="Edm.String" />
                 <Property Name="healthAttestationSupportedStatus" Type="Edm.String" />
@@ -14966,7 +14966,7 @@
                 <Property Name="searchDisableIndexerBackoff" Type="Edm.Boolean" Nullable="false" />
                 <Property Name="searchDisableIndexingEncryptedItems" Type="Edm.Boolean" Nullable="false" />
                 <Property Name="searchDisableIndexingRemovableDrive" Type="Edm.Boolean" Nullable="false" />
-                <Property Name="searchEnableAutomaticIndexSizeManangement" Type="Edm.Boolean" Nullable="false" />
+                <Property Name="searchEnableAutomaticIndexSizeManagement" Type="Edm.Boolean" Nullable="false" />
                 <Property Name="searchEnableRemoteQueries" Type="Edm.Boolean" Nullable="false" />
                 <Property Name="settingsBlockAccountsPage" Type="Edm.Boolean" Nullable="false" />
                 <Property Name="settingsBlockAddProvisioningPackage" Type="Edm.Boolean" Nullable="false" />
@@ -15350,7 +15350,7 @@
                 <Property Name="deviceAccountEmail" Type="Edm.String" />
                 <Property Name="exchangeServer" Type="Edm.String" />
                 <Property Name="passwordRotationEnabled" Type="Edm.Boolean" />
-                <Property Name="sessionInitiationProtocalAddress" Type="Edm.String" />
+                <Property Name="sessionInitiationProtocolAddress" Type="Edm.String" />
             </ComplexType>
             <ComplexType Name="windowsDeviceAccount">
                 <Property Name="password" Type="Edm.String" />
@@ -16686,7 +16686,7 @@
                 <Property Name="simulationNotification" Type="graph.simulationNotification" />
             </ComplexType>
             <ComplexType Name="simulationNotification" BaseType="graph.baseEndUserNotification">
-                <Property Name="targettedUserType" Type="graph.targettedUserType" />
+                <Property Name="targetedUserType" Type="graph.targetedUserType" />
             </ComplexType>
             <ComplexType Name="noTrainingSetting" BaseType="graph.trainingSetting" />
             <ComplexType Name="oAuthConsentAppDetail">
@@ -16863,7 +16863,7 @@
             </EntityType>
             <EntityType Name="endUserNotificationDetail" BaseType="graph.entity">
                 <Property Name="emailContent" Type="Edm.String" Nullable="false" />
-                <Property Name="isDefaultLangauge" Type="Edm.Boolean" />
+                <Property Name="isDefaultLanguage" Type="Edm.Boolean" />
                 <Property Name="language" Type="Edm.String" Nullable="false" />
                 <Property Name="locale" Type="Edm.String" Nullable="false" />
                 <Property Name="sentFrom" Type="graph.emailIdentity" Nullable="false" />
@@ -16871,7 +16871,7 @@
             </EntityType>
             <EntityType Name="landingPageDetail" BaseType="graph.entity">
                 <Property Name="content" Type="Edm.String" Nullable="false" />
-                <Property Name="isDefaultLangauge" Type="Edm.Boolean" />
+                <Property Name="isDefaultLanguage" Type="Edm.Boolean" />
                 <Property Name="language" Type="Edm.String" Nullable="false" />
             </EntityType>
             <EntityType Name="simulationAutomationRun" BaseType="graph.entity">
@@ -16886,7 +16886,7 @@
                 <Property Name="createdDateTime" Type="Edm.DateTimeOffset" />
                 <Property Name="description" Type="Edm.String" />
                 <Property Name="displayName" Type="Edm.String" />
-                <Property Name="isDefaultLangauge" Type="Edm.Boolean" />
+                <Property Name="isDefaultLanguage" Type="Edm.Boolean" />
                 <Property Name="lastModifiedBy" Type="graph.emailIdentity" />
                 <Property Name="lastModifiedDateTime" Type="Edm.DateTimeOffset" />
                 <Property Name="locale" Type="Edm.String" Nullable="false" />
@@ -21225,7 +21225,7 @@
                 <Parameter Name="significance" Type="graph.Json" />
                 <ReturnType Type="graph.workbookFunctionResult" />
             </Action>
-            <Action Name="permut" IsBound="true">
+            <Action Name="permute" IsBound="true">
                 <Parameter Name="bindparameter" Type="graph.workbookFunctions" />
                 <Parameter Name="number" Type="graph.Json" />
                 <Parameter Name="numberChosen" Type="graph.Json" />
@@ -24142,7 +24142,7 @@
                 <Parameter Name="mailNickname" Type="Edm.String" Unicode="false" />
                 <Parameter Name="classification" Type="Edm.String" Unicode="false" />
                 <Parameter Name="visibility" Type="graph.teamVisibilityType" Nullable="false" />
-                <Parameter Name="partsToClone" Type="graph.clonableTeamParts" Nullable="false" />
+                <Parameter Name="partsToClone" Type="graph.cloneableTeamParts" Nullable="false" />
             </Action>
             <Action Name="sendActivityNotification" IsBound="true">
                 <Parameter Name="bindingParameter" Type="graph.team" />

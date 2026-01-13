@@ -1,4 +1,4 @@
-# Apollo conector
+# Apollo connector
 This connector has two ways of reading data:
     1.Read
     2.Search

@@ -11,8 +11,8 @@
     "pagination": {
       "has_previous_page": false,
       "has_next_page": false,
-      "start_cursor": "WzNd",
-      "end_cursor": "WzNd",
+      "start_cursor": "WzAnd",
+      "end_cursor": "WzAnd",
       "per_page": 500
     }
   }

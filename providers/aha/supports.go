@@ -20,7 +20,7 @@ const (
 	objectNameIntegrations       = "integrations"
 	objectNameProducts           = "products"
 	objectNameReleasePhases      = "release_phases"
-	objectNmaeSchedulableChanges = "schedulable_changes"
+	objectNameSchedulableChanges = "schedulable_changes"
 	objectNameTeamMembers        = "team_members"
 	objectNameTeams              = "teams"
 	objectNameTasks              = "tasks"

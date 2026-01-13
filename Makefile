@@ -76,7 +76,8 @@ linter-clear-cache:
 fix: custom-gcl
 	gci write --skip-generated . && \
 		./custom-gcl run -c .golangci.yml --fix && \
-		typos --config .typos.toml --write-changes
+		typos --config .typos.toml --write-changes && \
+		. scripts/bash/linter.sh
 
 .PHONY: lint
 lint: fix

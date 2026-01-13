@@ -1,7 +1,7 @@
 ---
 swagger: "2.0"
 info:
-  description: "SendinBlue provide a RESTFul API that can be used with any languages.\
+  description: "SendinBlue provide a RESTFull API that can be used with any languages.\
     \ With this API, you will be able to :\n  - Manage your campaigns and get the\
     \ statistics\n  - Manage your contacts\n  - Send transactional Emails and SMS\n\
     \  - and much more...\n\nYou can download our wrappers at https://github.com/orgs/sendinblue\n\
@@ -118,7 +118,7 @@ paths:
         x-optionalDataType: "String"
       responses:
         "200":
-          description: "Email campaigns informations"
+          description: "Email campaigns information"
           examples:
             applications/json:
               campaigns:
@@ -342,7 +342,7 @@ paths:
         x-exportParamName: "CampaignId"
       responses:
         "200":
-          description: "Email campaign informations"
+          description: "Email campaign information"
           examples:
             application/json:
               id: 22
@@ -1054,7 +1054,7 @@ paths:
         x-optionalDataType: "String"
       responses:
         "200":
-          description: "transactional email templates informations"
+          description: "transactional email templates information"
           examples:
             application/json:
               count: 2
@@ -1133,7 +1133,7 @@ paths:
         x-exportParamName: "TemplateId"
       responses:
         "200":
-          description: "Email template informations"
+          description: "Email template information"
           examples:
             application/json:
               id: 33
@@ -1293,7 +1293,7 @@ paths:
         x-optionalDataType: "String"
       responses:
         "200":
-          description: "Aggregated report informations"
+          description: "Aggregated report information"
           examples:
             application/json:
               range: "2016-09-08|2017-04-28"
@@ -1386,7 +1386,7 @@ paths:
         x-optionalDataType: "String"
       responses:
         "200":
-          description: "Aggregated report informations"
+          description: "Aggregated report information"
           examples:
             application/json:
               reports:
@@ -1543,7 +1543,7 @@ paths:
         x-optionalDataType: "String"
       responses:
         "200":
-          description: "Email events report informations"
+          description: "Email events report information"
           examples:
             application/json:
               events:
@@ -2130,7 +2130,7 @@ paths:
         x-exportParamName: "EndDate"
       responses:
         "200":
-          description: "Contact informations"
+          description: "Contact information"
           examples:
             application/json:
               email: "peggy.rain@example.com"
@@ -2303,7 +2303,7 @@ paths:
         x-optionalDataType: "String"
       responses:
         "200":
-          description: "Contact campaign statistics informations"
+          description: "Contact campaign statistics information"
           examples:
             application/json:
               from: "sendermail@example.com"
@@ -2533,7 +2533,7 @@ paths:
         x-optionalDataType: "String"
       responses:
         "200":
-          description: "Folders informations"
+          description: "Folders information"
           examples:
             application/json:
               folders:
@@ -2784,7 +2784,7 @@ paths:
         x-optionalDataType: "String"
       responses:
         "200":
-          description: "Lists informations"
+          description: "Lists information"
           examples:
             application/json:
               lists:
@@ -2845,7 +2845,7 @@ paths:
         x-exportParamName: "ListId"
       responses:
         "200":
-          description: "List informations"
+          description: "List information"
           examples:
             application/json:
               id: 12
@@ -3005,7 +3005,7 @@ paths:
         x-optionalDataType: "String"
       responses:
         "200":
-          description: "Contact informations"
+          description: "Contact information"
           examples:
             application/json:
               contacts:
@@ -3268,7 +3268,7 @@ paths:
         x-optionalDataType: "String"
       responses:
         "200":
-          description: "SMS campaigns informations"
+          description: "SMS campaigns information"
           examples:
             application/json:
               campaigns:
@@ -3364,7 +3364,7 @@ paths:
         x-exportParamName: "CampaignId"
       responses:
         "200":
-          description: "SMS campaign informations"
+          description: "SMS campaign information"
           examples:
             application/json:
               id: 2
@@ -3689,7 +3689,7 @@ paths:
         x-optionalDataType: "String"
       responses:
         "200":
-          description: "Aggregated SMS report informations"
+          description: "Aggregated SMS report information"
           examples:
             application/json:
               range: "2015-05-22|2017-11-29"
@@ -3761,7 +3761,7 @@ paths:
         x-optionalDataType: "String"
       responses:
         "200":
-          description: "Aggregated SMS report informations"
+          description: "Aggregated SMS report information"
           examples:
             application/json:
               reports:
@@ -3898,7 +3898,7 @@ paths:
         x-optionalDataType: "String"
       responses:
         "200":
-          description: "Sms events report informations"
+          description: "Sms events report information"
           examples:
             application/json:
               events:
@@ -4149,7 +4149,7 @@ paths:
         x-optionalDataType: "String"
       responses:
         "200":
-          description: "Webhooks informations"
+          description: "Webhooks information"
           examples:
             application/json:
               webhooks:
@@ -4213,7 +4213,7 @@ paths:
         x-exportParamName: "WebhookId"
       responses:
         "200":
-          description: "Webhook informations"
+          description: "Webhook information"
           examples:
             application/json:
               url: "http://example.domain.com/1brxxxxxx5p1"
@@ -4296,7 +4296,7 @@ paths:
       tags:
       - "Reseller"
       summary: "Get the list of all children accounts"
-      operationId: "getResellerChilds"
+      operationId: "getResellerChildren"
       parameters:
       - name: "limit"
         in: "query"
@@ -4932,7 +4932,7 @@ paths:
       parameters: []
       responses:
         "200":
-          description: "account informations"
+          description: "account information"
           examples:
             application/json:
               plan:
@@ -5008,7 +5008,7 @@ paths:
         x-optionalDataType: "String"
       responses:
         "200":
-          description: "processes informations"
+          description: "processes information"
           examples:
             application/json:
               processes:
@@ -5034,7 +5034,7 @@ paths:
     get:
       tags:
       - "Process"
-      summary: "Return the informations for a process"
+      summary: "Return the information for a process"
       operationId: "getProcess"
       parameters:
       - name: "processId"
@@ -5046,7 +5046,7 @@ paths:
         x-exportParamName: "ProcessId"
       responses:
         "200":
-          description: "process informations"
+          description: "process information"
           examples:
             application/json:
               id: 194
@@ -5167,7 +5167,7 @@ paths:
       parameters:
       - name: "uuid"
         in: "path"
-        description: "UUID to fetch events specific to recieved email"
+        description: "UUID to fetch events specific to received email"
         required: true
         type: "string"
         x-exportParamName: "Uuid"
@@ -5368,7 +5368,7 @@ paths:
         x-exportParamName: "Id"
       responses:
         "204":
-          description: "Returned when sub-account is deleted succesfully"
+          description: "Returned when sub-account is deleted successfully"
         "400":
           description: "bad request"
           examples:
@@ -5563,7 +5563,7 @@ paths:
       parameters:
       - name: "filters"
         in: "query"
-        description: "Filter by attrbutes. If you have filter for owner on your side\
+        description: "Filter by attributes. If you have filter for owner on your side\
           \ please send it as {\"attributes.owner\":\"5b1a17d914b73d35a76ca0c7\"}"
         required: false
         type: "string"
@@ -5815,7 +5815,7 @@ paths:
       parameters:
       - name: "filters[attributes]"
         in: "query"
-        description: "Filter by attrbutes. If you have filter for owner on your side\
+        description: "Filter by attributes. If you have filter for owner on your side\
           \ please send it as `attributes.owner`.\""
         required: false
         type: "string"
@@ -7131,7 +7131,7 @@ paths:
         x-exportParamName: "Id"
       responses:
         "200":
-          description: "Category informations"
+          description: "Category information"
           schema:
             $ref: "#/definitions/getCategoryDetails"
         "400":
@@ -7290,7 +7290,7 @@ paths:
         x-exportParamName: "Id"
       responses:
         "200":
-          description: "Product informations"
+          description: "Product information"
           schema:
             $ref: "#/definitions/getProductDetails"
         "400":
@@ -7427,7 +7427,7 @@ definitions:
     properties:
       token:
         type: "string"
-        example: "ede520dxxxxxxxxxxxx76d631fba2"
+        example: "edge520dxxxxxxxxxxxx76d631fba2"
         description: "Session token, it will remain valid for 15 days."
   getChildDomain:
     type: "object"
@@ -9642,7 +9642,7 @@ definitions:
         example: "open"
         description: "Choose the metrics that will determinate the winning version.\
           \ Considered if 'splitRule' >= 1 and < 50. If splitRule = 50, 'winnerCriteria'\
-          \ is ignored if passed or alreday exist in record"
+          \ is ignored if passed or already exist in record"
         enum:
         - "open"
         - "click"
@@ -9653,7 +9653,7 @@ definitions:
         description: "Choose the duration of the test in hours. Maximum is 7 days,\
           \ pass 24*7 = 168 hours. The winning version will be sent at the end of\
           \ the test. Considered if 'splitRule' >= 1 and < 50. If splitRule = 50,\
-          \ 'winnerDelay' is ignored if passed or alreday exist in record"
+          \ 'winnerDelay' is ignored if passed or already exist in record"
         minimum: 1
         maximum: 168
       ipWarmupEnable:
@@ -9718,7 +9718,7 @@ definitions:
       winningCriteria:
         type: "string"
         example: "Open"
-        description: "Criteria choosen for winning version (Open/Click)"
+        description: "Criteria chosen for winning version (Open/Click)"
         enum:
         - "Open"
         - "Click"
@@ -10392,7 +10392,7 @@ definitions:
               FNAME: "Dicky"
               COUNTRY: "DE"
               BIRTHDAY: "11/02/1989"
-              PREFERED_COLOR: "BLACK"
+              PREFERRED_COLOR: "BLACK"
           description: "List of attributes to be imported"
           minProperties: 1
           maxProperties: 2
@@ -10607,7 +10607,7 @@ definitions:
           type: "string"
           format: "email"
           example: "helen.jurger@example.com"
-          description: "Email addres of the recipient"
+          description: "Email address of the recipient"
   sendTestSms:
     type: "object"
     properties:
@@ -12809,7 +12809,7 @@ definitions:
         type: "string"
         example: "United States of America"
         description: "Country information"
-    description: "Address informations"
+    description: "Address information"
   getSendersList_ips:
     type: "object"
     required:
@@ -13975,7 +13975,7 @@ definitions:
           LNAME: "Roger"
         description: "Pass the set of attributes to be updated. **These attributes\
           \ must be present in your account**. To update existing email address of\
-          \ a contact with the new one please pass EMAIL in attribtes. For example,\
+          \ a contact with the new one please pass EMAIL in attributes. For example,\
           \ **{ \"EMAIL\":\"newemail@domain.com\", \"FNAME\":\"Ellie\", \"LNAME\"\
           :\"Roger\"}**.\nKeep in mind transactional attributes can be updated the\
           \ same way as normal attributes. Mobile Number in **SMS** field should be\

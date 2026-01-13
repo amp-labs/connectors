@@ -199,7 +199,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 				}},
 				NextPage: testroutines.URLTestServer + "/contacts?per_page=60&starting_after=" +
-					"Wy0xLCI2NjQzOWI5NDdiYjA5NWE2ODFmN2ZkOWUiLDNd",
+					"Wy0xLCI2NjQzOWI5NDdiYjA5NEW2ODFmN2ZkOWUiLDAnd",
 				Done: false,
 			},
 			ExpectedErrs: nil,

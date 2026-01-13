@@ -1101,7 +1101,7 @@ paths:
       description: |
         Shows the properties of the specified comment.
 
-        The `{locale}` is required only for end users and anomynous users. Admins and agents can omit it.
+        The `{locale}` is required only for end users and anonymous users. Admins and agents can omit it.
 
         #### Allowed for
 
@@ -1683,7 +1683,7 @@ paths:
       description: |
         Lists all the sections in Help Center or in a specific [category](/api-reference/help_center/help-center-api/categories).
 
-        The `{locale}` is required only for end users and anomynous users. Admins and agents can omit it.
+        The `{locale}` is required only for end users and anonymous users. Admins and agents can omit it.
 
         #### Allowed for
 
@@ -3497,7 +3497,7 @@ components:
           description: The locale in which this comment was made
         non_author_editor_id:
           type: integer
-          description: The user id of whoever performed the most recent (if any) non-author edit. A non-author edit consists of an edit make by a user other than the author that creates or updates the `body` or `author_id`. Note that only edits made after May 17, 2021 will be reflected in this field. If no non-author edits have occured since May 17, 2021, then this field will be `null`.
+          description: The user id of whoever performed the most recent (if any) non-author edit. A non-author edit consists of an edit make by a user other than the author that creates or updates the `body` or `author_id`. Note that only edits made after May 17, 2021 will be reflected in this field. If no non-author edits have occurred since May 17, 2021, then this field will be `null`.
           readOnly: true
         non_author_updated_at:
           type: string
@@ -3705,7 +3705,7 @@ components:
           readOnly: true
         non_author_editor_id:
           type: integer
-          description: The user id of whoever performed the most recent (if any) non-author edit. A non-author edit consists of an edit make by a user other than the author that creates or updates the `body`. Note that only edits made after May 17, 2021 will be reflected in this field. If no non-author edits have occured since May 17, 2021, then this field will be `null`.
+          description: The user id of whoever performed the most recent (if any) non-author edit. A non-author edit consists of an edit make by a user other than the author that creates or updates the `body`. Note that only edits made after May 17, 2021 will be reflected in this field. If no non-author edits have occurred since May 17, 2021, then this field will be `null`.
           readOnly: true
         non_author_updated_at:
           type: string
@@ -3800,7 +3800,7 @@ components:
           readOnly: true
         non_author_editor_id:
           type: integer
-          description: The user id of whoever performed the most recent (if any) non-author edit. A non-author edit consists of an edit make by a user other than the author that creates or updates the `title` or `details`. Note that only edits made after May 17, 2021 will be reflected in this field. If no non-author edits have occured since May 17, 2021, then this field will be `null`.
+          description: The user id of whoever performed the most recent (if any) non-author edit. A non-author edit consists of an edit make by a user other than the author that creates or updates the `title` or `details`. Note that only edits made after May 17, 2021 will be reflected in this field. If no non-author edits have occurred since May 17, 2021, then this field will be `null`.
           readOnly: true
         non_author_updated_at:
           type: string

@@ -64,7 +64,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(`"clinet_id" is not allowed`),
+				errors.New(`"client_id" is not allowed`),
 			},
 		},
 		{

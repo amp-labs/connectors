@@ -34,13 +34,13 @@ func TestBulkRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Correct error message is understood from JSON response",
-			Input: common.ReadParams{ObjectName: "Accout", Fields: connectors.Fields("id")},
+			Input: common.ReadParams{ObjectName: "Account", Fields: connectors.Fields("id")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusBadRequest, responseUnknownObject),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("sObject type 'Accout' is not supported"),
+				common.ErrBadRequest, errors.New("sObject type 'Account' is not supported"),
 			},
 		},
 		{

@@ -1629,7 +1629,7 @@ paths:
               account_id: account_id,
               body: acquisition_update
             )
-            puts "Updated AccountAcqusition #{acquisition}"
+            puts "Updated AccountAcquisition #{acquisition}"
           rescue Recurly::Errors::ValidationError => e
             # If the request was invalid, you may want to tell your user
             # why. You can find the invalid params and reasons in e.recurly_error.params
@@ -1689,7 +1689,7 @@ paths:
       summary: Remove an account's acquisition data
       responses:
         '204':
-          description: Acquisition data was succesfully deleted.
+          description: Acquisition data was successfully deleted.
         '404':
           description: Incorrect site or account ID.
           content:
@@ -1744,7 +1744,7 @@ paths:
         source: |
           begin
             acquisition = @client.remove_account_acquisition(account_id: account_id)
-            puts "Removed AccountAcqusition #{acquisition}"
+            puts "Removed AccountAcquisition #{acquisition}"
           rescue Recurly::Errors::NotFoundError
             # If the resource was not found, you may want to alert the user or
             # just return nil
@@ -8004,7 +8004,7 @@ paths:
       - measured_unit
       operationId: remove_measured_unit
       summary: Remove a measured unit
-      description: A mesured unit cannot be deleted if it is used by an active plan.
+      description: A measured unit cannot be deleted if it is used by an active plan.
       parameters:
       - "$ref": "#/components/parameters/measured_unit_id"
       responses:
@@ -9497,7 +9497,7 @@ paths:
         source: |
           begin
             invoice = @client.mark_invoice_successful(invoice_id: invoice_id)
-            puts "Marked invoice sucessful #{invoice}"
+            puts "Marked invoice successful #{invoice}"
           rescue Recurly::Errors::NotFoundError
             # If the resource was not found, you may want to alert the user or
             # just return nil
@@ -10138,7 +10138,7 @@ paths:
       description: |
         There are two ways to do a refund:
         * Apply a specific dollar/cent amount or percentage amount to an entire invoice, which will refund the resulting amount across all line items on the invoice.
-          * If you want to refund the entire refundable amount on the invoice, the simplest way is to do `type=amount` without specifiying an `amount`.
+          * If you want to refund the entire refundable amount on the invoice, the simplest way is to do `type=amount` without specifying an `amount`.
           * Note: You must have the Credit Memos feature flag enabled on your site to utilize percentage amount refunds on invoices.
         * Apply a refund to one or more individual line items on an invoice. A line item can be refunded by a quantity amount, a specific dollar/cent amount, or a percentage amount and will only apply to the specific line item you are aiming to refund.
           * Note: You must have the Credit Memos feature flag enabled on your site to utilize specific dollar/cent amount and percentage amount refunds on line items.
@@ -13771,7 +13771,7 @@ paths:
       summary: Convert trial subscription
       description: This will immediately convert a trial subscription to a fully active
         paid subscription, creating and collecting an invoice for auto-collecting
-        subsriptions.  If the invoice cannot be collected, the subscription will remain
+        subscriptions.  If the invoice cannot be collected, the subscription will remain
         in trial. The subscription must be in a trial. Active, paused, expired, cancelled,
         or failed subscriptions cannot be converted.
       parameters:
@@ -20327,7 +20327,7 @@ components:
           format: date-time
           title: Deleted at
           description: Definitions are initially soft deleted, and once all the values
-            are removed from the accouts or subscriptions, will be hard deleted an
+            are removed from the accounts or subscriptions, will be hard deleted an
             no longer visible.
           readOnly: true
     CurrencyCode:
@@ -21920,7 +21920,7 @@ components:
         destination_tax_address_source:
           type: string
           title: Destination tax address source
-          description: The source of the address that will be used as the destinaion
+          description: The source of the address that will be used as the destination
             in determining taxes. Available only when the site is on an Elite plan.
             A value of "destination" refers to the "Customer tax address". A value
             of "origin" refers to the "Business entity tax address".
@@ -22229,7 +22229,7 @@ components:
         destination_tax_address_source:
           type: string
           title: Destination tax address source
-          description: The source of the address that will be used as the destinaion
+          description: The source of the address that will be used as the destination
             in determining taxes. Available only when the site is on an Elite plan.
             A value of "destination" refers to the "Customer tax address". A value
             of "origin" refers to the "Business entity tax address".
@@ -27123,7 +27123,7 @@ components:
         destination_tax_address_source:
           type: string
           title: Destination tax address source
-          description: The source of the address that will be used as the destinaion
+          description: The source of the address that will be used as the destination
             in determining taxes. Available only when the site is on an Elite plan.
             A value of "destination" refers to the "Customer tax address". A value
             of "origin" refers to the "Business entity tax address".

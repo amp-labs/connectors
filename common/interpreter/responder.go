@@ -21,7 +21,7 @@ type FaultyResponder struct {
 
 // NewFaultyResponder creates error responder that will be used when provider responds with erroneous payload.
 //   - FormatSwitch will be used to select the best matching error format.
-//     It can be null if you don't want pretty parsing and formating.
+//     It can be null if you don't want pretty parsing and formatting.
 //   - StatusCodeMap will be used to enhance error message.
 //     This is an optional map that will precede any default status to error mapping.
 func NewFaultyResponder(errorSwitch *FormatSwitch, statusCodeMap map[int]error) *FaultyResponder {

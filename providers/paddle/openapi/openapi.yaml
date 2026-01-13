@@ -16560,7 +16560,7 @@ components:
           - ntf_01gt261ms8ew72a0vnm5p5ne2q
     notification_setting_id_path:
       x-stoplight:
-        id: uu626wvahk1nd
+        id: uu626wvahk1and
       name: notification_setting_id
       in: path
       description: Paddle ID of the notification setting entity (notification destination) to work with.
@@ -24306,7 +24306,7 @@ components:
         - PK
         - PL
         - PM
-        - PN
+        - ON
         - PR
         - PS
         - PT
@@ -24703,7 +24703,7 @@ components:
           description: Poland
         PM:
           description: Saint Pierre and Miquelon
-        PN:
+        ON:
           description: Pitcairn
         PR:
           description: Puerto Rico

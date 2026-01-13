@@ -152,7 +152,7 @@
       "label": "autogen",
       "type": "enumeration",
       "fieldType": "booleancheckbox",
-      "description": "True if this contact was generated programatically for testing purposes",
+      "description": "True if this contact was generated programmatically for testing purposes",
       "groupName": "contactinformation",
       "options": [
         {

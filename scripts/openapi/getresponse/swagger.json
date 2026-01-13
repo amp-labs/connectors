@@ -17320,7 +17320,7 @@
                     "Autoresponders"
                 ],
                 "summary": "The statistics for a single autoresponder",
-                "description": "\u003E\nThis requst returns the statistics summary for a single given autoresponder. As in all statistics, you can change the date and time range  (hourly daily monthly or total). Keep in mind\nthat all statistics date ranges are given in standard UTC period type objects. ([See ISO 8601 standard](http://en.wikipedia.org/wiki/ISO_8601#Time_intervals))\n\n(https://app.getresponse.com/statistics.html?t=followup#total).\n You can filter the resource using criteria specified as `query[*]`. You can provide multiple criteria, to use AND logic. You can sort the resource using parameters specified as `sort[*]`. You can specify multiple fields to sort by.",
+                "description": "\u003E\nThis request returns the statistics summary for a single given autoresponder. As in all statistics, you can change the date and time range  (hourly daily monthly or total). Keep in mind\nthat all statistics date ranges are given in standard UTC period type objects. ([See ISO 8601 standard](http://en.wikipedia.org/wiki/ISO_8601#Time_intervals))\n\n(https://app.getresponse.com/statistics.html?t=followup#total).\n You can filter the resource using criteria specified as `query[*]`. You can provide multiple criteria, to use AND logic. You can sort the resource using parameters specified as `sort[*]`. You can specify multiple fields to sort by.",
                 "operationId": "getSingleAutoresponderStatistics",
                 "parameters": [
                     {
@@ -34173,7 +34173,7 @@
                         ]
                     },
                     "webformType": {
-                        "description": "The property required for the webform subscription method. If it equals webforms, webformsv2 or popups, additonal property value is needed.",
+                        "description": "The property required for the webform subscription method. If it equals webforms, webformsv2 or popups, additional property value is needed.",
                         "type": "string",
                         "enum": [
                             "all",
@@ -37084,7 +37084,7 @@
                     "confirmation": {
                         "$ref": "#/components/schemas/CampaignConfirmation"
                     },
-                    "optinTypes": {
+                    "optionTypes": {
                         "$ref": "#/components/schemas/CampaignOptinTypes"
                     },
                     "subscriptionNotifications": {
@@ -37172,7 +37172,7 @@
                 },
                 "type": "object"
             },
-            "CampaignOptinTypes": {
+            "CampaignOptionTypes": {
                 "properties": {
                     "email": {
                         "description": "Single opt-in: confirmed opt-in disabled. Double opt-in: confirmed opt-in enabled. You can find more information [here](https://www.getresponse.com/resources/glossary/confirmed-opt-in.html)",
@@ -38438,7 +38438,7 @@
             },
             "FormSettings": {
                 "properties": {
-                    "optin": {
+                    "option": {
                         "description": "`single` - Single opt-in means that the contact will be added without confirming their subscription first. `double` - Double opt-in means that the contact will receive a subscription confirmation email.",
                         "type": "string",
                         "enum": [
@@ -38754,7 +38754,7 @@
                         "example": 2,
                         "nullable": true
                     },
-                    "optin": {
+                    "option": {
                         "description": "The opt-in type (double or single)",
                         "type": "string",
                         "enum": [
@@ -39846,7 +39846,7 @@
                             "selectedSegments": {
                                 "$ref": "#/components/schemas/MessageSendSettingSelectedSegments"
                             },
-                            "selectedSupressions": {
+                            "selectedSuppressions": {
                                 "$ref": "#/components/schemas/MessageSendSettingSelectedSuppressions"
                             },
                             "excludedCampaigns": {
@@ -41281,7 +41281,7 @@
                                     "selectedSegments": {
                                         "$ref": "#/components/schemas/MessageSendSettingSelectedSegments"
                                     },
-                                    "selectedSupressions": {
+                                    "selectedSuppressions": {
                                         "$ref": "#/components/schemas/MessageSendSettingSelectedSuppressions"
                                     },
                                     "excludedCampaigns": {
@@ -41498,7 +41498,7 @@
                                     "selectedSegments": {
                                         "$ref": "#/components/schemas/MessageSendSettingSelectedSegments"
                                     },
-                                    "selectedSupressions": {
+                                    "selectedSuppressions": {
                                         "$ref": "#/components/schemas/MessageSendSettingSelectedSuppressions"
                                     },
                                     "excludedCampaigns": {
@@ -43880,7 +43880,7 @@
                         "type": "integer",
                         "example": 0
                     },
-                    "website_buider_elegant": {
+                    "website_builder_elegant": {
                         "type": "integer",
                         "example": 0
                     },
@@ -45181,7 +45181,7 @@
                 }
             },
             "AutoresponderSendSettingsDelayInHours": {
-                "description": "How many hours to delay the message after a trigger occured, in the 0-23 format",
+                "description": "How many hours to delay the message after a trigger occurred, in the 0-23 format",
                 "type": "integer",
                 "format": "int32",
                 "maximum": 23,
@@ -50231,7 +50231,7 @@
         },
         {
             "name": "Suppressions",
-            "description": "Suppressions API documentaion"
+            "description": "Suppressions API documentation"
         },
         {
             "name": "Orders",

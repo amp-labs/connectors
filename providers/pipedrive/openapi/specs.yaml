@@ -55,7 +55,7 @@ tags:
       Leads are potential deals stored in Leads Inbox before they are archived or converted to a deal. Each lead needs to be named (using the `title` field) and be linked to a person or an organization. In addition to that, a lead can contain most of the fields a deal can (such as `value` or `expected_close_date`).
   - name: LegacyTeams
     description: |
-      Legacy teams allow you to form groups of users withing the organization for more efficient management. Previously Legacy Teams were called Teams and occupied the `v1/teams*` path. They're being deprecated because we are preparing for an upgraded version of the Teams API, which requires migrating the current functionality to a new path URL `v1/legacyTeams*`. The functionality and [OAuth scopes](https://pipedrive.readme.io/docs/marketplace-scopes-and-permissions-explanations) of all the Teams API endpoints will remain the same.
+      Legacy teams allow you to form groups of users within the organization for more efficient management. Previously Legacy Teams were called Teams and occupied the `v1/teams*` path. They're being deprecated because we are preparing for an upgraded version of the Teams API, which requires migrating the current functionality to a new path URL `v1/legacyTeams*`. The functionality and [OAuth scopes](https://pipedrive.readme.io/docs/marketplace-scopes-and-permissions-explanations) of all the Teams API endpoints will remain the same.
   - name: Mailbox
     description: |
       Mailbox was designed to be the email control hub inside Pipedrive. Pipedrive supports all major providers (including Gmail, Outlook and also custom IMAP/SMTP). There are 2 options for syncing user emails: 2-way sync: Mail Connection is established with the mail provider (example Gmail). There can be only 1 active Mail Connection per user in company. 1-way sync: SmartBCC feature which stores the copies of email messages to Pipedrive by adding the SmartBCC specific address to mail recipients.
@@ -97,7 +97,7 @@ tags:
       Product fields represent the near-complete schema for a product in the context of the company of the authorized user. Each company can have a different schema for their products, with various custom fields. In the context of using product fields as a schema for defining the data fields of a product, it must be kept in mind that some types of custom fields can have additional data fields which are not separate product fields per se. Such is the case with monetary, daterange and timerange fields – each of these fields will have one additional data field in addition to the one presented in the context of product fields. For example, if there is a monetary field with the key `ffk9s9` stored on the account, `ffk9s9` would hold the numeric value of the field, and `ffk9s9_currency` would hold the ISO currency code that goes along with the numeric value. To find out which data fields are available, fetch one product and list its keys.
   - name: Products
     description: |
-      Products are the goods or services you are dealing with. Each product can have N different price points - firstly, each product can have a price in N different currencies, and secondly, each product can have N variations of itself, each having N prices in different currencies. Note that only one price per variation per currency is supported. Products can be instantiated to deals. In the context of instatiation, a custom price, quantity, duration and discount can be applied.
+      Products are the goods or services you are dealing with. Each product can have N different price points - firstly, each product can have a price in N different currencies, and secondly, each product can have N variations of itself, each having N prices in different currencies. Note that only one price per variation per currency is supported. Products can be instantiated to deals. In the context of instantiation, a custom price, quantity, duration and discount can be applied.
   - name: Projects
     description: |
       Projects represent ongoing, completed or canceled projects attached to an organization, person or to deals. Each project has an owner and must be placed in a phase. Each project consists of standard data fields but can also contain a number of custom fields. The custom fields can be recognized by long hashes as keys.
@@ -5842,7 +5842,7 @@ paths:
             schema:
               title: addDealRequest
               allOf:
-                - title: requredTitleParameter
+                - title: requiredTitleParameter
                   type: object
                   required:
                     - title
@@ -10912,7 +10912,7 @@ paths:
                           linked_person_name: ''
                           mail_message_party_id: 1
                       body_url: 'https://example.org'
-                      nylas_id: 8cfw8n7l4iy24xxxxxxxxx
+                      nylas_id: 8cfw8n7l4it24xxxxxxxxx
                       account_id: ao5gpry0zykr1xxxxxxxxx
                       user_id: 1
                       mail_thread_id: 1
@@ -11650,7 +11650,7 @@ paths:
                           linked_person_name: ''
                           mail_message_party_id: 1
                       body_url: 'https://example.org'
-                      nylas_id: 8cfw8n7l4iy24xxxxxxxxx
+                      nylas_id: 8cfw8n7l4it24xxxxxxxxx
                       account_id: ao5gpry0zykr1xxxxxxxxx
                       user_id: 1
                       mail_thread_id: 1
@@ -29846,7 +29846,7 @@ paths:
                           linked_person_name: ''
                           mail_message_party_id: 1
                       body_url: 'https://example.org'
-                      nylas_id: 8cfw8n7l4iy24xxxxxxxxx
+                      nylas_id: 8cfw8n7l4it24xxxxxxxxx
                       account_id: ao5gpry0zykr1xxxxxxxxx
                       user_id: 1
                       mail_thread_id: 1
@@ -37521,7 +37521,7 @@ paths:
                           linked_person_name: ''
                           mail_message_party_id: 1
                       body_url: 'https://example.org'
-                      nylas_id: 8cfw8n7l4iy24xxxxxxxxx
+                      nylas_id: 8cfw8n7l4it24xxxxxxxxx
                       account_id: ao5gpry0zykr1xxxxxxxxx
                       user_id: 1
                       mail_thread_id: 1
@@ -52165,7 +52165,7 @@ paths:
           content:
             application/json:
               schema:
-                title: unathorizedResponse
+                title: unauthorizedResponse
                 type: object
                 properties:
                   success:
@@ -52957,7 +52957,7 @@ paths:
           content:
             application/json:
               schema:
-                title: unathorizedResponse
+                title: unauthorizedResponse
                 type: object
                 properties:
                   success:
@@ -53043,7 +53043,7 @@ paths:
           content:
             application/json:
               schema:
-                title: unathorizedResponse
+                title: unauthorizedResponse
                 type: object
                 properties:
                   success:
@@ -53199,7 +53199,7 @@ paths:
           content:
             application/json:
               schema:
-                title: unathorizedResponse
+                title: unauthorizedResponse
                 type: object
                 properties:
                   success:
@@ -53436,7 +53436,7 @@ paths:
           content:
             application/json:
               schema:
-                title: unathorizedResponse
+                title: unauthorizedResponse
                 type: object
                 properties:
                   success:
@@ -53497,7 +53497,7 @@ paths:
           content:
             application/json:
               schema:
-                title: unathorizedResponse
+                title: unauthorizedResponse
                 type: object
                 properties:
                   success:

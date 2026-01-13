@@ -113,8 +113,8 @@ func extractID(record map[string]any) (recordID string, found bool) {
 		return "", false
 	}
 
-	resourceName, convertable := resourceNameField.(string)
-	if !convertable {
+	resourceName, convertible := resourceNameField.(string)
+	if !convertible {
 		return "", false
 	}
 

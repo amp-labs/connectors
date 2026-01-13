@@ -4337,7 +4337,7 @@
                                                     },
                                                     "justcall_number": {
                                                         "type": "string",
-                                                        "description": "JustCall number from which SMS was sent or receievd",
+                                                        "description": "JustCall number from which SMS was sent or received",
                                                         "example": "127077XXXXX"
                                                     },
                                                     "justcall_line_name": {
@@ -4524,7 +4524,7 @@
                                         },
                                         "justcall_number": {
                                             "type": "string",
-                                            "description": "JustCall number from which SMS was sent or receievd",
+                                            "description": "JustCall number from which SMS was sent or received",
                                             "example": "127077XXXXX"
                                         },
                                         "justcall_line_name": {
@@ -4719,7 +4719,7 @@
                                         },
                                         "justcall_number": {
                                             "type": "string",
-                                            "description": "JustCall number from which SMS was sent or receievd",
+                                            "description": "JustCall number from which SMS was sent or received",
                                             "example": "127077XXXXX"
                                         },
                                         "justcall_line_name": {
@@ -4936,7 +4936,7 @@
                                         },
                                         "justcall_number": {
                                             "type": "string",
-                                            "description": "JustCall number from which SMS was sent or receievd",
+                                            "description": "JustCall number from which SMS was sent or received",
                                             "example": "127077XXXXX"
                                         },
                                         "justcall_line_name": {
@@ -21937,7 +21937,7 @@
                     },
                     "justcall_number": {
                         "type": "string",
-                        "description": "JustCall number from which SMS was sent or receievd",
+                        "description": "JustCall number from which SMS was sent or received",
                         "example": "127077XXXXX"
                     },
                     "justcall_line_name": {
@@ -22118,7 +22118,7 @@
                                 },
                                 "justcall_number": {
                                     "type": "string",
-                                    "description": "JustCall number from which SMS was sent or receievd",
+                                    "description": "JustCall number from which SMS was sent or received",
                                     "example": "127077XXXXX"
                                 },
                                 "justcall_line_name": {

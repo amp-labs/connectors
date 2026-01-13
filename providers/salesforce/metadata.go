@@ -151,7 +151,7 @@ type fieldResult struct {
 
 	Autonumber        *bool `json:"autonumber,omitempty"`
 	Calculated        *bool `json:"calculated,omitempty"`
-	Createable        *bool `json:"createable,omitempty"`
+	Creatable         *bool `json:"creatable,omitempty"`
 	Updateable        *bool `json:"updateable,omitempty"`
 	Custom            *bool `json:"custom,omitempty"`
 	Nillable          *bool `json:"nillable,omitempty"`
@@ -183,7 +183,7 @@ func (r describeSObjectResult) transformToFields() map[string]common.FieldMetada
 func (f fieldResult) isReadOnly() bool {
 	return (f.Autonumber != nil && *f.Autonumber) ||
 		(f.Calculated != nil && *f.Calculated) ||
-		(f.Createable != nil && !*f.Createable && f.Updateable != nil && !*f.Updateable)
+		(f.Creatable != nil && !*f.Creatable && f.Updateable != nil && !*f.Updateable)
 }
 
 func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
@@ -244,7 +244,7 @@ func (f fieldResult) getFieldValues() []common.FieldValue {
 // Salesforce only defines "required" in the context of CREATE (not update).
 //
 // A field is required on create when all of the following are true:
-//   - it is createable
+//   - it is creatable
 //   - it is not nillable (cannot be null)
 //   - it is not defaulted on create (Salesforce will not autopopulate it)
 //
@@ -257,12 +257,12 @@ func (f fieldResult) isRequired() *bool {
 	}
 
 	// Cannot determine without all three metadata flags.
-	if f.Createable == nil || f.Nillable == nil || f.DefaultedOnCreate == nil {
+	if f.Creatable == nil || f.Nillable == nil || f.DefaultedOnCreate == nil {
 		return nil
 	}
 
-	// Required when createable, non-nillable, and not defaulted by Salesforce.
-	requiredOnCreate := *f.Createable && !*f.Nillable && !*f.DefaultedOnCreate
+	// Required when creatable, non-nillable, and not defaulted by Salesforce.
+	requiredOnCreate := *f.Creatable && !*f.Nillable && !*f.DefaultedOnCreate
 
 	return goutils.Pointer(requiredOnCreate)
 }

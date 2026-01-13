@@ -8824,7 +8824,7 @@
                   "subscriptions.email.marketing.method",
                   "subscriptions.email.marketing.method_detail",
                   "subscriptions.email.marketing.custom_method_detail",
-                  "subscriptions.email.marketing.double_optin",
+                  "subscriptions.email.marketing.double_option",
                   "subscriptions.email.marketing.suppression",
                   "subscriptions.email.marketing.list_suppressions",
                   "subscriptions.sms",
@@ -12671,7 +12671,7 @@
                   "subscriptions.email.marketing.method",
                   "subscriptions.email.marketing.method_detail",
                   "subscriptions.email.marketing.custom_method_detail",
-                  "subscriptions.email.marketing.double_optin",
+                  "subscriptions.email.marketing.double_option",
                   "subscriptions.email.marketing.suppression",
                   "subscriptions.email.marketing.list_suppressions",
                   "subscriptions.sms",
@@ -13871,7 +13871,7 @@
                   "subscriptions.email.marketing.method",
                   "subscriptions.email.marketing.method_detail",
                   "subscriptions.email.marketing.custom_method_detail",
-                  "subscriptions.email.marketing.double_optin",
+                  "subscriptions.email.marketing.double_option",
                   "subscriptions.email.marketing.suppression",
                   "subscriptions.email.marketing.list_suppressions",
                   "subscriptions.sms",
@@ -14170,7 +14170,7 @@
                   "subscriptions.email.marketing.method",
                   "subscriptions.email.marketing.method_detail",
                   "subscriptions.email.marketing.custom_method_detail",
-                  "subscriptions.email.marketing.double_optin",
+                  "subscriptions.email.marketing.double_option",
                   "subscriptions.email.marketing.suppression",
                   "subscriptions.email.marketing.list_suppressions",
                   "subscriptions.sms",
@@ -15996,7 +15996,7 @@
                   "subscriptions.email.marketing.method",
                   "subscriptions.email.marketing.method_detail",
                   "subscriptions.email.marketing.custom_method_detail",
-                  "subscriptions.email.marketing.double_optin",
+                  "subscriptions.email.marketing.double_option",
                   "subscriptions.email.marketing.suppression",
                   "subscriptions.email.marketing.list_suppressions",
                   "subscriptions.sms",
@@ -17839,7 +17839,7 @@
                   "subscriptions.email.marketing.method",
                   "subscriptions.email.marketing.method_detail",
                   "subscriptions.email.marketing.custom_method_detail",
-                  "subscriptions.email.marketing.double_optin",
+                  "subscriptions.email.marketing.double_option",
                   "subscriptions.email.marketing.suppression",
                   "subscriptions.email.marketing.list_suppressions",
                   "subscriptions.sms",
@@ -21808,7 +21808,7 @@
       "post": {
         "operationId": "create_client_event",
         "summary": "Create Client Event",
-        "description": "Create a new event to track a profile's activity.\n\nThis endpoint is specifically designed to be called from publicly-browseable, client-side environments only and requires a [public API key (site ID)](https://www.klaviyo.com/settings/account/api-keys). Never use a private API key with our client-side endpoints.\n\nTo create events from server-side applications, please use [POST /api/events](https://developers.klaviyo.com/en/reference/create_event).\n\nNote that to update a profile's existing identifiers (e.g., email), you must use a server-side endpoint authenticated by a private API key. Attempts to do so via client-side endpoints will return a 202, however the identifier field(s) will not be updated.<br><br>*Rate limits*:<br>Burst: `350/s`<br>Steady: `3500/m`\n\n**Scopes:**\n`events:write`",
+        "description": "Create a new event to track a profile's activity.\n\nThis endpoint is specifically designed to be called from publicly-browsable, client-side environments only and requires a [public API key (site ID)](https://www.klaviyo.com/settings/account/api-keys). Never use a private API key with our client-side endpoints.\n\nTo create events from server-side applications, please use [POST /api/events](https://developers.klaviyo.com/en/reference/create_event).\n\nNote that to update a profile's existing identifiers (e.g., email), you must use a server-side endpoint authenticated by a private API key. Attempts to do so via client-side endpoints will return a 202, however the identifier field(s) will not be updated.<br><br>*Rate limits*:<br>Burst: `350/s`<br>Steady: `3500/m`\n\n**Scopes:**\n`events:write`",
         "parameters": [
           {
             "name": "company_id",
@@ -21871,7 +21871,7 @@
       "post": {
         "operationId": "create_client_profile",
         "summary": "Create or Update Client Profile",
-        "description": "Create or update properties about a profile without tracking an associated event.\n\nThis endpoint is specifically designed to be called from publicly-browseable, client-side environments only and requires a [public API key (site ID)](https://www.klaviyo.com/settings/account/api-keys). Never use a private API key with our client-side endpoints.\n\nTo create or update profiles from server-side applications, please use [POST /api/profile-import](https://developers.klaviyo.com/en/reference/create_or_update_profile).\n\nNote that to update a profile's existing identifiers (e.g., email), you must use a server-side endpoint authenticated by a private API key. Attempts to do so via client-side endpoints will return a 202, however the identifier field(s) will not be updated.<br><br>*Rate limits*:<br>Burst: `350/s`<br>Steady: `3500/m`\n\n**Scopes:**\n`profiles:write`",
+        "description": "Create or update properties about a profile without tracking an associated event.\n\nThis endpoint is specifically designed to be called from publicly-browsable, client-side environments only and requires a [public API key (site ID)](https://www.klaviyo.com/settings/account/api-keys). Never use a private API key with our client-side endpoints.\n\nTo create or update profiles from server-side applications, please use [POST /api/profile-import](https://developers.klaviyo.com/en/reference/create_or_update_profile).\n\nNote that to update a profile's existing identifiers (e.g., email), you must use a server-side endpoint authenticated by a private API key. Attempts to do so via client-side endpoints will return a 202, however the identifier field(s) will not be updated.<br><br>*Rate limits*:<br>Burst: `350/s`<br>Steady: `3500/m`\n\n**Scopes:**\n`profiles:write`",
         "parameters": [
           {
             "name": "company_id",
@@ -21934,7 +21934,7 @@
       "post": {
         "operationId": "bulk_create_client_events",
         "summary": "Bulk Create Client Events",
-        "description": "Create new events to track a profile's activity.\n\nThis endpoint is specifically designed to be called from publicly-browseable, client-side environments only and requires a [public API key (site ID)](https://www.klaviyo.com/settings/account/api-keys). Never use a private API key with our client-side endpoints.\n\nTo create events from server-side applications, please use [POST /api/event-bulk-create-jobs](https://developers.klaviyo.com/en/reference/bulk_create_events).\n\nAccepts a maximum of `1000` events per request.<br><br>*Rate limits*:<br>Burst: `10/s`<br>Steady: `150/m`\n\n**Scopes:**\n`events:write`",
+        "description": "Create new events to track a profile's activity.\n\nThis endpoint is specifically designed to be called from publicly-browsable, client-side environments only and requires a [public API key (site ID)](https://www.klaviyo.com/settings/account/api-keys). Never use a private API key with our client-side endpoints.\n\nTo create events from server-side applications, please use [POST /api/event-bulk-create-jobs](https://developers.klaviyo.com/en/reference/bulk_create_events).\n\nAccepts a maximum of `1000` events per request.<br><br>*Rate limits*:<br>Burst: `10/s`<br>Steady: `150/m`\n\n**Scopes:**\n`events:write`",
         "parameters": [
           {
             "name": "company_id",
@@ -22000,7 +22000,7 @@
       "post": {
         "operationId": "create_client_back_in_stock_subscription",
         "summary": "Create Client Back In Stock Subscription",
-        "description": "Subscribe a profile to receive back in stock notifications. Check out [our Back in Stock API guide](https://developers.klaviyo.com/en/docs/how_to_set_up_custom_back_in_stock) for more details.\n\nThis endpoint is specifically designed to be called from publicly-browseable, client-side environments only and requires a [public API key (site ID)](https://www.klaviyo.com/settings/account/api-keys). Never use a private API key with our client-side endpoints.\n\nTo create back in stock subscriptions from server-side applications, please use [POST /api/back-in-stock-subscriptions](https://developers.klaviyo.com/en/reference/create_back_in_stock_subscription).<br><br>*Rate limits*:<br>Burst: `350/s`<br>Steady: `3500/m`\n\n**Scopes:**\n`catalogs:write`\n`profiles:write`",
+        "description": "Subscribe a profile to receive back in stock notifications. Check out [our Back in Stock API guide](https://developers.klaviyo.com/en/docs/how_to_set_up_custom_back_in_stock) for more details.\n\nThis endpoint is specifically designed to be called from publicly-browsable, client-side environments only and requires a [public API key (site ID)](https://www.klaviyo.com/settings/account/api-keys). Never use a private API key with our client-side endpoints.\n\nTo create back in stock subscriptions from server-side applications, please use [POST /api/back-in-stock-subscriptions](https://developers.klaviyo.com/en/reference/create_back_in_stock_subscription).<br><br>*Rate limits*:<br>Burst: `350/s`<br>Steady: `3500/m`\n\n**Scopes:**\n`catalogs:write`\n`profiles:write`",
         "parameters": [
           {
             "name": "company_id",
@@ -23876,7 +23876,7 @@
             "example": "marketing drive",
             "nullable": true
           },
-          "double_optin": {
+          "double_option": {
             "description": "Whether the profile was subscribed to email marketing using a double opt-in.",
             "type": "boolean",
             "example": true,
@@ -25970,7 +25970,7 @@
           "is_double_opt_in"
         ]
       },
-      "DoubleOptinFilter": {
+      "DoubleOptionFilter": {
         "type": "object",
         "properties": {
           "field": {

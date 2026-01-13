@@ -68,7 +68,7 @@ order</b>.
 > functions for a specific connector.
 
 
-> Please make seperate PRs for each of the steps below.
+> Please make separate PRs for each of the steps below.
 
 ### 1. Add list metadata functionality:
 

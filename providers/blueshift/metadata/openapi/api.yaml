@@ -549,7 +549,7 @@
           },
           {
             "name": "syncUpdateWithProductData",
-            "description": "If you pass this query parameter, the API returns the UUID for products that are added succesfully.",
+            "description": "If you pass this query parameter, the API returns the UUID for products that are added successfully.",
             "in": "query",
             "schema": {
               "type": "string"
@@ -704,7 +704,7 @@
                               "type": "string",
                               "description": "All the errors for the particular item that failed.",
                               "properties": {
-                                "error_tpe": {
+                                "error_type": {
                                   "type": "string",
                                   "description": "The field name and the error details."
                                 }
@@ -713,7 +713,7 @@
                           },
                           "product": {
                             "type": "object",
-                            "description": "The details for the item for which the error occured. Includes the category and the product details.",
+                            "description": "The details for the item for which the error occurred. Includes the category and the product details.",
                             "properties": {
                               "category": {
                                 "type": "array",
@@ -856,7 +856,7 @@
                       },
                       "description": "All the errors for the particular item that failed.",
                       "properties": {
-                        "error_tpe": {
+                        "error_type": {
                           "type": "string",
                           "description": "The field name and the error details."
                         }
@@ -2576,7 +2576,7 @@
                   "description": {
                     "type": "string",
                     "example": "The list of users who are based in San Francisco.",
-                    "description": "Specify an appropirate description of that provides context on what the list contains."
+                    "description": "Specify an appropriate description of that provides context on what the list contains."
                   },
                   "is_seed_list": {
                     "type": "integer",
@@ -3686,12 +3686,12 @@
                   },
                   "device_idfa": {
                     "type": "string",
-                    "description": "Sepcify the advertising identifier (idfa) on the device.",
+                    "description": "Specify the advertising identifier (idfa) on the device.",
                     "example": "4d031ed8-c40e-57d4-9c99-a3e308d8cd78"
                   },
                   "device_idfv": {
                     "type": "string",
-                    "description": "Specify the identfier for vendor (idfv) on the device.",
+                    "description": "Specify the identifier for vendor (idfv) on the device.",
                     "example": "6d031ec8-e40c-47d4-9c99-b3e308d8ed78"
                   },
                   "device_manufacturer": {
@@ -3862,12 +3862,12 @@
                         },
                         "device_idfa": {
                           "type": "string",
-                          "description": "Sepcify the advertising identifier (idfa) on the device.",
+                          "description": "Specify the advertising identifier (idfa) on the device.",
                           "example": "39c20522-2ce9-4466-9876-7677b89e4d3b"
                         },
                         "device_idfv": {
                           "type": "string",
-                          "description": "Specify the identfier for vendor (idfv) on the device.",
+                          "description": "Specify the identifier for vendor (idfv) on the device.",
                           "example": "6d031ec8-e40c-47d4-9c99-b3e308d8ed78"
                         },
                         "device_manufacturer": {
@@ -4062,7 +4062,7 @@
                     },
                     "device_idfv": {
                       "type": "string",
-                      "description": "The identfier for vendor (idfv) on the device.",
+                      "description": "The identifier for vendor (idfv) on the device.",
                       "example": "6d031ec8-e40c-47d4-9c99-b3e308d8ed78"
                     },
                     "device_manufacturer": {
@@ -4134,7 +4134,7 @@
           {
             "in": "query",
             "name": "timestamp_end",
-            "description": "Specify a timestamp in ISO 8601 format to filter data for events that occured before it.",
+            "description": "Specify a timestamp in ISO 8601 format to filter data for events that occurred before it.",
             "example": "2023-04-26T23:59:59Z",
             "schema": {
               "type": "string",
@@ -7123,7 +7123,7 @@
             "description": "Rate limit exceeded - Too many requests. Contact Blueshft for more information on recommended number of API calls/throughputs."
           },
           "500": {
-            "description": "Internal server error - An unforseen error occured. Contact Blueshift for more information."
+            "description": "Internal server error - An unforeseen error occurred. Contact Blueshift for more information."
           },
           "502": {
             "description": "Bad gateway - Error establishing connection, retry with exponential back-off."
@@ -8455,12 +8455,12 @@
                           "properties": {
                             "uuid": {
                               "type": "string",
-                              "description": "The UUID of the enitity that has this tag.",
+                              "description": "The UUID of the entity that has this tag.",
                               "example": "d0d3e2d0-983f-4fb0-8d14-70da314120cd"
                             },
                             "name": {
                               "type": "string",
-                              "description": "The name of the entitity that has this tag.",
+                              "description": "The name of the entity that has this tag.",
                               "example": "Black Friday 2024"
                             },
                             "resource_type": {
@@ -8581,17 +8581,17 @@
                       },
                       "browser_platform": {
                         "type": "string",
-                        "description": "The platform the used when the event occured.",
+                        "description": "The platform the used when the event occurred.",
                         "example": "Windows"
                       },
                       "browser_type": {
                         "type": "string",
-                        "description": "The broswer used when the event occured.",
+                        "description": "The browser used when the event occurred.",
                         "example": "Firefox"
                       },
                       "browser_version": {
                         "type": "string",
-                        "description": "The version of the broswer used.",
+                        "description": "The version of the browser used.",
                         "example": "126.0"
                       },
                       "cookie": {
@@ -8620,10 +8620,10 @@
                       },
                       "referrer": {
                         "type": "string",
-                        "description": "The URL of the page that referred the customer to the specific page on which the event occured.",
+                        "description": "The URL of the page that referred the customer to the specific page on which the event occurred.",
                         "example": "http://site.com"
                       },
-                      "santized_at": {
+                      "sanitized_at": {
                         "type": "string",
                         "description": "The timestamp when our backend processed the event.",
                         "example": "2021-08-25T06:06:59.415Z"
@@ -8650,7 +8650,7 @@
                       },
                       "url": {
                         "type": "string",
-                        "description": "The URL of the page that indicates where the event occured.",
+                        "description": "The URL of the page that indicates where the event occurred.",
                         "example": "http://site.com"
                       },
                       "user_agent": {

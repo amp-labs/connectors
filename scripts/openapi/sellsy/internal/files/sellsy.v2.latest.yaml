@@ -62,7 +62,7 @@
 
     | 400           | Validation and logic errors |
 
-    | 401           | Authentification errors |
+    | 401           | Authentication errors |
 
     | 402           | Quotas limit reached or limit of feature reached on your current plan |
 
@@ -121,7 +121,7 @@
     The quotas are counted on each request, even in the event of an error. On the scripts generating a lot of requests, it is therefore necessary to check these values before returning requests.
 
 
-    A new 402 error code has created. This error appears when you try to create ressources like a pipeline or custom fields and the quota limit has been reached.
+    A new 402 error code has created. This error appears when you try to create resources like a pipeline or custom fields and the quota limit has been reached.
 
 
     # Pagination on list and search requests
@@ -563,7 +563,7 @@
       'summary': 'Update a comment'
       'tags':
         - 'Comments'
-      'description': 'Udate a comment'
+      'description': 'Update a comment'
       'operationId': 'update-comment'
       'parameters':
         - '$ref': '#/components/parameters/commentItemEmbed'
@@ -924,7 +924,7 @@
                 'accounting_purchase_code_id':
                   'type': 'integer'
                   'nullable': true
-                  'description': 'Company accouting purchase code id'
+                  'description': 'Company accounting purchase code id'
                   'example': 98556
                 'owner_id':
                   'type': 'integer'
@@ -1219,7 +1219,7 @@
               'schema':
                 '$ref': '#/paths/~1companies/post/responses/201/content/application~1json/schema'
       'operationId': 'get-company'
-      'description': 'Fetch company informations'
+      'description': 'Fetch company information'
       'security':
         - 'oauth2':
             - 'companies.read'
@@ -1241,7 +1241,7 @@
                 '$ref': '#/paths/~1companies/post/responses/201/content/application~1json/schema'
         '204':
           'description': 'Validated'
-      'description': 'Update Company informations'
+      'description': 'Update Company information'
       'requestBody':
         'content':
           'application/json':
@@ -1321,7 +1321,7 @@
                 'accounting_purchase_code_id':
                   'type': 'integer'
                   'nullable': true
-                  'description': 'Company accouting purchase code id'
+                  'description': 'Company accounting purchase code id'
                   'example': 98556
                 'owner_id':
                   'type': 'integer'
@@ -1352,7 +1352,7 @@
                       - 'email'
                       - 'postal_mail'
                       - 'custom'
-                  'description': 'list of campaign type subcribed'
+                  'description': 'list of campaign type subscribed'
                   'uniqueItems': true
       'security':
         - 'oauth2':
@@ -3209,7 +3209,7 @@
         'description': 'Custom field id'
     'get':
       'summary': 'Get custom field'
-      'description': 'Fetch a custom field informations'
+      'description': 'Fetch a custom field information'
       'tags':
         - 'Custom Fields'
       'operationId': 'get-custom-field'
@@ -5060,7 +5060,7 @@
                 'accounting_purchase_code_id':
                   'type': 'integer'
                   'nullable': true
-                  'description': 'Accouting purchase code id'
+                  'description': 'Accounting purchase code id'
                   'example': 98556
                 'owner_id':
                   'type': 'integer'
@@ -5083,7 +5083,7 @@
                       - 'email'
                       - 'postal_mail'
                       - 'custom'
-                  'description': 'list of campaign type subcribed'
+                  'description': 'list of campaign type subscribed'
                   'uniqueItems': true
                 'sync':
                   'type': 'object'
@@ -5421,7 +5421,7 @@
               'schema':
                 '$ref': '#/paths/~1individuals/get/responses/200/content/application~1json/schema/properties/data/items'
       'operationId': 'get-individual'
-      'description': 'Fetch individual informations'
+      'description': 'Fetch individual information'
       'security':
         - 'oauth2':
             - 'individuals.read'
@@ -5443,7 +5443,7 @@
                 '$ref': '#/paths/~1individuals/get/responses/200/content/application~1json/schema/properties/data/items'
         '204':
           'description': 'Validated'
-      'description': 'Update Individual informations'
+      'description': 'Update Individual information'
       'requestBody':
         'content':
           'application/json':
@@ -5529,7 +5529,7 @@
                 'accounting_purchase_code_id':
                   'type': 'integer'
                   'nullable': true
-                  'description': 'Accouting purchase code id'
+                  'description': 'Accounting purchase code id'
                   'example': 98556
                 'owner_id':
                   'type': 'integer'
@@ -5552,7 +5552,7 @@
                       - 'email'
                       - 'postal_mail'
                       - 'custom'
-                  'description': 'list of campaign type subcribed'
+                  'description': 'list of campaign type subscribed'
                   'uniqueItems': true
                 'sync':
                   'type': 'object'
@@ -6008,7 +6008,7 @@
       'description': 'Search the activity'
   '/activities/crm/metas':
     'get':
-      'summary': 'Get meta informations for activity'
+      'summary': 'Get meta information for activity'
       'tags':
         - 'CRM Activities'
       'responses':
@@ -6023,7 +6023,7 @@
         - 'oauth2':
             - 'activities.read'
       'parameters': []
-      'description': 'Get metadata, ie everything you need to build the form (filter labels, static values aso..)'
+      'description': 'Get metadata, ie everything you need to build the form (filter labels, static values also..)'
   '/custom-activities/{id}':
     'parameters':
       - 'schema':
@@ -6044,7 +6044,7 @@
               'schema':
                 '$ref': '#/components/schemas/CustomActivity'
       'operationId': 'get-custom-activities-id'
-      'description': 'Fetch custom activity informations'
+      'description': 'Fetch custom activity information'
       'security':
         - 'oauth2':
             - 'custom-activities.read'
@@ -6285,7 +6285,7 @@
                     'type': 'array'
                     'items':
                       '$ref': '#/components/schemas/CustomActivityType'
-      'description': 'Get a list of custom actvity types'
+      'description': 'Get a list of custom activity types'
       'security':
         - 'oauth2':
             - 'custom-activities.read'
@@ -6504,7 +6504,7 @@
   '/personal-access-tokens/metas':
     'get':
       'deprecated': true
-      'summary': 'Get meta informations for personal access tokens'
+      'summary': 'Get meta information for personal access tokens'
       'tags':
         - 'API Management'
       'responses':
@@ -6664,7 +6664,7 @@
       'operationId': 'search-accounting-codes'
       'tags':
         - 'Accounting'
-      'description': 'Search in list of accouting codes'
+      'description': 'Search in list of accounting codes'
       'security':
         - 'oauth2':
             - 'accounting-codes.read'
@@ -6853,7 +6853,7 @@
         'required': true
         'description': 'Type of accounting journal to fetch'
     'get':
-      'summary': 'Get meta informations for accounting journal'
+      'summary': 'Get meta information for accounting journal'
       'tags':
         - 'Accounting'
       'responses':
@@ -7128,7 +7128,7 @@
             'application/json':
               'schema':
                 '$ref': '#/paths/~1taxes/get/responses/200/content/application~1json/schema/properties/data/items'
-      'description': 'Fetch tax informations'
+      'description': 'Fetch tax information'
       'security':
         - 'oauth2':
             - 'taxes.read'
@@ -7148,7 +7148,7 @@
             'application/json':
               'schema':
                 '$ref': '#/paths/~1taxes/get/responses/200/content/application~1json/schema/properties/data/items'
-      'description': 'Update Tax informations'
+      'description': 'Update Tax information'
       'requestBody':
         'content':
           'application/json':
@@ -7381,7 +7381,7 @@
         'content':
           'application/json':
             'schema':
-              'title': 'Accouting codes of taxes'
+              'title': 'Accounting codes of taxes'
               'type': 'object'
               'properties':
                 'debit_vat':
@@ -8268,7 +8268,7 @@
               'schema':
                 '$ref': '#/components/schemas/ContactItem'
       'operationId': 'get-contact'
-      'description': 'Fetch contact informations'
+      'description': 'Fetch contact information'
       'security':
         - 'oauth2':
             - 'contacts.read'
@@ -8288,7 +8288,7 @@
                 '$ref': '#/components/schemas/ContactItem'
         '204':
           'description': 'Validated'
-      'description': 'Update contact informations'
+      'description': 'Update contact information'
       'operationId': 'update-contact'
       'requestBody':
         'content':
@@ -8738,7 +8738,7 @@
                 '$ref': '#/components/schemas/OpportunityItem'
         '204':
           'description': 'Validated'
-      'description': 'Update Opportunity informations'
+      'description': 'Update Opportunity information'
       'security':
         - 'oauth2':
             - 'opportunities.write'
@@ -10465,7 +10465,7 @@
       'tags':
         - 'Staffs'
       'operationId': 'update-staff'
-      'description': 'Update staff informations'
+      'description': 'Update staff information'
       'responses':
         '200':
           'description': 'Staff updated, schema content depends on current user level of visibility on staffs, a restricted version could be return'
@@ -11435,7 +11435,7 @@
     'put':
       'operationId': 'update-webhook'
       'summary': 'Update Webhook'
-      'description': 'Update Webhook informations'
+      'description': 'Update Webhook information'
       'tags':
         - 'Webhooks'
       'responses':
@@ -11606,7 +11606,7 @@
             - 'accounts.read'
   '/settings/subscription':
     'get':
-      'summary': 'Get my Sellsy subscription informations'
+      'summary': 'Get my Sellsy subscription information'
       'description': 'Retrieve the details of my Sellsy subscription'
       'operationId': 'get-account-subscription'
       'tags':
@@ -12740,8 +12740,8 @@
         'content':
           'application/json':
             'schema':
-              'title': 'Metada related to the link between documents'
-              'description': 'Metada related to the link between documents'
+              'title': 'Metadata related to the link between documents'
+              'description': 'Metadata related to the link between documents'
               'additionalProperties': false
               'type': 'object'
               'properties':
@@ -14363,7 +14363,7 @@
         'description': 'Id of directory'
     'get':
       'summary': 'Get directory'
-      'description': 'Fetch directory informations <div style="padding:17px; font-wright:bold; border-radius: 2px; margin-bottom: 4px; line-height: 1.5em; color: #9A7D36; background-color: #fff2cf; cursor: default;"><b>This route is available in open beta.</b><br />Please note that its specifications are potentially subject to significant and breaking changes in the coming weeks.</div>
+      'description': 'Fetch directory information <div style="padding:17px; font-wright:bold; border-radius: 2px; margin-bottom: 4px; line-height: 1.5em; color: #9A7D36; background-color: #fff2cf; cursor: default;"><b>This route is available in open beta.</b><br />Please note that its specifications are potentially subject to significant and breaking changes in the coming weeks.</div>
 
         '
       'tags':
@@ -17901,7 +17901,7 @@
                   - 'email'
                   - 'postal_mail'
                   - 'custom'
-              'description': 'list of campaign type subcribed'
+              'description': 'list of campaign type subscribed'
               'uniqueItems': true
         - 'type': 'object'
           'properties':
@@ -18839,7 +18839,7 @@
                                 'example': '25.20'
                       'accounting_code':
                         'type': 'integer'
-                        'description': 'Accouting code of row'
+                        'description': 'Accounting code of row'
                         'example': 7576
                       'analytic_code':
                         'type': 'string'
@@ -18923,7 +18923,7 @@
                         'example': '445.33'
                       'accounting_code_id':
                         'type': 'integer'
-                        'description': 'Accouting code id of row'
+                        'description': 'Accounting code id of row'
                         'example': 7576
                       'analytic_code':
                         'type': 'string'
@@ -19018,7 +19018,7 @@
                                 'example': '25.20'
                       'accounting_code':
                         'type': 'integer'
-                        'description': 'Accouting code of row'
+                        'description': 'Accounting code of row'
                         'example': 7576
                       'analytic_code':
                         'type': 'string'
@@ -19368,7 +19368,7 @@
                       'value':
                         'oneOf':
                           - 'type': 'string'
-                            'description': 'value of discount (Expressed in amount or percent depending choosen type)'
+                            'description': 'value of discount (Expressed in amount or percent depending chosen type)'
                             'example': '20.5'
                       'total':
                         'type': 'string'
@@ -19401,7 +19401,7 @@
                     'example': '445.33'
                   'accounting_code_id':
                     'type': 'integer'
-                    'description': 'Accouting code id of row'
+                    'description': 'Accounting code id of row'
                     'example': 7576
                   'analytic_code':
                     'type': 'string'
@@ -19474,7 +19474,7 @@
                       'value':
                         'oneOf':
                           - 'type': 'string'
-                            'description': 'value of discount (Expressed in amount or percent depending choosen type)'
+                            'description': 'value of discount (Expressed in amount or percent depending chosen type)'
                             'example': '20.5'
                       'total':
                         'type': 'string'
@@ -19482,7 +19482,7 @@
                         'example': '400'
                   'accounting_code_id':
                     'type': 'integer'
-                    'description': 'Accouting code id of row'
+                    'description': 'Accounting code id of row'
                     'example': 7576
                   'analytic_code':
                     'type': 'string'
@@ -19637,7 +19637,7 @@
                     'example': '445.33'
                   'accounting_code_id':
                     'type': 'integer'
-                    'description': 'Accouting code id of row'
+                    'description': 'Accounting code id of row'
                     'example': 7576
                   'analytic_code':
                     'type': 'string'
@@ -20238,7 +20238,7 @@
                     'accounting_purchase_code_id':
                       'type': 'integer'
                       'nullable': true
-                      'description': 'Company accouting purchase code id'
+                      'description': 'Company accounting purchase code id'
                       'example': 98556
                     'owner':
                       '$ref': '#/components/schemas/Model/properties/owner/allOf/0'
@@ -20291,7 +20291,7 @@
                           - 'email'
                           - 'postal_mail'
                           - 'custom'
-                      'description': 'list of campaign type subcribed'
+                      'description': 'list of campaign type subscribed'
                       'uniqueItems': true
                 'individual':
                   'title': 'Individual'
@@ -20415,7 +20415,7 @@
                     'accounting_purchase_code_id':
                       'type': 'integer'
                       'nullable': true
-                      'description': 'Accouting purchase code id'
+                      'description': 'Accounting purchase code id'
                       'example': 98556
                     'owner':
                       '$ref': '#/components/schemas/Model/properties/owner/allOf/0'
@@ -20446,7 +20446,7 @@
                           - 'email'
                           - 'postal_mail'
                           - 'custom'
-                      'description': 'list of campaign type subcribed'
+                      'description': 'list of campaign type subscribed'
                       'uniqueItems': true
                     'sync':
                       'type': 'object'
@@ -20604,7 +20604,7 @@
                     'start_at':
                       'type': 'string'
                       'format': 'date'
-                      'description': 'Start date of the fiscal yaer'
+                      'description': 'Start date of the fiscal year'
                     'end_at':
                       'type': 'string'
                       'format': 'date'
@@ -22122,7 +22122,7 @@
           'additionalProperties': true
         'event_more':
           'type': 'object'
-          'description': 'Additional informations'
+          'description': 'Additional information'
           'example':
             'old': 'client'
             'new': 'prospect'
@@ -23181,7 +23181,7 @@
                         'minimum': 1
         'more':
           'type': 'object'
-          'description': 'Additional informations'
+          'description': 'Additional information'
           'example':
             'old': 'client'
             'new': 'prospect'
@@ -24759,7 +24759,7 @@
               'label':
                 'type': 'string'
                 'description': 'Label of the layout'
-                'example': 'Apparence par défaut'
+                'example': 'Appearance par défaut'
               'value':
                 'type': 'integer'
                 'description': 'Id of the layout'
@@ -24853,7 +24853,7 @@
     'InvoicingConformityState':
       'title': 'conformityState'
       'type': 'object'
-      'description': 'Invoice conformity state informations'
+      'description': 'Invoice conformity state information'
       'properties':
         'id':
           'type': 'integer'
@@ -28416,7 +28416,7 @@
           'additionalProperties': true
         'event_more':
           'type': 'object'
-          'description': 'Additional informations'
+          'description': 'Additional information'
           'example':
             'old': 'client'
             'new': 'prospect'
@@ -29502,7 +29502,7 @@
             - 'odt'
             - 'odp'
             - 'odg'
-            - 'odf'
+            - 'of'
             - 'sat'
             - 'wav'
             - 'wave'
@@ -30423,7 +30423,7 @@
             - 'debit'
           'example': 'credit'
         'amounts':
-          'description': 'Amount informations'
+          'description': 'Amount information'
           'type': 'object'
           'properties':
             'total':
@@ -32294,15 +32294,15 @@
                 'description': 'Diff with last year'
               'workforce_count':
                 'type': 'integer'
-                'description': 'Number of emplyees'
+                'description': 'Number of employees'
                 'nullable': true
         'rcs':
           'type': 'string'
-          'description': 'RCS of compnay'
+          'description': 'RCS of company'
           'nullable': true
         'vat':
           'type': 'string'
-          'description': 'VAT of compnay'
+          'description': 'VAT of company'
           'nullable': true
         'company_sign':
           'type': 'string'
@@ -33716,7 +33716,7 @@
                           'value':
                             'oneOf':
                               - 'type': 'string'
-                                'description': 'Value of discount (Expressed in amount or percent depending choosen type)'
+                                'description': 'Value of discount (Expressed in amount or percent depending chosen type)'
                                 'example': '20.5'
                           'total':
                             'type': 'string'
@@ -33836,7 +33836,7 @@
                           'value':
                             'oneOf':
                               - 'type': 'string'
-                                'description': 'value of discount (Expressed in amount or percent depending choosen type)'
+                                'description': 'value of discount (Expressed in amount or percent depending chosen type)'
                                 'example': '20.5'
                           'total':
                             'type': 'string'
@@ -33845,7 +33845,7 @@
                             'readOnly': true
                       'accounting_code_id':
                         'type': 'integer'
-                        'description': 'Accouting code id of row'
+                        'description': 'Accounting code id of row'
                         'example': 7576
                       'analytic_code':
                         'type': 'string'
@@ -34018,7 +34018,7 @@
                         'example': '445.33'
                       'accounting_code_id':
                         'type': 'integer'
-                        'description': 'Accouting code id of row'
+                        'description': 'Accounting code id of row'
                         'example': 7576
                       'analytic_code':
                         'type': 'string'
@@ -34169,7 +34169,7 @@
                           'value':
                             'oneOf':
                               - 'type': 'string'
-                                'description': 'Value of discount (Expressed in amount or percent depending choosen type)'
+                                'description': 'Value of discount (Expressed in amount or percent depending chosen type)'
                                 'example': '20.5'
                           'total':
                             'type': 'string'
@@ -42126,7 +42126,7 @@
           'example': '12.34'
       'required':
         - 'quantity'
-    'ConsentSettingsOuput':
+    'ConsentSettingsOutput':
       'type': 'object'
       'description': 'The consent settings'
       'required':
@@ -42138,11 +42138,11 @@
           'description': 'The consent settings'
           'required':
             - 'default_consent'
-            - 'double_optin'
+            - 'double_option'
           'properties':
             'default_consent':
               'type': 'boolean'
-            'double_optin':
+            'double_option':
               'type': 'object'
               'required':
                 - 'enable'
@@ -42485,7 +42485,7 @@
               'label':
                 'type': 'string'
                 'description': 'VAT type label'
-                'example': 'TVA sur les débits'
+                'example': 'TVA sure les débits'
         'payment_methods':
           'type': 'array'
           'description': 'List of payment methods'
@@ -42578,7 +42578,7 @@
                 'description': 'If true, the due date is the end of the month applied after the x_days'
               'override_date':
                 'type': 'boolean'
-                'description': 'If true, the due date can be overriden'
+                'description': 'If true, the due date can be overridden'
               '_embed':
                 'type': 'object'
                 'properties':
@@ -43042,7 +43042,7 @@
           'description': 'If true, the due date is the end of the month applied after the x_days'
         'override_date':
           'type': 'boolean'
-          'description': 'If true, the due date can be overriden'
+          'description': 'If true, the due date can be overridden'
         '_embed':
           'type': 'object'
           'properties':
@@ -43389,7 +43389,7 @@
                 - 'owner'
             - 'type': 'string'
               'title': 'custom-fields'
-              'description': 'Each custom field value could be requested as an embed object by specifiying it identifier in the query, prefixed by "cf." string. _(example: `embed[]=cf.123` for the value of the custom field of identifier `123`)<br/>`custom-fields.read` oauth2 scope is required_'
+              'description': 'Each custom field value could be requested as an embed object by specifying it identifier in the query, prefixed by "cf." string. _(example: `embed[]=cf.123` for the value of the custom field of identifier `123`)<br/>`custom-fields.read` oauth2 scope is required_'
               'pattern': '^cf.[\d]+$'
     'crmActivityOrder':
       'in': 'query'
@@ -44081,7 +44081,7 @@
           'enum':
             - 'aggregations'
             - 'aggregations.credit_debit'
-    'opportuntiyCategoryEmbed':
+    'opportunityCategoryEmbed':
       'in': 'query'
       'name': 'embed'
       'description': 'Additional object included in the result'
@@ -44468,8 +44468,8 @@
             'webhooks.write': 'Grants write access to webhooks'
             'payments.read': 'Grand read access to payments'
             'payments.write': 'Grand write access to payments'
-            'items.read': 'Grand read acces to items'
-            'items.write': 'Grand write acces to items'
+            'items.read': 'Grand read access to items'
+            'items.write': 'Grand write access to items'
             'invoicing.read': 'Grant read access to invoicing'
             'notifications.read': 'Grant read access to notifications'
             'notifications.write': 'Grant write access to notifications'

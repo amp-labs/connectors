@@ -2567,8 +2567,8 @@
               "valueType": "string",
               "providerType": "string"
             },
-            "occurence_date": {
-              "displayName": "occurence_date",
+            "occurrence_date": {
+              "displayName": "occurrence_date",
               "valueType": "string",
               "providerType": "string"
             },

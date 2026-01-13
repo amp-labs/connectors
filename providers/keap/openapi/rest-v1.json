@@ -16129,7 +16129,7 @@
                             "enum": [
                               "UnengagedMarketable",
                               "SingleOptIn",
-                              "DoubleOptin",
+                              "DoubleOption",
                               "Confirmed",
                               "UnengagedNonMarketable",
                               "NonMarketable",
@@ -16877,7 +16877,7 @@
                       "enum": [
                         "UnengagedMarketable",
                         "SingleOptIn",
-                        "DoubleOptin",
+                        "DoubleOption",
                         "Confirmed",
                         "UnengagedNonMarketable",
                         "NonMarketable",
@@ -17986,7 +17986,7 @@
                       "enum": [
                         "UnengagedMarketable",
                         "SingleOptIn",
-                        "DoubleOptin",
+                        "DoubleOption",
                         "Confirmed",
                         "UnengagedNonMarketable",
                         "NonMarketable",
@@ -18733,7 +18733,7 @@
                       "enum": [
                         "UnengagedMarketable",
                         "SingleOptIn",
-                        "DoubleOptin",
+                        "DoubleOption",
                         "Confirmed",
                         "UnengagedNonMarketable",
                         "NonMarketable",
@@ -19549,7 +19549,7 @@
                             "enum": [
                               "UnengagedMarketable",
                               "SingleOptIn",
-                              "DoubleOptin",
+                              "DoubleOption",
                               "Confirmed",
                               "UnengagedNonMarketable",
                               "NonMarketable",
@@ -20655,7 +20655,7 @@
                       "enum": [
                         "UnengagedMarketable",
                         "SingleOptIn",
-                        "DoubleOptin",
+                        "DoubleOption",
                         "Confirmed",
                         "UnengagedNonMarketable",
                         "NonMarketable",
@@ -21791,7 +21791,7 @@
                       "enum": [
                         "UnengagedMarketable",
                         "SingleOptIn",
-                        "DoubleOptin",
+                        "DoubleOption",
                         "Confirmed",
                         "UnengagedNonMarketable",
                         "NonMarketable",
@@ -24468,7 +24468,7 @@
                       "enum": [
                         "UnengagedMarketable",
                         "SingleOptIn",
-                        "DoubleOptin",
+                        "DoubleOption",
                         "Confirmed",
                         "UnengagedNonMarketable",
                         "NonMarketable",
@@ -30154,7 +30154,7 @@
                       "enum": [
                         "UnengagedMarketable",
                         "SingleOptIn",
-                        "DoubleOptin",
+                        "DoubleOption",
                         "Confirmed",
                         "UnengagedNonMarketable",
                         "NonMarketable",
@@ -52493,7 +52493,7 @@
           "Opportunity"
         ],
         "summary": "Retrieve an Opportunity",
-        "description": "Retrives a single opportunity",
+        "description": "Retrieves a single opportunity",
         "operationId": "getOpportunityUsingGET",
         "parameters": [
           {
@@ -70440,7 +70440,7 @@
           "E-Commerce"
         ],
         "summary": "List Subscriptions",
-        "description": "Retrieves a list of all subcriptions using the specified search criteria.",
+        "description": "Retrieves a list of all subscriptions using the specified search criteria.",
         "operationId": "listSubscriptionsUsingGET",
         "parameters": [
           {
@@ -87786,7 +87786,7 @@
             "enum": [
               "UnengagedMarketable",
               "SingleOptIn",
-              "DoubleOptin",
+              "DoubleOption",
               "Confirmed",
               "UnengagedNonMarketable",
               "NonMarketable",
@@ -87948,7 +87948,7 @@
                   "enum": [
                     "UnengagedMarketable",
                     "SingleOptIn",
-                    "DoubleOptin",
+                    "DoubleOption",
                     "Confirmed",
                     "UnengagedNonMarketable",
                     "NonMarketable",
@@ -88246,7 +88246,7 @@
                   "enum": [
                     "UnengagedMarketable",
                     "SingleOptIn",
-                    "DoubleOptin",
+                    "DoubleOption",
                     "Confirmed",
                     "UnengagedNonMarketable",
                     "NonMarketable",
@@ -92140,7 +92140,7 @@
             "enum": [
               "UnengagedMarketable",
               "SingleOptIn",
-              "DoubleOptin",
+              "DoubleOption",
               "Confirmed",
               "UnengagedNonMarketable",
               "NonMarketable",
@@ -96849,7 +96849,7 @@
             "enum": [
               "UnengagedMarketable",
               "SingleOptIn",
-              "DoubleOptin",
+              "DoubleOption",
               "Confirmed",
               "UnengagedNonMarketable",
               "NonMarketable",

@@ -3668,7 +3668,7 @@ paths:
         | android_app_version                | String                         |
         | android_device                     | String                         |
         | android_app_name                   | String                         |
-        | andoid_sdk_version                 | String                         |
+        | android_sdk_version                 | String                         |
         | segment_id                         | String                         |
         | tag_id                             | String                         |
         | custom_attributes.{attribute_name} | String                         |
@@ -12568,7 +12568,7 @@ components:
         region:
           type: string
           nullable: true
-          description: The overal region that the contact is located in
+          description: The overall region that the contact is located in
           example: Dublin
         city:
           type: string
@@ -14526,7 +14526,7 @@ components:
       description: The data export api is used to view all message sent & viewed in
         a given timeframe.
       properties:
-        job_identfier:
+        job_identifier:
           type: string
           description: The identifier for your job.
           example: orzzsbd7hk67xyu
@@ -15169,7 +15169,7 @@ components:
         value:
           oneOf:
           - type: array
-            description: Add mutiple filters.
+            description: Add multiple filters.
             title: multiple filter search request
             items:
               "$ref": "#/components/schemas/multiple_filter_search_request"
@@ -16908,7 +16908,7 @@ components:
         description:
           type: string
           description: The description of the ticket type.
-          example: A bug has been occured
+          example: A bug has been occurred
         category:
           type: string
           description: Category of the Ticket Type.

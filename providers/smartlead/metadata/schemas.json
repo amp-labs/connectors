@@ -78,7 +78,7 @@
             "user_id": "User ID",
             "logo": "Logo",
             "logo_url": "Logo URL",
-            "client_permision": "Client permission"
+            "client_permission": "Client permission"
           }
         }
       }
