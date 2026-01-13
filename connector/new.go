@@ -50,6 +50,7 @@ import (
 	"github.com/amp-labs/connectors/providers/getresponse"
 	"github.com/amp-labs/connectors/providers/github"
 	"github.com/amp-labs/connectors/providers/gitlab"
+	"github.com/amp-labs/connectors/providers/g2"
 	"github.com/amp-labs/connectors/providers/gong"
 	"github.com/amp-labs/connectors/providers/google"
 	"github.com/amp-labs/connectors/providers/gorgias"
@@ -168,6 +169,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Flatfile:                wrapper(newFlatfileConnector),
 	providers.Freshdesk:               wrapper(newFreshdeskConnector),
 	providers.Front:                   wrapper(newFrontConnector),
+	providers.G2:                      wrapper(newG2Connector),
 	providers.GetResponse:             wrapper(newGetResponseConnector),
 	providers.GitLab:                  wrapper(newGitLabConnector),
 	providers.Github:                  wrapper(newGithubConnector),
@@ -955,4 +957,8 @@ func newKaseyaVSAXConnector(
 	params common.ConnectorParams,
 ) (*kaseyavsax.Connector, error) {
 	return kaseyavsax.NewConnector(params)
+}
+
+func newG2Connector(params common.ConnectorParams) (*g2.Connector, error) {
+	return g2.NewConnector(params)
 }
