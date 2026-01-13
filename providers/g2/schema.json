@@ -78,7 +78,7 @@
         },
         "categories": {
           "displayName": "Categories",
-          "path": "/api/v2/categories",
+          "path": "/api/v2/categories/{id}",
           "responseKey": "",
           "fields": {
             "description": {
@@ -494,11 +494,21 @@
         },
         "products": {
           "displayName": "Products",
-          "path": "/api/v2/users/me/products",
+          "path": "/api/v2/products",
           "responseKey": "",
           "fields": {
+            "detail_description": {
+              "displayName": "detail_description",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "domain": {
               "displayName": "domain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "g2_url": {
+              "displayName": "g2_url",
               "valueType": "string",
               "providerType": "string"
             },
@@ -517,8 +527,28 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "public_detail_url": {
+              "displayName": "public_detail_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "review_count": {
+              "displayName": "review_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
             "slug": {
               "displayName": "slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "star_rating": {
+              "displayName": "star_rating",
+              "valueType": "int",
+              "providerType": "number"
+            },
+            "write_review_url": {
+              "displayName": "write_review_url",
               "valueType": "string",
               "providerType": "string"
             }
@@ -585,7 +615,7 @@
         },
         "screenshots": {
           "displayName": "Screenshots",
-          "path": "/api/v2/screenshots/{id}",
+          "path": "/api/v2/products/{product_id}/screenshots",
           "responseKey": "",
           "fields": {
             "created_at": {
@@ -677,6 +707,38 @@
             },
             "submitted_at": {
               "displayName": "submitted_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "users/me/products": {
+          "displayName": "Users/Me/Products",
+          "path": "/api/v2/users/me/products",
+          "responseKey": "",
+          "fields": {
+            "domain": {
+              "displayName": "domain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "image_url": {
+              "displayName": "image_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "slug": {
+              "displayName": "slug",
               "valueType": "string",
               "providerType": "string"
             }

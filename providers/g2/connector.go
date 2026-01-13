@@ -5,6 +5,8 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/operations"
+	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
@@ -32,9 +34,13 @@ type Connector struct {
 	common.RequireMetadata
 
 	components.SchemaProvider
+	components.Reader
 
-	// subjectProductId represents either subject_product_id or product_id.
-	subjectProductId string
+	// productId represents either subject_product_id or product_id.
+	// reading buyer_intent requires subject_product_id.
+	// reading other objects like reviews, competitors, discussions
+	// requires product_id.
+	productId string
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -43,7 +49,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		return nil, err
 	}
 
-	connector.subjectProductId = params.Metadata["subject_product_id"]
+	connector.productId = params.Metadata["subjectProductId"]
 
 	return connector, nil
 }
@@ -52,12 +58,29 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
 		RequireMetadata: common.RequireMetadata{
-			ExpectedMetadataKeys: []string{"subject_product_id"},
+			ExpectedMetadataKeys: []string{"subjectProductId"},
 		},
 	}
 
 	// Set the metadata provider for the connector
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)
+
+	registry, err := components.NewEndpointRegistry(supportedOperations())
+	if err != nil {
+		return nil, err
+	}
+
+	// Set the read provider for the connector
+	connector.Reader = reader.NewHTTPReader(
+		connector.HTTPClient().Client,
+		registry,
+		connector.Module(),
+		operations.ReadHandlers{
+			BuildRequest:  connector.buildReadRequest,
+			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
 
 	return connector, nil
 }
