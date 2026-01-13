@@ -32,26 +32,20 @@ func (c *Connector) ListObjectMetadata(
 	}
 
 	for _, objectName := range objectNames {
-		objectMetadata, exists := baseResult.Result[objectName]
-		if !exists {
+		objectMetadataPtr := baseResult.GetObjectMetadata(objectName)
+		if objectMetadataPtr == nil {
 			continue
 		}
 
 		objectCustomFields := filterCustomFieldsByObject(customFields, objectName)
-		objectMetadataPtr := &objectMetadata
-
-		// Initialize Fields if nil
-		if objectMetadataPtr.Fields == nil {
-			objectMetadataPtr.Fields = make(common.FieldsMetadata)
-		}
 
 		for _, field := range objectCustomFields {
-			objectMetadataPtr.Fields[field.Name] = common.FieldMetadata{
+			objectMetadataPtr.AddFieldMetadata(field.Name, common.FieldMetadata{
 				DisplayName:  field.Name,
 				ValueType:    getFieldValueType(field),
 				ProviderType: field.Type,
 				Values:       nil,
-			}
+			})
 		}
 
 		baseResult.Result[objectName] = *objectMetadataPtr
