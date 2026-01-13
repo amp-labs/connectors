@@ -33,7 +33,8 @@ This form also prevents null fields to be sent out as zero values.
 type SubscriptionEvent map[string]any
 
 var (
-	_ common.SubscriptionEvent       = SubscriptionEvent{}
+	_ common.SubscriptionEvent = SubscriptionEvent{}
+
 	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
 )
 
