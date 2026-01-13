@@ -341,8 +341,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				// Note: no include=enhancedAllCustomFields for account (not in objectsWithCustomFields)
-				If:   mockcond.QueryParam("query", "SELECT * FROM Account STARTPOSITION 1 MAXRESULTS 1000"),
+				If: mockcond.And{
+					mockcond.QueryParam("query", "SELECT * FROM Account STARTPOSITION 1 MAXRESULTS 1000"),
+					// Note: no include=enhancedAllCustomFields for account (not in objectsWithCustomFields)
+					mockcond.QueryParamsMissing("include"),
+				},
 				Then: mockserver.Response(http.StatusOK, responseAccount),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
