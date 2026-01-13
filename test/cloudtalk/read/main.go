@@ -27,31 +27,37 @@ func main() {
 	conn := testCloudTalk.GetCloudTalkConnector(ctx)
 
 	slog.Info("Testing basic read for contacts")
+
 	if err := testRead(ctx, conn, "contacts"); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("Testing basic read for calls")
+
 	if err := testRead(ctx, conn, "calls"); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("Testing pagination for contacts")
+
 	if err := testPagination(ctx, conn, "contacts"); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("Testing time-based filtering/incremental sync for calls")
+
 	if err := testCallsFiltering(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("Testing fallback behavior for contacts filtering (expecting full read)")
+
 	if err := testContactsFilteringIgnored(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("Testing time-based filtering/incremental sync for activity")
+
 	if err := testActivityFiltering(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
@@ -100,6 +106,7 @@ func testPagination(ctx context.Context, conn *cloudtalk.Connector, objectName s
 
 	// Read second page
 	params.NextPage = res.NextPage
+
 	res2, err := conn.Read(ctx, params)
 	if err != nil {
 		return fmt.Errorf("error reading %s page 2: %w", objectName, err)
@@ -128,6 +135,7 @@ func testCallsFiltering(ctx context.Context, conn *cloudtalk.Connector) error {
 	if err != nil {
 		return fmt.Errorf("error reading calls with range: %w", err)
 	}
+
 	slog.Info("Recent calls results", "rows", res.Rows)
 
 	utils.DumpJSON(res, os.Stdout)
@@ -176,6 +184,7 @@ func testActivityFiltering(ctx context.Context, conn *cloudtalk.Connector) error
 	if err != nil {
 		return fmt.Errorf("error reading activity with range: %w", err)
 	}
+
 	slog.Info("Recent activity results", "rows", res.Rows)
 
 	utils.DumpJSON(res, os.Stdout)

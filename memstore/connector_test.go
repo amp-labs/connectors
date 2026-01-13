@@ -23,6 +23,7 @@ func mustParseSchema(jsonSchema string) *InputSchema {
 	if err := json.Unmarshal([]byte(jsonSchema), &schema); err != nil {
 		panic(fmt.Sprintf("failed to parse test schema: %v", err))
 	}
+
 	return &schema
 }
 
@@ -283,6 +284,7 @@ func TestDeriveSchemasFromStructs(t *testing.T) {
 				} else if !strings.Contains(err.Error(), tt.errorMsg) {
 					t.Errorf("expected error containing %q, got %q", tt.errorMsg, err.Error())
 				}
+
 				return
 			}
 
@@ -379,6 +381,7 @@ func TestNewConnectorWithStructSchemas(t *testing.T) {
 				} else if !strings.Contains(err.Error(), tt.errorMsg) {
 					t.Errorf("expected error containing %q, got %q", tt.errorMsg, err.Error())
 				}
+
 				return
 			}
 
@@ -436,6 +439,7 @@ func TestSchemasPriority(t *testing.T) {
 	if _, hasRawId := props["rawId"]; !hasRawId {
 		t.Error("expected raw schema (with rawId field), but got struct-derived schema")
 	}
+
 	if _, hasId := props["id"]; hasId {
 		t.Error("expected raw schema (without id field), but got struct-derived schema")
 	}
@@ -560,6 +564,7 @@ func TestCRUDWithStructSchemas(t *testing.T) {
 		if err == nil {
 			t.Error("expected validation error for missing required field")
 		}
+
 		if !strings.Contains(err.Error(), "validation failed") {
 			t.Errorf("expected validation error, got: %v", err)
 		}
@@ -784,12 +789,15 @@ func TestListObjectMetadataWithStructSchemas(t *testing.T) {
 		if !hasEmail {
 			t.Fatal("expected 'email' field in metadata")
 		}
+
 		if emailField.ValueType != common.ValueTypeString {
 			t.Errorf("expected email ValueType String, got %v", emailField.ValueType)
 		}
+
 		if emailField.IsRequired == nil || !*emailField.IsRequired {
 			t.Error("expected email to be marked as required")
 		}
+
 		if emailField.DisplayName == "" {
 			t.Error("expected email to have display name")
 		}
@@ -799,9 +807,11 @@ func TestListObjectMetadataWithStructSchemas(t *testing.T) {
 		if !hasStatus {
 			t.Fatal("expected 'status' field in metadata")
 		}
+
 		if statusField.ValueType != common.ValueTypeSingleSelect {
 			t.Errorf("expected status ValueType SingleSelect, got %v", statusField.ValueType)
 		}
+
 		if len(statusField.Values) == 0 {
 			t.Error("expected status to have enum values")
 		}
@@ -816,6 +826,7 @@ func TestListObjectMetadataWithStructSchemas(t *testing.T) {
 		if !hasTags {
 			t.Fatal("expected 'tags' field in metadata")
 		}
+
 		if tagsField.ValueType != common.ValueTypeOther {
 			t.Errorf("expected tags ValueType Other (array), got %v", tagsField.ValueType)
 		}
@@ -825,6 +836,7 @@ func TestListObjectMetadataWithStructSchemas(t *testing.T) {
 		if !hasFirstName {
 			t.Fatal("expected 'firstName' field in metadata")
 		}
+
 		if firstNameField.DisplayName != "First Name" {
 			t.Errorf("expected display name 'First Name', got %q", firstNameField.DisplayName)
 		}
@@ -841,6 +853,7 @@ func TestListObjectMetadataWithStructSchemas(t *testing.T) {
 		if !hasId {
 			t.Fatal("expected 'id' field in metadata")
 		}
+
 		if idField.ValueType != common.ValueTypeInt {
 			t.Errorf("expected id ValueType Int, got %v", idField.ValueType)
 		}
@@ -850,6 +863,7 @@ func TestListObjectMetadataWithStructSchemas(t *testing.T) {
 		if !hasUpdatedAt {
 			t.Fatal("expected 'updatedAt' field in metadata")
 		}
+
 		if updatedAtField.ValueType != common.ValueTypeDateTime {
 			t.Errorf("expected updatedAt ValueType DateTime, got %v", updatedAtField.ValueType)
 		}
@@ -859,6 +873,7 @@ func TestListObjectMetadataWithStructSchemas(t *testing.T) {
 		if !hasIndustry {
 			t.Fatal("expected 'industry' field in metadata")
 		}
+
 		if industryField.ValueType != common.ValueTypeSingleSelect {
 			t.Errorf("expected industry ValueType SingleSelect, got %v", industryField.ValueType)
 		}
@@ -868,6 +883,7 @@ func TestListObjectMetadataWithStructSchemas(t *testing.T) {
 		if !hasEmpCount {
 			t.Fatal("expected 'employeeCount' field in metadata")
 		}
+
 		if empCountField.ValueType != common.ValueTypeInt {
 			t.Errorf("expected employeeCount ValueType Int, got %v", empCountField.ValueType)
 		}
@@ -877,6 +893,7 @@ func TestListObjectMetadataWithStructSchemas(t *testing.T) {
 		if !hasWebsite {
 			t.Fatal("expected 'website' field in metadata")
 		}
+
 		if websiteField.ValueType != common.ValueTypeString {
 			t.Errorf("expected website ValueType String, got %v", websiteField.ValueType)
 		}
@@ -923,6 +940,7 @@ func TestNewConnector_EmptySchemas(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			conn, err := NewConnector(WithSchemas(tt.schemas))
 			if tt.wantErr {
 				require.Error(t, err)
@@ -1036,6 +1054,7 @@ func TestWrite_ValidData(t *testing.T) {
 	}
 
 	ctx := context.Background()
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result, err := conn.Write(ctx, common.WriteParams{
@@ -1102,6 +1121,7 @@ func TestWrite_InvalidData(t *testing.T) {
 	}
 
 	ctx := context.Background()
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result, err := conn.Write(ctx, common.WriteParams{
@@ -1398,6 +1418,7 @@ func TestWrite_Update(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
+
 	recordID := createResult.RecordId
 
 	// Update the record
@@ -1653,6 +1674,7 @@ func TestDelete_Success(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
+
 	recordID := createResult.RecordId
 
 	// Delete record
@@ -1747,8 +1769,10 @@ func TestConcurrentWrites(t *testing.T) {
 	// Launch concurrent writes
 	for i := 0; i < numGoroutines; i++ {
 		wg.Add(1)
+
 		go func(index int) {
 			defer wg.Done()
+
 			_, err := conn.Write(ctx, common.WriteParams{
 				ObjectName: "persons",
 				RecordData: map[string]any{
@@ -1800,8 +1824,10 @@ func TestConcurrentReads(t *testing.T) {
 
 	for i := 0; i < numGoroutines; i++ {
 		wg.Add(1)
+
 		go func() {
 			defer wg.Done()
+
 			result, err := conn.Read(ctx, common.ReadParams{
 				ObjectName: "persons",
 				Fields:     datautils.NewStringSet("name"),
@@ -1829,6 +1855,7 @@ func TestConcurrentMixedOperations(t *testing.T) {
 
 	// Create initial records
 	recordIDs := make([]string, 10)
+
 	for i := 0; i < 10; i++ {
 		result, err := conn.Write(ctx, common.WriteParams{
 			ObjectName: "persons",
@@ -1838,12 +1865,14 @@ func TestConcurrentMixedOperations(t *testing.T) {
 			},
 		})
 		require.NoError(t, err)
+
 		recordIDs[i] = result.RecordId
 	}
 
 	// Mix of operations
 	for i := 0; i < numGoroutines; i++ {
 		wg.Add(1)
+
 		go func(index int) {
 			defer wg.Done()
 
@@ -2300,6 +2329,7 @@ func TestGenerateRandomRecord_Arrays(t *testing.T) {
 
 			// Verify uniqueness
 			seen := make(map[string]bool)
+
 			for _, tag := range tags {
 				tagStr := tag.(string)
 				assert.False(t, seen[tagStr], "tags should be unique")

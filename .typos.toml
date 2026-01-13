@@ -1,0 +1,24 @@
+[files]
+extend-exclude = [
+    "go.mod",
+    "go.sum"
+]
+
+ignore-hidden = true
+ignore-files = true
+ignore-dot = true
+ignore-vcs = true
+ignore-global = true
+ignore-parent = true
+
+[default]
+check-filename = true
+check-file = true
+unicode = true
+locale = "en"
+extend-ignore-re = ["[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"]
+extend-ignore-identifiers-re = ["[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"]
+
+[default.extend-words]
+
+[default.extend-identifiers]

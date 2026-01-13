@@ -46,6 +46,7 @@ func TestPermuteQueryParam(t *testing.T) {
 	for _, cond := range conditions {
 		// Try all expected requests until one matches
 		matched := false
+
 		for _, selectExpectation := range expected {
 			r := newRequestWithQuery(t, "SELECT "+selectExpectation+" FROM opportunity")
 			if cond.EvaluateCondition(nil, r) {
@@ -53,6 +54,7 @@ func TestPermuteQueryParam(t *testing.T) {
 				break
 			}
 		}
+
 		if !matched {
 			t.Fatalf("generated Condition did not match any expected permutation")
 		}
@@ -69,6 +71,7 @@ func TestPermuteQueryParam(t *testing.T) {
 	// --- 3. Ensure Or(...) rejects queries NOT in the permutations ---
 	invalidValue := "SELECT A,C,D FROM opportunity"
 	invalidReq := newRequestWithQuery(t, invalidValue)
+
 	if conditions.EvaluateCondition(nil, invalidReq) {
 		t.Fatalf("Or(...) matched an invalid query %q", invalidValue)
 	}
@@ -82,5 +85,6 @@ func newRequestWithQuery(t *testing.T, queryValue string) *http.Request {
 	if err != nil {
 		t.Fatalf("failed to build request: %v", err)
 	}
+
 	return r
 }

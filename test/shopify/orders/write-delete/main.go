@@ -25,6 +25,7 @@ func MainFn() int {
 	defer done()
 
 	utils.SetupLogging()
+
 	conn := shopify.GetShopifyConnector(ctx)
 
 	timestamp := time.Now().Unix()
@@ -55,11 +56,13 @@ func MainFn() int {
 	utils.DumpJSON(productResult, os.Stdout)
 
 	productID := productResult.RecordId
+
 	variantID, ok := extractFirstVariantID(productResult.Data)
 	if !ok {
 		slog.Error("Failed to extract first variant id from product create response")
 		// best-effort cleanup
 		_ = cleanupDelete(ctx, conn, "products", productID)
+
 		return 1
 	}
 
@@ -175,6 +178,7 @@ func MainFn() int {
 	orderID = ""
 
 	slog.Info("=== All order tests completed successfully ===")
+
 	return 0
 }
 
@@ -192,6 +196,7 @@ func cleanupDelete(ctx context.Context, conn interface {
 	}
 
 	slog.Info("cleanup delete succeeded", "object", objectName, "recordId", recordID)
+
 	return nil
 }
 

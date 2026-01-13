@@ -57,6 +57,7 @@ func setupSampleData(ctx context.Context, conn *memstore.Connector) {
 			"status":    "active",
 			"tags":      []any{"test", "sample"},
 		}
+
 		_, err := conn.Write(ctx, common.WriteParams{
 			ObjectName: "contacts",
 			RecordData: contactData,
@@ -279,5 +280,6 @@ func printJSON(label string, data any) {
 		slog.Error("Failed to marshal JSON", "error", err)
 		return
 	}
+
 	fmt.Printf("%s:\n%s\n", label, string(jsonData))
 }
