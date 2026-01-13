@@ -92,6 +92,7 @@ import (
 	"github.com/amp-labs/connectors/providers/podium"
 	"github.com/amp-labs/connectors/providers/pylon"
 	"github.com/amp-labs/connectors/providers/recurly"
+	"github.com/amp-labs/connectors/providers/revenuecat"
 	"github.com/amp-labs/connectors/providers/sageintacct"
 	"github.com/amp-labs/connectors/providers/salesflare"
 	"github.com/amp-labs/connectors/providers/salesforce"
@@ -212,6 +213,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Podium:                  wrapper(newPodiumConnector),
 	providers.Pylon:                   wrapper(newPylonConnector),
 	providers.Recurly:                 wrapper(newRecurlyConnector),
+	providers.RevenueCat:              wrapper(newRevenueCatConnector),
 	providers.SageIntacct:             wrapper(newSageIntacctConnector),
 	providers.Salesflare:              wrapper(newSalesflareConnector),
 	providers.Salesforce:              wrapper(newSalesforceConnector),
@@ -931,6 +933,10 @@ func newSolarWindsConnector(params common.ConnectorParams) (*solarwinds.Connecto
 
 func newRecurlyConnector(params common.ConnectorParams) (*recurly.Connector, error) {
 	return recurly.NewConnector(params)
+}
+
+func newRevenueCatConnector(params common.ConnectorParams) (*revenuecat.Connector, error) {
+	return revenuecat.NewConnector(params)
 }
 
 func newAcuitySchedulingConnector(

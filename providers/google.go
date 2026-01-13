@@ -59,7 +59,7 @@ func init() {
 				BaseURL:     "https://gmail.googleapis.com/gmail",
 				DisplayName: "Google Mail (Gmail)",
 				Support: Support{
-					Read:      false,
+					Read:      true,
 					Subscribe: false,
 					Write:     false,
 				},
