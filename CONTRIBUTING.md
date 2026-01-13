@@ -1,5 +1,11 @@
 # Contributing to Connectors
 
+## Development Environment Setup
+
+```
+make install/dev
+```
+
 ## Prerequisites
 
 1. To test connectors, you'll need your own developer account and instance with the provider you're testing (like
