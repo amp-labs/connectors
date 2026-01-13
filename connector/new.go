@@ -169,6 +169,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Flatfile:                wrapper(newFlatfileConnector),
 	providers.Freshdesk:               wrapper(newFreshdeskConnector),
 	providers.Front:                   wrapper(newFrontConnector),
+	providers.G2:                      wrapper(newG2Connector),
 	providers.GetResponse:             wrapper(newGetResponseConnector),
 	providers.GitLab:                  wrapper(newGitLabConnector),
 	providers.Github:                  wrapper(newGithubConnector),
