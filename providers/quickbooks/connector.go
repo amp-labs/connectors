@@ -30,6 +30,7 @@ type Connector struct {
 	components.Writer
 
 	// realmID is the Company ID in QuickBooks.
+	// http://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0
 	realmID string
 	// graphQLBaseURL is a variable on the struct so it can be mocked in unit tests.
 	graphQLBaseURL string

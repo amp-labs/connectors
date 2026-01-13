@@ -94,7 +94,7 @@ func (c *Connector) fetchCustomFieldDefinitions(ctx context.Context) ([]customFi
 
 func filterCustomFieldsByObject(fields []customFieldDefinition, objectName string) []customFieldDefinition {
 	if !objectsWithCustomFields.Has(objectName) {
-		return []customFieldDefinition{}
+		return nil
 	}
 
 	return fields
