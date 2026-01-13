@@ -13,8 +13,11 @@ import (
 func (c *Connector) UpsertMetadata(
 	ctx context.Context, params *common.UpsertMetadataParams,
 ) (*common.UpsertMetadataResult, error) {
-	// Delegated.
-	return c.customAdapter.UpsertMetadata(ctx, params)
+	if c.crmAdapter != nil {
+		return c.crmAdapter.UpsertMetadata(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
 }
 
 // ListObjectMetadata returns object metadata for each object name provided.

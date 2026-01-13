@@ -6,8 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/batch"
-	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/custom"
+	"github.com/amp-labs/connectors/providers/salesforce/internal/crm"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/pardot"
 )
 
@@ -37,14 +36,13 @@ type Connector struct {
 	moduleInfo   *providers.ModuleInfo
 	moduleID     common.ModuleID
 
+	// crmAdapter handles the core Salesforce CRM module.
+	// It provides dedicated support for SalesforceCRM-specific functionality.
+	crmAdapter *crm.Adapter
+
 	// pardotAdapter handles the Salesforce Account Engagement (Pardot) module.
 	// It provides dedicated support for Pardot-specific endpoints and metadata.
 	pardotAdapter *pardot.Adapter
-
-	// CRM module sub-adapters.
-	// These delegate specialized subsets of CRM functionality to keep Connector modular and prevent code bloat.
-	customAdapter *custom.Adapter // used for connectors.UpsertMetadataConnector capabilities.
-	batchAdapter  *batch.Adapter  // used for connectors.BatchWriteConnector capabilities.
 }
 
 // NewConnector returns a new Salesforce connector.
@@ -79,21 +77,22 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		XML:  &interpreter.DirectFaultyResponder{Callback: conn.interpretXMLError},
 	}.Handle
 
-	// Delegate selected CRM functionality to internal adapters to
-	// prevent this package from growing too large. These adapters
-	// effectively "inline" specialized responsibilities while sharing
-	// the same HTTP and module context.
-	//
-	// Note: moduleInfo always refers to the Salesforce CRM module.
-	// These adapters are not applicable to the Pardot module.
-	conn.customAdapter = custom.NewAdapter(httpClient, conn.Client, conn.moduleInfo)
-	conn.batchAdapter = batch.NewAdapter(httpClient, conn.moduleInfo)
-
 	// Initialize the Pardot (Account Engagement) adapter if applicable.
 	// In that case, read/write/list metadata operations are delegated to it.
 	moduleID := params.Module.Selection.ID
 	if isPardotModule(moduleID) {
 		conn.pardotAdapter, err = pardot.NewAdapter(conn.Client, conn.moduleInfo, params.Metadata.Map)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// Default Salesforce CRM module.
+		connectorParams, err := newParams(opts)
+		if err != nil {
+			return nil, err
+		}
+
+		conn.crmAdapter, err = crm.NewAdapter(connectorParams)
 		if err != nil {
 			return nil, err
 		}
