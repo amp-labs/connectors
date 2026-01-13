@@ -86,6 +86,8 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	if params.ObjectName == "meetings" {
+		// This will add query parameters to include additional data fields
+		// in the meetings API response.
 		addMeetingsQueryParams(url)
 	}
 
