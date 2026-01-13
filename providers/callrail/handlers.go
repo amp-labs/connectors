@@ -154,22 +154,22 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 func retrieveRecordId(body *ajson.Node) (string, error) {
 	var idVal string
 
-	// 1. we try integer
-	recordID, err := jsonquery.New(body).IntegerWithDefault("id", 0)
-	if !errors.Is(err, jsonquery.ErrNotNumeric) {
-		return "", err
+	// 1. we try string
+	recordId, err := jsonquery.New(body).StrWithDefault("id", "")
+	if err != nil {
+		return "nil", err
 	}
 
-	idVal = strconv.Itoa(int(recordID))
+	idVal = recordId
 
-	// 2. we try string
-	if recordID == 0 {
-		recordId, err := jsonquery.New(body).StrWithDefault("id", "")
-		if err != nil {
-			return "nil", err
+	// 2. we try integer
+	if idVal == "" {
+		recordID, err := jsonquery.New(body).IntegerWithDefault("id", 0)
+		if !errors.Is(err, jsonquery.ErrNotNumeric) {
+			return "", err
 		}
 
-		idVal = recordId
+		idVal = strconv.Itoa(int(recordID))
 	}
 
 	return idVal, nil
