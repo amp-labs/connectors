@@ -46,7 +46,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		return nil, err
 	}
 
-	connector.productId = params.Metadata["subjectProductId"]
+	connector.productId = params.Metadata["productId"]
 
 	return connector, nil
 }
@@ -55,7 +55,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
 		RequireMetadata: common.RequireMetadata{
-			ExpectedMetadataKeys: []string{"subjectProductId"},
+			ExpectedMetadataKeys: []string{"productId"},
 		},
 	}
 

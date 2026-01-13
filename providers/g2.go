@@ -41,8 +41,8 @@ func init() {
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					DisplayName: "Subject Product Id",
-					Name:        "subjectProductId",
+					DisplayName: "Product Id",
+					Name:        "productId",
 				},
 			},
 		},
