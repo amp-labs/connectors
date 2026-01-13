@@ -646,6 +646,9 @@ type SubscriptionEvent interface {
 	RecordId() (string, error)
 	EventTimeStampNano() (int64, error)
 	RawMap() (map[string]any, error)
+	// PreLoadData is used to pre-load data into the subscription event.
+	// Assume that the data will include the entire request body in case it is needed for the event processing.
+	// This method will be called for every event as the first step in the event processing.
 	PreLoadData(data *SubscriptionEventPreLoadData) error
 }
 
