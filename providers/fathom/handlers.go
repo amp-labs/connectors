@@ -25,6 +25,12 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, err
 	}
 
+	if objectName == "meetings" {
+		// This will add query parameters to include additional data fields
+		// in the meetings API response.
+		addMeetingsQueryParams(url)
+	}
+
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
@@ -83,6 +89,12 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, apiVersion, params.ObjectName)
 	if err != nil {
 		return nil, err
+	}
+
+	if params.ObjectName == "meetings" {
+		// This will add query parameters to include additional data fields
+		// in the meetings API response.
+		addMeetingsQueryParams(url)
 	}
 
 	if !params.Since.IsZero() {
