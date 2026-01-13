@@ -29,7 +29,7 @@
       "FieldsMap": {
         "allowCancellation": "allowCancellation",
         "allowReschedule": "allowReschedule",
-        "appointmentPerSlot": "appointmentPerSlot",
+        "appoinmentPerSlot": "appoinmentPerSlot",
         "autoConfirm": "autoConfirm",
         "availabilities": "availabilities",
         "calendarType": "calendarType",

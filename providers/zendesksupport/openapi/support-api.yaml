@@ -3398,7 +3398,7 @@ paths:
               examples:
                 default:
                   $ref: '#/components/examples/DynamicContentVariantResponseExample'
-  /api/v2/dynamic_content/items/{dynamic_content_item_id}/variants/{dynamic_content_variant_id}:
+  /api/v2/dynamic_content/items/{dynamic_content_item_id}/variants/{dynammic_content_variant_id}:
     parameters:
       - $ref: '#/components/parameters/DynamicContentItemId'
       - $ref: '#/components/parameters/DynamicContentVariantId'
@@ -7387,7 +7387,7 @@ paths:
                   $ref: '#/components/examples/SkillBasedRoutingAttributeDefinitionsExample'
   /api/v2/routing/requirements/fulfilled:
     get:
-      operationId: ListTicketsFulfilledByUser
+      operationId: ListTicketsFullfilledByUser
       tags:
         - Skill Based Routing
       summary: List Tickets Fulfilled by a User
@@ -11721,7 +11721,7 @@ paths:
       - $ref: '#/components/parameters/UserId'
       - $ref: '#/components/parameters/UserIdentityId'
     put:
-      operationId: RequestUserVerification
+      operationId: RequestUserVerfication
       tags:
         - User Identities
       summary: Request User Verification
@@ -13730,7 +13730,7 @@ paths:
             - 3
       responses:
         "200":
-          description: Successful response
+          description: Succesful response
           content:
             application/json:
               schema:
@@ -13767,7 +13767,7 @@ paths:
                     - 60
       responses:
         "200":
-          description: Successful response
+          description: Succesful response
           content:
             application/json:
               schema:
@@ -16045,7 +16045,7 @@ components:
           description: the id of the new resource
         index:
           type: integer
-          description: the index number of the result
+          description: the index number of the resul
       required:
         - id
         - index
@@ -16167,7 +16167,7 @@ components:
             custom_role_id: 9373643
             details: ""
             email: johnny@example.com
-            external_id: sai989sure98w9
+            external_id: sai989sur98w9
             id: 35436
             last_login_at: "2011-05-05T10:38:52Z"
             locale: en-US
@@ -16437,7 +16437,7 @@ components:
       properties:
         count:
           type: integer
-          description: The current number of the requested resource
+          description: The current numnber of the requested resource
           readOnly: true
         limit:
           type: integer
@@ -19289,7 +19289,7 @@ components:
           readOnly: true
         url:
           type: string
-          description: URL of the SLA Policy record
+          description: URL of the SLA Policy reacord
           readOnly: true
       example:
         created_at: "2015-03-17T22:50:26Z"
@@ -22257,7 +22257,7 @@ components:
             custom_role_id: 9373643
             details: ""
             email: johnny@example.com
-            external_id: sai989sure98w9
+            external_id: sai989sur98w9
             id: 35436
             last_login_at: "2011-05-05T10:38:52Z"
             locale: en-US
@@ -23261,7 +23261,7 @@ components:
         custom_role_id: 9373643
         details: ""
         email: johnny@example.com
-        external_id: sai989sure98w9
+        external_id: sai989sur98w9
         iana_time_zone: Pacific/Pago_Pago
         id: 35436
         last_login_at: "2011-05-05T10:38:52Z"
@@ -24057,7 +24057,7 @@ components:
         type: integer
       example: 47
     DynamicContentVariantId:
-      name: dynamic_content_variant_id
+      name: dynammic_content_variant_id
       in: path
       description: The ID of the variant
       required: true
@@ -25966,7 +25966,7 @@ components:
           custom_role_id: 9373643
           details: ""
           email: johnny@example.com
-          external_id: sai989sure98w9
+          external_id: sai989sur98w9
           id: 35436
           last_login_at: "2011-05-05T10:38:52Z"
           locale: en-US
@@ -26073,7 +26073,7 @@ components:
             custom_role_id: 9373643
             details: ""
             email: johnny@example.com
-            external_id: sai989sure98w9
+            external_id: sai989sur98w9
             id: 35436
             last_login_at: "2011-05-05T10:38:52Z"
             locale: en-US
@@ -30131,7 +30131,7 @@ components:
             custom_role_id: 9373643
             details: ""
             email: johnny@example.com
-            external_id: sai989sure98w9
+            external_id: sai989sur98w9
             id: 35436
             last_login_at: "2011-05-05T10:38:52Z"
             locale: en-US

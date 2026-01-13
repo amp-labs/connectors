@@ -2157,7 +2157,7 @@
           "Accounts (Companies)"
         ],
         "summary": "Get a list of industries",
-        "description": "Retrieves the list of valid industries to describe companies as belonging to.",
+        "description": "Retreives the list of valid industries to describe companies as belonging to.",
         "responses": {
           "200": {
             "description": "OK",
@@ -6687,7 +6687,7 @@
                   "example": "734-123-4567"
                 },
                 "E164": {
-                  "description": "The phone number formatted for international use; a common programmatic standard for working with phone numbers",
+                  "description": "The phone number formatted for international use; a common programatic standard for working with phone numbers",
                   "type": "string",
                   "example": "+17341234567"
                 },
@@ -6903,7 +6903,7 @@
         "properties": {
           "name": {
             "description": "The name of the pipeline",
-            "example": "Premium Prospects Pipeline"
+            "example": "Preimum Prospects Pipeline"
           },
           "default": {
             "description": "Whether this is the default pipeline for new leads.",

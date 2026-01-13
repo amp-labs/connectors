@@ -5271,7 +5271,7 @@ paths:
           schema:
             "$ref": "#/definitions/API_Entities_AccessRequester"
           examples:
-            successful_response:
+            successfull_response:
               id: 1
               username: raymond_smith
               name: Raymond Smith
@@ -5303,7 +5303,7 @@ paths:
           schema:
             "$ref": "#/definitions/API_Entities_AccessRequester"
           examples:
-            successful_response:
+            successfull_response:
               id: 1
               username: raymond_smith
               name: Raymond Smith
@@ -17873,7 +17873,7 @@ paths:
           required: false
         - in: formData
           name: milestone_id
-          description: The global ID of a milestone to assign the merge request to.
+          description: The global ID of a milestone to assign the merge reques to.
           type: integer
           format: int32
           required: false
@@ -18438,7 +18438,7 @@ paths:
           required: false
         - in: formData
           name: milestone_id
-          description: The global ID of a milestone to assign the merge request to.
+          description: The global ID of a milestone to assign the merge reques to.
           type: integer
           format: int32
           required: false
@@ -34001,7 +34001,7 @@ paths:
           schema:
             "$ref": "#/definitions/API_Entities_AccessRequester"
           examples:
-            successful_response:
+            successfull_response:
               id: 1
               username: raymond_smith
               name: Raymond Smith
@@ -34033,7 +34033,7 @@ paths:
           schema:
             "$ref": "#/definitions/API_Entities_AccessRequester"
           examples:
-            successful_response:
+            successfull_response:
               id: 1
               username: raymond_smith
               name: Raymond Smith
@@ -37481,7 +37481,7 @@ paths:
     put:
       summary: Create or deprecate NPM package
       description:
-        Create was introduced in GitLab 11.8 & deprecate support was added
+        Create was introduced in GitLab 11.8 & deprecate suppport was added
         in 16.0
       produces:
         - application/json
@@ -49008,7 +49008,7 @@ paths:
   "/api/v4/personal_access_tokens/{id}/rotate":
     post:
       summary: Rotate personal access token
-      description: Rotates a personal access token.
+      description: Roates a personal access token.
       produces:
         - application/json
       consumes:
@@ -55899,9 +55899,9 @@ definitions:
         type: string
       system:
         type: string
-      notable_id:
+      noteable_id:
         type: string
-      notable_type:
+      noteable_type:
         type: string
       project_id:
         type: string
@@ -55921,7 +55921,7 @@ definitions:
         type: string
       internal:
         type: string
-      notable_iid:
+      noteable_iid:
         type: string
       commands_changes:
         type: string
@@ -57559,7 +57559,7 @@ definitions:
         example: 4a:9d:64:15:ed:3a:e6:07:6e:89:36:b3:3b:03:05:d9
       fingerprint_sha256:
         type: string
-        example: SHA256:Jrs3LD1Ji30xNLtTVf9ANDCj7kkBgPBb2pjvTZ3HfIgU
+        example: SHA256:Jrs3LD1Ji30xNLtTVf9NDCj7kkBgPBb2pjvTZ3HfIgU
       projects_with_write_access:
         "$ref": "#/definitions/API_Entities_ProjectIdentity"
       projects_with_readonly_access:
@@ -57594,7 +57594,7 @@ definitions:
         example: 4a:9d:64:15:ed:3a:e6:07:6e:89:36:b3:3b:03:05:d9
       fingerprint_sha256:
         type: string
-        example: SHA256:Jrs3LD1Ji30xNLtTVf9ANDCj7kkBgPBb2pjvTZ3HfIgU
+        example: SHA256:Jrs3LD1Ji30xNLtTVf9NDCj7kkBgPBb2pjvTZ3HfIgU
       projects_with_write_access:
         "$ref": "#/definitions/API_Entities_ProjectIdentity"
       projects_with_readonly_access:
@@ -60461,7 +60461,7 @@ definitions:
         type: string
       to_line:
         type: string
-      applicable:
+      appliable:
         type: string
       applied:
         type: string

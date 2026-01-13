@@ -34078,7 +34078,7 @@
         "summary": "Get AI Settings",
         "operationId": "getSettingsAi",
         "tags": [
-          "AISettings"
+          "AISetings"
         ],
         "responses": {
           "200": {
@@ -34137,7 +34137,7 @@
           }
         ],
         "tags": [
-          "AISettings"
+          "AISetings"
         ],
         "responses": {
           "default": {

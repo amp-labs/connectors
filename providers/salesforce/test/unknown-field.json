@@ -1,6 +1,6 @@
 [
   {
-    "message": "No such column 'AccountNumber' on sobject of type Account",
+    "message": "No such column 'AccountNumer' on sobject of type Account",
     "errorCode": "INVALID_FIELD"
   }
 ]

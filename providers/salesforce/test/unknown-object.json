@@ -1,6 +1,6 @@
 [
   {
-    "message": "\nName,BillingCity,IsDeleted FROM Account\n                                ^\nERROR at Row:1:Column:43\nsObject type 'Account' is not supported. If you are attempting to use a custom object, be sure to append the '__c' after the entity name. Please reference your WSDL or the describe call for the appropriate names.",
+    "message": "\nName,BillingCity,IsDeleted FROM Accout\n                                ^\nERROR at Row:1:Column:43\nsObject type 'Accout' is not supported. If you are attempting to use a custom object, be sure to append the '__c' after the entity name. Please reference your WSDL or the describe call for the appropriate names.",
     "errorCode": "INVALID_TYPE"
   }
 ]

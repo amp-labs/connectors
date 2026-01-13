@@ -13595,8 +13595,8 @@
               "valueType": "string",
               "providerType": "Edm.String"
             },
-            "isDefaultLanguage": {
-              "displayName": "isDefaultLanguage",
+            "isDefaultLangauge": {
+              "displayName": "isDefaultLangauge",
               "valueType": "boolean",
               "providerType": "Edm.Boolean"
             },
@@ -18669,8 +18669,8 @@
               "valueType": "string",
               "providerType": "Edm.String"
             },
-            "isDefaultLanguage": {
-              "displayName": "isDefaultLanguage",
+            "isDefaultLangauge": {
+              "displayName": "isDefaultLangauge",
               "valueType": "boolean",
               "providerType": "Edm.Boolean"
             },
@@ -21619,8 +21619,8 @@
               "valueType": "int",
               "providerType": "Edm.Int64"
             },
-            "uuid": {
-              "displayName": "uuid",
+            "udid": {
+              "displayName": "udid",
               "valueType": "string",
               "providerType": "Edm.String"
             },
@@ -33624,8 +33624,8 @@
               "valueType": "string",
               "providerType": "Edm.String"
             },
-            "isDefaultLanguage": {
-              "displayName": "isDefaultLanguage",
+            "isDefaultLangauge": {
+              "displayName": "isDefaultLangauge",
               "valueType": "boolean",
               "providerType": "Edm.Boolean"
             },
@@ -39000,8 +39000,8 @@
               "valueType": "boolean",
               "providerType": "Edm.Boolean"
             },
-            "searchEnableAutomaticIndexSizeManagement": {
-              "displayName": "searchEnableAutomaticIndexSizeManagement",
+            "searchEnableAutomaticIndexSizeManangement": {
+              "displayName": "searchEnableAutomaticIndexSizeManangement",
               "valueType": "boolean",
               "providerType": "Edm.Boolean"
             },
@@ -40683,8 +40683,8 @@
           },
           "custom": ""
         },
-        "windowsMalwareInformation": {
-          "displayName": "Windows Malware Information",
+        "windowsMalwareInformations": {
+          "displayName": "Windows Malware Informations",
           "path": "",
           "responseKey": "",
           "fields": {
@@ -40809,8 +40809,8 @@
           },
           "custom": ""
         },
-        "windowsMobileMISS": {
-          "displayName": "Windows Mobile Miss",
+        "windowsMobileMSIS": {
+          "displayName": "Windows Mobile Msis",
           "path": "",
           "responseKey": "",
           "fields": {

@@ -6288,7 +6288,7 @@
       "put": {
         "tags": ["Conversations", "Chatbots"],
         "summary": "Claim conversation",
-        "description": "Claim a conversation for a given agent. To avoid taking over assigned conversations, set the `force` parameter to false",
+        "description": "Claim a conversation for a given agent. To avoid taking over assigned conversations, set the `force` paremeter to false",
         "operationId": "putConversationsConversationidClaim",
         "parameters": [
           {
@@ -9202,7 +9202,7 @@
                         },
                         {
                           "locale": "de-AT",
-                          "content": "Hallo {{requester_firstname}},\n\nWenn Sie bei Company Name einkaufen, bieten wir Ihnen in 30-tägiges Rückgaberecht ohne Aufwand\n\nWillkommen!!!!\n\n{{csid}}\n\nmit freundlichen Grüßen,\n{{agent_firstname}}",
+                          "content": "Hallo {{requester_firstname}},\n\nWenn Sie bei Company Name einkaufen, bieten wir Ihnen ein 30-tägiges Rückgaberecht ohne Aufwand\n\nWillkommen!!!!\n\n{{csid}}\n\nmit freundlichen Grüßen,\n{{agent_firstname}}",
                           "isDeactivated": false,
                           "subject": "30-Tage-Rückgaberecht bei Company Name csid:{{csid}} agent_firstname:{{agent_firstname}} requester_firstname:{{requester_firstname}}"
                         },

@@ -77,7 +77,7 @@
             ],
             "pageInfo": {
                 "hasNextPage": true,
-                "endCursor": "eyJsYXN0X2lkIjoxMjM0NTY3ODksImxhc3RfdmFsdWUiOiItMDI0LTAxLTIwVDE0OjQ1OjAwWiJ9"
+                "endCursor": "eyJsYXN0X2lkIjoxMjM0NTY3ODksImxhc3RfdmFsdWUiOiIyMDI0LTAxLTIwVDE0OjQ1OjAwWiJ9"
             }
         }
     }

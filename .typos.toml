@@ -12,10 +12,12 @@ extend-exclude = [
     "scripts/openapi/",
     # Generated files
     "*.gen.go",
-    # Data files (json/yaml) - don't modify
+    # Data files - don't modify
     "*.json",
     "*.yaml",
-    "*.yml"
+    "*.yml",
+    "*.csv",
+    "*.xml"
 ]
 
 ignore-hidden = true

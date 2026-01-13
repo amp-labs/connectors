@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Users",
-        "description": "The User APIs allow developers to programmatically access data related to users, groups, and contact groups.",
+        "description": "The User APIs allow developers to programatically access data related to users, groups, and contact groups.",
         "termsOfService": "https://zoom.us/docs/en-us/zoom_api_license_and_tou.html",
         "contact": {
             "name": "Zoom Developers",
@@ -1311,7 +1311,7 @@
                                                 "id": {
                                                     "type": "string",
                                                     "description": "The user's ID.",
-                                                    "example": "v4itWT1LTfy8QvPG4GTvdg"
+                                                    "example": "v4iyWT1LTfy8QvPG4GTvdg"
                                                 }
                                             }
                                         }
@@ -1338,7 +1338,7 @@
                                         "ids": {
                                             "type": "string",
                                             "description": "The administrator IDs.",
-                                            "example": "v4itWT1LTfy8QvPG4GTvdg"
+                                            "example": "v4iyWT1LTfy8QvPG4GTvdg"
                                         }
                                     }
                                 }
@@ -2932,7 +2932,7 @@
                                                     "id": {
                                                         "type": "string",
                                                         "description": "Unique Identifier of the user. ",
-                                                        "example": "v4itWT1LTfy8QvPG4GTvdg"
+                                                        "example": "v4iyWT1LTfy8QvPG4GTvdg"
                                                     },
                                                     "last_name": {
                                                         "type": "string",
@@ -3050,7 +3050,7 @@
                                                 "id": {
                                                     "type": "string",
                                                     "description": "User ID.",
-                                                    "example": "v4itWT1LTfy8QvPG4GTvdg"
+                                                    "example": "v4iyWT1LTfy8QvPG4GTvdg"
                                                 }
                                             }
                                         }
@@ -3075,7 +3075,7 @@
                                         },
                                         "ids": {
                                             "type": "string",
-                                            "example": "v4itWT1LTfy8QvPG4GTvdg"
+                                            "example": "v4iyWT1LTfy8QvPG4GTvdg"
                                         }
                                     }
                                 }
@@ -3204,7 +3204,7 @@
                         "required": true,
                         "schema": {
                             "type": "string",
-                            "example": "v4itWT1LTfy8QvPG4GTvdg"
+                            "example": "v4iyWT1LTfy8QvPG4GTvdg"
                         }
                     }
                 ],
@@ -4989,7 +4989,7 @@
                                                         },
                                                         "allow_users_to_search_others_options": {
                                                             "type": "string",
-                                                            "description": "Allow users to search others, when selecting multiple items, separate them with commas. \n* ''-none. \n* '1' - In the same account. \n* '2' - Under the same master account, including all sub accounts. \n* '3' - Under the same organization.",
+                                                            "description": "Allow users to search others, when selecting multiple items, separate them with commas. \n* ''-none. \n* '1' - In the same account. \n* '2' - Under the same master account, including all sub acounts. \n* '3' - Under the same organization.",
                                                             "example": "1,3"
                                                         },
                                                         "allow_users_to_add_contacts": {
@@ -6302,7 +6302,7 @@
                                                         "properties": {
                                                             "allow_attendees_chat_with": {
                                                                 "type": "integer",
-                                                                "description": "Allow webinar attendees to chat with others in the webinar.\n* `1` - No one.\n* `2` - Host and all panelists.\n* `3` - Everyone.",
+                                                                "description": "Allow webinar attendees to chat witn others in the webinar.\n* `1` - No one.\n* `2` - Host and all panelists.\n* `3` - Everyone.",
                                                                 "example": 3,
                                                                 "enum": [
                                                                     1,
@@ -7074,7 +7074,7 @@
                                                     },
                                                     "allow_users_to_search_others_options": {
                                                         "type": "string",
-                                                        "description": "Allow users to search others, when selecting multiple items, separate them with commas. \n* ''-none. \n* '1' - In the same account. \n* '2' - Under the same master account, including all sub accounts. \n* '3' - Under the same organization.",
+                                                        "description": "Allow users to search others, when selecting multiple items, separate them with commas. \n* ''-none. \n* '1' - In the same account. \n* '2' - Under the same master account, including all sub acounts. \n* '3' - Under the same organization.",
                                                         "example": "1,3"
                                                     },
                                                     "allow_users_to_add_contacts": {
@@ -16376,7 +16376,7 @@
                                         "token": {
                                             "type": "string",
                                             "description": "The user's ZAK or token value.",
-                                            "example": "6IjAwMDAwMSIsInputX3NrbSI6InputX"
+                                            "example": "6IjAwMDAwMSIsInptX3NrbSI6InptX"
                                         }
                                     }
                                 }

@@ -1,11 +1,11 @@
 {
   "statusCode": 400,
   "error": "Bad Request",
-  "message": "\"client_id\" is not allowed",
+  "message": "\"clinet_id\" is not allowed",
   "validation": {
     "source": "body",
     "keys": [
-      "client_id"
+      "clinet_id"
     ]
   }
 }

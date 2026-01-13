@@ -2512,7 +2512,7 @@
           {
             "name": "query",
             "in": "query",
-            "description": "Required. The plain-text query for the request. The query is used to match prefix phrases of the fields on a person. For example, a person with name \"foo name\" matches queries such as \"f\", \"fo\", \"foo\", \"foo n\", \"name\", etc., but not \"oo n\".",
+            "description": "Required. The plain-text query for the request. The query is used to match prefix phrases of the fields on a person. For example, a person with name \"foo name\" matches queries such as \"f\", \"fo\", \"foo\", \"foo n\", \"nam\", etc., but not \"oo n\".",
             "schema": {
               "type": "string"
             }
@@ -3282,7 +3282,7 @@
           {
             "name": "query",
             "in": "query",
-            "description": "Required. The plain-text query for the request. The query is used to match prefix phrases of the fields on a person. For example, a person with name \"foo name\" matches queries such as \"f\", \"fo\", \"foo\", \"foo n\", \"name\", etc., but not \"oo n\".",
+            "description": "Required. The plain-text query for the request. The query is used to match prefix phrases of the fields on a person. For example, a person with name \"foo name\" matches queries such as \"f\", \"fo\", \"foo\", \"foo n\", \"nam\", etc., but not \"oo n\".",
             "schema": {
               "type": "string"
             }

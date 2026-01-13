@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "SolarWinds Service Desk API",
-    "description": "All SolarWinds Service Desk API definitions\n# General Concepts\n## Service URL\nFor US based customers, please use `https://api.samanage.com`\n\n For European based customers, please use `https://apieu.samanage.com`\n\nFor APJ based customers, please use `https://apiau.samanage.com`\n\n## Formats\n\nYou can use XML or JSON format for your request.\n\nXML Example: `curl -H \"X-Samanage-Authorization: Bearer TOKEN\" -H \"Accept: application/vnd.samanage.v2.1+xml\" -X GET https://api.samanage.com/incidents.xml`\n\nJSON Example: `curl -H \"X-Samanage-Authorization: Bearer TOKEN\" -H \"Accept: application/vnd.samanage.v2.1+json\" -H \"Content-Type: application/json\" -X GET https://api.samanage.com/incidents.json`\n\nFor create and update, the provided data needs to be in the correct format.\n\nXML Example: `<incident> <field_to_update>content</field_to_update> </incident>`\n\nJSON Example: `{\"incident\": {\"field_to_update\": \"content\"}}`\n\nTo clear fields, use the following format:\n\nXML Example: `<incident> <field_to_update></field_to_update> </incident>`\n\nJSON Example: `{\"incident\": {\"field_to_update\": \"\"}}`\n\n## Authentication\nThe API authentication is token-based. Admins can generate a token directly from the user setup page.  The token is needed by the API developer to gain access to specific items in SolarWinds accessible only via the API. For more details click here [Token authentication for API integration](https://documentation.solarwinds.com/en/success_center/swsd/content/completeguidetoswsd/token-authentication-for-api-integration.htm). When an admin re-generates their token (via the user setup page), all previously generated tokens become invalid.\n\nThe tokens are relatively long strings that resemble the following: <div style=\"word-wrap: break-word;\"> AAAZWV0YXkubmF0YW4rNUBzYW1hbmFnZS5jb20hbGciOiJIUzUxMiJ9.eyJ1c2VyX2ljIjoxMjU2OTQzLCJnZW5lcmF0ZWRfYXQiOiItMDE3LTA2LTA3IDA5OjE3OjI5In0.j_H15qzJJr9vXGAHCThLEOQrE9GGbjMxZJOs5zAf_iqaGqxlIOAmvPpBx0td_C3r7dliAfXXIgdqhZHVoK1KTwAzd1</div>\n\nIn order to supply the API token you should pass X-Samanage-Authorization header in the following format: “Bearer API_TOKEN_STRING”.\n\nThe API call resembles the following:\n\n`curl -H \"X-Samanage-Authorization: Bearer AAAZWV0YXkubmF0YW4rNUBzYW1hbmFnZS5jb20hbGciOiJIUzUxMiJ9.eyJ1c2VyX2ljIjoxMjU2OTQzLCJnZW5lcmF0ZWRfYXQiOiItMDE3LTA2LTA3IDA5OjE3OjI5In0.j_H15qzJJr9vXGAHCThLEOQrE9GGbjMxZJOs5zAf_iqaGqxlIOAmvPpBx0td_C3r7dliAfXXIgdqhZHVoK1KTwAzd1\" -H \"Accept: application/vnd.samanage.v2.1+json\" https://api.samanage.com/hardwares.json`\n\nIf the authentication fails, a “401 Unauthorized” message will be returned.\n## Security\nSWSD uses a secured API channel. To connect to the regional API server, use the account admin users’ token information and connect using Token-based authentication. Requests should never be transferred in plain text over the wire. Instead, use SSL version 1.2 or higher (which can be accessed using https://) to ensure that all communication with the server is encrypted and secured.\n## Limitations\nTo ensure API performance and avoid denial of service, we employ API call limits based per minute as defined by the Service Desk plan of the endpoint user.\n\nPackages:\n\nAdvanced Plan - 1000 calls per minute\n\nPremier Plan - 1500 calls per minute\n## Versioning\nClients must provide the version number they are ready to work with in the “Accept” HTTP header. A valid \"Accept\" header should specify current content type and version number. For example, “application/vnd.samanage.v2.1+xml”.\n When no “Accept” header is specified, the API will default to version 2.1.\nIf you request an API version that is no longer supported, the API will respond with an HTTP status code of “406 – Not Acceptable”.\n\nExample: \n`curl -H \"X-Samanage-Authorization: Bearer TOKEN\" -H \"Accept: application/vnd.samanage.v2.1+json\" https://api.samanage.com/hardwares.json`\n## Updates History\n## Pagination\nEvery response with a large data set will be paginated. The response will include the pagination data as headers and links (formatted as <url>; rel=”relative”). For example:\n\nX-Per-Page: 50\n\nX-Total-Count: 3099\n\nX-Total-Pages: 62\n\nLink: `<https://api.samanage.com/incidents.xml?page=1>`; rel=\"first\",\n\n`<https://api.samanage.com/incidents.xml?page=8>`; rel=\"prev\",\n\n`<https://api.samanage.com/incidents.xml?page=10>`; rel=\"next\",\n\n`<https://api.samanage.com/incidents.xml?page=62>`; rel=\"last\"\n\nYou can request a specific page by providing a “page” parameter. For example, to request the third page of the hardware list, you can use the following command: `curl -H \"X-Samanage-Authorization: Bearer TOKEN\" https://api.samanage.com/hardwares.json?page=3`\n\nTo control the number of rows returned, provide the per_page parameter. For example, to request 100 rows with each results page, you can use the following command: `curl -H \"X-Samanage-Authorization: Bearer TOKEN\" https://api.samanage.com/hardwares.json?per_page=100`\n## API Entry Point\n All communication with the API begins with a list of available services. Although it is possible to get directly to a specific service URL, we advise you begin with the api.xml entry point. This ensures your program will run seamlessly if changes are made to the underlying URLs for services in future versions of the API.\n\n**Request**\n\nGET api.samanage.com/api.json \n`curl -H \"X-Samanage-Authorization: Bearer TOKEN\" -H \"Accept: application/json\" -X GET https://api.samanage.com/api.json`\n\n**Response**\n\n`[{\"name\":\"Computers List\",\"href\":\"https://api.samanage.com/hardwares.json\"},`\n\n`{\"name\":\"Helpdesk Incidents List\",\"href\":\"https://api.samanage.com/incidents.json\"},`\n\n`{\"name\":\"Changes List\",\"href\":\"https://api.samanage.com/changes.json\"},`\n\n`...]`\n## Short / long layout\nFor all APIs, you can specify the layout (short / long). This affects the length of the returned records, and is relevant for changes, contracts, hardwares, incidents, other assets, problems, and solutions.\n\nTo use, add the parameter to the request: “?layout=short” or “?layout=long”. If not present, the default is “short”.\n## Searching\nYou can search for records by using query parameters on top of the base URL. For example, when requesting a list of hardwares, you may want to limit them to only those with a specific IP address. This could be accomplished with a request like -\n\n GET api.samanage.com/hardwares.xml?ip_address=123.456*\n\nHere, ip_address is a query parameter that implements a filter where the IP equals 123.456.xxx.xxx.\n\nOther examples: `https://api.samanage.com/other_assets.json?asset_id=XXXXXXXX`, `https://api.samanage.com/hardwares.json?asset_tag=XXXXXXXX`\n## Date formats\nThe following date formats are allowed as input when updating date fields:\n\n* January 21, 2015\n* January 21 2015\n* Jan 21, 2015\n* Jan 21 2015\n* 21/1/2015\n* 2015/1/21\n* 21-1-2015\n* 2015-1-21\n*21.1.2015 \n* 2015.1.21\n## Custom fields\nTo set custom fields, use the following data format:\n\n XML Example:\n\n`<incident><custom_fields_values>`\n\n`<custom_fields_value><name>field name</name><value>content</value></custom_fields_value>`\n\n`</custom_fields_values></incident>`\n\nJSON Example:\n\n`{\"incident\": {\"custom_fields_values\": {\"custom_fields_value\": [{\"name\": \"field name\",\"value\": \"content\"}]}}}`\n## API filtering\nYou have two options for filtering: by days or by time. You can also use custom ranges for filtering by days.\n\n**Filter by fixed days or time**\n\n* Filter by fixed days\n\n  `{api.samanage.com}/incidents?updated={days} - Last X days` - Options for Last X days: 1-90, or 365 (example: 365)\n\n* Filter by relative times\n\n   `{api.samanage.com}/incidents?updated={hours}h - Last X hours` - Options for hours: 1-23 (example: 7h)\n\n**Filter using a custom range**\n\n* Select the date and time range in ISO 8601 UTC format.\n\n* Filter by updated_from and updated_to.\n\n   &#9675; Updated_from indicates the range start.\n\n   &#9675; Updated_to indicates the range end.\n\n   **Examples:**\n\n  Get incidents updated in a specific date/time range - `incidents.json?updated_from='2023-11-29T08:00'&updated_to='2023-11-30T08:00'`\n\n    Get incidents updated from a specific date/time until now - `incidents.json?updated_from='2023-11-29T08:00'`\n\n    Get incidents created in a specific date/time range - `incidents.json?created_from='2023-11-29T08:00'&created_to='2023-11-30T08:00'`\n\n    Get incidents created from a specific date/time until now - `incidents.json?created_from='2023-11-29T08:00'`\n\n**Filter using a custom date (custom_gte to custom_lte option)** - *Deprecated*\n\n &nbsp; &nbsp; **Examples:**\n\n &nbsp; &nbsp; Get all incidents with an updated or created date greater than or equal to a specific date and less than or equal to a different specific date -\n\n &nbsp; &nbsp; `{api.samanage.com}/incidents?updated=Select Date Range&updated_custom_gte={Date/Datetime}&updated_custom_lte={Date/datetime}`<br><br><hr></hr>",
+    "description": "All SolarWinds Service Desk API definitions\n# General Concepts\n## Service URL\nFor US based customers, please use `https://api.samanage.com`\n\n For European based customers, please use `https://apieu.samanage.com`\n\nFor APJ based customers, please use `https://apiau.samanage.com`\n\n## Formats\n\nYou can use XML or JSON format for your request.\n\nXML Example: `curl -H \"X-Samanage-Authorization: Bearer TOKEN\" -H \"Accept: application/vnd.samanage.v2.1+xml\" -X GET https://api.samanage.com/incidents.xml`\n\nJSON Example: `curl -H \"X-Samanage-Authorization: Bearer TOKEN\" -H \"Accept: application/vnd.samanage.v2.1+json\" -H \"Content-Type: application/json\" -X GET https://api.samanage.com/incidents.json`\n\nFor create and update, the provided data needs to be in the correct format.\n\nXML Example: `<incident> <field_to_update>content</field_to_update> </incident>`\n\nJSON Example: `{\"incident\": {\"field_to_update\": \"content\"}}`\n\nTo clear fields, use the following format:\n\nXML Example: `<incident> <field_to_update></field_to_update> </incident>`\n\nJSON Example: `{\"incident\": {\"field_to_update\": \"\"}}`\n\n## Authentication\nThe API authentication is token-based. Admins can generate a token directly from the user setup page.  The token is needed by the API developer to gain access to specific items in SolarWinds accessible only via the API. For more details click here [Token authentication for API integration](https://documentation.solarwinds.com/en/success_center/swsd/content/completeguidetoswsd/token-authentication-for-api-integration.htm). When an admin re-generates their token (via the user setup page), all previously generated tokens become invalid.\n\nThe tokens are relatively long strings that resemble the following: <div style=\"word-wrap: break-word;\"> AAAZWV0YXkubmF0YW4rNUBzYW1hbmFnZS5jb20hbGciOiJIUzUxMiJ9.eyJ1c2VyX2ljIjoxMjU2OTQzLCJnZW5lcmF0ZWRfYXQiOiIyMDE3LTA2LTA3IDA5OjE3OjI5In0.j_H15qzJJr9vXGAHCThLEOQrE9GGbjMxZJOs5zAf_iqaGqxlIOAmvPpBx0td_C3r7dliAfXXIgdqhZHVoK1KTwAzd1</div>\n\nIn order to supply the API token you should pass X-Samanage-Authorization header in the following format: “Bearer API_TOKEN_STRING”.\n\nThe API call resembles the following:\n\n`curl -H \"X-Samanage-Authorization: Bearer AAAZWV0YXkubmF0YW4rNUBzYW1hbmFnZS5jb20hbGciOiJIUzUxMiJ9.eyJ1c2VyX2ljIjoxMjU2OTQzLCJnZW5lcmF0ZWRfYXQiOiIyMDE3LTA2LTA3IDA5OjE3OjI5In0.j_H15qzJJr9vXGAHCThLEOQrE9GGbjMxZJOs5zAf_iqaGqxlIOAmvPpBx0td_C3r7dliAfXXIgdqhZHVoK1KTwAzd1\" -H \"Accept: application/vnd.samanage.v2.1+json\" https://api.samanage.com/hardwares.json`\n\nIf the authentication fails, a “401 Unauthorized” message will be returned.\n## Security\nSWSD uses a secured API channel. To connect to the regional API server, use the account admin users’ token information and connect using Token-based authentication. Requests should never be transferred in plain text over the wire. Instead, use SSL version 1.2 or higher (which can be accessed using https://) to ensure that all communication with the server is encrypted and secured.\n## Limitations\nTo ensure API performance and avoid denial of service, we employ API call limits based per minute as defined by the Service Desk plan of the endpoint user.\n\nPackages:\n\nAdvanced Plan - 1000 calls per minute\n\nPremier Plan - 1500 calls per minute\n## Versioning\nClients must provide the version number they are ready to work with in the “Accept” HTTP header. A valid \"Accept\" header should specify current content type and version number. For example, “application/vnd.samanage.v2.1+xml”.\n When no “Accept” header is specified, the API will default to version 2.1.\nIf you request an API version that is no longer supported, the API will respond with an HTTP status code of “406 – Not Acceptable”.\n\nExample: \n`curl -H \"X-Samanage-Authorization: Bearer TOKEN\" -H \"Accept: application/vnd.samanage.v2.1+json\" https://api.samanage.com/hardwares.json`\n## Updates History\n## Pagination\nEvery response with a large data set will be paginated. The response will include the pagination data as headers and links (formatted as <url>; rel=”relative”). For example:\n\nX-Per-Page: 50\n\nX-Total-Count: 3099\n\nX-Total-Pages: 62\n\nLink: `<https://api.samanage.com/incidents.xml?page=1>`; rel=\"first\",\n\n`<https://api.samanage.com/incidents.xml?page=8>`; rel=\"prev\",\n\n`<https://api.samanage.com/incidents.xml?page=10>`; rel=\"next\",\n\n`<https://api.samanage.com/incidents.xml?page=62>`; rel=\"last\"\n\nYou can request a specific page by providing a “page” parameter. For example, to request the third page of the hardware list, you can use the following command: `curl -H \"X-Samanage-Authorization: Bearer TOKEN\" https://api.samanage.com/hardwares.json?page=3`\n\nTo control the number of rows returned, provide the per_page parameter. For example, to request 100 rows with each results page, you can use the following command: `curl -H \"X-Samanage-Authorization: Bearer TOKEN\" https://api.samanage.com/hardwares.json?per_page=100`\n## API Entry Point\n All communication with the API begins with a list of available services. Although it is possible to get directly to a specific service URL, we advise you begin with the api.xml entry point. This ensures your program will run seamlessly if changes are made to the underlying URLs for services in future versions of the API.\n\n**Request**\n\nGET api.samanage.com/api.json \n`curl -H \"X-Samanage-Authorization: Bearer TOKEN\" -H \"Accept: application/json\" -X GET https://api.samanage.com/api.json`\n\n**Response**\n\n`[{\"name\":\"Computers List\",\"href\":\"https://api.samanage.com/hardwares.json\"},`\n\n`{\"name\":\"Helpdesk Incidents List\",\"href\":\"https://api.samanage.com/incidents.json\"},`\n\n`{\"name\":\"Changes List\",\"href\":\"https://api.samanage.com/changes.json\"},`\n\n`...]`\n## Short / long layout\nFor all APIs, you can specify the layout (short / long). This affects the length of the returned records, and is relevant for changes, contracts, hardwares, incidents, other assets, problems, and solutions.\n\nTo use, add the parameter to the request: “?layout=short” or “?layout=long”. If not present, the default is “short”.\n## Searching\nYou can search for records by using query parameters on top of the base URL. For example, when requesting a list of hardwares, you may want to limit them to only those with a specific IP address. This could be accomplished with a request like -\n\n GET api.samanage.com/hardwares.xml?ip_address=123.456*\n\nHere, ip_address is a query parameter that implements a filter where the IP equals 123.456.xxx.xxx.\n\nOther examples: `https://api.samanage.com/other_assets.json?asset_id=XXXXXXXX`, `https://api.samanage.com/hardwares.json?asset_tag=XXXXXXXX`\n## Date formats\nThe following date formats are allowed as input when updating date fields:\n\n* January 21, 2015\n* January 21 2015\n* Jan 21, 2015\n* Jan 21 2015\n* 21/1/2015\n* 2015/1/21\n* 21-1-2015\n* 2015-1-21\n*21.1.2015 \n* 2015.1.21\n## Custom fields\nTo set custom fields, use the following data format:\n\n XML Example:\n\n`<incident><custom_fields_values>`\n\n`<custom_fields_value><name>field name</name><value>content</value></custom_fields_value>`\n\n`</custom_fields_values></incident>`\n\nJSON Example:\n\n`{\"incident\": {\"custom_fields_values\": {\"custom_fields_value\": [{\"name\": \"field name\",\"value\": \"content\"}]}}}`\n## API filtering\nYou have two options for filtering: by days or by time. You can also use custom ranges for filtering by days.\n\n**Filter by fixed days or time**\n\n* Filter by fixed days\n\n  `{api.samanage.com}/incidents?updated={days} - Last X days` - Options for Last X days: 1-90, or 365 (example: 365)\n\n* Filter by relative times\n\n   `{api.samanage.com}/incidents?updated={hours}h - Last X hours` - Options for hours: 1-23 (example: 7h)\n\n**Filter using a custom range**\n\n* Select the date and time range in ISO 8601 UTC format.\n\n* Filter by updated_from and updated_to.\n\n   &#9675; Updated_from indicates the range start.\n\n   &#9675; Updated_to indicates the range end.\n\n   **Examples:**\n\n  Get incidents updated in a specific date/time range - `incidents.json?updated_from='2023-11-29T08:00'&updated_to='2023-11-30T08:00'`\n\n    Get incidents updated from a specific date/time until now - `incidents.json?updated_from='2023-11-29T08:00'`\n\n    Get incidents created in a specific date/time range - `incidents.json?created_from='2023-11-29T08:00'&created_to='2023-11-30T08:00'`\n\n    Get incidents created from a specific date/time until now - `incidents.json?created_from='2023-11-29T08:00'`\n\n**Filter using a custom date (custom_gte to custom_lte option)** - *Deprecated*\n\n &nbsp; &nbsp; **Examples:**\n\n &nbsp; &nbsp; Get all incidents with an updated or created date greater than or equal to a specific date and less than or equal to a different specific date -\n\n &nbsp; &nbsp; `{api.samanage.com}/incidents?updated=Select Date Range&updated_custom_gte={Date/Datetime}&updated_custom_lte={Date/datetime}`<br><br><hr></hr>",
     "version": "0.2.18",
     "x-logo": {
       "url": "https://tse4.mm.bing.net/th?id=OIP.lhiASqIhZ7Ow90BTOuu5kAHaEH&pid=Api&P=0&w=301&h=168",
@@ -48882,7 +48882,7 @@
     "/asset_links/delete_asset_link_by_id": {
       "put": {
         "operationId": "deleteAssetLink",
-        "description": "Delete dependency by id",
+        "description": "Delete dpendency by id",
         "tags": ["Configuration Item"],
         "parameters": [
           {
@@ -54432,7 +54432,7 @@
                         "type": "string",
                         "example": "Group Description"
                       },
-                      "supervisor_id": {
+                      "superviser_id": {
                         "anyOf": [
                           { "type": "string", "example": "1" },
                           { "type": "integer", "example": 1 }
@@ -54631,7 +54631,7 @@
                         "type": "string",
                         "example": "Group Description"
                       },
-                      "supervisor_id": {
+                      "superviser_id": {
                         "anyOf": [
                           { "type": "string", "example": "1" },
                           { "type": "integer", "example": 1 }
@@ -54816,7 +54816,7 @@
                   }
                 }
               },
-              "example": "<group>\n\t<name>Group Name</name>\n\t<description>Group Description</description>\n\t<supervisor_id>1</supervisor_id>\n\t<custom_fields_values>\n\t\t<custom_fields_value>1</custom_fields_value>\n\t</custom_fields_values>\n\t<custom_fields_values_attributes>1</custom_fields_values_attributes>\n</group>"
+              "example": "<group>\n\t<name>Group Name</name>\n\t<description>Group Description</description>\n\t<superviser_id>1</superviser_id>\n\t<custom_fields_values>\n\t\t<custom_fields_value>1</custom_fields_value>\n\t</custom_fields_values>\n\t<custom_fields_values_attributes>1</custom_fields_values_attributes>\n</group>"
             }
           }
         },
@@ -55529,7 +55529,7 @@
                         "type": "string",
                         "example": "Group Description"
                       },
-                      "supervisor_id": {
+                      "superviser_id": {
                         "anyOf": [
                           { "type": "string", "example": "1" },
                           { "type": "integer", "example": 1 }
@@ -55729,7 +55729,7 @@
                         "type": "string",
                         "example": "Group Description"
                       },
-                      "supervisor_id": {
+                      "superviser_id": {
                         "anyOf": [
                           { "type": "string", "example": "1" },
                           { "type": "integer", "example": 1 }
@@ -55914,7 +55914,7 @@
                   }
                 }
               },
-              "example": "<group>\n\t<name>Group Name</name>\n\t<description>Group Description</description>\n\t<supervisor_id>1</supervisor_id>\n\t<custom_fields_values>\n\t\t<custom_fields_value>1</custom_fields_value>\n\t</custom_fields_values>\n\t<custom_fields_values_attributes>1</custom_fields_values_attributes>\n</group>"
+              "example": "<group>\n\t<name>Group Name</name>\n\t<description>Group Description</description>\n\t<superviser_id>1</superviser_id>\n\t<custom_fields_values>\n\t\t<custom_fields_value>1</custom_fields_value>\n\t</custom_fields_values>\n\t<custom_fields_values_attributes>1</custom_fields_values_attributes>\n</group>"
             }
           }
         },
@@ -69528,7 +69528,7 @@
                         "version": { "type": "string", "example": "0.0.0" },
                         "category": {
                           "type": "string",
-                          "example": "Google software"
+                          "example": "Google softwares"
                         },
                         "vendor": {
                           "type": "object",
@@ -69613,7 +69613,7 @@
                         "version": { "type": "string", "example": "0.0.0" },
                         "category": {
                           "type": "string",
-                          "example": "Google software"
+                          "example": "Google softwares"
                         },
                         "vendor": {
                           "type": "object",
@@ -69670,7 +69670,7 @@
                     }
                   }
                 },
-                "example": "<software>\n\t<id>1</id>\n\t<name>Google Chrome</name>\n\t<tag>software tag</tag>\n\t<manufacturer>Google LLC</manufacturer>\n\t<version>0.0.0</version>\n\t<category>Google software</category>\n\t<vendor>\n\t\t<id>1</id>\n\t\t<name>Google</name>\n\t\t<address>address description</address>\n\t\t<country>US</country>\n\t\t<city>Texas</city>\n\t\t<zip>1</zip>\n\t\t<tech_support>+000000000</tech_support>\n\t\t<business_phone>+000000000</business_phone>\n\t\t<url>www.google.com</url>\n\t\t<created_at>2020-01-01T00:00:00.000+01:00</created_at>\n\t\t<updated_at>2020-10-01T00:00:00.000+01:00</updated_at>\n\t</vendor>\n\t<installs>1</installs>\n\t<created_at>2020-01-01T00:00:00.000+01:00</created_at>\n\t<updated_at>2020-10-01T00:00:00.000+01:00</updated_at>\n</software>"
+                "example": "<software>\n\t<id>1</id>\n\t<name>Google Chrome</name>\n\t<tag>software tag</tag>\n\t<manufacturer>Google LLC</manufacturer>\n\t<version>0.0.0</version>\n\t<category>Google softwares</category>\n\t<vendor>\n\t\t<id>1</id>\n\t\t<name>Google</name>\n\t\t<address>address description</address>\n\t\t<country>US</country>\n\t\t<city>Texas</city>\n\t\t<zip>1</zip>\n\t\t<tech_support>+000000000</tech_support>\n\t\t<business_phone>+000000000</business_phone>\n\t\t<url>www.google.com</url>\n\t\t<created_at>2020-01-01T00:00:00.000+01:00</created_at>\n\t\t<updated_at>2020-10-01T00:00:00.000+01:00</updated_at>\n\t</vendor>\n\t<installs>1</installs>\n\t<created_at>2020-01-01T00:00:00.000+01:00</created_at>\n\t<updated_at>2020-10-01T00:00:00.000+01:00</updated_at>\n</software>"
               }
             }
           },
@@ -69680,10 +69680,10 @@
         }
       }
     },
-    "/software": {
+    "/softwares": {
       "get": {
-        "operationId": "getSoftware",
-        "description": "List of software",
+        "operationId": "getSoftwares",
+        "description": "List of softwares",
         "tags": ["Software"],
         "parameters": [
           {
@@ -69699,7 +69699,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "List of software",
+                  "description": "List of softwares",
                   "type": "array",
                   "items": {
                     "type": "object",
@@ -69727,7 +69727,7 @@
                       "version": { "type": "string", "example": "0.0.0" },
                       "category": {
                         "type": "string",
-                        "example": "Google software"
+                        "example": "Google softwares"
                       },
                       "vendor": {
                         "type": "object",
@@ -69786,7 +69786,7 @@
               },
               "application/xml": {
                 "schema": {
-                  "description": "List of software",
+                  "description": "List of softwares",
                   "type": "array",
                   "xml": { "name": "/", "wrapped": true },
                   "items": {
@@ -69818,7 +69818,7 @@
                           "version": { "type": "string", "example": "0.0.0" },
                           "category": {
                             "type": "string",
-                            "example": "Google software"
+                            "example": "Google softwares"
                           },
                           "vendor": {
                             "type": "object",
@@ -69876,7 +69876,7 @@
                     }
                   }
                 },
-                "example": "<>\n\t<software>\n\t\t<id>1</id>\n\t\t<name>Google Chrome</name>\n\t\t<tag>software tag</tag>\n\t\t<manufacturer>Google LLC</manufacturer>\n\t\t<version>0.0.0</version>\n\t\t<category>Google software</category>\n\t\t<vendor>\n\t\t\t<id>1</id>\n\t\t\t<name>Google</name>\n\t\t\t<address>address description</address>\n\t\t\t<country>US</country>\n\t\t\t<city>Texas</city>\n\t\t\t<zip>1</zip>\n\t\t\t<tech_support>+000000000</tech_support>\n\t\t\t<business_phone>+000000000</business_phone>\n\t\t\t<url>www.google.com</url>\n\t\t\t<created_at>2020-01-01T00:00:00.000+01:00</created_at>\n\t\t\t<updated_at>2020-10-01T00:00:00.000+01:00</updated_at>\n\t\t</vendor>\n\t\t<installs>1</installs>\n\t\t<created_at>2020-01-01T00:00:00.000+01:00</created_at>\n\t\t<updated_at>2020-10-01T00:00:00.000+01:00</updated_at>\n\t</software>\n\n<>"
+                "example": "<>\n\t<software>\n\t\t<id>1</id>\n\t\t<name>Google Chrome</name>\n\t\t<tag>software tag</tag>\n\t\t<manufacturer>Google LLC</manufacturer>\n\t\t<version>0.0.0</version>\n\t\t<category>Google softwares</category>\n\t\t<vendor>\n\t\t\t<id>1</id>\n\t\t\t<name>Google</name>\n\t\t\t<address>address description</address>\n\t\t\t<country>US</country>\n\t\t\t<city>Texas</city>\n\t\t\t<zip>1</zip>\n\t\t\t<tech_support>+000000000</tech_support>\n\t\t\t<business_phone>+000000000</business_phone>\n\t\t\t<url>www.google.com</url>\n\t\t\t<created_at>2020-01-01T00:00:00.000+01:00</created_at>\n\t\t\t<updated_at>2020-10-01T00:00:00.000+01:00</updated_at>\n\t\t</vendor>\n\t\t<installs>1</installs>\n\t\t<created_at>2020-01-01T00:00:00.000+01:00</created_at>\n\t\t<updated_at>2020-10-01T00:00:00.000+01:00</updated_at>\n\t</software>\n\n<>"
               }
             }
           },
@@ -82879,7 +82879,7 @@
     },
     "/memberships/{id}": {
       "delete": {
-        "operationId": "deleteMembershipById",
+        "operationId": "deleteMemebershipById",
         "description": "Delete membership.\nExample: curl -H \"X-Samanage-Authorization: Bearer TOKEN\" -H 'Accept: application/xml' -H 'Content-Type:text/xml' -X DELETE https://api.samanage.com/memberships/1.xml",
         "tags": ["Membership"],
         "parameters": [

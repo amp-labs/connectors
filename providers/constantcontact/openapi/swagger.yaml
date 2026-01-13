@@ -614,8 +614,8 @@ paths:
         \ filter contacts to export, specify the source to use, `contact_id`, `list_id`,\
         \ or `segment_id` (all mutually exclusive).\nBy default, all contact related\
         \ fields are exported. Use the fields array to only export specific contact\
-        \ fields. You must export `email_address` to successfully export `email_option_source`,\
-        \ `email_option_date`, `email_optout_source`, `email_optout_date`, or `email_optout_reason`.\n\
+        \ fields. You must export `email_address` to successfully export `email_optin_source`,\
+        \ `email_optin_date`, `email_optout_source`, `email_optout_date`, or `email_optout_reason`.\n\
         After Constant Contact finishes processing the activity, use the `results`\
         \ link in the response body to retrieve the CSV file."
       operationId: "postContactsExport"
@@ -5585,7 +5585,7 @@ paths:
       - api_key: []
       x-authorization-privileges:
       - "ui:campaign:metrics"
-  /reports/landing_pages/campaign_details/{campaign_activity_id}/p_unique_contact_sms_options:
+  /reports/landing_pages/campaign_details/{campaign_activity_id}/p_unique_contact_sms_optins:
     get:
       tags:
       - "Landing Pages Reporting"
@@ -6958,8 +6958,8 @@ definitions:
       fields:
         type: "array"
         description: "Use this array to export specific contact fields. You must export\
-          \ <code>email_address</code> to successfully export <code>email_option_source</code>,\
-          \ <code>email_option_date</code>, <code>email_optout_source</code>, <code>email_optout_date</code>,\
+          \ <code>email_address</code> to successfully export <code>email_optin_source</code>,\
+          \ <code>email_optin_date</code>, <code>email_optout_source</code>, <code>email_optout_date</code>,\
           \ or <code>email_optout_reason</code>."
         items:
           type: "string"
@@ -7510,7 +7510,7 @@ definitions:
       sms_consent_date:
         type: "string"
         example: "07-03-2024"
-        description: "Required if the SMS permission is set to `explicit`. The date\
+        description: "Required if the SMS permission is set to `explict`. The date\
           \ that the contact consented to receiving SMS messages. Valid date formats\
           \ are MM/DD/YYYY, M/D/YYYY, YYYY/MM/DD, YYYY/M/D, YYYY-MM-DD, YYYY-M-D,M-D-YYYY,\
           \ or M-DD-YYYY ."
@@ -9412,7 +9412,7 @@ definitions:
         type: "string"
         format: "date-time"
         example: "2016-03-03T10:53:04-05:00"
-        description: "Date and time that the request was received, in ISO-8601 format."
+        description: "Date and time that the request was received, in ISO-8601 formmat."
       updated_at:
         type: "string"
         format: "date-time"
@@ -9487,7 +9487,7 @@ definitions:
         type: "string"
         example: "O"
         description: "The code representing the consent state, including <code>E</code>\
-          \ for option and <code>O</code> for Option."
+          \ for optin and <code>O</code> for Optin."
       source:
         type: "string"
         example: "A"
@@ -12155,7 +12155,7 @@ definitions:
         description: "The unique ID that identifies of the campaign activity to use."
       tracking_activity_type:
         type: "string"
-        example: "p_contact_sms_options"
+        example: "p_contact_sms_optins"
         description: "The tracked activity event type."
       email_address:
         type: "string"
@@ -12311,7 +12311,7 @@ definitions:
       time_zone_id:
         type: "string"
         example: "US/Eastern"
-        description: "The official time zone to use to represent the physical location\
+        description: "The offical time zone to use to represent the physical location\
           \ associated with the client account."
       website:
         type: "string"
@@ -12409,7 +12409,7 @@ definitions:
         description: "The system generated ID used to uniquely identify a client account."
       provision_uuid:
         type: "string"
-        example: "x9xx2edge-5a58-4e23-8168-25930c5x7bxb"
+        example: "x9xx2ede-5a58-4e23-8168-25930c5x7bxb"
         description: "The system generated ID used to uniquely identify the provisioning\
           \ of a client account."
   TierObject:

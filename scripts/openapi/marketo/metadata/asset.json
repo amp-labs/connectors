@@ -632,7 +632,7 @@
       "get": {
         "tags": ["Emails"],
         "summary": "Get Email Dynamic Content",
-        "description": "Retrieves the dynamic content record for the given section.  Required Permissions: Read-Only Assets, Read-Write Assets",
+        "description": "Retrieves the dyanmic content record for the given section.  Required Permissions: Read-Only Assets, Read-Write Assets",
         "operationId": "getEmailDynamicContentUsingGET",
         "consumes": ["application/x-www-form-urlencoded"],
         "produces": ["application/json"],
@@ -8578,7 +8578,7 @@
         },
         "url": {
           "type": "string",
-          "description": "Publicly accessible URL of the file"
+          "description": "Publically accessible URL of the file"
         }
       }
     },
@@ -9502,7 +9502,7 @@
         },
         "operator": {
           "type": "string",
-          "description": "Operator to evaluate against the subject field"
+          "description": "Operator to evaluate aginst the subject field"
         },
         "subjectField": {
           "type": "string",
