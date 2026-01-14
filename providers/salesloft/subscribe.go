@@ -59,7 +59,7 @@ func (c *Connector) Subscribe(
 		for _, event := range events.Events {
 			// This converts common event type to Salesloft event type format and also
 			// expands events if needed (e.g., "tasks" update -> "task_completed" and "task_updated")
-			providerEvents, err := expandEvent(obj, event)
+			providerEvents, err := toModuleEventName(obj, event)
 			if err != nil {
 				return nil, err
 			}
@@ -320,8 +320,8 @@ func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error
 	return req, nil
 }
 
-// expandEvent converts a common event type into one or more Salesloft module events using the mapping.
-func expandEvent(objectName common.ObjectName, eventType common.SubscriptionEventType) ([]ModuleEvent, error) {
+// toModuleEventName converts a common event type into one or more Salesloft module events using the mapping.
+func toModuleEventName(objectName common.ObjectName, eventType common.SubscriptionEventType) ([]ModuleEvent, error) {
 	mapping, exists := salesloftEventMappings[objectName]
 	if !exists {
 		return nil, fmt.Errorf("%w: %s", errUnsupportedObject, objectName)
