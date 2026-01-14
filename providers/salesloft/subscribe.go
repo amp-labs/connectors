@@ -26,7 +26,7 @@ func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	}
 }
 
-// nolint: funlen, cyclop,gocognit
+// nolint: funlen,cyclop,gocognit,godoclint
 func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -395,6 +395,7 @@ func (m eventMapping) ToProviderEvents(commonEvent common.SubscriptionEventType)
 // GetAllSupportedEvents returns all provider events that this mapping supports.
 func (m eventMapping) GetAllSupportedEvents() []moduleEvent {
 	var events []moduleEvent
+
 	events = append(events, m.CreateEvents...)
 	events = append(events, m.UpdateEvents...)
 	events = append(events, m.DeleteEvents...)

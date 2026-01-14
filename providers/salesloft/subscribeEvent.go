@@ -67,6 +67,7 @@ func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
 	return []string{}, errors.New("updated fields are not supported by Salesloft webhooks") //nolint:err113
 }
 
+// nolint: godoclint
 // Salesloft doesn't provide deliveredAt field in webhook response.
 // So we are using updated_at field as event timestamp.
 func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
@@ -112,7 +113,7 @@ func (evt SubscriptionEvent) RecordId() (string, error) {
 	return strconv.Itoa(int(id)), nil
 }
 
-// // No workspace concept in Salesloft.
+// Workspace is not available in Salesloft.
 func (evt SubscriptionEvent) Workspace() (string, error) {
 	return "", nil
 }
