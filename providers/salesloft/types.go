@@ -4,19 +4,19 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-type SubscriptionRequest struct {
+type subscriptionRequest struct {
 	UniqueRef       string `json:"unique_ref"        validate:"required"`
 	WebhookEndPoint string `json:"webhook_end_point" validate:"required"`
 	Secret          string `json:"secret,omitempty"`
 }
 
-type SubscriptionPayload struct {
+type subscriptionPayload struct {
 	CallbackURL   string `json:"callback_url"   validate:"required"`
 	EventType     string `json:"event_type"     validate:"required"`
 	CallbackToken string `json:"callback_token" validate:"required"`
 }
 
-type SubscriptionResponse struct {
+type subscriptionResponse struct {
 	UserGUID      string `json:"user_guid"`
 	TenantId      string `json:"tenant_id"`
 	ID            int    `json:"id"`
@@ -25,27 +25,27 @@ type SubscriptionResponse struct {
 	CallbackURL   string `json:"callback_url"`
 	CallbackToken string `json:"callback_token"`
 }
-type SuccessfulSubscription struct {
+type successfulSubscription struct {
 	ID         string
 	ObjectName string
 	EventName  string
 }
 
-type SubscriptionResult struct {
-	Subscriptions map[common.ObjectName]map[ModuleEvent]SubscriptionResponse `json:"subscriptions"`
+type subscriptionResult struct {
+	Subscriptions map[common.ObjectName]map[moduleEvent]subscriptionResponse `json:"subscriptions"`
 }
 
-// ModuleEvent represents the combined event type format used by Salesloft.
-// Format: "{objectName}_{eventAction}" (e.g., "person_created", "call_updated").
-type ModuleEvent string
+// moduleEvent represents the combined event type string used by Salesloft.
+// A moduleEvent value has the format "{objectName}_{eventAction}" (e.g., "person_created", "call_updated").
+type moduleEvent string
 
-type EventMapping struct {
-	CreateEvents []ModuleEvent
-	UpdateEvents []ModuleEvent
-	DeleteEvents []ModuleEvent
+type eventMapping struct {
+	CreateEvents []moduleEvent
+	UpdateEvents []moduleEvent
+	DeleteEvents []moduleEvent
 }
 
-type SalesloftObjectMapping struct {
+type salesloftObjectMapping struct {
 	ObjectName string
-	Events     EventMapping
+	Events     eventMapping
 }

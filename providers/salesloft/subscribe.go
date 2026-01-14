@@ -22,7 +22,7 @@ func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
 
 func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	return &common.SubscriptionResult{
-		Result: &SubscriptionResult{},
+		Result: &subscriptionResult{},
 	}
 }
 
@@ -43,8 +43,8 @@ func (c *Connector) Subscribe(
 	}
 
 	// Store successful subscriptions with their full response data
-	subscriptionsMap := make(map[common.ObjectName]map[ModuleEvent]SubscriptionResponse)
-	successfulSubscriptions := make([]SuccessfulSubscription, 0)
+	subscriptionsMap := make(map[common.ObjectName]map[moduleEvent]subscriptionResponse)
+	successfulSubscriptions := make([]successfulSubscription, 0)
 
 	var firstError error
 
@@ -81,13 +81,13 @@ func (c *Connector) Subscribe(
 					} else {
 						// Initialize nested map if needed
 						if subscriptionsMap[currObj] == nil {
-							subscriptionsMap[currObj] = make(map[ModuleEvent]SubscriptionResponse)
+							subscriptionsMap[currObj] = make(map[moduleEvent]subscriptionResponse)
 						}
 
 						subscriptionsMap[currObj][currProviderEvent] = *response
 
 						// Keep track of successful subscriptions for rollback
-						successfulSubscriptions = append(successfulSubscriptions, SuccessfulSubscription{
+						successfulSubscriptions = append(successfulSubscriptions, successfulSubscription{
 							ID:         strconv.Itoa(response.ID),
 							ObjectName: string(currObj),
 							EventName:  string(currProviderEvent),
@@ -143,7 +143,7 @@ func (c *Connector) Subscribe(
 	}
 
 	res.Status = common.SubscriptionStatusSuccess
-	res.Result = &SubscriptionResult{
+	res.Result = &subscriptionResult{
 		Subscriptions: subscriptionsMap,
 	}
 
@@ -165,9 +165,9 @@ func (c *Connector) DeleteSubscription(
 		return fmt.Errorf("%w: Result cannot be null", errMissingParams)
 	}
 
-	subscriptionData, ok := result.Result.(*SubscriptionResult)
+	subscriptionData, ok := result.Result.(*subscriptionResult)
 	if !ok {
-		return fmt.Errorf("%w: expected SubscriptionResult to be type %T but got %T",
+		return fmt.Errorf("%w: expected subscriptionResult to be type %T but got %T",
 			errInvalidRequestType, subscriptionData, result.Result)
 	}
 
@@ -197,11 +197,11 @@ func (c *Connector) DeleteSubscription(
 // createSingleSubscription attempts to create a single subscription and returns the full response.
 func (c *Connector) createSingleSubscription(
 	ctx context.Context,
-	event ModuleEvent,
+	event moduleEvent,
 	obj common.ObjectName,
-	req *SubscriptionRequest,
-) (*SubscriptionResponse, error) {
-	payload := &SubscriptionPayload{
+	req *subscriptionRequest,
+) (*subscriptionResponse, error) {
+	payload := &subscriptionPayload{
 		CallbackURL:   req.WebhookEndPoint,
 		EventType:     string(event),
 		CallbackToken: req.Secret,
@@ -218,8 +218,8 @@ func (c *Connector) createSingleSubscription(
 // createSubscription makes the API call to create a webhook subscription.
 func (c *Connector) createSubscription(
 	ctx context.Context,
-	payload *SubscriptionPayload,
-) (*SubscriptionResponse, error) {
+	payload *subscriptionPayload,
+) (*subscriptionResponse, error) {
 	url, err := c.getSubscribeURL()
 	if err != nil {
 		return nil, err
@@ -230,7 +230,7 @@ func (c *Connector) createSubscription(
 		return nil, fmt.Errorf("failed to create subscription: %w", err)
 	}
 
-	result, err := common.UnmarshalJSON[SubscriptionResponse](resp)
+	result, err := common.UnmarshalJSON[subscriptionResponse](resp)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal subscription response: %w", err)
 	}
@@ -241,8 +241,8 @@ func (c *Connector) createSubscription(
 // rollbackSubscriptions attempts to delete all successful subscriptions in case of partial failure.
 func (c *Connector) rollbackSubscriptions(
 	ctx context.Context,
-	subscriptions []SuccessfulSubscription,
-) (rolledBack []SuccessfulSubscription, failedToRollBack []SuccessfulSubscription, err error) {
+	subscriptions []successfulSubscription,
+) (rolledBack []successfulSubscription, failedToRollBack []successfulSubscription, err error) {
 	var rollbackErrors error
 
 	var mutex sync.Mutex
@@ -251,7 +251,7 @@ func (c *Connector) rollbackSubscriptions(
 
 	for _, subFromList := range subscriptions {
 		callbacks = append(callbacks,
-			func(sub SuccessfulSubscription) func(ctx context.Context) error {
+			func(sub successfulSubscription) func(ctx context.Context) error {
 				return func(ctx context.Context) error {
 					deleteErr := c.deleteSubscription(ctx, sub.ID)
 
@@ -301,12 +301,12 @@ func (c *Connector) deleteSubscription(ctx context.Context, subscriptionID strin
 	return nil
 }
 
-func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error) {
+func validateRequest(params common.SubscribeParams) (*subscriptionRequest, error) {
 	if params.Request == nil {
 		return nil, fmt.Errorf("%w: request is nil", errMissingParams)
 	}
 
-	req, ok := params.Request.(*SubscriptionRequest)
+	req, ok := params.Request.(*subscriptionRequest)
 	if !ok {
 		return nil, fmt.Errorf("%w: expected '%T', got '%T'", errInvalidRequestType, req, params.Request)
 	}
@@ -321,7 +321,7 @@ func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error
 }
 
 // toModuleEventName converts a common event type into one or more Salesloft module events using the mapping.
-func toModuleEventName(objectName common.ObjectName, eventType common.SubscriptionEventType) ([]ModuleEvent, error) {
+func toModuleEventName(objectName common.ObjectName, eventType common.SubscriptionEventType) ([]moduleEvent, error) {
 	mapping, exists := salesloftEventMappings[objectName]
 	if !exists {
 		return nil, fmt.Errorf("%w: %s", errUnsupportedObject, objectName)
@@ -350,7 +350,7 @@ func validateSubscriptionEvents(subscriptionEvents map[common.ObjectName]common.
 		// Get all supported events for this object
 		supportedEvents := mapping.Events.GetAllSupportedEvents()
 
-		supportedSet := make(map[ModuleEvent]bool)
+		supportedSet := make(map[moduleEvent]bool)
 		for _, evt := range supportedEvents {
 			supportedSet[evt] = true
 		}
@@ -379,7 +379,7 @@ func validateSubscriptionEvents(subscriptionEvents map[common.ObjectName]common.
 }
 
 // ToProviderEvents converts a common event type to one or more Salesloft provider events.
-func (m EventMapping) ToProviderEvents(commonEvent common.SubscriptionEventType) []ModuleEvent {
+func (m eventMapping) ToProviderEvents(commonEvent common.SubscriptionEventType) []moduleEvent {
 	switch commonEvent { // nolint:exhaustive
 	case common.SubscriptionEventTypeCreate:
 		return m.CreateEvents
@@ -393,8 +393,8 @@ func (m EventMapping) ToProviderEvents(commonEvent common.SubscriptionEventType)
 }
 
 // GetAllSupportedEvents returns all provider events that this mapping supports.
-func (m EventMapping) GetAllSupportedEvents() []ModuleEvent {
-	var events []ModuleEvent
+func (m eventMapping) GetAllSupportedEvents() []moduleEvent {
+	var events []moduleEvent
 	events = append(events, m.CreateEvents...)
 	events = append(events, m.UpdateEvents...)
 	events = append(events, m.DeleteEvents...)
