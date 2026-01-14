@@ -19,20 +19,41 @@ var (
 	objectNameAccount                              = "account"
 	objectNameReport                               = "report"
 	objectNameTeam                                 = "team"
-	objectNameUnclaimedDraft                       = "unclaimed_draft"
-	objectNameSignatureRequest                     = "signature_request"
-	objectNameSignatureRequestEmbedded             = "signature_request/create_embedded"
-	objectNameSignatureRequestEmbeddedWithTemplate = "signature_request/create_embedded_with_template"
+	objectNameUnclaimedDraft                       = "draft"
+	objectNameSignatureRequest                     = "signature"
+	objectNameSignatureRequestEmbedded             = "signature/embedded"
+	objectNameSignatureRequestEmbeddedWithTemplate = "signature/embedded_with_template"
 )
 
 //nolint:gochecknoglobals
 var readObjectResponseKey = datautils.NewDefaultMap(map[string]string{
-	objectNameTemplate:     "templates",
-	objectNameApiApp:       "api_apps",
-	objectNameFax:          "faxes",
-	objectNameFaxLine:      "fax_lines",
-	objectNameBulkSendJobs: "bulk_send_jobs",
+	objectNameTemplate:         "templates",
+	objectNameApiApp:           "api_apps",
+	objectNameFax:              "faxes",
+	objectNameFaxLine:          "fax_lines",
+	objectNameBulkSendJobs:     "bulk_send_jobs",
+	objectNameSignatureRequest: "signature_requests",
 }, func(objectName string) (fieldName string) {
+	return objectName
+},
+)
+
+// mapping from clean object names to actual API endpoint paths for read operations.
+var readObjectAPIPath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+	objectNameSignatureRequest: "signature_request",
+}, func(objectName string) (apiPath string) {
+	return objectName
+},
+)
+
+// mapping from clean object names to actual API endpoint paths for write operations.
+// This is used when the API endpoint contains verbs (like 'create') that we remove from the exposed object name.
+var writeObjectAPIPath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+	objectNameUnclaimedDraft:                       "unclaimed_draft",
+	objectNameSignatureRequest:                     "signature_request",
+	objectNameSignatureRequestEmbedded:             "signature_request/create_embedded",
+	objectNameSignatureRequestEmbeddedWithTemplate: "signature_request/create_embedded_with_template",
+}, func(objectName string) (apiPath string) {
 	return objectName
 },
 )

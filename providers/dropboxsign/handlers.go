@@ -21,7 +21,10 @@ const (
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName, listSuffix)
+	// Get the actual API path from the clean object name
+	apiPath := readObjectAPIPath.Get(objectName)
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, apiPath, listSuffix)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +81,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName, listSuffix)
+	// Get the actual API path from the clean object name
+	apiPath := readObjectAPIPath.Get(params.ObjectName)
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, apiPath, listSuffix)
 	if err != nil {
 		return nil, err
 	}
@@ -177,6 +183,10 @@ func (c *Connector) parseWriteResponse(
 }
 
 func buildWriteURL(baseURL, objectName, recordId string) (string, error) {
+	// Get the actual API path (which may contain verbs like 'create')
+	// from the clean object name (which is exposed to users)
+	apiPath := writeObjectAPIPath.Get(objectName)
+
 	var urlSuffix string
 
 	// For objects that do not require 'create' suffix on write without record ID
@@ -185,7 +195,7 @@ func buildWriteURL(baseURL, objectName, recordId string) (string, error) {
 		urlSuffix = "create"
 	}
 
-	url, err := urlbuilder.New(baseURL, apiVersion, objectName, urlSuffix)
+	url, err := urlbuilder.New(baseURL, apiVersion, apiPath, urlSuffix)
 	if err != nil {
 		return "", err
 	}
