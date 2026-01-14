@@ -166,7 +166,7 @@ func (c *Connector) UpdateSubscription(
 
 	// Build a map of existing subscriptions for quick lookup.
 	// This composite key allows O(1) lookup when comparing existing vs requested subscriptions.
-	existingSubscriptions := make(map[ModuleEvent]bool)
+	existingSubscriptions := make(map[moduleEvent]bool)
 
 	for _, eventsMap := range prevState.Subscriptions {
 		for eventName := range eventsMap {
@@ -175,11 +175,11 @@ func (c *Connector) UpdateSubscription(
 	}
 
 	// Build a map of requested subscriptions
-	requestedSubscriptions := make(map[ModuleEvent]bool)
+	requestedSubscriptions := make(map[moduleEvent]bool)
 
 	for objName, events := range params.SubscriptionEvents {
 		for _, event := range events.Events {
-			providerEvents, err := expandEvent(objName, event)
+			providerEvents, err := toModuleEventName(objName, event)
 			if err != nil {
 				return nil, fmt.Errorf("failed to expandEvent event type %s: %w", event, err)
 			}
@@ -196,11 +196,11 @@ func (c *Connector) UpdateSubscription(
 	// - If subscription exists but is NOT requested → delete it (webhook no longer needed)
 	// - If subscription exists AND is requested → keep it (reuse existing webhook)
 	// - If subscription is requested but NOT existing → will be created in next step
-	subscriptionsToDelete := &SubscriptionResult{
-		Subscriptions: make(map[common.ObjectName]map[ModuleEvent]SubscriptionResponse),
+	subscriptionsToDelete := &subscriptionResult{
+		Subscriptions: make(map[common.ObjectName]map[moduleEvent]subscriptionResponse),
 	}
-	subscriptionsToKeep := &SubscriptionResult{
-		Subscriptions: make(map[common.ObjectName]map[ModuleEvent]SubscriptionResponse),
+	subscriptionsToKeep := &subscriptionResult{
+		Subscriptions: make(map[common.ObjectName]map[moduleEvent]subscriptionResponse),
 	}
 
 	for objName, eventsMap := range prevState.Subscriptions {
@@ -208,14 +208,14 @@ func (c *Connector) UpdateSubscription(
 			if !requestedSubscriptions[eventName] {
 				// Need to delete this subscription
 				if subscriptionsToDelete.Subscriptions[objName] == nil {
-					subscriptionsToDelete.Subscriptions[objName] = make(map[ModuleEvent]SubscriptionResponse)
+					subscriptionsToDelete.Subscriptions[objName] = make(map[moduleEvent]subscriptionResponse)
 				}
 
 				subscriptionsToDelete.Subscriptions[objName][eventName] = response
 			} else {
 				// Keep this subscription
 				if subscriptionsToKeep.Subscriptions[objName] == nil {
-					subscriptionsToKeep.Subscriptions[objName] = make(map[ModuleEvent]SubscriptionResponse)
+					subscriptionsToKeep.Subscriptions[objName] = make(map[moduleEvent]subscriptionResponse)
 				}
 
 				subscriptionsToKeep.Subscriptions[objName][eventName] = response
@@ -239,7 +239,7 @@ func (c *Connector) UpdateSubscription(
 		var eventsToCreate []common.SubscriptionEventType
 
 		for _, event := range events.Events {
-			providerEvents, err := expandEvent(objName, event)
+			providerEvents, err := toModuleEventName(objName, event)
 			if err != nil {
 				return nil, fmt.Errorf("failed to convert event type %s: %w", event, err)
 			}
@@ -535,7 +535,7 @@ func (m eventMapping) GetAllSupportedEvents() []moduleEvent {
 }
 
 // ModuleEventToCommon converts a provider event back to common event type.
-func ModuleEventToCommon(e ModuleEvent, objectName common.ObjectName) (common.SubscriptionEventType, bool) {
+func ModuleEventToCommon(e moduleEvent, objectName common.ObjectName) (common.SubscriptionEventType, bool) {
 	mapping, exists := salesloftEventMappings[objectName]
 	if !exists {
 		return "", false
@@ -550,7 +550,7 @@ func ModuleEventToCommon(e ModuleEvent, objectName common.ObjectName) (common.Su
 }
 
 // ToCommonEvent converts a provider event back to common event type.
-func (m EventMapping) ToCommonEvent(providerEvent ModuleEvent) (common.SubscriptionEventType, bool) {
+func (m eventMapping) ToCommonEvent(providerEvent moduleEvent) (common.SubscriptionEventType, bool) {
 	if slices.Contains(m.CreateEvents, providerEvent) {
 		return common.SubscriptionEventTypeCreate, true
 	}
@@ -566,13 +566,13 @@ func (m EventMapping) ToCommonEvent(providerEvent ModuleEvent) (common.Subscript
 	return "", false
 }
 
-func validatePreviousResult(previousResult *common.SubscriptionResult) (*SubscriptionResult, error) {
+func validatePreviousResult(previousResult *common.SubscriptionResult) (*subscriptionResult, error) {
 	// Validate the previous result
 	if previousResult == nil || previousResult.Result == nil {
 		return nil, fmt.Errorf("%w: missing previousResult or previousResult.Result", errMissingParams)
 	}
 
-	prevState, ok := previousResult.Result.(*SubscriptionResult)
+	prevState, ok := previousResult.Result.(*subscriptionResult)
 	if !ok {
 		return nil, fmt.Errorf(
 			"%w: expected previousResult.Result to be type %T, but got %T",
@@ -585,7 +585,7 @@ func validatePreviousResult(previousResult *common.SubscriptionResult) (*Subscri
 	return prevState, nil
 }
 
-func buildFinalObjectEvents(finalResult *SubscriptionResult) map[common.ObjectName]common.ObjectEvents {
+func buildFinalObjectEvents(finalResult *subscriptionResult) map[common.ObjectName]common.ObjectEvents {
 	finalObjectEvents := make(map[common.ObjectName]common.ObjectEvents)
 
 	for objName, eventsMap := range finalResult.Subscriptions {
@@ -611,19 +611,19 @@ func buildFinalObjectEvents(finalResult *SubscriptionResult) map[common.ObjectNa
 	return finalObjectEvents
 }
 
-func mergeSubscriptionResults(kept *SubscriptionResult, created *common.SubscriptionResult) *SubscriptionResult {
+func mergeSubscriptionResults(kept *subscriptionResult, created *common.SubscriptionResult) *subscriptionResult {
 	// Merge the results: kept subscriptions + newly created subscriptions.
 	// Start with subscriptions we kept from the previous state (these already existed and are still wanted).
-	finalResult := &SubscriptionResult{
+	finalResult := &subscriptionResult{
 		Subscriptions: kept.Subscriptions,
 	}
 
 	// Add newly created subscriptions to the final result.
 	if created != nil && created.Result != nil {
-		if newSubs, ok := created.Result.(*SubscriptionResult); ok {
+		if newSubs, ok := created.Result.(*subscriptionResult); ok {
 			for objName, eventsMap := range newSubs.Subscriptions {
 				if finalResult.Subscriptions[objName] == nil {
-					finalResult.Subscriptions[objName] = make(map[ModuleEvent]SubscriptionResponse)
+					finalResult.Subscriptions[objName] = make(map[moduleEvent]subscriptionResponse)
 				}
 				maps.Copy(finalResult.Subscriptions[objName], eventsMap)
 			}
