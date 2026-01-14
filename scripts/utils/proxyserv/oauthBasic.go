@@ -1,4 +1,3 @@
-// nolint:ireturn
 package proxyserv
 
 import (
@@ -16,7 +15,7 @@ import (
 func (f Factory) CreateProxyBasic(ctx context.Context) *Proxy {
 	params := createBasicParams(f.Registry)
 	providerInfo := getProviderConfig(f.Provider, f.CatalogVariables)
-	httpClient := setupBasicAuthHTTPClient(ctx, providerInfo, params.User, params.Pass, f.Debug, f.Substitutions)
+	httpClient := setupBasicAuthHTTPClient(ctx, providerInfo, params.User, params.Pass, f.Debug, f.Metadata)
 	baseURL := getBaseURL(providerInfo)
 
 	return newProxy(baseURL, httpClient)

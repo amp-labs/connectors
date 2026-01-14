@@ -3,6 +3,7 @@ package atlassian
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"maps"
 	"net/http"
 	"net/url"
 	"sort"
@@ -30,9 +31,7 @@ func JwtTokenGenerator(payload map[string]any, secret string) common.DynamicHead
 		claims["iat"] = time.Now().Unix()
 		claims["exp"] = time.Now().Add(jwtExpiryPeriod).Unix()
 
-		for k, v := range req.URL.Query() {
-			queryParams[k] = v
-		}
+		maps.Copy(queryParams, req.URL.Query())
 
 		claims["qsh"] = createQueryStringHash(
 			req.Method,
@@ -41,9 +40,7 @@ func JwtTokenGenerator(payload map[string]any, secret string) common.DynamicHead
 		)
 
 		// Add any input payload too
-		for k, v := range payload {
-			claims[k] = v
-		}
+		maps.Copy(claims, payload)
 
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims(claims))
 

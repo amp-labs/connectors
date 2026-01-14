@@ -160,7 +160,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Then:  mockserver.Response(http.StatusUnprocessableEntity, tagsIssue),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New("Name has already been taken"), // nolint:goerr113
+				errors.New("Name has already been taken"),
 			},
 		},
 		{

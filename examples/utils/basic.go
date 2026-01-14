@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package utils
 
 import (
@@ -13,7 +14,9 @@ type BasicAuthOptions struct {
 	Pass string
 }
 
-func CreateBasicAuthClient(ctx context.Context, info *providers.ProviderInfo, opts BasicAuthOptions) common.AuthenticatedHTTPClient {
+func CreateBasicAuthClient(
+	ctx context.Context, info *providers.ProviderInfo, opts BasicAuthOptions,
+) common.AuthenticatedHTTPClient {
 	// Create the authenticated HTTP client.
 	httpClient, err := info.NewClient(ctx, &providers.NewClientParams{
 		// If you set this to true, the client will log all requests and responses.

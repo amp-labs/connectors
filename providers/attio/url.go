@@ -26,7 +26,7 @@ func (c *Connector) getObjectReadURL(objName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, apiVersion, "objects", objName, "records", "query")
 }
 
-// Relative URL for retrieving standarad and custom object write URL.
+// Relative URL for retrieving standard and custom object write URL.
 func (c *Connector) getObjectWriteURL(objName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, apiVersion, "objects", objName, "records")
 }

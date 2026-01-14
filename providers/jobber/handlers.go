@@ -206,7 +206,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	// Prepare request body with mutation & variables
-	requestBody := map[string]interface{}{
+	requestBody := map[string]any{
 		"query": mutation,
 		"variables": map[string]any{
 			"input": params.RecordData,

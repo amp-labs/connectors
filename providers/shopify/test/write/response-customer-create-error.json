@@ -1,0 +1,13 @@
+{
+  "data": {
+    "customerCreate": {
+      "userErrors": [
+        {
+          "field": null,
+          "message": "Customer must have a name, phone number or email address"
+        }
+      ],
+      "customer": null
+    }
+  }
+}

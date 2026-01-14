@@ -49,7 +49,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrAccessToken,
-				errors.New( // nolint:goerr113
+				errors.New(
 					"Incorrect authentication credentials.",
 				),
 			},
@@ -67,7 +67,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New( // nolint:goerr113
+				errors.New(
 					"Invalid input: One of `attributes`, `relationships` or `id` must be included in the request payload.", // nolint:lll
 				),
 			},
@@ -85,7 +85,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Tag Service Error: Tag with name 'popular' already exists"), // nolint:goerr113
+				errors.New("Tag Service Error: Tag with name 'popular' already exists"),
 			},
 		},
 		{

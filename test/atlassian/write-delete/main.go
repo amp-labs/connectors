@@ -45,7 +45,7 @@ func main() {
 	newTitle := "Fix button dropdown in main menu"
 
 	testscenario.ValidateCreateUpdateDelete(ctx, conn,
-		"issue",
+		"issues",
 		issuePayload{
 			Fields: issueFields{
 				Project: identifier{

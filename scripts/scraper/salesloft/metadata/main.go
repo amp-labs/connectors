@@ -7,12 +7,13 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/salesloft"
-	"github.com/amp-labs/connectors/providers/salesloft/metadata"
+	"github.com/amp-labs/connectors/scripts/scraper/salesloft/internal/files"
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/iancoleman/strcase"
 )
@@ -90,15 +91,15 @@ func createIndex() {
 		log.Printf("Index completed %.2f%%\n", getPercentage(index, len(sections))) // nolint:forbidigo
 
 		// Update file after each iteration.
-		goutils.MustBeNil(metadata.FileManager.SaveIndex(registry))
+		goutils.MustBeNil(files.OutputSalesloft.SaveIndex(registry))
 	}
 }
 
 func createSchemas() {
-	index, err := metadata.FileManager.LoadIndex()
+	index, err := files.OutputSalesloft.LoadIndex()
 	goutils.MustBeNil(err)
 
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
+	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
 
 	filteredListDocs := getFilteredListDocs(index)
 	for i := range filteredListDocs { // nolint:varnamelen
@@ -109,22 +110,24 @@ func createSchemas() {
 		urlPath := formatObjectURL(endpointPath)
 		objectName, _ := strings.CutPrefix(urlPath, "/")
 
-		doc.Find(`.openapi-tabs__schema-container .openapi-schema__property`).
-			Each(func(i int, property *goquery.Selection) {
+		doc.Find(`.openapi-tabs__schema-container .openapi-schema__container`).
+			Each(func(i int, listItem *goquery.Selection) {
+				property := listItem.Find(".openapi-schema__property")
+				fieldName := property.Text()
+				propertyType := listItem.Find(".openapi-schema__name")
+				fieldType := propertyType.Text()
+
 				// Sometimes there are nested fields we ignore them
 				// Only the first most field represents top level fields of response payload
-				if !scrapper.Query.IsVisible(property) {
+				if !scrapper.Query.IsVisible(listItem) || !scrapper.Query.IsVisible(property) {
 					return
 				}
 
-				fieldName := property.Text()
 				if len(fieldName) != 0 {
 					newDisplayName, isList := handleDisplayName(model.DisplayName)
 					if isList {
 						schemas.Add("", objectName, newDisplayName, urlPath, "data",
-							staticschema.FieldMetadataMapV1{
-								fieldName: fieldName,
-							}, &model.URL, nil)
+							createField(fieldName, fieldType), &model.URL, nil)
 					}
 				}
 			})
@@ -132,15 +135,15 @@ func createSchemas() {
 		log.Printf("Schemas completed %.2f%% [%v]\n", getPercentage(i, len(filteredListDocs)), objectName)
 
 		// Update file after each iteration.
-		goutils.MustBeNil(metadata.FileManager.FlushSchemas(schemas))
+		goutils.MustBeNil(files.OutputSalesloft.FlushSchemas(schemas))
 	}
 
 	// Finalized save.
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(files.OutputSalesloft.FlushSchemas(schemas))
 }
 
 func createQueryParamStats() {
-	index, err := metadata.FileManager.LoadIndex()
+	index, err := files.OutputSalesloft.LoadIndex()
 	goutils.MustBeNil(err)
 
 	registry := datautils.NamedLists[string]{}
@@ -161,7 +164,7 @@ func createQueryParamStats() {
 		log.Printf("Query param schemas completed %.2f%% [%v]\n", getPercentage(i, numObjects), modelName)
 	}
 
-	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	goutils.MustBeNil(files.OutputSalesloft.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 }
 
 /*
@@ -209,7 +212,7 @@ func getSectionLinks() []string {
 }
 
 func getPercentage(i int, i2 int) float64 {
-	return (float64(i+1) / float64(i2)) * 100 // nolint:gomnd,mnd
+	return (float64(i+1) / float64(i2)) * 100 // nolint:mnd
 }
 
 // List of exceptions:
@@ -228,15 +231,15 @@ func handleDisplayName(name string) (displayName string, isListResource bool) {
 
 	if stripped, ok := strings.CutPrefix(name, "List "); ok {
 		return naming.CapitalizeFirstLetterEveryWord(stripped), true
-	} else {
-		// This one is special case. Just hard coded, mapped display name.
-		if name == "Retrieve a list of Requests" {
-			return "Requests", true
-		}
+	}
 
-		if ok = strings.HasPrefix(name, "Fetch "); ok {
-			return "", false
-		}
+	// This one is special case. Just hard coded, mapped display name.
+	if name == "Retrieve a list of Requests" {
+		return "Requests", true
+	}
+
+	if ok := strings.HasPrefix(name, "Fetch "); ok {
+		return "", false
 	}
 
 	return name, true
@@ -246,4 +249,57 @@ func queryHTML(sourceURL string) *goquery.Document {
 	const waitInterval = 2 // seconds
 
 	return scrapper.QueryLoadableHTML(sourceURL, waitInterval)
+}
+
+func createField(fieldName, fieldType string) staticschema.FieldMetadataMapV2 {
+	fieldType = strings.Trim(fieldType, " ")
+
+	return staticschema.FieldMetadataMapV2{
+		fieldName: staticschema.FieldMetadata{
+			DisplayName:  fieldName,
+			ValueType:    getFieldValueType(fieldType),
+			ProviderType: fieldType,
+			Values:       nil,
+		},
+	}
+}
+
+// Existing values at the time of writing:
+// [
+//
+//	"object",
+//	"object[]",
+//	"boolean",
+//	"date",
+//	"date-time",
+//	"integer",
+//	"integer[]",
+//	"number",
+//	"object",
+//	"object[]",
+//	"string",
+//	"string[]",
+//	"uuid"
+//
+// ]
+// Number is mapped to float, just to be safe. However, it seems that it is in fact an integer.
+// Not exactly sure why two types exist, could be due to legacy or legitimate reason.
+func getFieldValueType(fieldType string) common.ValueType {
+	switch fieldType {
+	case "integer":
+		return common.ValueTypeInt
+	case "number":
+		return common.ValueTypeFloat
+	case "boolean":
+		return common.ValueTypeBoolean
+	case "string", "uuid":
+		return common.ValueTypeString
+	case "date":
+		return common.ValueTypeDate
+	case "date-time":
+		return common.ValueTypeDateTime
+	default:
+		// object, array
+		return common.ValueTypeOther
+	}
 }

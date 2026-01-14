@@ -18,127 +18,127 @@ var (
 )
 
 //nolint:gochecknoglobals
-var salesloftEventMappings = map[common.ObjectName]SalesloftObjectMapping{
+var salesloftEventMappings = map[common.ObjectName]salesloftObjectMapping{
 	"accounts": {
 		ObjectName: "account",
-		Events: EventMapping{
-			CreateEvents: []ModuleEvent{"account_created"},
-			UpdateEvents: []ModuleEvent{"account_updated"},
-			DeleteEvents: []ModuleEvent{"account_deleted"},
+		Events: eventMapping{
+			CreateEvents: []moduleEvent{"account_created"},
+			UpdateEvents: []moduleEvent{"account_updated"},
+			DeleteEvents: []moduleEvent{"account_deleted"},
 		},
 	},
 
 	"bulk_jobs": {
 		ObjectName: "bulk_job",
-		Events: EventMapping{
-			UpdateEvents: []ModuleEvent{"bulk_job_completed"},
+		Events: eventMapping{
+			UpdateEvents: []moduleEvent{"bulk_job_completed"},
 		},
 	},
 
 	"cadences": {
 		ObjectName: "cadence",
-		Events: EventMapping{
-			CreateEvents: []ModuleEvent{"cadence_created"},
-			UpdateEvents: []ModuleEvent{"cadence_updated"},
-			DeleteEvents: []ModuleEvent{"cadence_deleted"},
+		Events: eventMapping{
+			CreateEvents: []moduleEvent{"cadence_created"},
+			UpdateEvents: []moduleEvent{"cadence_updated"},
+			DeleteEvents: []moduleEvent{"cadence_deleted"},
 		},
 	},
 
 	"cadence_memberships": {
 		ObjectName: "cadence_membership",
-		Events: EventMapping{
-			CreateEvents: []ModuleEvent{"cadence_membership_created"},
-			UpdateEvents: []ModuleEvent{"cadence_membership_updated"},
+		Events: eventMapping{
+			CreateEvents: []moduleEvent{"cadence_membership_created"},
+			UpdateEvents: []moduleEvent{"cadence_membership_updated"},
 		},
 	},
 
 	"activities/calls": {
 		ObjectName: "call",
-		Events: EventMapping{
-			CreateEvents: []ModuleEvent{"call_created"},
-			UpdateEvents: []ModuleEvent{"call_updated"},
+		Events: eventMapping{
+			CreateEvents: []moduleEvent{"call_created"},
+			UpdateEvents: []moduleEvent{"call_updated"},
 		},
 	},
 
 	"call_data_records": {
 		ObjectName: "call_data_record",
-		Events: EventMapping{
-			CreateEvents: []ModuleEvent{"call_data_record_created"},
-			UpdateEvents: []ModuleEvent{"call_data_record_updated"},
+		Events: eventMapping{
+			CreateEvents: []moduleEvent{"call_data_record_created"},
+			UpdateEvents: []moduleEvent{"call_data_record_updated"},
 		},
 	},
 
 	"conversations": {
 		ObjectName: "conversation",
-		Events: EventMapping{
-			CreateEvents: []ModuleEvent{"conversation_created"},
-			UpdateEvents: []ModuleEvent{"conversation_updated"},
+		Events: eventMapping{
+			CreateEvents: []moduleEvent{"conversation_created"},
+			UpdateEvents: []moduleEvent{"conversation_updated"},
 		},
 	},
 
 	"activities/emails": {
 		ObjectName: "email",
-		Events: EventMapping{
-			UpdateEvents: []ModuleEvent{"email_updated"},
+		Events: eventMapping{
+			UpdateEvents: []moduleEvent{"email_updated"},
 		},
 	},
 
 	"meetings": {
 		ObjectName: "meeting",
-		Events: EventMapping{
-			CreateEvents: []ModuleEvent{"meeting_booked"},
-			UpdateEvents: []ModuleEvent{"meeting_updated"},
+		Events: eventMapping{
+			CreateEvents: []moduleEvent{"meeting_booked"},
+			UpdateEvents: []moduleEvent{"meeting_updated"},
 		},
 	},
 
 	"notes": {
 		ObjectName: "note",
-		Events: EventMapping{
-			CreateEvents: []ModuleEvent{"note_created"},
-			UpdateEvents: []ModuleEvent{"note_updated"},
-			DeleteEvents: []ModuleEvent{"note_deleted"},
+		Events: eventMapping{
+			CreateEvents: []moduleEvent{"note_created"},
+			UpdateEvents: []moduleEvent{"note_updated"},
+			DeleteEvents: []moduleEvent{"note_deleted"},
 		},
 	},
 
 	"people": {
 		ObjectName: "person",
-		Events: EventMapping{
-			CreateEvents: []ModuleEvent{"person_created"},
-			UpdateEvents: []ModuleEvent{"person_updated"},
-			DeleteEvents: []ModuleEvent{"person_deleted"},
+		Events: eventMapping{
+			CreateEvents: []moduleEvent{"person_created"},
+			UpdateEvents: []moduleEvent{"person_updated"},
+			DeleteEvents: []moduleEvent{"person_deleted"},
 		},
 	},
 
 	"steps": {
 		ObjectName: "step",
-		Events: EventMapping{
-			CreateEvents: []ModuleEvent{"step_created"},
-			UpdateEvents: []ModuleEvent{"step_updated"},
-			DeleteEvents: []ModuleEvent{"step_deleted"},
+		Events: eventMapping{
+			CreateEvents: []moduleEvent{"step_created"},
+			UpdateEvents: []moduleEvent{"step_updated"},
+			DeleteEvents: []moduleEvent{"step_deleted"},
 		},
 	},
 
 	"successes": {
 		ObjectName: "success",
-		Events: EventMapping{
-			CreateEvents: []ModuleEvent{"success_created"},
+		Events: eventMapping{
+			CreateEvents: []moduleEvent{"success_created"},
 		},
 	},
 
 	"tasks": {
 		ObjectName: "task",
-		Events: EventMapping{
-			CreateEvents: []ModuleEvent{"task_created"},
-			UpdateEvents: []ModuleEvent{"task_updated", "task_completed"},
-			DeleteEvents: []ModuleEvent{"task_deleted"},
+		Events: eventMapping{
+			CreateEvents: []moduleEvent{"task_created"},
+			UpdateEvents: []moduleEvent{"task_updated", "task_completed"},
+			DeleteEvents: []moduleEvent{"task_deleted"},
 		},
 	},
 
 	"users": {
 		ObjectName: "user",
-		Events: EventMapping{
-			CreateEvents: []ModuleEvent{"user_created"},
-			UpdateEvents: []ModuleEvent{"user_updated"},
+		Events: eventMapping{
+			CreateEvents: []moduleEvent{"user_created"},
+			UpdateEvents: []moduleEvent{"user_updated"},
 		},
 	},
 }

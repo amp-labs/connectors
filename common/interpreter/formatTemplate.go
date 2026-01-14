@@ -2,7 +2,7 @@ package interpreter
 
 // ErrorDescriptor enhances base error with extra message.
 // Every implementor decides how server response will be converted, and
-// how important message will be formated into helpful error.
+// how important message will be formatted into helpful error.
 type ErrorDescriptor interface {
 	CombineErr(base error) error
 }

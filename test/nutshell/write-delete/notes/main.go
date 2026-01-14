@@ -21,7 +21,7 @@ type payloadLinks struct {
 	ParentID string `json:"parent"`
 }
 
-// This value may change based on the data in your acocunt.
+// This value may change based on the data in your account.
 const accountID = "15-accounts"
 
 func main() {

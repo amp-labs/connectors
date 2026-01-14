@@ -1,0 +1,10 @@
+[
+  {
+    "message": "Duplicate PermissionSetAssignment.  Assignee: 005ak000005hvjJ; Permission Set: 0PSak00000M9uBB",
+    "errorCode": "DUPLICATE_VALUE",
+    "fields": [
+      "AssigneeId",
+      "PermissionSetId"
+    ]
+  }
+]

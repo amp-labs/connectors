@@ -1,0 +1,29 @@
+{
+  "totalSize": 2,
+  "done": true,
+  "records": [
+    {
+      "attributes": {
+        "type": "Opportunity",
+        "url": "/services/data/v60.0/sobjects/Opportunity/006ak00000OQ4RxAAL"
+      },
+      "Id": "006ak00000OQ4RxAAL",
+      "Name": "Test Opportunity 1",
+      "AccountId": "001ak00000OKNPHAA5",
+      "Amount": 50000.00,
+      "StageName": "Prospecting"
+    },
+    {
+      "attributes": {
+        "type": "Opportunity",
+        "url": "/services/data/v60.0/sobjects/Opportunity/006ak00000OQ4RyAAL"
+      },
+      "Id": "006ak00000OQ4RyAAL",
+      "Name": "Test Opportunity 2",
+      "AccountId": null,
+      "Amount": 30000.00,
+      "StageName": "Qualification"
+    }
+  ]
+}
+

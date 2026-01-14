@@ -86,7 +86,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	//
 	// Note: moduleInfo always refers to the Salesforce CRM module.
 	// These adapters are not applicable to the Pardot module.
-	conn.customAdapter = custom.NewAdapter(httpClient, conn.moduleInfo)
+	conn.customAdapter = custom.NewAdapter(httpClient, conn.Client, conn.moduleInfo)
 	conn.batchAdapter = batch.NewAdapter(httpClient, conn.moduleInfo)
 
 	// Initialize the Pardot (Account Engagement) adapter if applicable.
@@ -112,6 +112,14 @@ func (c *Connector) String() string {
 	return c.Provider() + ".Connector"
 }
 
+// SetBaseURL
+// TODO use components.Connector to inherit this method.
+func (c *Connector) SetBaseURL(newURL string) {
+	c.providerInfo.BaseURL = newURL
+	c.moduleInfo.BaseURL = newURL
+	c.HTTPClient().Base = newURL
+}
+
 func (c *Connector) getRestApiURL(paths ...string) (*urlbuilder.URL, error) {
 	parts := append([]string{
 		restAPISuffix, // scope URLs to API version
@@ -128,14 +136,6 @@ func (c *Connector) getDomainURL(paths ...string) (*urlbuilder.URL, error) {
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
 func (c *Connector) getURLEventRelayConfig(identifier string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.getModuleURL(), uriToolingEventRelayConfig, identifier)
-}
-
-// SetBaseURL
-// TODO use components.Connector to inherit this method.
-func (c *Connector) SetBaseURL(newURL string) {
-	c.providerInfo.BaseURL = newURL
-	c.moduleInfo.BaseURL = newURL
-	c.HTTPClient().Base = newURL
 }
 
 // Gateway access to URLs.

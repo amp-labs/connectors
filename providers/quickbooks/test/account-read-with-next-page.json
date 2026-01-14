@@ -1,0 +1,20 @@
+{
+  "QueryResponse": {
+    "startPosition": 1,
+    "maxResults": 1000,
+    "Account": [
+      {
+        "AccountSubType": "AccountsReceivable",
+        "AccountType": "Accounts Receivable",
+        "Active": true,
+        "Classification": "Asset",
+        "domain": "QBO",
+        "sparse": false,
+        "FullyQualifiedName": "Canadian Accounts Receivable",
+        "Name": "Canadian Accounts Receivable"
+      }
+    ]
+  },
+  "time": "2015-07-13T12:35:57.651-07:00"
+}
+

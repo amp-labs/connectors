@@ -45,7 +45,7 @@ func (r ResponseError) CombineErr(base error) error {
 	return fmt.Errorf("%w: %v", base, strings.Join(messages, ", "))
 }
 
-// This function uses to check wether the response(200 statuscode) contain error or not.
+// This function uses to check whether the response(200 statuscode) contain error or not.
 func checkErrorInResponse(errorArr []*ajson.Node) error {
 	if len(errorArr) == 0 {
 		return nil

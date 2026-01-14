@@ -60,8 +60,11 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/crm/v3/objects/contacts/batch/create"),
-				Then:  mockserver.Response(http.StatusConflict, errConflictExisting),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/crm/v3/objects/contacts/batch/create"),
+				},
+				Then: mockserver.Response(http.StatusConflict, errConflictExisting),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
@@ -82,8 +85,11 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/crm/v3/objects/contacts/batch/create"),
-				Then:  mockserver.Response(http.StatusBadRequest, nil),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/crm/v3/objects/contacts/batch/create"),
+				},
+				Then: mockserver.Response(http.StatusBadRequest, nil),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
@@ -104,8 +110,11 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/crm/v3/objects/contacts/batch/create"),
-				Then:  mockserver.Response(http.StatusBadRequest, errManyInvalidFields),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/crm/v3/objects/contacts/batch/create"),
+				},
+				Then: mockserver.Response(http.StatusBadRequest, errManyInvalidFields),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
@@ -142,8 +151,11 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/crm/v3/objects/contacts/batch/create"),
-				Then:  mockserver.Response(http.StatusOK, responseCreateContacts),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/crm/v3/objects/contacts/batch/create"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCreateContacts),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
@@ -219,8 +231,11 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/crm/v3/objects/contacts/batch/update"),
-				Then:  mockserver.Response(http.StatusBadRequest, errDuplicateIDs),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/crm/v3/objects/contacts/batch/update"),
+				},
+				Then: mockserver.Response(http.StatusBadRequest, errDuplicateIDs),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
@@ -241,8 +256,11 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/crm/v3/objects/contacts/batch/update"),
-				Then:  mockserver.Response(http.StatusBadRequest, errManyInvalidFields),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/crm/v3/objects/contacts/batch/update"),
+				},
+				Then: mockserver.Response(http.StatusBadRequest, errManyInvalidFields),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
@@ -277,7 +295,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Type:       common.BatchWriteTypeUpdate,
 				Batch: common.BatchItems{{
 					Record: map[string]any{
-						"id":        "unknowIdentifier888", // This identifier will have no response corespondent.
+						"id":        "unknownIdentifier888", // This identifier will have no response corespondent.
 						"email":     "Markus.Blevins@hubspot.com",
 						"lastname":  "Blevins (updated)",
 						"firstname": "Markus (updated)",
@@ -293,8 +311,11 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/crm/v3/objects/contacts/batch/update"),
-				Then:  mockserver.Response(http.StatusMultiStatus, errUpdatePartial),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/crm/v3/objects/contacts/batch/update"),
+				},
+				Then: mockserver.Response(http.StatusMultiStatus, errUpdatePartial),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
@@ -307,7 +328,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				}`)},
 				Results: []common.WriteResult{{
 					Success:  false,
-					RecordId: "unknowIdentifier888",
+					RecordId: "unknownIdentifier888",
 					Errors:   []any{common.ErrBatchUnprocessedRecord},
 					Data:     nil,
 				}, {
@@ -333,8 +354,11 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/crm/v3/objects/contacts/batch/update"),
-				Then:  mockserver.Response(http.StatusOK, responseUpdateContacts),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/crm/v3/objects/contacts/batch/update"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseUpdateContacts),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{

@@ -42,6 +42,10 @@ func (conn *Connector) Provider() providers.Provider {
 	return providers.Freshdesk
 }
 
+func (conn *Connector) String() string {
+	return conn.Provider() + ".Connector"
+}
+
 func (conn *Connector) getAPIURL(objectName string) (*urlbuilder.URL, error) {
 	path, exists := objectResourcePath[objectName]
 	if !exists {
@@ -54,8 +58,4 @@ func (conn *Connector) getAPIURL(objectName string) (*urlbuilder.URL, error) {
 func (conn *Connector) setBaseURL(newURL string) {
 	conn.BaseURL = newURL
 	conn.Client.HTTPClient.Base = newURL
-}
-
-func (conn *Connector) String() string {
-	return conn.Provider() + ".Connector"
 }

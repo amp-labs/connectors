@@ -1,0 +1,62 @@
+[files]
+extend-exclude = [
+    "go.mod",
+    "go.sum",
+    # Test data and sample responses
+    "test/",
+    "**/sample_response/",
+    "**/sample_responses/",
+    # OpenAPI specs and metadata (external/generated files)
+    "**/openapi/",
+    "**/metadata/",
+    "scripts/openapi/",
+    # Generated files
+    "*.gen.go",
+    # Data files - don't modify
+    "*.json",
+    "*.yaml",
+    "*.yml",
+    "*.csv",
+    "*.xml",
+    # Test files (contain mock data with intentional strings)
+    "*_test.go",
+    # Files with external API field names (non-standard spellings)
+    "providers/salesforce/metadata.go"
+]
+
+ignore-hidden = true
+ignore-files = true
+ignore-dot = true
+ignore-vcs = true
+ignore-global = true
+ignore-parent = true
+
+[default]
+check-filename = true
+check-file = true
+unicode = true
+locale = "en"
+# Ignore UUIDs, hex strings, and random ID-like strings
+extend-ignore-re = [
+    "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
+    "[0-9a-fA-F]{24,}",
+    # Random alphanumeric ID strings (like cf_9RsqbFDfApgIOJsiSCwRuKw5gdVibt6H7qEvn4nQDjN)
+    "[a-zA-Z0-9_]{30,}"
+]
+extend-ignore-identifiers-re = [
+    "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
+    "[0-9a-fA-F]{24,}",
+    "[a-zA-Z0-9_]{30,}"
+]
+
+[default.extend-words]
+# API endpoint names (external APIs)
+vists = "vists"
+# SQL/filter operators (NOT IN)
+NIN = "NIN"
+
+[default.extend-identifiers]
+# Variable abbreviations (ue = user errors)
+ue = "ue"
+ueRaw = "ueRaw"
+NIN = "NIN"

@@ -71,7 +71,7 @@ func makeNextRecordsURL() common.NextPageFunc {
 	}
 }
 
-// To extract selected fields from the read response, implement the DataMarshaller.
+// MarshalledData to extract selected fields from the read response, implement the DataMarshaller.
 // This is necessary because the important fields are embedded as an object,
 // where the key is the singular form of the object name, inside an array
 // whose key is the plural form of the object name.

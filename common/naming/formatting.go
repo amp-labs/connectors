@@ -30,3 +30,8 @@ func CapitalizeFirstLetter(text string) string {
 
 	return caser.String(text[:1]) + text[1:]
 }
+
+// SeparateUnderscoreWords converts underscore-separated words into space-separated words.
+func SeparateUnderscoreWords(text string) string {
+	return strings.ReplaceAll(text, "_", " ")
+}

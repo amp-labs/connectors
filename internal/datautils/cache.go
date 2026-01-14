@@ -1,4 +1,3 @@
-// nolint:ireturn
 package datautils
 
 import "sync"

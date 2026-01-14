@@ -87,7 +87,7 @@ This is an exhaustive list of API endpoints which are excluded from Write/Delete
 
 
 Endpoints that are performing alike operations are excluded as well. 
-In other words they are covered by related endpoint. Excluded similiar endpoints are as follows:
+In other words they are covered by related endpoint. Excluded similar endpoints are as follows:
 - [/api/templates/email/update](https://api.iterable.com/api/docs#templates_updateEmailTemplate) - Update email template
 - [/api/templates/inapp/update](https://api.iterable.com/api/docs#templates_updateInAppTemplate) - Update in-app template
 - [/api/templates/push/update](https://api.iterable.com/api/docs#templates_updatePushTemplate) - Update push template
