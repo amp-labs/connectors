@@ -50,7 +50,7 @@ func testBusinesses(ctx context.Context) error {
 			"phone":       "+18832327657",
 			"email":       "johnmalt@gmail.com",
 			"website":     "www.xyz.com",
-			"address":     "street adress",
+			"address":     "street address",
 			"city":        "new york",
 			"postalCode":  "12312312",
 			"state":       "new york",

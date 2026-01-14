@@ -26,7 +26,7 @@ const (
 	hasMoreQuery    = "has_more" // nolint:gochecknoglobals
 )
 
-// ErrSkipFailure is an error genarated when we fails to construct the next page url.
+// ErrSkipFailure is an error generated when we fails to construct the next page url.
 var ErrSkipFailure = errors.New("error: failed to create next page url")
 
 // nextRecordsURL builds the next-page url func.
@@ -49,7 +49,7 @@ func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 				url.WithQueryParam(skipQuery, currSkip+defaultPageSize)
 				url.WithQueryParam(limitQuery, defaultPageSize)
 
-				return url.String(), nil
+				return addTrailingSlashIfNeeded(url.String()), nil
 			}
 		}
 

@@ -25,7 +25,7 @@ func (f Factory) CreateProxyCustom(ctx context.Context) *Proxy {
 
 func forEachField(callback func(name string, f credscanning.Field)) {
 	v := reflect.ValueOf(credscanning.Fields)
-	t := reflect.TypeOf(credscanning.Fields)
+	t := v.Type()
 
 	for i := range v.NumField() {
 		name := t.Field(i).Name

@@ -24,6 +24,7 @@ var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
 	http.StatusConflict: common.ErrBadRequest,
 }
 
+// ErrorDetails
 // nolint:tagliatelle
 type ErrorDetails struct {
 	Error errorResponse `json:"error"`

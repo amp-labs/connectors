@@ -11,7 +11,7 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-var ErrEmptyResultResponse = errors.New("writing reponded with an empty result")
+var ErrEmptyResultResponse = errors.New("writing responded with an empty result")
 
 // Write creates/updates records in attio.
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {

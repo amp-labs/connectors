@@ -1,0 +1,17 @@
+{
+    "notFoundIds": null,
+    "items": [
+        {
+            "id": "Y2lzY29zcGFyazovL3VzL1BFT",
+            "emails": [
+                "admin@example.wbx.ai"
+            ],
+            "displayName": "admin@example.wbx.ai",
+            "nickName": "admin",
+            "firstName": "admin",
+            "lastName": "admin",
+            "orgId": "Y2lzY29zcGFyazovL3VzL09",
+            "type": "person"
+        }
+    ]
+}

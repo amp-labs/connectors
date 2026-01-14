@@ -80,7 +80,8 @@ type deskValues struct {
 
 // ==============================================================================
 
-func (c *Connector) ListObjectMetadata(ctx context.Context,
+func (c *Connector) ListObjectMetadata( // nolint:wsl_v5
+	ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
 	var (
@@ -114,14 +115,14 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			metadata, err := mf(ctx, obj)
 			if err != nil {
 				mu.Lock()
-				objectMetadata.Errors[obj] = err
+				objectMetadata.Errors[obj] = err // nolint:wsl_v5
 				mu.Unlock()
 
 				return nil //nolint:nilerr // intentionally collecting errors in map, not failing fast
 			}
 
 			mu.Lock()
-			objectMetadata.Result[object] = *metadata
+			objectMetadata.Result[object] = *metadata // nolint:wsl_v5
 			mu.Unlock()
 
 			return nil

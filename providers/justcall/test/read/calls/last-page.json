@@ -1,0 +1,43 @@
+{
+  "status": "success",
+  "count": 1,
+  "total_count": 5,
+  "current_page": 3,
+  "per_page": 2,
+  "next_page_link": "",
+  "prev_page_link": "https://api.justcall.io/v2.1/calls?page=2&per_page=2",
+  "data": [
+    {
+      "id": 1005,
+      "call_sid": "CA555555555",
+      "contact_name": "Eve Davis",
+      "contact_number": "+14155555555",
+      "contact_email": "eve@example.com",
+      "agent_id": 12345,
+      "agent_name": "John Doe",
+      "agent_email": "john@example.com",
+      "agent_active": "yes",
+      "justcall_number": "+14155551234",
+      "justcall_line_name": "Main Line",
+      "call_date": "2024-03-15",
+      "call_time": "17:00:00",
+      "call_user_date": "2024-03-15",
+      "call_user_time": "14:00:00",
+      "call_duration": {
+        "total": 60,
+        "ringing": 3,
+        "answered": 57
+      },
+      "cost_incurred": 0,
+      "call_info": {
+        "direction": "outbound",
+        "type": "voice",
+        "status": "completed"
+      },
+      "ivr_info": {},
+      "queue": {},
+      "queue_callback": {},
+      "justcall_ai": {}
+    }
+  ]
+}

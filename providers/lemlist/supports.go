@@ -22,7 +22,7 @@ func responseSchema(objectName string) (string, string) {
 	switch objectName {
 	case "campaigns", "schedules":
 		return object, objectName
-	case "team/senders", "activities", "unsubscirbes", "hooks", "database/filters":
+	case "team/senders", "activities", "unsubscribes", "hooks", "database/filters":
 		return list, ""
 	default:
 		return object, ""

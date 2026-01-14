@@ -95,7 +95,7 @@ Outreach API version : v2
 | Opportunity | opportunities | Read, Write |
 | Opportunity Prospect Role |  opportunityProspectRoles | Read, Write |
 | Opportunity Stage | opportunityStages | Read, Write |
-| Org Setting  | orgSettings/:id (by id only) | Read, Write(Patch by id ony) |
+| Org Setting  | orgSettings/:id (by id only) | Read, Write(Patch by id only) |
 | Persona | personas | Read, Write |
 | Phone Number | phoneNumbers | Read, Write |
 | Profile | profiles | Read, Write |

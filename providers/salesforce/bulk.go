@@ -1,6 +1,6 @@
-// Package salesforce
-// This file has bulk related functionality that is internal to this package.
 package salesforce
+
+// This file has bulk related functionality that is internal to this package.
 
 import (
 	"context"

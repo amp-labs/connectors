@@ -5,7 +5,7 @@ import "encoding/json"
 // PluralString imposes plural form on a word conforming to English rules.
 // It is capable of self conversion to singular form.
 // You can use it as keys in maps, values, and it knows how to Marshal itself like a string.
-// Unmarshalling will apply plural formating.
+// Unmarshalling will apply plural formatting.
 type PluralString struct { //nolint:recvcheck
 	text string
 }

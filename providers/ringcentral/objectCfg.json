@@ -1,0 +1,469 @@
+{
+  "caller-blocking/phone-numbers": {
+    "read_path": "restapi/v1.0/account/~/extension/~/caller-blocking/phone-numbers",
+    "write_path": "restapi/v1.0/account/~/extension/~/caller-blocking/phone-numbers",
+    "records_field": "records"
+  },
+  "telephony/call-out": {
+    "write_path": "restapi/v1.0/account/~/telephony/call-out"
+  },
+  "forwarding-number": {
+    "read_path": "restapi/v1.0/account/~/extension/~/forwarding-number",
+    "write_path": "restapi/v1.0/account/~/extension/~/forwarding-number",
+    "records_field": "records"
+  },
+  "answering-rule": {
+    "read_path": "restapi/v1.0/account/~/extension/~/answering-rule",
+    "write_path": "restapi/v1.0/account/~/extension/~/answering-rule",
+    "records_field": "records"
+  },
+  "company-answering-rule": {
+    "read_path": "restapi/v1.0/account/~/answering-rule",
+    "write_path": "restapi/v1.0/account/~/answering-rule",
+    "records_field": "records"
+  },
+  "comm-handling/states": {
+    "read_path": "restapi/v2/accounts/~/extensions/~/comm-handling/states",
+    "write_path": "restapi/v2/accounts/~/extensions/~/comm-handling/states",
+    "update_method": "PATCH",
+    "records_field": "records",
+    "uses_offset_pagination": true
+  },
+  "comm-handling/voice/state-rules": {
+    "read_path": "restapi/v2/accounts/~/extensions/~/comm-handling/voice/state-rules",
+    "write_path": "restapi/v2/accounts/~/extensions/~/comm-handling/voice/state-rules",
+    "records_field": "records",
+    "uses_offset_pagination": true
+  },
+  "comm-handling/voice/interaction-rules": {
+    "read_path": "restapi/v2/accounts/~/extensions/~/comm-handling/voice/interaction-rules",
+    "write_path": "restapi/v2/accounts/~/extensions/~/comm-handling/voice/interaction-rules",
+    "update_method": "PATCH",
+    "records_field": "records",
+    "uses_offset_pagination": true
+  },
+  "comm-handling/voice/forwarding-targets": {
+    "read_path": "restapi/v2/accounts/~/extensions/~/comm-handling/voice/forwarding-targets",
+    "records_field": "referencedExtensions",
+    "uses_offset_pagination": true
+  },
+  "call-flip-numbers": {
+    "read_path": "restapi/v2/accounts/~/extensions/~/call-flip-numbers",
+    "write_path": "restapi/v2/accounts/~/extensions/~/call-flip-numbers",
+    "records_field": "records"
+  },
+  "call-log": {
+    "read_path": "restapi/v1.0/account/~/extension/~/call-log",
+    "records_field": "records"
+  },
+  "active-calls": {
+    "read_path": "restapi/v1.0/account/~/extension/~/active-calls",
+    "records_field": "records"
+  },
+  "company-call-log": {
+    "read_path": "restapi/v1.0/account/~/call-log",
+    "records_field": "records"
+  },
+  "company-active-calls": {
+    "read_path": "restapi/v1.0/account/~/active-calls",
+    "records_field": "records"
+  },
+  "call-log-sync": {
+    "read_path": "restapi/v1.0/account/~/extension/~/call-log-sync",
+    "records_field": "records",
+    "uses_sync_token": true
+  },
+  "company-call-log-sync": {
+    "read_path": "restapi/v1.0/account/~/call-log-sync",
+    "records_field": "records",
+    "uses_sync_token": true
+  },
+  "call-log-extract-sync": {
+    "read_path": "restapi/v1.0/account/~/call-log-extract-sync",
+    "records_field": "records",
+    "uses_sync_token": true
+  },
+  "call-monitoring-groups": {
+    "read_path": "restapi/v1.0/account/~/call-monitoring-groups",
+    "write_path": "restapi/v1.0/account/~/call-monitoring-groups",
+    "records_field": "records"
+  },
+  "call-queues": {
+    "read_path": "restapi/v1.0/account/~/call-queues",
+    "write_path": "restapi/v1.0/account/~/call-queues",
+    "records_field": "records"
+  },
+  "client-info/sip-provision": {
+    "write_path": "restapi/v1.0/client-info/sip-provision"
+  },
+  "custom-greetings": {
+    "read_path": "restapi/v1.0/account/~/call-recording/custom-greetings",
+    "records_field": "records"
+  },
+  "dictionary/greeting": {
+    "read_path": "restapi/v1.0/dictionary/greeting",
+    "records_field": "records"
+  },
+  "vr-prompts": {
+    "read_path": "restapi/v1.0/account/~/ivr-prompts",
+    "records_field": "records"
+  },
+  "ivr-menus": {
+    "read_path": "restapi/v1.0/account/~/ivr-menus",
+    "write_path": "restapi/v1.0/account/~/ivr-menus",
+    "records_field": "records"
+  },
+  "ring-out": {
+    "write_path": "restapi/v1.0/account/accountId/extension/extensionId/ring-out"
+  },
+  "fax": {
+    "write_path": "restapi/v1.0/account/~/extension/~/fax"
+  },
+  "fax-cover-page": {
+    "read_path": "restapi/v1.0/dictionary/fax-cover-page",
+    "records_field": "records"
+  },
+  "message-store-report": {
+    "write_path": "restapi/v1.0/account/~/message-store-report"
+  },
+  "message-store": {
+    "read_path": "restapi/v1.0/account/~/extension/~/message-store",
+    "write_path": "restapi/v1.0/account/~/extension/~/message-store",
+    "update_method": "PATCH",
+    "records_field": "records"
+  },
+  "message-sync": {
+    "read_path": "restapi/v1.0/account/~/extension/~/message-sync",
+    "records_field": "records"
+  },
+  "company-pager": {
+    "write_path": "restapi/v1.0/account/~/extension/~/company-pager"
+  },
+  "sms": {
+    "write_path": "restapi/v1.0/account/~/extension/~/sms"
+  },
+  "mms": {
+    "write_path": "restapi/v1.0/account/~/extension/~/mms"
+  },
+  "a2p-sms/batches": {
+    "read_path": "restapi/v1.0/account/~/a2p-sms/batches",
+    "write_path": "restapi/v1.0/account/~/a2p-sms/batches",
+    "records_field": "records",
+    "uses_offset_pagination": true
+  },
+  "a2p-sms/messages": {
+    "read_path": "restapi/v1.0/account/~/a2p-sms/messages",
+    "records_field": "records",
+    "uses_offset_pagination": true
+  },
+  "message-store-templates": {
+    "read_path": "restapi/v1.0/account/~/message-store-templates",
+    "write_path": "restapi/v1.0/account/~/message-store-templates",
+    "records_field": "records"
+  },
+  "user-message-store-templates": {
+    "read_path": "restapi/v1.0/account/~/extension/~/message-store-templates",
+    "write_path": "restapi/v1.0/account/~/extension/~/message-store-templates",
+    "records_field": "records"
+  },
+  "sms/consents": {
+    "read_path": "restapi/v2/accounts/~/sms/consents",
+    "records_field": "records"
+  },
+  "adaptive-cards": {
+    "write_path": "team-messaging/v1/adaptive-cards"
+  },
+  "sms-registration-brands": {
+    "read_path": "restapi/v1.0/account/~/sms-registration-brands",
+    "records_field": "records"
+  },
+  "events": {
+    "read_path": "team-messaging/v1/events",
+    "write_path": "team-messaging/v1/events",
+    "records_field": "records",
+    "uses_cursor_pagination": true
+  },
+  "chats": {
+    "read_path": "team-messaging/v1/chats",
+    "records_field": "records",
+    "uses_cursor_pagination": true
+  },
+  "recent/chats": {
+    "read_path": "team-messaging/v1/recent/chats",
+    "records_field": "records"
+  },
+  "favorites": {
+    "read_path": "team-messaging/v1/favorites",
+    "records_field": "records"
+  },
+  "conversations": {
+    "read_path": "team-messaging/v1/conversations",
+    "write_path": "team-messaging/v1/conversations",
+    "records_field": "records"
+  },
+  "data-export": {
+    "read_path": "team-messaging/v1/data-export",
+    "write_path": "team-messaging/v1/data-export",
+    "records_field": "tasks"
+  },
+  "webhooks": {
+    "read_path": "team-messaging/v1/webhooks",
+    "records_field": "records"
+  },
+  "teams": {
+    "read_path": "team-messaging/v1/teams",
+    "write_path": "team-messaging/v1/teams",
+    "records_field": "records",
+    "uses_cursor_pagination": true
+  },
+  "bridges": {
+    "write_path": "rcvideo/v2/account/~/extension/~/bridges",
+    "update_method": "PATCH"
+  },
+  "delegators": {
+    "read_path": "rcvideo/v1/accounts/~/extensions/~/delegators",
+    "records_field": "items"
+  },
+  "meetings": {
+    "read_path": "rcvideo/v1/history/account/~/meetings",
+    "records_field": "meetings",
+    "uses_cursor_pagination": true
+  },
+  "history/meetings": {
+    "read_path": "rcvideo/v1/history/meetings",
+    "records_field": "meetings",
+    "uses_cursor_pagination": true
+  },
+  "recordings": {
+    "read_path": "rcvideo/v1/account/~/recordings",
+    "records_field": "recordings",
+    "uses_cursor_pagination": true
+  },
+  "extension-recordings": {
+    "read_path": "rcvideo/v1/account/~/extension/~/recordings",
+    "records_field": "recordings",
+    "uses_cursor_pagination": true
+  },
+  "webinars": {
+    "read_path": "webinar/configuration/v1/webinars",
+    "write_path": "webinar/configuration/v1/webinars",
+    "update_method": "PATCH",
+    "records_field": "records",
+    "uses_cursor_pagination": true
+  },
+  "configuration/sessions": {
+    "read_path": "webinar/configuration/v1/sessions",
+    "records_field": "records",
+    "uses_cursor_pagination": true
+  },
+  "company/sessions": {
+    "read_path": "webinar/configuration/v1/company/sessions",
+    "records_field": "records",
+    "uses_cursor_pagination": true
+  },
+  "history/sessions": {
+    "read_path": "webinar/history/v1/sessions",
+    "records_field": "records",
+    "uses_cursor_pagination": true
+  },
+  "history/company/sessions": {
+    "read_path": "webinar/history/v1/company/sessions",
+    "records_field": "records",
+    "uses_cursor_pagination": true
+  },
+  "webinar/recordings": {
+    "read_path": "webinar/history/v1/recordings",
+    "records_field": "records",
+    "uses_cursor_pagination": true
+  },
+  "webinar/company/recordings": {
+    "read_path": "webinar/history/v1/company/recordings",
+    "records_field": "records",
+    "uses_cursor_pagination": true
+  },
+  "webinar/subscriptions": {
+    "read_path": "webinar/notifications/v1/subscriptions",
+    "write_path": "webinar/notifications/v1/subscriptions",
+    "records_field": "records"
+  },
+  "custom-fields": {
+    "read_path": "restapi/v1.0/account/~/custom-fields",
+    "write_path": "restapi/v1.0/account/~/custom-fields",
+    "records_field": "records"
+  },
+  "sites": {
+    "read_path": "restapi/v1.0/account/~/sites",
+    "write_path": "restapi/v1.0/account/~/sites",
+    "records_field": "records"
+  },
+  "accounts/phone-numbers": {
+    "read_path": "restapi/v2/accounts/~/phone-numbers",
+    "write_path": "restapi/v2/accounts/~/phone-numbers/bulk-add",
+    "records_field": "records"
+  },
+  "extension/phone-number": {
+    "read_path": "restapi/v1.0/account/~/extension/~/phone-number",
+    "records_field": "records"
+  },
+  "company/phone-number": {
+    "read_path": "restapi/v1.0/account/~/phone-number",
+    "records_field": "records"
+  },
+  "account/presence": {
+    "read_path": "restapi/v1.0/account/~/presence",
+    "records_field": "records"
+  },
+  "call-queue-presence": {
+    "read_path": "restapi/v1.0/account/~/extension/~/call-queue-presence",
+    "records_field": "records"
+  },
+  "languages": {
+    "read_path": "restapi/v1.0/dictionary/language",
+    "records_field": "records"
+  },
+  "countries": {
+    "read_path": "restapi/v1.0/dictionary/country",
+    "records_field": "records"
+  },
+  "locations": {
+    "read_path": "restapi/v1.0/dictionary/location",
+    "records_field": "records"
+  },
+  "states": {
+    "read_path": "restapi/v1.0/dictionary/state",
+    "records_field": "records"
+  },
+  "timezones": {
+    "read_path": "restapi/v1.0/dictionary/timezone",
+    "records_field": "records"
+  },
+  "permissions": {
+    "read_path": "restapi/v1.0/dictionary/permission",
+    "records_field": "records"
+  },
+  "permission-category": {
+    "read_path": "restapi/v1.0/dictionary/permission-category",
+    "records_field": "records"
+  },
+  "extension/grant": {
+    "read_path": "restapi/v1.0/account/~/extension/~/grant",
+    "records_field": "records"
+  },
+  "user/features": {
+    "read_path": "restapi/v1.0/account/~/extension/~/features",
+    "records_field": "records"
+  },
+  "emergency-locations": {
+    "read_path": "restapi/v1.0/account/~/emergency-locations",
+    "write_path": "restapi/v1.0/account/~/emergency-locations",
+    "records_field": "records"
+  },
+  "user/emergency-locations": {
+    "read_path": "restapi/v1.0/account/~/extension/~/emergency-locations",
+    "write_path": "restapi/v1.0/account/~/extension/~/emergency-locations",
+    "records_field": "records"
+  },
+  "batch-provisioning/users": {
+    "write_path": "restapi/v2/accounts/~/batch-provisioning/users"
+  },
+  "users": {
+    "read_path": "restapi/v1.0/account/~/emergency-address-auto-update/users",
+    "records_field": "records"
+  },
+  "wireless-points": {
+    "read_path": "restapi/v1.0/account/~/emergency-address-auto-update/wireless-points",
+    "write_path": "restapi/v1.0/account/~/emergency-address-auto-update/wireless-points",
+    "records_field": "records"
+  },
+  "networks": {
+    "read_path": "restapi/v1.0/account/~/emergency-address-auto-update/networks",
+    "write_path": "restapi/v1.0/account/~/emergency-address-auto-update/networks",
+    "records_field": "records"
+  },
+  "devices": {
+    "read_path": "restapi/v1.0/account/~/emergency-address-auto-update/devices",
+    "write_path": "restapi/v1.0/account/~/device",
+    "records_field": "records"
+  },
+  "switches": {
+    "read_path": "restapi/v1.0/account/~/emergency-address-auto-update/switches",
+    "write_path": "restapi/v1.0/account/~/emergency-address-auto-update/switches",
+    "records_field": "records"
+  },
+  "extension/devices": {
+    "read_path": "restapi/v1.0/account/~/extension/~/device",
+    "records_field": "records"
+  },
+  "extensions": {
+    "read_path": "restapi/v1.0/account/~/extension",
+    "write_path": "restapi/v1.0/account/~/extension",
+    "records_field": "records"
+  },
+  "user/templates": {
+    "read_path": "restapi/v1.0/account/~/templates",
+    "records_field": "records"
+  },
+  "scim/users": {
+    "write_path": "scim/v2/Users"
+  },
+  "resourecTpes": {
+    "read_path": "scim/v2/ResourceTypes",
+    "records_field": "Resources"
+  },
+  "schemas": {
+    "read_path": "scim/v2/Schemas",
+    "records_field": "Resources"
+  },
+  "direct-routing/users": {
+    "read_path": "restapi/v1.0/account/~/ms-teams/direct-routing/users",
+    "records_field": "mappings"
+  },
+  "contacts": {
+    "read_path": "restapi/v1.0/account/~/extension/~/address-book/contact",
+    "write_path": "restapi/v1.0/account/~/extension/~/address-book/contact",
+    "records_field": "records"
+  },
+  "favorite/contacts": {
+    "read_path": "restapi/v1.0/account/~/extension/~/favorite",
+    "records_field": "records"
+  },
+  "directory/entries": {
+    "read_path": "restapi/v1.0/account/~/directory/entries",
+    "records_field": "records"
+  },
+  "directory/federation": {
+    "read_path": "restapi/v1.0/account/~/directory/federation",
+    "records_field": "records"
+  },
+  "company/assigned-role": {
+    "read_path": "restapi/v1.0/account/~/assigned-role",
+    "records_field": "records"
+  },
+  "user/assigned-role": {
+    "read_path": "restapi/v1.0/account/~/extension/~/assigned-role",
+    "write_path": "restapi/v1.0/account/~/extension/~/assigned-role",
+    "records_field": "records"
+  },
+  "user-role": {
+    "read_path": "restapi/v1.0/dictionary/user-role",
+    "records_field": "records"
+  },
+  "company/user-role": {
+    "read_path": "restapi/v1.0/account/~/user-role",
+    "write_path": "restapi/v1.0/account/~/user-role",
+    "records_field": "records"
+  },
+  "assignable-roles": {
+    "read_path": "restapi/v1.0/account/~/extension/~/assignable-roles",
+    "records_field": "records"
+  },
+  "administered-sites": {
+    "read_path": "restapi/v1.0/account/~/extension/~/administered-sites",
+    "records_field": "records"
+  },
+  "subscriptions": {
+    "read_path": "restapi/v1.0/subscription",
+    "write_path": "restapi/v1.0/subscription",
+    "records_field": "records"
+  }
+}

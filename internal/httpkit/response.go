@@ -1,4 +1,3 @@
-// nolint:lll
 package httpkit
 
 import (
@@ -8,6 +7,7 @@ import (
 
 // HeaderLink extracts and parses Link Header of HTTP response.
 //
+// nolint:lll
 // Example: given the header below we want to return one of the URLs based on the relationship name.
 // <https://api.capsulecrm.com/api/v2/parties?page=3&perPage=1>; rel="next", <https://api.capsulecrm.com/api/v2/parties?page=1&perPage=1>; rel="prev"
 //

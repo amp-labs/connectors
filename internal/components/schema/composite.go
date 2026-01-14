@@ -3,11 +3,14 @@ package schema
 import (
 	"context"
 	"log/slog"
+	"maps"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
+
+var _ components.SchemaProvider = &CompositeSchemaProvider{}
 
 // CompositeSchemaProvider gets metadata from multiple providers with fallback.
 // For example, certain connectors may have OpenAPI definitions for some objects,
@@ -67,9 +70,7 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 		}
 
 		// Add errors to result.Errors
-		for obj, err := range metadata.Errors {
-			result.Errors[obj] = err
-		}
+		maps.Copy(result.Errors, metadata.Errors)
 
 		notLastProvider := idx < len(c.schemaProviders)-1
 

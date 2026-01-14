@@ -295,7 +295,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Type:       common.BatchWriteTypeUpdate,
 				Batch: common.BatchItems{{
 					Record: map[string]any{
-						"id":        "unknowIdentifier888", // This identifier will have no response corespondent.
+						"id":        "unknownIdentifier888", // This identifier will have no response corespondent.
 						"email":     "Markus.Blevins@hubspot.com",
 						"lastname":  "Blevins (updated)",
 						"firstname": "Markus (updated)",
@@ -328,7 +328,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				}`)},
 				Results: []common.WriteResult{{
 					Success:  false,
-					RecordId: "unknowIdentifier888",
+					RecordId: "unknownIdentifier888",
 					Errors:   []any{common.ErrBatchUnprocessedRecord},
 					Data:     nil,
 				}, {

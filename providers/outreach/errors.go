@@ -4,4 +4,4 @@ import (
 	"errors"
 )
 
-var ErrIdMustInt = errors.New("provided record ID must be convertable to integer")
+var ErrIdMustInt = errors.New("provided record ID must be convertible to integer")

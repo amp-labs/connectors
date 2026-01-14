@@ -1,0 +1,1625 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/v2.1",
+      "objects": {
+        "agent": {
+          "displayName": "Agent",
+          "path": "/calls/analytics/agent",
+          "responseKey": "records",
+          "fields": {
+            "agent_email": {
+              "displayName": "agent_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "agent_id": {
+              "displayName": "agent_id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "agent_name": {
+              "displayName": "agent_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "summary": {
+              "displayName": "summary",
+              "valueType": "other"
+            }
+          }
+        },
+        "calls": {
+          "displayName": "Calls",
+          "path": "/calls",
+          "responseKey": "data",
+          "fields": {
+            "agent_active": {
+              "displayName": "agent_active",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "agent_email": {
+              "displayName": "agent_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "agent_id": {
+              "displayName": "agent_id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "agent_name": {
+              "displayName": "agent_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "call_date": {
+              "displayName": "call_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "call_duration": {
+              "displayName": "call_duration",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "call_info": {
+              "displayName": "call_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "call_sid": {
+              "displayName": "call_sid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "call_time": {
+              "displayName": "call_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "call_user_date": {
+              "displayName": "call_user_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "call_user_time": {
+              "displayName": "call_user_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_email": {
+              "displayName": "contact_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_name": {
+              "displayName": "contact_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_number": {
+              "displayName": "contact_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "cost_incurred": {
+              "displayName": "cost_incurred",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "ivr_info": {
+              "displayName": "ivr_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "justcall_ai": {
+              "displayName": "justcall_ai",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "justcall_line_name": {
+              "displayName": "justcall_line_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "justcall_number": {
+              "displayName": "justcall_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "queue": {
+              "displayName": "queue",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "queue_callback": {
+              "displayName": "queue_callback",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "calls_ai": {
+          "displayName": "Calls AI",
+          "path": "/calls_ai",
+          "responseKey": "data",
+          "fields": {
+            "action_items": {
+              "displayName": "action_items",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "call_moments": {
+              "displayName": "call_moments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "call_score": {
+              "displayName": "call_score",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "call_score_parameters": {
+              "displayName": "call_score_parameters",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "call_sid": {
+              "displayName": "call_sid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "call_summary": {
+              "displayName": "call_summary",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "call_transcription": {
+              "displayName": "call_transcription",
+              "valueType": "other"
+            },
+            "customer_sentiment": {
+              "displayName": "customer_sentiment",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "interaction_stats": {
+              "displayName": "interaction_stats",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "manual_call_score": {
+              "displayName": "manual_call_score",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "platform": {
+              "displayName": "platform",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "justcall",
+                  "displayValue": "justcall"
+                },
+                {
+                  "value": "sales_dialer",
+                  "displayValue": "sales_dialer"
+                }
+              ]
+            },
+            "smart_chapters": {
+              "displayName": "smart_chapters",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "campaigns": {
+          "displayName": "Campaigns",
+          "path": "/sales_dialer/campaigns",
+          "responseKey": "data",
+          "fields": {
+            "abandoning_message_id": {
+              "displayName": "abandoning_message_id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "assigned_to_id": {
+              "displayName": "assigned_to_id",
+              "valueType": "other"
+            },
+            "call_forwarding_number": {
+              "displayName": "call_forwarding_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "call_scripts": {
+              "displayName": "call_scripts",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "contact_dialing_order": {
+              "displayName": "contact_dialing_order",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contacts_count": {
+              "displayName": "contacts_count",
+              "valueType": "other"
+            },
+            "country_code": {
+              "displayName": "country_code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_by_email": {
+              "displayName": "created_by_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_by_id": {
+              "displayName": "created_by_id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "created_by_name": {
+              "displayName": "created_by_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_date": {
+              "displayName": "created_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_time": {
+              "displayName": "created_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default_number": {
+              "displayName": "default_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "disposition_groups": {
+              "displayName": "disposition_groups",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "maximum_calls_per_agent": {
+              "displayName": "maximum_calls_per_agent",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "voicemail_message_id": {
+              "displayName": "voicemail_message_id",
+              "valueType": "other",
+              "providerType": "number"
+            }
+          }
+        },
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/contacts",
+          "responseKey": "data",
+          "fields": {
+            "address": {
+              "displayName": "address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "agent_id": {
+              "displayName": "agent_id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "company": {
+              "displayName": "company",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_number": {
+              "displayName": "contact_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "extension": {
+              "displayName": "extension",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_updated_at": {
+              "displayName": "last_updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "other_numbers": {
+              "displayName": "other_numbers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "parent_contact_id": {
+              "displayName": "parent_contact_id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "other"
+            },
+            "status_updated_at": {
+              "displayName": "status_updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "contacts/blacklist": {
+          "displayName": "Contacts Blacklist",
+          "path": "/contacts/blacklist",
+          "responseKey": "data",
+          "fields": {
+            "address": {
+              "displayName": "address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "agent_id": {
+              "displayName": "agent_id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "company": {
+              "displayName": "company",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_number": {
+              "displayName": "contact_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "extension": {
+              "displayName": "extension",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_updated_at": {
+              "displayName": "last_updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "other_numbers": {
+              "displayName": "other_numbers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "parent_contact_id": {
+              "displayName": "parent_contact_id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "ref_id": {
+              "displayName": "ref_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "other"
+            },
+            "status_updated_at": {
+              "displayName": "status_updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "list": {
+          "displayName": "List",
+          "path": "/voice-agents/list",
+          "responseKey": "data",
+          "fields": {
+            "actions": {
+              "displayName": "actions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "actions_count": {
+              "displayName": "actions_count",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "assigned_numbers": {
+              "displayName": "assigned_numbers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "created_date": {
+              "displayName": "created_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_time": {
+              "displayName": "created_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dynamic_variables": {
+              "displayName": "dynamic_variables",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_active": {
+              "displayName": "is_active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "meetings_ai": {
+          "displayName": "Meetings AI",
+          "path": "/meetings_ai",
+          "responseKey": "data",
+          "fields": {
+            "instance_date": {
+              "displayName": "instance_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "instance_duration": {
+              "displayName": "instance_duration",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "instance_friendly_duration": {
+              "displayName": "instance_friendly_duration",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "instance_moments": {
+              "displayName": "instance_moments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "instance_sid": {
+              "displayName": "instance_sid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "instance_summary": {
+              "displayName": "instance_summary",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "instance_time": {
+              "displayName": "instance_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "instance_transcription": {
+              "displayName": "instance_transcription",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "instance_user_date": {
+              "displayName": "instance_user_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "instance_user_time": {
+              "displayName": "instance_user_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "interaction_stats": {
+              "displayName": "interaction_stats",
+              "valueType": "other"
+            },
+            "invitee_emails": {
+              "displayName": "invitee_emails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "manual_instance_score": {
+              "displayName": "manual_instance_score",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "meeting_id": {
+              "displayName": "meeting_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "meeting_title": {
+              "displayName": "meeting_title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "platform": {
+              "displayName": "platform",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sentiment": {
+              "displayName": "sentiment",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "smart_chapters": {
+              "displayName": "smart_chapters",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "speakers": {
+              "displayName": "speakers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "messages": {
+          "displayName": "Messages",
+          "path": "/whatsapp/messages",
+          "responseKey": "data",
+          "fields": {
+            "agent_email": {
+              "displayName": "agent_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "agent_id": {
+              "displayName": "agent_id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "agent_name": {
+              "displayName": "agent_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_email": {
+              "displayName": "contact_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_name": {
+              "displayName": "contact_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_number": {
+              "displayName": "contact_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "delivery_date": {
+              "displayName": "delivery_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "delivery_status": {
+              "displayName": "delivery_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "read",
+                  "displayValue": "read"
+                },
+                {
+                  "value": "delivered",
+                  "displayValue": "delivered"
+                },
+                {
+                  "value": "sent",
+                  "displayValue": "sent"
+                },
+                {
+                  "value": "received",
+                  "displayValue": "received"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                }
+              ]
+            },
+            "delivery_time": {
+              "displayName": "delivery_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "direction": {
+              "displayName": "direction",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "incoming",
+                  "displayValue": "incoming"
+                },
+                {
+                  "value": "outgoing",
+                  "displayValue": "outgoing"
+                }
+              ]
+            },
+            "failure_reason": {
+              "displayName": "failure_reason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "justcall_line_name": {
+              "displayName": "justcall_line_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "justcall_number": {
+              "displayName": "justcall_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "message_date": {
+              "displayName": "message_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "message_info": {
+              "displayName": "message_info",
+              "valueType": "other"
+            },
+            "message_origin": {
+              "displayName": "message_origin",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "message_time": {
+              "displayName": "message_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "message_user_date": {
+              "displayName": "message_user_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "message_user_time": {
+              "displayName": "message_user_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reaction_inbound": {
+              "displayName": "reaction_inbound",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reaction_inbound_time": {
+              "displayName": "reaction_inbound_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reaction_outbound": {
+              "displayName": "reaction_outbound",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reaction_outbound_time": {
+              "displayName": "reaction_outbound_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "read_date": {
+              "displayName": "read_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "read_time": {
+              "displayName": "read_time",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "number": {
+          "displayName": "Number",
+          "path": "/calls/analytics/number",
+          "responseKey": "records",
+          "fields": {
+            "justcall_number": {
+              "displayName": "justcall_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "summary": {
+              "displayName": "summary",
+              "valueType": "other"
+            }
+          }
+        },
+        "phone-numbers": {
+          "displayName": "Phone Numbers",
+          "path": "/phone-numbers",
+          "responseKey": "data",
+          "fields": {
+            "availability_setting": {
+              "displayName": "availability_setting",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "business_registration": {
+              "displayName": "business_registration",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "capabilities": {
+              "displayName": "capabilities",
+              "valueType": "other"
+            },
+            "current_status": {
+              "displayName": "current_status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "friendly_number": {
+              "displayName": "friendly_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "justcall_line_name": {
+              "displayName": "justcall_line_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "justcall_number": {
+              "displayName": "justcall_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number_owner": {
+              "displayName": "number_owner",
+              "valueType": "other"
+            },
+            "number_type": {
+              "displayName": "number_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shared_with": {
+              "displayName": "shared_with",
+              "valueType": "other"
+            },
+            "sms_compliance": {
+              "displayName": "sms_compliance",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "sales_dialer/calls": {
+          "displayName": "Sales Dialer Calls",
+          "path": "/sales_dialer/calls",
+          "responseKey": "data",
+          "fields": {
+            "agent_email": {
+              "displayName": "agent_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "agent_id": {
+              "displayName": "agent_id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "agent_name": {
+              "displayName": "agent_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "call_date": {
+              "displayName": "call_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "call_id": {
+              "displayName": "call_id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "call_info": {
+              "displayName": "call_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "call_sid": {
+              "displayName": "call_sid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "call_time": {
+              "displayName": "call_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "call_user_date": {
+              "displayName": "call_user_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "call_user_time": {
+              "displayName": "call_user_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "campaign": {
+              "displayName": "campaign",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "contact_email": {
+              "displayName": "contact_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_id": {
+              "displayName": "contact_id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "contact_name": {
+              "displayName": "contact_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_number": {
+              "displayName": "contact_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "justcall_ai": {
+              "displayName": "justcall_ai",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sales_dialer_number": {
+              "displayName": "sales_dialer_number",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "sales_dialer/campaigns/contacts": {
+          "displayName": "Sales Dialer Campaigns Contacts",
+          "path": "/sales_dialer/campaigns/contacts",
+          "responseKey": "data",
+          "fields": {
+            "added_to_campaign_at": {
+              "displayName": "added_to_campaign_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "address": {
+              "displayName": "address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "birthday": {
+              "displayName": "birthday",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "last_updated": {
+              "displayName": "last_updated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "occupation": {
+              "displayName": "occupation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone_number": {
+              "displayName": "phone_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "progress_status": {
+              "displayName": "progress_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Dialed",
+                  "displayValue": "Dialed"
+                },
+                {
+                  "value": "Skipped",
+                  "displayValue": "Skipped"
+                },
+                {
+                  "value": "Undialed",
+                  "displayValue": "Undialed"
+                }
+              ]
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Active",
+                  "displayValue": "Active"
+                },
+                {
+                  "value": "Invalid",
+                  "displayValue": "Invalid"
+                },
+                {
+                  "value": "DNCA",
+                  "displayValue": "DNCA"
+                }
+              ]
+            },
+            "status_updated_at": {
+              "displayName": "status_updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "sales_dialer/contacts": {
+          "displayName": "Sales Dialer Contacts",
+          "path": "/sales_dialer/contacts",
+          "responseKey": "data",
+          "fields": {
+            "address": {
+              "displayName": "address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "birthday": {
+              "displayName": "birthday",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "occupation": {
+              "displayName": "occupation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone_number": {
+              "displayName": "phone_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status_updated_at": {
+              "displayName": "status_updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/texts/tags",
+          "responseKey": "data",
+          "fields": {
+            "color_code": {
+              "displayName": "color_code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_by": {
+              "displayName": "created_by",
+              "valueType": "other"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "templates": {
+          "displayName": "Templates",
+          "path": "/whatsapp/messages/templates",
+          "responseKey": "data",
+          "fields": {
+            "actions": {
+              "displayName": "actions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "actions_count": {
+              "displayName": "actions_count",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "body": {
+              "displayName": "body",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category": {
+              "displayName": "category",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Marketing",
+                  "displayValue": "Marketing"
+                },
+                {
+                  "value": "Utility",
+                  "displayValue": "Utility"
+                }
+              ]
+            },
+            "footer": {
+              "displayName": "footer",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "header_type": {
+              "displayName": "header_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Normal Text",
+                  "displayValue": "Normal Text"
+                },
+                {
+                  "value": "Image",
+                  "displayValue": "Image"
+                },
+                {
+                  "value": "Video",
+                  "displayValue": "Video"
+                },
+                {
+                  "value": "PDF",
+                  "displayValue": "PDF"
+                }
+              ]
+            },
+            "header_value": {
+              "displayName": "header_value",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "language": {
+              "displayName": "language",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Approved",
+                  "displayValue": "Approved"
+                },
+                {
+                  "value": "Rejected",
+                  "displayValue": "Rejected"
+                },
+                {
+                  "value": "Pending",
+                  "displayValue": "Pending"
+                }
+              ]
+            }
+          }
+        },
+        "texts": {
+          "displayName": "Texts",
+          "path": "/texts",
+          "responseKey": "data",
+          "fields": {
+            "agent_email": {
+              "displayName": "agent_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "agent_id": {
+              "displayName": "agent_id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "agent_name": {
+              "displayName": "agent_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_email": {
+              "displayName": "contact_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_name": {
+              "displayName": "contact_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_number": {
+              "displayName": "contact_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "cost_incurred": {
+              "displayName": "cost_incurred",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "delivery_status": {
+              "displayName": "delivery_status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "direction": {
+              "displayName": "direction",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "is_deleted": {
+              "displayName": "is_deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "justcall_line_name": {
+              "displayName": "justcall_line_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "justcall_number": {
+              "displayName": "justcall_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "medium": {
+              "displayName": "medium",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sms_date": {
+              "displayName": "sms_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sms_info": {
+              "displayName": "sms_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sms_time": {
+              "displayName": "sms_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sms_user_date": {
+              "displayName": "sms_user_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sms_user_time": {
+              "displayName": "sms_user_time",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "threads": {
+          "displayName": "Threads",
+          "path": "/texts/threads",
+          "responseKey": "data",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "latest_text": {
+              "displayName": "latest_text",
+              "valueType": "other"
+            },
+            "thread_tags": {
+              "displayName": "thread_tags",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "user_groups": {
+          "displayName": "User Groups",
+          "path": "/user_groups",
+          "responseKey": "data",
+          "fields": {
+            "group_extension": {
+              "displayName": "group_extension",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "group_name": {
+              "displayName": "group_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "members": {
+              "displayName": "members",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "total_members": {
+              "displayName": "total_members",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "updated_on": {
+              "displayName": "updated_on",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "data",
+          "fields": {
+            "available": {
+              "displayName": "available",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Yes",
+                  "displayValue": "Yes"
+                },
+                {
+                  "value": "No",
+                  "displayValue": "No"
+                }
+              ]
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "extension": {
+              "displayName": "extension",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "groups": {
+              "displayName": "groups",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "last_login_timestamp": {
+              "displayName": "last_login_timestamp",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "on_call": {
+              "displayName": "on_call",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Yes",
+                  "displayValue": "Yes"
+                },
+                {
+                  "value": "No",
+                  "displayValue": "No"
+                }
+              ]
+            },
+            "owned_numbers": {
+              "displayName": "owned_numbers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "role": {
+              "displayName": "role",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shared_numbers": {
+              "displayName": "shared_numbers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "timezone": {
+              "displayName": "timezone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "unavailability_reason": {
+              "displayName": "unavailability_reason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "working_hours_type": {
+              "displayName": "working_hours_type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "webhooks": {
+          "displayName": "Webhooks",
+          "path": "/webhooks",
+          "responseKey": "data",
+          "fields": {
+            "blacklisted_url_count": {
+              "displayName": "blacklisted_url_count",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "latest_api_version": {
+              "displayName": "latest_api_version",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url_count": {
+              "displayName": "url_count",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "warning_url_count": {
+              "displayName": "warning_url_count",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "webhook_urls": {
+              "displayName": "webhook_urls",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        }
+      }
+    }
+  }
+}

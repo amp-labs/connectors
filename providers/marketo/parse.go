@@ -1,6 +1,7 @@
 package marketo
 
 import (
+	"slices"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -17,7 +18,7 @@ func constructNextRecordsURL(object, nextToken string) common.NextPageFunc {
 	if paginatesByIDs(object) {
 		// Incase of Reading Records from the Objects requiring Filtering.
 		// we construct Next-Page URLs using the filtered ids.
-		// constructNextPageFilteredURL creates the next-page url by appendig the next page ids in the query parameters
+		// constructNextPageFilteredURL creates the next-page url by appending the next page ids in the query parameters
 		return constructNextPageFilteredURL
 	}
 
@@ -64,21 +65,9 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 }
 
 func usesStandardId(object string) bool {
-	for _, v := range IdResponseObjects {
-		if v == object {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(IdResponseObjects, object)
 }
 
 func usesMarketoGUID(object string) bool {
-	for _, v := range marketoGUIDResponseObjects {
-		if v == object {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(marketoGUIDResponseObjects, object)
 }

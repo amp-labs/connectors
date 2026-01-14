@@ -39,16 +39,16 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	return conn, nil
 }
 
-func (c *Connector) getAPIURL(object string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, object)
-}
-
 func (c *Connector) Provider() providers.Provider {
 	return providers.Asana
 }
 
 func (c *Connector) String() string {
 	return c.Provider() + ".Connector"
+}
+
+func (c *Connector) getAPIURL(object string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.BaseURL, apiVersion, object)
 }
 
 func (c *Connector) setBaseURL(newURL string) {

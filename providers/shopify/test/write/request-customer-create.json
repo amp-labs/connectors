@@ -1,0 +1,10 @@
+{
+  "query": "mutation customerCreate($input: CustomerInput!) {\n  customerCreate(input: $input) {\n    userErrors {\n      field\n      message\n    }\n    customer {\n      id\n      email\n      phone\n      firstName\n      lastName\n      displayName\n      createdAt\n      updatedAt\n      state\n      note\n      tags\n      taxExempt\n      verifiedEmail\n      locale\n    }\n  }\n}\n",
+  "variables": {
+    "input": {
+      "email": "steve.lastnameson@example.com",
+      "firstName": "Steve",
+      "phone": "+16465555555"
+    }
+  }
+}

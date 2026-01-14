@@ -17,8 +17,9 @@ import (
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	responseOrgMeta := testutils.DataFromFile(t, "metadata-organization-sampled.json")
-	responseCustomObjMeta := testutils.DataFromFile(t, "metadata/custom-object-with-custom-fields.json")
+	responseOrgMeta := testutils.DataFromFile(t, "metadata/read/organization-sampled.json")
+	responseAccountsMeta := testutils.DataFromFile(t, "metadata/read/accounts-sampled.json")
+	responseCustomObjMeta := testutils.DataFromFile(t, "metadata/read/custom-object-with-custom-fields.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -59,7 +60,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(true),
+								IsRequired:   goutils.Pointer(false),
 							},
 							"preferencesconsentmanagementenabled": {
 								DisplayName:  "ConsentManagementEnabled",
@@ -67,7 +68,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ProviderType: "boolean",
 								ReadOnly:     goutils.Pointer(false),
 								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(true),
+								IsRequired:   goutils.Pointer(false),
 								Values:       nil,
 							},
 							"latitude": {
@@ -94,7 +95,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ProviderType: "datetime",
 								ReadOnly:     goutils.Pointer(true),
 								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(true),
+								IsRequired:   goutils.Pointer(false),
 								Values:       nil,
 							},
 							"defaultaccountaccess": {
@@ -123,7 +124,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 							"phone": {
 								DisplayName:  "Phone",
-								ValueType:    "other",
+								ValueType:    "string",
 								ProviderType: "phone",
 								ReadOnly:     goutils.Pointer(false),
 								IsCustom:     goutils.Pointer(false),
@@ -166,11 +167,11 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						Fields: map[string]common.FieldMetadata{
 							"id": {
 								DisplayName:  "Record ID",
-								ValueType:    "other",
+								ValueType:    "string",
 								ProviderType: "id",
 								ReadOnly:     goutils.Pointer(true),
 								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(true),
+								IsRequired:   goutils.Pointer(false),
 							},
 							"interests__c": {
 								DisplayName:  "Interests",
@@ -178,7 +179,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ProviderType: "multipicklist",
 								ReadOnly:     goutils.Pointer(false),
 								IsCustom:     goutils.Pointer(true),
-								IsRequired:   goutils.Pointer(true),
+								IsRequired:   goutils.Pointer(false),
 								Values: []common.FieldValue{{
 									Value:        "art",
 									DisplayValue: "art",
@@ -189,6 +190,71 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 									Value:        "travel",
 									DisplayValue: "travel",
 								}},
+							},
+							"mailbox__c": {
+								DisplayName:  "MailBox",
+								ValueType:    "string",
+								ProviderType: "email",
+								ReadOnly:     goutils.Pointer(false),
+								IsCustom:     goutils.Pointer(true),
+								IsRequired:   goutils.Pointer(false),
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Describe required fields for object accounts",
+			Input: []string{"Account"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.Body(`{"allOrNone":false,"compositeRequest":[{
+					"referenceId":"Account",
+					"method":"GET",
+					"url":"/services/data/v60.0/sobjects/Account/describe"
+				}]}`),
+				Then: mockserver.Response(http.StatusOK, responseAccountsMeta),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"account": {
+						DisplayName: "Account",
+						Fields: map[string]common.FieldMetadata{
+							"name": {
+								DisplayName:  "Account Name",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     goutils.Pointer(false),
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(true),
+							},
+							"createddate": {
+								DisplayName:  "Created Date",
+								ValueType:    "datetime",
+								ProviderType: "datetime",
+								ReadOnly:     goutils.Pointer(true),
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(false),
+							},
+							"createdbyid": {
+								DisplayName:  "Created By ID",
+								ValueType:    "string",
+								ProviderType: "reference",
+								ReadOnly:     goutils.Pointer(true),
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(false),
+							},
+							"photourl": {
+								DisplayName:  "Photo URL",
+								ValueType:    "string",
+								ProviderType: "url",
+								ReadOnly:     goutils.Pointer(true),
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(false),
 							},
 						},
 					},

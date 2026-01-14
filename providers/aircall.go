@@ -32,10 +32,10 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     true, // proxy integration was tested with OAuth2, not API Key
-			Read:      false,
+			Proxy:     true,
+			Read:      true, // adding deep connector integration test validation
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
