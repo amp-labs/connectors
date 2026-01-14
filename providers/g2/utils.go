@@ -220,6 +220,11 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 
 	// Add fields query values
 	if cfg.fieldsQuery != "" {
+		// If a user is reading buyer_intent we need the time field for incremental read sync.
+		if !params.Fields.Has("time") && (params.ObjectName == pathBuyerIntent || params.ObjectName == pathBuyerIntentSandBox) { //nolint:lll
+			params.Fields.Add([]string{"time"})
+		}
+
 		url.WithQueryParam(cfg.fieldsQuery, strings.Join(params.Fields.List(), ","))
 	}
 

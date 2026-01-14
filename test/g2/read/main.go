@@ -31,7 +31,7 @@ func main() {
 	res, err := conn.Read(ctx, connectors.ReadParams{
 		ObjectName: "sandbox/buyer_intent",
 		Since:      sinceTime,
-		Fields:     connectors.Fields("signal_type", "time", "day", "week", "company_domain", "company_country"),
+		Fields:     connectors.Fields("signal_type", "day", "week", "company_domain", "company_country"),
 	})
 	if err != nil {
 		utils.Fail("error reading from connector", "error", err)
