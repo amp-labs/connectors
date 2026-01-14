@@ -8,15 +8,16 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
+// Reference: https://developers.salesloft.com/docs/api/account-stages-index/
+//
 //nolint:revive
 func (c *Connector) GetRecordsByIds(ctx context.Context, objectName string,
-	recordIds []string, fields []string, associations []string,
+	recordIds []string, fields []string, _ []string,
 ) ([]common.ReadResultRow, error) {
 	// Sanitize method arguments.
 	config := common.ReadParams{
-		ObjectName:        objectName,
-		Fields:            datautils.NewSetFromList(fields),
-		AssociatedObjects: associations,
+		ObjectName: objectName,
+		Fields:     datautils.NewSetFromList(fields),
 	}
 
 	if err := config.ValidateParams(true); err != nil {
