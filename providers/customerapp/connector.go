@@ -44,6 +44,14 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	return conn, nil
 }
 
+func (c *Connector) Provider() providers.Provider {
+	return providers.CustomerJourneysApp
+}
+
+func (c *Connector) String() string {
+	return c.Provider() + ".Connector"
+}
+
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, ApiVersion, arg)
 }
@@ -51,12 +59,4 @@ func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
 func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
-}
-
-func (c *Connector) Provider() providers.Provider {
-	return providers.CustomerJourneysApp
-}
-
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
 }

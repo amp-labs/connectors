@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"slices"
 	"strconv"
 
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -421,16 +422,12 @@ func getSchemaType(objectName string, schema *openapi3.Schema) definitionSchemaT
 		slog.Warn("Schema definition has multiple types")
 	}
 
-	for _, s := range *schema.Type {
-		if s == "object" {
-			return schemaTypeObject
-		}
+	if slices.Contains(*schema.Type, "object") {
+		return schemaTypeObject
 	}
 
-	for _, s := range *schema.Type {
-		if s == "array" {
-			return schemaTypeArray
-		}
+	if slices.Contains(*schema.Type, "array") {
+		return schemaTypeArray
 	}
 
 	slog.Warn("Schema definition is neither an object nor an array. " +

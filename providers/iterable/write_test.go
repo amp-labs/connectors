@@ -58,7 +58,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Invalid Json: No content to map due to end-of-input"), // nolint:goerr113
+				errors.New("Invalid Json: No content to map due to end-of-input"),
 			},
 		},
 		{
@@ -74,7 +74,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Invalid JSON body"), // nolint:goerr113
+				errors.New("Invalid JSON body"),
 			},
 		},
 		{
@@ -177,7 +177,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrCaller,
-				errors.New("No webhook with id 0"), // nolint:goerr113
+				errors.New("No webhook with id 0"),
 			},
 		},
 	}

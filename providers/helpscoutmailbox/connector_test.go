@@ -253,7 +253,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrObjectNotSupported},
 		},
 		{
-			Name: "Successfull start a conversation",
+			Name: "Successful start a conversation",
 			Input: common.WriteParams{ObjectName: "conversations", RecordData: map[string]any{
 				"customer": map[string]any{
 					"email":     "bear@acme.com",

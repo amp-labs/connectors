@@ -44,11 +44,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrRetryable,
-				errors.New(string(unsupportedResponse)), // nolint:goerr113
+				errors.New(string(unsupportedResponse)),
 			},
 		},
 		{
-			Name:         "RecordID must be convertable to integers",
+			Name:         "RecordID must be convertible to integers",
 			Input:        common.WriteParams{ObjectName: "prospects", RecordData: map[string]any{}, RecordId: "xseedesrt"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{ErrIdMustInt},

@@ -1,4 +1,3 @@
-// nolint:ireturn
 package interpreter
 
 import (
@@ -123,10 +122,6 @@ type listErrorDescriptor struct {
 	list []ErrorDescriptor
 }
 
-func (d *listErrorDescriptor) addErr(descriptor ErrorDescriptor) {
-	d.list = append(d.list, descriptor)
-}
-
 func (d *listErrorDescriptor) CombineErr(base error) error {
 	list := make([]error, len(d.list))
 
@@ -137,6 +132,10 @@ func (d *listErrorDescriptor) CombineErr(base error) error {
 	return errors.Join(list...)
 }
 
+func (d *listErrorDescriptor) addErr(descriptor ErrorDescriptor) {
+	d.list = append(d.list, descriptor)
+}
+
 type defaultErrorDescriptor struct {
 	responseData []byte
 }
@@ -145,6 +144,6 @@ func (d defaultErrorDescriptor) CombineErr(base error) error {
 	return errors.Join(
 		base,
 		ErrUnknownResponseFormat,
-		errors.New(string(d.responseData)), // nolint:goerr113
+		errors.New(string(d.responseData)), // nolint:err113
 	)
 }

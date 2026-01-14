@@ -1,0 +1,14 @@
+{
+  "totalSize": 1,
+  "done": true,
+  "records": [
+    {
+      "attributes": {
+        "type": "PermissionSet",
+        "url": "/services/data/v60.0/sobjects/PermissionSet/0PSak00000M9uBBGAZ"
+      },
+      "Id": "0PSak00000M9uBBGAZ",
+      "Name": "IntegrationCustomFieldVisibility"
+    }
+  ]
+}

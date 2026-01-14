@@ -76,9 +76,9 @@ func testCreatingEventTypes(ctx context.Context, conn *cl.Connector) error {
 				"end_date":   "2025-10-07",
 			},
 			"location": map[string]string{
-				"kind":           "physical",
-				"location":       "Main Office",
-				"additonal_info": "string",
+				"kind":            "physical",
+				"location":        "Main Office",
+				"additional_info": "string",
 			},
 		},
 	}

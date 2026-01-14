@@ -1,0 +1,53 @@
+{
+  "status": "success",
+  "count": 2,
+  "total_count": 2,
+  "current_page": 1,
+  "per_page": 100,
+  "next_page_link": "",
+  "prev_page_link": "",
+  "data": [
+    {
+      "id": 8001,
+      "delivery_status": "delivered",
+      "is_deleted": 0,
+      "is_mms": false,
+      "body": "Hello, this is a test message",
+      "medium": "sms",
+      "direction": "outbound",
+      "contact_name": "Alice Johnson",
+      "contact_number": "+14155551111",
+      "agent_id": 12345,
+      "agent_name": "John Doe",
+      "justcall_number": "+14155551234",
+      "datetime": "2024-03-15 14:30:00",
+      "read": 1,
+      "mms_media": [],
+      "contact_email": "alice@example.com",
+      "cost_incurred": 0,
+      "segment_count": 1,
+      "total_segment_cost": 0
+    },
+    {
+      "id": 8002,
+      "delivery_status": "delivered",
+      "is_deleted": 0,
+      "is_mms": false,
+      "body": "Thanks for your response",
+      "medium": "sms",
+      "direction": "inbound",
+      "contact_name": "Alice Johnson",
+      "contact_number": "+14155551111",
+      "agent_id": 12345,
+      "agent_name": "John Doe",
+      "justcall_number": "+14155551234",
+      "datetime": "2024-03-15 14:35:00",
+      "read": 1,
+      "mms_media": [],
+      "contact_email": "alice@example.com",
+      "cost_incurred": 0,
+      "segment_count": 1,
+      "total_segment_cost": 0
+    }
+  ]
+}

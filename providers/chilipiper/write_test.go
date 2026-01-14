@@ -44,7 +44,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrObjectNotSupported},
 		},
 		{
-			Name: "Successfull add users in a team",
+			Name: "Successful add users in a team",
 			Input: common.WriteParams{ObjectName: "team/users/add", RecordData: map[string]any{
 				"teamId": "4edf8761-e5ee-48b2-81c8-c5e4849481fc",
 				"userIds": []string{

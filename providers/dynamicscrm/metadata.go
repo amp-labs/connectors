@@ -18,7 +18,7 @@ func (c *Connector) ListObjectMetadata(
 		return nil, common.ErrMissingObjects
 	}
 
-	// enforce string formating, then do internal delegation
+	// enforce string formatting, then do internal delegation
 	return c.listObjectMetadata(ctx, naming.NewSingularStrings(objectNames))
 }
 

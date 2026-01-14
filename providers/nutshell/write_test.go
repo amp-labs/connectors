@@ -35,7 +35,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("You may only create one accounts resource per request."), // nolint:goerr113
+				errors.New("You may only create one accounts resource per request."),
 			},
 		},
 		{
@@ -47,7 +47,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(`"application/json-patch+json is required, see http://jsonapi.org"`), // nolint:goerr113
+				errors.New(`"application/json-patch+json is required, see http://jsonapi.org"`),
 			},
 		},
 		{

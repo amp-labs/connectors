@@ -37,13 +37,13 @@ func (r ResponseMessagesError) CombineErr(base error) error {
 	result := base
 
 	if len(r.ErrorMessages) != 0 {
-		result = errors.Join(result, errors.New( // nolint:goerr113
+		result = errors.Join(result, errors.New( // nolint:err113
 			strings.Join(r.ErrorMessages, ","),
 		))
 	}
 
 	if len(r.WarningMessages) != 0 {
-		result = errors.Join(result, errors.New( // nolint:goerr113
+		result = errors.Join(result, errors.New( // nolint:err113
 			strings.Join(r.WarningMessages, ","),
 		))
 	}
@@ -54,7 +54,7 @@ func (r ResponseMessagesError) CombineErr(base error) error {
 			messages = append(messages, fmt.Sprintf("%v:%v", k, v))
 		}
 
-		result = errors.Join(result, errors.New( // nolint:goerr113
+		result = errors.Join(result, errors.New( // nolint:err113
 			strings.Join(messages, ","),
 		))
 	}

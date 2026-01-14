@@ -90,14 +90,14 @@ func fetchDataFields(
 }
 
 func metadataFallback(moduleID common.ModuleID, objectName string) (*common.ObjectMetadata, error) {
-	metadatResult, err := metadata.Schemas.Select(moduleID, []string{objectName})
+	metadataResult, err := metadata.Schemas.Select(moduleID, []string{objectName})
 	if err != nil {
 		return nil, err
 	}
 
-	data, exists := metadatResult.Result[objectName]
+	data, exists := metadataResult.Result[objectName]
 	if !exists {
-		return nil, metadatResult.Errors[objectName]
+		return nil, metadataResult.Errors[objectName]
 	}
 
 	return &data, nil

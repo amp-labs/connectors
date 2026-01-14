@@ -25,12 +25,12 @@ func main() {
 	//  read the definitions in the specification file.
 	// 5 represents the amount of substrings that will be generated
 	// when path of interest is split using `/`
-	def, docA, err := constructDefinitions(assets, 5) //nolint:gomnd,mnd
+	def, docA, err := constructDefinitions(assets, 5) //nolint:mnd
 	goutils.MustBeNil(err)
 
 	// 4 represents the amount of substrings that will be generated
 	// when path of interest is split using `/`
-	ldef, docL, err := constructDefinitions(leads, 4) //nolint:gomnd,mnd
+	ldef, docL, err := constructDefinitions(leads, 4) //nolint:mnd
 	goutils.MustBeNil(err)
 
 	// Initializes an empty map of leads ObjectMetadata

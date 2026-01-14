@@ -15,7 +15,7 @@ import (
 
 var objectName = "users"
 
-type CreateUserPaylod struct {
+type CreateUserPayload struct {
 	Action   string   `json:"action"`
 	UserInfo UserInfo `json:"user_info"`
 }
@@ -42,7 +42,7 @@ func main() {
 	slog.Info("> TEST Create User")
 	slog.Info("Creating a user...")
 
-	createUser(ctx, conn, &CreateUserPaylod{
+	createUser(ctx, conn, &CreateUserPayload{
 		Action: "create",
 		UserInfo: UserInfo{
 			Email:       "peter@gmail.com",
@@ -57,7 +57,7 @@ func main() {
 	slog.Info("> Successful test completion")
 }
 
-func createUser(ctx context.Context, conn *zoom.Connector, payload *CreateUserPaylod) {
+func createUser(ctx context.Context, conn *zoom.Connector, payload *CreateUserPayload) {
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: objectName,
 		RecordId:   "",
