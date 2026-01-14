@@ -152,7 +152,7 @@ func (c *Connector) Subscribe(
 	return res, nil
 }
 
-// nolint: funlen, cyclop,gocognit, gocyclo
+// nolint: funlen, cyclop,gocognit,gocyclo,godoclint
 func (c *Connector) UpdateSubscription(
 	ctx context.Context,
 	params common.SubscribeParams,

@@ -10,7 +10,7 @@ import (
 
 // Reference: https://developers.salesloft.com/docs/api/account-stages-index/
 //
-//nolint:revive
+//nolint:revive, godoclint
 func (c *Connector) GetRecordsByIds(ctx context.Context, objectName string,
 	recordIds []string, fields []string, _ []string,
 ) ([]common.ReadResultRow, error) {
