@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -183,7 +184,7 @@ func PathsConfig(productID, objectName string) (string, error) {
 	}
 }
 
-func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error) { // nolint: cyclop
+func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error) { // nolint: cyclop,funlen
 	var (
 		url            *urlbuilder.URL
 		err            error
@@ -220,12 +221,21 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 
 	// Add fields query values
 	if cfg.fieldsQuery != "" {
+		dimensions := make(datautils.StringSet)
+		dimensions.Add(params.Fields.List())
+
 		// If a user is reading buyer_intent we need the time field for incremental read sync.
-		if !params.Fields.Has("time") && (params.ObjectName == pathBuyerIntent || params.ObjectName == pathBuyerIntentSandBox) { //nolint:lll
-			params.Fields.Add([]string{"time"})
+		if !dimensions.Has("time") && (params.ObjectName == pathBuyerIntent || params.ObjectName == pathBuyerIntentSandBox) { //nolint:lll
+			dimensions.Add([]string{"time"})
 		}
 
-		url.WithQueryParam(cfg.fieldsQuery, strings.Join(params.Fields.List(), ","))
+		// dimensions never takes id as a query param, thus we remove it from the list of fields we require from the API.
+		// we will get this field from the raw records, as it's always returned.
+		if dimensions.Has("id") {
+			dimensions.Remove("id")
+		}
+
+		url.WithQueryParam(cfg.fieldsQuery, strings.Join(dimensions.List(), ","))
 	}
 
 	// Add page size query values

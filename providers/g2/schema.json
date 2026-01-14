@@ -14,6 +14,11 @@
               "valueType": "int",
               "providerType": "integer"
             },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "signal_type": {
               "displayName": "signal_type",
               "valueType": "string",
@@ -200,6 +205,11 @@
               "displayName": "total_activity",
               "valueType": "int",
               "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
             },
             "signal_type": {
               "displayName": "signal_type",
