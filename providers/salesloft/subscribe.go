@@ -458,7 +458,7 @@ func toModuleEventName(objectName common.ObjectName, eventType common.Subscripti
 		return nil, fmt.Errorf("%w: %s", errUnsupportedObject, objectName)
 	}
 
-	events := mapping.Events.ToProviderEvents(eventType)
+	events := mapping.Events.toProviderEvents(eventType)
 	if len(events) == 0 {
 		return nil, fmt.Errorf("%w: %s for object %s", errUnsupportedEventType, eventType, objectName)
 	}
@@ -479,7 +479,7 @@ func validateSubscriptionEvents(subscriptionEvents map[common.ObjectName]common.
 		}
 
 		// Get all supported events for this object
-		supportedEvents := mapping.Events.GetAllSupportedEvents()
+		supportedEvents := mapping.Events.getAllSupportedEvents()
 
 		supportedSet := make(map[moduleEvent]bool)
 		for _, evt := range supportedEvents {
@@ -487,7 +487,7 @@ func validateSubscriptionEvents(subscriptionEvents map[common.ObjectName]common.
 		}
 
 		for _, event := range events.Events {
-			providerEvents := mapping.Events.ToProviderEvents(event)
+			providerEvents := mapping.Events.toProviderEvents(event)
 			if len(providerEvents) == 0 {
 				validationErrors = errors.Join(validationErrors,
 					fmt.Errorf("%w: event '%s' for object '%s'", errUnsupportedSubscriptionEvent, event, objectName))
@@ -509,8 +509,8 @@ func validateSubscriptionEvents(subscriptionEvents map[common.ObjectName]common.
 	return validationErrors
 }
 
-// ToProviderEvents converts a common event type to one or more Salesloft provider events.
-func (m eventMapping) ToProviderEvents(commonEvent common.SubscriptionEventType) []moduleEvent {
+// toProviderEvents converts a common event type to one or more Salesloft provider events.
+func (m eventMapping) toProviderEvents(commonEvent common.SubscriptionEventType) []moduleEvent {
 	switch commonEvent { // nolint:exhaustive
 	case common.SubscriptionEventTypeCreate:
 		return m.CreateEvents
@@ -523,8 +523,8 @@ func (m eventMapping) ToProviderEvents(commonEvent common.SubscriptionEventType)
 	}
 }
 
-// GetAllSupportedEvents returns all provider events that this mapping supports.
-func (m eventMapping) GetAllSupportedEvents() []moduleEvent {
+// getAllSupportedEvents returns all provider events that this mapping supports.
+func (m eventMapping) getAllSupportedEvents() []moduleEvent {
 	var events []moduleEvent
 
 	events = append(events, m.CreateEvents...)
