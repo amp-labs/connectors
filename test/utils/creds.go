@@ -73,8 +73,6 @@ func NewOauth2ClientForProvider(
 		common.WithOAuthToken(reader.GetOauthToken()),
 	}
 
-	// Apply custom token header attachment if the provider has one configured
-	// (e.g., Shopify uses X-Shopify-Access-Token header)
 	if header := getTokenHeaderAttachment(providerInfo); header != nil {
 		options = append(options, common.WithTokenHeaderAttachment(header))
 	}
