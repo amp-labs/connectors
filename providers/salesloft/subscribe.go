@@ -158,19 +158,10 @@ func (c *Connector) UpdateSubscription(
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-	// Validate the previous result
-	if previousResult == nil || previousResult.Result == nil {
-		return nil, fmt.Errorf("%w: missing previousResult or previousResult.Result", errMissingParams)
-	}
-
-	prevState, ok := previousResult.Result.(*SubscriptionResult)
-	if !ok {
-		return nil, fmt.Errorf(
-			"%w: expected previousResult.Result to be type %T, but got %T",
-			errInvalidRequestType,
-			prevState,
-			previousResult.Result,
-		)
+	// Validate previous result
+	prevState, err := validatePreviousResult(previousResult)
+	if err != nil {
+		return nil, err
 	}
 
 	// Build a map of existing subscriptions for quick lookup.
@@ -286,48 +277,8 @@ func (c *Connector) UpdateSubscription(
 		}
 	}
 
-	// Merge the results: kept subscriptions + newly created subscriptions.
-	// Start with subscriptions we kept from the previous state (these already existed and are still wanted).
-	finalResult := &SubscriptionResult{
-		Subscriptions: subscriptionsToKeep.Subscriptions,
-	}
-
-	// Add newly created subscriptions to the final result.
-	if createResult != nil && createResult.Result != nil {
-		newSubs, ok := createResult.Result.(*SubscriptionResult)
-		if ok {
-			for objName, eventsMap := range newSubs.Subscriptions {
-				if finalResult.Subscriptions[objName] == nil {
-					finalResult.Subscriptions[objName] = make(map[ModuleEvent]SubscriptionResponse)
-				}
-
-				maps.Copy(finalResult.Subscriptions[objName], eventsMap)
-			}
-		}
-	}
-
-	// Build the final ObjectEvents map
-	finalObjectEvents := make(map[common.ObjectName]common.ObjectEvents)
-
-	for objName, eventsMap := range finalResult.Subscriptions {
-		var events []common.SubscriptionEventType
-
-		for eventName := range eventsMap {
-			// Convert provider event name back to common event type
-			if commonEvent, found := ModuleEventToCommon(eventName, objName); found {
-				// Avoid duplicates
-				// Events like "update" can map to multiple provider events,
-				// so we need to ensure we don't add the same common event multiple times.
-				if !slices.Contains(events, commonEvent) {
-					events = append(events, commonEvent)
-				}
-			}
-		}
-
-		if len(events) > 0 {
-			finalObjectEvents[objName] = common.ObjectEvents{Events: events}
-		}
-	}
+	finalResult := mergeSubscriptionResults(subscriptionsToKeep, createResult)
+	finalObjectEvents := buildFinalObjectEvents(finalResult)
 
 	return &common.SubscriptionResult{
 		Status:       common.SubscriptionStatusSuccess,
@@ -612,4 +563,71 @@ func (m EventMapping) ToCommonEvent(providerEvent ModuleEvent) (common.Subscript
 	}
 
 	return "", false
+}
+
+func validatePreviousResult(previousResult *common.SubscriptionResult) (*SubscriptionResult, error) {
+	// Validate the previous result
+	if previousResult == nil || previousResult.Result == nil {
+		return nil, fmt.Errorf("%w: missing previousResult or previousResult.Result", errMissingParams)
+	}
+
+	prevState, ok := previousResult.Result.(*SubscriptionResult)
+	if !ok {
+		return nil, fmt.Errorf(
+			"%w: expected previousResult.Result to be type %T, but got %T",
+			errInvalidRequestType,
+			prevState,
+			previousResult.Result,
+		)
+	}
+
+	return prevState, nil
+}
+
+func buildFinalObjectEvents(finalResult *SubscriptionResult) map[common.ObjectName]common.ObjectEvents {
+	finalObjectEvents := make(map[common.ObjectName]common.ObjectEvents)
+
+	for objName, eventsMap := range finalResult.Subscriptions {
+		var events []common.SubscriptionEventType
+
+		for eventName := range eventsMap {
+			// Convert provider event name back to common event type
+			if commonEvent, found := ModuleEventToCommon(eventName, objName); found {
+				// Avoid duplicates
+				// Events like "update" can map to multiple provider events,
+				// so we need to ensure we don't add the same common event multiple times.
+				if !slices.Contains(events, commonEvent) {
+					events = append(events, commonEvent)
+				}
+			}
+		}
+
+		if len(events) > 0 {
+			finalObjectEvents[objName] = common.ObjectEvents{Events: events}
+		}
+	}
+
+	return finalObjectEvents
+}
+
+func mergeSubscriptionResults(kept *SubscriptionResult, created *common.SubscriptionResult) *SubscriptionResult {
+	// Merge the results: kept subscriptions + newly created subscriptions.
+	// Start with subscriptions we kept from the previous state (these already existed and are still wanted).
+	finalResult := &SubscriptionResult{
+		Subscriptions: kept.Subscriptions,
+	}
+
+	// Add newly created subscriptions to the final result.
+	if created != nil && created.Result != nil {
+		if newSubs, ok := created.Result.(*SubscriptionResult); ok {
+			for objName, eventsMap := range newSubs.Subscriptions {
+				if finalResult.Subscriptions[objName] == nil {
+					finalResult.Subscriptions[objName] = make(map[ModuleEvent]SubscriptionResponse)
+				}
+				maps.Copy(finalResult.Subscriptions[objName], eventsMap)
+			}
+		}
+	}
+
+	return finalResult
 }
