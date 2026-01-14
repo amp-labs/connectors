@@ -45,7 +45,7 @@ To determine the meaning of `"id": 6`, you can query the contacts model, which p
       "options": [],
       "record_type": "CONTACT",
       "field_type": "Text",
-      "field_name": "jobtitle", // Prefered field name.
+      "field_name": "jobtitle", // Preferred field name.
       "default_value": null
     },
   ],

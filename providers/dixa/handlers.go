@@ -63,8 +63,8 @@ func constructQueuePayload(recordData any) request {
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	var (
-		paylod = params.RecordData
-		method = http.MethodPost
+		payload = params.RecordData
+		method  = http.MethodPost
 	)
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
@@ -79,10 +79,10 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	if params.ObjectName == queues {
-		paylod = constructQueuePayload(params.RecordData)
+		payload = constructQueuePayload(params.RecordData)
 	}
 
-	jsonData, err := json.Marshal(paylod)
+	jsonData, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
 	}

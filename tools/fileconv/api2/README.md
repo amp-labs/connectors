@@ -8,7 +8,7 @@ If your OpenAPI file is using newer version 3 check out `api3` package.
 
 Before extracting metadata from OpenAPI, the schema is initially converted from V2 to V3 format.
 For further details, refer to the `api3` package README, as the remaining process follows the same approach as `api3`.
-This pacakge acts as a gateway and a wrapper of `api3`.
+This package acts as a gateway and a wrapper of `api3`.
 
 ## Loading File
 
