@@ -164,30 +164,10 @@ func (c *Connector) UpdateSubscription(
 		return nil, err
 	}
 
-	// Build a map of existing subscriptions for quick lookup.
-	// This composite key allows O(1) lookup when comparing existing vs requested subscriptions.
-	existingSubscriptions := make(map[moduleEvent]bool)
-
-	for _, eventsMap := range prevState.Subscriptions {
-		for eventName := range eventsMap {
-			existingSubscriptions[eventName] = true
-		}
-	}
-
-	// Build a map of requested subscriptions
-	requestedSubscriptions := make(map[moduleEvent]bool)
-
-	for objName, events := range params.SubscriptionEvents {
-		for _, event := range events.Events {
-			providerEvents, err := toModuleEventName(objName, event)
-			if err != nil {
-				return nil, fmt.Errorf("failed to expandEvent event type %s: %w", event, err)
-			}
-
-			for _, providerEvt := range providerEvents {
-				requestedSubscriptions[providerEvt] = true
-			}
-		}
+	// Build subscription maps
+	existingSubscriptions, requestedSubscriptions, err := buildSubscriptionMaps(prevState, params)
+	if err != nil {
+		return nil, err
 	}
 
 	// Categorize existing subscriptions into delete/keep buckets.
@@ -534,14 +514,14 @@ func (m eventMapping) getAllSupportedEvents() []moduleEvent {
 	return events
 }
 
-// ModuleEventToCommon converts a provider event back to common event type.
-func ModuleEventToCommon(e moduleEvent, objectName common.ObjectName) (common.SubscriptionEventType, bool) {
+// moduleEventToCommon converts a provider event back to common event type.
+func moduleEventToCommon(e moduleEvent, objectName common.ObjectName) (common.SubscriptionEventType, bool) {
 	mapping, exists := salesloftEventMappings[objectName]
 	if !exists {
 		return "", false
 	}
 
-	commonEvent, found := mapping.Events.ToCommonEvent(e)
+	commonEvent, found := mapping.Events.toCommonEvent(e)
 	if found {
 		return commonEvent, true
 	}
@@ -550,7 +530,7 @@ func ModuleEventToCommon(e moduleEvent, objectName common.ObjectName) (common.Su
 }
 
 // ToCommonEvent converts a provider event back to common event type.
-func (m eventMapping) ToCommonEvent(providerEvent moduleEvent) (common.SubscriptionEventType, bool) {
+func (m eventMapping) toCommonEvent(providerEvent moduleEvent) (common.SubscriptionEventType, bool) {
 	if slices.Contains(m.CreateEvents, providerEvent) {
 		return common.SubscriptionEventTypeCreate, true
 	}
@@ -585,6 +565,40 @@ func validatePreviousResult(previousResult *common.SubscriptionResult) (*subscri
 	return prevState, nil
 }
 
+func buildSubscriptionMaps(prevState *subscriptionResult, params common.SubscribeParams) (
+	map[moduleEvent]bool,
+	map[moduleEvent]bool,
+	error,
+) {
+	// Build a map of existing subscriptions for quick lookup.
+	// This composite key allows O(1) lookup when comparing existing vs requested subscriptions.
+	existingSubscriptions := make(map[moduleEvent]bool)
+
+	for _, eventsMap := range prevState.Subscriptions {
+		for eventName := range eventsMap {
+			existingSubscriptions[eventName] = true
+		}
+	}
+
+	// Build a map of requested subscriptions
+	requestedSubscriptions := make(map[moduleEvent]bool)
+
+	for objName, events := range params.SubscriptionEvents {
+		for _, event := range events.Events {
+			providerEvents, expandErr := toModuleEventName(objName, event)
+			if expandErr != nil {
+				return nil, nil, fmt.Errorf("failed to expand event type %s: %w", event, expandErr)
+			}
+
+			for _, providerEvt := range providerEvents {
+				requestedSubscriptions[providerEvt] = true
+			}
+		}
+	}
+
+	return existingSubscriptions, requestedSubscriptions, nil
+}
+
 func buildFinalObjectEvents(finalResult *subscriptionResult) map[common.ObjectName]common.ObjectEvents {
 	finalObjectEvents := make(map[common.ObjectName]common.ObjectEvents)
 
@@ -593,7 +607,7 @@ func buildFinalObjectEvents(finalResult *subscriptionResult) map[common.ObjectNa
 
 		for eventName := range eventsMap {
 			// Convert provider event name back to common event type
-			if commonEvent, found := ModuleEventToCommon(eventName, objName); found {
+			if commonEvent, found := moduleEventToCommon(eventName, objName); found {
 				// Avoid duplicates
 				// Events like "update" can map to multiple provider events,
 				// so we need to ensure we don't add the same common event multiple times.
