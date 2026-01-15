@@ -161,6 +161,8 @@ var readObjCfg = map[string]ObjectConfig{ // nolint: gochecknoglobals
 	},
 }
 
+var buyerIntents = datautils.NewStringSet(pathBuyerIntent, pathBuyerIntentSandBox) // nolint: gochecknoglobals
+
 // PathsConfig returns the appropriate path string based on the object name.
 // For product-specific paths, it requires a productID and returns a path in the
 // format "products/{productID}/{objectName}".
@@ -225,7 +227,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		dimensions.Add(params.Fields.List())
 
 		// If a user is reading buyer_intent we need the time field for incremental read sync.
-		if !dimensions.Has("time") && (params.ObjectName == pathBuyerIntent || params.ObjectName == pathBuyerIntentSandBox) { //nolint:lll
+		if !dimensions.Has("time") && (buyerIntents.Has(params.ObjectName)) { //nolint:lll
 			dimensions.Add([]string{"time"})
 		}
 
