@@ -42,39 +42,21 @@ func NewOauth2Client(
 	reader *credscanning.ProviderCredentials,
 	configProvider func(*credscanning.ProviderCredentials) *oauth2.Config,
 ) common.AuthenticatedHTTPClient {
-	client, err := common.NewOAuthHTTPClient(ctx,
-		common.WithOAuthClient(http.DefaultClient),
-		common.WithOAuthConfig(configProvider(reader)),
-		common.WithOAuthToken(reader.GetOauthToken()),
-	)
-	if err != nil {
-		Fail("error creating oauth", "error", err)
-	}
-
-	return client
-}
-
-// NewOauth2ClientForProvider creates an OAuth2 client that respects provider-specific
-// token header configuration (e.g., Shopify uses X-Shopify-Access-Token instead of Bearer).
-func NewOauth2ClientForProvider(
-	ctx context.Context,
-	provider providers.Provider,
-	reader *credscanning.ProviderCredentials,
-	configProvider func(*credscanning.ProviderCredentials) *oauth2.Config,
-) common.AuthenticatedHTTPClient {
-	providerInfo, err := providers.ReadInfo(provider)
-	if err != nil {
-		Fail("error reading provider info", "error", err)
-	}
-
 	options := []common.OAuthOption{
 		common.WithOAuthClient(http.DefaultClient),
 		common.WithOAuthConfig(configProvider(reader)),
 		common.WithOAuthToken(reader.GetOauthToken()),
 	}
 
-	if header := getTokenHeaderAttachment(providerInfo); header != nil {
-		options = append(options, common.WithTokenHeaderAttachment(header))
+	// If the creds indicate which provider this is for, automatically apply any
+	// provider-specific token header attachment (e.g., Shopify uses X-Shopify-Access-Token).
+	if providerName := reader.Get(credscanning.Fields.Provider); providerName != "" {
+		providerInfo, err := providers.ReadInfo(providers.Provider(providerName))
+		if err == nil {
+			if header := getTokenHeaderAttachment(providerInfo); header != nil {
+				options = append(options, common.WithTokenHeaderAttachment(header))
+			}
+		}
 	}
 
 	client, err := common.NewOAuthHTTPClient(ctx, options...)

@@ -17,8 +17,7 @@ func GetShopifyConnector(ctx context.Context) *shopify.Connector {
 
 	workspace := reader.Get(credscanning.Fields.Workspace)
 
-	// Shopify uses OAuth2 with a custom header (X-Shopify-Access-Token)
-	client := utils.NewOauth2ClientForProvider(ctx, providers.Shopify, reader, getOAuthConfig(workspace))
+	client := utils.NewOauth2Client(ctx, reader, getOAuthConfig(workspace))
 
 	conn, err := shopify.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
