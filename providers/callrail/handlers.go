@@ -121,10 +121,11 @@ func (c *Connector) parseReadResponse(
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	var (
-		paylod = params.RecordData
-		method = http.MethodPost
-		url    *urlbuilder.URL
-		err    error
+		payload = params.RecordData
+		method  = http.MethodPost
+
+		url *urlbuilder.URL
+		err error
 	)
 
 	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion+c.accountId, common.AddSuffixIfNotExists(params.ObjectName, ".json")) // nolint:lll
@@ -143,7 +144,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		method = http.MethodPut
 	}
 
-	jsonData, err := json.Marshal(paylod)
+	jsonData, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
 	}
