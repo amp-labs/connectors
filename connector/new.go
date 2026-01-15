@@ -92,6 +92,7 @@ import (
 	"github.com/amp-labs/connectors/providers/pipeliner"
 	"github.com/amp-labs/connectors/providers/podium"
 	"github.com/amp-labs/connectors/providers/pylon"
+	"github.com/amp-labs/connectors/providers/quickbooks"
 	"github.com/amp-labs/connectors/providers/recurly"
 	"github.com/amp-labs/connectors/providers/revenuecat"
 	"github.com/amp-labs/connectors/providers/ringcentral"
@@ -215,6 +216,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Pipeliner:               wrapper(newPipelinerConnector),
 	providers.Podium:                  wrapper(newPodiumConnector),
 	providers.Pylon:                   wrapper(newPylonConnector),
+	providers.QuickBooks:              wrapper(newQuickbooksConnector),
 	providers.Recurly:                 wrapper(newRecurlyConnector),
 	providers.RevenueCat:              wrapper(newRevenueCatConnector),
 	providers.RingCentral:             wrapper(newRingCentral),
@@ -967,4 +969,8 @@ func newG2Connector(params common.ConnectorParams) (*g2.Connector, error) {
 
 func newRingCentral(params common.ConnectorParams) (*ringcentral.Connector, error) {
 	return ringcentral.NewConnector(params)
+}
+
+func newQuickbooksConnector(params common.ConnectorParams) (*quickbooks.Connector, error) {
+	return quickbooks.NewConnector(params)
 }
