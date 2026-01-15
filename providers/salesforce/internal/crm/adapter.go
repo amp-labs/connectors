@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/batch"
-	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/custom"
+	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/metadata"
 )
 
 // Adapter handles CRUD operations (at the moment: delete only) against Salesforce's REST API.
@@ -22,8 +22,8 @@ type Adapter struct {
 
 	// CRM module sub-adapters.
 	// These delegate specialized subsets of CRM functionality to keep Connector modular and prevent code bloat.
-	customAdapter *custom.Adapter // used for connectors.UpsertMetadataConnector capabilities.
-	batchAdapter  *batch.Adapter  // used for connectors.BatchWriteConnector capabilities.
+	customAdapter *metadata.Adapter // used for connectors.UpsertMetadataConnector capabilities.
+	batchAdapter  *batch.Adapter    // used for connectors.BatchWriteConnector capabilities.
 }
 
 // NewAdapter creates a new crm Adapter configured to work with Salesforce's APIs.
@@ -38,7 +38,7 @@ func constructor(base *components.Connector) (*Adapter, error) {
 	// prevent this package from growing too large. These adapters
 	// effectively "inline" specialized responsibilities while sharing
 	// the same HTTP and module context.
-	adapter.customAdapter = custom.NewAdapter(adapter.HTTPClient(), adapter.JSONHTTPClient(), adapter.ModuleInfo())
+	adapter.customAdapter = metadata.NewAdapter(adapter.HTTPClient(), adapter.JSONHTTPClient(), adapter.ModuleInfo())
 	adapter.batchAdapter = batch.NewAdapter(adapter.HTTPClient(), adapter.ModuleInfo())
 
 	return adapter, nil
