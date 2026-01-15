@@ -94,6 +94,7 @@ import (
 	"github.com/amp-labs/connectors/providers/pylon"
 	"github.com/amp-labs/connectors/providers/recurly"
 	"github.com/amp-labs/connectors/providers/revenuecat"
+	"github.com/amp-labs/connectors/providers/ringcentral"
 	"github.com/amp-labs/connectors/providers/sageintacct"
 	"github.com/amp-labs/connectors/providers/salesflare"
 	"github.com/amp-labs/connectors/providers/salesforce"
@@ -216,6 +217,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Pylon:                   wrapper(newPylonConnector),
 	providers.Recurly:                 wrapper(newRecurlyConnector),
 	providers.RevenueCat:              wrapper(newRevenueCatConnector),
+	providers.RingCentral:             wrapper(newRingCentral),
 	providers.SageIntacct:             wrapper(newSageIntacctConnector),
 	providers.Salesflare:              wrapper(newSalesflareConnector),
 	providers.Salesforce:              wrapper(newSalesforceConnector),
@@ -961,4 +963,8 @@ func newKaseyaVSAXConnector(
 
 func newG2Connector(params common.ConnectorParams) (*g2.Connector, error) {
 	return g2.NewConnector(params)
+}
+
+func newRingCentral(params common.ConnectorParams) (*ringcentral.Connector, error) {
+	return ringcentral.NewConnector(params)
 }
