@@ -44,13 +44,13 @@ func ValidateCreateDelete[CP any](ctx context.Context, conn ConnectorCRUD, objec
 
 	fmt.Println("Reading", objectName)
 
-	res := readObjects(ctx, conn, objectName, suite.ReadFields)
+	res := readObjects(ctx, conn, objectName, suite.ReadFields, suite.SearchBy.Since)
 
 	fmt.Println("Finding recently created", objectName)
 
 	search := suite.SearchBy
-	object := searchObject(res, search.Key, search.Value)
-	objectID := getRecordIdentifierValue(object, suite.RecordIdentifierKey)
+	object := searchObjectRecord(res, search.Key, search.Value)
+	objectID := object.getRecordIdentifierValue(suite.RecordIdentifierKey)
 
 	fmt.Println("Object record identifier is", objectID)
 
