@@ -2,11 +2,11 @@ package salesforce
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm"
+	crmcore "github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/pardot"
 )
 
@@ -72,10 +72,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	// Proxy actions use the base URL set on the HTTP client, so we need to set it here.
 	conn.SetBaseURL(conn.moduleInfo.BaseURL)
 
-	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
-		JSON: &interpreter.DirectFaultyResponder{Callback: conn.interpretJSONError},
-		XML:  &interpreter.DirectFaultyResponder{Callback: conn.interpretXMLError},
-	}.Handle
+	// Setup CRM error handler for methods that have not been moved to internal/crm.
+	conn.Client.HTTPClient.ErrorHandler = crmcore.NewErrorHandler().Handle
 
 	// Initialize the Pardot (Account Engagement) adapter if applicable.
 	// In that case, read/write/list metadata operations are delegated to it.
