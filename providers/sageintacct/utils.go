@@ -104,8 +104,13 @@ func flattenFields(pathParts []string, fields map[string]SageIntacctFieldDef) ma
 		parts := append(pathParts, fieldName)
 		fullPath := jsonpath.ToNestedPath(parts...)
 
+		capitalizedParts := make([]string, len(parts))
+		for i, part := range parts {
+			capitalizedParts[i] = naming.CapitalizeFirstLetter(part)
+		}
+
 		result[fullPath] = common.FieldMetadata{
-			DisplayName:  naming.CapitalizeFirstLetterEveryWord(fullPath),
+			DisplayName:  strings.Join(capitalizedParts, " > "),
 			ValueType:    mapSageIntacctTypeToValueType(fieldDef.Type),
 			ProviderType: fieldDef.Type,
 			ReadOnly:     goutils.Pointer(fieldDef.ReadOnly),

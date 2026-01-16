@@ -26,7 +26,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
-
 		{
 			Name:  "Server response must have at least one field",
 			Input: []string{"butterflies"},
@@ -42,7 +41,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				},
 			},
 		},
-
 		{
 			Name:  "Successfully describe User metadata",
 			Input: []string{"company-config/user"},
@@ -58,14 +56,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 						Fields: map[string]common.FieldMetadata{
 							// Top-level fields
 							"$['accountEmail']": {
-								DisplayName:  "$['Accountemail']",
+								DisplayName:  "AccountEmail",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"$['adminPrivileges']": {
-								DisplayName:  "$['Adminprivileges']",
+								DisplayName:  "AdminPrivileges",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
@@ -86,35 +84,35 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							},
 							// Nested fields from refs.contact
 							"$['contact']['id']": {
-								DisplayName:  "$['Contact']['Id']",
+								DisplayName:  "Contact > Id",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"$['contact']['key']": {
-								DisplayName:  "$['Contact']['Key']",
+								DisplayName:  "Contact > Key",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"$['contact']['firstName']": {
-								DisplayName:  "$['Contact']['Firstname']",
+								DisplayName:  "Contact > FirstName",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"$['contact']['lastName']": {
-								DisplayName:  "$['Contact']['Lastname']",
+								DisplayName:  "Contact > LastName",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"$['contact']['email1']": {
-								DisplayName:  "$['Contact']['Email1']",
+								DisplayName:  "Contact > Email1",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
@@ -122,28 +120,28 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							},
 							// Nested fields from refs.contact.groups.mailingAddress
 							"$['contact']['mailingAddress']['addressLine1']": {
-								DisplayName:  "$['Contact']['Mailingaddress']['Addressline1']",
+								DisplayName:  "Contact > MailingAddress > AddressLine1",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"$['contact']['mailingAddress']['city']": {
-								DisplayName:  "$['Contact']['Mailingaddress']['City']",
+								DisplayName:  "Contact > MailingAddress > City",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"$['contact']['mailingAddress']['state']": {
-								DisplayName:  "$['Contact']['Mailingaddress']['State']",
+								DisplayName:  "Contact > MailingAddress > State",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"$['contact']['mailingAddress']['country']": {
-								DisplayName:  "$['Contact']['Mailingaddress']['Country']",
+								DisplayName:  "Contact > MailingAddress > Country",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
@@ -151,21 +149,21 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							},
 							// Nested fields from refs.entity
 							"$['entity']['id']": {
-								DisplayName:  "$['Entity']['Id']",
+								DisplayName:  "Entity > Id",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"$['entity']['key']": {
-								DisplayName:  "$['Entity']['Key']",
+								DisplayName:  "Entity > Key",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(false),
 								Values:       []common.FieldValue{},
 							},
 							"$['entity']['name']": {
-								DisplayName:  "$['Entity']['Name']",
+								DisplayName:  "Entity > Name",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     goutils.Pointer(true),
