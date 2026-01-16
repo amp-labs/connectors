@@ -196,6 +196,7 @@ func ExtractLowercaseFieldsFromRaw(fields []string, record map[string]any) map[s
 	return out
 }
 
+// GetMarshaledData converts records into ReadResultRow slices without populating the Id field.
 func GetMarshaledData(records []map[string]any, fields []string) ([]ReadResultRow, error) {
 	data := make([]ReadResultRow, len(records))
 
