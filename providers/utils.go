@@ -555,7 +555,7 @@ func createOAuth2AuthCodeHTTPClient( //nolint:ireturn
 				}))
 	}
 
-	if header, ok := createOauth2TokenHeaderAttachment(info); ok {
+	if header := CreateOauth2TokenHeaderAttachment(info); header != nil {
 		options = append(options, common.WithTokenHeaderAttachment(header))
 	}
 
@@ -614,7 +614,7 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 				}))
 	}
 
-	if header, ok := createOauth2TokenHeaderAttachment(info); ok {
+	if header := CreateOauth2TokenHeaderAttachment(info); header != nil {
 		options = append(options, common.WithTokenHeaderAttachment(header))
 	}
 
@@ -947,11 +947,23 @@ func (i *ProviderInfo) RequiresWorkspace() bool {
 	return false
 }
 
-func createOauth2TokenHeaderAttachment(info *ProviderInfo) (*common.TokenHeaderAttachment, bool) {
+// CreateOauth2TokenHeaderAttachment builds and returns a custom token header configuration
+// for OAuth2 authentication, if the provider defines one.
+//
+// By default, OAuth2 tokens are sent using the standard
+//
+//	Authorization: Bearer <token>
+//
+// header. Some providers override this behavior and require a custom header instead
+// (for example, Shopify uses: X-Shopify-Access-Token: <token>).
+//
+// If the provider does not specify a custom header configuration, this function returns
+// (nil, false). Otherwise, it returns the configured TokenHeaderAttachment and true.
+func CreateOauth2TokenHeaderAttachment(info *ProviderInfo) *common.TokenHeaderAttachment {
 	if info.Oauth2Opts == nil ||
 		info.Oauth2Opts.AccessTokenOpts == nil ||
 		info.Oauth2Opts.AccessTokenOpts.Header == nil {
-		return nil, false
+		return nil
 	}
 
 	header := info.Oauth2Opts.AccessTokenOpts.Header
@@ -959,5 +971,5 @@ func createOauth2TokenHeaderAttachment(info *ProviderInfo) (*common.TokenHeaderA
 	return &common.TokenHeaderAttachment{
 		Name:   header.Name,
 		Prefix: header.ValuePrefix,
-	}, true
+	}
 }
