@@ -40,8 +40,8 @@ func MainFn() int {
 
 func testReadCustomFields(ctx context.Context, conn *testConn.Connector) error {
 	params := common.ReadParams{
-		ObjectName: "custom_fields",
-		Fields:     connectors.Fields(""),
+		ObjectName: "subscribers",
+		Fields:     connectors.Fields("sub_custom_field"),
 	}
 
 	res, err := conn.Read(ctx, params)
