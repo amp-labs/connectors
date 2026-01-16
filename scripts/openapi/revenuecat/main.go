@@ -22,11 +22,6 @@ var (
 	FileManager = api3.NewOpenapiFileManager[any](apiFile) // nolint:gochecknoglobals
 )
 
-// nolint:gochecknoglobals
-var (
-	ignoreEndpoints = []string{}
-)
-
 func main() {
 	explorer, err := FileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
