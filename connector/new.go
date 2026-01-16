@@ -40,6 +40,7 @@ import (
 	"github.com/amp-labs/connectors/providers/dixa"
 	"github.com/amp-labs/connectors/providers/docusign"
 	"github.com/amp-labs/connectors/providers/drift"
+	"github.com/amp-labs/connectors/providers/dropboxsign"
 	"github.com/amp-labs/connectors/providers/dynamicsbusiness"
 	"github.com/amp-labs/connectors/providers/dynamicscrm"
 	"github.com/amp-labs/connectors/providers/fathom"
@@ -164,6 +165,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Dixa:                    wrapper(newDixaConnector),
 	providers.Docusign:                wrapper(newDocusignConnector),
 	providers.Drift:                   wrapper(newDriftConnector),
+	providers.DropboxSign:             wrapper(newDropboxSignConnector),
 	providers.DynamicsBusinessCentral: wrapper(newDynamicsBusinessCentral),
 	providers.DynamicsCRM:             wrapper(newDynamicsCRMConnector),
 	providers.Fathom:                  wrapper(newFathomConnector),
@@ -973,4 +975,8 @@ func newRingCentral(params common.ConnectorParams) (*ringcentral.Connector, erro
 
 func newQuickbooksConnector(params common.ConnectorParams) (*quickbooks.Connector, error) {
 	return quickbooks.NewConnector(params)
+}
+
+func newDropboxSignConnector(params common.ConnectorParams) (*dropboxsign.Connector, error) {
+	return dropboxsign.NewConnector(params)
 }
