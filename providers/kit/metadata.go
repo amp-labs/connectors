@@ -98,5 +98,4 @@ type customFieldDefinition struct {
 	Name  string `json:"name"`
 	Key   string `json:"key"`
 	Label string `json:"label"`
-	Type  string `json:"type,omitempty"`
 }
