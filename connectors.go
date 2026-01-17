@@ -3,6 +3,7 @@ package connectors
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -109,6 +110,31 @@ type AuthMetadataConnector interface {
 
 	// GetPostAuthInfo returns authentication metadata.
 	GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error)
+}
+
+// TotalRecordsParam contains parameters for getting total record counts.
+type TotalRecordsParam struct {
+	ObjectName     string
+	SinceTimestamp *time.Time
+	UntilTimestamp *time.Time
+}
+
+// GetTotalRecordsConnector is an interface that extends the Connector interface with
+// the ability to retrieve total record counts.
+type GetTotalRecordsConnector interface {
+	Connector
+
+	// GetTotalRecords returns the total number of records that would be returned
+	// for the given object and time range.
+	//
+	// Parameters:
+	//   - ctx: context for the operation
+	//   - params: parameters specifying the object name and optional time range
+	//
+	// Returns:
+	//   - int: the total number of records
+	//   - error: any error that occurred while fetching the count
+	GetTotalRecords(ctx context.Context, params *TotalRecordsParam) (int, error)
 }
 
 // BatchRecordReaderConnector defines the interface for connectors that can
