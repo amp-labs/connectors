@@ -29,12 +29,12 @@ func init() {
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760967524/media/paypal.com_1760967523.svg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760967555/media/paypal.com_1760967555.svg",
+				IconURL: "",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1768827171/media/phoneburner.com_1768827171.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760967524/media/paypal.com_1760967523.svg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1760967578/media/paypal.com_1760967577.svg",
+				IconURL: "",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1768827171/media/phoneburner.com_1768827171.svg",
 			},
 		},
 		Labels: &Labels{
