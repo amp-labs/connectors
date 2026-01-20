@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/salesforce/internal/pardot"
 	"golang.org/x/oauth2"
 )
 
@@ -34,12 +35,21 @@ func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unuse
 		Module:              oldParams.Module.Selection.ID,
 		AuthenticatedClient: oldParams.Client.Caller.Client,
 		Workspace:           oldParams.Workspace.Name,
+		Metadata:            oldParams.Map,
 	}, nil
 }
 
 func (p parameters) ValidateParams() error {
 	if isPardotModule(p.Module.Selection.ID) {
-		return p.Client.ValidateParams()
+		// Check that business unit id is present.
+		p.Metadata.WithMetadata(p.Metadata.Map, []string{
+			pardot.MetadataKeyBusinessUnitID,
+		})
+
+		return errors.Join(
+			p.Client.ValidateParams(),
+			p.Metadata.ValidateParams(),
+		)
 	}
 
 	return errors.Join(

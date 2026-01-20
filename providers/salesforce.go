@@ -141,6 +141,15 @@ func init() { // nolint:funlen
 						ModuleSalesforceCRM: ModuleDependency{},
 					},
 				},
+				{
+					Name:        "businessUnitId",
+					DisplayName: "Business Unit ID",
+					DocsURL:     "https://help.salesforce.com/s/articleView?id=000381973&type=1",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleSalesforceAccountEngagement:     {},
+						ModuleSalesforceAccountEngagementDemo: {},
+					},
+				},
 			},
 		},
 	})
