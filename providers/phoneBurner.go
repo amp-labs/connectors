@@ -35,7 +35,7 @@ func init() {
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1768827171/media/phoneburner.com_1768827171.svg",
+				LogoURL: "",
 			},
 			Regular: &MediaTypeRegular{
 				IconURL: "",
