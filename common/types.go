@@ -503,6 +503,24 @@ type ListObjectMetadataResult struct {
 	Errors map[string]error
 }
 
+// RecordCountParams contains parameters for getting record counts.
+type RecordCountParams struct {
+	// ObjectName is the name of the object to count records for.
+	ObjectName string
+
+	// SinceTimestamp is an optional timestamp to count only records updated after this time.
+	SinceTimestamp *time.Time
+
+	// UntilTimestamp is an optional timestamp to count only records updated up to this time.
+	UntilTimestamp *time.Time
+}
+
+// RecordCountResult contains the result of a record count operation.
+type RecordCountResult struct {
+	// Count is the number of records matching the query.
+	Count int
+}
+
 func NewListObjectMetadataResult() *ListObjectMetadataResult {
 	return &ListObjectMetadataResult{
 		Result: make(map[string]ObjectMetadata),
