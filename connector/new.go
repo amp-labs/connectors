@@ -110,6 +110,7 @@ import (
 	"github.com/amp-labs/connectors/providers/snowflake"
 	"github.com/amp-labs/connectors/providers/solarwinds"
 	"github.com/amp-labs/connectors/providers/stripe"
+	"github.com/amp-labs/connectors/providers/superSend"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/webex"
 	"github.com/amp-labs/connectors/providers/xero"
@@ -234,6 +235,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.SnapchatAds:             wrapper(newSnapchatAdsConnector),
 	providers.Snowflake:               wrapper(newSnowflakeConnector),
 	providers.SolarWindsServiceDesk:   wrapper(newSolarWindsConnector),
+	providers.SuperSend:               wrapper(newSuperSendConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
 	providers.Webex:                   wrapper(newWebexConnector),
@@ -979,4 +981,8 @@ func newQuickbooksConnector(params common.ConnectorParams) (*quickbooks.Connecto
 
 func newDropboxSignConnector(params common.ConnectorParams) (*dropboxsign.Connector, error) {
 	return dropboxsign.NewConnector(params)
+}
+
+func newSuperSendConnector(params common.ConnectorParams) (*superSend.Connector, error) {
+	return superSend.NewConnector(params)
 }
