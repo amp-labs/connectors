@@ -15,6 +15,7 @@ func (c *Connector) GetRecordCount(
 	ctx context.Context,
 	params *common.RecordCountParams,
 ) (*common.RecordCountResult, error) {
+
 	if c.isPardotModule() {
 		return c.pardotAdapter.GetRecordCount(ctx, params)
 	}
