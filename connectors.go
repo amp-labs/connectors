@@ -354,7 +354,7 @@ type (
 	WriteResult              = common.WriteResult
 	DeleteResult             = common.DeleteResult
 	BatchWriteParam          = common.BatchWriteParam
-	BatchWriteType           = common.BatchWriteType
+	WriteType                = common.WriteType
 	BatchWriteResult         = common.BatchWriteResult
 	BatchStatus              = common.BatchStatus
 	ListObjectMetadataResult = common.ListObjectMetadataResult
@@ -365,11 +365,13 @@ type (
 )
 
 const (
-	BatchStatusSuccess   = common.BatchStatusSuccess
-	BatchStatusFailure   = common.BatchStatusFailure
-	BatchStatusPartial   = common.BatchStatusPartial
-	BatchWriteTypeCreate = common.BatchWriteTypeCreate
-	BatchWriteTypeUpdate = common.BatchWriteTypeUpdate
+	BatchStatusSuccess = common.BatchStatusSuccess
+	BatchStatusFailure = common.BatchStatusFailure
+	BatchStatusPartial = common.BatchStatusPartial
+	WriteTypeCreate    = common.WriteTypeCreate
+	WriteTypeUpdate    = common.WriteTypeUpdate
+	WriteTypeDelete    = common.WriteTypeDelete
+	WriteTypeUpsert    = common.WriteTypeUpsert
 )
 
 var Fields = datautils.NewStringSet // nolint:gochecknoglobals
