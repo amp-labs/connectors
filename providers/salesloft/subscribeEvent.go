@@ -110,7 +110,7 @@ func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 		return common.SubscriptionEventTypeOther, err
 	}
 
-	_, objectMap, err := getObjectByModuleEvent(moduleEvent(eventStr))
+	_, objectMap, err := getObjectMapByModuleEvent(moduleEvent(eventStr))
 	if err != nil {
 		return common.SubscriptionEventTypeOther, err
 	}
@@ -128,7 +128,7 @@ func (evt SubscriptionEvent) ObjectName() (string, error) {
 		return "", err
 	}
 
-	objectName, _, err := getObjectByModuleEvent(moduleEvent(eventStr))
+	objectName, _, err := getObjectMapByModuleEvent(moduleEvent(eventStr))
 	if err != nil {
 		return "", err
 	}

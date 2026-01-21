@@ -657,7 +657,10 @@ func categorizeSubscriptions(
 	return subscriptionsToDelete, subscriptionsToKeep
 }
 
-func getObjectByModuleEvent(eventName moduleEvent) (common.ObjectName, salesloftObjectMapping, error) {
+// getObjectMapByModuleEvent searches salesloftEventMappings to find which object a module event belongs to.
+// Returns the actual object name (map key, e.g., "tasks") and its full mapping configuration.
+// For example, "task_completed" returns ("tasks", mapping, nil).
+func getObjectMapByModuleEvent(eventName moduleEvent) (common.ObjectName, salesloftObjectMapping, error) {
 	for objName, mapping := range salesloftEventMappings {
 		_, found := mapping.Events.toCommonEvent(eventName)
 		if found {
