@@ -45,6 +45,10 @@ func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.Subscripti
 	return []common.SubscriptionEvent{SubscriptionEvent(e)}, nil
 }
 
+func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadData) error {
+	return nil
+}
+
 const (
 	OutreachWebhookSignatureHeader = "Outreach-Webhook-Signature"
 )

@@ -25,6 +25,7 @@ import (
 	"github.com/amp-labs/connectors/providers/breakcold"
 	"github.com/amp-labs/connectors/providers/brevo"
 	"github.com/amp-labs/connectors/providers/calendly"
+	"github.com/amp-labs/connectors/providers/callrail"
 	"github.com/amp-labs/connectors/providers/campaignmonitor"
 	"github.com/amp-labs/connectors/providers/capsule"
 	"github.com/amp-labs/connectors/providers/chargebee"
@@ -151,6 +152,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Breakcold:               wrapper(newBreakcoldConnector),
 	providers.Brevo:                   wrapper(newBrevoConnector),
 	providers.Calendly:                wrapper(newCalendlyConnector),
+	providers.CallRail:                wrapper(newCallRail),
 	providers.CampaignMonitor:         wrapper(newCampaignMonitorConnector),
 	providers.Capsule:                 wrapper(newCapsuleConnector),
 	providers.Chargebee:               wrapper(newChargebeeConnector),
@@ -985,4 +987,8 @@ func newDropboxSignConnector(params common.ConnectorParams) (*dropboxsign.Connec
 
 func newSuperSendConnector(params common.ConnectorParams) (*superSend.Connector, error) {
 	return superSend.NewConnector(params)
+}
+
+func newCallRail(params common.ConnectorParams) (*callrail.Connector, error) {
+	return callrail.NewConnector(params)
 }

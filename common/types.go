@@ -503,6 +503,24 @@ type ListObjectMetadataResult struct {
 	Errors map[string]error
 }
 
+// RecordCountParams contains parameters for getting record counts.
+type RecordCountParams struct {
+	// ObjectName is the name of the object to count records for.
+	ObjectName string
+
+	// SinceTimestamp is an optional timestamp to count only records updated after this time.
+	SinceTimestamp *time.Time
+
+	// UntilTimestamp is an optional timestamp to count only records updated up to this time.
+	UntilTimestamp *time.Time
+}
+
+// RecordCountResult contains the result of a record count operation.
+type RecordCountResult struct {
+	// Count is the number of records matching the query.
+	Count int
+}
+
 func NewListObjectMetadataResult() *ListObjectMetadataResult {
 	return &ListObjectMetadataResult{
 		Result: make(map[string]ObjectMetadata),
@@ -632,6 +650,10 @@ const (
 	SubscriptionEventTypeOther             SubscriptionEventType = "other"
 )
 
+type SubscriptionEventPreLoadData struct {
+	Request *http.Request
+}
+
 // SubscriptionEvent is an interface for webhook events coming from the provider.
 // This interface defines methods to extract information from the webhook event.
 type SubscriptionEvent interface {
@@ -642,6 +664,10 @@ type SubscriptionEvent interface {
 	RecordId() (string, error)
 	EventTimeStampNano() (int64, error)
 	RawMap() (map[string]any, error)
+	// PreLoadData is used to pre-load data into the subscription event.
+	// Assume that the data will include the entire request body in case it is needed for the event processing.
+	// This method will be called for every event as the first step in the event processing.
+	PreLoadData(data *SubscriptionEventPreLoadData) error
 }
 
 type SubscriptionUpdateEvent interface {
