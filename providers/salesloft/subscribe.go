@@ -664,5 +664,6 @@ func getObjectByModuleEvent(eventName moduleEvent) (common.ObjectName, salesloft
 			return objName, mapping, nil
 		}
 	}
+
 	return "", salesloftObjectMapping{}, fmt.Errorf("%w: %s", errUnsupportedSubscriptionEvent, eventName)
 }

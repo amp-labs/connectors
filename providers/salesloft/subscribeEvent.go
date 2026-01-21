@@ -32,7 +32,6 @@ var (
 
 // PreLoadData implements [common.SubscriptionEvent].
 func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadData) error {
-
 	if data == nil || data.Request == nil {
 		return fmt.Errorf("%w: request cannot be nil", errMissingParams)
 	}
@@ -99,7 +98,6 @@ func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
 }
 
 func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
-
 	m := evt.asMap()
 
 	eventStr, err := m.GetString("event")
@@ -118,7 +116,6 @@ func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 	}
 
 	return commonEvent, nil
-
 }
 
 func (evt SubscriptionEvent) ObjectName() (string, error) {
