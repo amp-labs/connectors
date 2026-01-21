@@ -3,6 +3,7 @@ package salesforce
 import (
 	"context"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
@@ -11,6 +12,14 @@ import (
 func (c *Connector) BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error) {
 	if c.crmAdapter != nil {
 		return c.crmAdapter.BatchWrite(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.Delete(ctx, params)
 	}
 
 	return nil, common.ErrNotImplemented
