@@ -32,8 +32,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 		},
 		{
-			Name:       "Successfully describe multiple objects with metadata",
-			Input:      []string{"teams", "senders", "contact/all", "sender-profiles", "org"},
+			Name: "Successfully describe multiple objects with metadata",
+			Input: []string{
+				"teams", "senders", "contact/all", "sender-profiles", "org",
+				"labels", "campaigns/overview", "managed-domains", "managed-mailboxes",
+				"placement-tests", "auto/identitys", "conversation/latest-by-profile",
+			},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -150,6 +154,181 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "current_plan",
 								ValueType:    "string",
 								ProviderType: "string",
+							},
+						},
+					},
+					"labels": {
+						DisplayName: "Labels",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"color": {
+								DisplayName:  "color",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"deleted": {
+								DisplayName:  "deleted",
+								ValueType:    "boolean",
+								ProviderType: "boolean",
+							},
+						},
+					},
+					"campaigns/overview": {
+						DisplayName: "Campaigns",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"status": {
+								DisplayName:  "status",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+							"disabled": {
+								DisplayName:  "disabled",
+								ValueType:    "boolean",
+								ProviderType: "boolean",
+							},
+						},
+					},
+					"managed-domains": {
+						DisplayName: "Managed Domains",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"status": {
+								DisplayName:  "status",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"mailboxCount": {
+								DisplayName:  "mailboxCount",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+						},
+					},
+					"managed-mailboxes": {
+						DisplayName: "Managed Mailboxes",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"email": {
+								DisplayName:  "email",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"firstName": {
+								DisplayName:  "firstName",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"status": {
+								DisplayName:  "status",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"placement-tests": {
+						DisplayName: "Placement Tests",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"status": {
+								DisplayName:  "status",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"auto_send": {
+								DisplayName:  "auto_send",
+								ValueType:    "boolean",
+								ProviderType: "boolean",
+							},
+						},
+					},
+					"auto/identitys": {
+						DisplayName: "Identities",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"username": {
+								DisplayName:  "username",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"type": {
+								DisplayName:  "type",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+							"status": {
+								DisplayName:  "status",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+						},
+					},
+					"conversation/latest-by-profile": {
+						DisplayName: "Conversations",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"title": {
+								DisplayName:  "title",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"is_unread": {
+								DisplayName:  "is_unread",
+								ValueType:    "boolean",
+								ProviderType: "boolean",
+							},
+							"platform_type": {
+								DisplayName:  "platform_type",
+								ValueType:    "int",
+								ProviderType: "integer",
 							},
 						},
 					},
