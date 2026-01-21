@@ -50,6 +50,7 @@ linters:
         - -ST1003 # Poorly chosen identifier.
         - -QF1002 # Convert untagged switch to tagged switch.
         - -QF1008 # Omit embedded fields from selector expression.
+        - -SA1019 # Using a deprecated function, variable, constant or field.
     # https://golangci-lint.run/docs/linters/configuration/#gosec
     gosec:
       excludes:
