@@ -49,13 +49,13 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "contacts",
 			},
 			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrUnknownBatchWriteType},
+			ExpectedErrs: []error{common.ErrUnknownWriteType},
 		},
 		{
 			Name: "General high level error not tied to any record",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeCreate,
+				Type:       common.WriteTypeCreate,
 				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
@@ -80,7 +80,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Bad request without the body",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeCreate,
+				Type:       common.WriteTypeCreate,
 				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
@@ -105,7 +105,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Many errors not traceable to any record",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeCreate,
+				Type:       common.WriteTypeCreate,
 				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
@@ -146,7 +146,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Successful write",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeCreate,
+				Type:       common.WriteTypeCreate,
 				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
@@ -226,7 +226,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "General high level error not tied to any record",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeUpdate,
+				Type:       common.WriteTypeUpdate,
 				Batch:      updateRecords,
 			},
 			Server: mockserver.Conditional{
@@ -251,7 +251,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Many errors not traceable to any record",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeUpdate,
+				Type:       common.WriteTypeUpdate,
 				Batch:      updateRecords,
 			},
 			Server: mockserver.Conditional{
@@ -292,7 +292,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Partial result where one contact did not have an id",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeUpdate,
+				Type:       common.WriteTypeUpdate,
 				Batch: common.BatchItems{{
 					Record: map[string]any{
 						"id":        "unknownIdentifier888", // This identifier will have no response corespondent.
@@ -349,7 +349,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Successful write",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeUpdate,
+				Type:       common.WriteTypeUpdate,
 				Batch:      updateRecords,
 			},
 			Server: mockserver.Conditional{

@@ -348,12 +348,14 @@ const (
 	BatchStatusPartial BatchStatus = "partial"
 )
 
-// BatchWriteType specifies the intended operation type within a batch modification.
-type BatchWriteType string
+// WriteType specifies the type of write operation (create, update, delete, upsert).
+type WriteType string
 
 const (
-	BatchWriteTypeCreate BatchWriteType = "create"
-	BatchWriteTypeUpdate BatchWriteType = "update"
+	WriteTypeCreate WriteType = "create"
+	WriteTypeUpdate WriteType = "update"
+	WriteTypeDelete WriteType = "delete"
+	WriteTypeUpsert WriteType = "upsert"
 )
 
 // BatchWriteParam defines the input required to execute a batch write operation.
@@ -362,7 +364,7 @@ type BatchWriteParam struct {
 	// ObjectName identifies the target object for the write operation.
 	ObjectName ObjectName
 	// Type defines how the records should be processed: create, update, or upsert.
-	Type BatchWriteType
+	Type WriteType
 	// Batch contains the collection of record payloads to be written.
 	Batch BatchItems
 	// Headers contains additional headers to be added to the request.
@@ -394,11 +396,11 @@ func (i BatchItem) GetRecord() (Record, error) {
 type BatchItems []BatchItem
 
 func (p BatchWriteParam) IsCreate() bool {
-	return p.Type == BatchWriteTypeCreate
+	return p.Type == WriteTypeCreate
 }
 
 func (p BatchWriteParam) IsUpdate() bool {
-	return p.Type == BatchWriteTypeUpdate
+	return p.Type == WriteTypeUpdate
 }
 
 type Record map[string]any
