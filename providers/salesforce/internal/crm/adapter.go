@@ -4,9 +4,13 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/deleter"
+	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/batch"
+	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/metadata"
 )
 
@@ -19,6 +23,9 @@ type Adapter struct {
 
 	// Require authenticated client
 	common.RequireAuthenticatedClient
+
+	// Supported operations
+	components.Deleter
 
 	// CRM module sub-adapters.
 	// These delegate specialized subsets of CRM functionality to keep Connector modular and prevent code bloat.
@@ -33,6 +40,17 @@ func NewAdapter(params *common.ConnectorParams) (*Adapter, error) {
 
 func constructor(base *components.Connector) (*Adapter, error) {
 	adapter := &Adapter{Connector: base}
+
+	adapter.Deleter = deleter.NewHTTPDeleter(
+		adapter.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		adapter.ProviderContext.Module(),
+		operations.DeleteHandlers{
+			BuildRequest:  adapter.buildDeleteRequest,
+			ParseResponse: adapter.parseDeleteResponse,
+			ErrorHandler:  core.NewErrorHandler().Handle,
+		},
+	)
 
 	// Delegate selected CRM functionality to internal adapters to
 	// prevent this package from growing too large. These adapters
@@ -54,4 +72,14 @@ func (a Adapter) UpsertMetadata(
 func (a Adapter) BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error) {
 	// Delegated.
 	return a.batchAdapter.BatchWrite(ctx, params)
+}
+
+// Gateway access to URLs.
+func (a Adapter) getModuleURL() string {
+	return a.ModuleInfo().BaseURL
+}
+
+// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_sobject_retrieve_delete.htm
+func (a Adapter) getDeleteURL(objectName, recordID string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(a.getModuleURL(), core.URISobjects, objectName, recordID)
 }
