@@ -171,37 +171,7 @@ func (c *Connector) UpdateSubscription(
 	}
 
 	// Categorize existing subscriptions into delete/keep buckets.
-	//
-	// Algorithm:
-	// - If subscription exists but is NOT requested → delete it (webhook no longer needed)
-	// - If subscription exists AND is requested → keep it (reuse existing webhook)
-	// - If subscription is requested but NOT existing → will be created in next step
-	subscriptionsToDelete := &subscriptionResult{
-		Subscriptions: make(map[common.ObjectName]map[moduleEvent]subscriptionResponse),
-	}
-	subscriptionsToKeep := &subscriptionResult{
-		Subscriptions: make(map[common.ObjectName]map[moduleEvent]subscriptionResponse),
-	}
-
-	for objName, eventsMap := range prevState.Subscriptions {
-		for eventName, response := range eventsMap {
-			if !requestedSubscriptions[eventName] {
-				// Need to delete this subscription
-				if subscriptionsToDelete.Subscriptions[objName] == nil {
-					subscriptionsToDelete.Subscriptions[objName] = make(map[moduleEvent]subscriptionResponse)
-				}
-
-				subscriptionsToDelete.Subscriptions[objName][eventName] = response
-			} else {
-				// Keep this subscription
-				if subscriptionsToKeep.Subscriptions[objName] == nil {
-					subscriptionsToKeep.Subscriptions[objName] = make(map[moduleEvent]subscriptionResponse)
-				}
-
-				subscriptionsToKeep.Subscriptions[objName][eventName] = response
-			}
-		}
-	}
+	subscriptionsToDelete, subscriptionsToKeep := categorizeSubscriptions(prevState, requestedSubscriptions)
 
 	// Delete subscriptions that are no longer needed
 	if len(subscriptionsToDelete.Subscriptions) > 0 {
@@ -645,4 +615,44 @@ func mergeSubscriptionResults(kept *subscriptionResult, created *common.Subscrip
 	}
 
 	return finalResult
+}
+
+// Categorize existing subscriptions into delete/keep buckets.
+//
+// Algorithm:
+// - If subscription exists but is NOT requested → delete it (webhook no longer needed)
+// - If subscription exists AND is requested → keep it (reuse existing webhook)
+// - If subscription is requested but NOT existing → will be created in next step.
+func categorizeSubscriptions(
+	prevState *subscriptionResult,
+	requestedSubscriptions map[moduleEvent]bool,
+) (subscriptionsToDelete, subscriptionsToKeep *subscriptionResult) {
+	subscriptionsToDelete = &subscriptionResult{
+		Subscriptions: make(map[common.ObjectName]map[moduleEvent]subscriptionResponse),
+	}
+	subscriptionsToKeep = &subscriptionResult{
+		Subscriptions: make(map[common.ObjectName]map[moduleEvent]subscriptionResponse),
+	}
+
+	for objName, eventsMap := range prevState.Subscriptions {
+		for eventName, response := range eventsMap {
+			if !requestedSubscriptions[eventName] {
+				// Need to delete this subscription
+				if subscriptionsToDelete.Subscriptions[objName] == nil {
+					subscriptionsToDelete.Subscriptions[objName] = make(map[moduleEvent]subscriptionResponse)
+				}
+
+				subscriptionsToDelete.Subscriptions[objName][eventName] = response
+			} else {
+				// Keep this subscription
+				if subscriptionsToKeep.Subscriptions[objName] == nil {
+					subscriptionsToKeep.Subscriptions[objName] = make(map[moduleEvent]subscriptionResponse)
+				}
+
+				subscriptionsToKeep.Subscriptions[objName][eventName] = response
+			}
+		}
+	}
+
+	return subscriptionsToDelete, subscriptionsToKeep
 }
