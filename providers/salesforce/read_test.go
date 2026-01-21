@@ -419,6 +419,10 @@ func constructTestConnectorGeneral(serverURL string, module common.ModuleID) (*C
 	// for testing we want to redirect calls to our mock server
 	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, serverURL))
 
+	if connector.crmAdapter != nil {
+		connector.crmAdapter.SetUnitTestBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
+	}
+
 	return connector, nil
 }
 

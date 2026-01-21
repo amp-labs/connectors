@@ -29,7 +29,11 @@ type Connector struct {
 	components.Reader
 	components.Writer
 
-	realmID string // QuickBooks Company ID
+	// realmID is the Company ID in QuickBooks.
+	// http://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0
+	realmID string
+	// graphQLBaseURL is a variable on the struct so it can be mocked in unit tests.
+	graphQLBaseURL string
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {

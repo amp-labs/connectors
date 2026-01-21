@@ -1,4 +1,4 @@
-package custom
+package metadata
 
 import (
 	"github.com/amp-labs/connectors/common"

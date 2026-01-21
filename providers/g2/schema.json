@@ -9,8 +9,48 @@
           "path": "/api/v2/products/{subject_product_id}/buyer_intent",
           "responseKey": "",
           "fields": {
-            "category_id": {
-              "displayName": "category_id",
+            "total_activity": {
+              "displayName": "total_activity",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "signal_type": {
+              "displayName": "signal_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time": {
+              "displayName": "time",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "day": {
+              "displayName": "day",
+              "valueType": "datetime",
+              "providerType": "date"
+            },
+            "week": {
+              "displayName": "week",
+              "valueType": "datetime",
+              "providerType": "date"
+            },
+            "month": {
+              "displayName": "month",
+              "valueType": "datetime",
+              "providerType": "date"
+            },
+            "company_id": {
+              "displayName": "company_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_name": {
+              "displayName": "company_name",
               "valueType": "string",
               "providerType": "string"
             },
@@ -19,18 +59,8 @@
               "valueType": "string",
               "providerType": "string"
             },
-            "company_id": {
-              "displayName": "company_id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "company_intent_score": {
-              "displayName": "company_intent_score",
-              "valueType": "int",
-              "providerType": "number"
-            },
-            "company_name": {
-              "displayName": "company_name",
+            "company_country": {
+              "displayName": "company_country",
               "valueType": "string",
               "providerType": "string"
             },
@@ -39,18 +69,118 @@
               "valueType": "string",
               "providerType": "string"
             },
-            "day": {
-              "displayName": "day",
-              "valueType": "datetime",
-              "providerType": "date"
+            "company_city": {
+              "displayName": "company_city",
+              "valueType": "string",
+              "providerType": "string"
             },
-            "id": {
-              "displayName": "id",
+            "company_employees": {
+              "displayName": "company_employees",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "company_industry": {
+              "displayName": "company_industry",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_intent_score": {
+              "displayName": "company_intent_score",
+              "valueType": "float",
+              "providerType": "number"
+            },
+            "visitor_id": {
+              "displayName": "visitor_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visitor_country": {
+              "displayName": "visitor_country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visitor_state": {
+              "displayName": "visitor_state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visitor_city": {
+              "displayName": "visitor_city",
               "valueType": "string",
               "providerType": "string"
             },
             "product_id": {
               "displayName": "product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_slug": {
+              "displayName": "product_slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_name": {
+              "displayName": "product_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category_id": {
+              "displayName": "category_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category_slug": {
+              "displayName": "category_slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category_name": {
+              "displayName": "category_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "left_product_id": {
+              "displayName": "left_product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "left_product_slug": {
+              "displayName": "left_product_slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "left_product_name": {
+              "displayName": "left_product_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "right_product_id": {
+              "displayName": "right_product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "right_product_slug": {
+              "displayName": "right_product_slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "right_product_name": {
+              "displayName": "right_product_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vendor_id": {
+              "displayName": "vendor_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vendor_slug": {
+              "displayName": "vendor_slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vendor_name": {
+              "displayName": "vendor_name",
               "valueType": "string",
               "providerType": "string"
             },
@@ -63,14 +193,196 @@
               "displayName": "subject_product_slug",
               "valueType": "string",
               "providerType": "string"
-            },
+            }
+          }
+        },
+        "sandbox/buyer_intent": {
+          "displayName": "Buyer Intent",
+          "path": "/api/sandbox/products/{subject_product_id}/buyer_intent",
+          "responseKey": "",
+          "fields": {
             "total_activity": {
               "displayName": "total_activity",
               "valueType": "int",
               "providerType": "integer"
             },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "signal_type": {
+              "displayName": "signal_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time": {
+              "displayName": "time",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "day": {
+              "displayName": "day",
+              "valueType": "datetime",
+              "providerType": "date"
+            },
+            "week": {
+              "displayName": "week",
+              "valueType": "datetime",
+              "providerType": "date"
+            },
+            "month": {
+              "displayName": "month",
+              "valueType": "datetime",
+              "providerType": "date"
+            },
+            "company_id": {
+              "displayName": "company_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_name": {
+              "displayName": "company_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_domain": {
+              "displayName": "company_domain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_country": {
+              "displayName": "company_country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_state": {
+              "displayName": "company_state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_city": {
+              "displayName": "company_city",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_employees": {
+              "displayName": "company_employees",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "company_industry": {
+              "displayName": "company_industry",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_intent_score": {
+              "displayName": "company_intent_score",
+              "valueType": "float",
+              "providerType": "number"
+            },
             "visitor_id": {
               "displayName": "visitor_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visitor_country": {
+              "displayName": "visitor_country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visitor_state": {
+              "displayName": "visitor_state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visitor_city": {
+              "displayName": "visitor_city",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_id": {
+              "displayName": "product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_slug": {
+              "displayName": "product_slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_name": {
+              "displayName": "product_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category_id": {
+              "displayName": "category_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category_slug": {
+              "displayName": "category_slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category_name": {
+              "displayName": "category_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "left_product_id": {
+              "displayName": "left_product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "left_product_slug": {
+              "displayName": "left_product_slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "left_product_name": {
+              "displayName": "left_product_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "right_product_id": {
+              "displayName": "right_product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "right_product_slug": {
+              "displayName": "right_product_slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "right_product_name": {
+              "displayName": "right_product_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vendor_id": {
+              "displayName": "vendor_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vendor_slug": {
+              "displayName": "vendor_slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vendor_name": {
+              "displayName": "vendor_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject_product_id": {
+              "displayName": "subject_product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject_product_slug": {
+              "displayName": "subject_product_slug",
               "valueType": "string",
               "providerType": "string"
             }
