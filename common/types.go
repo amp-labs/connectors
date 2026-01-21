@@ -650,6 +650,10 @@ const (
 	SubscriptionEventTypeOther             SubscriptionEventType = "other"
 )
 
+type SubscriptionEventPreLoadData struct {
+	Request *http.Request
+}
+
 // SubscriptionEvent is an interface for webhook events coming from the provider.
 // This interface defines methods to extract information from the webhook event.
 type SubscriptionEvent interface {
@@ -660,6 +664,10 @@ type SubscriptionEvent interface {
 	RecordId() (string, error)
 	EventTimeStampNano() (int64, error)
 	RawMap() (map[string]any, error)
+	// PreLoadData is used to pre-load data into the subscription event.
+	// Assume that the data will include the entire request body in case it is needed for the event processing.
+	// This method will be called for every event as the first step in the event processing.
+	PreLoadData(data *SubscriptionEventPreLoadData) error
 }
 
 type SubscriptionUpdateEvent interface {
