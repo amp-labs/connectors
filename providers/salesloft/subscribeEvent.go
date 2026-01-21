@@ -30,6 +30,12 @@ var (
 	eventHeader     = "x-salesloft-event"     //nolint:gochecknoglobals,unused
 )
 
+// PreLoadData implements [common.SubscriptionEvent].
+func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadData) error {
+	// TODO
+	return nil
+}
+
 func (c *Connector) VerifyWebhookMessage(ctx context.Context,
 	req *common.WebhookRequest, params *common.VerificationParams,
 ) (bool, error) {

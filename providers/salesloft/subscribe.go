@@ -153,7 +153,8 @@ func (c *Connector) Subscribe(
 func (c *Connector) UpdateSubscription(ctx context.Context,
 	params common.SubscribeParams, previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-	panic("unimplemented")
+	// TODO: implement in a future PR
+	return nil, nil // nolint: nilnil
 }
 
 // DeleteSubscription deletes webhook subscriptions.
