@@ -36,7 +36,12 @@ func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadDa
 		return fmt.Errorf("%w: request cannot be nil", errMissingParams)
 	}
 
-	evt["event"] = data.Request.Header.Get(eventHeader)
+	eventValue := data.Request.Header.Get(eventHeader)
+	if eventValue == "" {
+		return fmt.Errorf("%w: missing %s header", errMissingParams, eventHeader)
+	}
+
+	evt["event"] = eventValue
 
 	return nil
 }
@@ -110,10 +115,7 @@ func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 		return common.SubscriptionEventTypeOther, err
 	}
 
-	commonEvent, found := objectMap.Events.toCommonEvent(moduleEvent(eventStr))
-	if !found {
-		return common.SubscriptionEventTypeOther, fmt.Errorf("%w: %s", errUnsupportedSubscriptionEvent, eventStr)
-	}
+	commonEvent, _ := objectMap.Events.toCommonEvent(moduleEvent(eventStr))
 
 	return commonEvent, nil
 }
