@@ -32,7 +32,13 @@ var (
 
 // PreLoadData implements [common.SubscriptionEvent].
 func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadData) error {
-	// TODO
+
+	if data == nil || data.Request == nil {
+		return fmt.Errorf("%w: request cannot be nil", errMissingParams)
+	}
+
+	evt["event"] = data.Request.Header.Get(eventHeader)
+
 	return nil
 }
 
@@ -93,15 +99,53 @@ func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
 }
 
 func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
-	return common.SubscriptionEventType(""), errors.New("event type not provided by Salesloft webhooks") //nolint:err113
+
+	m := evt.asMap()
+
+	eventStr, err := m.GetString("event")
+	if err != nil {
+		return common.SubscriptionEventTypeOther, err
+	}
+
+	_, objectMap, err := getObjectByModuleEvent(moduleEvent(eventStr))
+	if err != nil {
+		return common.SubscriptionEventTypeOther, err
+	}
+
+	commonEvent, found := objectMap.Events.toCommonEvent(moduleEvent(eventStr))
+	if !found {
+		return common.SubscriptionEventTypeOther, fmt.Errorf("%w: %s", errUnsupportedSubscriptionEvent, eventStr)
+	}
+
+	return commonEvent, nil
+
 }
 
 func (evt SubscriptionEvent) ObjectName() (string, error) {
-	return "", errors.New("object name not provided by Salesloft webhooks") //nolint:err113
+	m := evt.asMap()
+
+	eventStr, err := m.GetString("event")
+	if err != nil {
+		return "", err
+	}
+
+	objectName, _, err := getObjectByModuleEvent(moduleEvent(eventStr))
+	if err != nil {
+		return "", err
+	}
+
+	return string(objectName), nil
 }
 
 func (evt SubscriptionEvent) RawEventName() (string, error) {
-	return "", errors.New("raw event name not provided by Salesloft webhooks") //nolint:err113
+	m := evt.asMap()
+
+	eventStr, err := m.GetString("event")
+	if err != nil {
+		return "", err
+	}
+
+	return eventStr, nil
 }
 
 func (evt SubscriptionEvent) RawMap() (map[string]any, error) {

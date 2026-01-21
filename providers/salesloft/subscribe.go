@@ -656,3 +656,13 @@ func categorizeSubscriptions(
 
 	return subscriptionsToDelete, subscriptionsToKeep
 }
+
+func getObjectByModuleEvent(eventName moduleEvent) (common.ObjectName, salesloftObjectMapping, error) {
+	for objName, mapping := range salesloftEventMappings {
+		_, found := mapping.Events.toCommonEvent(eventName)
+		if found {
+			return objName, mapping, nil
+		}
+	}
+	return "", salesloftObjectMapping{}, fmt.Errorf("%w: %s", errUnsupportedSubscriptionEvent, eventName)
+}
