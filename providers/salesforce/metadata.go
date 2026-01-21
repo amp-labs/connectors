@@ -3,6 +3,7 @@ package salesforce
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -10,11 +11,16 @@ import (
 	"github.com/amp-labs/connectors/internal/goutils"
 )
 
+var ErrCannotReadMetadata = errors.New("cannot read object metadata, it is possible you don't have the correct permissions set") // nolint:lll
+
 func (c *Connector) UpsertMetadata(
 	ctx context.Context, params *common.UpsertMetadataParams,
 ) (*common.UpsertMetadataResult, error) {
-	// Delegated.
-	return c.customAdapter.UpsertMetadata(ctx, params)
+	if c.crmAdapter != nil {
+		return c.crmAdapter.UpsertMetadata(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
 }
 
 // ListObjectMetadata returns object metadata for each object name provided.

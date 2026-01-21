@@ -1,24 +1,116 @@
 package dropboxsign
 
-import "github.com/amp-labs/connectors/internal/datautils"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/datautils"
+)
 
 //nolint:gochecknoglobals
 var (
-	objectNameTemplate     = "template"
-	objectNameBulkSendJobs = "bulk_send_job"
-	objectNameApiApp       = "api_app"
-	objectNameFax          = "fax"
-	objectNameFaxLine      = "fax_line"
+	objectNameTemplate                             = "template"
+	objectNameBulkSendJobs                         = "bulk_send_job"
+	objectNameApiApp                               = "api_app"
+	objectNameFax                                  = "fax"
+	objectNameFaxLine                              = "fax_line"
+	objectNameAccount                              = "account"
+	objectNameReport                               = "report"
+	objectNameTeam                                 = "team"
+	objectNameUnclaimedDraft                       = "draft"
+	objectNameSignatureRequest                     = "signature"
+	objectNameSignatureRequestEmbedded             = "signature/embedded"
+	objectNameSignatureRequestEmbeddedWithTemplate = "signature/embedded_with_template"
 )
 
 //nolint:gochecknoglobals
 var readObjectResponseKey = datautils.NewDefaultMap(map[string]string{
-	objectNameTemplate:     "templates",
-	objectNameApiApp:       "api_apps",
-	objectNameFax:          "faxes",
-	objectNameFaxLine:      "fax_lines",
-	objectNameBulkSendJobs: "bulk_send_jobs",
+	objectNameTemplate:         "templates",
+	objectNameApiApp:           "api_apps",
+	objectNameFax:              "faxes",
+	objectNameFaxLine:          "fax_lines",
+	objectNameBulkSendJobs:     "bulk_send_jobs",
+	objectNameSignatureRequest: "signature_requests",
 }, func(objectName string) (fieldName string) {
 	return objectName
 },
 )
+
+// mapping from clean object names to actual API endpoint paths for read operations.
+var readObjectAPIPath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+	objectNameSignatureRequest: "signature_request",
+}, func(objectName string) (apiPath string) {
+	return objectName
+},
+)
+
+// mapping from clean object names to actual API endpoint paths for write operations.
+// This is used when the API endpoint contains verbs (like 'create') that we remove from the exposed object name.
+var writeObjectAPIPath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+	objectNameUnclaimedDraft:                       "unclaimed_draft",
+	objectNameSignatureRequest:                     "signature_request",
+	objectNameSignatureRequestEmbedded:             "signature_request/create_embedded",
+	objectNameSignatureRequestEmbeddedWithTemplate: "signature_request/create_embedded_with_template",
+}, func(objectName string) (apiPath string) {
+	return objectName
+},
+)
+
+// set of objects that do not require 'create' suffix on write operations.
+var writeObjectWithoutCreateSuffix = datautils.NewSet( //nolint:gochecknoglobals
+	objectNameApiApp,
+)
+
+// set of objects that require update by ID on write operations.
+var writeObjectUpdateById = datautils.NewSet( //nolint:gochecknoglobals
+	objectNameApiApp,
+)
+
+//nolint:gochecknoglobals
+var writeResponseKey = datautils.NewDefaultMap(map[string]string{
+	objectNameAccount:  "account_id",
+	objectNameTemplate: "template_id",
+	objectNameApiApp:   "client_id",
+	objectNameTeam:     "name",
+}, func(objectName string) (fieldName string) {
+	return objectName
+},
+)
+
+func supportedOperations() components.EndpointRegistryInput {
+	readSupport := []string{
+		objectNameTemplate,
+		objectNameApiApp,
+		objectNameFax,
+		objectNameFaxLine,
+		objectNameBulkSendJobs,
+		objectNameSignatureRequest,
+	}
+
+	writeSupport := []string{
+		objectNameAccount,
+		objectNameTemplate,
+		objectNameReport,
+		objectNameTeam,
+		objectNameUnclaimedDraft,
+		objectNameApiApp,
+		objectNameFaxLine,
+		objectNameSignatureRequestEmbedded,
+		objectNameSignatureRequestEmbeddedWithTemplate,
+	}
+
+	return components.EndpointRegistryInput{
+		common.ModuleRoot: {
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
+				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
+			},
+		},
+	}
+}

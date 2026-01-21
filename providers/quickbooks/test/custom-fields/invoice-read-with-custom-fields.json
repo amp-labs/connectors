@@ -1,0 +1,31 @@
+{
+  "QueryResponse": {
+    "Invoice": [
+      {
+        "Id": "100",
+        "DocNumber": "INV-1001",
+        "TotalAmt": 1500.00,
+        "Balance": 0,
+        "DueDate": "2024-02-15",
+        "CustomField": [
+          {
+            "DefinitionId": "540344",
+            "Name": "ProjectCode",
+            "Type": "StringType",
+            "StringValue": "PROJ-001"
+          },
+          {
+            "DefinitionId": "540345",
+            "Name": "Department",
+            "Type": "StringType",
+            "StringValue": "Engineering"
+          }
+        ]
+      }
+    ],
+    "startPosition": 1,
+    "maxResults": 1
+  },
+  "time": "2024-01-15T10:30:00.000-07:00"
+}
+

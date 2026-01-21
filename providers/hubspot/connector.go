@@ -6,6 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/batch"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/custom"
 )
 
@@ -58,7 +59,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	conn.Client.HTTPClient.Base = conn.providerInfo.BaseURL
 	// Note: error handler must return common.HTTPError.
 	// Check method in the internal package "custom", method "readGroupName" which relies on error casting.
-	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
+	conn.Client.HTTPClient.ErrorHandler = core.InterpretJSONError
 	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
 
 	conn.customAdapter = custom.NewAdapter(conn.Client, conn.moduleInfo)

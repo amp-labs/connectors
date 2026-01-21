@@ -49,6 +49,7 @@ func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 		},
 		Scopes: []string{
 			"com.intuit.quickbooks.accounting",
+			"app-foundations.custom-field-definitions.read",
 		},
 		RedirectURL: "https://api.withampersand.com/callbacks/v1/oauth",
 	}
