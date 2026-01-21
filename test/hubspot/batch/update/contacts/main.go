@@ -95,7 +95,7 @@ func main() {
 	for _, tt := range tests {
 		res, err := conn.BatchWrite(ctx, &connectors.BatchWriteParam{
 			ObjectName: "contacts",
-			Type:       connectors.WriteTypeUpdate,
+			Type:       connectors.BatchWriteTypeUpdate,
 			Batch:      tt.records,
 		})
 		if err != nil {

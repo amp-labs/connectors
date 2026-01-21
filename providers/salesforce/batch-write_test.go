@@ -50,13 +50,13 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "Contact",
 			},
 			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrUnknownWriteType},
+			ExpectedErrs: []error{common.ErrUnknownBatchWriteType},
 		},
 		{
 			Name: "General high level error not tied to any record",
 			Input: &common.BatchWriteParam{
 				ObjectName: "Contact",
-				Type:       common.WriteTypeCreate,
+				Type:       common.BatchWriteTypeCreate,
 				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
@@ -87,7 +87,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Many errors not traceable to any record",
 			Input: &common.BatchWriteParam{
 				ObjectName: "Contact",
-				Type:       common.WriteTypeCreate,
+				Type:       common.BatchWriteTypeCreate,
 				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
@@ -131,7 +131,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Bad request without the body",
 			Input: &common.BatchWriteParam{
 				ObjectName: "Contact",
-				Type:       common.WriteTypeCreate,
+				Type:       common.BatchWriteTypeCreate,
 				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
@@ -156,7 +156,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Successful write with valid payload construction",
 			Input: &common.BatchWriteParam{
 				ObjectName: "Contact",
-				Type:       common.WriteTypeCreate,
+				Type:       common.BatchWriteTypeCreate,
 				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
@@ -231,7 +231,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "General high level error not tied to any record",
 			Input: &common.BatchWriteParam{
 				ObjectName: "Contact",
-				Type:       common.WriteTypeUpdate,
+				Type:       common.BatchWriteTypeUpdate,
 				Batch:      updateRecords,
 			},
 			Server: mockserver.Conditional{
@@ -274,7 +274,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			// As of right now, connector always sets payload with AllOrNone=true.
 			Input: &common.BatchWriteParam{
 				ObjectName: "Contact",
-				Type:       common.WriteTypeUpdate,
+				Type:       common.BatchWriteTypeUpdate,
 				Batch:      updateRecords,
 			},
 			Server: mockserver.Conditional{
@@ -318,7 +318,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Successful write",
 			Input: &common.BatchWriteParam{
 				ObjectName: "Contact",
-				Type:       common.WriteTypeUpdate,
+				Type:       common.BatchWriteTypeUpdate,
 				Batch:      updateRecords,
 			},
 			Server: mockserver.Conditional{
