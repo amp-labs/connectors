@@ -214,6 +214,8 @@ func getFieldValueType(fieldType string) common.ValueType {
 		return common.ValueTypeBoolean
 	case "DateTime":
 		return common.ValueTypeDateTime
+	case "Enum":
+		return common.ValueTypeSingleSelect
 	default:
 		// object, array
 		return common.ValueTypeOther

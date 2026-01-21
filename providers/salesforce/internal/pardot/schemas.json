@@ -249,7 +249,7 @@
             },
             "operator": {
               "displayName": "operator",
-              "valueType": "other",
+              "valueType": "singleSelect",
               "providerType": "Enum",
               "readOnly": false,
               "values": [
@@ -311,7 +311,7 @@
             },
             "basedOn": {
               "displayName": "basedOn",
-              "valueType": "other",
+              "valueType": "singleSelect",
               "providerType": "Enum",
               "readOnly": true,
               "values": [
@@ -407,7 +407,7 @@
             },
             "tagReplacementLanguage": {
               "displayName": "tagReplacementLanguage",
-              "valueType": "other",
+              "valueType": "singleSelect",
               "providerType": "Enum",
               "readOnly": true,
               "values": [
@@ -507,7 +507,7 @@
             },
             "tagReplacementLanguage": {
               "displayName": "tagReplacementLanguage",
-              "valueType": "other",
+              "valueType": "singleSelect",
               "providerType": "Enum",
               "readOnly": true,
               "values": [
@@ -625,7 +625,7 @@
             },
             "type": {
               "displayName": "type",
-              "valueType": "other",
+              "valueType": "singleSelect",
               "providerType": "Enum",
               "readOnly": true,
               "values": [
@@ -731,7 +731,7 @@
             },
             "status": {
               "displayName": "status",
-              "valueType": "other",
+              "valueType": "singleSelect",
               "providerType": "Enum",
               "readOnly": true,
               "values": [
@@ -961,7 +961,7 @@
             },
             "objectType": {
               "displayName": "objectType",
-              "valueType": "other",
+              "valueType": "singleSelect",
               "providerType": "Enum",
               "readOnly": true,
               "values": [
@@ -1465,7 +1465,7 @@
             },
             "layoutType": {
               "displayName": "layoutType",
-              "valueType": "other",
+              "valueType": "singleSelect",
               "providerType": "Enum",
               "readOnly": true,
               "values": [
@@ -1699,7 +1699,7 @@
             },
             "matchType": {
               "displayName": "matchType",
-              "valueType": "other",
+              "valueType": "singleSelect",
               "providerType": "Enum",
               "readOnly": true,
               "values": [
@@ -1831,7 +1831,7 @@
             },
             "type": {
               "displayName": "type",
-              "valueType": "other",
+              "valueType": "singleSelect",
               "providerType": "Enum",
               "readOnly": true,
               "values": [
@@ -2649,7 +2649,7 @@
             },
             "objectType": {
               "displayName": "objectType",
-              "valueType": "other",
+              "valueType": "singleSelect",
               "providerType": "Enum",
               "readOnly": true,
               "values": [
@@ -2993,7 +2993,7 @@
             },
             "tagReplacementLanguage": {
               "displayName": "tagReplacementLanguage",
-              "valueType": "other",
+              "valueType": "singleSelect",
               "providerType": "Enum",
               "readOnly": true,
               "values": [
