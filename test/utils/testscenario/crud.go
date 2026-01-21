@@ -52,6 +52,8 @@ type CRUDTestSuite struct {
 type Property struct {
 	Key   string
 	Value string
+	// Since is used to scope the Read to locate a record with matching key and value within the time window.
+	Since time.Time
 }
 
 func (p Property) isZero() bool {
@@ -82,7 +84,7 @@ func ValidateCreateUpdateDelete[CP, UP any](ctx context.Context, conn ConnectorC
 
 	// READ
 	fmt.Println("Reading", objectName)
-	res := readObjects(ctx, conn, objectName, suite.ReadFields)
+	res := readObjects(ctx, conn, objectName, suite.ReadFields, suite.SearchBy.Since)
 
 	// SEARCH
 	fmt.Println("Finding recently created", objectName)
@@ -91,8 +93,8 @@ func ValidateCreateUpdateDelete[CP, UP any](ctx context.Context, conn ConnectorC
 
 	if !suite.SearchBy.isZero() {
 		search := suite.SearchBy
-		object := searchObject(res, search.Key, search.Value)
-		objectID = getRecordIdentifierValue(object, suite.RecordIdentifierKey)
+		object := searchObjectRecord(res, search.Key, search.Value)
+		objectID = object.getRecordIdentifierValue(suite.RecordIdentifierKey)
 	}
 
 	fmt.Println("Object record identifier is", objectID)
@@ -130,14 +132,27 @@ func ValidateCreateUpdateDelete[CP, UP any](ctx context.Context, conn ConnectorC
 		}
 	}
 
-	res = readObjects(ctx, conn, objectName, suite.ReadFields)
-	object := searchObject(res, suite.RecordIdentifierKey, objectID)
-	validateUpdatedFieldsFunc(object)
+	res = readObjects(ctx, conn, objectName, suite.ReadFields, suite.SearchBy.Since)
+	object := searchObjectRecord(res, suite.RecordIdentifierKey, objectID)
+	validateUpdatedFieldsFunc(object.Fields)
 
 	// DELETE
 	fmt.Println("Removing this", objectName)
 	removeObject(ctx, conn, objectName, objectID)
 	fmt.Println("> Successful test completion")
+}
+
+type objectRecord struct {
+	common.ReadResultRow
+}
+
+func (r objectRecord) getRecordIdentifierValue(key string) string {
+	if r.Id != "" {
+		return r.Id
+	}
+
+	// Old style where identifier will be inside the fields.
+	return getRecordIdentifierValue(r.Fields, key)
 }
 
 func getRecordIdentifierValue(object map[string]any, key string) string {
@@ -174,10 +189,12 @@ func createObject[CP any](ctx context.Context, conn ConnectorCRUD, objectName st
 	return res
 }
 
-func readObjects(ctx context.Context, conn ConnectorCRUD, objectName string, fields datautils.StringSet) *common.ReadResult {
+func readObjects(ctx context.Context, conn ConnectorCRUD,
+	objectName string, fields datautils.StringSet, since time.Time) *common.ReadResult {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
 		Fields:     fields,
+		Since:      since,
 	})
 	if err != nil {
 		utils.Fail("error reading from provider", "error", err)
@@ -203,16 +220,22 @@ func readObjects(ctx context.Context, conn ConnectorCRUD, objectName string, fie
 	return res
 }
 
-func searchObject(res *common.ReadResult, key, value string) map[string]any {
+func searchObjectRecord(res *common.ReadResult, key, value string) objectRecord {
 	for _, data := range res.Data {
 		if mockutils.DoesObjectCorrespondToString(data.Fields[key], value) {
-			return data.Fields
+			return objectRecord{data}
+		}
+
+		// If we are searching using primary identifier it not be present in data.Fields all the time.
+		// Need to check separately.
+		if mockutils.DoesObjectCorrespondToString(data.Id, value) {
+			return objectRecord{data}
 		}
 	}
 
 	utils.Fail("error finding object in a list")
 
-	return nil
+	return objectRecord{} // unreachable code
 }
 
 func updateObject[UP any](ctx context.Context, conn ConnectorCRUD, objectName string, objectID string, payload *UP) {
