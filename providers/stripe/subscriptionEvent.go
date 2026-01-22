@@ -159,6 +159,11 @@ func (evt SubscriptionEvent) Workspace() (string, error) {
 	return "", nil
 }
 
+// PreLoadData is a no-op for Stripe events as they are already fully loaded when received.
+func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadData) error {
+	return nil
+}
+
 // extractObjectNameFromEventType extracts the object name from the event type.
 // Example: "setup_intent.created" -> "setup_intent".
 func (evt SubscriptionEvent) extractObjectNameFromEventType() (string, error) {
