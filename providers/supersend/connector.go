@@ -1,11 +1,11 @@
-package superSend
+package supersend
 
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/superSend/metadata"
+	"github.com/amp-labs/connectors/providers/supersend/metadata"
 )
 
 type Connector struct {

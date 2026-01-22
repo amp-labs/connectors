@@ -5,14 +5,14 @@ import (
 	"log"
 	"os"
 
-	"github.com/amp-labs/connectors/test/superSend"
+	"github.com/amp-labs/connectors/test/supersend"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
 	ctx := context.Background()
 
-	conn := superSend.GetSuperSendConnector(ctx)
+	conn := supersend.GetSuperSendConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{
 		"teams",

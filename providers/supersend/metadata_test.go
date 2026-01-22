@@ -1,4 +1,4 @@
-package superSend
+package supersend
 
 import (
 	"testing"

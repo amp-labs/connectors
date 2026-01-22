@@ -111,7 +111,7 @@ import (
 	"github.com/amp-labs/connectors/providers/snowflake"
 	"github.com/amp-labs/connectors/providers/solarwinds"
 	"github.com/amp-labs/connectors/providers/stripe"
-	"github.com/amp-labs/connectors/providers/superSend"
+	"github.com/amp-labs/connectors/providers/supersend"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/webex"
 	"github.com/amp-labs/connectors/providers/xero"
@@ -985,8 +985,8 @@ func newDropboxSignConnector(params common.ConnectorParams) (*dropboxsign.Connec
 	return dropboxsign.NewConnector(params)
 }
 
-func newSuperSendConnector(params common.ConnectorParams) (*superSend.Connector, error) {
-	return superSend.NewConnector(params)
+func newSuperSendConnector(params common.ConnectorParams) (*supersend.Connector, error) {
+	return supersend.NewConnector(params)
 }
 
 func newCallRail(params common.ConnectorParams) (*callrail.Connector, error) {

@@ -1,4 +1,4 @@
-package superSend
+package supersend
 
 import (
 	"context"
@@ -6,17 +6,17 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/superSend"
+	"github.com/amp-labs/connectors/providers/supersend"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-func GetSuperSendConnector(ctx context.Context) *superSend.Connector {
+func GetSuperSendConnector(ctx context.Context) *supersend.Connector {
 	filePath := credscanning.LoadPath(providers.SuperSend)
 	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client := utils.NewAPIKeyClient(ctx, reader, providers.SuperSend)
 
-	conn, err := superSend.NewConnector(common.ConnectorParams{
+	conn, err := supersend.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {
