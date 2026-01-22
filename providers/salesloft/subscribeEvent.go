@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"log"
 	"maps"
 	"strconv"
 	"time"
@@ -21,14 +22,31 @@ type SalesloftVerificationParams struct {
 }
 
 var (
-	_ common.SubscriptionEvent       = SubscriptionEvent{}
-	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
+	_ common.SubscriptionEvent          = SubscriptionEvent{}
+	_ common.SubscriptionUpdateEvent    = SubscriptionEvent{}
+	_ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 )
 
 var (
 	signatureHeader = "x-salesloft-signature" //nolint:gochecknoglobals
 	eventHeader     = "x-salesloft-event"     //nolint:gochecknoglobals,unused
 )
+
+// CollapsedSubscriptionEvent represents the raw webhook payload from Salesloft.
+// Unlike Salesforce or Zoho, Salesloft sends individual events (one record per webhook),
+// so this implementation simply wraps the single event.
+type CollapsedSubscriptionEvent map[string]any
+
+// RawMap returns a copy of the raw event data.
+func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
+	return maps.Clone(e), nil
+}
+
+// SubscriptionEventList returns the event as a single-element list.
+// Salesloft webhooks contain only one record per payload, so no fan-out is needed.
+func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.SubscriptionEvent, error) {
+	return []common.SubscriptionEvent{SubscriptionEvent(e)}, nil
+}
 
 // PreLoadData implements [common.SubscriptionEvent].
 func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadData) error {
@@ -37,11 +55,14 @@ func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadDa
 	}
 
 	eventValue := data.Request.Header.Get(eventHeader)
+
+	log.Printf("event value: %s", eventValue)
+
 	if eventValue == "" {
 		return fmt.Errorf("%w: missing %s header", errMissingParams, eventHeader)
 	}
 
-	evt["event"] = eventValue
+	evt["eventHeader"] = eventValue
 
 	return nil
 }
@@ -105,7 +126,7 @@ func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
 func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 	m := evt.asMap()
 
-	eventStr, err := m.GetString("event")
+	eventStr, err := m.GetString("eventHeader")
 	if err != nil {
 		return common.SubscriptionEventTypeOther, err
 	}
@@ -123,7 +144,7 @@ func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 func (evt SubscriptionEvent) ObjectName() (string, error) {
 	m := evt.asMap()
 
-	eventStr, err := m.GetString("event")
+	eventStr, err := m.GetString("eventHeader")
 	if err != nil {
 		return "", err
 	}
@@ -139,7 +160,7 @@ func (evt SubscriptionEvent) ObjectName() (string, error) {
 func (evt SubscriptionEvent) RawEventName() (string, error) {
 	m := evt.asMap()
 
-	eventStr, err := m.GetString("event")
+	eventStr, err := m.GetString("eventHeader")
 	if err != nil {
 		return "", err
 	}
@@ -154,7 +175,7 @@ func (evt SubscriptionEvent) RawMap() (map[string]any, error) {
 func (evt SubscriptionEvent) RecordId() (string, error) {
 	m := evt.asMap()
 
-	id, err := m.GetInt("id")
+	id, err := m.GetFloat("id")
 	if err != nil {
 		return "", err
 	}
