@@ -34,11 +34,11 @@ func init() {
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "",
-				LogoURL: "",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1769032944/phoneBurner_icon_j5zikt.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1769033375/phoneBurner_logo_dark_mxc9lt.png",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1769032944/phoneBurner_icon_j5zikt.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1768827171/media/phoneburner.com_1768827171.svg",
 			},
 		},
