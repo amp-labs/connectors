@@ -46,9 +46,11 @@ func Objects() []metadatadef.Schema {
 		),
 		api3.WithArrayItemAutoSelection(),
 	)
+
 	goutils.MustBeNil(err)
 
-	objects, err := explorer.ReadObjectsGet(
+	objects, err := explorer.ReadObjects(
+		"GET",
 		api3.NewAllowPathStrategy(allowedEndpoints),
 		objectEndpoints, displayNameOverride,
 		api3.CustomMappingObjectCheck(zoom.ObjectNameToResponseField[common.ModuleRoot]),

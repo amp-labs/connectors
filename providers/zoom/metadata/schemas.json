@@ -668,6 +668,125 @@
             }
           }
         },
+        "recordings": {
+          "displayName": "Recordings",
+          "path": "/users/me/recordings",
+          "responseKey": "meetings",
+          "fields": {
+            "account_id": {
+              "displayName": "account_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "auto_delete": {
+              "displayName": "auto_delete",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "auto_delete_date": {
+              "displayName": "auto_delete_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "duration": {
+              "displayName": "duration",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "host_id": {
+              "displayName": "host_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "recording_count": {
+              "displayName": "recording_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "recording_files": {
+              "displayName": "recording_files",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "recording_play_passcode": {
+              "displayName": "recording_play_passcode",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_time": {
+              "displayName": "start_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "topic": {
+              "displayName": "topic",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "total_size": {
+              "displayName": "total_size",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "99",
+                  "displayValue": "99"
+                }
+              ]
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "tracking_fields": {
           "displayName": "Tracking Fields",
           "path": "/tracking_fields",

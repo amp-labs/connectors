@@ -2,6 +2,7 @@ package main
 
 import (
 	"log/slog"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -24,21 +25,24 @@ func main() {
 	)
 
 	for _, object := range objects {
+		objectName := object.ObjectName
+
+		urlPath := strings.ReplaceAll(object.URLPath, "{userId}", "me")
 
 		if object.Problem != nil {
 			slog.Error("schema not extracted",
-				"objectName", object.ObjectName,
+				"objectName", objectName,
 				"error", object.Problem,
 			)
 		}
 
 		for _, field := range object.Fields {
-			schemas.Add(common.ModuleRoot, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
+			schemas.Add(common.ModuleRoot, objectName, object.DisplayName, urlPath, object.ResponseKey,
 				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
 		}
 
 		for _, queryParam := range object.QueryParams {
-			registry.Add(queryParam, object.ObjectName)
+			registry.Add(queryParam, objectName)
 		}
 	}
 
