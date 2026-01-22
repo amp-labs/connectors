@@ -19,6 +19,10 @@ var (
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
 		"contacts/groups": "Contact Groups",
 	}
+
+	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
+		"/contacts/groups": "contacts_groups",
+	}
 )
 
 func Objects() []metadatadef.Schema {
@@ -33,7 +37,7 @@ func Objects() []metadatadef.Schema {
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewAllowPathStrategy(allowedEndpoints),
-		nil, displayNameOverride, api3.CustomMappingObjectCheck(
+		objectEndpoints, displayNameOverride, api3.CustomMappingObjectCheck(
 			zoom.ObjectNameToResponseField[common.ModuleRoot],
 		),
 	)

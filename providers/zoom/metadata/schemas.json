@@ -4,6 +4,53 @@
       "id": "root",
       "path": "",
       "objects": {
+        "activities": {
+          "displayName": "Activities",
+          "path": "/report/activities",
+          "responseKey": "activity_logs",
+          "fields": {
+            "client_type": {
+              "displayName": "client_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ip_address": {
+              "displayName": "ip_address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time": {
+              "displayName": "time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Sign in",
+                  "displayValue": "Sign in"
+                },
+                {
+                  "value": "Sign out",
+                  "displayValue": "Sign out"
+                }
+              ]
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "archive_files": {
           "displayName": "Archive Files",
           "path": "/archive_files",
@@ -117,7 +164,49 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "100",
+                  "displayValue": "100"
+                }
+              ]
             },
             "uuid": {
               "displayName": "uuid",
@@ -126,8 +215,55 @@
             }
           }
         },
-        "contacts/groups": {
-          "displayName": "Contact Groups",
+        "billing": {
+          "displayName": "Billing",
+          "path": "/report/billing",
+          "responseKey": "billing_reports",
+          "fields": {
+            "end_date": {
+              "displayName": "end_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_date": {
+              "displayName": "start_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tax_amount": {
+              "displayName": "tax_amount",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "total_amount": {
+              "displayName": "total_amount",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "int",
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                }
+              ]
+            }
+          }
+        },
+        "contacts_groups": {
+          "displayName": "Contacts Groups",
           "path": "/contacts/groups",
           "responseKey": "groups",
           "fields": {
@@ -149,7 +285,43 @@
             "group_privacy": {
               "displayName": "group_privacy",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
+            }
+          }
+        },
+        "device_groups": {
+          "displayName": "Device Groups",
+          "path": "/devices/groups",
+          "responseKey": "groups",
+          "fields": {
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "zdm_group_id": {
+              "displayName": "zdm_group_id",
+              "valueType": "string",
+              "providerType": "string"
             }
           }
         },
@@ -181,12 +353,56 @@
             "device_status": {
               "displayName": "device_status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "-1",
+                  "displayValue": "-1"
+                },
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                }
+              ]
             },
             "device_type": {
               "displayName": "device_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                }
+              ]
             },
             "enrolled_in_zdm": {
               "displayName": "enrolled_in_zdm",
@@ -250,28 +466,6 @@
             }
           }
         },
-        "devices/groups": {
-          "displayName": "Device Groups",
-          "path": "/devices/groups",
-          "responseKey": "groups",
-          "fields": {
-            "description": {
-              "displayName": "description",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "name": {
-              "displayName": "name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "zdm_group_id": {
-              "displayName": "zdm_group_id",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "groups": {
           "displayName": "Groups",
           "path": "/groups",
@@ -294,8 +488,8 @@
             }
           }
         },
-        "h323/devices": {
-          "displayName": "H.323/SIP Devices",
+        "h323_devices": {
+          "displayName": "H 323/Sip Device List",
           "path": "/h323/devices",
           "responseKey": "devices",
           "fields": {
@@ -350,7 +544,7 @@
             }
           }
         },
-        "meetings/meeting_summaries": {
+        "meeting_summaries": {
           "displayName": "Meeting Summaries",
           "path": "/meetings/meeting_summaries",
           "responseKey": "summaries",
@@ -412,91 +606,7 @@
             }
           }
         },
-        "report/activities": {
-          "displayName": "Activities",
-          "path": "/report/activities",
-          "responseKey": "activity_logs",
-          "fields": {
-            "client_type": {
-              "displayName": "client_type",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "email": {
-              "displayName": "email",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "ip_address": {
-              "displayName": "ip_address",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "time": {
-              "displayName": "time",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "type": {
-              "displayName": "type",
-              "valueType": "singleSelect",
-              "providerType": "string",
-              "values": [
-                {
-                  "value": "Sign in",
-                  "displayValue": "Sign in"
-                },
-                {
-                  "value": "Sign out",
-                  "displayValue": "Sign out"
-                }
-              ]
-            },
-            "version": {
-              "displayName": "version",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "report/billing": {
-          "displayName": "Billing",
-          "path": "/report/billing",
-          "responseKey": "billing_reports",
-          "fields": {
-            "end_date": {
-              "displayName": "end_date",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "start_date": {
-              "displayName": "start_date",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "tax_amount": {
-              "displayName": "tax_amount",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "total_amount": {
-              "displayName": "total_amount",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "type": {
-              "displayName": "type",
-              "valueType": "int",
-              "providerType": "integer"
-            }
-          }
-        },
-        "sip_phones/phones": {
+        "phones": {
           "displayName": "Phones",
           "path": "/sip_phones/phones",
           "responseKey": "phones",
@@ -781,7 +891,25 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "99",
+                  "displayValue": "99"
+                }
+              ]
             },
             "user_created_at": {
               "displayName": "user_created_at",
@@ -791,7 +919,17 @@
             "verified": {
               "displayName": "verified",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                }
+              ]
             }
           }
         }

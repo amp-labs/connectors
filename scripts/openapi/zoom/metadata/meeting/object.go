@@ -20,15 +20,16 @@ var (
 		"/sip_phones/phones",
 		"/tracking_fields",
 		"/h323/devices",
+		"/users/{userId}/recordings",
 	}
 
 	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
-		"/devices/groups":             "devices/groups",
+		"/devices/groups":             "device_groups",
 		"/archive_files":              "archive_files",
 		"/meetings/meeting_summaries": "meeting_summaries",
 		"/report/billing":             "billing",
 		"/report/activities":          "activities",
-		"/h323/devices":               "h323/devices",
+		"/h323/devices":               "h323_devices",
 	}
 
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
