@@ -84,7 +84,7 @@ func searchRecords(fld string) common.RecordsFunc {
 	}
 }
 
-// GetMarshaledData retrieves records and unnests the custom fields fo contacts objects.
+// getMarshaledData retrieves records and unnests the custom fields of contacts objects.
 func getMarshaledData(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
 	data := make([]common.ReadResultRow, len(records))
 
