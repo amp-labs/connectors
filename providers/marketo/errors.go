@@ -23,7 +23,7 @@ type Response struct {
 
 var ErrInvalidData = errors.New("invalid request data provided")
 
-// checkResponseLeverErr reports wheather the response level error is available or not.
+// checkResponseLeverErr reports whether the response level error is available or not.
 // If available, returns the error code as well.
 func checkResponseLeverErr(body []byte) (bool, int, error) {
 	var resp Response

@@ -5,10 +5,10 @@ import "github.com/amp-labs/connectors/common"
 const (
 	Seismic Provider = "seismic"
 
-	// ModuleSeismicReporting is the module used for accessing and manging reporting API.
+	// ModuleSeismicReporting is the module used for accessing and managing reporting API.
 	ModuleSeismicReporting common.ModuleID = "reporting"
 
-	// ModuleSeismicIntegration is the module used for accessing and manging integration API.
+	// ModuleSeismicIntegration is the module used for accessing and managing integration API.
 	ModuleSeismicIntegration common.ModuleID = "integration"
 )
 

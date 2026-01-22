@@ -360,8 +360,8 @@ func (is *InputSchema) UpdateHash(h hash.Hash) error {
 	builder.Hashable(is.AdditionalProperties)
 	builder.Hashable(is.PropertyNames)
 
-	for _, tpe := range is.Type {
-		builder.String(tpe)
+	for _, t := range is.Type {
+		builder.String(t)
 	}
 
 	for index, value := range is.Enum {

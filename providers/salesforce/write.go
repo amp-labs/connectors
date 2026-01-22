@@ -3,14 +3,26 @@ package salesforce
 import (
 	"context"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
 func (c *Connector) BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error) {
-	// Delegated.
-	return c.batchAdapter.BatchWrite(ctx, params)
+	if c.crmAdapter != nil {
+		return c.crmAdapter.BatchWrite(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.Delete(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
 }
 
 // Write will write data to Salesforce.

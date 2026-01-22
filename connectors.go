@@ -111,6 +111,23 @@ type AuthMetadataConnector interface {
 	GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error)
 }
 
+// RecordCountConnector is an interface that extends the Connector interface with
+// the ability to retrieve record counts.
+type RecordCountConnector interface {
+	Connector
+
+	// GetRecordCount returns the count of records for the given object and time range.
+	//
+	// Parameters:
+	//   - ctx: context for the operation
+	//   - params: parameters specifying the object name and optional time range
+	//
+	// Returns:
+	//   - *RecordCountResult: the result containing the count
+	//   - error: any error that occurred while fetching the count
+	GetRecordCount(ctx context.Context, params *common.RecordCountParams) (*common.RecordCountResult, error)
+}
+
 // BatchRecordReaderConnector defines the interface for connectors that can
 // fetch full record data from a provider in batch.
 type BatchRecordReaderConnector interface {
@@ -337,20 +354,24 @@ type (
 	WriteResult              = common.WriteResult
 	DeleteResult             = common.DeleteResult
 	BatchWriteParam          = common.BatchWriteParam
-	BatchWriteType           = common.BatchWriteType
+	WriteType                = common.WriteType
 	BatchWriteResult         = common.BatchWriteResult
 	BatchStatus              = common.BatchStatus
 	ListObjectMetadataResult = common.ListObjectMetadataResult
+	RecordCountParams        = common.RecordCountParams
+	RecordCountResult        = common.RecordCountResult
 
 	ErrorWithStatus = common.HTTPError //nolint:errname
 )
 
 const (
-	BatchStatusSuccess   = common.BatchStatusSuccess
-	BatchStatusFailure   = common.BatchStatusFailure
-	BatchStatusPartial   = common.BatchStatusPartial
-	BatchWriteTypeCreate = common.BatchWriteTypeCreate
-	BatchWriteTypeUpdate = common.BatchWriteTypeUpdate
+	BatchStatusSuccess = common.BatchStatusSuccess
+	BatchStatusFailure = common.BatchStatusFailure
+	BatchStatusPartial = common.BatchStatusPartial
+	WriteTypeCreate    = common.WriteTypeCreate
+	WriteTypeUpdate    = common.WriteTypeUpdate
+	WriteTypeDelete    = common.WriteTypeDelete
+	WriteTypeUpsert    = common.WriteTypeUpsert
 )
 
 var Fields = datautils.NewStringSet // nolint:gochecknoglobals

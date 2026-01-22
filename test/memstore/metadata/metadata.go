@@ -62,6 +62,7 @@ func testListObjectMetadata(ctx context.Context, conn *memstore.Connector) {
 		for fieldName := range metadata.Fields {
 			fieldNames = append(fieldNames, fieldName)
 		}
+
 		fmt.Printf("  Fields: %v\n", fieldNames)
 	}
 
@@ -81,6 +82,7 @@ func testInspectFieldMetadata(ctx context.Context, conn *memstore.Connector) {
 
 	// Inspect contacts fields
 	slog.Info("=== Contact Fields ===")
+
 	contactMetadata := result.Result["contacts"]
 	for fieldName, fieldInfo := range contactMetadata.Fields {
 		required := false
@@ -101,6 +103,7 @@ func testInspectFieldMetadata(ctx context.Context, conn *memstore.Connector) {
 			for i, val := range fieldInfo.Values {
 				enumValues[i] = val.Value
 			}
+
 			fmt.Printf("  Enum values: %v\n", enumValues)
 		}
 	}
@@ -109,6 +112,7 @@ func testInspectFieldMetadata(ctx context.Context, conn *memstore.Connector) {
 
 	// Inspect companies fields (focusing on enum and types)
 	slog.Info("=== Company Fields ===")
+
 	companyMetadata := result.Result["companies"]
 	for fieldName, fieldInfo := range companyMetadata.Fields {
 		required := false
@@ -128,6 +132,7 @@ func testInspectFieldMetadata(ctx context.Context, conn *memstore.Connector) {
 			for i, val := range fieldInfo.Values {
 				enumValues[i] = val.Value
 			}
+
 			fmt.Printf("  Enum values: %v\n", enumValues)
 		}
 	}
@@ -136,6 +141,7 @@ func testInspectFieldMetadata(ctx context.Context, conn *memstore.Connector) {
 
 	// Inspect deals fields
 	slog.Info("=== Deal Fields ===")
+
 	dealMetadata := result.Result["deals"]
 	for fieldName, fieldInfo := range dealMetadata.Fields {
 		required := false
@@ -147,11 +153,13 @@ func testInspectFieldMetadata(ctx context.Context, conn *memstore.Connector) {
 		if required {
 			extraInfo += " (REQUIRED)"
 		}
+
 		if len(fieldInfo.Values) > 0 {
 			enumValues := make([]string, len(fieldInfo.Values))
 			for i, val := range fieldInfo.Values {
 				enumValues[i] = val.Value
 			}
+
 			extraInfo += fmt.Sprintf(" [enum: %v]", enumValues)
 		}
 
@@ -177,6 +185,7 @@ func testSchemaValidation(ctx context.Context, conn *memstore.Connector) {
 
 	// Analyze contacts schema
 	slog.Info("=== Contact Schema Constraints ===")
+
 	contactMetadata := result.Result["contacts"]
 
 	requiredFields := make([]string, 0)
@@ -186,11 +195,13 @@ func testSchemaValidation(ctx context.Context, conn *memstore.Connector) {
 		if fieldInfo.IsRequired != nil && *fieldInfo.IsRequired {
 			requiredFields = append(requiredFields, fieldName)
 		}
+
 		if len(fieldInfo.Values) > 0 {
 			values := make([]string, len(fieldInfo.Values))
 			for i, val := range fieldInfo.Values {
 				values[i] = val.Value
 			}
+
 			enumFields[fieldName] = values
 		}
 	}
@@ -204,9 +215,11 @@ func testSchemaValidation(ctx context.Context, conn *memstore.Connector) {
 
 	// Analyze companies schema
 	slog.Info("=== Company Schema Constraints ===")
+
 	companyMetadata := result.Result["companies"]
 
 	companyConstraints := make(map[string]map[string]any)
+
 	for fieldName, fieldInfo := range companyMetadata.Fields {
 		constraints := make(map[string]any)
 
@@ -214,11 +227,13 @@ func testSchemaValidation(ctx context.Context, conn *memstore.Connector) {
 		if fieldInfo.IsRequired != nil && *fieldInfo.IsRequired {
 			constraints["required"] = true
 		}
+
 		if len(fieldInfo.Values) > 0 {
 			enumValues := make([]string, len(fieldInfo.Values))
 			for i, val := range fieldInfo.Values {
 				enumValues[i] = val.Value
 			}
+
 			constraints["enum"] = enumValues
 		}
 
@@ -233,9 +248,11 @@ func testSchemaValidation(ctx context.Context, conn *memstore.Connector) {
 
 	// Analyze deals schema
 	slog.Info("=== Deal Schema Constraints ===")
+
 	dealMetadata := result.Result["deals"]
 
 	dealConstraints := make(map[string]map[string]any)
+
 	for fieldName, fieldInfo := range dealMetadata.Fields {
 		constraints := make(map[string]any)
 
@@ -243,11 +260,13 @@ func testSchemaValidation(ctx context.Context, conn *memstore.Connector) {
 		if fieldInfo.IsRequired != nil && *fieldInfo.IsRequired {
 			constraints["required"] = true
 		}
+
 		if len(fieldInfo.Values) > 0 {
 			enumValues := make([]string, len(fieldInfo.Values))
 			for i, val := range fieldInfo.Values {
 				enumValues[i] = val.Value
 			}
+
 			constraints["enum"] = enumValues
 		}
 
@@ -273,5 +292,6 @@ func printJSON(label string, data any) {
 		slog.Error("Failed to marshal JSON", "error", err)
 		return
 	}
+
 	fmt.Printf("%s:\n%s\n", label, string(jsonData))
 }

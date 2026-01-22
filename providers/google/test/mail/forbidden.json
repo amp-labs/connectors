@@ -1,0 +1,14 @@
+{
+  "error": {
+    "code": 403,
+    "message": "CSE is not enabled.",
+    "errors": [
+      {
+        "message": "CSE is not enabled.",
+        "domain": "global",
+        "reason": "forbidden"
+      }
+    ],
+    "status": "PERMISSION_DENIED"
+  }
+}

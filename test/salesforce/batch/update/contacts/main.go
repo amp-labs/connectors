@@ -25,7 +25,7 @@ func main() {
 
 	res, err := conn.BatchWrite(ctx, &connectors.BatchWriteParam{
 		ObjectName: "Contact",
-		Type:       connectors.BatchWriteTypeUpdate,
+		Type:       connectors.WriteTypeUpdate,
 		Batch: common.BatchItems{{
 			Record: map[string]any{
 				"id":        "003ak00000jvIfpAAE",

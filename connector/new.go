@@ -25,6 +25,7 @@ import (
 	"github.com/amp-labs/connectors/providers/breakcold"
 	"github.com/amp-labs/connectors/providers/brevo"
 	"github.com/amp-labs/connectors/providers/calendly"
+	"github.com/amp-labs/connectors/providers/callrail"
 	"github.com/amp-labs/connectors/providers/campaignmonitor"
 	"github.com/amp-labs/connectors/providers/capsule"
 	"github.com/amp-labs/connectors/providers/chargebee"
@@ -40,6 +41,7 @@ import (
 	"github.com/amp-labs/connectors/providers/dixa"
 	"github.com/amp-labs/connectors/providers/docusign"
 	"github.com/amp-labs/connectors/providers/drift"
+	"github.com/amp-labs/connectors/providers/dropboxsign"
 	"github.com/amp-labs/connectors/providers/dynamicsbusiness"
 	"github.com/amp-labs/connectors/providers/dynamicscrm"
 	"github.com/amp-labs/connectors/providers/fathom"
@@ -47,6 +49,7 @@ import (
 	"github.com/amp-labs/connectors/providers/flatfile"
 	"github.com/amp-labs/connectors/providers/freshdesk"
 	"github.com/amp-labs/connectors/providers/front"
+	"github.com/amp-labs/connectors/providers/g2"
 	"github.com/amp-labs/connectors/providers/getresponse"
 	"github.com/amp-labs/connectors/providers/github"
 	"github.com/amp-labs/connectors/providers/gitlab"
@@ -91,7 +94,10 @@ import (
 	"github.com/amp-labs/connectors/providers/pipeliner"
 	"github.com/amp-labs/connectors/providers/podium"
 	"github.com/amp-labs/connectors/providers/pylon"
+	"github.com/amp-labs/connectors/providers/quickbooks"
 	"github.com/amp-labs/connectors/providers/recurly"
+	"github.com/amp-labs/connectors/providers/revenuecat"
+	"github.com/amp-labs/connectors/providers/ringcentral"
 	"github.com/amp-labs/connectors/providers/sageintacct"
 	"github.com/amp-labs/connectors/providers/salesflare"
 	"github.com/amp-labs/connectors/providers/salesforce"
@@ -99,6 +105,7 @@ import (
 	"github.com/amp-labs/connectors/providers/seismic"
 	"github.com/amp-labs/connectors/providers/sellsy"
 	"github.com/amp-labs/connectors/providers/servicenow"
+	"github.com/amp-labs/connectors/providers/shopify"
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/snapchatads"
 	"github.com/amp-labs/connectors/providers/snowflake"
@@ -144,6 +151,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Breakcold:               wrapper(newBreakcoldConnector),
 	providers.Brevo:                   wrapper(newBrevoConnector),
 	providers.Calendly:                wrapper(newCalendlyConnector),
+	providers.CallRail:                wrapper(newCallRail),
 	providers.CampaignMonitor:         wrapper(newCampaignMonitorConnector),
 	providers.Capsule:                 wrapper(newCapsuleConnector),
 	providers.Chargebee:               wrapper(newChargebeeConnector),
@@ -159,6 +167,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Dixa:                    wrapper(newDixaConnector),
 	providers.Docusign:                wrapper(newDocusignConnector),
 	providers.Drift:                   wrapper(newDriftConnector),
+	providers.DropboxSign:             wrapper(newDropboxSignConnector),
 	providers.DynamicsBusinessCentral: wrapper(newDynamicsBusinessCentral),
 	providers.DynamicsCRM:             wrapper(newDynamicsCRMConnector),
 	providers.Fathom:                  wrapper(newFathomConnector),
@@ -166,6 +175,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Flatfile:                wrapper(newFlatfileConnector),
 	providers.Freshdesk:               wrapper(newFreshdeskConnector),
 	providers.Front:                   wrapper(newFrontConnector),
+	providers.G2:                      wrapper(newG2Connector),
 	providers.GetResponse:             wrapper(newGetResponseConnector),
 	providers.GitLab:                  wrapper(newGitLabConnector),
 	providers.Github:                  wrapper(newGithubConnector),
@@ -210,7 +220,10 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Pipeliner:               wrapper(newPipelinerConnector),
 	providers.Podium:                  wrapper(newPodiumConnector),
 	providers.Pylon:                   wrapper(newPylonConnector),
+	providers.QuickBooks:              wrapper(newQuickbooksConnector),
 	providers.Recurly:                 wrapper(newRecurlyConnector),
+	providers.RevenueCat:              wrapper(newRevenueCatConnector),
+	providers.RingCentral:             wrapper(newRingCentral),
 	providers.SageIntacct:             wrapper(newSageIntacctConnector),
 	providers.Salesflare:              wrapper(newSalesflareConnector),
 	providers.Salesforce:              wrapper(newSalesforceConnector),
@@ -218,6 +231,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Seismic:                 wrapper(newSeismicConnector),
 	providers.Sellsy:                  wrapper(newSellsyConnector),
 	providers.ServiceNow:              wrapper(newServiceNowConnector),
+	providers.Shopify:                 wrapper(newShopifyConnector),
 	providers.Smartlead:               wrapper(newSmartleadConnector),
 	providers.SnapchatAds:             wrapper(newSnapchatAdsConnector),
 	providers.Snowflake:               wrapper(newSnowflakeConnector),
@@ -931,14 +945,44 @@ func newRecurlyConnector(params common.ConnectorParams) (*recurly.Connector, err
 	return recurly.NewConnector(params)
 }
 
+func newRevenueCatConnector(params common.ConnectorParams) (*revenuecat.Connector, error) {
+	return revenuecat.NewConnector(params)
+}
+
 func newAcuitySchedulingConnector(
 	params common.ConnectorParams,
 ) (*acuityscheduling.Connector, error) {
 	return acuityscheduling.NewConnector(params)
 }
 
+func newShopifyConnector(
+	params common.ConnectorParams,
+) (*shopify.Connector, error) {
+	return shopify.NewConnector(params)
+}
+
 func newKaseyaVSAXConnector(
 	params common.ConnectorParams,
 ) (*kaseyavsax.Connector, error) {
 	return kaseyavsax.NewConnector(params)
+}
+
+func newG2Connector(params common.ConnectorParams) (*g2.Connector, error) {
+	return g2.NewConnector(params)
+}
+
+func newRingCentral(params common.ConnectorParams) (*ringcentral.Connector, error) {
+	return ringcentral.NewConnector(params)
+}
+
+func newQuickbooksConnector(params common.ConnectorParams) (*quickbooks.Connector, error) {
+	return quickbooks.NewConnector(params)
+}
+
+func newDropboxSignConnector(params common.ConnectorParams) (*dropboxsign.Connector, error) {
+	return dropboxsign.NewConnector(params)
+}
+
+func newCallRail(params common.ConnectorParams) (*callrail.Connector, error) {
+	return callrail.NewConnector(params)
 }

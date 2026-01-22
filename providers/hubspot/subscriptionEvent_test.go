@@ -65,7 +65,7 @@ func TestExtractEventTypeFromSubscriptionEvent(t *testing.T) {
 
 	evtTypeDelete, err := deleteMessage.EventType()
 	if err != nil {
-		t.Fatalf("error extracting eventTye from subscription event: %s", err)
+		t.Fatalf("error extracting eventType from subscription event: %s", err)
 	}
 
 	assert.Equal(t, evtTypeDelete, common.SubscriptionEventTypeDelete, "event type should be parsed correctly")
@@ -76,7 +76,7 @@ func TestExtractEventTypeFromSubscriptionEvent(t *testing.T) {
 
 	evtTypeUpdate, err := updateMessage.EventType()
 	if err != nil {
-		t.Fatalf("error extracting eventTye from subscription event: %s", err)
+		t.Fatalf("error extracting eventType from subscription event: %s", err)
 	}
 
 	assert.Equal(t, evtTypeUpdate, common.SubscriptionEventTypeUpdate, "event type should be parsed correctly")

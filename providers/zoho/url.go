@@ -16,7 +16,7 @@ const (
 )
 
 type (
-	// objectNameTransformer takes an object and transfoms it to a standard zoho provider api name.
+	// objectNameTransformer takes an object and transforms it to a standard zoho provider api name.
 	objectNameTransformer func(string) string
 
 	// fieldsTransformer takes a list of field names and transforms them to the appropriate expected field names.

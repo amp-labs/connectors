@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "filtering": {},
+    "sorting": {
+      "sort_by": "updated_at",
+      "sort_direction": "DESC NULLS LAST"
+    },
+    "paging": {
+      "per_page": 3,
+      "current_page": 1,
+      "next_page": 2,
+      "prev_page": null
+    }
+  },
+  "data": [
+    {
+      "id": 47760,
+      "name": "celebration",
+      "field_type": "opportunity",
+      "value_type": "text",
+      "created_at": "2025-12-29T14:22:24.802588-05:00",
+      "updated_at": "2025-12-29T14:22:24.802588-05:00"
+    },
+    {
+      "id": 47759,
+      "name": "hobby",
+      "field_type": "person",
+      "value_type": "text",
+      "created_at": "2025-12-29T14:20:04.418880-05:00",
+      "updated_at": "2025-12-29T14:20:04.418880-05:00"
+    },
+    {
+      "id": 34595,
+      "name": "mails",
+      "field_type": "person",
+      "value_type": "text",
+      "created_at": "2024-03-07T02:19:10.990528-05:00",
+      "updated_at": "2024-03-07T02:19:10.990528-05:00"
+    }
+  ]
+}

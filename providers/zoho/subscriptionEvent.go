@@ -26,6 +26,10 @@ type (
 	}
 )
 
+func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadData) error {
+	return nil
+}
+
 // VerifyWebhookMessage verifies the signature of a webhook message from Zoho CRM.
 // Zoho does not send a signature, but instead,
 // they ask us to provide tokens of our choice that they attach to webhook messages

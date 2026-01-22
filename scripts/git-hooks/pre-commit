@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Pre-commit hook to run linting and auto-fix
+# This hook runs 'make fix' which will:
+# 1. Check/install linters if needed
+# 2. Run gci to format imports
+# 3. Run golangci-lint with --fix
+
+echo "Running pre-commit hook: make fix..."
+
+# Run make fix
+make fix
+status=$?
+
+if [ $status -ne 0 ]; then
+    echo "Pre-commit hook failed. Please fix the errors and try again."
+    exit 1
+fi
+
+# Stage any files that were auto-fixed
+git add -u
+
+echo "Pre-commit hook completed successfully."
+exit 0

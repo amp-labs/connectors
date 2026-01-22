@@ -1,0 +1,37 @@
+{
+  "data": {
+    "productCreate": {
+      "userErrors": [],
+      "product": {
+        "id": "gid://shopify/Product/1072482054",
+        "title": "Cool socks",
+        "handle": "cool-socks",
+        "descriptionHtml": "",
+        "productType": "Apparel",
+        "vendor": "TestVendor",
+        "status": "DRAFT",
+        "createdAt": "2024-01-15T10:00:00Z",
+        "updatedAt": "2024-01-15T10:00:00Z",
+        "tags": [],
+        "options": [
+          {
+            "id": "gid://shopify/ProductOption/1064577875",
+            "name": "Title",
+            "position": 1,
+            "values": ["Default Title"]
+          }
+        ],
+        "variants": {
+          "nodes": [
+            {
+              "id": "gid://shopify/ProductVariant/1070326022",
+              "title": "Default Title",
+              "price": "0.00",
+              "sku": ""
+            }
+          ]
+        }
+      }
+    }
+  }
+}

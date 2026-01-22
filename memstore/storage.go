@@ -131,7 +131,7 @@ type Storage interface {
 	//   - If both since and until are zero, all records are returned (equivalent to GetAll)
 	//   - If an updated timestamp field is not configured for this object type, all records
 	//     are returned regardless of time range parameters
-	//   - Records with missing or unparseable timestamp values are excluded when time
+	//   - Records with missing or unparsable timestamp values are excluded when time
 	//     filtering is active
 	//   - Supported timestamp formats: RFC3339 strings, Unix timestamps (int/int64/float64)
 	List(objectName string, since, until time.Time) ([]map[string]any, error)
@@ -290,6 +290,7 @@ func NewStorage(
 	// Convert association maps to typed maps and deep copy
 	for objectName, fieldAssocs := range associations {
 		store.associations[ObjectName(objectName)] = make(map[string]*AssociationSchema, len(fieldAssocs))
+
 		for fieldName, assoc := range fieldAssocs {
 			// Deep copy the AssociationSchema
 			assocCopy := *assoc
@@ -561,7 +562,7 @@ func (s *storage) Delete(objectName, recordID string) error {
 // Behavior:
 //   - If both since and until are zero, returns all records (equivalent to GetAll)
 //   - If no updated field is configured for the object, returns all records regardless of time range
-//   - Records with missing or unparseable timestamps are excluded when time filtering is active
+//   - Records with missing or unparsable timestamps are excluded when time filtering is active
 //   - Supports RFC3339 strings and Unix timestamps (int, int64, float64, json.Number)
 //
 // Returns an empty slice if the object type doesn't exist or no records match the time range.
@@ -685,6 +686,7 @@ func (s *storage) GetAssociations() map[ObjectName]map[string]*AssociationSchema
 
 	for objectName, fieldAssocs := range s.associations {
 		out[objectName] = make(map[string]*AssociationSchema, len(fieldAssocs))
+
 		for fieldName, assoc := range fieldAssocs {
 			// Deep copy the AssociationSchema to prevent external modifications
 			assocCopy := *assoc

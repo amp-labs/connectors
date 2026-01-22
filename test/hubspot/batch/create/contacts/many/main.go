@@ -45,7 +45,7 @@ func main() {
 	// Batch create many records.
 	res, err := conn.BatchWrite(ctx, &connectors.BatchWriteParam{
 		ObjectName: "contacts",
-		Type:       connectors.BatchWriteTypeCreate,
+		Type:       connectors.WriteTypeCreate,
 		Batch:      records,
 	})
 	if err != nil {

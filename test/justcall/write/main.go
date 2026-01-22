@@ -190,7 +190,9 @@ func testUpdateCall(ctx context.Context, conn *justcall.Connector) error {
 
 func printResult(name string, res *common.WriteResult) {
 	jsonStr, _ := json.MarshalIndent(res, "", "  ")
+
 	fmt.Printf("\n=== %s ===\n", name)
+
 	_, _ = os.Stdout.Write(jsonStr)
 	_, _ = os.Stdout.WriteString("\n")
 }

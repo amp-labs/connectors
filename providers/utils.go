@@ -555,6 +555,10 @@ func createOAuth2AuthCodeHTTPClient( //nolint:ireturn
 				}))
 	}
 
+	if header, ok := createOauth2TokenHeaderAttachment(info); ok {
+		options = append(options, common.WithTokenHeaderAttachment(header))
+	}
+
 	options = append(options, cfg.Options...)
 
 	var err error
@@ -608,6 +612,10 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 						Response:   rsp,
 					})
 				}))
+	}
+
+	if header, ok := createOauth2TokenHeaderAttachment(info); ok {
+		options = append(options, common.WithTokenHeaderAttachment(header))
 	}
 
 	options = append(options, cfg.Options...)
@@ -937,4 +945,19 @@ func (i *ProviderInfo) RequiresWorkspace() bool {
 	}
 
 	return false
+}
+
+func createOauth2TokenHeaderAttachment(info *ProviderInfo) (*common.TokenHeaderAttachment, bool) {
+	if info.Oauth2Opts == nil ||
+		info.Oauth2Opts.AccessTokenOpts == nil ||
+		info.Oauth2Opts.AccessTokenOpts.Header == nil {
+		return nil, false
+	}
+
+	header := info.Oauth2Opts.AccessTokenOpts.Header
+
+	return &common.TokenHeaderAttachment{
+		Name:   header.Name,
+		Prefix: header.ValuePrefix,
+	}, true
 }

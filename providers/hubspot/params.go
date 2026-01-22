@@ -12,6 +12,7 @@ import (
 
 const (
 	// DefaultPageSize is the default page size for paginated requests.
+	// HubSpot's read endpoints support max 100 records per page.
 	DefaultPageSize    = "100"
 	DefaultPageSizeInt = 100
 )

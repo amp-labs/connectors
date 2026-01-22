@@ -79,6 +79,10 @@ var (
 	// ErrCursorGone is returned when a cursor used for pagination is no longer valid.
 	ErrCursorGone = errors.New("pagination cursor gone or expired")
 
+	// ErrResultsLimitExceeded is returned when a search query exceeds the provider's
+	// maximum result limit (e.g., HubSpot's 10,000 record search limit).
+	ErrResultsLimitExceeded = errors.New("results limit exceeded")
+
 	// ErrMissingExpectedValues is returned when response data doesn't have values expected for processing.
 	ErrMissingExpectedValues = errors.New("response data is missing expected values")
 
@@ -211,8 +215,28 @@ type WriteParams struct {
 	Headers []WriteHeader // optional
 }
 
+// GetRecord converts WriteParams.RecordData into a map-based Record.
+//
+// If RecordData is already a map[string]any, it is returned directly.
+// Otherwise, the value is serialized to JSON and deserialized back into a map.
 func (p WriteParams) GetRecord() (Record, error) {
 	return RecordDataToMap(p.RecordData)
+}
+
+// IsCreate reports whether the Write is creating a new record.
+//
+// Write is considered a Create when no record identifier is provided.
+// Callers should prefer IsCreate over negating IsUpdate for clarity.
+func (p WriteParams) IsCreate() bool {
+	return p.RecordId == ""
+}
+
+// IsUpdate reports whether the write operation is an update rather than a Create.
+//
+// Write is considered an update when a non-empty RecordId is provided.
+// Callers should prefer IsUpdate over negating IsCreate for clarity.
+func (p WriteParams) IsUpdate() bool {
+	return p.RecordId != ""
 }
 
 // RecordDataToMap converts WriteParams.RecordData into a map[string]any.
@@ -324,12 +348,14 @@ const (
 	BatchStatusPartial BatchStatus = "partial"
 )
 
-// BatchWriteType specifies the intended operation type within a batch modification.
-type BatchWriteType string
+// WriteType specifies the type of write operation (create, update, delete, upsert).
+type WriteType string
 
 const (
-	BatchWriteTypeCreate BatchWriteType = "create"
-	BatchWriteTypeUpdate BatchWriteType = "update"
+	WriteTypeCreate WriteType = "create"
+	WriteTypeUpdate WriteType = "update"
+	WriteTypeDelete WriteType = "delete"
+	WriteTypeUpsert WriteType = "upsert"
 )
 
 // BatchWriteParam defines the input required to execute a batch write operation.
@@ -338,7 +364,7 @@ type BatchWriteParam struct {
 	// ObjectName identifies the target object for the write operation.
 	ObjectName ObjectName
 	// Type defines how the records should be processed: create, update, or upsert.
-	Type BatchWriteType
+	Type WriteType
 	// Batch contains the collection of record payloads to be written.
 	Batch BatchItems
 	// Headers contains additional headers to be added to the request.
@@ -370,11 +396,11 @@ func (i BatchItem) GetRecord() (Record, error) {
 type BatchItems []BatchItem
 
 func (p BatchWriteParam) IsCreate() bool {
-	return p.Type == BatchWriteTypeCreate
+	return p.Type == WriteTypeCreate
 }
 
 func (p BatchWriteParam) IsUpdate() bool {
-	return p.Type == BatchWriteTypeUpdate
+	return p.Type == WriteTypeUpdate
 }
 
 type Record map[string]any
@@ -479,11 +505,48 @@ type ListObjectMetadataResult struct {
 	Errors map[string]error
 }
 
+// RecordCountParams contains parameters for getting record counts.
+type RecordCountParams struct {
+	// ObjectName is the name of the object to count records for.
+	ObjectName string
+
+	// SinceTimestamp is an optional timestamp to count only records updated after this time.
+	SinceTimestamp *time.Time
+
+	// UntilTimestamp is an optional timestamp to count only records updated up to this time.
+	UntilTimestamp *time.Time
+}
+
+// RecordCountResult contains the result of a record count operation.
+type RecordCountResult struct {
+	// Count is the number of records matching the query.
+	Count int
+}
+
 func NewListObjectMetadataResult() *ListObjectMetadataResult {
 	return &ListObjectMetadataResult{
 		Result: make(map[string]ObjectMetadata),
 		Errors: make(map[string]error),
 	}
+}
+
+func (r ListObjectMetadataResult) GetObjectMetadata(objectName string) *ObjectMetadata {
+	object, ok := r.Result[objectName]
+	if !ok {
+		return nil
+	}
+
+	if object.Fields != nil {
+		return NewObjectMetadata(object.DisplayName, object.Fields)
+	}
+
+	// Metadata uses old format and stores data at FieldsMap.
+	object.Fields = make(FieldsMetadata)
+	if object.FieldsMap == nil {
+		object.FieldsMap = make(map[string]string)
+	}
+
+	return &object
 }
 
 // AppendError will associate an error with the object.
@@ -589,6 +652,10 @@ const (
 	SubscriptionEventTypeOther             SubscriptionEventType = "other"
 )
 
+type SubscriptionEventPreLoadData struct {
+	Request *http.Request
+}
+
 // SubscriptionEvent is an interface for webhook events coming from the provider.
 // This interface defines methods to extract information from the webhook event.
 type SubscriptionEvent interface {
@@ -599,6 +666,10 @@ type SubscriptionEvent interface {
 	RecordId() (string, error)
 	EventTimeStampNano() (int64, error)
 	RawMap() (map[string]any, error)
+	// PreLoadData is used to pre-load data into the subscription event.
+	// Assume that the data will include the entire request body in case it is needed for the event processing.
+	// This method will be called for every event as the first step in the event processing.
+	PreLoadData(data *SubscriptionEventPreLoadData) error
 }
 
 type SubscriptionUpdateEvent interface {

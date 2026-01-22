@@ -111,6 +111,7 @@ func main() {
    - Flattened to root level using their label names
    - Requestable by label name (e.g., 'membership_status', 'priority_level')
 `, err)
+
 		return
 	}
 
@@ -124,7 +125,9 @@ func main() {
 		fmt.Println(strings.Repeat("=", 80))
 
 		firstRecord := readResult.Data[0]
+
 		fmt.Println("\n✅ Custom fields are flattened to root level in 'Fields':")
+
 		for fieldName, fieldValue := range firstRecord.Fields {
 			if fieldName != "id" && fieldName != "name" && fieldName != "email" &&
 				fieldName != "phone_number" && fieldName != "status" {
@@ -133,6 +136,7 @@ func main() {
 		}
 
 		fmt.Println("\n✅ Original response preserved in 'Raw' (custom_fields array intact):")
+
 		if customFields, ok := firstRecord.Raw["custom_fields"].([]any); ok {
 			fmt.Printf("  - custom_fields array contains %d items\n", len(customFields))
 		}

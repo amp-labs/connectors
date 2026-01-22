@@ -130,7 +130,7 @@ func (c *Connector) register(
 
 	result.NamedCredential = namedCred
 
-	evtCfg, err := c.createEventRelayConfing(
+	evtCfg, err := c.createEventRelayConfig(
 		ctx,
 		params,
 		namedCred.DestinationResourceName(),
@@ -201,7 +201,7 @@ func (c *Connector) createNamedCredential(ctx context.Context, params *Registrat
 	return c.CreateNamedCredential(ctx, namedCred)
 }
 
-func (c *Connector) createEventRelayConfing(
+func (c *Connector) createEventRelayConfig(
 	ctx context.Context,
 	params *RegistrationParams,
 	destinationResource string,

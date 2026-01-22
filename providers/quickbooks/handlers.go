@@ -98,6 +98,13 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	url.WithQueryParam("query", query)
 
+	// Include custom fields for supported objects.
+	// See Endpoints section:
+	// https://developer.intuit.com/app/developer/qbo/docs/workflows/create-custom-fields/get-started
+	if objectsWithCustomFields.Has(params.ObjectName) {
+		url.WithQueryParam("include", "enhancedAllCustomFields")
+	}
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
@@ -116,9 +123,9 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		response,
-		getRecords(params.ObjectName),
+		getNodeRecords(params.ObjectName),
 		nextRecordsURL(),
-		common.GetMarshaledData,
+		common.MakeMarshaledDataFunc(c.attachReadCustomFields(params.ObjectName)),
 		params.Fields,
 	)
 }

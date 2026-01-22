@@ -29,7 +29,7 @@ type fieldResults struct {
 }
 
 // options represents the set of values one can use for enum, sets data Types.
-// this oly works for objects: notes, activities, organizations, deals, products, persons.
+// this only works for objects: notes, activities, organizations, deals, products, persons.
 type options struct {
 	ID    any    `json:"id,omitempty"` // this can be an int,bool,string
 	Label string `json:"label,omitempty"`

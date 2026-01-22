@@ -125,14 +125,14 @@ func (c *Connector) RunScheduledMaintenance(
 	// In order to maintain the subscription, we need to
 	// update the expiration time of the subscription
 	// Available API is PUT or PATCH endpoint.
-	// Using PATCH will require parsing exisiting subscription and
+	// Using PATCH will require parsing existing subscription and
 	// reformulating the request body which is complicated and error prone.
 	// Our UpdateSubscription uses PUT endpoint and it will automatically extend the expiry time.
 	// So we just use UpdateSubscription to maintain the subscription.
 	return c.UpdateSubscription(ctx, params, previousResult)
 }
 
-// DeleteNotifcations disable all notification for list of channelIDs
+// DeleteNotifications disable all notification for list of channelIDs
 // https://www.zoho.com/crm/developer/docs/api/v7/notifications/update-details.html
 func (c *Connector) deleteNotifications(ctx context.Context, channelIDs string) error {
 	url, err := c.getSubscribeURL()
