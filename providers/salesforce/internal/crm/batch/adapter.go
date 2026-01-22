@@ -7,7 +7,13 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
+)
+
+const (
+	apiVersion    = "60.0"
+	versionPrefix = "v"
+	version       = versionPrefix + apiVersion
+	restAPISuffix = "/services/data/" + version
 )
 
 // Adapter handles batched record operations (create/update) against Salesforce's REST API.
@@ -50,7 +56,7 @@ func (a *Adapter) getModuleURL() string {
 // nolint:lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_create.htm
 func (a *Adapter) getCreateURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.getModuleURL(), core.RestAPISuffix, "/composite/sobjects")
+	return urlbuilder.New(a.getModuleURL(), restAPISuffix, "/composite/sobjects")
 }
 
 // getUpdateURL builds the endpoint for updating multiple records across one or more object types.
@@ -58,5 +64,5 @@ func (a *Adapter) getCreateURL() (*urlbuilder.URL, error) {
 // nolint:lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_update.htm
 func (a *Adapter) getUpdateURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.getModuleURL(), core.RestAPISuffix, "/composite/sobjects")
+	return urlbuilder.New(a.getModuleURL(), restAPISuffix, "/composite/sobjects")
 }

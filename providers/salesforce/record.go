@@ -62,7 +62,6 @@ type recordsByIDsParams struct {
 
 func (c *Connector) buildReadByIdentifierURL(config recordsByIDsParams) (*urlbuilder.URL, error) {
 	// Requesting record identifiers using SOQL query.
-	// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_query.htm
 	url, err := c.getRestApiURL("query")
 	if err != nil {
 		return nil, err

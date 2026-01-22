@@ -10,6 +10,15 @@ import (
 	"github.com/amp-labs/connectors/providers/salesforce/internal/pardot"
 )
 
+const (
+	apiVersion                 = "60.0"
+	versionPrefix              = "v"
+	version                    = versionPrefix + apiVersion
+	restAPISuffix              = "/services/data/" + version
+	uriSobjects                = restAPISuffix + "/sobjects"
+	uriToolingEventRelayConfig = restAPISuffix + "/tooling/sobjects/EventRelayConfig"
+)
+
 // Connector provides integration with Salesforce provider.
 //
 // This implementation currently supports two functional modules:
@@ -110,7 +119,7 @@ func (c *Connector) SetBaseURL(newURL string) {
 
 func (c *Connector) getRestApiURL(paths ...string) (*urlbuilder.URL, error) {
 	parts := append([]string{
-		crmcore.RestAPISuffix, // scope URLs to API version
+		restAPISuffix, // scope URLs to API version
 	}, paths...)
 
 	return urlbuilder.New(c.getModuleURL(), parts...)
@@ -123,7 +132,7 @@ func (c *Connector) getDomainURL(paths ...string) (*urlbuilder.URL, error) {
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
 func (c *Connector) getURLEventRelayConfig(identifier string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.getModuleURL(), crmcore.URIToolingEventRelayConfig, identifier)
+	return urlbuilder.New(c.getModuleURL(), uriToolingEventRelayConfig, identifier)
 }
 
 // Gateway access to URLs.
@@ -132,7 +141,7 @@ func (c *Connector) getModuleURL() string {
 }
 
 func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(crmcore.URISobjects, objectName, "describe")
+	return urlbuilder.New(uriSobjects, objectName, "describe")
 }
 
 func (c *Connector) isPardotModule() bool {
