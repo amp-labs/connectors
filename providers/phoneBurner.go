@@ -10,11 +10,6 @@ func init() {
 		Oauth2Opts: &Oauth2Opts{
 			GrantType: AuthorizationCode,
 			AuthURL:   "https://www.phoneburner.com/oauth/authorize",
-			AuthURLParams: map[string]string{
-				// If acting on behalf of a vendor account, PhoneBurner requires owner_type=vendor.
-				// Docs: https://www.phoneburner.com/developer/authentication#web_flow
-				"owner_type": "vendor",
-			},
 			TokenURL:                  "https://www.phoneburner.com/oauth/accesstoken",
 			DocsURL:                   "https://www.phoneburner.com/developer/authentication#web-flow",
 			ExplicitScopesRequired:    false,
