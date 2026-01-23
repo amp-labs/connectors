@@ -118,7 +118,7 @@ func getMarshaledData(records []map[string]any, fields []string) ([]common.ReadR
 }
 
 func apolloMarshaledData(objectName string) common.MarshalFunc {
-	if objectName != contacts {
+	if !usesFieldsResource.Has(objectName) {
 		return common.GetMarshaledData
 	}
 

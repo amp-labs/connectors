@@ -2,9 +2,12 @@ package apollo
 
 import (
 	"context"
+	"errors"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -36,6 +39,8 @@ type Field struct {
 func (c *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
+	ctx = logging.With(ctx, "connector", "apollo")
+
 	// Ensure that objectNames is not empty
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
@@ -60,7 +65,7 @@ func (c *Connector) requestMetadata(ctx context.Context, objectNames []string,
 		// for objects: Accounts, Contacts we use the fields endpoint to construct the metadatas
 		// We have to make 3 API calls for the standard(system), custom, crm fields.
 		if usesFieldsResource.Has(objectName) {
-			metadata, err := c.retrieveFields(ctx)
+			metadata, err := c.retrieveFields(ctx, objectName)
 			if err != nil {
 				metadataResult.Errors[objectName] = err
 			}
@@ -107,14 +112,16 @@ func (c *Connector) requestMetadata(ctx context.Context, objectNames []string,
 	return &metadataResult, nil
 }
 
-func (c *Connector) retrieveFields(ctx context.Context) (*common.ObjectMetadata, error) {
+// retrieveFields fetches the ObjectMetadata using the fields API
+// https://docs.apollo.io/reference/get-a-list-of-fields this requires master API key.
+func (c *Connector) retrieveFields(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
 	var response *FieldsResponse
 
 	objectMetadata := common.ObjectMetadata{
 		Fields: make(common.FieldsMetadata),
 	}
 
-	for _, v := range []string{"custom", "system"} {
+	for _, v := range []string{"custom", "system", "crm_synced"} {
 		url, err := c.getAPIURL(fields, readOp)
 		if err != nil {
 			return nil, err
@@ -124,6 +131,14 @@ func (c *Connector) retrieveFields(ctx context.Context) (*common.ObjectMetadata,
 
 		resp, err := c.Client.Get(ctx, url.String())
 		if err != nil {
+			// When this occurs the API responds with 422.
+			// This is beacuse there is no synced crm account.
+			if errors.Is(err, common.ErrCaller) && v == "crm_synced" {
+				logging.Logger(ctx).Error("failed to get crm_synced metadata", "object", objectName, "err", err.Error())
+
+				continue
+			}
+
 			return nil, err
 		}
 
@@ -138,7 +153,7 @@ func (c *Connector) retrieveFields(ctx context.Context) (*common.ObjectMetadata,
 				isEditable bool
 			)
 
-			if fld.Modality != "contact" {
+			if fld.Modality != naming.NewSingularString(objectName).String() {
 				continue
 			}
 
@@ -150,7 +165,7 @@ func (c *Connector) retrieveFields(ctx context.Context) (*common.ObjectMetadata,
 				isEditable = true
 			}
 
-			objectMetadata.Fields[strings.TrimPrefix(fld.Id, "contact.")] = common.FieldMetadata{
+			objectMetadata.Fields[strings.TrimPrefix(fld.Id, fld.Modality+".")] = common.FieldMetadata{
 				DisplayName:  fld.Label,
 				ReadOnly:     &isEditable,
 				ProviderType: fld.Type,
