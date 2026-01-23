@@ -63,23 +63,18 @@
             }
           }
         },
-        "customfields": {
-          "displayName": "Custom Fields",
-          "path": "/rest/1/customfields",
-          "responseKey": "customfields",
+        "folders": {
+          "displayName": "Folders",
+          "path": "/rest/1/folders",
+          "responseKey": "folders",
           "fields": {
-            "id": {
-              "displayName": "Id",
+            "folder_id": {
+              "displayName": "Folder Id",
               "valueType": "string",
               "providerType": "string"
             },
-            "name": {
-              "displayName": "Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "type": {
-              "displayName": "Type",
+            "folder_name": {
+              "displayName": "Folder Name",
               "valueType": "string",
               "providerType": "string"
             }
@@ -114,6 +109,45 @@
               "displayName": "Active",
               "valueType": "boolean",
               "providerType": "boolean"
+            }
+          }
+        },
+        "voicemails": {
+          "displayName": "Voicemails",
+          "path": "/rest/1/voicemails",
+          "responseKey": "voicemails",
+          "fields": {
+            "recording_id": {
+              "displayName": "Recording Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "playback_url": {
+              "displayName": "Playback Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_when": {
+              "displayName": "Created When",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "phonenumber": {
+          "displayName": "Phone Number",
+          "path": "/rest/1/phonenumber/{phone_number}",
+          "responseKey": "phonenumber",
+          "fields": {
+            "phone_number": {
+              "displayName": "Phone Number",
+              "valueType": "string",
+              "providerType": "string"
             }
           }
         }
