@@ -145,6 +145,14 @@ func (m *ModuleLinter) run(pass *analysis.Pass) (any, error) {
 
 // checkMetadataModuleDependencies validates that all MetadataItemInput have ModuleDependencies
 // when the provider has modules.
+//
+// NOTE on naming: "ModuleDependencies" is arguably a misnomer. A better name would be
+// "dependentModules" since this field specifies which modules DEPEND ON (i.e., require)
+// this metadata item, NOT which modules the metadata item depends on.
+//
+// Example: If a metadata item "workspace" has ModuleDependencies: {ModuleCRM: {}},
+// it means the CRM module requires/depends on the workspace metadata - not that
+// the workspace metadata depends on the CRM module.
 func (m *ModuleLinter) checkMetadataModuleDependencies(pass *analysis.Pass, metadataField ast.Expr) {
 	// metadataField is &ProviderMetadata{...}
 	// We need to unwrap it and find the Input field
