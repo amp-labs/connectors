@@ -62,7 +62,7 @@ func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadDa
 		return fmt.Errorf("%w: missing %s header", errMissingParams, eventHeader)
 	}
 
-	evt["eventHeader"] = eventValue
+	evt[eventHeader] = eventValue
 
 	return nil
 }
@@ -126,7 +126,7 @@ func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
 func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 	m := evt.asMap()
 
-	eventStr, err := m.GetString("eventHeader")
+	eventStr, err := m.GetString(eventHeader)
 	if err != nil {
 		return common.SubscriptionEventTypeOther, err
 	}
@@ -144,7 +144,7 @@ func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 func (evt SubscriptionEvent) ObjectName() (string, error) {
 	m := evt.asMap()
 
-	eventStr, err := m.GetString("eventHeader")
+	eventStr, err := m.GetString(eventHeader)
 	if err != nil {
 		return "", err
 	}
@@ -160,7 +160,7 @@ func (evt SubscriptionEvent) ObjectName() (string, error) {
 func (evt SubscriptionEvent) RawEventName() (string, error) {
 	m := evt.asMap()
 
-	eventStr, err := m.GetString("eventHeader")
+	eventStr, err := m.GetString(eventHeader)
 	if err != nil {
 		return "", err
 	}
