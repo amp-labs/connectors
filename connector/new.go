@@ -89,6 +89,7 @@ import (
 	"github.com/amp-labs/connectors/providers/outplay"
 	"github.com/amp-labs/connectors/providers/outreach"
 	"github.com/amp-labs/connectors/providers/paddle"
+	"github.com/amp-labs/connectors/providers/phoneburner"
 	"github.com/amp-labs/connectors/providers/pinterest"
 	"github.com/amp-labs/connectors/providers/pipedrive"
 	"github.com/amp-labs/connectors/providers/pipeliner"
@@ -218,6 +219,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Pinterest:               wrapper(newPinterestConnector),
 	providers.Pipedrive:               wrapper(newPipedriveConnector),
 	providers.Pipeliner:               wrapper(newPipelinerConnector),
+	providers.PhoneBurner:             wrapper(newPhoneBurnerConnector),
 	providers.Podium:                  wrapper(newPodiumConnector),
 	providers.Pylon:                   wrapper(newPylonConnector),
 	providers.QuickBooks:              wrapper(newQuickbooksConnector),
@@ -684,6 +686,10 @@ func newPodiumConnector(
 	params common.ConnectorParams,
 ) (*podium.Connector, error) {
 	return podium.NewConnector(params)
+}
+
+func newPhoneBurnerConnector(params common.ConnectorParams) (*phoneburner.Connector, error) {
+	return phoneburner.NewConnector(params)
 }
 
 func newLemlistConnector(
