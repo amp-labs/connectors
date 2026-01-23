@@ -123,8 +123,12 @@ func extractNestedUsers(body *ajson.Node) (map[string]any, error) {
 	}
 
 	arr, err := jsonquery.New(parentNode).ArrayOptional("users")
-	if err != nil || arr == nil {
+	if err != nil {
 		return nil, fmt.Errorf("couldn't find users array: %w", err)
+	}
+
+	if arr == nil {
+		return nil, fmt.Errorf("couldn't find users array: %w", common.ErrMissingExpectedValues)
 	}
 
 	if len(arr) == 0 {

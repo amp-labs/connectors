@@ -26,7 +26,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(
 		connector.HTTPClient().Client,
-		schema.FetchModeSerial,
+		schema.FetchModeParallel,
 		operations.SingleObjectMetadataHandlers{
 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
 			ParseResponse: connector.parseSingleObjectMetadataResponse,
