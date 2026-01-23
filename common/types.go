@@ -814,3 +814,28 @@ const (
 	// SubscriptionStatusFailedToRollback registration returned error, and failed to rollback some intermittent steps.
 	SubscriptionStatusFailedToRollback SubscriptionStatus = "failed_to_rollback"
 )
+
+type SearchFilter struct {
+	FilterGroup FilterGroup
+}
+
+type FilterGroup struct {
+	Filters []Filter
+}
+
+type Filter struct {
+	FieldName string
+	Operator  FilterOperatorType
+	Value     any // string, number, boolean, array, object
+}
+
+type FilterOperatorType string
+
+const (
+	FilterOperatorTypeEQ FilterOperatorType = "eq"
+	// FilterOperatorTypeNEQ FilterOperatorType = "neq"
+	// FilterOperatorTypeGT FilterOperatorType = "gt"
+	// FilterOperatorTypeGTE FilterOperatorType = "gte"
+	// FilterOperatorTypeLT FilterOperatorType = "lt"
+	// FilterOperatorTypeLTE FilterOperatorType = "lte".
+)
