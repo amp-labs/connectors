@@ -1,10 +1,8 @@
 package meeting
 
 import (
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
-	"github.com/amp-labs/connectors/providers/zoom"
 	"github.com/amp-labs/connectors/providers/zoom/metadata/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 )
@@ -53,7 +51,7 @@ func Objects() []metadatadef.Schema {
 		"GET",
 		api3.NewAllowPathStrategy(allowedEndpoints),
 		objectEndpoints, displayNameOverride,
-		api3.CustomMappingObjectCheck(zoom.ObjectNameToResponseField[common.ModuleRoot]),
+		nil,
 	)
 
 	goutils.MustBeNil(err)

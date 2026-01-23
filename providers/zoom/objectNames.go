@@ -17,23 +17,6 @@ var (
 	objectNameH322Device    = "h323_devices"    // nolint: gochecknoglobals
 )
 
-// ObjectNameToResponseField maps ObjectName to the response field name which contains that object.
-var ObjectNameToResponseField = common.ModuleObjectNameToFieldName{ // nolint: gochecknoglobals
-	common.ModuleRoot: datautils.NewDefaultMap(map[string]string{
-		"device_groups":     "groups",
-		"archive_files":     "meetings",
-		"meeting_summaries": "summaries",
-		"billing_report":    "billing_reports",
-		"activities_report": "activity_logs",
-		"h323_devices":      "devices",
-		"contacts_groups":   "groups",
-	},
-		func(objectName string) (fieldName string) {
-			return objectName
-		},
-	),
-}
-
 var supportedObjectsByWrite = map[common.ModuleID]datautils.StringSet{ // nolint: gochecknoglobals
 	common.ModuleRoot: datautils.NewSet(
 		ObjectNameContactGroup,
