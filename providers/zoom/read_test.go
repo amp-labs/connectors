@@ -19,6 +19,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseUsersSecondPage := testutils.DataFromFile(t, "read-users-second-page.json")
 	responseArchiveFilesFirstPage := testutils.DataFromFile(t, "archive-files-first-page.json")
 	responseArchiveFilesSecondPage := testutils.DataFromFile(t, "archive-files-second-page.json")
+	responseRecordingsFirstPage := testutils.DataFromFile(t, "recordings-first-page.json")
+	responseRecordingsSecondPage := testutils.DataFromFile(t, "recordings-second-page.json")
 
 	tests := []testroutines.Read{
 		{
@@ -150,6 +152,70 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"topic":             "My Personal Meeting Room",
 						"timezone":          "Asia/Shanghai",
 						"parent_meeting_id": "atdfasXxhSEQWit9t+U02HXNQ==",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read Recordings first page",
+			Input: common.ReadParams{
+				ObjectName: "recordings", Fields: connectors.Fields("id", "topic"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/users/me/recordings"),
+				Then:  mockserver.Response(http.StatusOK, responseRecordingsFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":    float64(6840331990),
+						"topic": "My Personal Meeting",
+					},
+					Raw: map[string]any{
+						"id":              float64(6840331990),
+						"topic":           "My Personal Meeting",
+						"account_id":      "Cx3wERazSgup7ZWRHQM8-w",
+						"host_id":         "_0ctZtY0REqWalTmwvrdIw",
+						"duration":        float64(20),
+						"recording_count": float64(22),
+					},
+				}},
+				NextPage: testroutines.URLTestServer + "/v2/users/me/recordings?next_page_token=Tva2CuIdTgsv8wAnhyAdU3m06Y2HuLQtlh3&page_size=300", //nolint:lll
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read Recordings second page without next page token",
+			Input: common.ReadParams{
+				ObjectName: "recordings", Fields: connectors.Fields("id", "topic"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/users/me/recordings"),
+				Then:  mockserver.Response(http.StatusOK, responseRecordingsSecondPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":    float64(7951442001),
+						"topic": "Team Standup Recording",
+					},
+					Raw: map[string]any{
+						"id":              float64(7951442001),
+						"topic":           "Team Standup Recording",
+						"account_id":      "Dx4xFSbzTgvp8XWSIHN9-x",
+						"host_id":         "_1duAuZ1SFrXblUnxwseJx",
+						"duration":        float64(45),
+						"recording_count": float64(5),
 					},
 				}},
 				NextPage: "",
