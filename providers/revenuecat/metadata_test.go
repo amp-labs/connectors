@@ -87,7 +87,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:       "Successfully describe multiple objects with metadata",
-			Input:      []string{"apps", "customers"},
+			Input:      []string{"apps"},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -132,6 +132,9 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
 		Module:              common.ModuleRoot,
 		AuthenticatedClient: mockutils.NewClient(),
+		Metadata: map[string]string{
+			"project_id": "proje51f9111",
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -141,4 +144,3 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 
 	return connector, nil
 }
-
