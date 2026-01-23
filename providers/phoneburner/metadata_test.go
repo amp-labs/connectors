@@ -20,7 +20,7 @@ func TestListObjectMetadata(t *testing.T) {
 
 	got, err := conn.ListObjectMetadata(
 		t.Context(),
-		[]string{"contacts", "tags", "customfields", "members"},
+		[]string{"contacts", "tags", "folders", "members", "voicemails", "phonenumber"},
 	)
 	if err != nil {
 		t.Fatalf("ListObjectMetadata returned error: %v", err)
@@ -58,16 +58,16 @@ func TestListObjectMetadata(t *testing.T) {
 					},
 				},
 			},
-			"customfields": {
-				DisplayName: "Custom Fields",
+			"folders": {
+				DisplayName: "Folders",
 				Fields: map[string]common.FieldMetadata{
-					"id": {
-						DisplayName:  "Id",
+					"folder_id": {
+						DisplayName:  "Folder Id",
 						ValueType:    "string",
 						ProviderType: "string",
 					},
-					"name": {
-						DisplayName:  "Name",
+					"folder_name": {
+						DisplayName:  "Folder Name",
 						ValueType:    "string",
 						ProviderType: "string",
 					},
@@ -88,8 +88,90 @@ func TestListObjectMetadata(t *testing.T) {
 					},
 				},
 			},
+			"voicemails": {
+				DisplayName: "Voicemails",
+				Fields: map[string]common.FieldMetadata{
+					"recording_id": {
+						DisplayName:  "Recording Id",
+						ValueType:    "string",
+						ProviderType: "string",
+					},
+					"name": {
+						DisplayName:  "Name",
+						ValueType:    "string",
+						ProviderType: "string",
+					},
+				},
+			},
+			"phonenumber": {
+				DisplayName: "Phone Number",
+				Fields: map[string]common.FieldMetadata{
+					"phone_number": {
+						DisplayName:  "Phone Number",
+						ValueType:    "string",
+						ProviderType: "string",
+					},
+				},
+			},
 		},
 		Errors: nil,
+	}
+
+	if !testroutines.ComparatorSubsetMetadata("", got, want) {
+		t.Fatalf("metadata result mismatch: expected subset not found")
+	}
+}
+
+func TestListObjectMetadata_EmptyObjects(t *testing.T) {
+	t.Parallel()
+
+	conn, err := NewConnector(common.ConnectorParams{
+		AuthenticatedClient: mockutils.NewClient(),
+	})
+	if err != nil {
+		t.Fatalf("failed to construct connector: %v", err)
+	}
+
+	_, err = conn.ListObjectMetadata(t.Context(), nil)
+	if err == nil {
+		t.Fatalf("expected error, got nil")
+	}
+	if err != common.ErrMissingObjects {
+		t.Fatalf("expected %v, got %v", common.ErrMissingObjects, err)
+	}
+}
+
+func TestListObjectMetadata_UnsupportedObject(t *testing.T) {
+	t.Parallel()
+
+	conn, err := NewConnector(common.ConnectorParams{
+		AuthenticatedClient: mockutils.NewClient(),
+	})
+	if err != nil {
+		t.Fatalf("failed to construct connector: %v", err)
+	}
+
+	got, err := conn.ListObjectMetadata(t.Context(), []string{"contacts", "unknown_object"})
+	if err != nil {
+		t.Fatalf("ListObjectMetadata returned error: %v", err)
+	}
+
+	want := &common.ListObjectMetadataResult{
+		Result: map[string]common.ObjectMetadata{
+			"contacts": {
+				DisplayName: "Contacts",
+				Fields: map[string]common.FieldMetadata{
+					"id": {
+						DisplayName:  "Id",
+						ValueType:    "string",
+						ProviderType: "string",
+					},
+				},
+			},
+		},
+		Errors: map[string]error{
+			"unknown_object": common.ErrObjectNotSupported,
+		},
 	}
 
 	if !testroutines.ComparatorSubsetMetadata("", got, want) {
