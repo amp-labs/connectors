@@ -1,0 +1,26 @@
+{
+    "totalCount": 123,
+    "data": [
+        {
+            "_id": "<string>",
+            "name": "<string>",
+            "source": "<string>",
+            "total_calls": 123,
+            "connected_calls": 123,
+            "conversations": 123,
+            "meetings_set": 123,
+            "good_quality_contacts": 123,
+            "data_quality": 123,
+            "owner": {
+                "_id": "<string>",
+                "first_name": "<string>",
+                "last_name": "<string>",
+                "email": "<string>"
+            }
+        }
+    ],
+    "page": 123,
+    "limit": 123,
+    "next": 123,
+    "prev": 123
+}
