@@ -838,3 +838,5 @@ type SearchParams struct {
 	NextPage   NextPageToken
 	Limit      int64 // page limit for the search. If omiited, return provider's default limit.
 }
+
+type SearchResult = ReadResult
