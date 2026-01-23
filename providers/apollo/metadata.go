@@ -16,6 +16,7 @@ var (
 	perPage          = "per_page" //nolint:gochecknoglobals
 	metadataPageSize = "1"        //nolint:gochecknoglobals
 	fields           = "fields"   //nolint:gochecknoglobals
+	custom           = "custom"   //nolint:gochecknoglobals
 )
 
 type FieldsResponse struct {
@@ -114,26 +115,27 @@ func (c *Connector) requestMetadata(ctx context.Context, objectNames []string,
 
 // retrieveFields fetches the ObjectMetadata using the fields API
 // https://docs.apollo.io/reference/get-a-list-of-fields this requires master API key.
-func (c *Connector) retrieveFields(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
+func (c *Connector) retrieveFields(ctx context.Context, objectName string, //nolint: cyclop
+) (*common.ObjectMetadata, error) {
 	var response *FieldsResponse
 
 	objectMetadata := common.ObjectMetadata{
 		Fields: make(common.FieldsMetadata),
 	}
 
-	for _, v := range []string{"custom", "system", "crm_synced"} {
+	for _, src := range []string{"custom", "system", "crm_synced"} {
 		url, err := c.getAPIURL(fields, readOp)
 		if err != nil {
 			return nil, err
 		}
 
-		url.WithQueryParam("source", v)
+		url.WithQueryParam("source", src)
 
 		resp, err := c.Client.Get(ctx, url.String())
 		if err != nil {
 			// When this occurs the API responds with 422.
-			// This is beacuse there is no synced crm account.
-			if errors.Is(err, common.ErrCaller) && v == "crm_synced" {
+			// This is because there is no synced crm account.
+			if errors.Is(err, common.ErrCaller) && src == "crm_synced" {
 				logging.Logger(ctx).Error("failed to get crm_synced metadata", "object", objectName, "err", err.Error())
 
 				continue
@@ -157,7 +159,7 @@ func (c *Connector) retrieveFields(ctx context.Context, objectName string) (*com
 				continue
 			}
 
-			if fld.Source == "custom" {
+			if fld.Source == custom {
 				isCustom = true
 			}
 

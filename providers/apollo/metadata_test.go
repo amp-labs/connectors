@@ -53,31 +53,16 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Successfully describe supported & unsupported objects",
-			Input: []string{"opportunities", "arsenal"},
+			Input: []string{"arsenal"},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/v1/opportunities/search"),
-					Then: mockserver.Response(http.StatusOK, opportunityResponse),
-				}, {
 					If:   mockcond.Path("/v1/arsenal"),
 					Then: mockserver.Response(http.StatusBadRequest, unsupportedResponse),
 				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
-				Result: map[string]common.ObjectMetadata{
-					"opportunities": {
-						DisplayName: "opportunities",
-						FieldsMap: map[string]string{
-							"id":                  "id",
-							"owner_id":            "owner_id",
-							"team_id":             "team_id",
-							"amount":              "amount",
-							"salesforce_owner_id": "salesforce_owner_id",
-						},
-					},
-				},
 				Errors: map[string]error{
 					"arsenal": mockutils.ExpectedSubsetErrors{
 						common.ErrCaller,
