@@ -1,0 +1,123 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/rest/1/contacts",
+          "responseKey": "contacts",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "First Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "Last Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone": {
+              "displayName": "Phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/rest/1/tags",
+          "responseKey": "tags",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "customfields": {
+          "displayName": "Custom Fields",
+          "path": "/rest/1/customfields",
+          "responseKey": "customfields",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "members": {
+          "displayName": "Members",
+          "path": "/rest/1/members",
+          "responseKey": "members",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "First Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "Last Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "active": {
+              "displayName": "Active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        }
+      }
+    }
+  }
+}
