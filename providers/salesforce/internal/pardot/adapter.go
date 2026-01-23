@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/salesforce/internal/pardot/metadata"
 )
 
 const MetadataKeyBusinessUnitID = "businessUnitId"
@@ -25,6 +26,9 @@ type Adapter struct {
 	components.Reader
 	components.Writer
 	components.Deleter
+
+	// Features.
+	metadataStrategy *metadata.Strategy
 
 	// Variables.
 	businessUnitID string
@@ -50,6 +54,13 @@ func constructor(base *components.Connector) (*Adapter, error) {
 		},
 	}
 
+	var err error
+
+	adapter.metadataStrategy, err = metadata.NewStrategy(base)
+	if err != nil {
+		return nil, err
+	}
+
 	errorHandler := errorHandlerFunc
 
 	adapter.Reader = reader.NewHTTPReader(
@@ -63,37 +74,29 @@ func constructor(base *components.Connector) (*Adapter, error) {
 		},
 	)
 
-	connector := funcName(adapter)
-
-	connector.Writer = writer.NewHTTPWriter(
-		connector.HTTPClient().Client,
+	adapter.Writer = writer.NewHTTPWriter(
+		adapter.HTTPClient().Client,
 		components.NewEmptyEndpointRegistry(),
-		connector.ProviderContext.Module(),
+		adapter.ProviderContext.Module(),
 		operations.WriteHandlers{
-			BuildRequest:  connector.buildWriteRequest,
-			ParseResponse: connector.parseWriteResponse,
+			BuildRequest:  adapter.buildWriteRequest,
+			ParseResponse: adapter.parseWriteResponse,
 			ErrorHandler:  errorHandler,
 		},
 	)
 
-	connector.Deleter = deleter.NewHTTPDeleter(
-		connector.HTTPClient().Client,
+	adapter.Deleter = deleter.NewHTTPDeleter(
+		adapter.HTTPClient().Client,
 		components.NewEmptyEndpointRegistry(),
-		connector.ProviderContext.Module(),
+		adapter.ProviderContext.Module(),
 		operations.DeleteHandlers{
-			BuildRequest:  connector.buildDeleteRequest,
-			ParseResponse: connector.parseDeleteResponse,
+			BuildRequest:  adapter.buildDeleteRequest,
+			ParseResponse: adapter.parseDeleteResponse,
 			ErrorHandler:  errorHandler,
 		},
 	)
 
 	return adapter, nil
-}
-
-func funcName(adapter *Adapter) *Adapter {
-	connector := adapter
-
-	return connector
 }
 
 func (a *Adapter) getModuleURL() string {
