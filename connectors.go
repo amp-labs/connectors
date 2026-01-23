@@ -388,5 +388,5 @@ type SearchConnector interface {
 	// Returns:
 	//   - *SearchResult: the result containing the search results
 	//   - error: any error that occurred while searching
-	Search(ctx context.Context, params *common.SearchParams) (*common.ReadResult, error)
+	Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error)
 }
