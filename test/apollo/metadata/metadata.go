@@ -14,7 +14,7 @@ func main() {
 
 	conn := apollo.GetApolloConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"opportunities", "contact_stages", "email_accounts", "typed_custom_fields", "opportunity_stages", "users", "deals", "labels", "contacts", "accounts"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"opportunities", "contact_stages", "email_accounts", "typed_custom_fields", "opportunity_stages", "users", "deals", "labels", "contacts", "accounts", "mimi"})
 	if err != nil {
 		log.Fatal(err)
 	}

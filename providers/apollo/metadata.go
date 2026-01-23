@@ -69,6 +69,8 @@ func (c *Connector) requestMetadata(ctx context.Context, objectNames []string,
 			metadata, err := c.retrieveFields(ctx, objectName)
 			if err != nil {
 				metadataResult.Errors[objectName] = err
+
+				continue
 			}
 
 			metadata.DisplayName = objectName
