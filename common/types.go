@@ -828,5 +828,5 @@ type Filter struct {
 type FilterOperator string
 
 const (
-	FilterOperatorTypeEQ FilterOperator = "eq"
+	FilterOperatorEQ FilterOperator = "eq"
 )
