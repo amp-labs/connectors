@@ -814,3 +814,19 @@ const (
 	// SubscriptionStatusFailedToRollback registration returned error, and failed to rollback some intermittent steps.
 	SubscriptionStatusFailedToRollback SubscriptionStatus = "failed_to_rollback"
 )
+
+type SearchFilter struct {
+	Filters []Filter
+}
+
+type Filter struct {
+	FieldName string
+	Operator  FilterOperator
+	Value     any // string, number, boolean, array, object
+}
+
+type FilterOperator string
+
+const (
+	FilterOperatorEQ FilterOperator = "eq"
+)
