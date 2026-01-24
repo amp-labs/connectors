@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/revenuecat/metadata"
 	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
@@ -87,6 +88,43 @@ func removeListSuffix(displayName string) string {
 	return displayName
 }
 
+// processObjects processes the extracted objects and builds schemas and registry
+func processObjects(objects metadatadef.Schemas[any], schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any],
+	registry *datautils.NamedLists[string],
+) {
+	for _, object := range objects {
+		if object.Problem != nil {
+			slog.Error("schema not extracted",
+				"objectName", object.ObjectName,
+				"error", object.Problem,
+			)
+		}
+
+		// Extract object name from URL path
+		// object.ObjectName should already be set from objectEndpoints mapping
+		objectName := object.ObjectName
+		// Normalize object name by replacing slashes with underscores
+		// e.g., "integrations/webhooks" -> "integrations_webhooks"
+		objectName = strings.ReplaceAll(objectName, "/", "_")
+
+		// The path should keep /{project_id}/ prefix for URL construction
+		// Transform /projects/{project_id}/... to /{project_id}/...
+		urlPath, _ := strings.CutPrefix(object.URLPath, "/projects")
+		if !strings.HasPrefix(urlPath, "/") {
+			urlPath = "/" + urlPath
+		}
+
+		for _, field := range object.Fields {
+			schemas.Add(common.ModuleRoot, objectName, object.DisplayName, urlPath, object.ResponseKey,
+				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
+		}
+
+		for _, queryParam := range object.QueryParams {
+			registry.Add(queryParam, objectName)
+		}
+	}
+}
+
 func main() {
 	explorer, err := FileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
@@ -123,37 +161,7 @@ func main() {
 	registry := datautils.NamedLists[string]{}
 
 	// Step 3: Process objects
-	for _, object := range objects {
-		if object.Problem != nil {
-			slog.Error("schema not extracted",
-				"objectName", object.ObjectName,
-				"error", object.Problem,
-			)
-		}
-
-		// Extract object name from URL path
-		// object.ObjectName should already be set from objectEndpoints mapping
-		objectName := object.ObjectName
-		// Normalize object name by replacing slashes with underscores
-		// e.g., "integrations/webhooks" -> "integrations_webhooks"
-		objectName = strings.ReplaceAll(objectName, "/", "_")
-
-		// The path should keep /{project_id}/ prefix for URL construction
-		// Transform /projects/{project_id}/... to /{project_id}/...
-		urlPath, _ := strings.CutPrefix(object.URLPath, "/projects")
-		if !strings.HasPrefix(urlPath, "/") {
-			urlPath = "/" + urlPath
-		}
-
-		for _, field := range object.Fields {
-			schemas.Add(common.ModuleRoot, objectName, object.DisplayName, urlPath, object.ResponseKey,
-				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
-		}
-
-		for _, queryParam := range object.QueryParams {
-			registry.Add(queryParam, objectName)
-		}
-	}
+	processObjects(objects, schemas, &registry)
 
 	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
 	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
