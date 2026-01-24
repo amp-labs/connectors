@@ -29,8 +29,7 @@ var readingSearchObjectsPOST = []string{"accounts", "contacts", "tasks", "emaile
 // readingListObjects represents objects that read by listing.
 //
 //nolint:gochecknoglobals,lll
-var readingListObjects = []string{"contact_stages", "opportunity_stages", "account_stages", "email_accounts", "labels",
-	"typed_custom_fields", "deal_stages", "lists_and_tags"}
+var readingListObjects = []string{"contact_stages", "opportunity_stages", "account_stages", "email_accounts", "labels", "typed_custom_fields", "deal_stages", "lists_and_tags"}
 
 // productNameToObjectName represents a mapping between the docs displaynames to object names.
 //

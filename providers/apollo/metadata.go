@@ -73,8 +73,10 @@ func (c *Connector) requestMetadata(ctx context.Context, objectNames []string,
 				continue
 			}
 
-			metadata.DisplayName = objectName
-			metadataResult.Result[objectName] = *metadata
+			if metadata != nil {
+				metadata.DisplayName = objectName
+				metadataResult.Result[objectName] = *metadata
+			}
 
 			continue
 		}
