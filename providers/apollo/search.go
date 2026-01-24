@@ -44,7 +44,7 @@ func (c *Connector) Search(ctx context.Context, config common.ReadParams, url *u
 		resp,
 		searchRecords(config.ObjectName),
 		getNextRecords,
-		common.GetMarshaledData,
+		apolloMarshaledData(config.ObjectName),
 		config.Fields,
 	)
 }

@@ -60,7 +60,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	return common.ParseResult(res,
 		recordsWrapperFunc(config.ObjectName),
 		getNextRecords,
-		common.GetMarshaledData,
+		apolloMarshaledData(config.ObjectName),
 		config.Fields,
 	)
 }
