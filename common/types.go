@@ -816,26 +816,17 @@ const (
 )
 
 type SearchFilter struct {
-	FilterGroup FilterGroup
-}
-
-type FilterGroup struct {
 	Filters []Filter
 }
 
 type Filter struct {
 	FieldName string
-	Operator  FilterOperatorType
+	Operator  FilterOperator
 	Value     any // string, number, boolean, array, object
 }
 
-type FilterOperatorType string
+type FilterOperator string
 
 const (
-	FilterOperatorTypeEQ FilterOperatorType = "eq"
-	// FilterOperatorTypeNEQ FilterOperatorType = "neq"
-	// FilterOperatorTypeGT FilterOperatorType = "gt"
-	// FilterOperatorTypeGTE FilterOperatorType = "gte"
-	// FilterOperatorTypeLT FilterOperatorType = "lt"
-	// FilterOperatorTypeLTE FilterOperatorType = "lte".
+	FilterOperatorTypeEQ FilterOperator = "eq"
 )
