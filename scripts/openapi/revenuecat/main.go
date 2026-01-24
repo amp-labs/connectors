@@ -89,7 +89,9 @@ func removeListSuffix(displayName string) string {
 }
 
 // processObjects processes the extracted objects and builds schemas and registry
-func processObjects(objects metadatadef.Schemas[any], schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any],
+func processObjects(
+	objects metadatadef.Schemas[any],
+	schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any],
 	registry *datautils.NamedLists[string],
 ) {
 	for _, object := range objects {
