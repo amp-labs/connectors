@@ -24,8 +24,8 @@ var (
 )
 
 // TopLevelPathMatcher only allows paths that have {project_id} as a preceding part and no other ID parameters
-// This filters out nested routes like /{project_id}/apps/{app_id}/... or /{project_id}/entitlements/{entitlement_id}/...
-// or /{project_id}/customers/{customer_id}/...
+// This filters out nested routes like /{project_id}/apps/{app_id}/... or
+// /{project_id}/entitlements/{entitlement_id}/...
 type TopLevelPathMatcher struct{}
 
 func (TopLevelPathMatcher) IsPathMatching(path string) bool {
