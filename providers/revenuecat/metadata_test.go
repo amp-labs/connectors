@@ -33,7 +33,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"apps": {
-						DisplayName: "Applist",
+						DisplayName: "App",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
 								DisplayName:  "id",
@@ -63,7 +63,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"customers": {
-						DisplayName: "Customerlist",
+						DisplayName: "Customers",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
 								DisplayName:  "id",
@@ -87,13 +87,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:       "Successfully describe multiple objects with metadata",
-			Input:      []string{"apps"},
+			Input:      []string{"entitlements", "offerings"},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"apps": {
-						DisplayName: "Applist",
+					"entitlements": {
+						DisplayName: "Entitlements",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
 								DisplayName:  "id",
@@ -102,8 +102,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 						},
 					},
-					"customers": {
-						DisplayName: "Customerlist",
+					"offerings": {
+						DisplayName: "Offerings",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
 								DisplayName:  "id",

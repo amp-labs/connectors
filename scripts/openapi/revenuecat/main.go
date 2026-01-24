@@ -21,13 +21,11 @@ var (
 	apiFile []byte
 
 	FileManager = api3.NewOpenapiFileManager[any](apiFile) // nolint:gochecknoglobals
-
-	ignoreEndpoints = []string{}
 )
 
-// TopLevelPathMatcher only allows paths that have {project_id} and no other ID parameters
-// This filters out nested routes like /apps/{app_id}/... or /entitlements/{entitlement_id}/...
-// or /customers/{customer_id}/...
+// TopLevelPathMatcher only allows paths that have {project_id} as a preceding part and no other ID parameters
+// This filters out nested routes like /{project_id}/apps/{app_id}/... or /{project_id}/entitlements/{entitlement_id}/...
+// or /{project_id}/customers/{customer_id}/...
 type TopLevelPathMatcher struct{}
 
 func (TopLevelPathMatcher) IsPathMatching(path string) bool {
@@ -70,7 +68,11 @@ func extractEndpoints(explorer *api3.Explorer[any]) (map[string]string, error) {
 			continue
 		}
 
-		// Map the full URL path to the object name
+		// Normalize object name by replacing slashes with underscores
+		// e.g., "integrations/webhooks" -> "integrations_webhooks"
+		objectName = strings.ReplaceAll(objectName, "/", "_")
+
+		// Map the full URL path to the normalized object name
 		objectEndpoints[urlPath] = objectName
 	}
 
@@ -89,6 +91,7 @@ func main() {
 	explorer, err := FileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
 			removeListSuffix,
+			api3.SlashesToSpaceSeparated,
 			api3.CamelCaseToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,
 			api3.Pluralize,
@@ -131,6 +134,9 @@ func main() {
 		// Extract object name from URL path
 		// object.ObjectName should already be set from objectEndpoints mapping
 		objectName := object.ObjectName
+		// Normalize object name by replacing slashes with underscores
+		// e.g., "integrations/webhooks" -> "integrations_webhooks"
+		objectName = strings.ReplaceAll(objectName, "/", "_")
 
 		// The path should keep /{project_id}/ prefix for URL construction
 		// Transform /projects/{project_id}/... to /{project_id}/...
@@ -145,7 +151,7 @@ func main() {
 		}
 
 		for _, queryParam := range object.QueryParams {
-			registry.Add(queryParam, object.ObjectName)
+			registry.Add(queryParam, objectName)
 		}
 	}
 

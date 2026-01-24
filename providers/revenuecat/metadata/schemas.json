@@ -244,7 +244,7 @@
             }
           }
         },
-        "integrations/webhooks": {
+        "integrations_webhooks": {
           "displayName": "Webhook Integrations",
           "path": "/integrations/webhooks",
           "responseKey": "items",
@@ -316,8 +316,8 @@
             }
           }
         },
-        "metrics/overview": {
-          "displayName": "Metrics/Overviews",
+        "metrics_overview": {
+          "displayName": "Metrics Overviews",
           "path": "/metrics/overview",
           "responseKey": "metrics",
           "fields": {
