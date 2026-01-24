@@ -11,10 +11,17 @@ import (
 
 // GetRecordCount returns the count of records for the given object and time range.
 // It uses Salesforce's COUNT() SOQL function to get the count efficiently.
+//
+// Example: counting Account records modified since a given time produces SOQL like:
+//
+//	SELECT COUNT() FROM Account WHERE SystemModstamp > 2024-01-15T00:00:00Z
+//
+// https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_count.htm
 func (c *Connector) GetRecordCount(
 	ctx context.Context,
 	params *common.RecordCountParams,
 ) (*common.RecordCountResult, error) {
+
 	if c.isPardotModule() {
 		return c.pardotAdapter.GetRecordCount(ctx, params)
 	}
