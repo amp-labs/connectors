@@ -3,6 +3,7 @@ package zoom
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -220,6 +221,154 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				}},
 				NextPage: "",
 				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Incremental read of Recordings with Since filter",
+			Input: common.ReadParams{
+				ObjectName: "recordings",
+				Fields:     connectors.Fields("id", "topic"),
+				Since:      time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v2/users/me/recordings"),
+					mockcond.QueryParam("from", "2024-01-15"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseRecordingsFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":    float64(6840331990),
+						"topic": "My Personal Meeting",
+					},
+					Raw: map[string]any{
+						"id":              float64(6840331990),
+						"topic":           "My Personal Meeting",
+						"account_id":      "Cx3wERazSgup7ZWRHQM8-w",
+						"host_id":         "_0ctZtY0REqWalTmwvrdIw",
+						"duration":        float64(20),
+						"recording_count": float64(22),
+					},
+				}},
+				NextPage: testroutines.URLTestServer + "/v2/users/me/recordings?" +
+					"from=2024-01-15&next_page_token=Tva2CuIdTgsv8wAnhyAdU3m06Y2HuLQtlh3&page_size=300",
+				Done: false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Incremental read of Recordings with Since and Until filters",
+			Input: common.ReadParams{
+				ObjectName: "recordings",
+				Fields:     connectors.Fields("id", "topic"),
+				Since:      time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2024, 3, 31, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v2/users/me/recordings"),
+					mockcond.QueryParam("from", "2024-01-01"),
+					mockcond.QueryParam("to", "2024-03-31"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseRecordingsFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":    float64(6840331990),
+						"topic": "My Personal Meeting",
+					},
+					Raw: map[string]any{
+						"id":              float64(6840331990),
+						"topic":           "My Personal Meeting",
+						"account_id":      "Cx3wERazSgup7ZWRHQM8-w",
+						"host_id":         "_0ctZtY0REqWalTmwvrdIw",
+						"duration":        float64(20),
+						"recording_count": float64(22),
+					},
+				}},
+				NextPage: testroutines.URLTestServer + "/v2/users/me/recordings?" +
+					"from=2024-01-01&next_page_token=Tva2CuIdTgsv8wAnhyAdU3m06Y2HuLQtlh3&page_size=300&to=2024-03-31",
+				Done: false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Incremental read of Archive Files with Since filter",
+			Input: common.ReadParams{
+				ObjectName: "archive_files",
+				Fields:     connectors.Fields("id", "topic"),
+				Since:      time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v2/archive_files"),
+					mockcond.QueryParam("from", "2024-06-01"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseArchiveFilesFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":    float64(553068284),
+						"topic": "My Personal Meeting Room",
+					},
+					Raw: map[string]any{
+						"id":                float64(553068284),
+						"topic":             "My Personal Meeting Room",
+						"timezone":          "Asia/Shanghai",
+						"parent_meeting_id": "atsXxhSEQWit9t+U02HXNQ==",
+					},
+				}},
+				NextPage: testroutines.URLTestServer + "/v2/archive_files?" +
+					"from=2024-06-01&next_page_token=At6eWnFZ1FB3arCXnRxqHLXKhbDW18yz2i2&page_size=300",
+				Done: false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Users read does not add time filter params",
+			Input: common.ReadParams{
+				ObjectName: "users",
+				Fields:     connectors.Fields("id", "email"),
+				Since:      time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v2/users"),
+					mockcond.QueryParamsMissing("from"),
+					mockcond.QueryParamsMissing("to"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseUsersFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":    "KDcuGIm1QgePTO8WbOqwIQ",
+						"email": "jchill@example.com",
+					},
+					Raw: map[string]any{
+						"id":    "KDcuGIm1QgePTO8WbOqwIQ",
+						"email": "jchill@example.com",
+					},
+				}},
+				NextPage: testroutines.URLTestServer + "/v2/users?next_page_token=8V8HigQkzm2O5r9RUn31D9ZyJHgrmFfbLa2&page_size=300", //nolint:lll
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},

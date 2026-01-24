@@ -15,6 +15,34 @@ var (
 	objectNameTrackingField = "tracking_fields" // nolint: gochecknoglobals
 	objectNameDevice        = "devices"         // nolint: gochecknoglobals
 	objectNameH322Device    = "h323_devices"    // nolint: gochecknoglobals
+	objectNameMeeting       = "meetings"        // nolint: gochecknoglobals
+)
+
+var incrementalObjects = datautils.NewSet( //nolint:gochecknoglobals
+	"recordings",
+	"archive_files",
+	"meeting_summaries",
+	"activities",
+	"meetings",
+	"users_report",
+	"recordings_report",
+	"meetings_report",
+	"operation_logs_report",
+	"meeting_activities_report",
+	"telephone_report",
+	"upcoming_events_report",
+)
+
+// mandatoryDateObjects defines which objects require mandatory from/to query parameters.
+// These endpoints will get default 30-day range when Since/Until are not provided.
+var mandatoryDateObjects = datautils.NewSet( //nolint:gochecknoglobals
+	"users_report",
+	"recordings_report",
+	"meetings_report",
+	"operation_logs_report",
+	"meeting_activities_report",
+	"telephone_report",
+	"upcoming_events_report",
 )
 
 var supportedObjectsByWrite = map[common.ModuleID]datautils.StringSet{ // nolint: gochecknoglobals
@@ -35,6 +63,7 @@ var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ // nolint
 	objectNameTrackingField: "/tracking_fields",
 	objectNameDevice:        "/devices",
 	objectNameH322Device:    "/h323/devices",
+	objectNameMeeting:       "/users/me/meetings",
 }, func(objectName string) (path string) {
 	return objectName
 },

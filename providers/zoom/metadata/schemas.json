@@ -544,6 +544,43 @@
             }
           }
         },
+        "meeting_activities_report": {
+          "displayName": "Meeting Activities Report",
+          "path": "/report/meeting_activities",
+          "responseKey": "meeting_activity_logs",
+          "fields": {
+            "activity_category": {
+              "displayName": "activity_category",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "activity_detail": {
+              "displayName": "activity_detail",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "activity_time": {
+              "displayName": "activity_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "meeting_number": {
+              "displayName": "meeting_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "operator": {
+              "displayName": "operator",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "operator_email": {
+              "displayName": "operator_email",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "meeting_summaries": {
           "displayName": "Meeting Summaries",
           "path": "/meetings/meeting_summaries",
@@ -601,6 +638,325 @@
             },
             "summary_start_time": {
               "displayName": "summary_start_time",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "meeting_templates": {
+          "displayName": "Meeting Templates",
+          "path": "/users/me/meeting_templates",
+          "responseKey": "templates",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "meetings": {
+          "displayName": "Meetings",
+          "path": "/users/me/meetings",
+          "responseKey": "meetings",
+          "fields": {
+            "agenda": {
+              "displayName": "agenda",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "duration": {
+              "displayName": "duration",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "host_id": {
+              "displayName": "host_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "join_url": {
+              "displayName": "join_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pmi": {
+              "displayName": "pmi",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_time": {
+              "displayName": "start_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "timezone": {
+              "displayName": "timezone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "topic": {
+              "displayName": "topic",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "int",
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                }
+              ]
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "meetings_report": {
+          "displayName": "Meetings Report",
+          "path": "/report/users/me/meetings",
+          "responseKey": "meetings",
+          "fields": {
+            "custom_keys": {
+              "displayName": "custom_keys",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "duration": {
+              "displayName": "duration",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "end_time": {
+              "displayName": "end_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "has_chat": {
+              "displayName": "has_chat",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_recording": {
+              "displayName": "has_recording",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_screen_share": {
+              "displayName": "has_screen_share",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "host_name": {
+              "displayName": "host_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "host_organization": {
+              "displayName": "host_organization",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "join_time": {
+              "displayName": "join_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "join_waiting_room_time": {
+              "displayName": "join_waiting_room_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "leave_time": {
+              "displayName": "leave_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "meeting_encryption_status": {
+              "displayName": "meeting_encryption_status",
+              "valueType": "int",
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
+            },
+            "participants_count": {
+              "displayName": "participants_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "participants_count_my_account": {
+              "displayName": "participants_count_my_account",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "schedule_time": {
+              "displayName": "schedule_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "session_key": {
+              "displayName": "session_key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "source": {
+              "displayName": "source",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_time": {
+              "displayName": "start_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "topic": {
+              "displayName": "topic",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "total_minutes": {
+              "displayName": "total_minutes",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "int",
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                }
+              ]
+            },
+            "user_email": {
+              "displayName": "user_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_name": {
+              "displayName": "user_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "operation_logs_report": {
+          "displayName": "Operation Logs Report",
+          "path": "/report/operationlogs",
+          "responseKey": "operation_logs",
+          "fields": {
+            "action": {
+              "displayName": "action",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category_type": {
+              "displayName": "category_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "operation_detail": {
+              "displayName": "operation_detail",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "operator": {
+              "displayName": "operator",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time": {
+              "displayName": "time",
               "valueType": "string",
               "providerType": "string"
             }
@@ -787,6 +1143,159 @@
             }
           }
         },
+        "recordings_report": {
+          "displayName": "Recordings Report",
+          "path": "/report/cloud_recording",
+          "responseKey": "cloud_recording_storage",
+          "fields": {
+            "date": {
+              "displayName": "date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "free_usage": {
+              "displayName": "free_usage",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "plan_usage": {
+              "displayName": "plan_usage",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "usage": {
+              "displayName": "usage",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "telephone_report": {
+          "displayName": "Telephone Report",
+          "path": "/report/telephone",
+          "responseKey": "telephony_usage",
+          "fields": {
+            "call_in_number": {
+              "displayName": "call_in_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "country_name": {
+              "displayName": "country_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dept": {
+              "displayName": "dept",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "duration": {
+              "displayName": "duration",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "end_time": {
+              "displayName": "end_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "host_email": {
+              "displayName": "host_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "host_id": {
+              "displayName": "host_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "host_name": {
+              "displayName": "host_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "meeting_id": {
+              "displayName": "meeting_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "meeting_type": {
+              "displayName": "meeting_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone_number": {
+              "displayName": "phone_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "rate": {
+              "displayName": "rate",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "signaled_number": {
+              "displayName": "signaled_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_time": {
+              "displayName": "start_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "total": {
+              "displayName": "total",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "toll-free",
+                  "displayValue": "toll-free"
+                },
+                {
+                  "value": "call-out",
+                  "displayValue": "call-out"
+                },
+                {
+                  "value": "call-in",
+                  "displayValue": "call-in"
+                },
+                {
+                  "value": "US toll-number",
+                  "displayValue": "US toll-number"
+                },
+                {
+                  "value": "global toll-number",
+                  "displayValue": "global toll-number"
+                },
+                {
+                  "value": "premium",
+                  "displayValue": "premium"
+                },
+                {
+                  "value": "premium call-in",
+                  "displayValue": "premium call-in"
+                },
+                {
+                  "value": "Toll",
+                  "displayValue": "Toll"
+                }
+              ]
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "tracking_fields": {
           "displayName": "Tracking Fields",
           "path": "/tracking_fields",
@@ -814,6 +1323,170 @@
             },
             "visible": {
               "displayName": "visible",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "tsp": {
+          "displayName": "Tsp",
+          "path": "/users/me/tsp",
+          "responseKey": "tsp_accounts",
+          "fields": {
+            "conference_code": {
+              "displayName": "conference_code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dial_in_numbers": {
+              "displayName": "dial_in_numbers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
+            },
+            "leader_pin": {
+              "displayName": "leader_pin",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tsp_bridge": {
+              "displayName": "tsp_bridge",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "US_TSP_TB",
+                  "displayValue": "US_TSP_TB"
+                },
+                {
+                  "value": "EU_TSP_TB",
+                  "displayValue": "EU_TSP_TB"
+                }
+              ]
+            }
+          }
+        },
+        "upcoming_events_report": {
+          "displayName": "Upcoming Events Report",
+          "path": "/report/upcoming_events",
+          "responseKey": "upcoming_events",
+          "fields": {
+            "dept": {
+              "displayName": "dept",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "host_id": {
+              "displayName": "host_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "host_name": {
+              "displayName": "host_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_time": {
+              "displayName": "start_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "topic": {
+              "displayName": "topic",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "upcoming_meetings": {
+          "displayName": "Upcoming Meetings",
+          "path": "/users/me/upcoming_meetings",
+          "responseKey": "meetings",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "duration": {
+              "displayName": "duration",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "join_url": {
+              "displayName": "join_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "passcode": {
+              "displayName": "passcode",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_time": {
+              "displayName": "start_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "timezone": {
+              "displayName": "timezone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "topic": {
+              "displayName": "topic",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "int",
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                }
+              ]
+            },
+            "use_pmi": {
+              "displayName": "use_pmi",
               "valueType": "boolean",
               "providerType": "boolean"
             }
@@ -1049,6 +1722,139 @@
                   "displayValue": "0"
                 }
               ]
+            }
+          }
+        },
+        "users_report": {
+          "displayName": "Users Report",
+          "path": "/report/users",
+          "responseKey": "users",
+          "fields": {
+            "custom_attributes": {
+              "displayName": "custom_attributes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "dept": {
+              "displayName": "dept",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "meeting_minutes": {
+              "displayName": "meeting_minutes",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "meetings": {
+              "displayName": "meetings",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "participants": {
+              "displayName": "participants",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "user_name": {
+              "displayName": "user_name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "webinars": {
+          "displayName": "Webinars",
+          "path": "/users/me/webinars",
+          "responseKey": "webinars",
+          "fields": {
+            "agenda": {
+              "displayName": "agenda",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "duration": {
+              "displayName": "duration",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "host_id": {
+              "displayName": "host_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_simulive": {
+              "displayName": "is_simulive",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "join_url": {
+              "displayName": "join_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_time": {
+              "displayName": "start_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "timezone": {
+              "displayName": "timezone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "topic": {
+              "displayName": "topic",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "int",
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                }
+              ]
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
             }
           }
         }
