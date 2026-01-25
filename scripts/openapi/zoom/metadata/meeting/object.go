@@ -34,11 +34,11 @@ var (
 	}
 
 	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
-		"/devices/groups":                 "device_groups",
+		"/devices/groups":                 "devices_groups",
 		"/archive_files":                  "archive_files",
 		"/meetings/meeting_summaries":     "meeting_summaries",
 		"/report/billing":                 "billing",
-		"/report/activities":              "activities",
+		"/report/activities":              "activities_report",
 		"/h323/devices":                   "h323_devices",
 		"/report/users/{userId}/meetings": "meetings_report",
 		"/report/users":                   "users_report",
@@ -50,7 +50,7 @@ var (
 	}
 
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
-		"devices/groups":                  "Device Groups",
+		"devices/groups":                  "Devices Groups",
 		"h323/devices":                    "H.323/SIP Devices",
 		"/report/users/{userId}/meetings": "Meetings Report",
 		"/report/users":                   "Users Report",
@@ -59,6 +59,7 @@ var (
 		"/report/meeting_activities":      "Meeting Activities Report",
 		"/report/telephone":               "Telephone Report",
 		"/report/upcoming_events":         "Upcoming Events Report",
+		"/report/activities":              "Activities Report",
 	}
 )
 

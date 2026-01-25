@@ -4,8 +4,8 @@
       "id": "root",
       "path": "",
       "objects": {
-        "activities": {
-          "displayName": "Activities",
+        "activities_report": {
+          "displayName": "Activities Report",
           "path": "/report/activities",
           "responseKey": "activity_logs",
           "fields": {
@@ -303,28 +303,6 @@
             }
           }
         },
-        "device_groups": {
-          "displayName": "Device Groups",
-          "path": "/devices/groups",
-          "responseKey": "groups",
-          "fields": {
-            "description": {
-              "displayName": "description",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "name": {
-              "displayName": "name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "zdm_group_id": {
-              "displayName": "zdm_group_id",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "devices": {
           "displayName": "Devices",
           "path": "/devices",
@@ -461,6 +439,28 @@
             },
             "vendor": {
               "displayName": "vendor",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "devices_groups": {
+          "displayName": "Devices Groups",
+          "path": "/devices/groups",
+          "responseKey": "groups",
+          "fields": {
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "zdm_group_id": {
+              "displayName": "zdm_group_id",
               "valueType": "string",
               "providerType": "string"
             }
