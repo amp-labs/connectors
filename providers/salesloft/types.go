@@ -46,6 +46,9 @@ type eventMapping struct {
 }
 
 type salesloftObjectMapping struct {
+	// ObjectName is the prefix used in Salesloft webhook event names.
+	// For example, "task" is used in events like "task_created", "task_updated".
+	// This differs from the map key which represents the actual object name used in read/write operations.
 	ObjectName string
 	Events     eventMapping
 }

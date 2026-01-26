@@ -17,6 +17,10 @@ var (
 	//nolint:revive
 )
 
+// salesloftEventMappings maps the actual object names (used in read/write operations) to their webhook configurations.
+// The map key (e.g., "tasks", "people", "activities/calls") is the object name supported by the connector.
+// The ObjectName field in the value (e.g., "task", "person", "call") is the prefix used in webhook event names.
+//
 //nolint:gochecknoglobals
 var salesloftEventMappings = map[common.ObjectName]salesloftObjectMapping{
 	"accounts": {
