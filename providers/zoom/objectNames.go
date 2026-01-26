@@ -16,6 +16,8 @@ var (
 	objectNameDevice        = "devices"         // nolint: gochecknoglobals
 	objectNameH322Device    = "h323_devices"    // nolint: gochecknoglobals
 	objectNameMeeting       = "meetings"        // nolint: gochecknoglobals
+	objectNameTsp           = "tsp"             // nolint: gochecknoglobals
+	objectNameWebinar       = "webinars"        // nolint: gochecknoglobals
 )
 
 var incrementalObjects = datautils.NewSet( //nolint:gochecknoglobals
@@ -53,6 +55,8 @@ var supportedObjectsByWrite = map[common.ModuleID]datautils.StringSet{ // nolint
 		objectNameTrackingField,
 		objectNameDevice,
 		objectNameH322Device,
+		objectNameTsp,
+		objectNameWebinar,
 	),
 }
 
@@ -64,6 +68,8 @@ var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ // nolint
 	objectNameDevice:        "/devices",
 	objectNameH322Device:    "/h323/devices",
 	objectNameMeeting:       "/users/me/meetings",
+	objectNameTsp:           "/users/me/tsp",
+	objectNameWebinar:       "/users/me/webinars",
 }, func(objectName string) (path string) {
 	return objectName
 },

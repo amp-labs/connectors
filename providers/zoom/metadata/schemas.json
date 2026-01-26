@@ -215,8 +215,8 @@
             }
           }
         },
-        "billing": {
-          "displayName": "Billing",
+        "billing_report": {
+          "displayName": "Billing Report",
           "path": "/report/billing",
           "responseKey": "billing_reports",
           "fields": {

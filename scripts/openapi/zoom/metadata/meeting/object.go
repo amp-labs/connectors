@@ -37,7 +37,7 @@ var (
 		"/devices/groups":                 "devices_groups",
 		"/archive_files":                  "archive_files",
 		"/meetings/meeting_summaries":     "meeting_summaries",
-		"/report/billing":                 "billing",
+		"/report/billing":                 "billing_report",
 		"/report/activities":              "activities_report",
 		"/h323/devices":                   "h323_devices",
 		"/report/users/{userId}/meetings": "meetings_report",
@@ -50,6 +50,7 @@ var (
 	}
 
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
+		"/report/billing":                 "Billing Report",
 		"devices/groups":                  "Devices Groups",
 		"h323/devices":                    "H.323/SIP Devices",
 		"/report/users/{userId}/meetings": "Meetings Report",
