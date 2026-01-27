@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"slices"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -24,7 +23,7 @@ func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	}
 }
 
-// nolint: funlen, cyclop
+// nolint: funlen, cyclop, godoclint
 func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -66,12 +65,12 @@ func (c *Connector) Subscribe(
 }
 
 // UpdateSubscription implements [connectors.SubscribeConnector].
+// nolint: nilnil
 func (c *Connector) UpdateSubscription(
 	ctx context.Context,
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-
 	// TODO: Implement update logic
 	return nil, nil
 }
@@ -173,7 +172,6 @@ func buildPayload(
 	for objectName, events := range subscriptionEvents {
 		for _, event := range events.Events {
 			EventsMap, err := getObjectEvents(objectName)
-
 			// This should never happen due to prior validation
 			if err != nil {
 				return nil, err
@@ -208,7 +206,6 @@ func buildPayload(
 	}
 
 	return payload, nil
-
 }
 
 func getObjectEvents(objectName common.ObjectName) (objectEvents, error) {
@@ -216,18 +213,8 @@ func getObjectEvents(objectName common.ObjectName) (objectEvents, error) {
 	if !exists {
 		return objectEvents{}, fmt.Errorf("%w: %s", errUnsupportedObject, objectName)
 	}
+
 	return events, nil
-}
-
-func getObjectEventsByProviderEvent(eventName providerEvent) (common.ObjectName, objectEvents, error) {
-	for objName, attioEvents := range attioObjectEvents {
-		_, found := attioEvents.toCommonEvent(eventName)
-		if found {
-			return objName, attioEvents, nil
-		}
-	}
-
-	return "", objectEvents{}, fmt.Errorf("%w: %s", errUnsupportedSubscriptionEvent, eventName)
 }
 
 func validateSubscriptionEvents(subscriptionEvents map[common.ObjectName]common.ObjectEvents) error {
@@ -256,6 +243,7 @@ func validateSubscriptionEvents(subscriptionEvents map[common.ObjectName]common.
 			if providerEvents == nil {
 				validationErrors = errors.Join(validationErrors,
 					fmt.Errorf("%w for object '%s'", errUnsupportedSubscriptionEvent, objectName))
+
 				continue
 			}
 
@@ -303,21 +291,4 @@ func (e objectEvents) toProviderEvents(commonEvent common.SubscriptionEventType)
 	default:
 		return nil
 	}
-}
-
-// getCommonEventType converts a provider event back to common event type.
-func (e objectEvents) toCommonEvent(providerEvent providerEvent) (common.SubscriptionEventType, bool) {
-	if slices.Contains(e.createEvents, providerEvent) {
-		return common.SubscriptionEventTypeCreate, true
-	}
-
-	if slices.Contains(e.updateEvents, providerEvent) {
-		return common.SubscriptionEventTypeUpdate, true
-	}
-
-	if slices.Contains(e.deleteEvents, providerEvent) {
-		return common.SubscriptionEventTypeDelete, true
-	}
-
-	return "", false
 }
