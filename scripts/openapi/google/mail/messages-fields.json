@@ -1,0 +1,87 @@
+{
+  "id": {
+    "displayName": "Id",
+    "valueType": "string",
+    "providerType": "string"
+  },
+  "threadId": {
+    "displayName": "Thread Id",
+    "valueType": "string",
+    "providerType": "string"
+  },
+  "$['payload']['partId']": {
+    "displayName": "Payload Part Id",
+    "valueType": "string",
+    "providerType": "string"
+  },
+  "$['payload']['mimeType']": {
+    "displayName": "Payload Mime Type",
+    "valueType": "string",
+    "providerType": "string"
+  },
+  "$['payload']['filename']": {
+    "displayName": "Payload Filename",
+    "valueType": "string",
+    "providerType": "string"
+  },
+  "$['payload']['headers']": {
+    "displayName": "Payload Headers",
+    "valueType": "other",
+    "providerType": "array"
+  },
+  "$['payload']['body']": {
+    "displayName": "Payload Body",
+    "valueType": "other",
+    "providerType": "object"
+  },
+  "$['payload']['body']['data']": {
+    "displayName": "Payload Data",
+    "valueType": "string",
+    "providerType": "string"
+  },
+  "$['payload']['parts']": {
+    "displayName": "Payload Parts",
+    "valueType": "other",
+    "providerType": "array"
+  },
+  "$labelIds": {
+    "displayName": "Label Ids",
+    "valueType": "other",
+    "providerType": "array"
+  },
+  "snippet": {
+    "displayName": "Snippet",
+    "valueType": "string",
+    "providerType": "string"
+  },
+  "historyId": {
+    "displayName": "History Id",
+    "valueType": "string",
+    "providerType": "string"
+  },
+  "$internalDate": {
+    "displayName": "Internal Date",
+    "valueType": "string",
+    "providerType": "string"
+  },
+  "payload": {
+    "displayName": "Payload",
+    "valueType": "other",
+    "providerType": "object"
+  },
+  "sizeEstimate": {
+    "displayName": "Size Estimate",
+    "valueType": "int",
+    "providerType": "integer"
+  },
+  "raw": {
+    "displayName": "Raw",
+    "valueType": "string",
+    "providerType": "string"
+  },
+  "classificationLabelValues": {
+    "displayName": "Classification Label Values",
+    "valueType": "other",
+    "providerType": "array"
+  }
+}

@@ -57,3 +57,7 @@ func (a *Adapter) getReadURL(objectName string) (*urlbuilder.URL, error) {
 
 	return urlbuilder.New(a.ModuleInfo().BaseURL, apiVersion, path)
 }
+
+func (a *Adapter) getMessageURL(messageID string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(a.ModuleInfo().BaseURL, apiVersion, "users/me/messages", messageID)
+}
