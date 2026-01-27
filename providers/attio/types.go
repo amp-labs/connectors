@@ -1,32 +1,24 @@
 package attio
 
-type SubscriptionRequest struct {
+type subscriptionRequest struct {
 	UniqueRef       string `json:"unique_ref"        validate:"required"`
 	WebhookEndpoint string `json:"webhook_end_point" validate:"required"`
 	Secret          string `json:"secret,omitempty"`
 }
 
-type SubscriptionPayload struct {
-	Data SubscriptionData `json:"data" validate:"required"`
+type subscriptionPayload struct {
+	Data subscriptionData `json:"data" validate:"required"`
 }
 
-type SubscriptionData struct {
+type subscriptionData struct {
 	TargetURL     string         `json:"target_url"    validate:"required"`
-	Subscriptions []Subscription `json:"subscriptions" validate:"required"`
+	Subscriptions []subscription `json:"subscriptions" validate:"required"`
 }
 
-type Subscription struct {
-	EventType string `json:"event_type" validate:"required"`
-	Filter    any    `json:"filter"     validate:"required"`
+type subscription struct {
+	EventType providerEvent `json:"event_type" validate:"required"`
+	Filter    any           `json:"filter"     validate:"required"`
 }
-
-type ModuleEvent string
-
-var (
-	Created ModuleEvent = "created" //nolint:gochecknoglobals
-	Updated ModuleEvent = "updated" //nolint:gochecknoglobals
-	Deleted ModuleEvent = "deleted" //nolint:gochecknoglobals
-)
 
 type createSubscriptionsResponse struct {
 	Data createSubscriptionsResponseData `json:"data"`
@@ -39,7 +31,7 @@ type createSubscriptionsResponseID struct {
 
 type createSubscriptionsResponseData struct {
 	TargetURL     string                        `json:"target_url"`
-	Subscriptions []Subscription                `json:"subscriptions" validate:"required"`
+	Subscriptions []subscription                `json:"subscriptions" validate:"required"`
 	ID            createSubscriptionsResponseID `json:"id"`
 	Status        string                        `json:"status"`
 	CreatedAt     string                        `json:"created_at"`
@@ -52,6 +44,16 @@ type SuccessfulSubscription struct {
 	EventName  string
 }
 
-type SubscriptionResult struct {
+type subscriptionResult struct {
 	Data createSubscriptionsResponseData `json:"data"`
+}
+
+// providerEvent represents the combined event type string used by Attio.
+// A providerEvent value has the format "{objectName}.{eventAction}" (e.g., note.created", "task.updated").
+type providerEvent string
+
+type objectEvents struct {
+	createEvents []providerEvent
+	updateEvents []providerEvent
+	deleteEvents []providerEvent
 }
