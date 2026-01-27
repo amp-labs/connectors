@@ -76,12 +76,30 @@ func (a *Adapter) parseReadResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	marshaller := common.MakeMarshaledDataFunc(nil)
+
+	// Messages with extra fields require fetching the full message.
+	// See Gmail API: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list#response-body
+	if params.ObjectName == "messages" && params.Fields.HasExtra(datautils.NewSet("id", "threadId")) {
+		messages, err := a.fetchMessages(ctx, resp)
+		if err != nil {
+			return nil, err
+		}
+
+		marshaller = readhelper.MakeMarshaledSelectedDataFunc(
+			embedMessageFields(params, messages),
+			embedMessageRaw(messages),
+		)
+	}
+
 	responseFieldName := Schemas.LookupArrayFieldName(a.Module(), params.ObjectName)
 
 	return common.ParseResult(resp,
-		common.ExtractOptionalRecordsFromPath(responseFieldName),
+		func(node *ajson.Node) ([]*ajson.Node, error) {
+			return jsonquery.New(node).ArrayOptional(responseFieldName)
+		},
 		makeNextRecordsURL(params),
-		common.GetMarshaledData,
+		marshaller,
 		params.Fields,
 	)
 }
