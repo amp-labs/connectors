@@ -816,13 +816,14 @@ const (
 )
 
 type SearchFilter struct {
-	Filters []Filter
+	// multiple filters are joined by `and` by default.
+	Filters []Filter `json:"filters,omitempty" validate:"required,dive"`
 }
 
 type Filter struct {
-	FieldName string
-	Operator  FilterOperator
-	Value     any // string, number, boolean, array, object
+	FieldName string         `json:"fieldName,omitempty" validate:"required"`
+	Operator  FilterOperator `json:"operator,omitempty"  validate:"required"`
+	Value     any            `json:"value,omitempty"     validate:"required"`
 }
 
 type FilterOperator string
@@ -834,7 +835,7 @@ const (
 type SearchParams struct {
 	ObjectName string
 	Fields     datautils.StringSet
-	Filters    []SearchFilter
+	Filter     SearchFilter
 	NextPage   NextPageToken
 	Limit      int64 // page limit for the search. If omiited, return provider's default limit.
 }
