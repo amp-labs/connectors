@@ -21,3 +21,10 @@ func (a *Adapter) ListObjectMetadata(
 ) (*common.ListObjectMetadataResult, error) {
 	return Schemas.Select(objectNames)
 }
+
+func (a *Adapter) GetRecordCount(
+	ctx context.Context, params *common.RecordCountParams,
+) (*common.RecordCountResult, error) {
+	// TODO needs implementation.
+	return nil, common.ErrNotImplemented
+}
