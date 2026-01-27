@@ -62,7 +62,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 				Always: mockserver.Response(http.StatusOK, errorNotFound),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New( // nolint:goerr113
+				errors.New(
 					"request failed: failed to delete record: 400",
 				),
 			},

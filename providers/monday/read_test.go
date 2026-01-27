@@ -28,7 +28,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(`Cannot query field "random_field" on type "Board".`), // nolint:goerr113
+				errors.New(`Cannot query field "random_field" on type "Board".`),
 			},
 		},
 	}

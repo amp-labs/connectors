@@ -35,12 +35,12 @@ func init() {
 			Proxy:     true,
 			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					// similar to oganization in Github
+					// similar to organization in Github
 					Name:        "workspace",
 					DisplayName: "Workspace",
 				},

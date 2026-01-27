@@ -12,7 +12,6 @@ import (
 	"github.com/amp-labs/connectors/internal/goutils"
 )
 
-// nolint:lll
 // BatchWrite executes a Salesforce composite create or update request.
 // It validates the input, builds the appropriate payload, sends the API call,
 // and parses the response into a BatchWriteResult.
@@ -20,6 +19,7 @@ import (
 // The payload formats for Create and Update endpoints are nearly identical.
 // The only notable difference—unused in this implementation—is the optional
 // "allOrNone" flag supported by the Update API (default is false).
+// nolint:lll
 // See: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_update.htm
 //
 // Response schemas differ slightly: Create responses wrap records in an
@@ -130,7 +130,7 @@ func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilde
 		return a.getUpdateURL()
 	}
 
-	return nil, common.ErrUnsupportedBatchWriteType
+	return nil, common.ErrUnsupportedWriteType
 }
 
 func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {

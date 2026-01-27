@@ -23,10 +23,11 @@ var (
 type Option = func(*parameters)
 
 type parameters struct {
-	provider providers.Provider
 	paramsbuilder.Client
 	paramsbuilder.Workspace
 	paramsbuilder.Metadata
+
+	provider providers.Provider
 }
 
 func (p parameters) ValidateParams() error {

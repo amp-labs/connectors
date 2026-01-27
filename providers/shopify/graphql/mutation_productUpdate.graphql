@@ -1,0 +1,34 @@
+mutation productUpdate($input: ProductInput!) {
+  productUpdate(input: $input) {
+    userErrors {
+      field
+      message
+    }
+    product {
+      id
+      title
+      handle
+      descriptionHtml
+      productType
+      vendor
+      status
+      createdAt
+      updatedAt
+      tags
+      options {
+        id
+        name
+        position
+        values
+      }
+      variants(first: 10) {
+        nodes {
+          id
+          title
+          price
+          sku
+        }
+      }
+    }
+  }
+}

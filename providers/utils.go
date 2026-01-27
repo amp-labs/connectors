@@ -1,4 +1,3 @@
-// nolint:ireturn
 package providers
 
 import (
@@ -55,7 +54,7 @@ func NewCustomCatalog(opts ...CatalogOption) CustomCatalog {
 	return CustomCatalog{custom: params.catalog}
 }
 
-func (c CustomCatalog) catalog() (*CatalogWrapper, error) {
+func (c CustomCatalog) catalog() (*CatalogWrapper, error) { // nolint:funcorder
 	if c.custom == nil {
 		// Null catalog was probably set via options.
 		// This is not allowed.
@@ -285,7 +284,7 @@ func (i *ProviderInfo) defaultModuleOrRoot() common.ModuleID {
 type UnauthorizedHandler func(client common.AuthenticatedHTTPClient, event *UnauthorizedEvent) (*http.Response, error)
 
 // IsUnauthorizedDecider is a function called to determine if a response is unauthorized.
-type IsUnauthorizedDecider func(rsp *http.Response) bool
+type IsUnauthorizedDecider func(rsp *http.Response) (bool, error)
 
 // UnauthorizedEvent is the event that is triggered when an unauthorized response (http 401) is received.
 type UnauthorizedEvent struct {
@@ -556,6 +555,10 @@ func createOAuth2AuthCodeHTTPClient( //nolint:ireturn
 				}))
 	}
 
+	if header := CreateOauth2TokenHeaderAttachment(info); header != nil {
+		options = append(options, common.WithTokenHeaderAttachment(header))
+	}
+
 	options = append(options, cfg.Options...)
 
 	var err error
@@ -609,6 +612,10 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 						Response:   rsp,
 					})
 				}))
+	}
+
+	if header := CreateOauth2TokenHeaderAttachment(info); header != nil {
+		options = append(options, common.WithTokenHeaderAttachment(header))
 	}
 
 	options = append(options, cfg.Options...)
@@ -790,7 +797,8 @@ func createApiKeyHTTPClient( //nolint:ireturn,cyclop,funlen
 ) (common.AuthenticatedHTTPClient, error) {
 	apiKey := cfg.Key
 
-	if info.ApiKeyOpts.AttachmentType == Header { //nolint:nestif
+	switch info.ApiKeyOpts.AttachmentType {
+	case Header:
 		if info.ApiKeyOpts.Header.ValuePrefix != "" {
 			apiKey = info.ApiKeyOpts.Header.ValuePrefix + apiKey
 		}
@@ -834,7 +842,7 @@ func createApiKeyHTTPClient( //nolint:ireturn,cyclop,funlen
 		}
 
 		return authClient, nil
-	} else if info.ApiKeyOpts.AttachmentType == Query {
+	case Query:
 		opts := []common.QueryParamAuthClientOption{
 			common.WithQueryParamClient(getClient(client)),
 		}
@@ -874,9 +882,9 @@ func createApiKeyHTTPClient( //nolint:ireturn,cyclop,funlen
 		}
 
 		return authClient, nil
+	default:
+		return nil, fmt.Errorf("%w: unsupported api key type %q", ErrClient, info.ApiKeyOpts.AttachmentType)
 	}
-
-	return nil, fmt.Errorf("%w: unsupported api key type %q", ErrClient, info.ApiKeyOpts.AttachmentType)
 }
 
 func (i *ProviderInfo) GetApiKeyQueryParamName() (string, error) {
@@ -937,4 +945,31 @@ func (i *ProviderInfo) RequiresWorkspace() bool {
 	}
 
 	return false
+}
+
+// CreateOauth2TokenHeaderAttachment builds and returns a custom token header configuration
+// for OAuth2 authentication, if the provider defines one.
+//
+// By default, OAuth2 tokens are sent using the standard
+//
+//	Authorization: Bearer <token>
+//
+// header. Some providers override this behavior and require a custom header instead
+// (for example, Shopify uses: X-Shopify-Access-Token: <token>).
+//
+// If the provider does not specify a custom header configuration, this function returns
+// (nil, false). Otherwise, it returns the configured TokenHeaderAttachment and true.
+func CreateOauth2TokenHeaderAttachment(info *ProviderInfo) *common.TokenHeaderAttachment {
+	if info.Oauth2Opts == nil ||
+		info.Oauth2Opts.AccessTokenOpts == nil ||
+		info.Oauth2Opts.AccessTokenOpts.Header == nil {
+		return nil
+	}
+
+	header := info.Oauth2Opts.AccessTokenOpts.Header
+
+	return &common.TokenHeaderAttachment{
+		Name:   header.Name,
+		Prefix: header.ValuePrefix,
+	}
 }

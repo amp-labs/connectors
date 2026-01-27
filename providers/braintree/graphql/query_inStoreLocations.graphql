@@ -1,0 +1,22 @@
+query InStoreLocationSearch {
+  search {
+    inStoreLocations(
+      first: {{.First}}
+      {{if .After}}
+      after: "{{.After}}"
+      {{end}}
+    ) {
+      edges {
+        node {
+          id
+          name
+          internalName
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}

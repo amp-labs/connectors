@@ -1,0 +1,32 @@
+[
+    {
+        "description": "Every Wednesday 11:00am to 12:00pm starting  8 July 2015 ending 29 July 2015",
+        "until": "2015-07-29T12:00:00-0700",
+        "recurring": "weekly",
+        "notes": "Recurring blocked time.",
+        "end": "2015-07-08T12:00:00-0700",
+        "start": "2015-07-08T11:00:00-0700",
+        "calendarID": 1,
+        "id": 4
+    },
+    {
+        "description": "Wednesday  1 July 2015 11:00am - 12:00pm",
+        "until": null,
+        "recurring": null,
+        "notes": "Blocked time.",
+        "end": "2015-07-01T12:00:00-0700",
+        "start": "2015-07-01T11:00:00-0700",
+        "calendarID": 1,
+        "id": 1
+    },
+    {
+        "description": "Tuesday 30 June 11:00am -  1 Jul 2015 12:00pm",
+        "until": null,
+        "recurring": null,
+        "notes": "Blocked time.",
+        "end": "2015-07-01T12:00:00-0700",
+        "start": "2015-06-30T11:00:00-0700",
+        "calendarID": 2,
+        "id": 3
+    }
+]

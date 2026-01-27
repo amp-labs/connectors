@@ -36,7 +36,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Validation Failed (dueOn is required)"), // nolint:goerr113
+				errors.New("Validation Failed (dueOn is required)"),
 			},
 		},
 		{
@@ -48,7 +48,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Method not allowed"), // nolint:goerr113
+				errors.New("Method not allowed"),
 			},
 		},
 		{

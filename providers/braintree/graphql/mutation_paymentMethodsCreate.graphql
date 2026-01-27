@@ -1,0 +1,13 @@
+mutation VaultPaymentMethod($input: VaultPaymentMethodInput!) {
+  paymentMethodsCreate: vaultPaymentMethod(input: $input) {
+    paymentMethod {
+      id
+      legacyId
+      createdAt
+      customer {
+        id
+        email
+      }
+    }
+  }
+}

@@ -44,7 +44,7 @@ func (c *Connector) GetRecordsByIds( // nolint:revive
 		rsp,
 		getRecords,
 		getNextRecordsURL,
-		getSalesforceDataMarshaller(config.AssociatedObjects),
+		getSalesforceDataMarshaller(config.ReadParams),
 		config.Fields,
 	)
 	if err != nil {
@@ -56,11 +56,13 @@ func (c *Connector) GetRecordsByIds( // nolint:revive
 
 type recordsByIDsParams struct {
 	common.ReadParams
+
 	RecordIdentifiers datautils.Set[string]
 }
 
 func (c *Connector) buildReadByIdentifierURL(config recordsByIDsParams) (*urlbuilder.URL, error) {
 	// Requesting record identifiers using SOQL query.
+	// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_query.htm
 	url, err := c.getRestApiURL("query")
 	if err != nil {
 		return nil, err

@@ -41,6 +41,10 @@ type HubspotVerificationParams struct {
 	ClientSecret string
 }
 
+func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadData) error {
+	return nil
+}
+
 // VerifyWebhookMessage verifies the signature of a webhook message from Hubspot.
 func (*Connector) VerifyWebhookMessage(
 	_ context.Context, request *common.WebhookRequest, params *common.VerificationParams,
@@ -169,7 +173,7 @@ func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
 	return time.UnixMilli(ts).UnixNano(), nil
 }
 
-func (evt SubscriptionEvent) asMap() common.StringMap {
+func (evt SubscriptionEvent) asMap() common.StringMap { // nolint:funcorder
 	return common.StringMap(evt)
 }
 

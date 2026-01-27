@@ -14,13 +14,14 @@ var ErrCannotParseErrorResponse = errors.New("implementation cannot process erro
 // FaultyResponder is an implementation of FaultyResponseHandler.
 // It uses common techniques to handle error response returned by provider.
 type FaultyResponder struct {
-	errorSwitch *FormatSwitch
 	StatusCodeMapper
+
+	errorSwitch *FormatSwitch
 }
 
 // NewFaultyResponder creates error responder that will be used when provider responds with erroneous payload.
 //   - FormatSwitch will be used to select the best matching error format.
-//     It can be null if you don't want pretty parsing and formating.
+//     It can be null if you don't want pretty parsing and formatting.
 //   - StatusCodeMap will be used to enhance error message.
 //     This is an optional map that will precede any default status to error mapping.
 func NewFaultyResponder(errorSwitch *FormatSwitch, statusCodeMap map[int]error) *FaultyResponder {
@@ -77,8 +78,9 @@ func (r DirectFaultyResponder) HandleErrorResponse(res *http.Response, body []by
 
 // XMLFaultyResponder is an implementation of FaultyResponseHandler.
 type XMLFaultyResponder struct {
-	templates Templates
 	StatusCodeMapper
+
+	templates Templates
 }
 
 // NewXMLFaultyResponder creates error responder that will be used when provider responds with erroneous payload.

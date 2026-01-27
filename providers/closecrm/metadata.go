@@ -53,14 +53,14 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			metadata, err := c.getMetadata(ctx, obj)
 			if err != nil {
 				mutex.Lock()
-				objectMetadata.Errors[obj] = err
+				objectMetadata.Errors[obj] = err // nolint:wsl_v5
 				mutex.Unlock()
 
 				return nil //nolint:nilerr // intentionally collecting errors in map, not failing fast
 			}
 
 			mutex.Lock()
-			objectMetadata.Result[obj] = *metadata
+			objectMetadata.Result[obj] = *metadata // nolint:wsl_v5
 			mutex.Unlock()
 
 			return nil
@@ -85,7 +85,7 @@ func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common
 	url.WithQueryParam("_limit", "1")
 	url.WithQueryParam("_skip", "0")
 
-	resp, err := c.Client.Get(ctx, url.String())
+	resp, err := c.Client.Get(ctx, addTrailingSlashIfNeeded(url.String()))
 	if err != nil {
 		return nil, err
 	}

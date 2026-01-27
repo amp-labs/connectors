@@ -61,7 +61,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrNotFound,
-				errors.New( // nolint:goerr113
+				errors.New(
 					"Board not found",
 				),
 			},

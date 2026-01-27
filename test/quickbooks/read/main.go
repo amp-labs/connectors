@@ -60,5 +60,18 @@ func main() {
 	slog.Info("Reading term..")
 	utils.DumpJSON(res, os.Stdout)
 
+	// Test reading customer with custom fields (requires ?	=enhancedAllCustomFields)
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "customer",
+		Fields:     connectors.Fields("Id", "DisplayName"),
+		Since:      time.Now().Add(-600 * time.Hour),
+	})
+	if err != nil {
+		utils.Fail("error reading from QuickBooks", "error", err)
+	}
+
+	slog.Info("Reading customer (with custom fields support)..")
+	utils.DumpJSON(res, os.Stdout)
+
 	slog.Info("Read operation completed successfully.")
 }

@@ -53,7 +53,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New( // nolint:goerr113
+				errors.New(
 					"not found: Action not found: Oh no- that url doesn't exist."),
 			},
 		},
@@ -106,7 +106,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New( // nolint:goerr113
+				errors.New(
 					"Unable to bind 1734632773073 into a date time!Acceptable formats are ISO8601"),
 			},
 		},

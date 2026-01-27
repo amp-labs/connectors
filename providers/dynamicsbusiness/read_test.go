@@ -48,7 +48,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Could not find a property named 'lastModifiedDateTime'"), // nolint:goerr113
+				errors.New("Could not find a property named 'lastModifiedDateTime'"),
 			},
 		},
 		{
@@ -61,7 +61,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				common.ErrNotFound,
-				errors.New("Environment does not exist."), // nolint:goerr113
+				errors.New("Environment does not exist."),
 			},
 		},
 		{

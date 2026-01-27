@@ -1,3 +1,4 @@
+// nolint:revive,godoclint
 package common
 
 import (
@@ -75,7 +76,7 @@ func WithCustomUnauthorizedHandler(
 // This is useful for handling the case where the server has invalidated the token, and the client
 // needs to forcefully refresh. It's optional.
 func WithCustomIsUnauthorizedHandler(
-	f func(rsp *http.Response) bool,
+	f func(rsp *http.Response) (bool, error),
 ) CustomAuthClientOption {
 	return func(params *customClientParams) {
 		params.isUnauthorized = f
@@ -111,7 +112,7 @@ type customClientParams struct {
 	dynamicParams  DynamicQueryParamsGenerator
 	debug          func(req *http.Request, rsp *http.Response)
 	unauthorized   func(hdrs []Header, params []QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error)
-	isUnauthorized func(rsp *http.Response) bool
+	isUnauthorized func(rsp *http.Response) (bool, error)
 }
 
 func (p *customClientParams) prepare() *customClientParams {
@@ -144,10 +145,14 @@ type customAuthClient struct {
 	dynamicParams  DynamicQueryParamsGenerator
 	debug          func(req *http.Request, rsp *http.Response)
 	unauthorized   func(hdrs []Header, params []QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error)
-	isUnauthorized func(rsp *http.Response) bool
+	isUnauthorized func(rsp *http.Response) (bool, error)
 }
 
-func (c *customAuthClient) getHeaders(req *http.Request) (Headers, error) {
+func (c *customAuthClient) CloseIdleConnections() {
+	c.client.CloseIdleConnections()
+}
+
+func (c *customAuthClient) getHeaders(req *http.Request) (Headers, error) { // nolint:funcorder
 	var hdrs Headers
 
 	if c.headers != nil {
@@ -166,7 +171,7 @@ func (c *customAuthClient) getHeaders(req *http.Request) (Headers, error) {
 	return hdrs, nil
 }
 
-func (c *customAuthClient) getQueryParams(req *http.Request) (QueryParams, error) {
+func (c *customAuthClient) getQueryParams(req *http.Request) (QueryParams, error) { // nolint:funcorder
 	var params QueryParams
 
 	if c.params != nil {
@@ -224,16 +229,12 @@ func (c *customAuthClient) Do(req *http.Request) (*http.Response, error) {
 	return c.handleUnauthorizedResponse(req2, rsp)
 }
 
-func (c *customAuthClient) CloseIdleConnections() {
-	c.client.CloseIdleConnections()
-}
-
-func (c *customAuthClient) isUnauthorizedResponse(rsp *http.Response) bool {
+func (c *customAuthClient) isUnauthorizedResponse(rsp *http.Response) (bool, error) {
 	if c.isUnauthorized != nil {
 		return c.isUnauthorized(rsp)
 	}
 
-	return rsp.StatusCode == http.StatusUnauthorized
+	return rsp.StatusCode == http.StatusUnauthorized, nil
 }
 
 // handleUnauthorizedResponse handles 401 responses or custom unauthorized conditions.
@@ -241,7 +242,12 @@ func (c *customAuthClient) handleUnauthorizedResponse(
 	req *http.Request,
 	rsp *http.Response,
 ) (*http.Response, error) {
-	if c.isUnauthorizedResponse(rsp) {
+	isUnauthorized, err := c.isUnauthorizedResponse(rsp)
+	if err != nil {
+		return nil, err
+	}
+
+	if isUnauthorized {
 		if c.unauthorized != nil {
 			return c.unauthorized(c.headers, c.params, req, rsp)
 		}

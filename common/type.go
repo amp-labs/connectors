@@ -1,6 +1,9 @@
+// nolint:revive,godoclint
 package common
 
-import "fmt"
+import (
+	"fmt"
+)
 
 //nolint:ireturn
 func AssertType[T any](val any) (T, error) {
@@ -10,4 +13,21 @@ func AssertType[T any](val any) (T, error) {
 	}
 
 	return of, nil
+}
+
+func InferValueTypeFromData(value any) ValueType {
+	if value == nil {
+		return ValueTypeOther
+	}
+
+	switch value.(type) {
+	case string:
+		return ValueTypeString
+	case float64, int, int64:
+		return ValueTypeFloat
+	case bool:
+		return ValueTypeBoolean
+	default:
+		return ValueTypeOther
+	}
 }

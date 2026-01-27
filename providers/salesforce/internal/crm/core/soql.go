@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -23,15 +24,13 @@ type SOQLBuilder struct {
 }
 
 func (s *SOQLBuilder) SelectFields(fields []string) *SOQLBuilder {
-	for _, field := range fields {
-		if field == "*" {
-			s.fields = "FIELDS(ALL)"
-			// if all fields are to be returned then we must limit to avoid error.
-			// Error example: `The SOQL FIELDS function must have a LIMIT of at most 200`
-			s.limit = identifiersLimitStr
+	if slices.Contains(fields, "*") {
+		s.fields = "FIELDS(ALL)"
+		// if all fields are to be returned then we must limit to avoid error.
+		// Error example: `The SOQL FIELDS function must have a LIMIT of at most 200`
+		s.limit = identifiersLimitStr
 
-			return s
-		}
+		return s
 	}
 
 	s.fields = strings.Join(fields, ",")

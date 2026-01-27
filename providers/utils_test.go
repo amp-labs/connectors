@@ -1,4 +1,3 @@
-// nolint:ireturn
 package providers
 
 import (
@@ -246,9 +245,10 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				BaseURL:     "https://api.hubapi.com",
 				DisplayName: "HubSpot",
 				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
+					Proxy:     true,
+					Read:      true,
+					Subscribe: true,
+					Write:     true,
 				},
 			},
 		},
@@ -359,8 +359,9 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 							Supported:          true,
 						},
 					},
-					Read:  true,
-					Write: true,
+					Read:      true,
+					Subscribe: true,
+					Write:     true,
 				},
 			},
 		},
@@ -426,8 +427,9 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 							Supported:          true,
 						},
 					},
-					Read:  true,
-					Write: true,
+					Read:      true,
+					Subscribe: true,
+					Write:     true,
 				},
 			},
 		},

@@ -29,7 +29,7 @@ import (
 //
 // Common cases:
 //   - Some objects can be filtered by "updated" and include that field in response.
-//   - Some can only be filtered by "created" but return "updated" (requiring client-side filtering).
+//   - Some can only be filtered by "created" but return "updated" (requiring connector-side filtering).
 //   - Others expose no filterable timestamp field, though they may include "created" in responses.
 //   - A few lack both filterable parameters and usable timestamps entirely.
 func createReadOperation(
@@ -69,8 +69,8 @@ func createReadOperation(
 //
 // Note:
 //
-//	Even if the HTTP method (GET or POST) does not support server-side time filtering,
-//	the client still applies local filtering to exclude records outside the specified time window.
+//	Even if the HTTP method (GET or POST) does not support provider-side time filtering,
+//	the connector still applies local filtering to exclude records outside the specified time window.
 func makeFilterFunc(params common.ReadParams, request *http.Request) common.RecordsFilterFunc {
 	timeSpec := objectsFilterParam.Get(params.ObjectName)
 	if timeSpec.ResponseAt == "" {
@@ -78,7 +78,7 @@ func makeFilterFunc(params common.ReadParams, request *http.Request) common.Reco
 		return readhelper.MakeIdentityFilterFunc(makeNextRecordsURL(request.URL))
 	}
 
-	// Client side filtering.
+	// Connector side filtering.
 	return readhelper.MakeTimeFilterFunc(
 		readhelper.ChronologicalOrder,
 		readhelper.NewTimeBoundary(),
@@ -95,7 +95,7 @@ func makeFilterFunc(params common.ReadParams, request *http.Request) common.Reco
 //
 // Notes:
 //   - Some objects can be queried by "created" but should advance based on "updated".
-//   - Some support no query filters but still expose a timestamp usable for client-side filtering.
+//   - Some support no query filters but still expose a timestamp usable for connector-side filtering.
 //   - If both are unavailable, RequestBy = filterNone and ResponseAt = "".
 //
 // References:
@@ -183,7 +183,7 @@ type timeFieldSpec struct {
 
 // readSearchPayload represents the JSON payload for a Sellsy search request.
 type readSearchPayload struct {
-	Filters readSearchFilters `json:"filters,omitempty"`
+	Filters readSearchFilters `json:"filters"`
 }
 
 // readSearchFilters defines the supported time-based filters accepted in Sellsy

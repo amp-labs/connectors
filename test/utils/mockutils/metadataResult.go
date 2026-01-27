@@ -34,7 +34,7 @@ func (metadataResultComparator) SubsetFields(actual, expected *common.ListObject
 			}
 		}
 
-		// For backwards compatability the FieldsMap is checked alongside
+		// For backwards compatibility the FieldsMap is checked alongside
 		for k, v := range expectedMetadata.FieldsMap {
 			value, ok := actualMetadata.FieldsMap[k]
 			if !ok {

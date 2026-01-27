@@ -5,6 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -153,12 +154,74 @@ func TestContactsListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cy
 	}
 }
 
+func TestMailListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
+	t.Parallel()
+
+	tests := []testroutines.Metadata{
+		{
+			Name:       "Successful metadata for messages and drafts",
+			Input:      []string{"messages", "drafts"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"messages": {
+						DisplayName: "Messages",
+						Fields: map[string]common.FieldMetadata{
+							"threadId": {
+								DisplayName:  "Thread Id",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     goutils.Pointer(false),
+							},
+						},
+					},
+					"drafts": {
+						DisplayName: "Drafts",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Id",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     goutils.Pointer(false),
+							},
+							"message": {
+								DisplayName:  "Message",
+								ValueType:    "other",
+								ProviderType: "object",
+								ReadOnly:     goutils.Pointer(false),
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+				return constructTestMailConnector(tt.Server.URL)
+			})
+		})
+	}
+}
+
 func constructTestCalendarConnector(serverURL string) (*Connector, error) {
 	return constructTestConnector(serverURL, providers.ModuleGoogleCalendar)
 }
 
 func constructTestContactsConnector(serverURL string) (*Connector, error) {
 	return constructTestConnector(serverURL, providers.ModuleGoogleContacts)
+}
+
+func constructTestMailConnector(serverURL string) (*Connector, error) {
+	return constructTestConnector(serverURL, providers.ModuleGoogleGmail)
 }
 
 func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connector, error) {

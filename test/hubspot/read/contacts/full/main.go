@@ -25,7 +25,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "contacts",
-		Fields:     connectors.Fields("email", "phone", "company", "website", "lastname", "firstname"),
+		Fields:     connectors.Fields("id", "email", "phone", "company", "website", "lastname", "firstname"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Hubspot", "error", err)

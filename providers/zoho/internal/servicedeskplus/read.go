@@ -51,7 +51,7 @@ func (a *Adapter) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error
 		&listInfo{
 			RowCount: pageSize,
 			// some of the APIs have updated_time field, but
-			// they mostly are nil for non upadated records.
+			// they mostly are nil for non updated records.
 			GetTotalCount:  true,
 			FieldsRequired: params.Fields.List(),
 		},

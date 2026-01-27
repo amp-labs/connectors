@@ -10,7 +10,7 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// search uses POST method to read data.It has a display limit of 50,000 records.
+// Search uses POST method to read data.It has a display limit of 50,000 records.
 // It's recommended to filter the results so as to narrow down the results as much as possible.
 // Most of the Filtering would need client's input so we don't exhaust calls by paging through all 50k records.
 // Using this as is may lead to that issue.
@@ -44,7 +44,7 @@ func (c *Connector) Search(ctx context.Context, config common.ReadParams, url *u
 		resp,
 		searchRecords(config.ObjectName),
 		getNextRecords,
-		common.GetMarshaledData,
+		apolloMarshaledData(config.ObjectName),
 		config.Fields,
 	)
 }

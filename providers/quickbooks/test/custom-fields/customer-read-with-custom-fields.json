@@ -1,0 +1,58 @@
+{
+  "QueryResponse": {
+    "Customer": [
+      {
+        "Id": "1",
+        "DisplayName": "Amy's Bird Sanctuary",
+        "GivenName": "Amy",
+        "FamilyName": "Lauterbach",
+        "FullyQualifiedName": "Amy's Bird Sanctuary",
+        "PreferredDeliveryMethod": "Print",
+        "BillWithParent": false,
+        "Job": false,
+        "CustomField": [
+          {
+            "DefinitionId": "540344",
+            "Name": "ProjectCode",
+            "Type": "StringType",
+            "StringValue": "PROJ-001"
+          },
+          {
+            "DefinitionId": "540346",
+            "Name": "BudgetAmount",
+            "Type": "NumberType",
+            "NumberValue": 50000
+          },
+          {
+            "DefinitionId": "540347",
+            "Name": "StartDate",
+            "Type": "DateType",
+            "DateValue": "2024-01-15"
+          }
+        ]
+      },
+      {
+        "Id": "2",
+        "DisplayName": "Bob's Burgers",
+        "GivenName": "Bob",
+        "FamilyName": "Belcher",
+        "FullyQualifiedName": "Bob's Burgers",
+        "PreferredDeliveryMethod": "Email",
+        "BillWithParent": false,
+        "Job": false,
+        "CustomField": [
+          {
+            "DefinitionId": "540344",
+            "Name": "ProjectCode",
+            "Type": "StringType",
+            "StringValue": "PROJ-002"
+          }
+        ]
+      }
+    ],
+    "startPosition": 1,
+    "maxResults": 2
+  },
+  "time": "2024-01-15T10:30:00.000-07:00"
+}
+

@@ -9,8 +9,8 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-func getRecords(objectName string) common.RecordsFunc {
-	return func(node *ajson.Node) ([]map[string]any, error) {
+func getNodeRecords(objectName string) common.NodeRecordsFunc {
+	return func(node *ajson.Node) ([]*ajson.Node, error) {
 		queryResponse, err := jsonquery.New(node).ObjectRequired("QueryResponse")
 
 		if err != nil || queryResponse == nil {
@@ -19,13 +19,16 @@ func getRecords(objectName string) common.RecordsFunc {
 
 		responseKey := objectNameToResponseField.Get(objectName)
 
-		rcds, err := jsonquery.New(queryResponse).ArrayRequired(naming.CapitalizeFirstLetter(responseKey))
-		if err != nil || rcds == nil {
-			// some endpoints return an empty object instead of an empty array when there are no records
-			return []map[string]any{}, nil //nolint:nilerr
+		rcds, err := jsonquery.New(queryResponse).ArrayOptional(naming.CapitalizeFirstLetter(responseKey))
+		if err != nil {
+			return nil, err
 		}
 
-		return jsonquery.Convertor.ArrayToMap(rcds)
+		if rcds == nil {
+			return []*ajson.Node{}, nil
+		}
+
+		return rcds, nil
 	}
 }
 

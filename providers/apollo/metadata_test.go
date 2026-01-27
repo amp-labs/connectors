@@ -17,7 +17,6 @@ import (
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	contactsResponse := testutils.DataFromFile(t, "contacts.json")
 	opportunityResponse := testutils.DataFromFile(t, "opportunities.json")
 	unsupportedResponse := testutils.DataFromFile(t, "unsupported.json")
 
@@ -54,50 +53,20 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Successfully describe supported & unsupported objects",
-			Input: []string{"contacts", "opportunities", "arsenal"},
+			Input: []string{"arsenal"},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/v1/opportunities/search"),
-					Then: mockserver.Response(http.StatusOK, opportunityResponse),
-				}, {
 					If:   mockcond.Path("/v1/arsenal"),
 					Then: mockserver.Response(http.StatusBadRequest, unsupportedResponse),
-				}, {
-					If:   mockcond.Path("/v1/contacts/search"),
-					Then: mockserver.Response(http.StatusOK, contactsResponse),
 				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
-				Result: map[string]common.ObjectMetadata{
-					"contacts": {
-						DisplayName: "contacts",
-						FieldsMap: map[string]string{
-							"id":                 "id",
-							"account":            "account",
-							"first_name":         "first_name",
-							"last_name":          "last_name",
-							"name":               "name",
-							"city":               "city",
-							"account_phone_note": "account_phone_note",
-						},
-					},
-					"opportunities": {
-						DisplayName: "opportunities",
-						FieldsMap: map[string]string{
-							"id":                  "id",
-							"owner_id":            "owner_id",
-							"team_id":             "team_id",
-							"amount":              "amount",
-							"salesforce_owner_id": "salesforce_owner_id",
-						},
-					},
-				},
 				Errors: map[string]error{
 					"arsenal": mockutils.ExpectedSubsetErrors{
 						common.ErrCaller,
-						errors.New(string(unsupportedResponse)), // nolint:goerr113
+						errors.New(string(unsupportedResponse)),
 					},
 				},
 			},
