@@ -9,13 +9,13 @@ import (
 var (
 	errInvalidRequestType           = errors.New("invalid request type")
 	errMissingParams                = errors.New("missing required parameters")
-	errUnsupportedEventType         = errors.New("unsupported event type")
 	errUnsupportedObject            = errors.New("unsupported object")
 	ErrMissingSignature             = errors.New("missing webhook signature header")
 	ErrInvalidSignature             = errors.New("invalid webhook signature")
 	errUnsupportedSubscriptionEvent = errors.New("unsupported subscription event")
 )
 
+//nolint:gochecknoglobals
 var attioObjectEvents = map[common.ObjectName]objectEvents{
 	"lists": {
 		createEvents: []providerEvent{"list.created"},
