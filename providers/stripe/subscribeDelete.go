@@ -9,8 +9,6 @@ import (
 
 // DeleteSubscription deletes webhook subscriptions for the specified objects.
 // Extracts the real endpoint ID from composite IDs (format: "endpointID:objectName").
-// If only some objects are deleted, the endpoint is updated to remove their events.
-// If all objects are deleted, the entire endpoint is deleted.
 func (c *Connector) DeleteSubscription(
 	ctx context.Context,
 	result common.SubscriptionResult,

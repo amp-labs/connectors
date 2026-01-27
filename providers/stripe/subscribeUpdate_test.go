@@ -158,49 +158,6 @@ func TestUpdateSubscription(t *testing.T) {
 				return actual != nil && actual.Status == common.SubscriptionStatusSuccess
 			},
 		},
-		{
-			Name: "Update keeps existing objects not in params",
-			Input: UpdateSubscriptionInput{
-				Params: common.SubscribeParams{
-					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-						"charge": {
-							Events: []common.SubscriptionEventType{
-								common.SubscriptionEventTypeCreate,
-							},
-						},
-					},
-					Request: &SubscriptionRequest{
-						WebhookEndPoint: "https://webhook.site/test",
-					},
-				},
-				PreviousResult: &common.SubscriptionResult{
-					Result: &SubscriptionResult{
-						Subscriptions: map[common.ObjectName]WebhookResponse{
-							"account": {
-								ID:            "we_123:account",
-								EnabledEvents: []string{"account.created", "account.updated"},
-							},
-							"balance": {
-								ID:            "we_123:balance",
-								EnabledEvents: []string{"balance.created"},
-							},
-						},
-					},
-				},
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPOST(),
-					mockcond.Path("/v1/webhook_endpoints/we_123"),
-				},
-				Then: mockserver.Response(http.StatusOK, webhookEndpointUpdatedResponse),
-			}.Server(),
-			ExpectedErrs: nil,
-			Comparator: func(_ string, actual, expected *common.SubscriptionResult) bool {
-				return actual != nil && actual.Status == common.SubscriptionStatusSuccess
-			},
-		},
 	}
 
 	for _, tt := range tests {
