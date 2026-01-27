@@ -410,6 +410,16 @@ type ProviderMetadata struct {
 // ProviderOpts Additional provider-specific metadata.
 type ProviderOpts map[string]string
 
+// SearchOperators defines model for SearchOperators.
+type SearchOperators struct {
+	Equals bool `json:"equals"`
+}
+
+// SearchSupport defines model for SearchSupport.
+type SearchSupport struct {
+	Operators SearchOperators `json:"operators"`
+}
+
 // SubscribeOpts defines model for SubscribeOpts.
 type SubscribeOpts struct {
 	// RegistrationTiming The timing of the registration.
@@ -442,6 +452,7 @@ type Support struct {
 	BulkWrite        BulkWriteSupport   `json:"bulkWrite" validate:"required"`
 	Proxy            bool               `json:"proxy"`
 	Read             bool               `json:"read"`
+	Search           SearchSupport      `json:"search"`
 	Subscribe        bool               `json:"subscribe"`
 	SubscribeSupport *SubscribeSupport  `json:"subscribeSupport,omitempty"`
 	Write            bool               `json:"write"`
