@@ -25,21 +25,7 @@ func (c *Connector) DeleteSubscription(
 		return err
 	}
 
-	currentEndpoint, err := c.GetWebhookEndpoint(ctx, endpointInfo.ID)
-	if err != nil {
-		return fmt.Errorf("failed to fetch webhook endpoint (ID: %s): %w", endpointInfo.ID, err)
-	}
-
-	eventsToRemove := collectEventsToRemove(subscriptionData, endpointInfo.ObjectsToDelete)
-	eventsToKeep := filterEventsToKeep(currentEndpoint.EnabledEvents, eventsToRemove)
-
-	// If no events remain, delete the entire endpoint
-	if len(eventsToKeep) == 0 {
-		return c.deleteWebhookEndpoint(ctx, endpointInfo.ID)
-	}
-
-	// Otherwise, update the endpoint to remove events for deleted objects
-	return c.updateEndpointAfterPartialDelete(ctx, endpointInfo.ID, eventsToKeep, currentEndpoint, subscriptionData)
+	return c.deleteWebhookEndpoint(ctx, endpointInfo.ID)
 }
 
 // validateSubscriptionResult validates the subscription result and extracts the subscription data.
@@ -107,79 +93,4 @@ func extractEndpointInfo(subscriptionData *SubscriptionResult) (*endpointInfo, e
 		ID:              realEndpointID,
 		ObjectsToDelete: objectsToDelete,
 	}, nil
-}
-
-// collectEventsToRemove collects all events that should be removed for the objects being deleted.
-func collectEventsToRemove(
-	subscriptionData *SubscriptionResult,
-	objectsToDelete map[common.ObjectName]bool,
-) map[string]bool {
-	eventsToRemove := make(map[string]bool)
-
-	for obj := range objectsToDelete {
-		if endpoint, ok := subscriptionData.Subscriptions[obj]; ok {
-			for _, event := range endpoint.EnabledEvents {
-				eventsToRemove[event] = true
-			}
-		}
-	}
-
-	return eventsToRemove
-}
-
-// filterEventsToKeep filters out events that should be removed, keeping only the remaining events.
-func filterEventsToKeep(currentEvents []string, eventsToRemove map[string]bool) []string {
-	eventsToKeep := make([]string, 0)
-
-	for _, event := range currentEvents {
-		if !eventsToRemove[event] {
-			eventsToKeep = append(eventsToKeep, event)
-		}
-	}
-
-	return eventsToKeep
-}
-
-// updateEndpointAfterPartialDelete updates the endpoint after a partial delete operation.
-func (c *Connector) updateEndpointAfterPartialDelete(
-	ctx context.Context,
-	endpointID string,
-	eventsToKeep []string,
-	currentEndpoint *WebhookResponse,
-	subscriptionData *SubscriptionResult,
-) error {
-	webhookURL := getWebhookURL(currentEndpoint, subscriptionData)
-	if webhookURL == "" {
-		return fmt.Errorf("%w: webhook URL is required for partial delete", errMissingParams)
-	}
-
-	payload := &WebhookPayload{
-		URL:           webhookURL,
-		EnabledEvents: eventsToKeep,
-	}
-
-	_, err := c.updateWebhookEndpoint(ctx, endpointID, payload)
-	if err != nil {
-		return fmt.Errorf("failed to update webhook endpoint after partial delete (ID: %s): %w", endpointID, err)
-	}
-
-	return nil
-}
-
-// getWebhookURL extracts the webhook URL from the current endpoint.
-func getWebhookURL(
-	currentEndpoint *WebhookResponse,
-	subscriptionData *SubscriptionResult,
-) string {
-	if currentEndpoint.URL != "" {
-		return currentEndpoint.URL
-	}
-
-	for _, endpoint := range subscriptionData.Subscriptions {
-		if endpoint.URL != "" {
-			return endpoint.URL
-		}
-	}
-
-	return ""
 }

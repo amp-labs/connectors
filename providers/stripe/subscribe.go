@@ -35,38 +35,15 @@ func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 
 // Subscribe creates webhook endpoint subscriptions for the specified objects and events.
 // Stripe allows multiple events per endpoint, so we create one endpoint with all requested events.
+// Endpoint: POST /v1/webhook_endpoints
+// Doc URL: https://docs.stripe.com/api/webhook_endpoints/create
 func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
-	req, err := validateRequest(params)
+	payload, err := buildWebhookPayloadFromParams(params)
 	if err != nil {
 		return nil, err
-	}
-
-	allStripeEventNames := make([]string, 0)
-
-	for obj, events := range params.SubscriptionEvents {
-		for _, event := range events.Events {
-			stripeEventName, err := getStripeEventName(event, obj)
-			if err != nil {
-				return nil, fmt.Errorf("failed to convert event type %s for object %s: %w", event, obj, err)
-			}
-
-			allStripeEventNames = append(allStripeEventNames, stripeEventName)
-		}
-
-		// Add pass-through events directly (provider-specific event names)
-		allStripeEventNames = append(allStripeEventNames, events.PassThroughEvents...)
-	}
-
-	if len(allStripeEventNames) == 0 {
-		return nil, fmt.Errorf("%w: no events to subscribe to", errMissingParams)
-	}
-
-	payload := &WebhookPayload{
-		URL:           req.WebhookEndPoint,
-		EnabledEvents: allStripeEventNames,
 	}
 
 	response, err := c.createWebhookEndpoint(ctx, payload)
@@ -80,6 +57,38 @@ func (c *Connector) Subscribe(
 	}
 
 	return result, nil
+}
+
+// buildWebhookPayloadFromParams validates the request and builds a webhook payload
+// with enabled events derived from the provided subscription params.
+func buildWebhookPayloadFromParams(
+	params common.SubscribeParams,
+) (*WebhookPayload, error) {
+	req, err := validateRequest(params)
+	if err != nil {
+		return nil, err
+	}
+
+	requestedEventsSet, err := buildRequestedEventSet(params.SubscriptionEvents)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(requestedEventsSet) == 0 {
+		return nil, fmt.Errorf("%w: no events to subscribe to", errMissingParams)
+	}
+
+	enabledEvents := make([]string, 0, len(requestedEventsSet))
+	for event := range requestedEventsSet {
+		enabledEvents = append(enabledEvents, event)
+	}
+
+	payload := &WebhookPayload{
+		URL:           req.WebhookEndPoint,
+		EnabledEvents: enabledEvents,
+	}
+
+	return payload, nil
 }
 
 // buildRequestedEventSet builds a set of requested events from subscription events.
@@ -176,7 +185,6 @@ func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error
 	return req, nil
 }
 
-// GetWebhookEndpoint fetches a webhook endpoint by ID.
 func (c *Connector) GetWebhookEndpoint(ctx context.Context, endpointID string) (*WebhookResponse, error) {
 	endpointURL, err := c.getWebhookEndpointURL()
 	if err != nil {
@@ -210,6 +218,9 @@ func (c *Connector) GetWebhookEndpoint(ctx context.Context, endpointID string) (
 	return result, nil
 }
 
+// deleteWebhookEndpoint deletes a webhook endpoint by ID.
+// Endpoint: DELETE /v1/webhook_endpoints/{id}
+// Doc URL: https://docs.stripe.com/api/webhook_endpoints/delete
 func (c *Connector) deleteWebhookEndpoint(ctx context.Context, endpointID string) error {
 	url, err := c.getWebhookEndpointURL()
 	if err != nil {
@@ -226,10 +237,13 @@ func (c *Connector) deleteWebhookEndpoint(ctx context.Context, endpointID string
 	return nil
 }
 
+// getStripeEventName converts normalized CRUD events to Stripe event type strings.
+// It only generates Stripe's standard *.created / *.updated / *.deleted actions.
+// For any other actions, callers must provide full Stripe event names via PassThroughEvents.
+// Doc URL: https://docs.stripe.com/api/events/types
 func getStripeEventName(event common.SubscriptionEventType, obj common.ObjectName) (string, error) {
 	objectName := strings.ToLower(string(obj))
 
-	// Use generic pattern for all events - specific event names should be provided via PassThroughEvents
 	switch event {
 	case common.SubscriptionEventTypeCreate:
 		return objectName + ".created", nil
@@ -237,10 +251,9 @@ func getStripeEventName(event common.SubscriptionEventType, obj common.ObjectNam
 		return objectName + ".updated", nil
 	case common.SubscriptionEventTypeDelete:
 		return objectName + ".deleted", nil
-	case common.SubscriptionEventTypeAssociationUpdate:
-		return objectName + ".updated", nil
-	case common.SubscriptionEventTypeOther:
-		return objectName + ".other", nil
+	case common.SubscriptionEventTypeAssociationUpdate,
+		common.SubscriptionEventTypeOther:
+		return "", fmt.Errorf("%w: %s", errUnsupportedEventType, event)
 	default:
 		return "", fmt.Errorf("%w: %s", errUnsupportedEventType, event)
 	}

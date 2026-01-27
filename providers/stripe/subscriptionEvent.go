@@ -19,6 +19,7 @@ var (
 	errTypeMismatch                                   = errors.New("type mismatch")
 	// eventTypeRegex validates Stripe event types which must have at least 2 parts separated by dots.
 	// Examples: "setup_intent.created", "customer.subscription.created".
+	// Doc URL: https://docs.stripe.com/api/events/types
 	eventTypeRegex = regexp.MustCompile(`^[^.]+(\.[^.]+)+$`)
 )
 

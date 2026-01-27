@@ -16,11 +16,12 @@ import (
 var _ connectors.BatchRecordReaderConnector = &Connector{}
 
 // GetRecordsByIds fetches full records from Stripe for a specific set of IDs.
-// since Stripe doesn't support batch fetching, this method makes individual
-// GET requests for each ID: /v1/{objectName}/{id}
+// Since Stripe doesn't support batch fetching, this method makes individual
+// GET requests for each ID: /v1/{objectName}/{id}.
+// Doc URL pattern: https://docs.stripe.com/api/{objectName}/retrieve
 //
-//nolint:revive
-func (c *Connector) GetRecordsByIds(
+//nolint:lll
+func (c *Connector) GetRecordsByIds( //nolint:revive
 	ctx context.Context,
 	objectName string,
 	ids []string,
@@ -133,6 +134,116 @@ func (c *Connector) buildGetRecordURL(objectName string, id string, associations
 
 // extractAssociations extracts expanded associations from a Stripe record.
 // when Stripe expands objects, they are nested directly in the record as a single object.
+// Doc URL: https://docs.stripe.com/api/expanding_objects
+// Example:
+/* /v1/payment_intents/pi_3SsAwzF6iHem4voo03GfTErP?expand[]=payment_method
+{
+    "id": "pi_3SsAwzF6iHem4voo03GfTErP",
+    "object": "payment_intent",
+    "amount": 100,
+    "amount_capturable": 0,
+    "amount_details": {
+        "tip": {}
+    },
+    "amount_received": 100,
+    "application": null,
+    "application_fee_amount": null,
+    "automatic_payment_methods": null,
+    "canceled_at": null,
+    "cancellation_reason": null,
+    "capture_method": "automatic_async",
+    "client_secret": "pi_3SsAwzF6iHem4voo03GfTErP_secret_cLacs6iNKmMRMqiartest",
+    "confirmation_method": "automatic",
+    "created": 1769038597,
+    "currency": "usd",
+    "customer": null,
+    "customer_account": null,
+    "description": null,
+    "excluded_payment_method_types": null,
+    "invoice": null,
+    "last_payment_error": null,
+    "latest_charge": "ch_3SsAwzF6iHem4voo0kHo2r3C",
+    "livemode": false,
+    "metadata": {},
+    "next_action": null,
+    "on_behalf_of": null,
+    "payment_method": {
+        "id": "pm_1SsAwzF6iHem4voorZHZEMKc",
+        "object": "payment_method",
+        "allow_redisplay": "unspecified",
+        "billing_details": {
+            "address": {
+                "city": null,
+                "country": null,
+                "line1": null,
+                "line2": null,
+                "postal_code": null,
+                "state": null
+            },
+            "email": null,
+            "name": null,
+            "phone": null,
+            "tax_id": null
+        },
+        "card": {
+            "brand": "visa",
+            "checks": {
+                "address_line1_check": null,
+                "address_postal_code_check": null,
+                "cvc_check": "pass"
+            },
+            "country": "US",
+            "display_brand": "visa",
+            "exp_month": 1,
+            "exp_year": 2027,
+            "fingerprint": "dHBG1eWHBeZi1Ja1",
+            "funding": "credit",
+            "generated_from": null,
+            "last4": "4242",
+            "networks": {
+                "available": [
+                    "visa"
+                ],
+                "preferred": null
+            },
+            "regulated_status": "unregulated",
+            "three_d_secure_usage": {
+                "supported": true
+            },
+            "wallet": null
+        },
+        "created": 1769038597,
+        "customer": null,
+        "customer_account": null,
+        "livemode": false,
+        "metadata": {},
+        "type": "card"
+    },
+    "payment_method_configuration_details": null,
+    "payment_method_options": {
+        "card": {
+            "installments": null,
+            "mandate_options": null,
+            "network": null,
+            "request_three_d_secure": "automatic"
+        }
+    },
+    "payment_method_types": [
+        "card"
+    ],
+    "processing": null,
+    "receipt_email": null,
+    "review": null,
+    "setup_future_usage": null,
+    "shipping": null,
+    "source": null,
+    "statement_descriptor": null,
+    "statement_descriptor_suffix": null,
+    "status": "succeeded",
+    "transfer_data": null,
+    "transfer_group": null
+}.
+*/
 func extractAssociations(record map[string]any, associationNames []string) map[string][]common.Association {
 	associations := make(map[string][]common.Association)
 
