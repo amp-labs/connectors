@@ -26,14 +26,3 @@ var supportAttioApi = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameTasks,
 	objectNameNotes,
 )
-
-var readObjectNameToSubscriptionName = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
-	objectNameLists:            "list",
-	objectNameWorkspacemembers: "workspace-member",
-	objectNameNotes:            "note",
-	objectNameTasks:            "task",
-},
-	func(objectName string) (fieldName string) {
-		return objectName
-	},
-)

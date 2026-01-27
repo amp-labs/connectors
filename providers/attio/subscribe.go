@@ -2,7 +2,9 @@ package attio
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"slices"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -18,7 +20,7 @@ func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
 
 func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	return &common.SubscriptionResult{
-		Result: &SubscriptionResult{},
+		Result: &subscriptionResult{},
 	}
 }
 
@@ -28,6 +30,12 @@ func (c *Connector) Subscribe(
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
 	req, err := validateRequest(params)
+	if err != nil {
+		return nil, err
+	}
+
+	// Validate that requested events are supported
+	err = validateSubscriptionEvents(params.SubscriptionEvents)
 	if err != nil {
 		return nil, err
 	}
@@ -50,49 +58,22 @@ func (c *Connector) Subscribe(
 	}
 
 	res.Status = common.SubscriptionStatusSuccess
-	res.Result = &SubscriptionResult{
+	res.Result = &subscriptionResult{
 		Data: response.Data,
 	}
 
 	return res, nil
 }
 
-// UpdateSubscription implements connectors.SubscribeConnector.
-func (c *Connector) UpdateSubscription(ctx context.Context,
-	params common.SubscribeParams, previousResult *common.SubscriptionResult,
+// UpdateSubscription implements [connectors.SubscribeConnector].
+func (c *Connector) UpdateSubscription(
+	ctx context.Context,
+	params common.SubscribeParams,
+	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-	// Validate the previous result
-	if previousResult == nil || previousResult.Result == nil {
-		return nil, fmt.Errorf("%w: missing previousResult or previousResult.Result", errMissingParams)
-	}
 
-	prevState, ok := previousResult.Result.(*SubscriptionResult)
-	if !ok {
-		return nil, fmt.Errorf(
-			"%w: expected previousResult.Result to be type %T, but got %T",
-			errInvalidRequestType,
-			prevState,
-			previousResult.Result,
-		) //nolint:lll
-	}
-
-	// Delete the existing subscription
-	err := c.deleteSubscription(ctx, prevState.Data.ID.WebhookID)
-	if err != nil {
-		return nil, fmt.Errorf(
-			"failed to delete previous subscription (ID: %s): %w",
-			prevState.Data.ID.WebhookID,
-			err,
-		)
-	}
-
-	// Create a new subscription
-	newResult, err := c.Subscribe(ctx, params)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create new subscription: %w", err)
-	}
-
-	return newResult, nil
+	// TODO: Implement update logic
+	return nil, nil
 }
 
 func (c *Connector) DeleteSubscription(
@@ -103,7 +84,7 @@ func (c *Connector) DeleteSubscription(
 		return fmt.Errorf("%w: Result cannot be nil", errMissingParams)
 	}
 
-	subscriptionData, ok := result.Result.(*SubscriptionResult)
+	subscriptionData, ok := result.Result.(*subscriptionResult)
 	if !ok {
 		return fmt.Errorf("%w: expected SubscriptionResult to be type %T but got %T",
 			errInvalidRequestType, subscriptionData, result.Result)
@@ -125,12 +106,12 @@ func (c *Connector) DeleteSubscription(
 	return nil
 }
 
-func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error) {
+func validateRequest(params common.SubscribeParams) (*subscriptionRequest, error) {
 	if params.Request == nil {
 		return nil, fmt.Errorf("%w: request is nil", errMissingParams)
 	}
 
-	req, ok := params.Request.(*SubscriptionRequest)
+	req, ok := params.Request.(*subscriptionRequest)
 	if !ok {
 		return nil, fmt.Errorf("%w: expected '%T' got '%T'", errInvalidRequestType, req, params.Request)
 	}
@@ -149,7 +130,7 @@ func (c *Connector) getSubscribeURL() (*urlbuilder.URL, error) {
 }
 
 func (c *Connector) createSubscriptions(ctx context.Context,
-	payload *SubscriptionPayload,
+	payload *subscriptionPayload,
 	updater common.WriteMethod,
 ) (*createSubscriptionsResponse, error) {
 	url, err := c.getSubscribeURL()
@@ -183,54 +164,160 @@ func (c *Connector) deleteSubscription(ctx context.Context, subscriptionID strin
 	return err
 }
 
-func getProviderEventName(subscriptionEvent common.SubscriptionEventType) (ModuleEvent, error) {
-	switch subscriptionEvent { //nolint:exhaustive
-	case common.SubscriptionEventTypeCreate:
-		return Created, nil
-	case common.SubscriptionEventTypeUpdate:
-		return Updated, nil
-	case common.SubscriptionEventTypeDelete:
-		return Deleted, nil
-	default:
-		return "", fmt.Errorf("%w: %s", errUnsupportedEventType, subscriptionEvent)
-	}
-}
-
 func buildPayload(
 	subscriptionEvents map[common.ObjectName]common.ObjectEvents,
 	webhookURL string,
-) (*SubscriptionPayload, error) {
-	subscriptions := make([]Subscription, 0)
+) (*subscriptionPayload, error) {
+	subscriptions := make([]subscription, 0)
 
 	for objectName, events := range subscriptionEvents {
 		for _, event := range events.Events {
-			event, err := getProviderEventName(event)
+			EventsMap, err := getObjectEvents(objectName)
+
+			// This should never happen due to prior validation
 			if err != nil {
 				return nil, err
 			}
 
-			subscriptionObjectName := readObjectNameToSubscriptionName.Get(string(objectName))
+			providerEvents := EventsMap.toProviderEvents(event)
 
-			providerEventType := subscriptionObjectName + "." + string(event)
+			if len(providerEvents) == 0 {
+				return nil, fmt.Errorf("%w: no provider events for object '%s' and event '%s'",
+					errUnsupportedSubscriptionEvent, objectName, event)
+			}
 
-			subscriptions = append(subscriptions, Subscription{
-				EventType: providerEventType,
-				// Filter is an object used to limit which webhook events are delivered.
-				// Filters can target specific records (by list_id, entry_id) and specific
-				// It cannot be used to do field level filtering.
-				// Use null to receive all events without filtering.
-				// Ref: https://docs.attio.com/rest-api/guides/webhooks#filtering
-				Filter: nil,
-			})
+			for _, e := range providerEvents {
+				subscriptions = append(subscriptions, subscription{
+					EventType: e,
+					// Filter is an object used to limit which webhook events are delivered.
+					// Filters can target specific records (by list_id, entry_id) and specific
+					// It cannot be used to do field level filtering.
+					// Use null to receive all events without filtering.
+					// Ref: https://docs.attio.com/rest-api/guides/webhooks#filtering
+					Filter: nil,
+				})
+			}
 		}
 	}
 
-	payload := &SubscriptionPayload{
-		Data: SubscriptionData{
+	payload := &subscriptionPayload{
+		Data: subscriptionData{
 			TargetURL:     webhookURL,
 			Subscriptions: subscriptions,
 		},
 	}
 
 	return payload, nil
+
+}
+
+func getObjectEvents(objectName common.ObjectName) (objectEvents, error) {
+	events, exists := attioObjectEvents[objectName]
+	if !exists {
+		return objectEvents{}, fmt.Errorf("%w: %s", errUnsupportedObject, objectName)
+	}
+	return events, nil
+}
+
+func getObjectEventsByProviderEvent(eventName providerEvent) (common.ObjectName, objectEvents, error) {
+	for objName, attioEvents := range attioObjectEvents {
+		_, found := attioEvents.toCommonEvent(eventName)
+		if found {
+			return objName, attioEvents, nil
+		}
+	}
+
+	return "", objectEvents{}, fmt.Errorf("%w: %s", errUnsupportedSubscriptionEvent, eventName)
+}
+
+func validateSubscriptionEvents(subscriptionEvents map[common.ObjectName]common.ObjectEvents) error {
+	var validationErrors error
+
+	for objectName, objectEvents := range subscriptionEvents {
+		attioEvents, exist := attioObjectEvents[objectName]
+		if !exist {
+			validationErrors = errors.Join(validationErrors,
+				fmt.Errorf("%s %w", objectName, errUnsupportedObject))
+
+			continue
+		}
+
+		// Get all supported events for this object
+		supportedEvents := attioEvents.getAllSupportedEvents()
+
+		supportedSet := make(map[providerEvent]bool)
+		for _, evt := range supportedEvents {
+			supportedSet[evt] = true
+		}
+
+		for _, event := range objectEvents.Events {
+			providerEvents := attioEvents.toProviderEvents(event)
+
+			if providerEvents == nil {
+				validationErrors = errors.Join(validationErrors,
+					fmt.Errorf("%w for object '%s'", errUnsupportedSubscriptionEvent, objectName))
+				continue
+			}
+
+			if len(providerEvents) == 0 {
+				validationErrors = errors.Join(validationErrors,
+					fmt.Errorf("%w: event '%s' for object '%s'", errUnsupportedSubscriptionEvent, event, objectName))
+
+				continue
+			}
+
+			// Validate that all provider events are supported
+			for _, providerEvent := range providerEvents {
+				if !supportedSet[providerEvent] {
+					validationErrors = errors.Join(validationErrors,
+						fmt.Errorf("%w: provider event '%s' for common event '%s' and object '%s'",
+							errUnsupportedSubscriptionEvent, providerEvent, event, objectName))
+				}
+			}
+		}
+	}
+
+	return validationErrors
+}
+
+// getAllSupportedEvents returns all provider events that this object supports.
+func (e objectEvents) getAllSupportedEvents() []providerEvent {
+	var events []providerEvent
+
+	events = append(events, e.createEvents...)
+	events = append(events, e.updateEvents...)
+	events = append(events, e.deleteEvents...)
+
+	return events
+}
+
+// getProviderEvents converts a common event type to corresponding Attio provider events.
+func (e objectEvents) toProviderEvents(commonEvent common.SubscriptionEventType) []providerEvent {
+	switch commonEvent { // nolint:exhaustive
+	case common.SubscriptionEventTypeCreate:
+		return e.createEvents
+	case common.SubscriptionEventTypeUpdate:
+		return e.updateEvents
+	case common.SubscriptionEventTypeDelete:
+		return e.deleteEvents
+	default:
+		return nil
+	}
+}
+
+// getCommonEventType converts a provider event back to common event type.
+func (e objectEvents) toCommonEvent(providerEvent providerEvent) (common.SubscriptionEventType, bool) {
+	if slices.Contains(e.createEvents, providerEvent) {
+		return common.SubscriptionEventTypeCreate, true
+	}
+
+	if slices.Contains(e.updateEvents, providerEvent) {
+		return common.SubscriptionEventTypeUpdate, true
+	}
+
+	if slices.Contains(e.deleteEvents, providerEvent) {
+		return common.SubscriptionEventTypeDelete, true
+	}
+
+	return "", false
 }
