@@ -817,10 +817,10 @@ const (
 
 type SearchFilter struct {
 	// multiple filters are joined by `and` by default.
-	FieldFilters []FieldFilters `json:"filters" validate:"required,dive"`
+	FieldFilters []FieldFilter `json:"filters" validate:"required,dive"`
 }
 
-type FieldFilters struct {
+type FieldFilter struct {
 	FieldName string         `json:"fieldName" validate:"required"`
 	Operator  FilterOperator `json:"operator"  validate:"required"`
 	Value     any            `json:"value"     validate:"required"`
