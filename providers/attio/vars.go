@@ -9,10 +9,10 @@ import (
 var (
 	errInvalidRequestType           = errors.New("invalid request type")
 	errMissingParams                = errors.New("missing required parameters")
-	errUnsupportedObject            = errors.New("unsupported object")
 	ErrMissingSignature             = errors.New("missing webhook signature header")
 	ErrInvalidSignature             = errors.New("invalid webhook signature")
 	errUnsupportedSubscriptionEvent = errors.New("unsupported subscription event")
+	errObjectNotFound               = errors.New("object not found. Ensure it is activated in the workspace settings")
 )
 
 //nolint:gochecknoglobals

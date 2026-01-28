@@ -35,11 +35,13 @@ func validateRequest(params common.SubscribeParams) (*subscriptionRequest, error
 //   - Makes sure the events actually exist for that object
 //
 // Standard/Custom Objects (people, companies, deals, etc.):
-//   - Checks if the object exists in the workspace
+//   - Checks if the object exists in the standardObjects fetched via Attio API
 //   - Only allows create, update, or delete events
+
+// nolint:funlen, cyclop
 func validateSubscriptionEvents(
 	subscriptionEvents map[common.ObjectName]common.ObjectEvents,
-	objectIDMap map[common.ObjectName]string,
+	standardObjects map[common.ObjectName]string,
 ) error {
 	var validationErrors error
 
@@ -59,40 +61,36 @@ func validateSubscriptionEvents(
 			for _, event := range objectEvents.Events {
 				providerEvents := attioEvents.toProviderEvents(event)
 
-				if providerEvents == nil {
+				if len(providerEvents) == 0 {
 					validationErrors = errors.Join(validationErrors,
 						fmt.Errorf("%w for object '%s'", errUnsupportedSubscriptionEvent, objectName))
 
 					continue
 				}
-
-				if len(providerEvents) == 0 {
-					validationErrors = errors.Join(validationErrors,
-						fmt.Errorf("%w: event '%s' for object '%s'", errUnsupportedSubscriptionEvent, event, objectName))
-
-					continue
-				}
-
 				// Validate that all provider events are supported
 				for _, providerEvent := range providerEvents {
 					if !supportedSet[providerEvent] {
 						validationErrors = errors.Join(validationErrors,
 							fmt.Errorf("%w: provider event '%s' for common event '%s' and object '%s'",
 								errUnsupportedSubscriptionEvent, providerEvent, event, objectName))
+
+						continue
 					}
 				}
 			}
 		} else {
 			// PATTERN 2: Validate standard/custom objects
-			_, exists := objectIDMap[objectName]
+			_, exists := standardObjects[objectName]
 			if !exists {
 				validationErrors = errors.Join(validationErrors,
-					fmt.Errorf("object '%s' not supported or not activated in workspace", objectName))
+					fmt.Errorf("%s: %w", objectName, errObjectNotFound))
 
 				continue
 			}
 
 			for _, evt := range objectEvents.Events {
+				// We only support create, update, delete events for standard/custom objects
+				//nolint:exhaustive
 				switch evt {
 				case common.SubscriptionEventTypeCreate,
 					common.SubscriptionEventTypeUpdate,
@@ -101,7 +99,9 @@ func validateSubscriptionEvents(
 				// Valid
 				default:
 					validationErrors = errors.Join(validationErrors,
-						fmt.Errorf("unsupported event '%s' for object '%s'", evt, objectName))
+						fmt.Errorf("%w: event '%s' for object '%s'", errUnsupportedSubscriptionEvent, evt, objectName))
+
+					continue
 				}
 			}
 		}
