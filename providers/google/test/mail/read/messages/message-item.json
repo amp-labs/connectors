@@ -1,0 +1,71 @@
+{
+  "id": "19174f3eeda702ed",
+  "threadId": "19174f3eeda702ed",
+  "labelIds": [
+    "CATEGORY_PROMOTIONS",
+    "UNREAD",
+    "INBOX"
+  ],
+  "snippet": "Restart your 14-day free trial now.",
+  "payload": {
+    "partId": "",
+    "mimeType": "multipart/alternative",
+    "filename": "",
+    "headers": [
+      {
+        "name": "Date",
+        "value": "Tue, 27 Jan 2026 09:10:00 -0500"
+      },
+      {
+        "name": "Subject",
+        "value": "Don't say goodbye! ✨"
+      }
+    ],
+    "body": {
+      "size": 0
+    },
+    "parts": [
+      {
+        "partId": "0",
+        "mimeType": "text/plain",
+        "filename": "",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "text/plain; charset=utf-8"
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "quoted-printable"
+          }
+        ],
+        "body": {
+          "size": 3190,
+          "data": "data123TEXT"
+        }
+      },
+      {
+        "partId": "1",
+        "mimeType": "text/html",
+        "filename": "",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "text/html; charset=\"utf-8\""
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "quoted-printable"
+          }
+        ],
+        "body": {
+          "size": 18344,
+          "data": "data123HTML"
+        }
+      }
+    ]
+  },
+  "sizeEstimate": 29817,
+  "historyId": "31772",
+  "internalDate": "1769523000000"
+}

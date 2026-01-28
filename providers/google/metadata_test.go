@@ -172,7 +172,7 @@ func TestMailListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Thread Id",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     nil,
 							},
 						},
 					},

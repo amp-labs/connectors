@@ -1,6 +1,8 @@
 package main
 
 import (
+	_ "embed"
+	"encoding/json"
 	"log/slog"
 	"net/http"
 	"strings"
@@ -16,8 +18,13 @@ import (
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
+const objectNameMessages = "messages"
+
 // nolint:gochecknoglobals
 var (
+	//go:embed messages-fields.json
+	messagesFieldsJSON string
+
 	ignoreEndpoints = []string{
 		// Endpoints to ignore because they return single configuration objects,
 		// not resource collections. Our schema extraction targets collection-based
@@ -49,6 +56,13 @@ func main() {
 				"objectName", objectName,
 				"error", object.Problem,
 			)
+		}
+
+		// The object messages is hard coded.
+		if objectName == objectNameMessages {
+			addFieldsForMessages(schemas, object.DisplayName, urlPath, object.ResponseKey)
+
+			continue
 		}
 
 		for _, field := range object.Fields {
@@ -121,4 +135,18 @@ func providerTypeConvertToValueType(providerType string) common.ValueType {
 		// Ex: object, array
 		return common.ValueTypeOther
 	}
+}
+
+func addFieldsForMessages(
+	schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any],
+	objectDisplayName, urlPath, responseKey string,
+) {
+	fields := make(staticschema.FieldMetadataMapV2)
+
+	err := json.Unmarshal([]byte(messagesFieldsJSON), &fields)
+	goutils.MustBeNil(err)
+
+	schemas.Add(providers.ModuleGoogleGmail,
+		objectNameMessages, objectDisplayName, urlPath,
+		responseKey, fields, nil, nil)
 }
