@@ -1,0 +1,28 @@
+{
+    "data": {
+        "_id": "test_team_id_001",
+        "name": "Test Team",
+        "users": [
+            {
+                "user": {
+                    "_id": "test_user_id_001",
+                    "email": "user1@example.com",
+                    "first_name": "Test",
+                    "last_name": "User1"
+                },
+                "status": "active",
+                "license": "enterprise"
+            },
+            {
+                "user": {
+                    "_id": "test_user_id_002",
+                    "email": "user2@example.com",
+                    "first_name": "Test",
+                    "last_name": "User2"
+                },
+                "status": "active",
+                "license": "enterprise"
+            }
+        ]
+    }
+}
