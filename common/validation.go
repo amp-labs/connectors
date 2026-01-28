@@ -27,6 +27,9 @@ var (
 
 	// ErrMissingFieldsMetadata is returned when the list of fields to create via UpsertMetadata is empty.
 	ErrMissingFieldsMetadata = errors.New("no fields metadata provided in UpsertMetadata")
+
+	// ErrMissingSearchFilters is returned when no field filters are provided for the Search operation.
+	ErrMissingSearchFilters = errors.New("no filters provided for Search operation")
 )
 
 func (p ReadParams) ValidateParams(withRequiredFields bool) error {
@@ -104,6 +107,22 @@ func (p *UpsertMetadataParams) ValidateParams() error {
 
 	if len(p.Fields) == 0 {
 		return ErrMissingFieldsMetadata
+	}
+
+	return nil
+}
+
+func (p SearchParams) ValidateParams(withRequiredFields bool) error {
+	if len(p.ObjectName) == 0 {
+		return ErrMissingObjects
+	}
+
+	if withRequiredFields && len(p.Fields) == 0 {
+		return ErrMissingFields
+	}
+
+	if len(p.Filter.FieldFilters) == 0 {
+		return ErrMissingSearchFilters
 	}
 
 	return nil

@@ -360,6 +360,9 @@ type (
 	ListObjectMetadataResult = common.ListObjectMetadataResult
 	RecordCountParams        = common.RecordCountParams
 	RecordCountResult        = common.RecordCountResult
+	SearchParams             = common.SearchParams
+	SearchFilter             = common.SearchFilter
+	SearchResult             = common.SearchResult
 
 	ErrorWithStatus = common.HTTPError //nolint:errname
 )
