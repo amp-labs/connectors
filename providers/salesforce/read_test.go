@@ -143,11 +143,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read Opportunity with Account association - AccountId added to SOQL and association extracted",
+			Name: "Read Opportunity with Accounts association - AccountId added to SOQL and association extracted",
 			Input: common.ReadParams{
 				ObjectName:        "opportunity",
 				Fields:            connectors.Fields("Name", "Amount", "StageName"),
-				AssociatedObjects: []string{"account"},
+				AssociatedObjects: []string{"accounts"},
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -173,7 +173,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 							"stagename": "Prospecting",
 						},
 						Associations: map[string][]common.Association{
-							"account": {
+							"accounts": {
 								{
 									ObjectId: "001ak00000OKNPHAA5",
 									Raw:      nil, // Parent relationships have empty Raw - workflow layer will fetch
@@ -418,6 +418,10 @@ func constructTestConnectorGeneral(serverURL string, module common.ModuleID) (*C
 
 	// for testing we want to redirect calls to our mock server
 	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, serverURL))
+
+	if connector.crmAdapter != nil {
+		connector.crmAdapter.SetUnitTestBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
+	}
 
 	return connector, nil
 }

@@ -150,12 +150,20 @@ func (IDPathIgnorer) IsPathMatching(path string) bool {
 
 type NestedIDPathIgnorer struct{}
 
+// IsPathMatching returns true when there is more than one URI part as ID.
 func (NestedIDPathIgnorer) IsPathMatching(path string) bool {
-	// Remove the last URL part.
-	parts := strings.Split(path, "/")
-	parts = parts[:len(parts)-1]
-	path = strings.Join(parts, "/")
+	parts := strings.Split(strings.Trim(path, "/"), "/")
+	idCounter := 0
 
-	// We get the large prefix which may have variate parts. It shouldn't.
-	return !strings.Contains(path, "{")
+	for _, p := range parts {
+		if strings.Contains(p, "{") && strings.Contains(p, "}") {
+			idCounter += 1
+
+			if idCounter > 1 {
+				return false
+			}
+		}
+	}
+
+	return true
 }

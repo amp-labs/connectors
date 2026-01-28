@@ -55,7 +55,9 @@
       "twitter_handle": null,
       "last_contacted_type": null,
       "job_seniority": null,
-      "custom_fields": {},
+      "custom_fields": {
+        "hobby": "surfing"
+      },
       "tags": [],
       "contact_restrictions": [],
       "success_count": 0,

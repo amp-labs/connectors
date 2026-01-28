@@ -3,6 +3,7 @@ package salesforce
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -10,11 +11,16 @@ import (
 	"github.com/amp-labs/connectors/internal/goutils"
 )
 
+var ErrCannotReadMetadata = errors.New("cannot read object metadata, it is possible you don't have the correct permissions set") // nolint:lll
+
 func (c *Connector) UpsertMetadata(
 	ctx context.Context, params *common.UpsertMetadataParams,
 ) (*common.UpsertMetadataResult, error) {
-	// Delegated.
-	return c.customAdapter.UpsertMetadata(ctx, params)
+	if c.crmAdapter != nil {
+		return c.crmAdapter.UpsertMetadata(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
 }
 
 // ListObjectMetadata returns object metadata for each object name provided.
@@ -193,14 +199,15 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
 	)
 
 	// Based on type property map value to Ampersand value type.
+	// See https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/field_types.htm
 	switch f.Type {
-	case "string", "textarea":
+	case "string", "textarea", "url", "email", "reference", "id", "phone":
 		valueType = common.ValueTypeString
 	case "boolean":
 		valueType = common.ValueTypeBoolean
 	case "int":
 		valueType = common.ValueTypeInt
-	case "double":
+	case "double", "currency", "percent":
 		valueType = common.ValueTypeFloat
 	case "date":
 		valueType = common.ValueTypeDate
@@ -213,7 +220,6 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
 		valueType = common.ValueTypeMultiSelect
 		values = f.getFieldValues()
 	default:
-		// Examples: base64, ID, reference, currency, percent, phone, url, email, anyType, location
 		valueType = common.ValueTypeOther
 	}
 

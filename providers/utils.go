@@ -284,7 +284,7 @@ func (i *ProviderInfo) defaultModuleOrRoot() common.ModuleID {
 type UnauthorizedHandler func(client common.AuthenticatedHTTPClient, event *UnauthorizedEvent) (*http.Response, error)
 
 // IsUnauthorizedDecider is a function called to determine if a response is unauthorized.
-type IsUnauthorizedDecider func(rsp *http.Response) bool
+type IsUnauthorizedDecider func(rsp *http.Response) (bool, error)
 
 // UnauthorizedEvent is the event that is triggered when an unauthorized response (http 401) is received.
 type UnauthorizedEvent struct {
@@ -555,6 +555,10 @@ func createOAuth2AuthCodeHTTPClient( //nolint:ireturn
 				}))
 	}
 
+	if header := CreateOauth2TokenHeaderAttachment(info); header != nil {
+		options = append(options, common.WithTokenHeaderAttachment(header))
+	}
+
 	options = append(options, cfg.Options...)
 
 	var err error
@@ -608,6 +612,10 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 						Response:   rsp,
 					})
 				}))
+	}
+
+	if header := CreateOauth2TokenHeaderAttachment(info); header != nil {
+		options = append(options, common.WithTokenHeaderAttachment(header))
 	}
 
 	options = append(options, cfg.Options...)
@@ -937,4 +945,31 @@ func (i *ProviderInfo) RequiresWorkspace() bool {
 	}
 
 	return false
+}
+
+// CreateOauth2TokenHeaderAttachment builds and returns a custom token header configuration
+// for OAuth2 authentication, if the provider defines one.
+//
+// By default, OAuth2 tokens are sent using the standard
+//
+//	Authorization: Bearer <token>
+//
+// header. Some providers override this behavior and require a custom header instead
+// (for example, Shopify uses: X-Shopify-Access-Token: <token>).
+//
+// If the provider does not specify a custom header configuration, this function returns
+// (nil, false). Otherwise, it returns the configured TokenHeaderAttachment and true.
+func CreateOauth2TokenHeaderAttachment(info *ProviderInfo) *common.TokenHeaderAttachment {
+	if info.Oauth2Opts == nil ||
+		info.Oauth2Opts.AccessTokenOpts == nil ||
+		info.Oauth2Opts.AccessTokenOpts.Header == nil {
+		return nil
+	}
+
+	header := info.Oauth2Opts.AccessTokenOpts.Header
+
+	return &common.TokenHeaderAttachment{
+		Name:   header.Name,
+		Prefix: header.ValuePrefix,
+	}
 }

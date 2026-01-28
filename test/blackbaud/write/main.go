@@ -40,7 +40,7 @@ func MainFn() int {
 func testBatches(ctx context.Context) error {
 	conn := blackbaud.GetBlackbaudConnector(ctx)
 
-	slog.Info("Creating the CRM Adminstration batches")
+	slog.Info("Creating the CRM Administration batches")
 
 	writeParams := common.WriteParams{
 		ObjectName: "crm-adnmg/batches",

@@ -74,10 +74,10 @@ func (p DeleteParams) ValidateParams() error {
 }
 
 var (
-	// ErrUnknownBatchWriteType is returned when enum option for the write type is invalid.
-	ErrUnknownBatchWriteType = errors.New("unknown batch write type")
-	// ErrUnsupportedBatchWriteType is returned when connector doesn't implement batch write type.
-	ErrUnsupportedBatchWriteType = errors.New("batch write type is not supported")
+	// ErrUnknownWriteType is returned when enum option for the write type is invalid.
+	ErrUnknownWriteType = errors.New("unknown write type")
+	// ErrUnsupportedWriteType is returned when connector doesn't implement write type.
+	ErrUnsupportedWriteType = errors.New("write type is not supported")
 )
 
 func (p BatchWriteParam) ValidateParams() error {
@@ -86,8 +86,8 @@ func (p BatchWriteParam) ValidateParams() error {
 	}
 
 	// Neither "create" nor "update".
-	if p.Type != BatchWriteTypeCreate && p.Type != BatchWriteTypeUpdate {
-		return ErrUnknownBatchWriteType
+	if p.Type != WriteTypeCreate && p.Type != WriteTypeUpdate {
+		return ErrUnknownWriteType
 	}
 
 	if len(p.Batch) == 0 {

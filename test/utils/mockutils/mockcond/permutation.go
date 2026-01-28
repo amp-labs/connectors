@@ -84,6 +84,7 @@ func generatePermutations[T comparable](items []T) [][]T {
 			perm := make([]T, size)
 			copy(perm, array)
 			result = append(result, perm)
+
 			return
 		}
 

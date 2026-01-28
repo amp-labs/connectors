@@ -17,7 +17,7 @@ const defaultSOQLPageSize = 2000
 func getParentFieldMap() map[string]map[string]string {
 	return map[string]map[string]string{
 		"opportunity": {
-			"account": "AccountId",
+			"accounts": "AccountId",
 		},
 	}
 }
@@ -137,6 +137,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 
 	// If NextPage is not set, then we're reading the first page of results.
 	// We need to construct the SOQL query and then make the request.
+	// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_query.htm
 	url, err := c.getRestApiURL("query")
 	if err != nil {
 		return nil, err

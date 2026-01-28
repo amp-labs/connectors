@@ -118,7 +118,7 @@ func (item attributeItem) getName() string {
 	// check if attribute has targets
 	if len(item.Targets) > 0 {
 		// This field is a reference to other entities.
-		// Apply underscore formating, because this is how such fields appear in the Read response.
+		// Apply underscore formatting, because this is how such fields appear in the Read response.
 		return fmt.Sprintf(UnderscoreFieldFormat, item.LogicalName)
 	}
 

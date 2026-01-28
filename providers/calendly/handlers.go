@@ -79,7 +79,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	node, hasData := response.Body()
 	if !hasData {
-		// this should never occur as the API responds with a cotents
+		// this should never occur as the API responds with a contents
 		// having body regardless of status code.
 		return &common.ReadResult{
 			Rows: 0,
@@ -136,8 +136,8 @@ func manualIncrementalSync(node *ajson.Node, recordsKey string, config common.Re
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	var (
-		paylod = params.RecordData
-		method = http.MethodPost
+		payload = params.RecordData
+		method  = http.MethodPost
 	)
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
@@ -151,7 +151,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		method = http.MethodPatch
 	}
 
-	jsonData, err := json.Marshal(paylod)
+	jsonData, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
 	}

@@ -51,9 +51,10 @@ type oauthClientParams struct {
 	config         *oauth2.Config
 	tokenSource    oauth2.TokenSource
 	tokenUpdated   func(oldToken, newToken *oauth2.Token) error
+	tokenHeader    *TokenHeaderAttachment
 	unauthorized   func(token *oauth2.Token, req *http.Request, rsp *http.Response) (*http.Response, error)
 	debug          func(req *http.Request, rsp *http.Response)
-	isUnauthorized func(rsp *http.Response) bool
+	isUnauthorized func(rsp *http.Response) (bool, error)
 }
 
 // WithOAuthClient sets the http client to use for the connector. Its usage is optional.
@@ -102,7 +103,7 @@ func WithOAuthUnauthorizedHandler(
 // This is useful for handling the case where the server has invalidated the token, and the client
 // needs to forcefully refresh. It's optional.
 func WithOAuthIsUnauthorizedHandler(
-	f func(rsp *http.Response) bool,
+	f func(rsp *http.Response) (bool, error),
 ) OAuthOption {
 	return func(params *oauthClientParams) {
 		params.isUnauthorized = f
@@ -122,6 +123,14 @@ func WithTokenUpdated(onTokenUpdated func(oldToken, newToken *oauth2.Token) erro
 func WithTokenSource(tokenSource oauth2.TokenSource) OAuthOption {
 	return func(params *oauthClientParams) {
 		params.tokenSource = tokenSource
+	}
+}
+
+// WithTokenHeaderAttachment configures the HTTP header used to attach the OAuth 2.0
+// access token to outbound API requests.
+func WithTokenHeaderAttachment(tokenHeader *TokenHeaderAttachment) OAuthOption {
+	return func(params *oauthClientParams) {
+		params.tokenHeader = tokenHeader
 	}
 }
 
@@ -163,6 +172,7 @@ func newOAuthClient(ctx context.Context, params *oauthClientParams) Authenticate
 	return &http.Client{
 		Transport: &oauth2Transport{
 			Source:         tokenSource,
+			Header:         params.tokenHeader,
 			Base:           params.client.Transport,
 			Debug:          params.debug,
 			Unauthorized:   params.unauthorized,
@@ -173,35 +183,11 @@ func newOAuthClient(ctx context.Context, params *oauthClientParams) Authenticate
 
 type oauth2Transport struct {
 	Source         oauth2.TokenSource
+	Header         *TokenHeaderAttachment
 	Base           http.RoundTripper
 	Debug          func(req *http.Request, rsp *http.Response)
 	Unauthorized   func(token *oauth2.Token, req *http.Request, rsp *http.Response) (*http.Response, error)
-	IsUnauthorized func(rsp *http.Response) bool
-}
-
-// getTokenFromSource retrieves a token from the TokenSource.
-func (t *oauth2Transport) getTokenFromSource(ctx context.Context) (*oauth2.Token, error) { // nolint:funcorder
-	srcCtx, ok := t.Source.(TokenSourceWithContext)
-	if ok {
-		return srcCtx.TokenWithContext(ctx)
-	}
-
-	return t.Source.Token()
-}
-
-// handleUnauthorizedResponse handles 401 responses or custom unauthorized conditions.
-func (t *oauth2Transport) handleUnauthorizedResponse( // nolint:funcorder
-	token *oauth2.Token,
-	req *http.Request,
-	rsp *http.Response,
-) (*http.Response, error) {
-	if rsp.StatusCode == http.StatusUnauthorized || (t.IsUnauthorized != nil && t.IsUnauthorized(rsp)) {
-		if t.Unauthorized != nil {
-			return t.Unauthorized(token, req, rsp)
-		}
-	}
-
-	return rsp, nil
+	IsUnauthorized func(rsp *http.Response) (bool, error)
 }
 
 func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
@@ -221,7 +207,9 @@ func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 
 	req2 := cloneRequest(req) // per RoundTripper contract
-	token.SetAuthHeader(req2)
+
+	// Attach token to request.
+	configureRequestWithToken(req2, token, t.Header)
 
 	// req.Body is assumed to be closed by the base RoundTripper.
 	reqBodyClosed = true
@@ -241,6 +229,44 @@ func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 
 	return t.handleUnauthorizedResponse(token, req2, rsp)
+}
+
+// getTokenFromSource retrieves a token from the TokenSource.
+func (t *oauth2Transport) getTokenFromSource(ctx context.Context) (*oauth2.Token, error) {
+	srcCtx, ok := t.Source.(TokenSourceWithContext)
+	if ok {
+		return srcCtx.TokenWithContext(ctx)
+	}
+
+	return t.Source.Token()
+}
+
+func (t *oauth2Transport) isUnauthorized(rsp *http.Response) (bool, error) {
+	if t.IsUnauthorized != nil {
+		return t.IsUnauthorized(rsp)
+	}
+
+	return rsp.StatusCode == http.StatusUnauthorized, nil
+}
+
+// handleUnauthorizedResponse handles 401 responses or custom unauthorized conditions.
+func (t *oauth2Transport) handleUnauthorizedResponse(
+	token *oauth2.Token,
+	req *http.Request,
+	rsp *http.Response,
+) (*http.Response, error) {
+	isUnauthorized, err := t.isUnauthorized(rsp)
+	if err != nil {
+		return nil, err
+	}
+
+	if isUnauthorized {
+		if t.Unauthorized != nil {
+			return t.Unauthorized(token, req, rsp)
+		}
+	}
+
+	return rsp, nil
 }
 
 func (t *oauth2Transport) base() http.RoundTripper {
@@ -364,4 +390,60 @@ func (w *observableTokenSource) HasChanged(tok *oauth2.Token) bool {
 		w.lastKnown.RefreshToken == tok.RefreshToken ||
 		w.lastKnown.TokenType == tok.TokenType ||
 		w.lastKnown.Expiry.Equal(tok.Expiry)
+}
+
+// TokenHeaderAttachment defines an HTTP header channel used to convey an
+// access token in outbound API requests.
+//
+// The access token is attached by setting the specified header name to the
+// token value, optionally prefixed with a static string (for example,
+// "Bearer " or "Token ").
+//
+// This attachment is typically used for providers that require access tokens
+// to be supplied through custom HTTP headers rather than the standard
+// OAuth 2.0 Authorization header.
+type TokenHeaderAttachment struct {
+	Name   string
+	Prefix string
+}
+
+// configureRequestWithToken attaches an OAuth 2.0 access token to an outgoing
+// HTTP request using the configured attachment channel.
+//
+// If a TokenHeaderAttachment is provided, the access token is conveyed through
+// the specified HTTP header channel, using the configured header name and
+// optional prefix.
+//
+// If no custom header attachment is configured, the function falls back to the
+// default OAuth 2.0 behavior and attaches the token using the standard
+// `Authorization: Bearer <token>` header.
+func configureRequestWithToken(
+	req *http.Request,
+	token *oauth2.Token,
+	customHeader *TokenHeaderAttachment,
+) {
+	if customHeader != nil {
+		// Custom header attachment.
+		//
+		// RFC 6750 defines the "Bearer" token type and associates it with the
+		// "Bearer" HTTP authentication scheme, which is why the standard form is:
+		//   Authorization: Bearer <token>
+		// https://datatracker.ietf.org/doc/html/rfc6750#section-6.1.1
+		//
+		// In practice, the string placed before the token (the prefix) corresponds
+		// to the authentication scheme used for that token type. This code does not
+		// derive the prefix from token_type dynamically; instead, ProviderInfo
+		// supplies a fixed prefix for connectors that deviate from the standard
+		// Bearer scheme or require nonstandard headers.
+		req.Header.Set(
+			customHeader.Name,
+			customHeader.Prefix+token.AccessToken,
+		)
+
+		return
+	}
+
+	// Default OAuth 2.0 channel.
+	// `Authorization: Bearer <token>` header.
+	token.SetAuthHeader(req)
 }

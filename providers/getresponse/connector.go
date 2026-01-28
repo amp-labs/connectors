@@ -3,7 +3,11 @@ package getresponse
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/deleter"
+	"github.com/amp-labs/connectors/internal/components/operations"
+	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/getresponse/metadata"
 )
@@ -11,6 +15,12 @@ import (
 type Connector struct {
 	*components.Connector
 	components.SchemaProvider
+	components.Reader
+	components.Writer
+	components.Deleter
+
+	// Require authenticated client
+	common.RequireAuthenticatedClient
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -18,15 +28,48 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
-	c := &Connector{
+	connector := &Connector{
 		Connector: base,
 	}
 
 	// static metadata for ListObjectMetadata
-	c.SchemaProvider = schema.NewOpenAPISchemaProvider(
-		c.ProviderContext.Module(),
+	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(
+		connector.ProviderContext.Module(),
 		metadata.Schemas,
 	)
 
-	return c, nil
+	connector.Reader = reader.NewHTTPReader(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.ReadHandlers{
+			BuildRequest:  connector.buildReadRequest,
+			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	connector.Writer = writer.NewHTTPWriter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	connector.Deleter = deleter.NewHTTPDeleter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.DeleteHandlers{
+			BuildRequest:  connector.buildDeleteRequest,
+			ParseResponse: connector.parseDeleteResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	return connector, nil
 }

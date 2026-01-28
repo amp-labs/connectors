@@ -43,7 +43,7 @@ func testRead(ctx context.Context, conn *mx.Connector, objectName string, fields
 	params := common.ReadParams{
 		ObjectName: objectName,
 		Fields:     connectors.Fields(fields...),
-		// NextPage:   "WyJfX21peG1heF9fdW5kZWZpbmVkX18iLHsiJG9pZCI6IjU2ZGUwYjdjZWExZGU5YjY2YTUzZjRmYiJ9XQ",
+		// NextPage:   "WyJfX21peG1heF9fdW5kZWZpbmVkX18iLHisJG9pZCI6IjU2ZGUwYjdjZWExZGU5YjY2YTUzZjRmYiJ9XQ",
 	}
 
 	res, err := conn.Read(ctx, params)

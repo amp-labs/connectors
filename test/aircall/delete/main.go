@@ -30,7 +30,9 @@ func main() {
 	// Step 1: Create a contact to delete
 	// We use a unique index to ensure unique phone numbers/emails
 	index := 999
+
 	slog.Info("Step 1: Creating a contact to delete")
+
 	recordID, err := testCreateContact(ctx, conn, index)
 	if err != nil {
 		slog.Error("Failed to create contact", "error", err)
@@ -39,6 +41,7 @@ func main() {
 
 	// Step 2: Delete the contact
 	slog.Info("Step 2: Deleting the contact", "recordId", recordID)
+
 	if err := testDeleteContact(ctx, conn, recordID); err != nil {
 		slog.Error("Failed to delete contact", "error", err)
 		return
@@ -78,6 +81,7 @@ func testCreateContact(ctx context.Context, conn *aircall.Connector, index int) 
 	}
 
 	slog.Info("Contact created successfully", "recordId", res.RecordId)
+
 	return res.RecordId, nil
 }
 

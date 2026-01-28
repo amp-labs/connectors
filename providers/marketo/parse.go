@@ -18,7 +18,7 @@ func constructNextRecordsURL(object, nextToken string) common.NextPageFunc {
 	if paginatesByIDs(object) {
 		// Incase of Reading Records from the Objects requiring Filtering.
 		// we construct Next-Page URLs using the filtered ids.
-		// constructNextPageFilteredURL creates the next-page url by appendig the next page ids in the query parameters
+		// constructNextPageFilteredURL creates the next-page url by appending the next page ids in the query parameters
 		return constructNextPageFilteredURL
 	}
 

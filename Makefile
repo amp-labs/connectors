@@ -1,25 +1,58 @@
 # ====================
 # Formatting & linting
 # ====================
-# Lint checking consists of two parts: "golangci-lint" and "gci". Both should be used together.
-# "gci" may still flag issues even if the golangci-lint check passes.
-# Therefore, if any files need formatting, they will be printed, and the final exit code will be
-# successful only if no such files exist.
-.PHONY: lint
-lint: custom-gcl
-	@output="$$(./custom-gcl run -c .golangci.yml 2>&1)"; \
-	echo "$$output"; \
-	if echo "$$output" | grep -Eq "build linters|module.* not found"; then \
-		echo "❌ GolangCI-Lint plugin build failed. Try 'make linter-rebuild'."; \
-		exit 1; \
-	fi; \
-	gci list . | sed 's/^/BadFormat: /'; \
-	[ $$(gci list . | wc -c) -eq 0 ]
 
+# Linter versions - keep in sync with .github/workflows/linter.yml
+GOLANGCI_LINT_VERSION=v2.7.1
+
+# Install all linters required by make fix
+.PHONY: install/linters
+install/linters:
+	@echo "Installing gci..."
+	go install github.com/daixiang0/gci@latest
+	@echo "Installing golangci-lint $(GOLANGCI_LINT_VERSION)..."
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $$(go env GOPATH)/bin $(GOLANGCI_LINT_VERSION)
+	@echo "Installing typos..."
+	cargo install typos-cli
+	@echo "Linters installed successfully!"
+
+# Install git hooks for this repository
+.PHONY: install/hooks
+install/hooks:
+	@git config --local core.hooksPath scripts/git-hooks
+	@echo "Git hooks configured successfully!"
+
+# Install linters and git hooks
+.PHONY: install/dev
+install/dev: install/linters install/hooks
+	@echo "Development environment setup complete!"
+
+# Check linter versions and auto-install if needed
+.PHONY: check-linters
+check-linters:
+	@if ! command -v gci >/dev/null 2>&1; then \
+		echo "gci not found, installing..."; \
+		go install github.com/daixiang0/gci@latest; \
+	fi
+	@if ! command -v golangci-lint >/dev/null 2>&1; then \
+		echo "golangci-lint not found, installing $(GOLANGCI_LINT_VERSION)..."; \
+		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $$(go env GOPATH)/bin $(GOLANGCI_LINT_VERSION); \
+	else \
+		INSTALLED_VERSION=$$(golangci-lint --version 2>/dev/null | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | head -1); \
+		if [ "$$INSTALLED_VERSION" != "$(GOLANGCI_LINT_VERSION)" ]; then \
+			echo "golangci-lint version mismatch: installed $$INSTALLED_VERSION, expected $(GOLANGCI_LINT_VERSION)"; \
+			echo "Installing golangci-lint $(GOLANGCI_LINT_VERSION)..."; \
+			curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $$(go env GOPATH)/bin $(GOLANGCI_LINT_VERSION); \
+		fi \
+	fi
+	@if ! command -v typos >/dev/null 2>&1; then \
+		echo "typos not found, installing..."; \
+		cargo install typos-cli; \
+	fi
 
 # Build custom golangci-lint binary with linter plugins nogoroutine, modulelinter.
 .PHONY: custom-gcl
-custom-gcl:
+custom-gcl: check-linters
 	@if [ ! -f custom-gcl ]; then \
 		echo "Building custom golangci-lint binary with nogoroutine & module linter..."; \
 		golangci-lint custom --verbose || exit 1; \
@@ -38,12 +71,16 @@ linter-clear-cache:
 # Run a few autoformatters and print out unfixable errors
 # PRE-REQUISITES: install linters, see https://ampersand.slab.com/posts/engineering-onboarding-guide-environment-set-up-9v73t3l8#huik9-install-linters
 # If you're curious, run `golangci-lint help linters` to see which linters have auto-fix enabled by golangci-lint.
-# For ones that do not have auto-fix enabled by golangci-lint (e.g. wsl and gci), we add the fix commands manually to this list.
+# For ones that do not have auto-fix enabled by golangci-lint (e.g. gci), we add the fix commands manually to this list.
 .PHONY: fix
 fix: custom-gcl
-	wsl --allow-cuddle-declarations --fix ./... && \
-		gci write . && \
-		./custom-gcl run -c .golangci.yml --fix
+	gci write --skip-generated . && \
+		./custom-gcl run -c .golangci.yml --fix && \
+		typos --config .typos.toml --write-changes && \
+		. scripts/bash/linter.sh
+
+.PHONY: lint
+lint: fix
 
 .PHONY: fix/sort
 fix/sort:

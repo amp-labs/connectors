@@ -50,6 +50,10 @@ linters:
         - -ST1003 # Poorly chosen identifier.
         - -QF1002 # Convert untagged switch to tagged switch.
         - -QF1008 # Omit embedded fields from selector expression.
+    # https://golangci-lint.run/docs/linters/configuration/#gosec
+    gosec:
+      excludes:
+        - G201 # SQL query construction using format string
     # https://golangci-lint.run/docs/linters/configuration/#varnamelen
     varnamelen:
       # The longest distance, in source lines, that is being considered a "small scope" where it is ok to use short variable names.

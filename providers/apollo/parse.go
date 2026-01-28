@@ -1,6 +1,7 @@
 package apollo
 
 import (
+	"maps"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -81,4 +82,45 @@ func searchRecords(fld string) common.RecordsFunc {
 
 		return records, nil
 	}
+}
+
+// getMarshaledData retrieves records and unnests the custom fields of contacts objects.
+func getMarshaledData(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
+	data := make([]common.ReadResultRow, len(records))
+
+	for idx, record := range records {
+		var customFields map[string]any
+
+		if rawCustomFields, exists := record["typed_custom_fields"]; exists {
+			if cstmFlds, ok := rawCustomFields.(map[string]any); ok {
+				customFields = cstmFlds
+			} else {
+				customFields = make(map[string]any)
+			}
+		} else {
+			// No custom fields present
+			customFields = make(map[string]any)
+		}
+
+		mergedRecord := make(map[string]any, len(record)+len(customFields))
+
+		maps.Copy(mergedRecord, record)
+
+		maps.Copy(mergedRecord, customFields)
+
+		data[idx] = common.ReadResultRow{
+			Fields: common.ExtractLowercaseFieldsFromRaw(fields, mergedRecord),
+			Raw:    mergedRecord,
+		}
+	}
+
+	return data, nil
+}
+
+func apolloMarshaledData(objectName string) common.MarshalFunc {
+	if !usesFieldsResource.Has(objectName) {
+		return common.GetMarshaledData
+	}
+
+	return getMarshaledData
 }

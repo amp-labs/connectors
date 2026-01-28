@@ -2,16 +2,14 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/amp-labs/connectors"
-	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 	connTest "github.com/amp-labs/connectors/test/hubspot"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/testscenario"
 	"github.com/brianvoe/gofakeit/v6"
 )
 
@@ -36,38 +34,48 @@ func main() {
 	// Get the Hubspot connector.
 	conn := connTest.GetHubspotConnector(ctx)
 
-	// Write an artificial contact to Hubspot.
-	result, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: "contacts",
-		RecordId:   "",
-		RecordData: &Contact{
-			Email:     gofakeit.Email(),
+	email := gofakeit.Email()
+	updatedPhone := gofakeit.Phone()
+	updatedCompany := gofakeit.Company()
+	updatedWebsite := gofakeit.URL()
+	updatedFirstName := gofakeit.FirstName()
+	updatedLastName := gofakeit.LastName()
+
+	testscenario.ValidateCreateUpdateDelete(ctx, conn,
+		"contacts",
+		Contact{
+			Email:     email,
 			Phone:     gofakeit.Phone(),
-			Company:   gofakeit.Company(),
+			Company:   updatedCompany,
 			Website:   gofakeit.URL(),
 			Lastname:  gofakeit.LastName(),
 			Firstname: gofakeit.FirstName(),
 		},
-	})
-	if err != nil {
-		utils.Fail("error writing to hubspot", "error", err)
-	}
-
-	// Dump the result.
-	utils.DumpJSON(result, os.Stdout)
-	fmt.Println("Wrote contact")
-
-	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "contacts",
-		Fields:     connectors.Fields("email", "phone", "company", "website", "lastname", "firstname"),
-		NextPage:   "",
-		Since:      time.Now().Add(-5 * time.Minute),
-	})
-	if err != nil {
-		utils.Fail("error reading from hubspot", "error", err)
-	}
-
-	fmt.Println("Reading contacts..")
-	// Dump the result.
-	utils.DumpJSON(res, os.Stdout)
+		Contact{
+			Email:     email,
+			Phone:     updatedPhone,
+			Company:   updatedCompany,
+			Website:   updatedWebsite,
+			Lastname:  updatedLastName,
+			Firstname: updatedFirstName,
+		},
+		testscenario.CRUDTestSuite{
+			ReadFields: datautils.NewSet("id",
+				"email", "phone", "company", "website", "lastname", "firstname"),
+			WaitBeforeSearch: 20 * time.Second,
+			SearchBy: testscenario.Property{
+				Key:   "email",
+				Value: email,
+				Since: time.Now().Add(-5 * time.Minute),
+			},
+			RecordIdentifierKey: "id",
+			UpdatedFields: map[string]string{
+				"phone":     updatedPhone,
+				"company":   updatedCompany,
+				"website":   updatedWebsite,
+				"lastname":  updatedLastName,
+				"firstname": updatedFirstName,
+			},
+		},
+	)
 }
