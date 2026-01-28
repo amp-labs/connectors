@@ -50,17 +50,30 @@ func (a *Adapter) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error
 	url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, DefaultPageSize))
 
 	if !params.Since.IsZero() {
-		if query, ok := incrementalQuery[objectNameLower]; ok {
+		if query, ok := incrementalSinceQuery[objectNameLower]; ok {
 			url.WithQueryParam(query, datautils.Time.FormatRFC3339WithOffset(params.Since))
+		}
+	}
+
+	if !params.Until.IsZero() {
+		if query, ok := incrementalUntilQuery[objectNameLower]; ok {
+			url.WithQueryParam(query, datautils.Time.FormatRFC3339WithOffset(params.Until))
 		}
 	}
 
 	return url, nil
 }
 
-// incrementalQuery is a registry of object name to the query parameter used for performing incremental reading.
-var incrementalQuery = map[string]string{ // nolint:gochecknoglobals
+// incrementalSinceQuery is a registry of object name to the query parameter used for performing incremental reading.
+var incrementalSinceQuery = map[string]string{ // nolint:gochecknoglobals
+	// https://developer.salesforce.com/docs/marketing/pardot/guide/email-v5.html
 	"emails": "sentAtAfterOrEqualTo",
+}
+
+// incrementalUntilQuery is a registry of object name to the query parameter used for performing incremental reading.
+var incrementalUntilQuery = map[string]string{ // nolint:gochecknoglobals
+	// https://developer.salesforce.com/docs/marketing/pardot/guide/email-v5.html
+	"emails": "sentAtBeforeOrEqualTo",
 }
 
 func (a *Adapter) parseReadResponse(
