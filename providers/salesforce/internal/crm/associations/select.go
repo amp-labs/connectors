@@ -1,0 +1,50 @@
+package associations
+
+import "github.com/amp-labs/connectors/common"
+
+// FieldsForSelectQuery adds fields for associated objects to the fields list.
+func FieldsForSelectQuery(config common.ReadParams) []string {
+	fields := config.Fields.List()
+
+	if config.AssociatedObjects == nil {
+		return fields
+	}
+
+	for _, obj := range config.AssociatedObjects {
+		fields = addFieldForAssociation(fields, config.ObjectName, obj)
+	}
+
+	return fields
+}
+
+// addFieldForAssociation adds a field or subquery for an associated object.
+func addFieldForAssociation(fields []string, objectName, assocObj string) []string {
+	// Some objects cannot be queried using a subquery, such as when the associated object is a parent object.
+	// In that case, we fetch the associated object's ID as a field, and fetch the full object in the q
+	if isParentRelationship(objectName, assocObj) {
+		parentField := getParentFieldName(objectName, assocObj)
+		if parentField != "" && !containsField(fields, parentField) {
+			fields = append(fields, parentField)
+		}
+
+		return fields
+	}
+
+	// Check for junction relationship (child relationship that maps to a different object)
+	relationshipName, _, isJunction := getJunctionRelationship(objectName, assocObj)
+	if isJunction {
+		// Use the mapped relationship name for SOQL subquery
+		// e.g., (SELECT FIELDS(STANDARD) FROM OpportunityContactRoles)
+		fields = append(fields, "(SELECT FIELDS(STANDARD) FROM "+relationshipName+")")
+
+		return fields
+	}
+
+	// Standard child relationship
+	// Generates subqueries like: (SELECT FIELDS(STANDARD) FROM Contacts)
+	// Just standard fields for now, because salesforce errors out > 200 fields on an object.
+	// Source: https://www.infallibletechie.com/2023/04/parent-child-records-in-salesforce-soql-using-rest-api.html
+	fields = append(fields, "(SELECT FIELDS(STANDARD) FROM "+assocObj+")")
+
+	return fields
+}

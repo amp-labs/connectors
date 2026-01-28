@@ -44,8 +44,8 @@ func (s *SOQLBuilder) From(from string) *SOQLBuilder {
 	return s
 }
 
-func (s *SOQLBuilder) Limit(l int) *SOQLBuilder {
-	s.limit = strconv.Itoa(l)
+func (s *SOQLBuilder) Limit(limit int64) *SOQLBuilder {
+	s.limit = strconv.FormatInt(limit, 10)
 
 	return s
 }
