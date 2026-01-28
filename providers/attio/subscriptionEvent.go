@@ -21,7 +21,7 @@ type (
 )
 
 const (
-	SignatureHeader = "attio-signature"
+	signatureHeader = "attio-signature"
 )
 
 // VerifyWebhookMessage implements WebhookVerifierConnector for Attio.
@@ -41,9 +41,9 @@ func (c *Connector) VerifyWebhookMessage(
 		return false, fmt.Errorf("%w: %w", errMissingParams, err)
 	}
 
-	signature := request.Headers.Get(SignatureHeader)
+	signature := request.Headers.Get(signatureHeader)
 	if signature == "" {
-		return false, fmt.Errorf("%w: missing %s header", ErrMissingSignature, SignatureHeader)
+		return false, fmt.Errorf("%w: missing %s header", ErrMissingSignature, signatureHeader)
 	}
 
 	sigBytes, err := hex.DecodeString(signature)

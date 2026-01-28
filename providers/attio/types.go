@@ -1,11 +1,10 @@
 package attio
 
 type subscriptionRequest struct {
-	UniqueRef       string `json:"unique_ref"        validate:"required"`
 	WebhookEndpoint string `json:"webhook_end_point" validate:"required"`
-	Secret          string `json:"secret,omitempty"`
 }
 
+// Reference: https://docs.attio.com/rest-api/endpoint-reference/webhooks/create-a-webhook#body-data
 type subscriptionPayload struct {
 	Data subscriptionData `json:"data" validate:"required"`
 }
@@ -17,9 +16,15 @@ type subscriptionData struct {
 
 type subscription struct {
 	EventType providerEvent `json:"event_type" validate:"required"`
-	Filter    any           `json:"filter"     validate:"required"`
+	// Filter is an object used to limit which webhook events are delivered.
+	// Filters can target specific records (by list_id, entry_id) and specific
+	// It cannot be used to do field level filtering.
+	// Use null to receive all events without filtering.
+	// Ref: https://docs.attio.com/rest-api/guides/webhooks#filtering
+	Filter any `json:"filter"     validate:"required"`
 }
 
+// Reference: https://docs.attio.com/rest-api/endpoint-reference/webhooks/create-a-webhook#response-data
 type createSubscriptionsResponse struct {
 	Data createSubscriptionsResponseData `json:"data"`
 }
