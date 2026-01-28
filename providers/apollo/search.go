@@ -62,7 +62,7 @@ func manualIncrementalSync(node *ajson.Node, recordsKey string, config common.Re
 		return nil, err
 	}
 
-	rows, err := common.GetMarshaledData(records, config.Fields.List())
+	rows, err := getMarshaledData(records, config.Fields.List())
 	if err != nil {
 		return nil, err
 	}
