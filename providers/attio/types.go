@@ -1,5 +1,30 @@
 package attio
 
+import "time"
+
+// objectData represents the common structure for object metadata
+// returned by Attio API endpoints.
+type objectData struct {
+	Id struct {
+		WorkspaceId string `json:"workspace_id"` //nolint:tagliatelle
+		ObjectId    string `json:"object_id"`    //nolint:tagliatelle
+	} `json:"id"`
+	ApiSlug      string    `json:"api_slug"`      //nolint:tagliatelle
+	SingularNoun string    `json:"singular_noun"` //nolint:tagliatelle
+	PluralNoun   string    `json:"plural_noun"`   //nolint:tagliatelle
+	CreatedAt    time.Time `json:"created_at"`    //nolint:tagliatelle
+}
+
+// objectResponse is used when the response returns a single object inside the data key.
+type objectResponse struct {
+	Data objectData `json:"data"`
+}
+
+// objectListResponse is used when the response returns a list (slice) of objects inside the data key.
+type objectListResponse struct {
+	Data []objectData `json:"data"`
+}
+
 type subscriptionRequest struct {
 	WebhookEndpoint string `json:"webhook_end_point" validate:"required"`
 }
@@ -21,7 +46,7 @@ type subscription struct {
 	// It cannot be used to do field level filtering.
 	// Use null to receive all events without filtering.
 	// Ref: https://docs.attio.com/rest-api/guides/webhooks#filtering
-	Filter any `json:"filter"     validate:"required"`
+	Filter any `json:"filter" validate:"required"`
 }
 
 // Reference: https://docs.attio.com/rest-api/endpoint-reference/webhooks/create-a-webhook#response-data

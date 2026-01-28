@@ -20,6 +20,18 @@ func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	}
 }
 
+// Subscribe handles two different subscription patterns based on object type:
+//
+// PATTERN 1 - Core Objects (lists, tasks, notes, workspace_members):
+//   - Subscribes using specific event types (e.g., "task.created", "note.updated")
+//   - No filters required - events are already object-specific
+//   - Event mappings are predefined in attioObjectEvents
+//
+// PATTERN 2 - Standard/Custom Objects (people, companies, deals, etc.):
+//   - Subscribes using generic "record.*" events (record.created, record.updated, record.deleted)
+//   - Requires object_id filter to target the specific object type
+//   - Object metadata is fetched dynamically from Attio API (Objects can be activated/deactivated in the workspace settings)
+//
 // nolint: funlen, cyclop, godoclint
 func (c *Connector) Subscribe(
 	ctx context.Context,
@@ -30,13 +42,26 @@ func (c *Connector) Subscribe(
 		return nil, err
 	}
 
-	// Validate that requested events are supported
-	err = validateSubscriptionEvents(params.SubscriptionEvents)
+	// Fetch the current list of objects from Attio API
+	objectList, err := c.geStandardOrCustomObjectsList(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	payload, err := buildPayload(params.SubscriptionEvents, req.WebhookEndpoint)
+	// Build a map: object name -> object ID
+	// Example: "people" -> "0e80364d-70b1-44d3-b7ba-0a6a564a7152"
+	objectIDMap := make(map[common.ObjectName]string)
+	for _, obj := range objectList {
+		objectIDMap[common.ObjectName(obj.ApiSlug)] = obj.Id.ObjectId
+	}
+
+	// Validate that requested events are supported
+	err = validateSubscriptionEvents(params.SubscriptionEvents, objectIDMap)
+	if err != nil {
+		return nil, err
+	}
+
+	payload, err := buildPayload(params.SubscriptionEvents, objectIDMap, req.WebhookEndpoint)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build subscription payload: %w", err)
 	}
@@ -139,30 +164,54 @@ func (c *Connector) deleteSubscription(ctx context.Context, subscriptionID strin
 
 func buildPayload(
 	subscriptionEvents map[common.ObjectName]common.ObjectEvents,
+	objectIDMap map[common.ObjectName]string,
 	webhookURL string,
 ) (*subscriptionPayload, error) {
 	subscriptions := make([]subscription, 0)
 
 	for objectName, events := range subscriptionEvents {
 		for _, event := range events.Events {
-			EventsMap, err := getObjectEvents(objectName)
-			// This should never happen due to prior validation
-			if err != nil {
-				return nil, err
-			}
+			EventsMap, isCoreObject := getObjectEvents(objectName)
+			if isCoreObject {
+				providerEvents := EventsMap.toProviderEvents(event)
 
-			providerEvents := EventsMap.toProviderEvents(event)
+				if len(providerEvents) == 0 {
+					return nil, fmt.Errorf("%w: no provider events for object '%s' and event '%s'",
+						errUnsupportedSubscriptionEvent, objectName, event)
+				}
 
-			if len(providerEvents) == 0 {
-				return nil, fmt.Errorf("%w: no provider events for object '%s' and event '%s'",
-					errUnsupportedSubscriptionEvent, objectName, event)
-			}
+				for _, e := range providerEvents {
+					subscriptions = append(subscriptions, subscription{
+						EventType: e,
+						Filter:    nil,
+					})
+				}
+			} else {
+				objectId, exists := objectIDMap[objectName]
+				if !exists {
+					return nil, fmt.Errorf("object '%s' not supported or not activated in workspace", objectName)
+				}
 
-			for _, e := range providerEvents {
-				subscriptions = append(subscriptions, subscription{
-					EventType: e,
-					Filter:    nil,
-				})
+				providerEvent, err := toRecordEvents(event)
+				if err != nil {
+					return nil, err
+				}
+
+				filter := map[string]any{
+					"$and": []map[string]any{
+						{
+							"field":    "id.object_id",
+							"operator": "equals",
+							"value":    objectId,
+						},
+					},
+				}
+				subscriptions = append(subscriptions,
+					subscription{
+						EventType: providerEvent,
+						Filter:    filter,
+					},
+				)
 			}
 		}
 	}
@@ -177,13 +226,13 @@ func buildPayload(
 	return payload, nil
 }
 
-func getObjectEvents(objectName common.ObjectName) (objectEvents, error) {
+func getObjectEvents(objectName common.ObjectName) (objectEvents, bool) {
 	events, exists := attioObjectEvents[objectName]
 	if !exists {
-		return objectEvents{}, fmt.Errorf("%w: %s", errUnsupportedObject, objectName)
+		return objectEvents{}, false
 	}
 
-	return events, nil
+	return events, true
 }
 
 // getAllSupportedEvents returns all provider events that this object supports.
@@ -208,5 +257,24 @@ func (e objectEvents) toProviderEvents(commonEvent common.SubscriptionEventType)
 		return e.deleteEvents
 	default:
 		return nil
+	}
+}
+
+// toRecordEvents converts a common event type to generic Attio record events.
+// This is used for standard/custom objects (people, companies, deals, etc.) which use
+// generic "record.*" event types instead of object-specific events.
+func toRecordEvents(commonEvent common.SubscriptionEventType) (providerEvent, error) {
+	switch commonEvent {
+	case common.SubscriptionEventTypeCreate:
+		return "record.created", nil
+
+	case common.SubscriptionEventTypeUpdate:
+		return "record.updated", nil
+
+	case common.SubscriptionEventTypeDelete:
+		return "record.updated", nil
+
+	default:
+		return "", fmt.Errorf("unsupported event type %s", commonEvent)
 	}
 }
