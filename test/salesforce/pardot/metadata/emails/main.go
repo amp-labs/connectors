@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -22,6 +23,8 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetSalesforceAccountEngagementConnector(ctx)
+
+	ctx = common.WithAuthToken(ctx, connTest.GetSalesforceAccessToken())
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
 		objectName,

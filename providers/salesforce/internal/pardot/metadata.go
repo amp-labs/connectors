@@ -28,7 +28,8 @@ var (
 func (a *Adapter) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
-	return Schemas.Select(objectNames)
+	// return Schemas.Select(objectNames)
+	return a.metadataStrategy.ListObjectMetadata(ctx, objectNames)
 }
 
 type pardotSchemas struct {
