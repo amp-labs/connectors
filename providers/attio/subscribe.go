@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 var _ connectors.SubscribeConnector = &Connector{}
@@ -101,10 +100,6 @@ func (c *Connector) DeleteSubscription(
 	}
 
 	return nil
-}
-
-func (c *Connector) getSubscribeURL() (*urlbuilder.URL, error) {
-	return c.getApiURL("webhooks")
 }
 
 func (c *Connector) createSubscriptions(ctx context.Context,
