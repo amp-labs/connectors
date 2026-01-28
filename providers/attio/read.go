@@ -128,7 +128,7 @@ func constructRequestBody(config common.ReadParams) map[string]any {
 	return body
 }
 
-func (c *Connector) geStandardOrCustomObjectsList(
+func (c *Connector) readStandardOrCustomObjectsList(
 	ctx context.Context,
 ) ([]objectData, error) {
 	url, err := c.getApiURL("objects")
