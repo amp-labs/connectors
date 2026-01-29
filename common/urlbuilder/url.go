@@ -129,8 +129,9 @@ func (u *URL) String() string {
 	// Everything stays the same
 	// The only thing that we alter in the delegate's query params
 	u.delegate.RawQuery = u.queryValuesToString()
+	output := u.delegate.String()
 
-	return u.delegate.String()
+	return output
 }
 
 // URL may have special encoding rules.

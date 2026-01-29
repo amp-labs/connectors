@@ -17,6 +17,20 @@ func FieldsForSelectQueryRead(params *common.ReadParams) []string {
 	return fields
 }
 
+func FieldsForSelectQuerySearch(params *common.SearchParams) []string {
+	fields := params.Fields.List()
+
+	if params.AssociatedObjects == nil {
+		return fields
+	}
+
+	for _, obj := range params.AssociatedObjects {
+		fields = addFieldForAssociation(fields, params.ObjectName, obj)
+	}
+
+	return fields
+}
+
 // addFieldForAssociation adds a field or subquery for an associated object.
 func addFieldForAssociation(fields []string, objectName, assocObj string) []string {
 	// Some objects cannot be queried using a subquery, such as when the associated object is a parent object.
