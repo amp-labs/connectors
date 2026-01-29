@@ -9,8 +9,6 @@ import (
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/spyzhov/ajson"
 )
 
 // DefaultPageSize is a relative limit. In fact the largest page size allowed is 100,000.
@@ -46,7 +44,7 @@ func (a *Adapter) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error
 		return nil, err
 	}
 
-	url.WithQueryParam("fields", strings.Join(params.Fields.List(), ","))
+	applyFieldsAndOrdering(url, params)
 	url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, DefaultPageSize))
 
 	if !params.Since.IsZero() {
@@ -64,16 +62,37 @@ func (a *Adapter) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error
 	return url, nil
 }
 
-// incrementalSinceQuery is a registry of object name to the query parameter used for performing incremental reading.
-var incrementalSinceQuery = map[string]string{ // nolint:gochecknoglobals
-	// https://developer.salesforce.com/docs/marketing/pardot/guide/email-v5.html
-	"emails": "sentAtAfterOrEqualTo",
-}
+// applyFieldsAndOrdering configures the request URL with the correct `fields`
+// and (when required) `orderBy` query parameters.
+//
+// It starts from the fields explicitly requested by the caller. If the target
+// object supports connector-side time filtering (for example, filtering by
+// createdAt or updatedAt), this function:
+//
+//   - ensures the required timestamp field is included in the `fields` query
+//   - applies an ascending `orderBy` so results are returned in chronological order
+//
+// This is necessary because connector-side filtering can only be applied if the
+// relevant field is present in the raw response payload.
+//
+// A set is used to avoid duplicate fields, and a copy is created to prevent
+// mutating the original params.Fields slice.
+func applyFieldsAndOrdering(url *urlbuilder.URL, params common.ReadParams) {
+	fields := params.Fields.List()
 
-// incrementalUntilQuery is a registry of object name to the query parameter used for performing incremental reading.
-var incrementalUntilQuery = map[string]string{ // nolint:gochecknoglobals
-	// https://developer.salesforce.com/docs/marketing/pardot/guide/email-v5.html
-	"emails": "sentAtBeforeOrEqualTo",
+	timeField, found := objectsFilterParam[params.ObjectName]
+	if found {
+		// Ensure the required createdAt/updatedAt field is included
+		// so connector-side filtering can be applied.
+		list := datautils.NewSetFromList(fields)
+		list.AddOne(timeField)
+		fields = list.List()
+
+		// Enforce chronological order for stable filtering
+		url.WithQueryParam("orderBy", timeField+" ASC")
+	}
+
+	url.WithQueryParam("fields", strings.Join(fields, ","))
 }
 
 func (a *Adapter) parseReadResponse(
@@ -82,13 +101,10 @@ func (a *Adapter) parseReadResponse(
 	req *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	return common.ParseResult(
-		resp,
-		common.ExtractOptionalRecordsFromPath("values"),
-		func(node *ajson.Node) (string, error) {
-			return jsonquery.New(node).StrWithDefault("nextPageUrl", "")
-		},
-		common.GetMarshaledData,
+	return common.ParseResultFiltered(params, resp,
+		common.MakeRecordsFunc("values"),
+		makeFilterFunc(params),
+		common.MakeMarshaledDataFunc(nil),
 		params.Fields,
 	)
 }
