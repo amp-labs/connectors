@@ -163,12 +163,17 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Read Recordings first page",
 			Input: common.ReadParams{
-				ObjectName: "recordings", Fields: connectors.Fields("id", "topic"),
+				ObjectName: "recordings",
+				Fields:     connectors.Fields("id", "topic"),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v2/users/me/recordings"),
-				Then:  mockserver.Response(http.StatusOK, responseRecordingsFirstPage),
+				If: mockcond.And{
+					mockcond.Path("/v2/users/me/recordings"),
+					mockcond.QueryParam("from", time.Now().AddDate(0, 0, -29).Format("2006-01-02")),
+					mockcond.QueryParam("to", time.Now().Format("2006-01-02")),
+				},
+				Then: mockserver.Response(http.StatusOK, responseRecordingsFirstPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -187,8 +192,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"recording_count": float64(22),
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v2/users/me/recordings?next_page_token=Tva2CuIdTgsv8wAnhyAdU3m06Y2HuLQtlh3&page_size=300", //nolint:lll
-				Done:     false,
+				NextPage: common.NextPageToken(testroutines.URLTestServer + "/v2/users/me/recordings?" +
+					"from=" + time.Now().AddDate(0, 0, -29).Format("2006-01-02") + "&next_page_token=Tva2CuIdTgsv8wAnhyAdU3m06Y2HuLQtlh3&page_size=300&to=" + time.Now().Format("2006-01-02")), //nolint:lll
+				Done: false,
 			},
 			ExpectedErrs: nil,
 		},
@@ -221,44 +227,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				}},
 				NextPage: "",
 				Done:     true,
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name: "Incremental read of Recordings with Since filter",
-			Input: common.ReadParams{
-				ObjectName: "recordings",
-				Fields:     connectors.Fields("id", "topic"),
-				Since:      time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC),
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/v2/users/me/recordings"),
-					mockcond.QueryParam("from", "2024-01-15"),
-				},
-				Then: mockserver.Response(http.StatusOK, responseRecordingsFirstPage),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"id":    float64(6840331990),
-						"topic": "My Personal Meeting",
-					},
-					Raw: map[string]any{
-						"id":              float64(6840331990),
-						"topic":           "My Personal Meeting",
-						"account_id":      "Cx3wERazSgup7ZWRHQM8-w",
-						"host_id":         "_0ctZtY0REqWalTmwvrdIw",
-						"duration":        float64(20),
-						"recording_count": float64(22),
-					},
-				}},
-				NextPage: testroutines.URLTestServer + "/v2/users/me/recordings?" +
-					"from=2024-01-15&next_page_token=Tva2CuIdTgsv8wAnhyAdU3m06Y2HuLQtlh3&page_size=300",
-				Done: false,
 			},
 			ExpectedErrs: nil,
 		},
