@@ -232,7 +232,7 @@ func (h *HTTPClient) Post(ctx context.Context,
 // refresh the access token and retry the request. If errorHandler is nil, then the default error
 // handler is used. If not, the caller can inject their own error handling logic.
 func (h *HTTPClient) Patch(ctx context.Context,
-	url string, reqBody any, headers ...Header,
+	url string, reqBody []byte, headers ...Header,
 ) (*http.Response, []byte, error) {
 	fullURL, err := h.getURL(url)
 	if err != nil {
@@ -249,7 +249,7 @@ func (h *HTTPClient) Patch(ctx context.Context,
 }
 
 func (h *HTTPClient) Put(ctx context.Context,
-	url string, reqBody any, headers ...Header,
+	url string, reqBody []byte, headers ...Header,
 ) (*http.Response, []byte, error) {
 	fullURL, err := h.getURL(url)
 	if err != nil {
@@ -359,7 +359,7 @@ func (h *HTTPClient) httpPost(ctx context.Context, url string, //nolint:dupl
 
 // httpPatch makes a PATCH request to the given URL and returns the response & response body.
 func (h *HTTPClient) httpPatch(ctx context.Context, //nolint:dupl
-	url string, headers []Header, body any,
+	url string, headers []Header, body []byte,
 ) (*http.Response, []byte, error) {
 	req, err := makePatchRequest(ctx, url, headers, body)
 	if err != nil {
@@ -406,7 +406,7 @@ func (h *HTTPClient) httpPatch(ctx context.Context, //nolint:dupl
 
 // httpPut makes a PUT request to the given URL and returns the response & response body.
 func (h *HTTPClient) httpPut(ctx context.Context, //nolint:dupl
-	url string, headers []Header, body any,
+	url string, headers []Header, body []byte,
 ) (*http.Response, []byte, error) {
 	req, err := makePutRequest(ctx, url, headers, body)
 	if err != nil {
@@ -543,13 +543,8 @@ func bodyReader(headers Headers, data []byte) (io.Reader, int64, error) {
 
 // makePatchRequest creates a PATCH request with the given headers and body, and adds the
 // Content-Type header. It then returns the request.
-func makePatchRequest(ctx context.Context, url string, headers []Header, body any) (*http.Request, error) {
-	jBody, err := json.Marshal(body)
-	if err != nil {
-		return nil, fmt.Errorf("request body is not valid JSON, body is %v:\n%w", body, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewReader(jBody))
+func makePatchRequest(ctx context.Context, url string, headers []Header, body []byte) (*http.Request, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewReader(body))
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
@@ -559,13 +554,8 @@ func makePatchRequest(ctx context.Context, url string, headers []Header, body an
 
 // makePutRequest creates a PUT request with the given headers and body, and adds the
 // Content-Type header. It then returns the request.
-func makePutRequest(ctx context.Context, url string, headers []Header, body any) (*http.Request, error) {
-	jBody, err := json.Marshal(body)
-	if err != nil {
-		return nil, fmt.Errorf("request body is not valid JSON, body is %v:\n%w", body, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewReader(jBody))
+func makePutRequest(ctx context.Context, url string, headers []Header, body []byte) (*http.Request, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewReader(body))
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}

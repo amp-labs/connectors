@@ -3,7 +3,6 @@ package common
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
@@ -767,10 +766,9 @@ func TestHTTPClient_Post_URLEncoded(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	payload := map[string]string{"key1": "value1", "key2": "value2"}
-	data, _ := json.Marshal(payload)
+	payload := []byte(`{"key1": "value1", "key2": "value2"}`)
 
-	resp, _, err := client.Post(ctx, server.URL, data, HeaderFormURLEncoded)
+	resp, _, err := client.Post(ctx, server.URL, payload, HeaderFormURLEncoded)
 
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -779,15 +777,16 @@ func TestHTTPClient_Post_URLEncoded(t *testing.T) {
 func TestHTTPClient_Patch_Success(t *testing.T) {
 	t.Parallel()
 
-	expectedBody := map[string]string{"name": "updated"}
+	expectedBody := []byte(`{"name": "updated"}`)
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPatch, r.Method)
 		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
 
-		var body map[string]string
-		_ = json.NewDecoder(r.Body).Decode(&body)
-		assert.Equal(t, expectedBody, body)
+		// Read and verify the request body
+		bodyBytes, err := io.ReadAll(r.Body)
+		require.NoError(t, err)
+		assert.Equal(t, expectedBody, bodyBytes) // Compare byte slices directly
 
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status":"updated"}`))
@@ -813,15 +812,16 @@ func TestHTTPClient_Patch_Success(t *testing.T) {
 func TestHTTPClient_Put_Success(t *testing.T) {
 	t.Parallel()
 
-	expectedBody := map[string]string{"name": "replaced"}
+	expectedBody := []byte(`{"name": "replaced"}`)
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPut, r.Method)
 		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
 
-		var body map[string]string
-		_ = json.NewDecoder(r.Body).Decode(&body)
-		assert.Equal(t, expectedBody, body)
+		// Read and verify the request body
+		bodyBytes, err := io.ReadAll(r.Body)
+		require.NoError(t, err)
+		assert.Equal(t, expectedBody, bodyBytes) // Compare byte slices directly
 
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status":"replaced"}`))
@@ -1130,7 +1130,7 @@ func TestMakePatchRequest(t *testing.T) {
 	headers := []Header{
 		{Key: "X-Custom", Value: "value"},
 	}
-	body := map[string]string{"test": "value"}
+	body := []byte(`{"test": "value"}`)
 
 	req, err := makePatchRequest(ctx, url, headers, body)
 
@@ -1141,22 +1141,6 @@ func TestMakePatchRequest(t *testing.T) {
 	assert.Equal(t, "application/json", req.Header.Get("Content-Type"))
 }
 
-func TestMakePatchRequest_InvalidJSON(t *testing.T) {
-	t.Parallel()
-
-	ctx := context.Background()
-	url := "https://example.com"
-	headers := []Header{}
-
-	// Create a body that cannot be marshaled to JSON
-	body := make(chan int)
-
-	_, err := makePatchRequest(ctx, url, headers, body)
-
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "request body is not valid JSON")
-}
-
 func TestMakePutRequest(t *testing.T) {
 	t.Parallel()
 
@@ -1165,7 +1149,7 @@ func TestMakePutRequest(t *testing.T) {
 	headers := []Header{
 		{Key: "X-Custom", Value: "value"},
 	}
-	body := map[string]string{"test": "value"}
+	body := []byte(`{"test": "value"}`)
 
 	req, err := makePutRequest(ctx, url, headers, body)
 
@@ -1441,7 +1425,13 @@ func TestGetResponseHeaders(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			result := GetResponseHeaders(tt.response)
-			assert.Equal(t, tt.expected, result)
+
+			if tt.expected == nil {
+				assert.Nil(t, result)
+				return
+			}
+
+			assert.ElementsMatch(t, tt.expected, result, "headers should match regardless of order")
 		})
 	}
 }
@@ -1479,10 +1469,10 @@ func TestHTTPClient_MethodsWithContext(t *testing.T) {
 	_, _, err = client.Post(ctx, server.URL, []byte(`{"test":"value"}`))
 	require.NoError(t, err)
 
-	_, _, err = client.Patch(ctx, server.URL, map[string]string{"test": "value"})
+	_, _, err = client.Patch(ctx, server.URL, []byte(`{"test": "value"}`))
 	require.NoError(t, err)
 
-	_, _, err = client.Put(ctx, server.URL, map[string]string{"test": "value"})
+	_, _, err = client.Put(ctx, server.URL, []byte(`{"test": "value"}`))
 	require.NoError(t, err)
 
 	_, _, err = client.Delete(ctx, server.URL)
