@@ -8,12 +8,12 @@ import (
 	"github.com/go-playground/validator"
 )
 
-func validateRequest(params common.SubscribeParams) (*subscriptionRequest, error) {
+func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error) {
 	if params.Request == nil {
 		return nil, fmt.Errorf("%w: request is nil", errMissingParams)
 	}
 
-	req, ok := params.Request.(*subscriptionRequest)
+	req, ok := params.Request.(*SubscriptionRequest)
 	if !ok {
 		return nil, fmt.Errorf("%w: expected '%T' got '%T'", errInvalidRequestType, req, params.Request)
 	}
