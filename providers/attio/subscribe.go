@@ -32,6 +32,7 @@ func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 //   - Requires object_id filter to target the specific object type
 //   - Object metadata is fetched dynamically from Attio API
 //   - Objects can be activated/deactivated in the workspace settings
+//   - Ref: https://docs.attio.com/rest-api/endpoint-reference/webhooks/create-a-webhook
 //
 // nolint: funlen, cyclop, godoclint
 func (c *Connector) Subscribe(
@@ -87,7 +88,6 @@ func (c *Connector) Subscribe(
 	return res, nil
 }
 
-// UpdateSubscription implements [connectors.SubscribeConnector].
 // nolint: nilnil
 func (c *Connector) UpdateSubscription(
 	ctx context.Context,
@@ -98,6 +98,7 @@ func (c *Connector) UpdateSubscription(
 	return nil, nil
 }
 
+// Reference: https://docs.attio.com/rest-api/endpoint-reference/webhooks/delete-a-webhook
 func (c *Connector) DeleteSubscription(
 	ctx context.Context,
 	result common.SubscriptionResult,
