@@ -26,6 +26,7 @@ func main() {
 		ObjectName: "prospects",
 		Fields: connectors.Fields(
 			"id", "firstName", "lastName", "email"),
+		Since:    utils.Timestamp("2025-05-16T11:24:11-07:00"),
 		PageSize: 2,
 	})
 }
