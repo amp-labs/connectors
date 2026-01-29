@@ -36,7 +36,7 @@ var incrementalObjects = datautils.NewSet( //nolint:gochecknoglobals
 )
 
 // mandatoryDateObjects defines which objects require mandatory from/to query parameters.
-// These endpoints will get default 30-day range when Since/Until are not provided.
+// These endpoints will get default 29-day range when Since/Until are not provided.
 var mandatoryDateObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"users_report",
 	"recordings_report",
@@ -45,6 +45,7 @@ var mandatoryDateObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"meeting_activities_report",
 	"telephone_report",
 	"upcoming_events_report",
+	"recordings",
 )
 
 var supportedObjectsByWrite = map[common.ModuleID]datautils.StringSet{ // nolint: gochecknoglobals
