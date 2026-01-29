@@ -25,7 +25,7 @@ type objectListResponse struct {
 	Data []objectData `json:"data"`
 }
 
-type subscriptionRequest struct {
+type SubscriptionRequest struct {
 	WebhookEndpoint string `json:"webhook_end_point" validate:"required"`
 }
 

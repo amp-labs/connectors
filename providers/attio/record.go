@@ -2,10 +2,10 @@ package attio
 
 import (
 	"context"
-	"errors"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 var _ connectors.BatchRecordReaderConnector = &Connector{}
@@ -15,7 +15,44 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	objectName string,
 	ids []string,
 	fields []string,
-	associations []string,
+	_ []string,
 ) ([]common.ReadResultRow, error) {
-	return nil, errors.New("attio doesn't support batch read by IDs") //nolint:err113
+	config := common.ReadParams{
+		ObjectName: objectName,
+		Fields:     datautils.NewSetFromList(fields),
+	}
+
+	if err := config.ValidateParams(true); err != nil {
+		return nil, err
+	}
+
+	url, err := c.getObjectReadURL(objectName)
+	if err != nil {
+		return nil, err
+	}
+
+	payload := map[string]any{
+		"filters": map[string]any{
+			"record_id": map[string]any{
+				"$in": ids,
+			},
+		},
+	}
+
+	res, err := c.Client.Post(ctx, url.String(), payload)
+	if err != nil {
+		return nil, err
+	}
+
+	parsed, err := common.ParseResult(res,
+		common.ExtractRecordsFromPath("data"),
+		makeNextRecordsURL(url, config.ObjectName),
+		common.GetMarshaledData,
+		config.Fields,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return parsed.Data, nil
 }

@@ -29,7 +29,7 @@ func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 	cfg := &oauth2.Config{
 		ClientID:     reader.Get(credscanning.Fields.ClientId),
 		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
-		RedirectURL:  "https://dev-api.withampersand.com/callbacks/v1/oauth",
+		RedirectURL:  "http://localhost:8080/callbacks/v1/oauth",
 		Endpoint: oauth2.Endpoint{
 			AuthURL:   "https://app.attio.com/authorize",
 			TokenURL:  "https://app.attio.com/oauth/token",
