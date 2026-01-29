@@ -2,16 +2,16 @@ package associations
 
 import "github.com/amp-labs/connectors/common"
 
-// FieldsForSelectQuery adds fields for associated objects to the fields list.
-func FieldsForSelectQuery(config common.ReadParams) []string {
-	fields := config.Fields.List()
+// FieldsForSelectQueryRead adds fields for associated objects to the fields list.
+func FieldsForSelectQueryRead(params *common.ReadParams) []string {
+	fields := params.Fields.List()
 
-	if config.AssociatedObjects == nil {
+	if params.AssociatedObjects == nil {
 		return fields
 	}
 
-	for _, obj := range config.AssociatedObjects {
-		fields = addFieldForAssociation(fields, config.ObjectName, obj)
+	for _, obj := range params.AssociatedObjects {
+		fields = addFieldForAssociation(fields, params.ObjectName, obj)
 	}
 
 	return fields

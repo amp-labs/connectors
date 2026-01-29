@@ -64,7 +64,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 
 // makeSOQL returns the SOQL query for the desired read operation.
 func makeSOQL(config common.ReadParams) *core.SOQLBuilder {
-	fields := associations.FieldsForSelectQuery(config)
+	fields := associations.FieldsForSelectQueryRead(&config)
 	soql := (&core.SOQLBuilder{}).SelectFields(fields).From(config.ObjectName)
 	addWhereClauses(soql, config)
 
