@@ -50,11 +50,11 @@ func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.Subscripti
 
 // PreLoadData implements [common.SubscriptionEvent].
 func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadData) error {
-	if data == nil || data.Request == nil {
+	if data == nil || data.RequestHeaders == nil {
 		return fmt.Errorf("%w: request cannot be nil", errMissingParams)
 	}
 
-	eventValue := data.Request.Header.Get(eventHeader)
+	eventValue := data.RequestHeaders.Get(eventHeader)
 
 	log.Printf("event value: %s", eventValue)
 
