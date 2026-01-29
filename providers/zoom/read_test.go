@@ -193,7 +193,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 				}},
 				NextPage: common.NextPageToken(testroutines.URLTestServer + "/v2/users/me/recordings?" +
-					"from=" + time.Now().AddDate(0, 0, -29).Format("2006-01-02") + "&next_page_token=Tva2CuIdTgsv8wAnhyAdU3m06Y2HuLQtlh3&page_size=300&to=" + time.Now().Format("2006-01-02")),
+					"from=" + time.Now().AddDate(0, 0, -29).Format("2006-01-02") + "&next_page_token=Tva2CuIdTgsv8wAnhyAdU3m06Y2HuLQtlh3&page_size=300&to=" + time.Now().Format("2006-01-02")), //nolint:lll
 				Done: false,
 			},
 			ExpectedErrs: nil,
