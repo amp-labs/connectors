@@ -151,9 +151,14 @@ func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 		}
 	}
 
+	allOrNone := false // default to partial success
+	if params.AllOrNone != nil {
+		allOrNone = *params.AllOrNone
+	}
+
 	return &Payload{
 		Records:   items,
-		AllOrNone: goutils.Pointer(false), // updating records is not all or none
+		AllOrNone: goutils.Pointer(allOrNone),
 	}, nil
 }
 
