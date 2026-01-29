@@ -37,7 +37,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		rsp,
 		core.GetRecords,
 		core.GetNextRecordsURL,
-		core.GetSalesforceDataMarshaller(config),
+		core.GetDataMarshallerForRead(config),
 		config.Fields,
 	)
 }
@@ -63,10 +63,10 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 }
 
 // makeSOQL returns the SOQL query for the desired read operation.
-func makeSOQL(config common.ReadParams) *core.SOQLBuilder {
-	fields := associations.FieldsForSelectQueryRead(&config)
-	soql := (&core.SOQLBuilder{}).SelectFields(fields).From(config.ObjectName)
-	addWhereClauses(soql, config)
+func makeSOQL(params common.ReadParams) *core.SOQLBuilder {
+	fields := associations.FieldsForSelectQueryRead(&params)
+	soql := (&core.SOQLBuilder{}).SelectFields(fields).From(params.ObjectName)
+	addWhereClauses(soql, params)
 
 	return soql
 }
