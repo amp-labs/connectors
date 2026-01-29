@@ -138,7 +138,9 @@ func init() { // nolint:funlen
 					// ModuleDependencies specifies which modules REQUIRE this metadata item.
 					// Here, it means: "the CRM module depends on/requires the workspace metadata".
 					ModuleDependencies: &ModuleDependencies{
-						ModuleSalesforceCRM: ModuleDependency{},
+						ModuleSalesforceCRM:                   {},
+						ModuleSalesforceAccountEngagement:     {},
+						ModuleSalesforceAccountEngagementDemo: {},
 					},
 				},
 				{
