@@ -4,7 +4,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-type subscriptionRequest struct {
+type SubscriptionRequest struct {
 	UniqueRef       string `json:"unique_ref"        validate:"required"`
 	WebhookEndPoint string `json:"webhook_end_point" validate:"required"`
 	Secret          string `json:"secret,omitempty"`
@@ -16,7 +16,7 @@ type subscriptionPayload struct {
 	CallbackToken string `json:"callback_token" validate:"required"`
 }
 
-type subscriptionResponse struct {
+type SubscriptionResponse struct {
 	UserGUID      string `json:"user_guid"`
 	TenantId      string `json:"tenant_id"`
 	ID            int    `json:"id"`
@@ -25,14 +25,14 @@ type subscriptionResponse struct {
 	CallbackURL   string `json:"callback_url"`
 	CallbackToken string `json:"callback_token"`
 }
-type successfulSubscription struct {
+type SuccessfulSubscription struct {
 	ID         string
 	ObjectName string
 	EventName  string
 }
 
-type subscriptionResult struct {
-	Subscriptions map[common.ObjectName]map[moduleEvent]subscriptionResponse `json:"subscriptions"`
+type SubscriptionResult struct {
+	Subscriptions map[common.ObjectName]map[moduleEvent]SubscriptionResponse `json:"subscriptions"`
 }
 
 // moduleEvent represents the combined event type string used by Salesloft.
