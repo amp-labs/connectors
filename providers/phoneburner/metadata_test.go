@@ -31,13 +31,13 @@ func TestListObjectMetadata(t *testing.T) {
 			"contacts": {
 				DisplayName: "Contacts",
 				Fields: map[string]common.FieldMetadata{
-					"id": {
-						DisplayName:  "Id",
+					"contact_user_id": {
+						DisplayName:  "Contact User Id",
 						ValueType:    "string",
 						ProviderType: "string",
 					},
-					"email": {
-						DisplayName:  "Email",
+					"first_name": {
+						DisplayName:  "First Name",
 						ValueType:    "string",
 						ProviderType: "string",
 					},
@@ -51,8 +51,8 @@ func TestListObjectMetadata(t *testing.T) {
 						ValueType:    "string",
 						ProviderType: "string",
 					},
-					"name": {
-						DisplayName:  "Name",
+					"title": {
+						DisplayName:  "Title",
 						ValueType:    "string",
 						ProviderType: "string",
 					},
@@ -76,13 +76,13 @@ func TestListObjectMetadata(t *testing.T) {
 			"members": {
 				DisplayName: "Members",
 				Fields: map[string]common.FieldMetadata{
-					"id": {
-						DisplayName:  "Id",
+					"user_id": {
+						DisplayName:  "User Id",
 						ValueType:    "string",
 						ProviderType: "string",
 					},
-					"email": {
-						DisplayName:  "Email",
+					"email_address": {
+						DisplayName:  "Email Address",
 						ValueType:    "string",
 						ProviderType: "string",
 					},
@@ -161,8 +161,8 @@ func TestListObjectMetadata_UnsupportedObject(t *testing.T) {
 			"contacts": {
 				DisplayName: "Contacts",
 				Fields: map[string]common.FieldMetadata{
-					"id": {
-						DisplayName:  "Id",
+					"contact_user_id": {
+						DisplayName:  "Contact User Id",
 						ValueType:    "string",
 						ProviderType: "string",
 					},

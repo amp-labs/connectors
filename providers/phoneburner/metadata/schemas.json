@@ -9,8 +9,13 @@
           "path": "/rest/1/contacts",
           "responseKey": "contacts",
           "fields": {
-            "id": {
-              "displayName": "Id",
+            "contact_user_id": {
+              "displayName": "Contact User Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner_id": {
+              "displayName": "Owner Id",
               "valueType": "string",
               "providerType": "string"
             },
@@ -24,25 +29,60 @@
               "valueType": "string",
               "providerType": "string"
             },
-            "email": {
-              "displayName": "Email",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "phone": {
-              "displayName": "Phone",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "created_at": {
-              "displayName": "Created At",
+            "date_added": {
+              "displayName": "Date Added",
               "valueType": "datetime",
               "providerType": "datetime"
             },
-            "updated_at": {
-              "displayName": "Updated At",
-              "valueType": "datetime",
-              "providerType": "datetime"
+            "raw_phone": {
+              "displayName": "Raw Phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "unique_id": {
+              "displayName": "Unique Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ad_code": {
+              "displayName": "Ad Code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "language": {
+              "displayName": "Language",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "region": {
+              "displayName": "Region",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time_zone": {
+              "displayName": "Time Zone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location_name": {
+              "displayName": "Location Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "latitude": {
+              "displayName": "Latitude",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "longitude": {
+              "displayName": "Longitude",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_zip": {
+              "displayName": "Raw Zip",
+              "valueType": "string",
+              "providerType": "string"
             }
           }
         },
@@ -56,8 +96,8 @@
               "valueType": "string",
               "providerType": "string"
             },
-            "name": {
-              "displayName": "Name",
+            "title": {
+              "displayName": "Title",
               "valueType": "string",
               "providerType": "string"
             }
@@ -85,8 +125,13 @@
           "path": "/rest/1/members",
           "responseKey": "members",
           "fields": {
-            "id": {
-              "displayName": "Id",
+            "user_id": {
+              "displayName": "User Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "username": {
+              "displayName": "Username",
               "valueType": "string",
               "providerType": "string"
             },
@@ -100,15 +145,30 @@
               "valueType": "string",
               "providerType": "string"
             },
-            "email": {
-              "displayName": "Email",
+            "email_address": {
+              "displayName": "Email Address",
               "valueType": "string",
               "providerType": "string"
             },
-            "active": {
-              "displayName": "Active",
-              "valueType": "boolean",
-              "providerType": "boolean"
+            "phone": {
+              "displayName": "Phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "display_name": {
+              "displayName": "Display Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscription_status": {
+              "displayName": "Subscription Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_added": {
+              "displayName": "Date Added",
+              "valueType": "datetime",
+              "providerType": "datetime"
             }
           }
         },
