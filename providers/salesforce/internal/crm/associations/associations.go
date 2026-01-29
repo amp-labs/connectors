@@ -14,15 +14,17 @@ import (
 //     create associations for the related object (Contact).
 //  3. Child relationships (e.g., Account -> Contacts): The associated records come nested in the
 //     response, so we can extract them directly.
-func ExtractAssociations(recordMap common.StringMap, config common.ReadParams) map[string][]common.Association {
+func ExtractAssociations(recordMap common.StringMap,
+	objectName string, associatedObjects []string,
+) map[string][]common.Association {
 	associations := make(map[string][]common.Association)
 
-	for _, assocObj := range config.AssociatedObjects {
+	for _, assocObj := range associatedObjects {
 		var assoc []common.Association
-		if isParentRelationship(config.ObjectName, assocObj) {
-			assoc = extractParentAssociation(recordMap, config.ObjectName, assocObj)
+		if isParentRelationship(objectName, assocObj) {
+			assoc = extractParentAssociation(recordMap, objectName, assocObj)
 		} else {
-			relationshipName, relatedIdField, isJunction := getJunctionRelationship(config.ObjectName, assocObj)
+			relationshipName, relatedIdField, isJunction := getJunctionRelationship(objectName, assocObj)
 			if isJunction {
 				assoc = extractJunctionAssociation(recordMap, relationshipName, relatedIdField)
 			} else {
