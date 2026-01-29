@@ -54,4 +54,12 @@ func main() {
 	slog.Info("Subscription results:")
 	utils.DumpJSON(subscribeResult, os.Stdout)
 
+	err = conn.DeleteSubscription(ctx, *subscribeResult)
+	if err != nil {
+		logging.Logger(ctx).Error("Error deleting subscription", "error", err)
+		return
+	}
+
+	slog.Info("Subscription deleted successfully")
+
 }
