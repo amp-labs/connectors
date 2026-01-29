@@ -24,7 +24,7 @@ func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
 
 func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	return &common.SubscriptionResult{
-		Result: &subscriptionResult{},
+		Result: &SubscriptionResult{},
 	}
 }
 
@@ -45,8 +45,8 @@ func (c *Connector) Subscribe(
 	}
 
 	// Store successful subscriptions with their full response data
-	subscriptionsMap := make(map[common.ObjectName]map[moduleEvent]subscriptionResponse)
-	successfulSubscriptions := make([]successfulSubscription, 0)
+	subscriptionsMap := make(map[common.ObjectName]map[moduleEvent]SubscriptionResponse)
+	SuccessfulSubscriptions := make([]SuccessfulSubscription, 0)
 
 	var firstError error
 
@@ -83,13 +83,13 @@ func (c *Connector) Subscribe(
 					} else {
 						// Initialize nested map if needed
 						if subscriptionsMap[currObj] == nil {
-							subscriptionsMap[currObj] = make(map[moduleEvent]subscriptionResponse)
+							subscriptionsMap[currObj] = make(map[moduleEvent]SubscriptionResponse)
 						}
 
 						subscriptionsMap[currObj][currProviderEvent] = *response
 
 						// Keep track of successful subscriptions for rollback
-						successfulSubscriptions = append(successfulSubscriptions, successfulSubscription{
+						SuccessfulSubscriptions = append(SuccessfulSubscriptions, SuccessfulSubscription{
 							ID:         strconv.Itoa(response.ID),
 							ObjectName: string(currObj),
 							EventName:  string(currProviderEvent),
@@ -114,7 +114,7 @@ func (c *Connector) Subscribe(
 	objectEvents := make(map[common.ObjectName]common.ObjectEvents)
 
 	if firstError != nil {
-		_, failedToRollBack, rollbackErr := c.rollbackSubscriptions(ctx, successfulSubscriptions)
+		_, failedToRollBack, rollbackErr := c.rollbackSubscriptions(ctx, SuccessfulSubscriptions)
 		if rollbackErr != nil {
 			res.Status = common.SubscriptionStatusFailedToRollback
 
@@ -145,7 +145,7 @@ func (c *Connector) Subscribe(
 	}
 
 	res.Status = common.SubscriptionStatusSuccess
-	res.Result = &subscriptionResult{
+	res.Result = &SubscriptionResult{
 		Subscriptions: subscriptionsMap,
 	}
 
@@ -246,9 +246,9 @@ func (c *Connector) DeleteSubscription(
 		return fmt.Errorf("%w: Result cannot be null", errMissingParams)
 	}
 
-	subscriptionData, ok := result.Result.(*subscriptionResult)
+	subscriptionData, ok := result.Result.(*SubscriptionResult)
 	if !ok {
-		return fmt.Errorf("%w: expected subscriptionResult to be type %T but got %T",
+		return fmt.Errorf("%w: expected SubscriptionResult to be type %T but got %T",
 			errInvalidRequestType, subscriptionData, result.Result)
 	}
 
@@ -280,8 +280,8 @@ func (c *Connector) createSingleSubscription(
 	ctx context.Context,
 	event moduleEvent,
 	obj common.ObjectName,
-	req *subscriptionRequest,
-) (*subscriptionResponse, error) {
+	req *SubscriptionRequest,
+) (*SubscriptionResponse, error) {
 	payload := &subscriptionPayload{
 		CallbackURL:   req.WebhookEndPoint,
 		EventType:     string(event),
@@ -300,7 +300,7 @@ func (c *Connector) createSingleSubscription(
 func (c *Connector) createSubscription(
 	ctx context.Context,
 	payload *subscriptionPayload,
-) (*subscriptionResponse, error) {
+) (*SubscriptionResponse, error) {
 	url, err := c.getSubscribeURL()
 	if err != nil {
 		return nil, err
@@ -311,7 +311,7 @@ func (c *Connector) createSubscription(
 		return nil, fmt.Errorf("failed to create subscription: %w", err)
 	}
 
-	result, err := common.UnmarshalJSON[subscriptionResponse](resp)
+	result, err := common.UnmarshalJSON[SubscriptionResponse](resp)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal subscription response: %w", err)
 	}
@@ -322,8 +322,8 @@ func (c *Connector) createSubscription(
 // rollbackSubscriptions attempts to delete all successful subscriptions in case of partial failure.
 func (c *Connector) rollbackSubscriptions(
 	ctx context.Context,
-	subscriptions []successfulSubscription,
-) (rolledBack []successfulSubscription, failedToRollBack []successfulSubscription, err error) {
+	subscriptions []SuccessfulSubscription,
+) (rolledBack []SuccessfulSubscription, failedToRollBack []SuccessfulSubscription, err error) {
 	var rollbackErrors error
 
 	var mutex sync.Mutex
@@ -332,7 +332,7 @@ func (c *Connector) rollbackSubscriptions(
 
 	for _, subFromList := range subscriptions {
 		callbacks = append(callbacks,
-			func(sub successfulSubscription) func(ctx context.Context) error {
+			func(sub SuccessfulSubscription) func(ctx context.Context) error {
 				return func(ctx context.Context) error {
 					deleteErr := c.deleteSubscription(ctx, sub.ID)
 
@@ -382,12 +382,12 @@ func (c *Connector) deleteSubscription(ctx context.Context, subscriptionID strin
 	return nil
 }
 
-func validateRequest(params common.SubscribeParams) (*subscriptionRequest, error) {
+func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error) {
 	if params.Request == nil {
 		return nil, fmt.Errorf("%w: request is nil", errMissingParams)
 	}
 
-	req, ok := params.Request.(*subscriptionRequest)
+	req, ok := params.Request.(*SubscriptionRequest)
 	if !ok {
 		return nil, fmt.Errorf("%w: expected '%T', got '%T'", errInvalidRequestType, req, params.Request)
 	}
@@ -516,13 +516,13 @@ func (m eventMapping) toCommonEvent(providerEvent moduleEvent) (common.Subscript
 	return "", false
 }
 
-func validatePreviousResult(previousResult *common.SubscriptionResult) (*subscriptionResult, error) {
+func validatePreviousResult(previousResult *common.SubscriptionResult) (*SubscriptionResult, error) {
 	// Validate the previous result
 	if previousResult == nil || previousResult.Result == nil {
 		return nil, fmt.Errorf("%w: missing previousResult or previousResult.Result", errMissingParams)
 	}
 
-	prevState, ok := previousResult.Result.(*subscriptionResult)
+	prevState, ok := previousResult.Result.(*SubscriptionResult)
 	if !ok {
 		return nil, fmt.Errorf(
 			"%w: expected previousResult.Result to be type %T, but got %T",
@@ -535,7 +535,7 @@ func validatePreviousResult(previousResult *common.SubscriptionResult) (*subscri
 	return prevState, nil
 }
 
-func buildSubscriptionMaps(prevState *subscriptionResult, params common.SubscribeParams) (
+func buildSubscriptionMaps(prevState *SubscriptionResult, params common.SubscribeParams) (
 	map[moduleEvent]bool,
 	map[moduleEvent]bool,
 	error,
@@ -569,7 +569,7 @@ func buildSubscriptionMaps(prevState *subscriptionResult, params common.Subscrib
 	return existingSubscriptions, requestedSubscriptions, nil
 }
 
-func buildFinalObjectEvents(finalResult *subscriptionResult) map[common.ObjectName]common.ObjectEvents {
+func buildFinalObjectEvents(finalResult *SubscriptionResult) map[common.ObjectName]common.ObjectEvents {
 	finalObjectEvents := make(map[common.ObjectName]common.ObjectEvents)
 
 	for objName, eventsMap := range finalResult.Subscriptions {
@@ -595,19 +595,19 @@ func buildFinalObjectEvents(finalResult *subscriptionResult) map[common.ObjectNa
 	return finalObjectEvents
 }
 
-func mergeSubscriptionResults(kept *subscriptionResult, created *common.SubscriptionResult) *subscriptionResult {
+func mergeSubscriptionResults(kept *SubscriptionResult, created *common.SubscriptionResult) *SubscriptionResult {
 	// Merge the results: kept subscriptions + newly created subscriptions.
 	// Start with subscriptions we kept from the previous state (these already existed and are still wanted).
-	finalResult := &subscriptionResult{
+	finalResult := &SubscriptionResult{
 		Subscriptions: kept.Subscriptions,
 	}
 
 	// Add newly created subscriptions to the final result.
 	if created != nil && created.Result != nil {
-		if newSubs, ok := created.Result.(*subscriptionResult); ok {
+		if newSubs, ok := created.Result.(*SubscriptionResult); ok {
 			for objName, eventsMap := range newSubs.Subscriptions {
 				if finalResult.Subscriptions[objName] == nil {
-					finalResult.Subscriptions[objName] = make(map[moduleEvent]subscriptionResponse)
+					finalResult.Subscriptions[objName] = make(map[moduleEvent]SubscriptionResponse)
 				}
 				maps.Copy(finalResult.Subscriptions[objName], eventsMap)
 			}
@@ -624,14 +624,14 @@ func mergeSubscriptionResults(kept *subscriptionResult, created *common.Subscrip
 // - If subscription exists AND is requested → keep it (reuse existing webhook)
 // - If subscription is requested but NOT existing → will be created in next step.
 func categorizeSubscriptions(
-	prevState *subscriptionResult,
+	prevState *SubscriptionResult,
 	requestedSubscriptions map[moduleEvent]bool,
-) (subscriptionsToDelete, subscriptionsToKeep *subscriptionResult) {
-	subscriptionsToDelete = &subscriptionResult{
-		Subscriptions: make(map[common.ObjectName]map[moduleEvent]subscriptionResponse),
+) (subscriptionsToDelete, subscriptionsToKeep *SubscriptionResult) {
+	subscriptionsToDelete = &SubscriptionResult{
+		Subscriptions: make(map[common.ObjectName]map[moduleEvent]SubscriptionResponse),
 	}
-	subscriptionsToKeep = &subscriptionResult{
-		Subscriptions: make(map[common.ObjectName]map[moduleEvent]subscriptionResponse),
+	subscriptionsToKeep = &SubscriptionResult{
+		Subscriptions: make(map[common.ObjectName]map[moduleEvent]SubscriptionResponse),
 	}
 
 	for objName, eventsMap := range prevState.Subscriptions {
@@ -639,14 +639,14 @@ func categorizeSubscriptions(
 			if !requestedSubscriptions[eventName] {
 				// Need to delete this subscription
 				if subscriptionsToDelete.Subscriptions[objName] == nil {
-					subscriptionsToDelete.Subscriptions[objName] = make(map[moduleEvent]subscriptionResponse)
+					subscriptionsToDelete.Subscriptions[objName] = make(map[moduleEvent]SubscriptionResponse)
 				}
 
 				subscriptionsToDelete.Subscriptions[objName][eventName] = response
 			} else {
 				// Keep this subscription
 				if subscriptionsToKeep.Subscriptions[objName] == nil {
-					subscriptionsToKeep.Subscriptions[objName] = make(map[moduleEvent]subscriptionResponse)
+					subscriptionsToKeep.Subscriptions[objName] = make(map[moduleEvent]SubscriptionResponse)
 				}
 
 				subscriptionsToKeep.Subscriptions[objName][eventName] = response
