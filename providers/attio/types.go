@@ -75,7 +75,7 @@ type SuccessfulSubscription struct {
 	EventName  string
 }
 
-type subscriptionResult struct {
+type SubscriptionResult struct {
 	Data createSubscriptionsResponseData `json:"data"`
 }
 

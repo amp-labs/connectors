@@ -161,7 +161,7 @@ func TestCreateSubscribe(t *testing.T) {
 						},
 					},
 				},
-				Result: &subscriptionResult{
+				Result: &SubscriptionResult{
 					Data: createSubscriptionsResponseData{
 						TargetURL: "https://example.com/webhook",
 						Status:    "active",
@@ -263,7 +263,7 @@ func TestCreateSubscribe(t *testing.T) {
 						},
 					},
 				},
-				Result: &subscriptionResult{
+				Result: &SubscriptionResult{
 					Data: createSubscriptionsResponseData{
 						TargetURL: "https://example.com/webhook",
 						ID: createSubscriptionsResponseID{
@@ -335,7 +335,7 @@ func TestDeleteSubscribe(t *testing.T) {
 		{
 			Name: "Unsubscribe successfully",
 			Input: common.SubscriptionResult{
-				Result: &subscriptionResult{
+				Result: &SubscriptionResult{
 					Data: createSubscriptionsResponseData{
 						TargetURL: "https://example.com/webhook",
 						ID: createSubscriptionsResponseID{
