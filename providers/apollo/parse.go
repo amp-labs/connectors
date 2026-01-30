@@ -85,7 +85,7 @@ func searchRecords(fld string) common.RecordsFunc {
 }
 
 // getMarshaledData retrieves records and unnests the custom fields of contacts objects.
-func getMarshaledData(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
+func (c *Connector) getMarshaledData(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
 	data := make([]common.ReadResultRow, len(records))
 
 	for idx, record := range records {
@@ -108,19 +108,32 @@ func getMarshaledData(records []map[string]any, fields []string) ([]common.ReadR
 
 		maps.Copy(mergedRecord, customFields)
 
+		// Attach labels back to the custom records fields
+		// Modify all record keys to lowercase
+		updatedRecords := make(map[string]any, len(record))
+
+		for key, value := range mergedRecord {
+			if customLabel, exists := c.customFields[key]; exists {
+				key = customLabel
+				updatedRecords[key] = value
+			} else {
+				updatedRecords[key] = value
+			}
+		}
+
 		data[idx] = common.ReadResultRow{
-			Fields: common.ExtractLowercaseFieldsFromRaw(fields, mergedRecord),
-			Raw:    mergedRecord,
+			Fields: common.ExtractLowercaseFieldsFromRaw(fields, updatedRecords),
+			Raw:    updatedRecords,
 		}
 	}
 
 	return data, nil
 }
 
-func apolloMarshaledData(objectName string) common.MarshalFunc {
+func (c *Connector) apolloMarshaledData(objectName string) common.MarshalFunc {
 	if !usesFieldsResource.Has(objectName) {
 		return common.GetMarshaledData
 	}
 
-	return getMarshaledData
+	return c.getMarshaledData
 }

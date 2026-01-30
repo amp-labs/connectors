@@ -12,6 +12,8 @@ import (
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
+	// customFields stores field id to field label for custom fields.
+	customFields map[string]string
 }
 
 type operation string
