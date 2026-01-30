@@ -23,6 +23,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	responseMembers := testutils.DataFromFile(t, "metadata/members.json")
 	responseTags := testutils.DataFromFile(t, "metadata/tags.json")
 	responseVoicemails := testutils.DataFromFile(t, "metadata/voicemails.json")
+	responseUnauthorized := testutils.DataFromFile(t, "metadata/error-unauthorized.json")
 
 	tests := []testroutines.Read{
 		{
@@ -78,6 +79,20 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				NextPage: "",
 				Done:     true,
 			},
+		},
+		{
+			Name:  "Provider envelope error is mapped (200 with http_status=401)",
+			Input: common.ReadParams{ObjectName: "contacts", Fields: connectors.Fields("contact_user_id")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/rest/1/contacts"),
+					mockcond.QueryParam("page_size", "100"),
+					mockcond.QueryParam("page", "1"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseUnauthorized),
+			}.Server(),
+			ExpectedErrs: []error{common.ErrAccessToken},
 		},
 		{
 			Name:  "Read tags",

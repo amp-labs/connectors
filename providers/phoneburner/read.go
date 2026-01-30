@@ -2,6 +2,7 @@ package phoneburner
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"sort"
 	"strconv"
@@ -98,6 +99,13 @@ func parseReadResponse(
 ) (*common.ReadResult, error) {
 	_ = ctx
 
+	// PhoneBurner sometimes encodes errors in a 2xx response body using an envelope like:
+	// { "http_status": 401, "status": "error", ... }
+	// Convert these "200-with-error" responses into proper HTTP errors.
+	if err := interpretPhoneBurnerEnvelopeError(response); err != nil {
+		return nil, err
+	}
+
 	url, err := urlbuilder.FromRawURL(request.URL)
 	if err != nil {
 		return nil, err
@@ -117,6 +125,53 @@ func parseReadResponse(
 	)
 }
 
+func interpretPhoneBurnerEnvelopeError(response *common.JSONHTTPResponse) error {
+	body, ok := response.Body()
+	if !ok {
+		return nil
+	}
+
+	q := jsonquery.New(body)
+
+	status, err := q.StrWithDefault("status", "")
+	if err != nil {
+		return err
+	}
+
+	httpStatusI, err := q.IntegerWithDefault("http_status", int64(response.Code))
+	if err != nil {
+		return err
+	}
+
+	httpStatus := int(httpStatusI)
+	if httpStatus == 0 {
+		httpStatus = response.Code
+	}
+
+	if status != "" && status != "success" && httpStatus < 400 {
+		httpStatus = http.StatusBadRequest
+	}
+
+	if httpStatus >= 400 || (status != "" && status != "success") {
+		raw, err := jsonquery.Convertor.ObjectToMap(body)
+		if err != nil {
+			return err
+		}
+
+		bodyBytes, err := json.Marshal(raw)
+		if err != nil {
+			return err
+		}
+
+		return common.InterpretError(&http.Response{
+			StatusCode: httpStatus,
+			Header:     response.Headers,
+		}, bodyBytes)
+	}
+
+	return nil
+}
+
 func recordsFunc(objectName string) (common.RecordsFunc, error) {
 	switch objectName {
 	case "contacts":
@@ -124,7 +179,6 @@ func recordsFunc(objectName string) (common.RecordsFunc, error) {
 	case "customfields":
 		return common.ExtractRecordsFromPath("customfields", "customfields"), nil
 	case "dialsession":
-		// Response shape: { "dialsessions": { "dialsessions": [ ... ] } }
 		return common.ExtractRecordsFromPath("dialsessions", "dialsessions"), nil
 	case "members":
 		return common.ExtractRecordsFromPath("members", "members"), nil
