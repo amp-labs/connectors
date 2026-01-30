@@ -4,12 +4,27 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadata(t *testing.T) {
 	t.Parallel()
+
+	responseCustomFields := testutils.DataFromFile(t, "metadata/customfields.json")
+	server := mockserver.Conditional{
+		Setup: mockserver.ContentJSON(),
+		If: mockcond.And{
+			mockcond.Path("/rest/1/customfields"),
+			mockcond.QueryParam("page_size", "100"),
+			mockcond.QueryParam("page", "1"),
+		},
+		Then: mockserver.Response(200, responseCustomFields),
+	}.Server()
 
 	conn, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: mockutils.NewClient(),
@@ -18,12 +33,18 @@ func TestListObjectMetadata(t *testing.T) {
 		t.Fatalf("failed to construct connector: %v", err)
 	}
 
+	conn.SetBaseURL(mockutils.ReplaceURLOrigin(conn.HTTPClient().Base, server.URL))
+
 	got, err := conn.ListObjectMetadata(
 		t.Context(),
 		[]string{"contacts", "tags", "folders", "members", "voicemails", "phonenumber", "dialsession", "customfields"},
 	)
 	if err != nil {
 		t.Fatalf("ListObjectMetadata returned error: %v", err)
+	}
+
+	if len(got.Errors) != 0 {
+		t.Fatalf("expected no metadata errors, got: %v", got.Errors)
 	}
 
 	want := &common.ListObjectMetadataResult{
@@ -40,6 +61,12 @@ func TestListObjectMetadata(t *testing.T) {
 						DisplayName:  "First Name",
 						ValueType:    "string",
 						ProviderType: "string",
+					},
+					"my_custom_field": {
+						DisplayName:  "My custom field",
+						ValueType:    "string",
+						ProviderType: "Text Field",
+						IsCustom:     goutils.Pointer(true),
 					},
 				},
 			},
@@ -174,12 +201,25 @@ func TestListObjectMetadata_EmptyObjects(t *testing.T) {
 func TestListObjectMetadata_UnsupportedObject(t *testing.T) {
 	t.Parallel()
 
+	responseCustomFields := testutils.DataFromFile(t, "metadata/customfields.json")
+	server := mockserver.Conditional{
+		Setup: mockserver.ContentJSON(),
+		If: mockcond.And{
+			mockcond.Path("/rest/1/customfields"),
+			mockcond.QueryParam("page_size", "100"),
+			mockcond.QueryParam("page", "1"),
+		},
+		Then: mockserver.Response(200, responseCustomFields),
+	}.Server()
+
 	conn, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: mockutils.NewClient(),
 	})
 	if err != nil {
 		t.Fatalf("failed to construct connector: %v", err)
 	}
+
+	conn.SetBaseURL(mockutils.ReplaceURLOrigin(conn.HTTPClient().Base, server.URL))
 
 	got, err := conn.ListObjectMetadata(t.Context(), []string{"contacts", "unknown_object"})
 	if err != nil {

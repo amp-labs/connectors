@@ -10,6 +10,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
@@ -109,6 +110,52 @@ func parseReadResponse(
 	url, err := urlbuilder.FromRawURL(request.URL)
 	if err != nil {
 		return nil, err
+	}
+
+	switch params.ObjectName {
+	case "contacts":
+		// Contacts can include a "custom_fields" array.
+		return common.ParseResult(
+			response,
+			common.MakeRecordsFunc("contacts", "contacts"),
+			nextRecordsURL(url.String(), params.ObjectName),
+			common.MakeMarshaledDataFunc(flattenContactCustomFields),
+			params.Fields,
+		)
+	case "members":
+		if !params.Since.IsZero() || !params.Until.IsZero() {
+			return common.ParseResultFiltered(
+				params,
+				response,
+				common.MakeRecordsFunc("members", "members"),
+				readhelper.MakeTimeFilterFunc(
+					readhelper.ReverseOrder,
+					readhelper.NewTimeBoundary(),
+					"date_added",
+					"2006-01-02 15:04:05",
+					nextRecordsURL(url.String(), params.ObjectName),
+				),
+				common.MakeMarshaledDataFunc(nil),
+				params.Fields,
+			)
+		}
+	case "voicemails":
+		if !params.Since.IsZero() || !params.Until.IsZero() {
+			return common.ParseResultFiltered(
+				params,
+				response,
+				common.MakeRecordsFunc("voicemails", "voicemails"),
+				readhelper.MakeTimeFilterFunc(
+					readhelper.ReverseOrder,
+					readhelper.NewTimeBoundary(),
+					"created_when",
+					"2006-01-02 15:04:05",
+					nextRecordsURL(url.String(), params.ObjectName),
+				),
+				common.MakeMarshaledDataFunc(nil),
+				params.Fields,
+			)
+		}
 	}
 
 	records, err := recordsFunc(params.ObjectName)

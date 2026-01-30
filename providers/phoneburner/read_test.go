@@ -3,6 +3,7 @@ package phoneburner
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -74,6 +75,38 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"primary_email": map[string]any{
 							"email": "john.demo@example.com",
 						},
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name:  "Read contacts flattens custom fields",
+			Input: common.ReadParams{ObjectName: "contacts", Fields: connectors.Fields("contact_user_id", "my_custom_field")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/rest/1/contacts"),
+					mockcond.QueryParam("page_size", "100"),
+					mockcond.QueryParam("page", "1"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContacts),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"contact_user_id": "30919237",
+						"my_custom_field": "my value",
+					},
+					Raw: map[string]any{
+						"custom_fields": []any{map[string]any{
+							"name":  "My custom field",
+							"type":  "1",
+							"value": "my value",
+						}},
 					},
 				}},
 				NextPage: "",
@@ -229,6 +262,29 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			},
 		},
 		{
+			Name: "Incremental read members returns empty for future Since",
+			Input: common.ReadParams{
+				ObjectName: "members",
+				Fields:     connectors.Fields("user_id", "email_address"),
+				Since:      time.Date(2099, 1, 1, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/rest/1/members"),
+					mockcond.QueryParam("page_size", "100"),
+					mockcond.QueryParam("page", "1"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseMembers),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     0,
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
 			Name:  "Read voicemails",
 			Input: common.ReadParams{ObjectName: "voicemails", Fields: connectors.Fields("recording_id", "name")},
 			Server: mockserver.Conditional{
@@ -255,6 +311,29 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"created_when": "2013-11-07 10:16:56",
 					},
 				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name: "Incremental read voicemails returns empty for future Since",
+			Input: common.ReadParams{
+				ObjectName: "voicemails",
+				Fields:     connectors.Fields("recording_id", "name"),
+				Since:      time.Date(2099, 1, 1, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/rest/1/voicemails"),
+					mockcond.QueryParam("page_size", "100"),
+					mockcond.QueryParam("page", "1"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseVoicemails),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     0,
 				NextPage: "",
 				Done:     true,
 			},

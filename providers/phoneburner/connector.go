@@ -2,12 +2,16 @@ package phoneburner
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
+	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
@@ -65,7 +69,22 @@ func (c *Connector) ListObjectMetadata(
 		return nil, common.ErrMissingObjects
 	}
 
-	return c.SchemaProvider.ListObjectMetadata(ctx, objectNames)
+	result, err := c.SchemaProvider.ListObjectMetadata(ctx, objectNames)
+	if err != nil {
+		return nil, err
+	}
+
+	// Attach contact custom fields to the contacts object metadata.
+	if _, ok := result.Result["contacts"]; ok {
+		if err := c.attachContactCustomFieldMetadata(ctx, result); err != nil {
+			if result.Errors == nil {
+				result.Errors = make(map[string]error)
+			}
+			result.Errors["contacts"] = errors.Join(common.ErrResolvingCustomFields, err)
+		}
+	}
+
+	return result, nil
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -79,4 +98,129 @@ func (c *Connector) parseReadResponse(
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
 	return parseReadResponse(ctx, params, request, response)
+}
+
+func (c *Connector) attachContactCustomFieldMetadata(
+	ctx context.Context,
+	metadataResult *common.ListObjectMetadataResult,
+) error {
+	defs, err := c.fetchCustomFieldDefinitions(ctx)
+	if err != nil {
+		return err
+	}
+
+	objectMetadata := metadataResult.GetObjectMetadata("contacts")
+	if objectMetadata == nil {
+		return nil
+	}
+
+	used := make(map[string]struct{}, len(objectMetadata.Fields))
+	for k := range objectMetadata.Fields {
+		used[k] = struct{}{}
+	}
+
+	for _, def := range defs {
+		key := phoneburnerCustomFieldKey(def.DisplayName)
+		if key == "" {
+			continue
+		}
+
+		if _, exists := used[key]; exists {
+			key = key + "_" + def.CustomFieldID
+		}
+		used[key] = struct{}{}
+
+		objectMetadata.AddFieldMetadata(key, common.FieldMetadata{
+			DisplayName:  def.DisplayName,
+			ValueType:    phoneburnerCustomFieldValueType(def.TypeName),
+			ProviderType: def.TypeName,
+			IsCustom:     goutils.Pointer(true),
+		})
+	}
+
+	metadataResult.Result["contacts"] = *objectMetadata
+
+	return nil
+}
+
+type phoneburnerCustomFieldDefinition struct {
+	CustomFieldID string
+	DisplayName   string
+	TypeName      string
+}
+
+func (c *Connector) fetchCustomFieldDefinitions(ctx context.Context) ([]phoneburnerCustomFieldDefinition, error) {
+	// Start from the first page, using the same paging conventions as Read.
+	req, err := c.buildReadRequest(ctx, common.ReadParams{ObjectName: "customfields"})
+	if err != nil {
+		return nil, err
+	}
+
+	u, err := urlbuilder.New(req.URL.String())
+	if err != nil {
+		return nil, err
+	}
+
+	// Use the max supported page size for fewer calls.
+	u.WithQueryParam("page_size", "100")
+	u.WithQueryParam("page", "1")
+
+	next := u.String()
+	out := make([]phoneburnerCustomFieldDefinition, 0)
+
+	for next != "" {
+		res, err := c.JSONHTTPClient().Get(ctx, next)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := interpretPhoneBurnerEnvelopeError(res); err != nil {
+			return nil, err
+		}
+
+		node, ok := res.Body()
+		if !ok {
+			return nil, common.ErrEmptyJSONHTTPResponse
+		}
+
+		records, err := jsonquery.New(node, "customfields").ArrayOptional("customfields")
+		if err != nil {
+			return nil, err
+		}
+
+		for _, r := range records {
+			q := jsonquery.New(r)
+
+			customFieldID, err := q.TextWithDefault("custom_field_id", "")
+			if err != nil {
+				return nil, err
+			}
+			displayName, err := q.TextWithDefault("display_name", "")
+			if err != nil {
+				return nil, err
+			}
+			typeName, err := q.TextWithDefault("type_name", "")
+			if err != nil {
+				return nil, err
+			}
+
+			if customFieldID == "" || displayName == "" {
+				continue
+			}
+
+			out = append(out, phoneburnerCustomFieldDefinition{
+				CustomFieldID: customFieldID,
+				DisplayName:   displayName,
+				TypeName:      typeName,
+			})
+		}
+
+		nextPageFunc := nextRecordsURL(next, "customfields")
+		next, err = nextPageFunc(node)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return out, nil
 }

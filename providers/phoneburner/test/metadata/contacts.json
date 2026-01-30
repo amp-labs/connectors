@@ -11,6 +11,13 @@
         "last_name": "Demo",
         "date_added": "2023-10-15 10:38:07",
         "raw_phone": "6025551234",
+        "custom_fields": [
+          {
+            "name": "My custom field",
+            "type": "1",
+            "value": "my value"
+          }
+        ],
         "primary_email": {
           "email": "john.demo@example.com"
         }
