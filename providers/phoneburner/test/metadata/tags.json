@@ -5,12 +5,12 @@
     "total_results": 2,
     "tags": [
       {
-        "tag_id": "10",
-        "name": "Prospect"
+        "id": 4406097,
+        "title": "Prospect"
       },
       {
-        "tag_id": "11",
-        "name": "Customer"
+        "id": 4406096,
+        "title": "Customer"
       }
     ],
     "page": 1,
