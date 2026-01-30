@@ -15,9 +15,8 @@ func main() {
 	m, err := connector.ListObjectMetadata(ctx, []string{
 		"analytics/list-performance",
 		"analytics/sdr-performance",
-		"call-logs",
+		"call-log",
 		"contact-lists/csv",
-		"users",
 	})
 	if err != nil {
 		utils.Fail(err.Error())
