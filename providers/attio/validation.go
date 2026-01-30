@@ -103,7 +103,7 @@ func validateSubscriptionEvents(
 				// Valid
 				default:
 					validationErrors = errors.Join(validationErrors,
-						fmt.Errorf("%w: event '%s' for object '%s'", errUnsupportedSubscriptionEvent, evt, objectName))
+						fmt.Errorf("%w: '%s' for object '%s'", errUnsupportedSubscriptionEvent, evt, objectName))
 
 					continue
 				}
