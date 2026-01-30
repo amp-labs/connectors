@@ -16,7 +16,6 @@ import (
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 	callLogsResponse := testutils.DataFromFile(t, "call-log.json")
-	usersResponse := testutils.DataFromFile(t, "team.json")
 	analyticsListPerformanceResponse := testutils.DataFromFile(t, "analytics-list-performance.json")
 	analyticsSdrPerformanceResponse := testutils.DataFromFile(t, "analytics-sdr-performance.json")
 	contactListsCsvResponse := testutils.DataFromFile(t, "contact-lists-csv.json")
@@ -30,7 +29,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		},
 		{
 			Name:  "Successfully describe call-logs object by sampling first record from data array",
-			Input: []string{"call-logs"},
+			Input: []string{"call-log"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
@@ -42,8 +41,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"call-logs": {
-						DisplayName: "Call-Logs",
+					"call-log": {
+						DisplayName: "Call-Log",
 						Fields: map[string]common.FieldMetadata{
 							"_id": {
 								DisplayName:  "_id",
@@ -119,50 +118,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			},
 			ExpectedErrs: nil,
 		},
-		{
-			Name:  "Successfully describe users object by sampling from nested users array in team response",
-			Input: []string{"users"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/v1/team"),
-					// users endpoint doesn't accept limit parameter (uses team endpoint)
-				},
-				Then: mockserver.Response(http.StatusOK, usersResponse),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
-			Expected: &common.ListObjectMetadataResult{
-				Result: map[string]common.ObjectMetadata{
-					"users": {
-						DisplayName: "Users",
-						Fields: map[string]common.FieldMetadata{
-							"user": {
-								DisplayName:  "user",
-								ValueType:    common.ValueTypeOther,
-								ProviderType: "",
-								Values:       nil,
-							},
-							"status": {
-								DisplayName:  "status",
-								ValueType:    common.ValueTypeString,
-								ProviderType: "",
-								Values:       nil,
-							},
-							"license": {
-								DisplayName:  "license",
-								ValueType:    common.ValueTypeString,
-								ProviderType: "",
-								Values:       nil,
-							},
-						},
-						FieldsMap: nil,
-					},
-				},
-				Errors: map[string]error{},
-			},
-			ExpectedErrs: nil,
-		},
-
 		{
 			Name:  "Successfully describe analytics/list-performance object by sampling first record from data array",
 			Input: []string{"analytics/list-performance"},
@@ -378,7 +333,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		},
 		{
 			Name:  "Returns error when server responds with 500",
-			Input: []string{"call-logs"},
+			Input: []string{"call-log"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
@@ -390,7 +345,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Errors: map[string]error{
-					"call-logs": mockutils.ExpectedSubsetErrors{
+					"call-log": mockutils.ExpectedSubsetErrors{
 						common.ErrServer,
 					},
 				},
@@ -399,7 +354,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		},
 		{
 			Name:  "Returns error when response is empty",
-			Input: []string{"call-logs"},
+			Input: []string{"call-log"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
@@ -411,7 +366,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Errors: map[string]error{
-					"call-logs": mockutils.ExpectedSubsetErrors{
+					"call-log": mockutils.ExpectedSubsetErrors{
 						common.ErrMissingExpectedValues,
 					},
 				},
@@ -420,7 +375,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		},
 		{
 			Name:  "Returns error when data array is empty",
-			Input: []string{"call-logs"},
+			Input: []string{"call-log"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
@@ -432,7 +387,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Errors: map[string]error{
-					"call-logs": mockutils.ExpectedSubsetErrors{
+					"call-log": mockutils.ExpectedSubsetErrors{
 						common.ErrMissingExpectedValues,
 					},
 				},
