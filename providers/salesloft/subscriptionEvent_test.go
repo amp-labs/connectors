@@ -14,15 +14,14 @@ func TestCollapsedSubscriptionEvent(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		name                    string
-		eventStr                string
-		eventHeader             string
-		expectedType            common.SubscriptionEventType
-		expectedRawName         string
-		expectedObject          string
-		expectedRecordID        string
-		expectedWorkspace       string
-		expectedUpdatedFieldErr string
+		name              string
+		eventStr          string
+		eventHeader       string
+		expectedType      common.SubscriptionEventType
+		expectedRawName   string
+		expectedObject    string
+		expectedRecordID  string
+		expectedWorkspace string
 	}{
 		{
 			name: "task_created",
@@ -78,13 +77,12 @@ func TestCollapsedSubscriptionEvent(t *testing.T) {
     "id": 49067
   }
 }`,
-			eventHeader:             "task_created",
-			expectedType:            common.SubscriptionEventTypeCreate,
-			expectedRawName:         "task_created",
-			expectedObject:          "tasks",
-			expectedRecordID:        "721356732",
-			expectedWorkspace:       "",
-			expectedUpdatedFieldErr: "updated fields are not supported by Salesloft webhooks",
+			eventHeader:       "task_created",
+			expectedType:      common.SubscriptionEventTypeCreate,
+			expectedRawName:   "task_created",
+			expectedObject:    "tasks",
+			expectedRecordID:  "721356732",
+			expectedWorkspace: "",
 		},
 		{
 			name: "task_updated",
@@ -140,13 +138,12 @@ func TestCollapsedSubscriptionEvent(t *testing.T) {
     "id": 49067
   }
 }`,
-			eventHeader:             "task_updated",
-			expectedType:            common.SubscriptionEventTypeUpdate,
-			expectedRawName:         "task_updated",
-			expectedObject:          "tasks",
-			expectedRecordID:        "721356732",
-			expectedWorkspace:       "",
-			expectedUpdatedFieldErr: "updated fields are not supported by Salesloft webhooks",
+			eventHeader:       "task_updated",
+			expectedType:      common.SubscriptionEventTypeUpdate,
+			expectedRawName:   "task_updated",
+			expectedObject:    "tasks",
+			expectedRecordID:  "721356732",
+			expectedWorkspace: "",
 		},
 		{
 			name: "account_deleted",
@@ -202,13 +199,12 @@ func TestCollapsedSubscriptionEvent(t *testing.T) {
   "last_contacted_person": null,
   "updated_at": "2026-01-22T02:45:21.340083-05:00"
 }`,
-			eventHeader:             "account_deleted",
-			expectedType:            common.SubscriptionEventTypeDelete,
-			expectedRawName:         "account_deleted",
-			expectedObject:          "accounts",
-			expectedRecordID:        "48371772",
-			expectedWorkspace:       "",
-			expectedUpdatedFieldErr: "updated fields are not supported by Salesloft webhooks",
+			eventHeader:       "account_deleted",
+			expectedType:      common.SubscriptionEventTypeDelete,
+			expectedRawName:   "account_deleted",
+			expectedObject:    "accounts",
+			expectedRecordID:  "48371772",
+			expectedWorkspace: "",
 		},
 		{
 			name: "account_updated",
@@ -264,13 +260,12 @@ func TestCollapsedSubscriptionEvent(t *testing.T) {
   "tags": [],
   "archived_at": null
 }`,
-			eventHeader:             "account_updated",
-			expectedType:            common.SubscriptionEventTypeUpdate,
-			expectedRawName:         "account_updated",
-			expectedObject:          "accounts",
-			expectedRecordID:        "75464484",
-			expectedWorkspace:       "",
-			expectedUpdatedFieldErr: "updated fields are not supported by Salesloft webhooks",
+			eventHeader:       "account_updated",
+			expectedType:      common.SubscriptionEventTypeUpdate,
+			expectedRawName:   "account_updated",
+			expectedObject:    "accounts",
+			expectedRecordID:  "75464484",
+			expectedWorkspace: "",
 		},
 	}
 
@@ -343,7 +338,7 @@ func TestCollapsedSubscriptionEvent(t *testing.T) {
 			assert.Assert(t, ok, "should implement SubscriptionUpdateEvent")
 
 			fields, err := updateEvt.UpdatedFields()
-			assert.Error(t, err, tc.expectedUpdatedFieldErr)
+			assert.NilError(t, err, "UpdatedFields should not return error")
 			assert.Assert(t, len(fields) == 0, "should not have updated fields")
 		})
 	}
