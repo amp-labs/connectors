@@ -65,6 +65,7 @@ type createSubscriptionsResponseData struct {
 	ID            createSubscriptionsResponseID `json:"id"`
 	Status        string                        `json:"status"`
 	CreatedAt     string                        `json:"created_at"`
+	Secret        string                        `json:"secret"`
 }
 
 // SuccessfulSubscription is used internally for rollback tracking.

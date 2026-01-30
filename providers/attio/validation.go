@@ -38,11 +38,15 @@ func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error
 //   - Checks if the object exists in the standardObjects fetched via Attio API
 //   - Only allows create, update, or delete events
 
-// nolint:funlen, cyclop
+// nolint:funlen, cyclop, gocognit
 func validateSubscriptionEvents(
 	subscriptionEvents map[common.ObjectName]common.ObjectEvents,
 	standardObjects map[common.ObjectName]string,
 ) error {
+	if len(subscriptionEvents) == 0 {
+		return fmt.Errorf("%w: subscription events are empty", errMissingParams)
+	}
+
 	var validationErrors error
 
 	for objectName, objectEvents := range subscriptionEvents {

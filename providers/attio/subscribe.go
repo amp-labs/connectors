@@ -88,7 +88,7 @@ func (c *Connector) Subscribe(
 	return res, nil
 }
 
-// nolint: nilnil
+// nolint: nilnil, godoclint
 func (c *Connector) UpdateSubscription(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -99,6 +99,7 @@ func (c *Connector) UpdateSubscription(
 }
 
 // Reference: https://docs.attio.com/rest-api/endpoint-reference/webhooks/delete-a-webhook
+// nolint: godoclint
 func (c *Connector) DeleteSubscription(
 	ctx context.Context,
 	result common.SubscriptionResult,
