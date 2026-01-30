@@ -217,4 +217,3 @@ func extractFoldersRecords() common.RecordsFunc {
 		return out, nil
 	}
 }
-
