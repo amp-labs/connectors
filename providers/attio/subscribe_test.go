@@ -170,7 +170,7 @@ func TestCreateSubscribe(t *testing.T) {
 							WorkspaceID: "e8d74639-96e5-41be-af46-ced812aef5c5",
 							WebhookID:   "c570dd25-5ded-44f6-b94a-84250956455d",
 						},
-						Secret: "a3ff6435ef497716835413ee10348624a817c87f0f11f7d14e79a68fa5292ebf",
+						Secret: "a3ff6435ef497716835413ee10348624a817c87f0f11f7d14e79a68fa5292ebf", // semgrep-disable-line generic.secrets.security.detected-generic-secret
 						Subscriptions: []subscription{
 							{
 								EventType: "record.deleted",
@@ -272,7 +272,7 @@ func TestCreateSubscribe(t *testing.T) {
 						},
 						Status:    "active",
 						CreatedAt: "2026-01-30T13:04:22.051000000Z",
-						Secret:    "a7fbac2b0dbdfa5b1e876c22eedcd9c852a24738bd56373ed1d008a49f17bcef",
+						Secret:    "a7fbac2b0dbdfa5b1e876c22eedcd9c852a24738bd56373ed1d008a49f17bcef", // semgrep-disable-line generic.secrets.security.detected-generic-secret
 						Subscriptions: []subscription{
 							{
 								EventType: "record.updated",
@@ -344,7 +344,7 @@ func TestDeleteSubscribe(t *testing.T) {
 						},
 						Status:    "active",
 						CreatedAt: "2026-01-30T13:04:22.051000000Z",
-						Secret:    "a7fbac2b0dbdfa5b1e876c22eedcd9c852a24738bd56373ed1d008a49f17bcef",
+						Secret:    "a7fbac2b0dbdfa5b1e876c22eedcd9c852a24738bd56373ed1d008a49f17bcef", // semgrep-disable-line generic.secrets.security.detected-generic-secret
 						Subscriptions: []subscription{
 							{
 								EventType: "record.updated",
