@@ -5,7 +5,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha1" //nolint:gosec
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"log"
 	"maps"
@@ -101,7 +100,7 @@ func (c *Connector) VerifyWebhookMessage(ctx context.Context,
 
 func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
 	// Salesloft does not provide updated fields in webhook response.
-	return []string{}, errors.New("updated fields are not supported by Salesloft webhooks") //nolint:err113
+	return []string{}, nil
 }
 
 // nolint: godoclint
