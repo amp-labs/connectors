@@ -27,6 +27,7 @@ const (
 // VerifyWebhookMessage implements WebhookVerifierConnector for Attio.
 // Returns (true, nil) if signature verification succeeds.
 // Returns (false, error) if verification fails or encounters an error.
+// Ref: https://docs.attio.com/rest-api/guides/webhooks#authenticating
 func (c *Connector) VerifyWebhookMessage(
 	_ context.Context,
 	request *common.WebhookRequest,

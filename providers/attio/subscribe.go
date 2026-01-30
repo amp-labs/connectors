@@ -98,6 +98,7 @@ func (c *Connector) UpdateSubscription(
 	return nil, nil
 }
 
+// DeleteSubscription removes an existing webhook subscription in Attio.
 // Reference: https://docs.attio.com/rest-api/endpoint-reference/webhooks/delete-a-webhook
 // nolint: godoclint
 func (c *Connector) DeleteSubscription(
