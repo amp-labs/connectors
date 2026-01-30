@@ -210,6 +210,122 @@
               "providerType": "string"
             }
           }
+        },
+        "content": {
+          "displayName": "Content",
+          "path": "/rest/1/content",
+          "responseKey": "content",
+          "fields": {
+            "cm_content_id": {
+              "displayName": "CM Content Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "display_name": {
+              "displayName": "Display Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "message_id": {
+              "displayName": "Message Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "display_order": {
+              "displayName": "Display Order",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "system_message": {
+              "displayName": "System Message",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "dialsession": {
+          "displayName": "Dial Sessions",
+          "path": "/rest/1/dialsession",
+          "responseKey": "dialsessions",
+          "fields": {
+            "dialsession_id": {
+              "displayName": "Dialsession Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "callerid": {
+              "displayName": "Caller Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_when": {
+              "displayName": "Start When",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "end_when": {
+              "displayName": "End When",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "connected_when": {
+              "displayName": "Connected When",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "disconnected_when": {
+              "displayName": "Disconnected When",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "call_count": {
+              "displayName": "Call Count",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "customfields": {
+          "displayName": "Custom Fields",
+          "path": "/rest/1/customfields",
+          "responseKey": "customfields",
+          "fields": {
+            "custom_field_id": {
+              "displayName": "Custom Field Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "display_name": {
+              "displayName": "Display Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type_id": {
+              "displayName": "Type Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type_name": {
+              "displayName": "Type Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "display_order": {
+              "displayName": "Display Order",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "value": {
+              "displayName": "Value",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
         }
       }
     }

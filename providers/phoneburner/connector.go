@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
+
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/phoneburner/metadata"
