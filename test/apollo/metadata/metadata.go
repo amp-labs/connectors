@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
+	"os"
 
 	"github.com/amp-labs/connectors/test/apollo"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
@@ -13,12 +14,10 @@ func main() {
 
 	conn := apollo.GetApolloConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"opportunities", "contact_stages", "email_accounts", "typed_custom_fields", "opportunity_stages", "users", "deals", "labels"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"opportunities", "contact_stages", "email_accounts", "typed_custom_fields", "opportunity_stages", "users", "deals", "labels", "contacts", "accounts", "mimi"})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Print the results
-	fmt.Println("Results: ", m.Result)
-	fmt.Println("Errors: ", m.Errors)
+	utils.DumpJSON(m, os.Stdout)
 }

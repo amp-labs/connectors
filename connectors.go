@@ -375,3 +375,18 @@ const (
 )
 
 var Fields = datautils.NewStringSet // nolint:gochecknoglobals
+
+type SearchConnector interface {
+	Connector
+
+	// Search searches for records in the given object and time range.
+	//
+	// Parameters:
+	//   - ctx: context for the operation
+	//   - params: parameters specifying the object name and optional time range
+	//
+	// Returns:
+	//   - *SearchResult: the result containing the search results
+	//   - error: any error that occurred while searching
+	Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error)
+}

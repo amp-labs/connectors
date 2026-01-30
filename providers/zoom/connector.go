@@ -8,7 +8,10 @@ import (
 	"github.com/amp-labs/connectors/providers/zoom/metadata"
 )
 
-const apiVersion = "/v2"
+const (
+	apiVersion     = "/v2"
+	ZoomDateFormat = "2006-01-02"
+)
 
 type Connector struct {
 	BaseURL string

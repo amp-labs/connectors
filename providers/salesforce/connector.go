@@ -37,7 +37,7 @@ type Connector struct {
 }
 
 // NewConnector returns a new Salesforce connector.
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
+func NewConnector(opts ...Option) (*Connector, error) {
 	params, err := paramsbuilder.Apply(parameters{}, opts,
 		WithModule(providers.ModuleSalesforceCRM),
 	)
@@ -45,13 +45,45 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	httpClient := params.Client.Caller
-	conn = &Connector{
+	conn, err := oldConstructor(params)
+	if err != nil {
+		return nil, err
+	}
+
+	connectorParams, err := newParams(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	// Initialize the Pardot (Account Engagement) adapter if applicable.
+	// Otherwise, initialize default Salesforce CRM module.
+	// Operations are delegated to either one.
+	moduleID := params.Module.Selection.ID
+	if isPardotModule(moduleID) {
+		conn.pardotAdapter, err = pardot.NewAdapter(connectorParams)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		conn.crmAdapter, err = crm.NewAdapter(connectorParams)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return conn, nil
+}
+
+// This constructor uses the old style parameters.
+func oldConstructor(params *parameters) (*Connector, error) {
+	conn := &Connector{
 		Client: &common.JSONHTTPClient{
-			HTTPClient: httpClient,
+			HTTPClient: params.Client.Caller,
 		},
 		moduleID: params.Module.Selection.ID,
 	}
+
+	var err error
 
 	conn.providerInfo, err = providers.ReadInfo(conn.Provider(), &params.Workspace)
 	if err != nil {
@@ -65,27 +97,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	// Setup CRM error handler for methods that have not been moved to internal/crm.
 	conn.Client.HTTPClient.ErrorHandler = crmcore.NewErrorHandler().Handle
-
-	// Initialize the Pardot (Account Engagement) adapter if applicable.
-	// In that case, read/write/list metadata operations are delegated to it.
-	moduleID := params.Module.Selection.ID
-	if isPardotModule(moduleID) {
-		conn.pardotAdapter, err = pardot.NewAdapter(conn.Client, conn.moduleInfo, params.Metadata.Map)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		// Default Salesforce CRM module.
-		connectorParams, err := newParams(opts)
-		if err != nil {
-			return nil, err
-		}
-
-		conn.crmAdapter, err = crm.NewAdapter(connectorParams)
-		if err != nil {
-			return nil, err
-		}
-	}
 
 	return conn, nil
 }

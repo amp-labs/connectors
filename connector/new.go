@@ -266,6 +266,8 @@ func newSalesforceConnector(params common.ConnectorParams) (*salesforce.Connecto
 	return salesforce.NewConnector(
 		salesforce.WithAuthenticatedClient(params.AuthenticatedClient),
 		salesforce.WithWorkspace(params.Workspace),
+		salesforce.WithModule(params.Module),
+		salesforce.WithMetadata(params.Metadata),
 	)
 }
 
