@@ -132,8 +132,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"user_id":        "1234567",
-						"email_address":  "saul@example.com",
+						"user_id":       "1234567",
+						"email_address": "saul@example.com",
 					},
 					Raw: map[string]any{
 						"user_id":       "1234567",
@@ -168,10 +168,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"name":         "Basic Voicemail",
 					},
 					Raw: map[string]any{
-						"recording_id":  "170999",
-						"name":          "Basic Voicemail",
-						"playback_url":  "http://sampledomain.com/pbx/dsrecording/AH-AEE-AAADGFF/170999/x.mp3",
-						"created_when":  "2013-11-07 10:16:56",
+						"recording_id": "170999",
+						"name":         "Basic Voicemail",
+						"playback_url": "http://sampledomain.com/pbx/dsrecording/AH-AEE-AAADGFF/170999/x.mp3",
+						"created_when": "2013-11-07 10:16:56",
 					},
 				}},
 				NextPage: "",
@@ -236,4 +236,3 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 
 	return conn, nil
 }
-
