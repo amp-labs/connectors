@@ -54,12 +54,6 @@ func main() {
 		Fields:     connectors.Fields("folder_id", "folder_name"),
 	})
 
-	slog.Info("=== Reading content (emails) ===")
-	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
-		ObjectName: "content",
-		Fields:     connectors.Fields("cm_content_id", "display_name"),
-	})
-
 	slog.Info("=== Reading customfields ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "customfields",

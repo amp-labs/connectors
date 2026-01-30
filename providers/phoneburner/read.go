@@ -121,9 +121,6 @@ func recordsFunc(objectName string) (common.RecordsFunc, error) {
 	switch objectName {
 	case "contacts":
 		return common.ExtractRecordsFromPath("contacts", "contacts"), nil
-	case "content":
-		// Response shape: { "content": { "emails": [ ... ] } }
-		return common.ExtractRecordsFromPath("emails", "content"), nil
 	case "customfields":
 		return common.ExtractRecordsFromPath("customfields", "customfields"), nil
 	case "dialsession":
