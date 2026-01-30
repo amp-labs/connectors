@@ -16,7 +16,7 @@ func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
 
 func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	return &common.SubscriptionResult{
-		Result: &subscriptionResult{},
+		Result: &SubscriptionResult{},
 	}
 }
 
@@ -81,7 +81,7 @@ func (c *Connector) Subscribe(
 	}
 
 	res.Status = common.SubscriptionStatusSuccess
-	res.Result = &subscriptionResult{
+	res.Result = &SubscriptionResult{
 		Data: response.Data,
 	}
 
@@ -108,7 +108,7 @@ func (c *Connector) DeleteSubscription(
 		return fmt.Errorf("%w: Result cannot be nil", errMissingParams)
 	}
 
-	subscriptionData, ok := result.Result.(*subscriptionResult)
+	subscriptionData, ok := result.Result.(*SubscriptionResult)
 	if !ok {
 		return fmt.Errorf("%w: expected SubscriptionResult to be type %T but got %T",
 			errInvalidRequestType, subscriptionData, result.Result)
