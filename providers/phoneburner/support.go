@@ -26,4 +26,3 @@ func supportedOperations() components.EndpointRegistryInput {
 		},
 	}
 }
-
