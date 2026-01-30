@@ -297,41 +297,42 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 					"emails": {
 						DisplayName: "Emails",
 						Fields: map[string]common.FieldMetadata{
-							"htmlMessage": {
-								DisplayName:  "HTML Message",
-								ValueType:    "string",
-								ProviderType: "string",
+							"listId": {
+								DisplayName:  "listId",
+								ValueType:    "int",
+								ProviderType: "Integer",
+								ReadOnly:     goutils.Pointer(true),
 								Values:       nil,
 							},
 							"sentAt": {
-								DisplayName:  "Sent At",
+								DisplayName:  "sentAt",
 								ValueType:    "datetime",
-								ProviderType: "datetime",
+								ProviderType: "DateTime",
 								ReadOnly:     goutils.Pointer(true),
 								Values:       nil,
 							},
 							"type": {
-								DisplayName:  "Type",
+								DisplayName:  "type",
 								ValueType:    "singleSelect",
-								ProviderType: "enum",
+								ProviderType: "Enum",
 								ReadOnly:     goutils.Pointer(true),
 								Values: []common.FieldValue{{
 									Value:        "html",
-									DisplayValue: "HTML",
+									DisplayValue: "html",
 								}, {
 									Value:        "text",
-									DisplayValue: "Text",
+									DisplayValue: "text",
 								}, {
 									Value:        "htmlAndText",
-									DisplayValue: "HTML and Text",
+									DisplayValue: "htmlAndText",
 								}},
 							},
 						},
 						FieldsMap: map[string]string{
-							"sentAt":          "Sent At",
-							"subject":         "Subject",
-							"textMessage":     "Text Message",
-							"trackerDomainId": "Tracker Domain ID",
+							"sentAt":          "sentAt",
+							"listId":          "listId",
+							"salesforceCmsId": "salesforceCmsId",
+							"campaign":        "campaign",
 						},
 					},
 				},

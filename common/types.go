@@ -653,7 +653,7 @@ const (
 )
 
 type SubscriptionEventPreLoadData struct {
-	Request *http.Request
+	RequestHeaders *http.Header
 }
 
 // SubscriptionEvent is an interface for webhook events coming from the provider.
@@ -814,3 +814,34 @@ const (
 	// SubscriptionStatusFailedToRollback registration returned error, and failed to rollback some intermittent steps.
 	SubscriptionStatusFailedToRollback SubscriptionStatus = "failed_to_rollback"
 )
+
+type SearchFilter struct {
+	// multiple filters are joined by `and` by default.
+	FieldFilters []FieldFilter `json:"filters" validate:"required,dive"`
+}
+
+type FieldFilter struct {
+	FieldName string         `json:"fieldName" validate:"required"`
+	Operator  FilterOperator `json:"operator"  validate:"required"`
+	Value     any            `json:"value"     validate:"required"`
+}
+
+type FilterOperator string
+
+const (
+	FilterOperatorEQ FilterOperator = "eq"
+)
+
+type SearchParams struct {
+	ObjectName string `json:"objectName" validate:"required"`
+
+	// fields to return in the search result.
+	Fields   datautils.StringSet `json:"fields"   validate:"required"`
+	Filter   SearchFilter        `json:"filter"   validate:"required"`
+	NextPage NextPageToken       `json:"nextPage" validate:"required"`
+
+	// page limit for the search. If omitted, return provider's default limit.
+	Limit int64 `json:"limit,omitempty"`
+}
+
+type SearchResult = ReadResult

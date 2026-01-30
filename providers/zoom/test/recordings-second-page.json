@@ -1,0 +1,36 @@
+{
+  "from": "2022-01-01",
+  "to": "2022-04-01",
+  "next_page_token": "",
+  "page_count": 1,
+  "page_size": 30,
+  "total_records": 1,
+  "meetings": [
+    {
+      "account_id": "Dx4xFSbzTgvp8XWSIHN9-x",
+      "duration": 45,
+      "host_id": "_1duAuZ1SFrXblUnxwseJx",
+      "id": 7951442001,
+      "recording_count": 5,
+      "start_time": "2022-02-15T10:30:00Z",
+      "topic": "Team Standup Recording",
+      "total_size": 150,
+      "type": "2",
+      "uuid": "CPLYvvnmUBHYvrxs4cMzuR==",
+      "recording_files": [
+        {
+          "deleted_time": "2022-02-15T11:15:00Z",
+          "download_url": "https://example.com/rec/download/Rh86u8yaCuFcBlkemhcgeooCCCC",
+          "file_path": "/8080765417/path02/standup.mp4",
+          "file_size": 15440,
+          "file_type": "MP4",
+          "file_extension": "MP4",
+          "id": "83687b2g-5f77-5b88-98d5-g24g0919ce87",
+          "meeting_id": "M1BHPFQWS0n6XTPPt/e+GR==",
+          "play_url": "https://example.com/rec/play/Rh86u8yaCuFcBlkemhcgeooCCCC",
+          "recording_end": "2022-02-15T11:15:00Z"
+        }
+      ]
+    }
+  ]
+}

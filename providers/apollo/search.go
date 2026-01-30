@@ -44,7 +44,7 @@ func (c *Connector) Search(ctx context.Context, config common.ReadParams, url *u
 		resp,
 		searchRecords(config.ObjectName),
 		getNextRecords,
-		common.GetMarshaledData,
+		apolloMarshaledData(config.ObjectName),
 		config.Fields,
 	)
 }
@@ -62,7 +62,7 @@ func manualIncrementalSync(node *ajson.Node, recordsKey string, config common.Re
 		return nil, err
 	}
 
-	rows, err := common.GetMarshaledData(records, config.Fields.List())
+	rows, err := getMarshaledData(records, config.Fields.List())
 	if err != nil {
 		return nil, err
 	}
