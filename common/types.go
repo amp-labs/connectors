@@ -653,7 +653,7 @@ const (
 )
 
 type SubscriptionEventPreLoadData struct {
-	Request *http.Request
+	RequestHeaders *http.Header
 }
 
 // SubscriptionEvent is an interface for webhook events coming from the provider.
