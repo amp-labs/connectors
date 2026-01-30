@@ -52,8 +52,6 @@ func phoneburnerCustomFieldKey(label string) string {
 }
 
 // flattenContactCustomFields promotes values from the "custom_fields" array into root-level keys.
-//
-// Note: ReadResultRow.Raw is preserved by MakeMarshaledDataFunc; this transformer only influences Fields.
 func flattenContactCustomFields(node *ajson.Node) (map[string]any, error) {
 	root, err := jsonquery.Convertor.ObjectToMap(node)
 	if err != nil {
