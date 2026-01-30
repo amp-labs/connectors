@@ -11,6 +11,9 @@ import (
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
 		"contacts",
+		"content",
+		"customfields",
+		"dialsession",
 		"folders",
 		"members",
 		"tags",

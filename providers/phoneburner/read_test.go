@@ -17,6 +17,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	responseContacts := testutils.DataFromFile(t, "metadata/contacts.json")
+	responseContent := testutils.DataFromFile(t, "metadata/content.json")
+	responseCustomFields := testutils.DataFromFile(t, "metadata/customfields.json")
+	responseDialSessions := testutils.DataFromFile(t, "metadata/dialsession.json")
 	responseFolders := testutils.DataFromFile(t, "metadata/folders.json")
 	responseMembers := testutils.DataFromFile(t, "metadata/members.json")
 	responseTags := testutils.DataFromFile(t, "metadata/tags.json")
@@ -79,7 +82,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Read tags",
-			Input: common.ReadParams{ObjectName: "tags", Fields: connectors.Fields("tag_id", "name")},
+			Input: common.ReadParams{ObjectName: "tags", Fields: connectors.Fields("id", "title")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
@@ -94,25 +97,131 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"tag_id": "10",
-						"name":   "Prospect",
+						"id":    float64(4406097),
+						"title": "Prospect",
 					},
 					Raw: map[string]any{
-						"tag_id": "10",
-						"name":   "Prospect",
+						"id":    float64(4406097),
+						"title": "Prospect",
 					},
 				}, {
 					Fields: map[string]any{
-						"tag_id": "11",
-						"name":   "Customer",
+						"id":    float64(4406096),
+						"title": "Customer",
 					},
 					Raw: map[string]any{
-						"tag_id": "11",
-						"name":   "Customer",
+						"id":    float64(4406096),
+						"title": "Customer",
 					},
 				}},
 				NextPage: "",
 				Done:     true,
+			},
+		},
+		{
+			Name:  "Read content (emails)",
+			Input: common.ReadParams{ObjectName: "content", Fields: connectors.Fields("cm_content_id", "display_name")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/rest/1/content"),
+				Then:  mockserver.Response(http.StatusOK, responseContent),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"cm_content_id": "1234",
+						"display_name":  "System message",
+					},
+					Raw: map[string]any{
+						"cm_content_id":  "1234",
+						"display_name":   "System message",
+						"description":    "This is an email shared from the master account",
+						"message_id":     "4046217",
+						"display_order":  "0",
+						"system_message": float64(1),
+					},
+				}, {
+					Fields: map[string]any{
+						"cm_content_id": "23295",
+						"display_name":  "User generated message",
+					},
+					Raw: map[string]any{
+						"cm_content_id":  "23295",
+						"display_name":   "User generated message",
+						"description":    "This message was created by the user",
+						"message_id":     "4046239",
+						"display_order":  "0",
+						"system_message": float64(0),
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name:  "Read custom fields",
+			Input: common.ReadParams{ObjectName: "customfields", Fields: connectors.Fields("custom_field_id", "display_name")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/rest/1/customfields"),
+					mockcond.QueryParam("page_size", "100"),
+					mockcond.QueryParam("page", "1"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCustomFields),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"custom_field_id": "215",
+						"display_name":    "My custom field",
+					},
+					Raw: map[string]any{
+						"custom_field_id": "215",
+						"display_name":    "My custom field",
+						"type_id":         "1",
+						"type_name":       "Text Field",
+						"display_order":   "0",
+						"value":           "Example",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name:  "Read dial sessions (has next page)",
+			Input: common.ReadParams{ObjectName: "dialsession", Fields: connectors.Fields("dialsession_id", "start_when")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/rest/1/dialsession"),
+					mockcond.QueryParam("page_size", "100"),
+					mockcond.QueryParam("page", "1"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseDialSessions),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"dialsession_id": "49463",
+						"start_when":     "2013-11-04 08:16:08",
+					},
+					Raw: map[string]any{
+						"dialsession_id": "49463",
+						"callerid":       nil,
+						"start_when":     "2013-11-04 08:16:08",
+						"call_count":     float64(0),
+					},
+				}},
+				NextPage: testroutines.URLTestServer + "/rest/1/dialsession?page=2&page_size=100",
+				Done:     false,
 			},
 		},
 		{

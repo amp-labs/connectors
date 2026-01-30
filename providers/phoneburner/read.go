@@ -3,12 +3,14 @@ package phoneburner
 import (
 	"context"
 	"net/http"
+	"sort"
 	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -18,7 +20,14 @@ const (
 )
 
 var (
-	paginatedObjects = datautils.NewStringSet("contacts", "members", "tags", "voicemails")
+	paginatedObjects = datautils.NewStringSet(
+		"contacts",
+		"customfields",
+		"dialsession",
+		"members",
+		"tags",
+		"voicemails",
+	)
 )
 
 func buildReadRequest(ctx context.Context, baseURL string, params common.ReadParams) (*http.Request, error) {
@@ -49,6 +58,26 @@ func buildReadRequest(ctx context.Context, baseURL string, params common.ReadPar
 	if paginatedObjects.Has(params.ObjectName) {
 		url.WithQueryParam("page_size", strconv.Itoa(100))
 		url.WithQueryParam("page", "1")
+	}
+
+	// Apply time scoping when the provider supports it.
+	switch params.ObjectName {
+	case "contacts":
+		// Docs: updated_from / update_to in "YYYY-MM-DD HH:ii:ss" format.
+		if !params.Since.IsZero() {
+			url.WithQueryParam("updated_from", params.Since.Format("2006-01-02 15:04:05"))
+		}
+		if !params.Until.IsZero() {
+			url.WithQueryParam("update_to", params.Until.Format("2006-01-02 15:04:05"))
+		}
+	case "dialsession":
+		// Docs: date_start / date_end in "YYYY-MM-DD" format.
+		if !params.Since.IsZero() {
+			url.WithQueryParam("date_start", params.Since.Format(time.DateOnly))
+		}
+		if !params.Until.IsZero() {
+			url.WithQueryParam("date_end", params.Until.Format(time.DateOnly))
+		}
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -92,6 +121,14 @@ func recordsFunc(objectName string) (common.RecordsFunc, error) {
 	switch objectName {
 	case "contacts":
 		return common.ExtractRecordsFromPath("contacts", "contacts"), nil
+	case "content":
+		// Response shape: { "content": { "emails": [ ... ] } }
+		return common.ExtractRecordsFromPath("emails", "content"), nil
+	case "customfields":
+		return common.ExtractRecordsFromPath("customfields", "customfields"), nil
+	case "dialsession":
+		// Response shape: { "dialsessions": { "dialsessions": [ ... ] } }
+		return common.ExtractRecordsFromPath("dialsessions", "dialsessions"), nil
 	case "members":
 		return common.ExtractRecordsFromPath("members", "members"), nil
 	case "tags":
@@ -111,7 +148,7 @@ func nextRecordsURL(requestURL string, objectName string) common.NextPageFunc {
 	}
 
 	return func(node *ajson.Node) (string, error) {
-		wrapper, err := jsonquery.New(node).ObjectRequired(objectName)
+		wrapper, err := jsonquery.New(node).ObjectRequired(paginationWrapperKey(objectName))
 		if err != nil {
 			return "", err
 		}
@@ -141,6 +178,15 @@ func nextRecordsURL(requestURL string, objectName string) common.NextPageFunc {
 	}
 }
 
+func paginationWrapperKey(objectName string) string {
+	switch objectName {
+	case "dialsession":
+		return "dialsessions"
+	default:
+		return objectName
+	}
+}
+
 func extractFoldersRecords() common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
 		foldersNode, err := jsonquery.New(node).ObjectRequired("folders")
@@ -163,6 +209,13 @@ func extractFoldersRecords() common.RecordsFunc {
 
 			out = append(out, obj)
 		}
+
+		// Map iteration order is non-deterministic; keep output stable for tests and consumers.
+		sort.Slice(out, func(i, j int) bool {
+			ai, _ := out[i]["folder_id"].(string)
+			aj, _ := out[j]["folder_id"].(string)
+			return ai < aj
+		})
 
 		return out, nil
 	}
