@@ -20,7 +20,7 @@ func TestListObjectMetadata(t *testing.T) {
 
 	got, err := conn.ListObjectMetadata(
 		t.Context(),
-		[]string{"contacts", "tags", "folders", "members", "voicemails", "phonenumber"},
+		[]string{"contacts", "tags", "folders", "members", "voicemails", "phonenumber", "content", "dialsession", "customfields"},
 	)
 	if err != nil {
 		t.Fatalf("ListObjectMetadata returned error: %v", err)
@@ -113,6 +113,51 @@ func TestListObjectMetadata(t *testing.T) {
 					},
 				},
 			},
+			"content": {
+				DisplayName: "Content",
+				Fields: map[string]common.FieldMetadata{
+					"cm_content_id": {
+						DisplayName:  "CM Content Id",
+						ValueType:    "string",
+						ProviderType: "string",
+					},
+					"display_name": {
+						DisplayName:  "Display Name",
+						ValueType:    "string",
+						ProviderType: "string",
+					},
+				},
+			},
+			"dialsession": {
+				DisplayName: "Dial Sessions",
+				Fields: map[string]common.FieldMetadata{
+					"dialsession_id": {
+						DisplayName:  "Dialsession Id",
+						ValueType:    "string",
+						ProviderType: "string",
+					},
+					"start_when": {
+						DisplayName:  "Start When",
+						ValueType:    "datetime",
+						ProviderType: "datetime",
+					},
+				},
+			},
+			"customfields": {
+				DisplayName: "Custom Fields",
+				Fields: map[string]common.FieldMetadata{
+					"custom_field_id": {
+						DisplayName:  "Custom Field Id",
+						ValueType:    "string",
+						ProviderType: "string",
+					},
+					"display_name": {
+						DisplayName:  "Display Name",
+						ValueType:    "string",
+						ProviderType: "string",
+					},
+				},
+			},
 		},
 		Errors: nil,
 	}
@@ -178,4 +223,3 @@ func TestListObjectMetadata_UnsupportedObject(t *testing.T) {
 		t.Fatalf("metadata result mismatch: expected subset not found")
 	}
 }
-

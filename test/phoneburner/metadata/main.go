@@ -21,4 +21,3 @@ func main() {
 
 	utils.DumpJSON(m, os.Stdout)
 }
-
