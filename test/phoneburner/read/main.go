@@ -32,7 +32,7 @@ func main() {
 	slog.Info("=== Reading tags ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "tags",
-		Fields:     connectors.Fields("tag_id", "name"),
+		Fields:     connectors.Fields("id", "title"),
 	})
 
 	slog.Info("=== Reading members ===")
@@ -53,5 +53,22 @@ func main() {
 		ObjectName: "folders",
 		Fields:     connectors.Fields("folder_id", "folder_name"),
 	})
-}
 
+	slog.Info("=== Reading content (emails) ===")
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "content",
+		Fields:     connectors.Fields("cm_content_id", "display_name"),
+	})
+
+	slog.Info("=== Reading customfields ===")
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "customfields",
+		Fields:     connectors.Fields("custom_field_id", "display_name", "type_name"),
+	})
+
+	slog.Info("=== Reading dialsession ===")
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "dialsession",
+		Fields:     connectors.Fields("dialsession_id", "start_when", "call_count"),
+	})
+}
