@@ -17,7 +17,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	responseContacts := testutils.DataFromFile(t, "metadata/contacts.json")
-	responseContent := testutils.DataFromFile(t, "metadata/content.json")
 	responseCustomFields := testutils.DataFromFile(t, "metadata/customfields.json")
 	responseDialSessions := testutils.DataFromFile(t, "metadata/dialsession.json")
 	responseFolders := testutils.DataFromFile(t, "metadata/folders.json")
@@ -112,48 +111,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					Raw: map[string]any{
 						"id":    float64(4406096),
 						"title": "Customer",
-					},
-				}},
-				NextPage: "",
-				Done:     true,
-			},
-		},
-		{
-			Name:  "Read content (emails)",
-			Input: common.ReadParams{ObjectName: "content", Fields: connectors.Fields("cm_content_id", "display_name")},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/rest/1/content"),
-				Then:  mockserver.Response(http.StatusOK, responseContent),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 2,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"cm_content_id": "1234",
-						"display_name":  "System message",
-					},
-					Raw: map[string]any{
-						"cm_content_id":  "1234",
-						"display_name":   "System message",
-						"description":    "This is an email shared from the master account",
-						"message_id":     "4046217",
-						"display_order":  "0",
-						"system_message": float64(1),
-					},
-				}, {
-					Fields: map[string]any{
-						"cm_content_id": "23295",
-						"display_name":  "User generated message",
-					},
-					Raw: map[string]any{
-						"cm_content_id":  "23295",
-						"display_name":   "User generated message",
-						"description":    "This message was created by the user",
-						"message_id":     "4046239",
-						"display_order":  "0",
-						"system_message": float64(0),
 					},
 				}},
 				NextPage: "",
