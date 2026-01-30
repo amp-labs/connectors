@@ -1,0 +1,26 @@
+{
+  "http_status": 200,
+  "status": "success",
+  "customfields": {
+    "customfields": [
+      {
+        "custom_field_id": "215",
+        "display_name": "My custom field",
+        "type_id": "1",
+        "type_name": "Text Field",
+        "display_order": "0",
+        "value": "Example",
+        "_link": {
+          "self": {
+            "href": "rest/1/customfields/215"
+          }
+        }
+      }
+    ],
+    "page_size": 1,
+    "total_results": "1",
+    "page": 1,
+    "total_pages": 1
+  }
+}
+
