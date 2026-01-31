@@ -1,0 +1,59 @@
+{
+    "data": [
+        {
+            "_id": "test_call_id_123",
+            "to": "(555) 123-4567",
+            "disposition": {
+                "internal_id": 10,
+                "external_id": "10",
+                "external_name": "No Answer"
+            },
+            "contact": {
+                "_id": "test_contact_id_456",
+                "first_name": "Test",
+                "last_name": "User",
+                "phone_numbers": [
+                    {
+                        "type": "mobile",
+                        "number": "(555) 123-4567",
+                        "country_code": "+1",
+                        "extension": "",
+                        "do_not_call": false,
+                        "is_wrong_number": false,
+                        "total_calls": 0,
+                        "validation": null,
+                        "call_classification": null,
+                        "_id": "test_phone_id_789"
+                    }
+                ],
+                "email": "test@example.com",
+                "source": "csv",
+                "linkedin": "linkedin.com/in/test-user",
+                "title": "Test Title",
+                "timezone": "ET",
+                "website": "example.com",
+                "company": "Test Company"
+            },
+            "contact_list": {
+                "_id": "test_list_id_101",
+                "name": "Test Contact List"
+            },
+            "user": {
+                "_id": "test_user_id_202",
+                "first_name": "Test",
+                "last_name": "User",
+                "email": "testuser@example.com"
+            },
+            "createdAt": "2024-01-15T10:30:00.000Z",
+            "updatedAt": "2024-01-15T11:00:00.000Z",
+            "recording_url": "https://example.com/recording/test123",
+            "transcription": "test transcription text",
+            "from": "15551234567"
+        }
+    ],
+    "pagination": {
+        "total": 1,
+        "page": 1,
+        "next": 2
+    }
+}
