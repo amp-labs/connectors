@@ -16,19 +16,18 @@ import (
 
 const (
 	apiVersion      = "v1"
-	defaultPageSize = 10 //https://docs.salesfinity.ai/api-reference/endpoint/call-log#:~:text=items%20per%20page%20(-,default%20is%2010%2C,-max%20is%20100
+	defaultPageSize = 10 // https://docs.salesfinity.ai/api-reference/endpoint/call-log
 )
 
-var objectTimeField = datautils.NewDefaultMap(datautils.Map[string, string]{}, func(key string) string {
-
-	switch key {
-	case "call-log":
-		return "updatedAt"
-	default:
-		return ""
-	}
-
-})
+var objectTimeField = datautils.NewDefaultMap( //nolint:gochecknoglobals
+	datautils.Map[string, string]{}, func(key string) string {
+		switch key {
+		case "call-log":
+			return "updatedAt"
+		default:
+			return ""
+		}
+	})
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if params.NextPage != "" {
@@ -39,15 +38,19 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	if err != nil {
 		return nil, err
 	}
+
 	pageSize := defaultPageSize
 	if params.PageSize > 0 {
 		pageSize = params.PageSize
 	}
 	url.WithQueryParam("limit", strconv.Itoa(pageSize))
+
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
-func (c *Connector) parseReadResponse(ctx context.Context, params common.ReadParams, request *http.Request, resp *common.JSONHTTPResponse) (*common.ReadResult, error) {
+func (c *Connector) parseReadResponse(ctx context.Context, params common.ReadParams,
+	request *http.Request, resp *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
 	return common.ParseResultFiltered(
 		params,
 		resp,
@@ -82,11 +85,13 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 		if err != nil {
 			return "", err
 		}
+
 		if nextPageNum == nil {
 			return "", nil
 		}
 
 		reqLink.WithQueryParam("page", strconv.FormatInt(*nextPageNum, 10))
+
 		return reqLink.String(), nil
 	}
 }

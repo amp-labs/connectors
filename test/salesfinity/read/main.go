@@ -28,11 +28,11 @@ func main() {
 		PageSize:   3,
 		Since:      time.Date(2026, 1, 26, 0, 0, 0, 0, time.UTC),
 	})
-	// testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
-	// 	ObjectName: "call-log",
-	// 	Fields:     connectors.Fields("_id"),
-	// 	PageSize:   100,
-	// 	Since:      time.Date(2026, 1, 29, 0, 0, 0, 0, time.UTC),
-	// })
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "call-log",
+		Fields:     connectors.Fields("_id"),
+		PageSize:   100,
+		Since:      time.Date(2026, 1, 29, 0, 0, 0, 0, time.UTC),
+	})
 
 }

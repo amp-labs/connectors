@@ -3,6 +3,7 @@ package salesfinity
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
@@ -17,6 +18,7 @@ type Connector struct {
 	common.RequireAuthenticatedClient
 	components.Reader
 	components.Writer
+	components.Deleter
 	components.SchemaProvider
 }
 
@@ -58,5 +60,16 @@ func constructor(base *components.Connector) (*Connector, error) {
 			ErrorHandler:  common.InterpretError,
 		},
 	)
+	connector.Deleter = deleter.NewHTTPDeleter(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.DeleteHandlers{
+			BuildRequest:  connector.buildDeleteRequest,
+			ParseResponse: connector.parseDeleteResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
 	return connector, nil
 }
