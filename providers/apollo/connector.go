@@ -12,11 +12,21 @@ import (
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
-	// customFields stores field id to field label for custom fields.
-	customFields map[string]string
+	// customFields stores objectName to a map of fieldName to label for custom fields.
+	customFields customFields
 }
 
 type operation string
+
+type customFields map[string]map[string]string
+
+func (c customFields) Set(objectName, fieldName, label string) {
+	if c[objectName] == nil {
+		c[objectName] = make(map[string]string)
+	}
+
+	c[objectName][fieldName] = label
+}
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	params, err := paramsbuilder.Apply(parameters{}, opts)
@@ -38,6 +48,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)
+	conn.customFields = make(customFields)
 
 	return conn, nil
 }

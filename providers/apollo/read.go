@@ -31,7 +31,10 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	// If NextPage is set, then we're reading the next page of results.
 	if len(config.NextPage) > 0 {
 		url.WithQueryParam(pageQuery, config.NextPage.String())
-	} else {
+	}
+
+	// we check for custom fields in any scenario when we have 0 custom fields for a particular object.
+	if len(c.customFields[config.ObjectName]) == 0 {
 		// If we're reading this for the first time, we make a call to retrieve
 		// custom fields, add them and their labels in the connector instance field customFields.
 		if err := c.retrieveCustomFields(ctx, config); err != nil {
@@ -72,9 +75,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 }
 
 func (c *Connector) retrieveCustomFields(ctx context.Context, config common.ReadParams) error {
-	// we need check if there are custom fields
-	fldLabels := make(map[string]string)
-
 	if usesFieldsResource.Has(config.ObjectName) {
 		metadata, err := c.retrieveFields(ctx, config.ObjectName)
 		if err != nil {
@@ -85,12 +85,9 @@ func (c *Connector) retrieveCustomFields(ctx context.Context, config common.Read
 			if *fld.IsCustom {
 				fldName := id
 				label := fld.DisplayName
-
-				fldLabels[fldName] = label
+				c.customFields.Set(config.ObjectName, fldName, label)
 			}
 		}
-
-		c.customFields = fldLabels
 	}
 
 	return nil

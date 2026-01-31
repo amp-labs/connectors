@@ -62,7 +62,7 @@ func (c *Connector) manualIncrementalSync(node *ajson.Node, recordsKey string, c
 		return nil, err
 	}
 
-	rows, err := c.getMarshaledData(records, config.Fields.List())
+	rows, err := c.customMarshaller(config.ObjectName)(records, config.Fields.List())
 	if err != nil {
 		return nil, err
 	}
