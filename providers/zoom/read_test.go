@@ -170,8 +170,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/v2/users/me/recordings"),
-					mockcond.QueryParam("from", time.Now().AddDate(0, 0, -29).Format("2006-01-02")),
-					mockcond.QueryParam("to", time.Now().Format("2006-01-02")),
+					//mockcond.QueryParam("from", time.Now().AddDate(0, 0, -29).Format("2006-01-02")),
+					//mockcond.QueryParam("to", time.Now().Format("2006-01-02")),
+					//mockcond.QueryParamTimeApprox("from", time.Now().AddDate(0, 0, -29), "2006-01-02"),
+					//mockcond.QueryParamTimeApprox("to", time.Now(), "2006-01-02"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseRecordingsFirstPage),
 			}.Server(),
@@ -192,6 +194,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"recording_count": float64(22),
 					},
 				}},
+				// TODO do not use time.Now
+				// Use custom comparator to handle this special case.
 				NextPage: common.NextPageToken(testroutines.URLTestServer + "/v2/users/me/recordings?" +
 					"from=" + time.Now().AddDate(0, 0, -29).Format("2006-01-02") + "&next_page_token=Tva2CuIdTgsv8wAnhyAdU3m06Y2HuLQtlh3&page_size=300&to=" + time.Now().Format("2006-01-02")), //nolint:lll
 				Done: false,
