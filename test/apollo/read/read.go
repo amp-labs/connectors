@@ -163,7 +163,7 @@ func testReadContacts(ctx context.Context, conn *ap.Connector) error {
 		ObjectName: "contacts",
 		Fields:     connectors.Fields("id", "first_name", "name"),
 		Since:      time.Now().Add(-10 * time.Hour),
-		// NextPage:   "3",
+		NextPage:   "2",
 	}
 
 	res, err := conn.Read(ctx, params)
