@@ -1,0 +1,37 @@
+{
+  "name": "Test Contact List",
+  "source": "csv",
+  "team": "695ee359f1bbcd2c51d4ae1b",
+  "user": "695ee359f1bbcd2c51d4ae1a",
+  "contacts": [
+    {
+      "account": "example_account",
+      "company": "Example Corp",
+      "email": "john.doe@example.com",
+      "first_name": "John",
+      "last_name": "Doe",
+      "linkedin": "https://www.linkedin.com/in/johndoe",
+      "notes": "Test contact created via API",
+      "website": "https://example.com",
+      "phone_numbers": [
+        {
+          "type": "mobile",
+          "number": "5551234567",
+          "country_code": "+1",
+          "_id": "6972b6679feab382af08f40b"
+        }
+      ],
+      "title": "Software Engineer",
+      "priority": 1,
+      "email_views": 0,
+      "timezone": "America/New_York",
+      "sequence_step": 0,
+      "_id": "6972b6679feab382af08f40a",
+      "custom_fields": []
+    }
+  ],
+  "_id": "6972b6679feab382af08f409",
+  "createdAt": "2026-01-22T23:44:39.646Z",
+  "updatedAt": "2026-01-22T23:44:39.646Z",
+  "_v": 0
+}
