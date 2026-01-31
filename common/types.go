@@ -369,6 +369,8 @@ type BatchWriteParam struct {
 	Batch BatchItems
 	// Headers contains additional headers to be added to the request.
 	Headers []WriteHeader // optional
+	// AllOrNone is accepted by Create and Update endpoint for output with partial success.
+	AllOrNone *bool
 }
 
 func TransformWriteHeaders(headers []WriteHeader, mode HeaderMode) []Header {
