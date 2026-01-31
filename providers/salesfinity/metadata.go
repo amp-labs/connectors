@@ -51,7 +51,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func extractDataFromResponse(body *ajson.Node, responseField string) (map[string]any, error) {
-	// salesfinity API returns {data: [...]}
+	// Salesfinity API returns {data: [...]}
 	jsonQuery := jsonquery.New(body)
 
 	arr, err := jsonQuery.ArrayOptional("data")
