@@ -25,7 +25,7 @@ func TestDelete(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Method(http.MethodDelete),
-					mockcond.Path("/v1/contact-lists/6972b6679feab382af08f409"),
+					mockcond.Path("/v1/contact-lists/csv/6972b6679feab382af08f409"),
 				},
 				Then: mockserver.Response(http.StatusOK, []byte(`{"success":true}`)),
 			}.Server(),

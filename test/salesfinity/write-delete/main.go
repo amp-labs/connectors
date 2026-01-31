@@ -79,7 +79,7 @@ func createContactList(ctx context.Context, conn *salesfinity.Connector, userID 
 
 func deleteContactList(ctx context.Context, conn *salesfinity.Connector, listID string) *common.DeleteResult {
 	res, err := conn.Delete(ctx, common.DeleteParams{
-		ObjectName: "contact-lists/csv",
+		ObjectName: "contact-lists",
 		RecordId:   listID,
 	})
 	if err != nil {
