@@ -76,3 +76,48 @@ func TestCalendarDelete(t *testing.T) { // nolint:funlen,cyclop
 		})
 	}
 }
+
+func TestMailDelete(t *testing.T) { // nolint:funlen,cyclop
+	t.Parallel()
+
+	tests := []testroutines.Delete{
+		{
+			Name:         "Delete object must be included",
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:         "Write object and its ID must be included",
+			Input:        common.DeleteParams{ObjectName: "drafts"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingRecordID},
+		},
+		{
+			Name: "Successful delete",
+			Input: common.DeleteParams{
+				ObjectName: "drafts",
+				RecordId:   "r5151461288000502025",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodDELETE(),
+					mockcond.Path("/gmail/v1/users/me/drafts/r5151461288000502025"),
+				},
+				Then: mockserver.Response(http.StatusNoContent),
+			}.Server(),
+			Expected: &common.DeleteResult{Success: true},
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.DeleteConnector, error) {
+				return constructTestMailConnector(tt.Server.URL)
+			})
+		})
+	}
+}

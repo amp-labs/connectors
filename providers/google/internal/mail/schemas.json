@@ -275,65 +275,65 @@
           "path": "/users/me/messages",
           "responseKey": "messages",
           "fields": {
-            "classificationLabelValues": {
+            "$['payload']['body']": {
+              "displayName": "Message Body",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "$['payload']['body']['data']": {
+              "displayName": "Message Data",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "$['payload']['classificationLabelValues']": {
               "displayName": "Classification Label Values",
               "valueType": "other",
-              "providerType": "array",
-              "readOnly": false
+              "providerType": "array"
             },
-            "historyId": {
+            "$['payload']['historyId']": {
               "displayName": "History Id",
               "valueType": "string",
-              "providerType": "string",
-              "readOnly": false
+              "providerType": "string"
+            },
+            "$['payload']['internalDate']": {
+              "displayName": "Internal Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "$['payload']['labelIds']": {
+              "displayName": "Label Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "$['payload']['raw']": {
+              "displayName": "Raw",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "$['payload']['sizeEstimate']": {
+              "displayName": "Size Estimate",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "$['payload']['snippet']": {
+              "displayName": "Snippet",
+              "valueType": "string",
+              "providerType": "string"
             },
             "id": {
               "displayName": "Id",
               "valueType": "string",
-              "providerType": "string",
-              "readOnly": false
-            },
-            "internalDate": {
-              "displayName": "Internal Date",
-              "valueType": "string",
-              "providerType": "string",
-              "readOnly": false
-            },
-            "labelIds": {
-              "displayName": "Label Ids",
-              "valueType": "other",
-              "providerType": "array",
-              "readOnly": false
+              "providerType": "string"
             },
             "payload": {
               "displayName": "Payload",
               "valueType": "other",
-              "providerType": "object",
-              "readOnly": false
-            },
-            "raw": {
-              "displayName": "Raw",
-              "valueType": "string",
-              "providerType": "string",
-              "readOnly": false
-            },
-            "sizeEstimate": {
-              "displayName": "Size Estimate",
-              "valueType": "int",
-              "providerType": "integer",
-              "readOnly": false
-            },
-            "snippet": {
-              "displayName": "Snippet",
-              "valueType": "string",
-              "providerType": "string",
-              "readOnly": false
+              "providerType": "object"
             },
             "threadId": {
               "displayName": "Thread Id",
               "valueType": "string",
-              "providerType": "string",
-              "readOnly": false
+              "providerType": "string"
             }
           }
         },

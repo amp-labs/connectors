@@ -1,13 +1,13 @@
 package pardot
 
 import (
+	"context"
 	_ "embed"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/tools/fileconv"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
@@ -17,14 +17,19 @@ var (
 	//go:embed schemas.json
 	schemas []byte
 
-	FileManager = scrapper.NewExtendedMetadataFileManager[staticschema.FieldMetadataMapV2, any]( // nolint:gochecknoglobals,lll
-		schemas, fileconv.NewSiblingFileLocator())
+	fileManager = scrapper.NewReader[staticschema.FieldMetadataMapV2](schemas) // nolint:gochecknoglobals
 
 	// Schemas is cached Object schemas.
 	Schemas = pardotSchemas{ // nolint:gochecknoglobals
-		Metadata: FileManager.MustLoadSchemas(),
+		Metadata: fileManager.MustLoadSchemas(),
 	}
 )
+
+func (a *Adapter) ListObjectMetadata(
+	ctx context.Context, objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
+	return Schemas.Select(objectNames)
+}
 
 type pardotSchemas struct {
 	*staticschema.Metadata[staticschema.FieldMetadataMapV2, any]

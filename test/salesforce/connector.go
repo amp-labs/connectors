@@ -14,6 +14,12 @@ import (
 	"golang.org/x/oauth2"
 )
 
+var fieldBusinessUnitID = credscanning.Field{
+	Name:      "businessUnitId",
+	PathJSON:  "metadata.businessUnitId",
+	SuffixENV: "BUSINESS_UNIT_ID",
+}
+
 func GetSalesforceConnector(ctx context.Context) *salesforce.Connector {
 	return getSalesforceConnector(ctx, providers.ModuleSalesforceCRM)
 }
@@ -29,6 +35,9 @@ func getSalesforceConnector(ctx context.Context, module common.ModuleID) *salesf
 		salesforce.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
 		salesforce.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
 		salesforce.WithModule(module),
+		salesforce.WithMetadata(map[string]string{
+			"businessUnitId": reader.Get(fieldBusinessUnitID),
+		}),
 	)
 	if err != nil {
 		testUtils.Fail("error creating connector", "error", err)
@@ -59,7 +68,9 @@ func GetSalesforceAccessToken() common.AuthToken {
 
 func getSalesforceJSONReader() *credscanning.ProviderCredentials {
 	filePath := credscanning.LoadPath(providers.Salesforce)
-	reader := utils.MustCreateProvCredJSON(filePath, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true,
+		fieldBusinessUnitID,
+	)
 
 	return reader
 }
