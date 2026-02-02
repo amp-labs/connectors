@@ -48,7 +48,7 @@ type subscription struct {
 	// It cannot be used to do field level filtering.
 	// Use null to receive all events without filtering.
 	// Ref: https://docs.attio.com/rest-api/guides/webhooks#filtering
-	Filter any `json:"filter" validate:"required"`
+	Filter any `json:"filter"`
 }
 
 // // createSubscriptionsResponse is the response returned by Attio when a webhook is created.
