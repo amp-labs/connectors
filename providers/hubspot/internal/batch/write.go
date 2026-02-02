@@ -106,24 +106,39 @@ func parseBulkResponse(
 	}
 
 	// == UPDATE == //
-	// Build a lookup table keyed by record ID.
-	items := response.GetItemsMap()
+	return parseUpdateResponse(payload, response)
+}
+
+// parseUpdateResponse handles update operation responses.
+// Results are matched by record ID. Errors contain context.ids to identify failed records.
+func parseUpdateResponse(payload *Payload, response *Response) (*common.BatchWriteResult, error) {
+	// Build lookup tables
+	resultsByID := response.GetItemsMap()
+	errorsByID := buildErrorsByRecordId(response.Errors)
 
 	return common.ParseBatchWrite(
 		payload.Items,
 		func(_ int, payloadItem PayloadItem) *ResponseItem {
-			// Each record must have an id when performing Bulk Update.
-			return items[payloadItem.ID]
+			return resultsByID[payloadItem.ID]
 		},
 		func(payloadItem PayloadItem, respItem *ResponseItem) (*common.WriteResult, error) {
+			// Check if there's a specific error for this record
+			if errObj, hasError := errorsByID[payloadItem.ID]; hasError {
+				return &common.WriteResult{
+					Success:  false,
+					RecordId: payloadItem.ID,
+					Errors:   []any{sanitizeError(errObj)},
+					Data:     nil,
+				}, nil
+			}
+
 			if respItem == nil {
-				// No matching response, but we still know which record failed.
 				return createUnprocessableItem(payloadItem.ID), nil
 			}
 
 			return respItem.ToWriteResult()
 		},
-		datautils.ToAnySlice(response.Errors),
+		sanitizeErrors(response.Errors),
 	)
 }
 
@@ -178,7 +193,7 @@ func parseCreateResponse(payload *Payload, response *Response) (*common.BatchWri
 }
 
 // buildErrorsByTraceId extracts objectWriteTraceId from error contexts.
-// HubSpot returns errors with context.objectWriteTraceId for partial success.
+// HubSpot returns errors with context.objectWriteTraceId for partial success on creates.
 func buildErrorsByTraceId(errors []Issue) map[string]Issue {
 	result := make(map[string]Issue)
 
@@ -190,6 +205,49 @@ func buildErrorsByTraceId(errors []Issue) map[string]Issue {
 	}
 
 	return result
+}
+
+// buildErrorsByRecordId extracts record IDs from error contexts.
+// HubSpot returns errors with context.ids for partial success on updates.
+func buildErrorsByRecordId(errors []Issue) map[string]Issue {
+	result := make(map[string]Issue)
+
+	for _, errObj := range errors {
+		ids := extractRecordIdsFromError(errObj)
+		for _, id := range ids {
+			result[id] = errObj
+		}
+	}
+
+	return result
+}
+
+// extractRecordIdsFromError extracts record IDs from an error's context.ids field.
+func extractRecordIdsFromError(errObj Issue) []string {
+	errMap, ok := errObj.(map[string]any)
+	if !ok {
+		return nil
+	}
+
+	context, ok := errMap["context"].(map[string]any)
+	if !ok {
+		return nil
+	}
+
+	// ids is returned as an array in context
+	idsRaw, ok := context["ids"].([]any)
+	if !ok || len(idsRaw) == 0 {
+		return nil
+	}
+
+	ids := make([]string, 0, len(idsRaw))
+	for _, idRaw := range idsRaw {
+		if id, ok := idRaw.(string); ok && id != "" {
+			ids = append(ids, id)
+		}
+	}
+
+	return ids
 }
 
 // extractTraceIdFromError extracts objectWriteTraceId from an error's context.
@@ -229,7 +287,7 @@ func sanitizeErrors(errors []Issue) []any {
 	return result
 }
 
-// sanitizeError removes internal fields like objectWriteTraceId from error objects
+// sanitizeError removes internal fields like objectWriteTraceId and ids from error objects
 // before returning them to customers.
 func sanitizeError(errObj Issue) Issue {
 	errMap, ok := errObj.(map[string]any)
@@ -243,12 +301,13 @@ func sanitizeError(errObj Issue) Issue {
 		sanitized[k] = v
 	}
 
-	// Remove objectWriteTraceId from context if present
+	// Remove internal fields from context if present
 	if context, ok := sanitized["context"].(map[string]any); ok {
-		// Create a copy of context without objectWriteTraceId
+		// Create a copy of context without internal fields
 		newContext := make(map[string]any, len(context))
 		for k, v := range context {
-			if k != "objectWriteTraceId" {
+			// Skip internal fields used for record matching
+			if k != "objectWriteTraceId" && k != "ids" {
 				newContext[k] = v
 			}
 		}

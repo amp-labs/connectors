@@ -370,17 +370,22 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
 				Status: common.BatchStatusPartial,
+				// Top-level errors are sanitized (ids removed from context)
 				Errors: []any{mockutils.JSONErrorWrapper(`{
 					  "status": "error",
 					  "category": "OBJECT_NOT_FOUND",
-					  "message": "Could not get some CONTACT objects, they may be deleted or not exist. Check that ids are valid.",
-					  "context": {"ids": [""]}
+					  "message": "Could not get some CONTACT objects, they may be deleted or not exist. Check that ids are valid."
 				}`)},
 				Results: []common.WriteResult{{
 					Success:  false,
 					RecordId: "unknownIdentifier888",
-					Errors:   []any{common.ErrBatchUnprocessedRecord.Error()},
-					Data:     nil,
+					// Per-record error matched by ID and sanitized
+					Errors: []any{mockutils.JSONErrorWrapper(`{
+						"status": "error",
+						"category": "OBJECT_NOT_FOUND",
+						"message": "Could not get some CONTACT objects, they may be deleted or not exist. Check that ids are valid."
+					}`)},
+					Data: nil,
 				}, {
 					Success:  true,
 					RecordId: "171591000199",

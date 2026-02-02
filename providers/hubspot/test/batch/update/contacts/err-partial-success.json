@@ -31,7 +31,7 @@
       "message": "Could not get some CONTACT objects, they may be deleted or not exist. Check that ids are valid.",
       "context": {
         "ids": [
-          ""
+          "unknownIdentifier888"
         ]
       }
     }
