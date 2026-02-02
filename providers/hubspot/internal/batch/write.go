@@ -162,7 +162,7 @@ func parseCreateResponse(payload *Payload, response *Response) (*common.BatchWri
 				return &common.WriteResult{
 					Success:  false,
 					RecordId: "",
-					Errors:   []any{errObj},
+					Errors:   []any{sanitizeError(errObj)},
 					Data:     nil,
 				}, nil
 			}
@@ -173,7 +173,7 @@ func parseCreateResponse(payload *Payload, response *Response) (*common.BatchWri
 
 			return respItem.ToWriteResult()
 		},
-		datautils.ToAnySlice(response.Errors),
+		sanitizeErrors(response.Errors),
 	)
 }
 
@@ -217,6 +217,51 @@ func extractTraceIdFromError(errObj Issue) string {
 	}
 
 	return ""
+}
+
+// sanitizeErrors removes internal fields from a slice of errors.
+func sanitizeErrors(errors []Issue) []any {
+	result := make([]any, len(errors))
+	for i, err := range errors {
+		result[i] = sanitizeError(err)
+	}
+
+	return result
+}
+
+// sanitizeError removes internal fields like objectWriteTraceId from error objects
+// before returning them to customers.
+func sanitizeError(errObj Issue) Issue {
+	errMap, ok := errObj.(map[string]any)
+	if !ok {
+		return errObj
+	}
+
+	// Create a shallow copy to avoid modifying the original
+	sanitized := make(map[string]any, len(errMap))
+	for k, v := range errMap {
+		sanitized[k] = v
+	}
+
+	// Remove objectWriteTraceId from context if present
+	if context, ok := sanitized["context"].(map[string]any); ok {
+		// Create a copy of context without objectWriteTraceId
+		newContext := make(map[string]any, len(context))
+		for k, v := range context {
+			if k != "objectWriteTraceId" {
+				newContext[k] = v
+			}
+		}
+
+		// If context is now empty, remove it entirely
+		if len(newContext) == 0 {
+			delete(sanitized, "context")
+		} else {
+			sanitized["context"] = newContext
+		}
+	}
+
+	return sanitized
 }
 
 func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilder.URL, error) {

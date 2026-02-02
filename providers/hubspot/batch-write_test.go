@@ -161,11 +161,12 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
 				Status: common.BatchStatusPartial,
+				// objectWriteTraceId is removed from all errors (internal field)
 				Errors: []any{mockutils.JSONErrorWrapper(`{
 					"status": "error",
 					"category": "CONFLICT",
 					"message": "Contact already exists. Existing ID: 171591000198",
-					"context": {"objectWriteTraceId": ["0"], "existingId": ["171591000198"]}
+					"context": {"existingId": ["171591000198"]}
 				}`)},
 				Results: []common.WriteResult{{
 					Success:  false,
@@ -174,7 +175,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 						"status": "error",
 						"category": "CONFLICT",
 						"message": "Contact already exists. Existing ID: 171591000198",
-						"context": {"objectWriteTraceId": ["0"], "existingId": ["171591000198"]}
+						"context": {"existingId": ["171591000198"]}
 					}`)},
 					Data: nil,
 				}, {
