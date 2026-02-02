@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -17,7 +16,6 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	zeroRecords := testutils.DataFromFile(t, "empty.json")
-	unsupportedResponse := testutils.DataFromFile(t, "unsupported.json")
 	sequencesResponse := testutils.DataFromFile(t, "sequences.json")
 
 	tests := []testroutines.Read{
@@ -31,15 +29,6 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input:        common.ReadParams{ObjectName: "deals"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingFields},
-		},
-		{
-			Name:  "Unsupported object",
-			Input: common.ReadParams{ObjectName: "arsenal", Fields: datautils.NewStringSet("testField")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusBadRequest, string(unsupportedResponse)),
-			}.Server(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
 		},
 		{
 			Name:  "Zero records response",

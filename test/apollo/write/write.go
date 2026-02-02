@@ -52,10 +52,9 @@ func testCreatingOpportunities(ctx context.Context) error {
 	params := common.WriteParams{
 		ObjectName: "opportunities",
 		RecordData: map[string]any{
-			"name":                 "opportunity - one",
-			"amount":               "200",
-			"opportunity_stage_id": "65b1974393794c0300d26dcf",
-			"closed_date":          "2024-12-18",
+			"name":        "opportunity - one",
+			"amount":      "200",
+			"closed_date": "2024-12-18",
 		},
 	}
 

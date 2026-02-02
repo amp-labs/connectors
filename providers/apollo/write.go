@@ -26,34 +26,34 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	// sets post as default
 	write = c.Client.Post
 
-	// we check for custom fields in any scenario when we have 0 custom fields for a particular object.
-	if c.customFields[config.ObjectName] == nil {
-		// If we're reading this for the first time, we make a call to retrieve
-		// custom fields, add them and their labels in the connector instance field customFields.
-		if err := c.retrieveCustomFields(ctx, config.ObjectName); err != nil {
-			return nil, err
-		}
-	}
-
 	// Add customFields mappings.
 	recordData, okay := config.RecordData.(map[string]any)
 	if !okay {
 		return nil, fmt.Errorf("err: unexpected data type %w", common.ErrMissingExpectedValues)
 	}
 
-	flds := c.customFields[config.ObjectName]
-
-	if flds != nil {
-		cstFlds := make(map[string]any)
-
-		for _, label := range flds {
-			if val, exists := recordData[label.fld]; exists {
-				cstFlds[label.customMachineField] = val
-			}
+	// we check for custom fields in any scenario when we have 0 custom fields for a particular object.
+	if usesFieldsResource.Has(config.ObjectName) && c.customFields[config.ObjectName] == nil {
+		// If we're reading this for the first time, we make a call to retrieve
+		// custom fields, add them and their labels in the connector instance field customFields.
+		if err := c.retrieveCustomFields(ctx, config.ObjectName); err != nil {
+			return nil, err
 		}
 
-		if len(cstFlds) > 0 {
-			recordData["typed_custom_fields"] = cstFlds
+		flds := c.customFields[config.ObjectName]
+
+		if flds != nil {
+			cstFlds := make(map[string]any)
+
+			for _, label := range flds {
+				if val, exists := recordData[label.fld]; exists {
+					cstFlds[label.customMachineField] = val
+				}
+			}
+
+			if len(cstFlds) > 0 {
+				recordData["typed_custom_fields"] = cstFlds
+			}
 		}
 	}
 

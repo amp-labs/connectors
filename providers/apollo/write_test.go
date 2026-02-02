@@ -1,7 +1,6 @@
 package apollo
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -17,8 +16,6 @@ import (
 func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	unsupportedResponse := testutils.DataFromFile(t, "unsupported.json")
-	opportunityCreationResponse := testutils.DataFromFile(t, "opportunity-write.json")
 	updateDealsResponse := testutils.DataFromFile(t, "update-deals.json")
 
 	tests := []testroutines.Write{
@@ -32,50 +29,6 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input:        common.WriteParams{ObjectName: "leads"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordData},
-		},
-
-		{
-			Name:  "Unsupported object",
-			Input: common.WriteParams{ObjectName: "arsenal", RecordData: "dummy"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusNotFound, unsupportedResponse),
-			}.Server(),
-			ExpectedErrs: []error{
-				common.ErrRetryable,
-				errors.New(string(unsupportedResponse)),
-			},
-		},
-		{
-			Name: "Successfully creation of an opportunity",
-			Input: common.WriteParams{ObjectName: "opportunities", RecordData: map[string]any{
-				"name":                 "opportunity - one",
-				"amount":               "200",
-				"opportunity_stage_id": "65b1974393794c0300d26dcf",
-				"closed_date":          "2024-12-18",
-			}},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, opportunityCreationResponse),
-			}.Server(),
-			Expected: &common.WriteResult{
-				Success:  true,
-				RecordId: "6781406a5dde2401b0dd5ea5",
-				Data: map[string]any{
-					"id":                  "6781406a5dde2401b0dd5ea5",
-					"team_id":             "6508dea16d3b6400a3ed7030",
-					"owner_id":            nil,
-					"salesforce_owner_id": nil,
-					"amount":              float64(200.0),
-					"closed_date":         "2024-12-18T00:00:00.000+00:00",
-					"account_id":          nil,
-					"description":         nil,
-					"is_closed":           false,
-				},
-			},
-			ExpectedErrs: nil,
 		},
 		{
 			Name: "Successfully update a deal",

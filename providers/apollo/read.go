@@ -34,7 +34,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 
 	// we check for custom fields in any scenario when we have 0 custom fields for a particular object.
-	if c.customFields[config.ObjectName] == nil {
+	if usesFieldsResource.Has(config.ObjectName) && c.customFields[config.ObjectName] == nil {
 		// If we're reading this for the first time, we make a call to retrieve
 		// custom fields, add them and their labels in the connector instance field customFields.
 		if err := c.retrieveCustomFields(ctx, config.ObjectName); err != nil {
