@@ -2,6 +2,7 @@ package batch
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -81,8 +82,11 @@ func parseBulkIssue(payload *Payload, rsp *common.JSONHTTPResponse) (*common.Bat
 // It maps each response item back to its corresponding payload record,
 // producing a per-record WriteResult when possible.
 //
-// For create operations, HubSpot preserves payload order — the Nth response
-// corresponds to the Nth payload. For updates, results are matched by record ID.
+// For create operations with partial success (207 Multi-Status), errors contain
+// objectWriteTraceId to identify which records failed. For full success (200),
+// response order matches payload order.
+//
+// For update operations, results are matched by record ID.
 func parseBulkResponse(
 	params *common.BatchWriteParam, payload *Payload, rsp *common.JSONHTTPResponse,
 ) (*common.BatchWriteResult, error) {
@@ -98,21 +102,7 @@ func parseBulkResponse(
 
 	// == Create == //
 	if params.IsCreate() {
-		// Response order matches payload order.
-		return common.ParseBatchWrite(
-			payload.Items,
-			func(index int, payloadItem PayloadItem) *ResponseItem {
-				return &response.Results[index]
-			},
-			func(_ PayloadItem, respItem *ResponseItem) (*common.WriteResult, error) {
-				if respItem == nil {
-					return createUnprocessableItem(""), nil
-				}
-
-				return respItem.ToWriteResult()
-			},
-			datautils.ToAnySlice(response.Errors),
-		)
+		return parseCreateResponse(payload, response)
 	}
 
 	// == UPDATE == //
@@ -135,6 +125,98 @@ func parseBulkResponse(
 		},
 		datautils.ToAnySlice(response.Errors),
 	)
+}
+
+// parseCreateResponse handles create operation responses.
+// For full success (200), results are in payload order.
+// For partial success (207), errors include objectWriteTraceId to identify failed records.
+func parseCreateResponse(payload *Payload, response *Response) (*common.BatchWriteResult, error) {
+	// Build a map of errors by trace ID for partial success handling.
+	// HubSpot returns objectWriteTraceId in error context for failed records.
+	errorsByTraceId := buildErrorsByTraceId(response.Errors)
+
+	// Track which results have been matched to payloads
+	resultIndex := 0
+
+	return common.ParseBatchWrite(
+		payload.Items,
+		func(index int, payloadItem PayloadItem) *ResponseItem {
+			// If this payload item's trace ID has an error, it failed
+			if _, hasError := errorsByTraceId[payloadItem.ObjectWriteTraceId]; hasError {
+				return nil
+			}
+
+			// Otherwise, match to the next available result
+			if resultIndex < len(response.Results) {
+				item := &response.Results[resultIndex]
+				resultIndex++
+
+				return item
+			}
+
+			return nil
+		},
+		func(payloadItem PayloadItem, respItem *ResponseItem) (*common.WriteResult, error) {
+			// Check if there's a specific error for this record
+			if errObj, hasError := errorsByTraceId[payloadItem.ObjectWriteTraceId]; hasError {
+				return &common.WriteResult{
+					Success:  false,
+					RecordId: "",
+					Errors:   []any{errObj},
+					Data:     nil,
+				}, nil
+			}
+
+			if respItem == nil {
+				return createUnprocessableItem(""), nil
+			}
+
+			return respItem.ToWriteResult()
+		},
+		datautils.ToAnySlice(response.Errors),
+	)
+}
+
+// buildErrorsByTraceId extracts objectWriteTraceId from error contexts.
+// HubSpot returns errors with context.objectWriteTraceId for partial success.
+func buildErrorsByTraceId(errors []Issue) map[string]Issue {
+	result := make(map[string]Issue)
+
+	for _, errObj := range errors {
+		traceId := extractTraceIdFromError(errObj)
+		if traceId != "" {
+			result[traceId] = errObj
+		}
+	}
+
+	return result
+}
+
+// extractTraceIdFromError extracts objectWriteTraceId from an error's context.
+func extractTraceIdFromError(errObj Issue) string {
+	// Error is any type, try to extract context.objectWriteTraceId
+	errMap, ok := errObj.(map[string]any)
+	if !ok {
+		return ""
+	}
+
+	context, ok := errMap["context"].(map[string]any)
+	if !ok {
+		return ""
+	}
+
+	// objectWriteTraceId is returned as an array in context
+	traceIds, ok := context["objectWriteTraceId"].([]any)
+	if !ok || len(traceIds) == 0 {
+		return ""
+	}
+
+	// Return the first trace ID (there should only be one per error)
+	if traceId, ok := traceIds[0].(string); ok {
+		return traceId
+	}
+
+	return ""
 }
 
 func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilder.URL, error) {
@@ -163,6 +245,12 @@ func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 			return nil, err
 		}
 
+		// For creates, add objectWriteTraceId to enable per-record error matching
+		// in partial success scenarios. HubSpot returns this trace ID in error responses.
+		if params.IsCreate() {
+			item.ObjectWriteTraceId = formatTraceId(index)
+		}
+
 		payloadItems[index] = *item
 	}
 
@@ -180,6 +268,12 @@ func createUnprocessableItem(identifier string) *common.WriteResult {
 	}
 }
 
+// formatTraceId creates a trace ID string from an index.
+// Used for objectWriteTraceId in HubSpot create operations.
+func formatTraceId(index int) string {
+	return strconv.Itoa(index)
+}
+
 // Payload represents the HubSpot batch request body.
 type Payload struct {
 	Items []PayloadItem `json:"inputs"`
@@ -189,9 +283,10 @@ type Payload struct {
 // Hubspot's payload is identical to what client supplies to the connector.
 // This is an alias.
 type PayloadItem struct {
-	ID           string        `json:"id,omitempty"`
-	Properties   common.Record `json:"properties"`
-	Associations any           `json:"associations,omitempty"`
+	ID                  string        `json:"id,omitempty"`
+	Properties          common.Record `json:"properties"`
+	Associations        any           `json:"associations,omitempty"`
+	ObjectWriteTraceId  string        `json:"objectWriteTraceId,omitempty"` //nolint:tagliatelle
 }
 
 func NewPayloadItem(record common.Record, associations any) (*PayloadItem, error) {
