@@ -34,10 +34,10 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 
 	// we check for custom fields in any scenario when we have 0 custom fields for a particular object.
-	if len(c.customFields[config.ObjectName]) == 0 {
+	if usesFieldsResource.Has(config.ObjectName) && c.customFields[config.ObjectName] == nil {
 		// If we're reading this for the first time, we make a call to retrieve
 		// custom fields, add them and their labels in the connector instance field customFields.
-		if err := c.retrieveCustomFields(ctx, config); err != nil {
+		if err := c.retrieveCustomFields(ctx, config.ObjectName); err != nil {
 			return nil, err
 		}
 	}
@@ -72,23 +72,4 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		c.apolloMarshaledData(config.ObjectName),
 		config.Fields,
 	)
-}
-
-func (c *Connector) retrieveCustomFields(ctx context.Context, config common.ReadParams) error {
-	if usesFieldsResource.Has(config.ObjectName) {
-		metadata, err := c.retrieveFields(ctx, config.ObjectName)
-		if err != nil {
-			return err
-		}
-
-		for id, fld := range metadata.Fields {
-			if *fld.IsCustom {
-				fldName := id
-				label := fld.DisplayName
-				c.customFields.Set(config.ObjectName, fldName, label)
-			}
-		}
-	}
-
-	return nil
 }
