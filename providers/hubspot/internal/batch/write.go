@@ -307,7 +307,8 @@ func createUnprocessableItem(identifier string) *common.WriteResult {
 		Success:  false, // not processed
 		RecordId: identifier,
 		Errors: []any{
-			common.ErrBatchUnprocessedRecord,
+			// Use error message string instead of error object for proper JSON serialization
+			common.ErrBatchUnprocessedRecord.Error(),
 		},
 		Data: nil,
 	}

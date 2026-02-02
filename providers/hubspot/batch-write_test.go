@@ -379,7 +379,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Results: []common.WriteResult{{
 					Success:  false,
 					RecordId: "unknownIdentifier888",
-					Errors:   []any{common.ErrBatchUnprocessedRecord},
+					Errors:   []any{common.ErrBatchUnprocessedRecord.Error()},
 					Data:     nil,
 				}, {
 					Success:  true,
