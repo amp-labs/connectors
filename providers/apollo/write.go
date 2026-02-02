@@ -33,7 +33,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	}
 
 	// we check for custom fields in any scenario when we have 0 custom fields for a particular object.
-	if usesFieldsResource.Has(config.ObjectName) && c.customFields[config.ObjectName] == nil { // noilnt: nestif
+	if usesFieldsResource.Has(config.ObjectName) && c.customFields[config.ObjectName] == nil { // nolint: nestif
 		// If we're reading this for the first time, we make a call to retrieve
 		// custom fields, add them and their labels in the connector instance field customFields.
 		if err := c.retrieveCustomFields(ctx, config.ObjectName); err != nil {
