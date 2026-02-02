@@ -19,11 +19,37 @@ func supportedOperations() components.EndpointRegistryInput {
 		"voicemails",
 	}
 
+	writeSupport := []string{
+		"contacts",
+		"customfields",
+		"dialsession",
+		"folders",
+		"members",
+		"tags",
+	}
+
+	deleteSupport := []string{
+		"contacts",
+		"customfields",
+		"folders",
+		"members",
+		"phonenumber",
+		"tags",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(deleteSupport, ",")),
+				Support:  components.DeleteSupport,
 			},
 		},
 	}
