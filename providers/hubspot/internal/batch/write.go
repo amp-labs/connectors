@@ -213,7 +213,7 @@ func buildErrorsByRecordId(errors []Issue) map[string]Issue {
 	result := make(map[string]Issue)
 
 	for _, errObj := range errors {
-		ids := extractRecordIdsFromError(errObj)
+		ids := extractRecordIDsFromError(errObj)
 		for _, id := range ids {
 			result[id] = errObj
 		}
@@ -222,27 +222,27 @@ func buildErrorsByRecordId(errors []Issue) map[string]Issue {
 	return result
 }
 
-// extractRecordIdsFromError extracts record IDs from an error's context.ids field.
-func extractRecordIdsFromError(errObj Issue) []string {
-	errMap, ok := errObj.(map[string]any)
-	if !ok {
+// extractRecordIDsFromError extracts record IDs from an error's context.ids field.
+func extractRecordIDsFromError(errObj Issue) []string { //nolint:varnamelen
+	errMap, isMap := errObj.(map[string]any)
+	if !isMap {
 		return nil
 	}
 
-	context, ok := errMap["context"].(map[string]any)
-	if !ok {
+	context, hasContext := errMap["context"].(map[string]any)
+	if !hasContext {
 		return nil
 	}
 
 	// ids is returned as an array in context
-	idsRaw, ok := context["ids"].([]any)
-	if !ok || len(idsRaw) == 0 {
+	idsRaw, hasIDs := context["ids"].([]any)
+	if !hasIDs || len(idsRaw) == 0 {
 		return nil
 	}
 
 	ids := make([]string, 0, len(idsRaw))
 	for _, idRaw := range idsRaw {
-		if id, ok := idRaw.(string); ok && id != "" {
+		if id, isString := idRaw.(string); isString && id != "" {
 			ids = append(ids, id)
 		}
 	}
@@ -251,27 +251,27 @@ func extractRecordIdsFromError(errObj Issue) []string {
 }
 
 // extractTraceIdFromError extracts objectWriteTraceId from an error's context.
-func extractTraceIdFromError(errObj Issue) string {
+func extractTraceIdFromError(errObj Issue) string { //nolint:varnamelen
 	// Error is any type, try to extract context.objectWriteTraceId
-	errMap, ok := errObj.(map[string]any)
-	if !ok {
+	errMap, isMap := errObj.(map[string]any)
+	if !isMap {
 		return ""
 	}
 
-	context, ok := errMap["context"].(map[string]any)
-	if !ok {
+	context, hasContext := errMap["context"].(map[string]any)
+	if !hasContext {
 		return ""
 	}
 
 	// objectWriteTraceId is returned as an array in context
-	traceIds, ok := context["objectWriteTraceId"].([]any)
-	if !ok || len(traceIds) == 0 {
+	traceIDs, hasTraceID := context["objectWriteTraceId"].([]any)
+	if !hasTraceID || len(traceIDs) == 0 {
 		return ""
 	}
 
 	// Return the first trace ID (there should only be one per error)
-	if traceId, ok := traceIds[0].(string); ok {
-		return traceId
+	if traceID, isString := traceIDs[0].(string); isString {
+		return traceID
 	}
 
 	return ""
@@ -388,10 +388,10 @@ type Payload struct {
 // Hubspot's payload is identical to what client supplies to the connector.
 // This is an alias.
 type PayloadItem struct {
-	ID                  string        `json:"id,omitempty"`
-	Properties          common.Record `json:"properties"`
-	Associations        any           `json:"associations,omitempty"`
-	ObjectWriteTraceId  string        `json:"objectWriteTraceId,omitempty"` //nolint:tagliatelle
+	ID                 string        `json:"id,omitempty"`
+	Properties         common.Record `json:"properties"`
+	Associations       any           `json:"associations,omitempty"`
+	ObjectWriteTraceId string        `json:"objectWriteTraceId,omitempty"` //nolint:tagliatelle
 }
 
 func NewPayloadItem(record common.Record, associations any) (*PayloadItem, error) {
