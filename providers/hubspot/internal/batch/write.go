@@ -462,7 +462,7 @@ func (i ResponseItem) ToWriteResult() (*common.WriteResult, error) {
 	}, nil
 }
 
-// IssueResponse models HubSpot’s structured error response for 4xx cases.
+// IssueResponse models HubSpot's structured error response for 4xx cases.
 type IssueResponse struct {
 	Status        string  `json:"status,omitempty"`
 	Message       string  `json:"message,omitempty"`
