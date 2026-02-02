@@ -54,7 +54,7 @@ func toRecordEvents(commonEvent common.SubscriptionEventType) (providerEvent, er
 		return "record.updated", nil
 
 	case common.SubscriptionEventTypeDelete:
-		return "record.updated", nil
+		return "record.deleted", nil
 
 	default:
 		return "", fmt.Errorf("%w: %s", errUnsupportedSubscriptionEvent, commonEvent)

@@ -2,6 +2,7 @@ package attio
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/amp-labs/connectors"
@@ -94,8 +95,8 @@ func (c *Connector) UpdateSubscription(
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-	// TODO: Implement update logic
-	return nil, nil
+	// TODO: not yet implemented. Returning an explicit error to avoid
+	return nil, errors.New("update subscription is not implemented for Attio") //nolint:err113
 }
 
 // DeleteSubscription removes an existing webhook subscription in Attio.
