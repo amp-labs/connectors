@@ -26,7 +26,7 @@ func TestDelete(t *testing.T) { //nolint:funlen,cyclop
 		},
 		{
 			Name:         "Write object and its ID must be included",
-			Input:        common.DeleteParams{ObjectName: "tags"},
+			Input:        common.DeleteParams{ObjectName: "contacts"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordID},
 		},
@@ -37,17 +37,10 @@ func TestDelete(t *testing.T) { //nolint:funlen,cyclop
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
-			Name:  "Delete tag",
-			Input: common.DeleteParams{ObjectName: "tags", RecordId: "4406100"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodDELETE(),
-					mockcond.Path("/rest/1/tags/4406100"),
-				},
-				Then: mockserver.Response(http.StatusNoContent),
-			}.Server(),
-			Expected: &common.DeleteResult{Success: true},
+			Name:         "Delete tag is not supported",
+			Input:        common.DeleteParams{ObjectName: "tags", RecordId: "4406100"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject, errors.New("tags does not support delete")},
 		},
 		{
 			Name:  "Delete contact",
@@ -116,12 +109,12 @@ func TestDelete(t *testing.T) { //nolint:funlen,cyclop
 		},
 		{
 			Name:  "Provider envelope error is mapped for delete (200 with http_status=401)",
-			Input: common.DeleteParams{ObjectName: "tags", RecordId: "4406100"},
+			Input: common.DeleteParams{ObjectName: "contacts", RecordId: "30919347"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodDELETE(),
-					mockcond.Path("/rest/1/tags/4406100"),
+					mockcond.Path("/rest/1/contacts/30919347"),
 				},
 				Then: mockserver.Response(http.StatusOK, respUnauthorized),
 			}.Server(),

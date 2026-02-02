@@ -49,7 +49,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/rest/1/tags"),
+					mockcond.Path("/rest/1/tags/"),
 					mockcond.HeaderContentURLFormEncoded(),
 					mockcond.Body("title=Sample+Tag"),
 				},
@@ -65,26 +65,10 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			},
 		},
 		{
-			Name:  "Update tag (form encoded)",
-			Input: common.WriteParams{ObjectName: "tags", RecordId: "4406100", RecordData: map[string]any{"title": "Sample Tag"}},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPUT(),
-					mockcond.Path("/rest/1/tags/4406100"),
-					mockcond.HeaderContentURLFormEncoded(),
-					mockcond.Body("title=Sample+Tag"),
-				},
-				Then: mockserver.Response(http.StatusOK, respTag),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
-			Expected: &common.WriteResult{
-				Success:  true,
-				RecordId: "4406100",
-				Data: map[string]any{
-					"title": "Sample Tag",
-				},
-			},
+			Name:         "Update tag is not supported",
+			Input:        common.WriteParams{ObjectName: "tags", RecordId: "4406100", RecordData: map[string]any{"title": "Sample Tag"}},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
 			Name:  "Create contact (form encoded)",
@@ -195,11 +179,11 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Success:  true,
 				RecordId: "25381104",
 				Data: map[string]any{
-					"user_id":     "25381104",
-					"first_name":  "johnny5",
-					"username":    "gumby",
-					"date_added":  "2023-09-22 14:51:38",
-					"last_name":   "",
+					"user_id":       "25381104",
+					"first_name":    "johnny5",
+					"username":      "gumby",
+					"date_added":    "2023-09-22 14:51:38",
+					"last_name":     "",
 					"email_address": "gumby@example.com",
 				},
 			},
@@ -231,7 +215,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/rest/1/tags"),
+					mockcond.Path("/rest/1/tags/"),
 					mockcond.HeaderContentURLFormEncoded(),
 					mockcond.Body("title=Sample+Tag"),
 				},
@@ -240,8 +224,8 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrAccessToken},
 		},
 		{
-			Name:  "Unsupported write object returns not supported",
-			Input: common.WriteParams{ObjectName: "voicemails", RecordData: map[string]any{"name": "x"}},
+			Name:   "Unsupported write object returns not supported",
+			Input:  common.WriteParams{ObjectName: "voicemails", RecordData: map[string]any{"name": "x"}},
 			Server: mockserver.Dummy(),
 			ExpectedErrs: []error{
 				common.ErrOperationNotSupportedForObject,
@@ -259,4 +243,3 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		})
 	}
 }
-
