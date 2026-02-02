@@ -34,7 +34,6 @@ func supportedOperations() components.EndpointRegistryInput {
 		"folders",
 		"members",
 		"phonenumber",
-		"tags",
 	}
 
 	return components.EndpointRegistryInput{
