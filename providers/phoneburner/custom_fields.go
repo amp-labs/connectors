@@ -111,4 +111,3 @@ func phoneburnerCustomFieldValueType(typeName string) common.ValueType {
 		return common.ValueTypeOther
 	}
 }
-
