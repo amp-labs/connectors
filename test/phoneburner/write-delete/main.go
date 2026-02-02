@@ -17,66 +17,100 @@ import (
 )
 
 func main() {
-	// Handle Ctrl-C gracefully.
+	os.Exit(MainFn())
+}
+
+func MainFn() int {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
-	// Set up slog logging.
 	utils.SetupLogging()
 
 	conn := connTest.GetPhoneBurnerConnector(ctx)
 
 	ownerID, ownerFirstName, err := getOwner(ctx, conn)
 	if err != nil {
-		utils.Fail("Failed to read members (needed for owner_id)", "error", err)
+		slog.Error("Failed to read members (needed for owner_id)", "error", err)
+		return 1
 	}
 	slog.Info("Using owner/member", "user_id", ownerID, "first_name", ownerFirstName)
 
-	tagID, err := createTag(ctx, conn)
-	if err != nil {
-		utils.Fail("Failed to create tag", "error", err)
-	}
-	// Tag update appears to be disallowed on some accounts (Allow: OPTIONS, DELETE).
-	// Skip by default; enable explicitly when needed.
-	if os.Getenv("AMP_PB_TEST_TAG_UPDATE") == "1" {
-		if err := updateTag(ctx, conn, tagID); err != nil {
-			utils.Fail("Failed to update tag", "error", err, "tag_id", tagID)
+	var (
+		folderID      string
+		customFieldID string
+		contactID     string
+	)
+	defer func() {
+		if contactID != "" {
+			_ = cleanupDelete(ctx, conn, "contacts", contactID)
 		}
-	} else {
-		slog.Warn("Skipping tag update; set AMP_PB_TEST_TAG_UPDATE=1 to enable", "tag_id", tagID)
-	}
+		if customFieldID != "" {
+			_ = cleanupDelete(ctx, conn, "customfields", customFieldID)
+		}
+		if folderID != "" {
+			_ = cleanupDelete(ctx, conn, "folders", folderID)
+		}
+	}()
 
-	folderID, err := createFolder(ctx, conn)
+	// ------------------------------------------------------------
+	// Step 1: Folder create -> update -> delete
+	// ------------------------------------------------------------
+	slog.Info("=== Step 1: folders (create -> update -> delete) ===")
+	folderID, err = createFolder(ctx, conn)
 	if err != nil {
-		utils.Fail("Failed to create folder", "error", err)
+		slog.Error("Failed to create folder", "error", err)
+		return 1
 	}
 	if err := updateFolder(ctx, conn, folderID); err != nil {
-		utils.Fail("Failed to update folder", "error", err, "folder_id", folderID)
+		slog.Error("Failed to update folder", "error", err, "folder_id", folderID)
+		return 1
 	}
+	if err := deleteByID(ctx, conn, "folders", folderID); err != nil {
+		slog.Error("Failed to delete folder", "error", err, "folder_id", folderID)
+		return 1
+	}
+	folderID = ""
 
-	customFieldID, err := createCustomField(ctx, conn)
+	// ------------------------------------------------------------
+	// Step 2: Custom fields create -> update -> delete
+	// ------------------------------------------------------------
+	slog.Info("=== Step 2: customfields (create -> update -> delete) ===")
+	customFieldID, err = createCustomField(ctx, conn)
 	if err != nil {
-		utils.Fail("Failed to create custom field", "error", err)
+		slog.Error("Failed to create custom field", "error", err)
+		return 1
 	}
 	if err := updateCustomField(ctx, conn, customFieldID); err != nil {
-		utils.Fail("Failed to update custom field", "error", err, "custom_field_id", customFieldID)
+		slog.Error("Failed to update custom field", "error", err, "custom_field_id", customFieldID)
+		return 1
 	}
+	if err := deleteByID(ctx, conn, "customfields", customFieldID); err != nil {
+		slog.Error("Failed to delete custom field", "error", err, "custom_field_id", customFieldID)
+		return 1
+	}
+	customFieldID = ""
 
-	contactID, err := createContact(ctx, conn, ownerID)
+	// ------------------------------------------------------------
+	// Step 3: Contacts create -> update -> delete
+	// ------------------------------------------------------------
+	slog.Info("=== Step 3: contacts (create -> update -> delete) ===")
+	contactID, err = createContact(ctx, conn, ownerID)
 	if err != nil {
-		utils.Fail("Failed to create contact", "error", err)
+		slog.Error("Failed to create contact", "error", err)
+		return 1
 	}
 	if err := updateContact(ctx, conn, contactID); err != nil {
-		utils.Fail("Failed to update contact", "error", err, "contact_user_id", contactID)
+		slog.Error("Failed to update contact", "error", err, "contact_user_id", contactID)
+		return 1
 	}
-
-	// Members update can be sensitive. We only do a no-op update (same value)
-	// so we exercise PUT /rest/1/members/{user_id} without changing state.
-	if err := updateMemberNoop(ctx, conn, ownerID, ownerFirstName); err != nil {
-		utils.Fail("Failed to update member (no-op)", "error", err, "user_id", ownerID)
+	if err := deleteByID(ctx, conn, "contacts", contactID); err != nil {
+		slog.Error("Failed to delete contact", "error", err, "contact_user_id", contactID)
+		return 1
 	}
+	contactID = ""
 
-	slog.Info("Write integration test completed successfully")
+	slog.Info("PhoneBurner write-delete integration test completed successfully")
+	return 0
 }
 
 func getOwner(ctx context.Context, conn *phoneburner.Connector) (userID string, firstName string, err error) {
@@ -96,67 +130,25 @@ func getOwner(ctx context.Context, conn *phoneburner.Connector) (userID string, 
 	if id == "" {
 		return "", "", fmt.Errorf("members response missing user_id")
 	}
-
 	fn, _ := res.Data[0].Raw["first_name"].(string)
 	return id, fn, nil
 }
 
-func createTag(ctx context.Context, conn *phoneburner.Connector) (string, error) {
-	title := fmt.Sprintf("amp-write-test-tag-%s", gofakeit.UUID())
-	slog.Info("Creating tag", "title", title)
-
-	res, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: "tags",
-		RecordData: map[string]any{
-			"title": title,
-		},
-	})
-	if err != nil {
-		return "", err
-	}
-	utils.DumpJSON(res, os.Stdout)
-
-	if res.RecordId == "" {
-		return "", fmt.Errorf("tag create returned empty RecordId")
-	}
-	return res.RecordId, nil
-}
-
-func updateTag(ctx context.Context, conn *phoneburner.Connector, tagID string) error {
-	title := fmt.Sprintf("amp-write-test-tag-updated-%s", gofakeit.UUID())
-	slog.Info("Updating tag", "tag_id", tagID, "title", title)
-
-	res, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: "tags",
-		RecordId:   tagID,
-		RecordData: map[string]any{
-			"title": title,
-		},
-	})
-	if err != nil {
-		return err
-	}
-	utils.DumpJSON(res, os.Stdout)
-	return nil
-}
-
 func createFolder(ctx context.Context, conn *phoneburner.Connector) (string, error) {
-	name := fmt.Sprintf("Amp Write Test Folder %s", gofakeit.Word())
+	name := fmt.Sprintf("Amp WD Folder %s", gofakeit.Word())
 	slog.Info("Creating folder", "name", name)
 
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "folders",
 		RecordData: map[string]any{
-			// PhoneBurner expects JSON body for folders.
 			"name":        name,
-			"description": "Created by Ampersand integration test",
+			"description": "Created by Ampersand write-delete integration test",
 		},
 	})
 	if err != nil {
 		return "", err
 	}
 	utils.DumpJSON(res, os.Stdout)
-
 	if res.RecordId == "" {
 		return "", fmt.Errorf("folder create returned empty RecordId")
 	}
@@ -164,7 +156,7 @@ func createFolder(ctx context.Context, conn *phoneburner.Connector) (string, err
 }
 
 func updateFolder(ctx context.Context, conn *phoneburner.Connector, folderID string) error {
-	name := fmt.Sprintf("Amp Write Test Folder Updated %s", gofakeit.Word())
+	name := fmt.Sprintf("Amp WD Folder Updated %s", gofakeit.Word())
 	slog.Info("Updating folder", "folder_id", folderID, "name", name)
 
 	res, err := conn.Write(ctx, common.WriteParams{
@@ -172,7 +164,7 @@ func updateFolder(ctx context.Context, conn *phoneburner.Connector, folderID str
 		RecordId:   folderID,
 		RecordData: map[string]any{
 			"name":        name,
-			"description": "Updated by Ampersand integration test",
+			"description": "Updated by Ampersand write-delete integration test",
 		},
 	})
 	if err != nil {
@@ -183,22 +175,20 @@ func updateFolder(ctx context.Context, conn *phoneburner.Connector, folderID str
 }
 
 func createCustomField(ctx context.Context, conn *phoneburner.Connector) (string, error) {
-	displayName := fmt.Sprintf("Amp Write Test Field %s", gofakeit.Word())
+	displayName := fmt.Sprintf("Amp WD Field %s", gofakeit.Word())
 	slog.Info("Creating custom field", "display_name", displayName)
 
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "customfields",
 		RecordData: map[string]any{
-			"display_name":  displayName,
-			"type":          1, // Text field
-			"display_order": 0,
+			"display_name": displayName,
+			"type":         1,
 		},
 	})
 	if err != nil {
 		return "", err
 	}
 	utils.DumpJSON(res, os.Stdout)
-
 	if res.RecordId == "" {
 		return "", fmt.Errorf("custom field create returned empty RecordId")
 	}
@@ -206,16 +196,14 @@ func createCustomField(ctx context.Context, conn *phoneburner.Connector) (string
 }
 
 func updateCustomField(ctx context.Context, conn *phoneburner.Connector, customFieldID string) error {
-	displayName := fmt.Sprintf("Amp Write Test Field Updated %s", gofakeit.Word())
+	displayName := fmt.Sprintf("Amp WD Field Updated %s", gofakeit.Word())
 	slog.Info("Updating custom field", "custom_field_id", customFieldID, "display_name", displayName)
 
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "customfields",
 		RecordId:   customFieldID,
 		RecordData: map[string]any{
-			"display_name":  displayName,
-			"type":          1,
-			"display_order": 0,
+			"display_name": displayName,
 		},
 	})
 	if err != nil {
@@ -228,30 +216,27 @@ func updateCustomField(ctx context.Context, conn *phoneburner.Connector, customF
 func createContact(ctx context.Context, conn *phoneburner.Connector, ownerID string) (string, error) {
 	firstName := gofakeit.FirstName()
 	lastName := gofakeit.LastName()
-	email := fmt.Sprintf("amp-write-test-%s@example.com", gofakeit.UUID())
+	email := fmt.Sprintf("amp-wd-%s@example.com", gofakeit.UUID())
 	phone := gofakeit.Numerify("602555####")
 
 	slog.Info("Creating contact", "owner_id", ownerID, "email", email)
-
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "contacts",
 		RecordData: map[string]any{
-			// PhoneBurner expects form body for contacts.
 			"owner_id":    ownerID,
 			"email":       email,
 			"first_name":  firstName,
 			"last_name":   lastName,
 			"phone":       phone,
 			"phone_type":  1,
-			"phone_label": "Amp test",
-			"notes":       "Created by Ampersand integration test",
+			"phone_label": "Amp wd test",
+			"notes":       "Created by Ampersand write-delete integration test",
 		},
 	})
 	if err != nil {
 		return "", err
 	}
 	utils.DumpJSON(res, os.Stdout)
-
 	if res.RecordId == "" {
 		return "", fmt.Errorf("contact create returned empty RecordId")
 	}
@@ -267,7 +252,6 @@ func updateContact(ctx context.Context, conn *phoneburner.Connector, contactID s
 		RecordId:   contactID,
 		RecordData: map[string]any{
 			"first_name": firstName,
-			"notes":      "Updated by Ampersand integration test",
 		},
 	})
 	if err != nil {
@@ -277,23 +261,29 @@ func updateContact(ctx context.Context, conn *phoneburner.Connector, contactID s
 	return nil
 }
 
-func updateMemberNoop(ctx context.Context, conn *phoneburner.Connector, userID string, firstName string) error {
-	if firstName == "" {
-		// If the API doesn't return first_name (sometimes empty), pick a conservative no-op.
-		firstName = " "
-	}
-	slog.Info("Updating member (no-op)", "user_id", userID)
-
-	res, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: "members",
-		RecordId:   userID,
-		RecordData: map[string]any{
-			"first_name": firstName,
-		},
+func deleteByID(ctx context.Context, conn *phoneburner.Connector, objectName, recordID string) error {
+	slog.Info("Deleting record", "object", objectName, "id", recordID)
+	res, err := conn.Delete(ctx, common.DeleteParams{
+		ObjectName: objectName,
+		RecordId:   recordID,
 	})
 	if err != nil {
 		return err
 	}
 	utils.DumpJSON(res, os.Stdout)
+	if !res.Success {
+		return fmt.Errorf("delete reported Success=false")
+	}
+	return nil
+}
+
+func cleanupDelete(ctx context.Context, conn *phoneburner.Connector, objectName, recordID string) error {
+	if recordID == "" {
+		return nil
+	}
+	if err := deleteByID(ctx, conn, objectName, recordID); err != nil {
+		slog.Warn("Cleanup delete failed", "object", objectName, "id", recordID, "error", err)
+		return err
+	}
 	return nil
 }
