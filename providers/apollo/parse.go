@@ -90,41 +90,30 @@ func (c *Connector) customMarshaller(objectName string) common.MarshalFunc {
 		data := make([]common.ReadResultRow, len(records))
 
 		for idx, record := range records {
-			var customFields map[string]any
+			customFields := make(map[string]any)
 
 			if rawCustomFields, exists := record["typed_custom_fields"]; exists {
 				if cstmFlds, ok := rawCustomFields.(map[string]any); ok {
-					customFields = cstmFlds
-				} else {
-					customFields = make(map[string]any)
+					maps.Copy(customFields, cstmFlds)
 				}
-			} else {
-				// No custom fields present
-				customFields = make(map[string]any)
 			}
 
 			mergedRecord := make(map[string]any, len(record)+len(customFields))
 
 			maps.Copy(mergedRecord, record)
-
 			maps.Copy(mergedRecord, customFields)
 
-			// Attach labels back to the custom records fields
-			// Modify all record keys to lowercase
-			updatedRecords := make(map[string]any, len(record))
-
-			for key, value := range mergedRecord {
-				if customLabel, exists := c.customFields[objectName][key]; exists {
-					key = customLabel
-					updatedRecords[key] = value
-				} else {
-					updatedRecords[key] = value
+			if customFlds, exists := c.customFields[objectName]; exists {
+				for _, fds := range customFlds {
+					if val, exists := mergedRecord[fds.customMachineField]; exists {
+						mergedRecord[fds.fld] = val
+					}
 				}
 			}
 
 			data[idx] = common.ReadResultRow{
-				Fields: common.ExtractLowercaseFieldsFromRaw(fields, updatedRecords),
-				Raw:    updatedRecords,
+				Fields: common.ExtractLowercaseFieldsFromRaw(fields, mergedRecord),
+				Raw:    mergedRecord,
 			}
 		}
 

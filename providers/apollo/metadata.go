@@ -119,7 +119,7 @@ func (c *Connector) requestMetadata(ctx context.Context, objectNames []string,
 
 // retrieveFields fetches the ObjectMetadata using the fields API
 // https://docs.apollo.io/reference/get-a-list-of-fields this requires master API key.
-func (c *Connector) retrieveFields(ctx context.Context, objectName string, //nolint: cyclop
+func (c *Connector) retrieveFields(ctx context.Context, objectName string, //nolint: cyclop,funlen
 ) (*common.ObjectMetadata, error) {
 	var response *FieldsResponse
 
@@ -171,12 +171,22 @@ func (c *Connector) retrieveFields(ctx context.Context, objectName string, //nol
 				isEditable = true
 			}
 
-			objectMetadata.Fields[strings.TrimPrefix(fld.Id, fld.Modality+".")] = common.FieldMetadata{
-				DisplayName:  fld.Label,
-				ReadOnly:     &isEditable,
-				ProviderType: fld.Type,
-				IsCustom:     &isCustom,
-				ValueType:    common.InferValueTypeFromData(fld.Example),
+			if !isCustom {
+				objectMetadata.Fields[strings.TrimPrefix(fld.Id, fld.Modality+".")] = common.FieldMetadata{
+					DisplayName:  fld.Label,
+					ReadOnly:     &isEditable,
+					ProviderType: fld.Type,
+					IsCustom:     &isCustom,
+					ValueType:    common.InferValueTypeFromData(fld.Example),
+				}
+			} else {
+				objectMetadata.Fields[fld.Label] = common.FieldMetadata{
+					DisplayName:  fld.Label,
+					ReadOnly:     &isEditable,
+					ProviderType: fld.Type,
+					IsCustom:     &isCustom,
+					ValueType:    common.InferValueTypeFromData(fld.Example),
+				}
 			}
 		}
 	}
