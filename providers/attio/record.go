@@ -10,6 +10,8 @@ import (
 
 var _ connectors.BatchRecordReaderConnector = &Connector{}
 
+// GetRecordsByIds fetches records by their IDs for a given object type.
+// Ref: https://docs.attio.com/rest-api/endpoint-reference/records/list-records
 func (c *Connector) GetRecordsByIds( //nolint:revive
 	ctx context.Context,
 	objectName string,
@@ -47,7 +49,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	parsed, err := common.ParseResult(res,
 		common.ExtractRecordsFromPath("data"),
 		makeNextRecordsURL(url, config.ObjectName),
-		common.GetMarshaledData,
+		DataMarshall(res),
 		config.Fields,
 	)
 	if err != nil {
