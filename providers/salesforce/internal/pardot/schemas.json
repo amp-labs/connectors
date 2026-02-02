@@ -11,7 +11,7 @@
           "fields": {
             "cost": {
               "displayName": "cost",
-              "valueType": "other",
+              "valueType": "float",
               "providerType": "Float",
               "readOnly": true
             },
@@ -21,22 +21,10 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "createdById": {
               "displayName": "createdById",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "folder": {
-              "displayName": "folder",
-              "valueType": "other",
-              "providerType": "Folder",
               "readOnly": true
             },
             "folderId": {
@@ -63,12 +51,6 @@
               "providerType": "String",
               "readOnly": true
             },
-            "parentCampaign": {
-              "displayName": "parentCampaign",
-              "valueType": "other",
-              "providerType": "Campaign",
-              "readOnly": true
-            },
             "parentCampaignId": {
               "displayName": "parentCampaignId",
               "valueType": "int",
@@ -85,12 +67,6 @@
               "displayName": "updatedAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "updatedById": {
@@ -119,34 +95,16 @@
               "providerType": "String",
               "readOnly": true
             },
-            "campaign": {
-              "displayName": "campaign",
-              "valueType": "other",
-              "providerType": "Campaign",
-              "readOnly": true
-            },
             "createdAt": {
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
               "readOnly": true
             },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "createdById": {
               "displayName": "createdById",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "folder": {
-              "displayName": "folder",
-              "valueType": "other",
-              "providerType": "Folder",
               "readOnly": true
             },
             "id": {
@@ -173,22 +131,10 @@
               "providerType": "String",
               "readOnly": true
             },
-            "trackerDomain": {
-              "displayName": "trackerDomain",
-              "valueType": "other",
-              "providerType": "TrackerDomain",
-              "readOnly": true
-            },
             "updatedAt": {
               "displayName": "updatedAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "updatedById": {
@@ -228,12 +174,6 @@
               "valueType": "string",
               "providerType": "String",
               "readOnly": false
-            },
-            "dynamicContent": {
-              "displayName": "dynamicContent",
-              "valueType": "other",
-              "providerType": "Dynamic Content",
-              "readOnly": true
             },
             "dynamicContentId": {
               "displayName": "dynamicContentId",
@@ -339,22 +279,10 @@
               "providerType": "String",
               "readOnly": false
             },
-            "campaign": {
-              "displayName": "campaign",
-              "valueType": "other",
-              "providerType": "Campaign",
-              "readOnly": true
-            },
             "createdAt": {
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "createdById": {
@@ -373,12 +301,6 @@
               "displayName": "embedUrl",
               "valueType": "string",
               "providerType": "String",
-              "readOnly": true
-            },
-            "folder": {
-              "displayName": "folder",
-              "valueType": "other",
-              "providerType": "Folder",
               "readOnly": true
             },
             "folderId": {
@@ -425,12 +347,6 @@
                 }
               ]
             },
-            "trackerDomain": {
-              "displayName": "trackerDomain",
-              "valueType": "other",
-              "providerType": "Tracker Domain",
-              "readOnly": true
-            },
             "trackerDomainId": {
               "displayName": "trackerDomainId",
               "valueType": "int",
@@ -441,12 +357,6 @@
               "displayName": "updatedAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "updatedById": {
@@ -463,34 +373,16 @@
           "path": "email-templates",
           "responseKey": "values",
           "fields": {
-            "campaign": {
-              "displayName": "campaign",
-              "valueType": "other",
-              "providerType": "Campaign",
-              "readOnly": true
-            },
             "createdAt": {
               "displayName": "createdAt",
-              "valueType": "other",
+              "valueType": "datetime",
               "providerType": "Datetime",
-              "readOnly": true
-            },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "createdById": {
               "displayName": "createdById",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "folder": {
-              "displayName": "folder",
-              "valueType": "other",
-              "providerType": "Folder",
               "readOnly": true
             },
             "id": {
@@ -525,22 +417,10 @@
                 }
               ]
             },
-            "trackerDomain": {
-              "displayName": "trackerDomain",
-              "valueType": "other",
-              "providerType": "Tracker Domain",
-              "readOnly": true
-            },
             "updatedAt": {
               "displayName": "updatedAt",
-              "valueType": "other",
+              "valueType": "datetime",
               "providerType": "Datetime",
-              "readOnly": true
-            },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "updatedById": {
@@ -557,22 +437,10 @@
           "path": "emails",
           "responseKey": "values",
           "fields": {
-            "campaign": {
-              "displayName": "campaign",
-              "valueType": "other",
-              "providerType": "Campaign",
-              "readOnly": true
-            },
             "clientType": {
               "displayName": "clientType",
               "valueType": "string",
               "providerType": "String",
-              "readOnly": true
-            },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "createdById": {
@@ -585,18 +453,6 @@
               "displayName": "id",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "list": {
-              "displayName": "list",
-              "valueType": "other",
-              "providerType": "List",
-              "readOnly": true
-            },
-            "listEmail": {
-              "displayName": "listEmail",
-              "valueType": "other",
-              "providerType": "List Email",
               "readOnly": true
             },
             "listEmailId": {
@@ -651,22 +507,10 @@
           "path": "engagement-studio-programs",
           "responseKey": "values",
           "fields": {
-            "businessHours": {
-              "displayName": "businessHours",
-              "valueType": "other",
-              "providerType": "Business Hours Representation",
-              "readOnly": true
-            },
             "createdAt": {
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "createdById": {
@@ -693,12 +537,6 @@
               "providerType": "Boolean",
               "readOnly": true
             },
-            "prospectsMultipleEntry": {
-              "displayName": "prospectsMultipleEntry",
-              "valueType": "other",
-              "providerType": "Prospects Multiple Entry Representation",
-              "readOnly": true
-            },
             "recipientListIds": {
               "displayName": "recipientListIds",
               "valueType": "other",
@@ -709,18 +547,6 @@
               "displayName": "salesforceId",
               "valueType": "string",
               "providerType": "String",
-              "readOnly": true
-            },
-            "schedule": {
-              "displayName": "schedule",
-              "valueType": "other",
-              "providerType": "Schedule Representation",
-              "readOnly": true
-            },
-            "scheduleCreatedBy": {
-              "displayName": "scheduleCreatedBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "scheduleCreatedById": {
@@ -769,12 +595,6 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "updatedById": {
               "displayName": "updatedById",
               "valueType": "int",
@@ -801,34 +621,16 @@
               "providerType": "String",
               "readOnly": true
             },
-            "campaign": {
-              "displayName": "campaign",
-              "valueType": "other",
-              "providerType": "Campaign",
-              "readOnly": true
-            },
             "createdAt": {
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
               "readOnly": true
             },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "createdById": {
               "displayName": "createdById",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "folder": {
-              "displayName": "folder",
-              "valueType": "other",
-              "providerType": "Folder",
               "readOnly": true
             },
             "id": {
@@ -843,12 +645,6 @@
               "providerType": "Boolean",
               "readOnly": true
             },
-            "salesforceCmsId": {
-              "displayName": "salesforceCmsId",
-              "valueType": "other",
-              "providerType": "List Email",
-              "readOnly": true
-            },
             "salesforceId": {
               "displayName": "salesforceId",
               "valueType": "string",
@@ -861,22 +657,10 @@
               "providerType": "Integer",
               "readOnly": true
             },
-            "trackerDomain": {
-              "displayName": "trackerDomain",
-              "valueType": "other",
-              "providerType": "TrackerDomain",
-              "readOnly": true
-            },
             "updatedAt": {
               "displayName": "updatedAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "updatedById": {
@@ -909,12 +693,6 @@
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "createdById": {
@@ -977,12 +755,6 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "updatedById": {
               "displayName": "updatedById",
               "valueType": "int",
@@ -1003,12 +775,6 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "createdById": {
               "displayName": "createdById",
               "valueType": "int",
@@ -1027,12 +793,6 @@
               "providerType": "String",
               "readOnly": true
             },
-            "parentFolder": {
-              "displayName": "parentFolder",
-              "valueType": "other",
-              "providerType": "Folder",
-              "readOnly": true
-            },
             "parentFolderId": {
               "displayName": "parentFolderId",
               "valueType": "int",
@@ -1049,12 +809,6 @@
               "displayName": "updatedAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "updatedById": {
@@ -1081,12 +835,6 @@
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "createdById": {
@@ -1131,12 +879,6 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "updatedById": {
               "displayName": "updatedById",
               "valueType": "int",
@@ -1157,22 +899,10 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "createdById": {
               "displayName": "createdById",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "formHandler": {
-              "displayName": "formHandler",
-              "valueType": "other",
-              "providerType": "Form Handler",
               "readOnly": true
             },
             "id": {
@@ -1189,22 +919,10 @@
           "path": "form-handlers",
           "responseKey": "values",
           "fields": {
-            "campaign": {
-              "displayName": "campaign",
-              "valueType": "other",
-              "providerType": "Campaign",
-              "readOnly": true
-            },
             "createdAt": {
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "createdById": {
@@ -1217,12 +935,6 @@
               "displayName": "embedCode",
               "valueType": "string",
               "providerType": "String",
-              "readOnly": true
-            },
-            "folder": {
-              "displayName": "folder",
-              "valueType": "other",
-              "providerType": "Folder",
               "readOnly": true
             },
             "id": {
@@ -1243,18 +955,6 @@
               "providerType": "String",
               "readOnly": true
             },
-            "trackerDomain": {
-              "displayName": "trackerDomain",
-              "valueType": "other",
-              "providerType": "Tracker Domain",
-              "readOnly": true
-            },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "updatedById": {
               "displayName": "updatedById",
               "valueType": "int",
@@ -1269,22 +969,10 @@
           "path": "forms",
           "responseKey": "values",
           "fields": {
-            "campaign": {
-              "displayName": "campaign",
-              "valueType": "other",
-              "providerType": "Campaign",
-              "readOnly": true
-            },
             "createdAt": {
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "createdById": {
@@ -1297,12 +985,6 @@
               "displayName": "embedCode",
               "valueType": "string",
               "providerType": "String",
-              "readOnly": true
-            },
-            "folder": {
-              "displayName": "folder",
-              "valueType": "other",
-              "providerType": "Folder",
               "readOnly": true
             },
             "id": {
@@ -1323,12 +1005,6 @@
               "providerType": "Boolean",
               "readOnly": true
             },
-            "layoutTemplate": {
-              "displayName": "layoutTemplate",
-              "valueType": "other",
-              "providerType": "LayoutTemplate",
-              "readOnly": true
-            },
             "salesforceCmsId": {
               "displayName": "salesforceCmsId",
               "valueType": "string",
@@ -1341,22 +1017,10 @@
               "providerType": "String",
               "readOnly": true
             },
-            "trackerDomain": {
-              "displayName": "trackerDomain",
-              "valueType": "other",
-              "providerType": "TrackerDomain",
-              "readOnly": true
-            },
             "updatedAt": {
               "displayName": "updatedAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "updatedById": {
@@ -1385,40 +1049,16 @@
               "providerType": "String",
               "readOnly": true
             },
-            "campaign": {
-              "displayName": "campaign",
-              "valueType": "other",
-              "providerType": "Campaign",
-              "readOnly": true
-            },
             "createdAt": {
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
               "readOnly": true
             },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "createdById": {
               "displayName": "createdById",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "folder": {
-              "displayName": "folder",
-              "valueType": "other",
-              "providerType": "Folder",
-              "readOnly": true
-            },
-            "form": {
-              "displayName": "form",
-              "valueType": "other",
-              "providerType": "Form",
               "readOnly": true
             },
             "id": {
@@ -1457,12 +1097,6 @@
               "providerType": "Integer",
               "readOnly": true
             },
-            "layoutTemplate": {
-              "displayName": "layoutTemplate",
-              "valueType": "other",
-              "providerType": "Layout Template",
-              "readOnly": true
-            },
             "layoutType": {
               "displayName": "layoutType",
               "valueType": "singleSelect",
@@ -1499,22 +1133,10 @@
               "providerType": "String",
               "readOnly": true
             },
-            "trackerDomain": {
-              "displayName": "trackerDomain",
-              "valueType": "other",
-              "providerType": "TrackerDomain",
-              "readOnly": true
-            },
             "updatedAt": {
               "displayName": "updatedAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "updatedById": {
@@ -1549,22 +1171,10 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "createdById": {
               "displayName": "createdById",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "folder": {
-              "displayName": "folder",
-              "valueType": "other",
-              "providerType": "Folder",
               "readOnly": true
             },
             "id": {
@@ -1589,12 +1199,6 @@
               "displayName": "updatedAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "updatedById": {
@@ -1623,34 +1227,16 @@
               "providerType": "Integer",
               "readOnly": true
             },
-            "nextStage": {
-              "displayName": "nextStage",
-              "valueType": "other",
-              "providerType": "Lifecycle Stage",
-              "readOnly": true
-            },
             "nextStageId": {
               "displayName": "nextStageId",
               "valueType": "int",
               "providerType": "Integer",
               "readOnly": true
             },
-            "previousStage": {
-              "displayName": "previousStage",
-              "valueType": "other",
-              "providerType": "Lifecycle Stage",
-              "readOnly": true
-            },
             "previousStageId": {
               "displayName": "previousStageId",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "prospect": {
-              "displayName": "prospect",
-              "valueType": "other",
-              "providerType": "Prospect",
               "readOnly": true
             },
             "prospectId": {
@@ -1739,12 +1325,6 @@
           "path": "list-emails",
           "responseKey": "values",
           "fields": {
-            "campaign": {
-              "displayName": "campaign",
-              "valueType": "other",
-              "providerType": "Campaign",
-              "readOnly": true
-            },
             "clientType": {
               "displayName": "clientType",
               "valueType": "string",
@@ -1757,22 +1337,10 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "createdById": {
               "displayName": "createdById",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "folder": {
-              "displayName": "folder",
-              "valueType": "other",
-              "providerType": "Folder",
               "readOnly": true
             },
             "id": {
@@ -1805,28 +1373,10 @@
               "providerType": "Boolean",
               "readOnly": true
             },
-            "recipientLists": {
-              "displayName": "recipientLists",
-              "valueType": "other",
-              "providerType": "Recipient Lists[]",
-              "readOnly": true
-            },
             "sentAt": {
               "displayName": "sentAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "suppressionLists": {
-              "displayName": "suppressionLists",
-              "valueType": "other",
-              "providerType": "Suppression Lists[]",
-              "readOnly": true
-            },
-            "trackerDomain": {
-              "displayName": "trackerDomain",
-              "valueType": "other",
-              "providerType": "Tracker Domain",
               "readOnly": true
             },
             "type": {
@@ -1855,12 +1405,6 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "updatedById": {
               "displayName": "updatedById",
               "valueType": "int",
@@ -1881,12 +1425,6 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "createdById": {
               "displayName": "createdById",
               "valueType": "int",
@@ -1905,28 +1443,10 @@
               "providerType": "Boolean",
               "readOnly": true
             },
-            "list": {
-              "displayName": "list",
-              "valueType": "other",
-              "providerType": "List",
-              "readOnly": true
-            },
-            "prospect": {
-              "displayName": "prospect",
-              "valueType": "other",
-              "providerType": "Prospect",
-              "readOnly": true
-            },
             "updatedAt": {
               "displayName": "updatedAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "updatedById": {
@@ -1943,34 +1463,16 @@
           "path": "lists",
           "responseKey": "values",
           "fields": {
-            "campaign": {
-              "displayName": "campaign",
-              "valueType": "other",
-              "providerType": "Campaign",
-              "readOnly": true
-            },
             "createdAt": {
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
               "readOnly": true
             },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "createdById": {
               "displayName": "createdById",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "folder": {
-              "displayName": "folder",
-              "valueType": "other",
-              "providerType": "Folder",
               "readOnly": true
             },
             "id": {
@@ -1997,12 +1499,6 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "updatedById": {
               "displayName": "updatedById",
               "valueType": "int",
@@ -2017,12 +1513,6 @@
           "path": "opportunities",
           "responseKey": "values",
           "fields": {
-            "campaign": {
-              "displayName": "campaign",
-              "valueType": "other",
-              "providerType": "Campaign",
-              "readOnly": true
-            },
             "campaignId": {
               "displayName": "campaignId",
               "valueType": "int",
@@ -2039,12 +1529,6 @@
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "createdById": {
@@ -2101,12 +1585,6 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "updatedById": {
               "displayName": "updatedById",
               "valueType": "int",
@@ -2115,7 +1593,7 @@
             },
             "value": {
               "displayName": "value",
-              "valueType": "other",
+              "valueType": "float",
               "providerType": "Float",
               "readOnly": true
             }
@@ -2131,12 +1609,6 @@
               "displayName": "annualRevenue",
               "valueType": "string",
               "providerType": "String",
-              "readOnly": true
-            },
-            "assignedTo": {
-              "displayName": "assignedTo",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "assignedToId": {
@@ -2185,12 +1657,6 @@
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "createdById": {
@@ -2337,12 +1803,6 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "updatedById": {
               "displayName": "updatedById",
               "valueType": "int",
@@ -2363,22 +1823,10 @@
           "path": "prospects",
           "responseKey": "values",
           "fields": {
-            "assignedTo": {
-              "displayName": "assignedTo",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "assignedToId": {
               "displayName": "assignedToId",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "campaign": {
-              "displayName": "campaign",
-              "valueType": "other",
-              "providerType": "Campaign",
               "readOnly": true
             },
             "campaignParameter": {
@@ -2415,12 +1863,6 @@
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "createdById": {
@@ -2525,12 +1967,6 @@
               "providerType": "String",
               "readOnly": true
             },
-            "prospectAccount": {
-              "displayName": "prospectAccount",
-              "valueType": "other",
-              "providerType": "Prospect Account",
-              "readOnly": true
-            },
             "recentInteraction": {
               "displayName": "recentInteraction",
               "valueType": "string",
@@ -2591,12 +2027,6 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "updatedById": {
               "displayName": "updatedById",
               "valueType": "int",
@@ -2615,12 +2045,6 @@
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "createdById": {
@@ -2715,12 +2139,6 @@
                 }
               ]
             },
-            "tag": {
-              "displayName": "tag",
-              "valueType": "other",
-              "providerType": "Tag",
-              "readOnly": true
-            },
             "tagId": {
               "displayName": "tagId",
               "valueType": "int",
@@ -2739,12 +2157,6 @@
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "createdById": {
@@ -2771,12 +2183,6 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "updatedById": {
               "displayName": "updatedById",
               "valueType": "int",
@@ -2797,22 +2203,10 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "createdById": {
               "displayName": "createdById",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "defaultCampaign": {
-              "displayName": "defaultCampaign",
-              "valueType": "other",
-              "providerType": "Campaign",
               "readOnly": true
             },
             "defaultCampaignId": {
@@ -2851,12 +2245,6 @@
               "providerType": "Boolean",
               "readOnly": true
             },
-            "sslRequestedBy": {
-              "displayName": "sslRequestedBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "sslRequestedById": {
               "displayName": "sslRequestedById",
               "valueType": "int",
@@ -2885,12 +2273,6 @@
               "displayName": "updatedAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "updatedById": {
@@ -2929,12 +2311,6 @@
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "createdBy": {
-              "displayName": "createdBy",
-              "valueType": "other",
-              "providerType": "User",
               "readOnly": true
             },
             "createdById": {
@@ -3017,12 +2393,6 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "updatedBy": {
-              "displayName": "updatedBy",
-              "valueType": "other",
-              "providerType": "User",
-              "readOnly": true
-            },
             "updatedById": {
               "displayName": "updatedById",
               "valueType": "int",
@@ -3043,12 +2413,6 @@
           "path": "visitor-activities",
           "responseKey": "values",
           "fields": {
-            "campaign": {
-              "displayName": "campaign",
-              "valueType": "other",
-              "providerType": "Campaign",
-              "readOnly": true
-            },
             "campaignId": {
               "displayName": "campaignId",
               "valueType": "int",
@@ -3059,12 +2423,6 @@
               "displayName": "createdAt",
               "valueType": "datetime",
               "providerType": "DateTime",
-              "readOnly": true
-            },
-            "customRedirect": {
-              "displayName": "customRedirect",
-              "valueType": "other",
-              "providerType": "Custom Redirect",
               "readOnly": true
             },
             "customRedirectId": {
@@ -3079,22 +2437,10 @@
               "providerType": "String",
               "readOnly": true
             },
-            "email": {
-              "displayName": "email",
-              "valueType": "other",
-              "providerType": "Email",
-              "readOnly": true
-            },
             "emailId": {
               "displayName": "emailId",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "emailTemplate": {
-              "displayName": "emailTemplate",
-              "valueType": "other",
-              "providerType": "Email Template",
               "readOnly": true
             },
             "emailTemplateId": {
@@ -3103,28 +2449,10 @@
               "providerType": "Integer",
               "readOnly": true
             },
-            "file": {
-              "displayName": "file",
-              "valueType": "other",
-              "providerType": "File",
-              "readOnly": true
-            },
             "fileId": {
               "displayName": "fileId",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "form": {
-              "displayName": "form",
-              "valueType": "other",
-              "providerType": "Form",
-              "readOnly": true
-            },
-            "formHandler": {
-              "displayName": "formHandler",
-              "valueType": "other",
-              "providerType": "Form Handler",
               "readOnly": true
             },
             "formHandlerId": {
@@ -3145,22 +2473,10 @@
               "providerType": "Integer",
               "readOnly": true
             },
-            "landingPage": {
-              "displayName": "landingPage",
-              "valueType": "other",
-              "providerType": "Landing Page",
-              "readOnly": true
-            },
             "landingPageId": {
               "displayName": "landingPageId",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "listEmail": {
-              "displayName": "listEmail",
-              "valueType": "other",
-              "providerType": "List Email",
               "readOnly": true
             },
             "listEmailId": {
@@ -3175,12 +2491,6 @@
               "providerType": "Integer",
               "readOnly": true
             },
-            "opportunity": {
-              "displayName": "opportunity",
-              "valueType": "other",
-              "providerType": "Opportunity",
-              "readOnly": true
-            },
             "opportunityId": {
               "displayName": "opportunityId",
               "valueType": "int",
@@ -3191,12 +2501,6 @@
               "displayName": "paidSearchAdId",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "prospect": {
-              "displayName": "prospect",
-              "valueType": "other",
-              "providerType": "Prospect",
               "readOnly": true
             },
             "prospectId": {
@@ -3229,34 +2533,16 @@
               "providerType": "DateTime",
               "readOnly": true
             },
-            "visit": {
-              "displayName": "visit",
-              "valueType": "other",
-              "providerType": "Visit",
-              "readOnly": true
-            },
             "visitId": {
               "displayName": "visitId",
               "valueType": "int",
               "providerType": "Integer",
               "readOnly": true
             },
-            "visitor": {
-              "displayName": "visitor",
-              "valueType": "other",
-              "providerType": "Visitor",
-              "readOnly": true
-            },
             "visitorId": {
               "displayName": "visitorId",
               "valueType": "int",
               "providerType": "Integer",
-              "readOnly": true
-            },
-            "visitorPageView": {
-              "displayName": "visitorPageView",
-              "valueType": "other",
-              "providerType": "Visitor Page View",
               "readOnly": true
             },
             "visitorPageViewId": {
@@ -3273,12 +2559,6 @@
           "path": "visitor-page-views",
           "responseKey": "values",
           "fields": {
-            "campaign": {
-              "displayName": "campaign",
-              "valueType": "other",
-              "providerType": "Campaign",
-              "readOnly": true
-            },
             "campaignId": {
               "displayName": "campaignId",
               "valueType": "int",
@@ -3321,12 +2601,6 @@
               "providerType": "String",
               "readOnly": true
             },
-            "visit": {
-              "displayName": "visit",
-              "valueType": "other",
-              "providerType": "Visit",
-              "readOnly": true
-            },
             "visitId": {
               "displayName": "visitId",
               "valueType": "int",
@@ -3347,12 +2621,6 @@
           "path": "visitors",
           "responseKey": "values",
           "fields": {
-            "campaignId": {
-              "displayName": "campaignId",
-              "valueType": "other",
-              "providerType": "Campaign",
-              "readOnly": true
-            },
             "campaignParameter": {
               "displayName": "campaignParameter",
               "valueType": "string",
@@ -3413,12 +2681,6 @@
               "providerType": "Integer",
               "readOnly": true
             },
-            "prospectId": {
-              "displayName": "prospectId",
-              "valueType": "other",
-              "providerType": "Prospect",
-              "readOnly": true
-            },
             "sourceParameter": {
               "displayName": "sourceParameter",
               "valueType": "string",
@@ -3433,7 +2695,7 @@
             },
             "updatedAt": {
               "displayName": "updatedAt",
-              "valueType": "other",
+              "valueType": "datetime",
               "providerType": "Datetime",
               "readOnly": true
             }
@@ -3491,12 +2753,6 @@
               "displayName": "mediumParameter",
               "valueType": "string",
               "providerType": "String",
-              "readOnly": true
-            },
-            "prospect": {
-              "displayName": "prospect",
-              "valueType": "other",
-              "providerType": "Prospect",
               "readOnly": true
             },
             "prospectId": {

@@ -113,7 +113,9 @@ func extractFieldsFromTable(doc *goquery.Document,
 				return
 			}
 
-			fields = append(fields, createField(fieldName, fieldType, isReadOnly, fieldValues))
+			if f := createField(objectName, fieldName, fieldType, isReadOnly, fieldValues); f != nil {
+				fields = append(fields, f)
+			}
 		})
 
 	return fields
@@ -156,15 +158,22 @@ func extractURL(doc *goquery.Document) string {
 	return queryURL
 }
 
-func createField(fieldName, fieldType string,
+func createField(objectName, fieldName, fieldType string,
 	isReadOnly bool, values staticschema.FieldValues,
 ) staticschema.FieldMetadataMapV2 {
 	fieldType = strings.Trim(fieldType, " ")
 
+	fieldVal, ok := getFieldValueType(fieldType)
+	if !ok {
+		fmt.Printf("Ignoring object field. Object %v, field %v, type %v.\n", objectName, fieldName, fieldType)
+
+		return nil
+	}
+
 	return staticschema.FieldMetadataMapV2{
 		fieldName: staticschema.FieldMetadata{
 			DisplayName:  fieldName,
-			ValueType:    getFieldValueType(fieldType),
+			ValueType:    fieldVal,
 			ProviderType: fieldType,
 			ReadOnly:     goutils.Pointer(isReadOnly),
 			Values:       values,
@@ -204,21 +213,25 @@ func getEnums(objectName, fieldName, fieldType string, description *goquery.Sele
 }
 
 // https://developer.salesforce.com/docs/marketing/pardot/guide/version5overview.html#data-types
-func getFieldValueType(fieldType string) common.ValueType {
-	switch fieldType {
-	case "String":
-		return common.ValueTypeString
-	case "Integer":
-		return common.ValueTypeInt
-	case "Boolean":
-		return common.ValueTypeBoolean
-	case "DateTime":
-		return common.ValueTypeDateTime
-	case "Enum":
-		return common.ValueTypeSingleSelect
+func getFieldValueType(fieldType string) (common.ValueType, bool) {
+	switch strings.ToLower(fieldType) {
+	case "string":
+		return common.ValueTypeString, true
+	case "float":
+		return common.ValueTypeFloat, true
+	case "integer":
+		return common.ValueTypeInt, true
+	case "boolean":
+		return common.ValueTypeBoolean, true
+	case "datetime":
+		return common.ValueTypeDateTime, true
+	case "enum":
+		return common.ValueTypeSingleSelect, true
+	case "array":
+		return common.ValueTypeOther, true
 	default:
 		// object, array
-		return common.ValueTypeOther
+		return common.ValueTypeOther, false
 	}
 }
 
