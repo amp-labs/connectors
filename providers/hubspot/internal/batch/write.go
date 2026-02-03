@@ -20,6 +20,21 @@ import (
 // HubSpot may return 400 (Bad Request) or 409 (Conflict) when record-level
 // validation fails — these are treated as soft issues (non-fatal responses)
 // and are parsed into a structured BatchWriteResult rather than raised as errors.
+//
+// # AllOrNone Policy
+//
+// For batch creates, the allOrNone policy is controlled via objectWriteTraceId:
+//   - When allOrNone is false (default), objectWriteTraceId is included to enable partial success.
+//   - When allOrNone is true, objectWriteTraceId is omitted, causing HubSpot to fail the entire batch
+//     if any record fails.
+//
+// Reference: https://developers.hubspot.com/docs/api-reference/error-handling
+//
+// For batch updates, HubSpot always allows partial success and does not support allOrNone behavior.
+// The API returns 200 for full success or 207 Multi-Status when some records fail.
+// This is a HubSpot API limitation.
+//
+// Reference: https://developers.hubspot.com/changelog/simplifying-batch-update-response-codes-for-crm-v3-apis
 func (a *Adapter) BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error) {
 	if err := params.ValidateParams(); err != nil {
 		return nil, err
@@ -338,6 +353,11 @@ func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilde
 func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 	payloadItems := make([]PayloadItem, len(params.Batch))
 
+	// For creates, include objectWriteTraceId only when allOrNone is false (default).
+	// This enables partial success - HubSpot returns trace IDs in error responses for per-record matching.
+	// When allOrNone is true, omit objectWriteTraceId so HubSpot fails the entire batch if any record fails.
+	includeTraceId := params.IsCreate() && !params.GetAllOrNone()
+
 	for index, batchItem := range params.Batch {
 		record, err := batchItem.GetRecord()
 		if err != nil {
@@ -349,9 +369,7 @@ func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 			return nil, err
 		}
 
-		// For creates, add objectWriteTraceId to enable per-record error matching
-		// in partial success scenarios. HubSpot returns this trace ID in error responses.
-		if params.IsCreate() {
+		if includeTraceId {
 			item.ObjectWriteTraceId = formatTraceId(index)
 		}
 
