@@ -20,7 +20,7 @@ func TestListObjectMetadata(t *testing.T) {
 
 	got, err := conn.ListObjectMetadata(
 		t.Context(),
-		[]string{"contacts", "tags", "folders", "members", "voicemails", "phonenumber", "dialsession", "customfields"},
+		[]string{"contacts", "folders", "members", "voicemails", "phonenumber", "dialsession", "customfields"},
 	)
 	if err != nil {
 		t.Fatalf("ListObjectMetadata returned error: %v", err)
@@ -38,21 +38,6 @@ func TestListObjectMetadata(t *testing.T) {
 					},
 					"first_name": {
 						DisplayName:  "First Name",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-				},
-			},
-			"tags": {
-				DisplayName: "Tags",
-				Fields: map[string]common.FieldMetadata{
-					"id": {
-						DisplayName:  "Id",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-					"title": {
-						DisplayName:  "Title",
 						ValueType:    "string",
 						ProviderType: "string",
 					},

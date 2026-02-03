@@ -86,23 +86,6 @@
             }
           }
         },
-        "tags": {
-          "displayName": "Tags",
-          "path": "/rest/1/tags",
-          "responseKey": "tags",
-          "fields": {
-            "id": {
-              "displayName": "Id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "title": {
-              "displayName": "Title",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "folders": {
           "displayName": "Folders",
           "path": "/rest/1/folders",
