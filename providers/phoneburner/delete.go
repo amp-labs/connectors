@@ -9,6 +9,9 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+// API reference:
+// https://www.phoneburner.com/developer/route_list
+
 func buildDeleteRequest(ctx context.Context, baseURL string, params common.DeleteParams) (*http.Request, error) {
 	// All supported deletes are path-ID deletes:
 	//   DELETE /rest/1/{object}/{id}

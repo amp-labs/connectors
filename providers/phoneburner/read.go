@@ -17,6 +17,8 @@ import (
 )
 
 const (
+	// API reference:
+	// https://www.phoneburner.com/developer/route_list
 	restPrefix = "rest"
 	restVer    = "1"
 )

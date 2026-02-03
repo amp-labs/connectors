@@ -14,6 +14,9 @@ import (
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
+// API reference:
+// https://www.phoneburner.com/developer/route_list
+
 func buildWriteRequest(ctx context.Context, baseURL string, params common.WriteParams) (*http.Request, error) {
 	url, method, err := buildWriteURL(baseURL, params)
 	if err != nil {
