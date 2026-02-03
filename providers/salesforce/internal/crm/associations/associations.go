@@ -1,64 +1,10 @@
-package salesforce
+package associations
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/spyzhov/ajson"
 )
 
-// getRecords returns the records from the response.
-func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	records, err := jsonquery.New(node).ArrayRequired("records")
-	if err != nil {
-		return nil, err
-	}
-
-	return jsonquery.Convertor.ArrayToMap(records)
-}
-
-// getNextRecordsURL returns the URL for the next page of results.
-func getNextRecordsURL(node *ajson.Node) (string, error) {
-	return jsonquery.New(node).StrWithDefault("nextRecordsUrl", "")
-}
-
-// getSalesforceDataMarshaller returns a marshaller that fills Associations in ReadResultRow for Salesforce.
-func getSalesforceDataMarshaller(
-	config common.ReadParams,
-) func(
-	[]map[string]any,
-	[]string,
-) ([]common.ReadResultRow, error) {
-	// This is a common.MarshalFunc.
-	return func(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
-		data := make([]common.ReadResultRow, len(records))
-
-		// Go through each record, attach associations (if any) to the record and
-		// convert the record to a common.ReadResultRow.
-		for idx, record := range records {
-			recordMap := common.ToStringMap(record)
-
-			// Extract the ID of the record.
-			id, _ := recordMap.GetCaseInsensitive("Id")
-			idStr, _ := id.(string)
-
-			data[idx] = common.ReadResultRow{
-				Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
-				Raw:    record,
-				Id:     idStr,
-			}
-
-			associations := extractAssociations(recordMap, config)
-
-			if len(associations) > 0 {
-				data[idx].Associations = associations
-			}
-		}
-
-		return data, nil
-	}
-}
-
-// extractAssociations extracts associations from a record map.
+// ExtractAssociations extracts associations from a record map.
 // There are three types of relationships:
 //  1. Parent relationships (e.g., Opportunity -> Account via AccountId): We only have the parent field
 //     value (the ID) in the response. We create an association with empty Raw, which triggers the
@@ -68,7 +14,7 @@ func getSalesforceDataMarshaller(
 //     create associations for the related object (Contact).
 //  3. Child relationships (e.g., Account -> Contacts): The associated records come nested in the
 //     response, so we can extract them directly.
-func extractAssociations(recordMap common.StringMap, config common.ReadParams) map[string][]common.Association {
+func ExtractAssociations(recordMap common.StringMap, config common.ReadParams) map[string][]common.Association {
 	associations := make(map[string][]common.Association)
 
 	for _, assocObj := range config.AssociatedObjects {
