@@ -157,23 +157,6 @@ func parseWriteResponse(
 	}
 
 	switch params.ObjectName {
-	case "tags":
-		tagNode, err := jsonquery.New(body).ObjectOptional("tag")
-		if err != nil || tagNode == nil {
-			return &common.WriteResult{Success: true, RecordId: params.RecordId}, nil
-		}
-
-		recordID, err := jsonquery.New(tagNode).TextWithDefault("id", params.RecordId)
-		if err != nil {
-			return nil, err
-		}
-
-		data, err := jsonquery.Convertor.ObjectToMap(tagNode)
-		if err != nil {
-			return nil, err
-		}
-
-		return &common.WriteResult{Success: true, RecordId: recordID, Data: data}, nil
 	case "contacts":
 		contactsWrapper, err := jsonquery.New(body).ObjectOptional("contacts")
 		if err != nil || contactsWrapper == nil {
