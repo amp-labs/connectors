@@ -22,8 +22,17 @@ func GetNextRecordsURL(node *ajson.Node) (string, error) {
 	return jsonquery.New(node).StrWithDefault("nextRecordsUrl", "")
 }
 
-// GetSalesforceDataMarshaller returns a marshaller that fills Associations in ReadResultRow for Salesforce.
-func GetSalesforceDataMarshaller(params common.ReadParams) common.MarshalFunc {
+// GetDataMarshallerForSearch returns a marshaller that fills Associations in ReadResultRow for Salesforce.
+func GetDataMarshallerForSearch(params *common.SearchParams) common.MarshalFunc {
+	return getDataMarshaller(params.ObjectName, params.AssociatedObjects)
+}
+
+// GetDataMarshallerForRead returns a marshaller that fills Associations in ReadResultRow for Salesforce.
+func GetDataMarshallerForRead(params common.ReadParams) common.MarshalFunc {
+	return getDataMarshaller(params.ObjectName, params.AssociatedObjects)
+}
+
+func getDataMarshaller(objectName string, associatedObjects []string) common.MarshalFunc {
 	return func(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
 		data := make([]common.ReadResultRow, len(records))
 
@@ -42,7 +51,7 @@ func GetSalesforceDataMarshaller(params common.ReadParams) common.MarshalFunc {
 				Id:     idStr,
 			}
 
-			asts := associations.ExtractAssociations(recordMap, params)
+			asts := associations.ExtractAssociations(recordMap, objectName, associatedObjects)
 
 			if len(asts) > 0 {
 				data[idx].Associations = asts

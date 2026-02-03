@@ -16,6 +16,9 @@ const (
 
 // SOQLBuilder builder of Salesforce Object Query Language.
 // It constructs query dynamically.
+//
+// Check the "SOQL and SOSL Reference" book:
+// https://resources.docs.salesforce.com/latest/latest/en-us/sfdc/pdf/salesforce_soql_sosl.pdf
 type SOQLBuilder struct {
 	fields string
 	from   string

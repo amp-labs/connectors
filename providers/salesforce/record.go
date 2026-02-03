@@ -45,7 +45,7 @@ func (c *Connector) GetRecordsByIds( // nolint:revive
 		rsp,
 		core.GetRecords,
 		core.GetNextRecordsURL,
-		core.GetSalesforceDataMarshaller(config.ReadParams),
+		core.GetDataMarshallerForRead(config.ReadParams),
 		config.Fields,
 	)
 	if err != nil {
