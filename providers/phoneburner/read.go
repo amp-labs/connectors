@@ -27,7 +27,6 @@ var (
 		"customfields",
 		"dialsession",
 		"members",
-		"tags",
 		"voicemails",
 	)
 )

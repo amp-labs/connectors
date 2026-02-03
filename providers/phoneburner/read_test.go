@@ -22,7 +22,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	responseDialSessions := testutils.DataFromFile(t, "metadata/dialsession.json")
 	responseFolders := testutils.DataFromFile(t, "metadata/folders.json")
 	responseMembers := testutils.DataFromFile(t, "metadata/members.json")
-	responseTags := testutils.DataFromFile(t, "metadata/tags.json")
 	responseVoicemails := testutils.DataFromFile(t, "metadata/voicemails.json")
 	responseUnauthorized := testutils.DataFromFile(t, "metadata/error-unauthorized.json")
 
@@ -126,44 +125,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Then: mockserver.Response(http.StatusOK, responseUnauthorized),
 			}.Server(),
 			ExpectedErrs: []error{common.ErrAccessToken},
-		},
-		{
-			Name:  "Read tags",
-			Input: common.ReadParams{ObjectName: "tags", Fields: connectors.Fields("id", "title")},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/rest/1/tags"),
-					mockcond.QueryParam("page_size", "100"),
-					mockcond.QueryParam("page", "1"),
-				},
-				Then: mockserver.Response(http.StatusOK, responseTags),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 2,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"id":    float64(4406097),
-						"title": "Prospect",
-					},
-					Raw: map[string]any{
-						"id":    float64(4406097),
-						"title": "Prospect",
-					},
-				}, {
-					Fields: map[string]any{
-						"id":    float64(4406096),
-						"title": "Customer",
-					},
-					Raw: map[string]any{
-						"id":    float64(4406096),
-						"title": "Customer",
-					},
-				}},
-				NextPage: "",
-				Done:     true,
-			},
 		},
 		{
 			Name:  "Read custom fields",

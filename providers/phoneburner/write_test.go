@@ -16,7 +16,6 @@ import (
 func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	respTag := testutils.DataFromFile(t, "write/tag.json")
 	respContact := testutils.DataFromFile(t, "write/contact.json")
 	respFolder := testutils.DataFromFile(t, "write/folder.json")
 	respCustomField := testutils.DataFromFile(t, "write/customfield.json")
@@ -32,41 +31,13 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:         "Write data must be included",
-			Input:        common.WriteParams{ObjectName: "tags"},
+			Input:        common.WriteParams{ObjectName: "contacts"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordData},
 		},
 		{
 			Name:         "Unknown objects are not supported",
 			Input:        common.WriteParams{ObjectName: "tiger", RecordData: map[string]any{"x": "y"}},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
-			Name:  "Create tag (form encoded)",
-			Input: common.WriteParams{ObjectName: "tags", RecordData: map[string]any{"title": "Sample Tag"}},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPOST(),
-					mockcond.Path("/rest/1/tags/"),
-					mockcond.HeaderContentURLFormEncoded(),
-					mockcond.Body("title=Sample+Tag"),
-				},
-				Then: mockserver.Response(http.StatusOK, respTag),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
-			Expected: &common.WriteResult{
-				Success:  true,
-				RecordId: "4406100",
-				Data: map[string]any{
-					"title": "Sample Tag",
-				},
-			},
-		},
-		{
-			Name:         "Update tag is not supported",
-			Input:        common.WriteParams{ObjectName: "tags", RecordId: "4406100", RecordData: map[string]any{"title": "Sample Tag"}},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
@@ -210,14 +181,14 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Provider envelope error is mapped for write (200 with http_status=401)",
-			Input: common.WriteParams{ObjectName: "tags", RecordData: map[string]any{"title": "Sample Tag"}},
+			Input: common.WriteParams{ObjectName: "contacts", RecordData: map[string]any{"first_name": "Johnny"}},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/rest/1/tags/"),
+					mockcond.Path("/rest/1/contacts"),
 					mockcond.HeaderContentURLFormEncoded(),
-					mockcond.Body("title=Sample+Tag"),
+					mockcond.Body("first_name=Johnny"),
 				},
 				Then: mockserver.Response(http.StatusOK, respUnauthorized),
 			}.Server(),

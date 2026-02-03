@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -41,23 +40,7 @@ func buildWriteRequest(ctx context.Context, baseURL string, params common.WriteP
 
 func buildWriteURL(baseURL string, params common.WriteParams) (*urlbuilder.URL, string, error) {
 	switch params.ObjectName {
-	case "contacts", "tags", "members", "folders", "customfields":
-		if params.ObjectName == "tags" {
-			// PhoneBurner is strict about trailing slashes for some tag routes.
-			// Construct a raw `url.URL` so we can preserve them.
-			base := strings.TrimRight(baseURL, "/") + "/" + restPrefix + "/" + restVer + "/" + params.ObjectName + "/"
-			if params.RecordId == "" {
-				raw, err := url.Parse(base)
-				if err != nil {
-					return nil, "", err
-				}
-				u, err := urlbuilder.FromRawURL(raw)
-				return u, http.MethodPost, err
-			}
-
-			return nil, "", fmt.Errorf("%w: tags does not support update", common.ErrOperationNotSupportedForObject)
-		}
-
+	case "contacts", "members", "folders", "customfields":
 		if params.RecordId == "" {
 			u, err := urlbuilder.New(baseURL, restPrefix, restVer, params.ObjectName)
 			return u, http.MethodPost, err
@@ -89,7 +72,7 @@ func buildWriteBody(params common.WriteParams) ([]byte, string, error) {
 			return nil, "", err
 		}
 		return b, "application/json", nil
-	case "contacts", "tags", "members", "customfields":
+	case "contacts", "members", "customfields":
 		b, err := encodeForm(record)
 		if err != nil {
 			return nil, "", err

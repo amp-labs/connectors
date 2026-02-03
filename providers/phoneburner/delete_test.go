@@ -37,12 +37,6 @@ func TestDelete(t *testing.T) { //nolint:funlen,cyclop
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
-			Name:         "Delete tag is not supported",
-			Input:        common.DeleteParams{ObjectName: "tags", RecordId: "4406100"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject, errors.New("tags does not support delete")},
-		},
-		{
 			Name:  "Delete contact",
 			Input: common.DeleteParams{ObjectName: "contacts", RecordId: "30919347"},
 			Server: mockserver.Conditional{
