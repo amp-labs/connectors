@@ -14,7 +14,7 @@ func main() {
 
 	conn := phoneburner.GetPhoneBurnerConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"contacts", "tags", "folders", "members", "voicemails", "phonenumber", "dialsession", "customfields"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"contacts", "folders", "members", "voicemails", "phonenumber", "dialsession", "customfields"})
 	if err != nil {
 		log.Fatal(err)
 	}
