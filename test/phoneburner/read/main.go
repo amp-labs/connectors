@@ -29,12 +29,6 @@ func main() {
 		Fields:     connectors.Fields("contact_user_id", "first_name", "last_name", "raw_phone"),
 	})
 
-	slog.Info("=== Reading tags ===")
-	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
-		ObjectName: "tags",
-		Fields:     connectors.Fields("id", "title"),
-	})
-
 	slog.Info("=== Reading members ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "members",
