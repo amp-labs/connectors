@@ -76,6 +76,13 @@ func (s *SOQLBuilder) WithIDs(identifiers []string) *SOQLBuilder {
 	return s.Where(fmt.Sprintf("Id IN (%v)", identifiersList))
 }
 
+// SelectCount sets the query to use COUNT() instead of field selection.
+func (s *SOQLBuilder) SelectCount() *SOQLBuilder {
+	s.fields = "COUNT()"
+
+	return s
+}
+
 func (s *SOQLBuilder) String() string {
 	query := fmt.Sprintf("SELECT %s FROM %s", s.fields, s.from)
 
