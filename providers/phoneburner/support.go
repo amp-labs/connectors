@@ -15,7 +15,6 @@ func supportedOperations() components.EndpointRegistryInput {
 		"dialsession",
 		"folders",
 		"members",
-		"tags",
 		"voicemails",
 	}
 

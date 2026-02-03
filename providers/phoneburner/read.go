@@ -27,7 +27,6 @@ var (
 		"customfields",
 		"dialsession",
 		"members",
-		"tags",
 		"voicemails",
 	)
 )
@@ -229,8 +228,6 @@ func recordsFunc(objectName string) (common.RecordsFunc, error) {
 		return common.ExtractRecordsFromPath("dialsessions", "dialsessions"), nil
 	case "members":
 		return common.ExtractRecordsFromPath("members", "members"), nil
-	case "tags":
-		return common.ExtractRecordsFromPath("tags", "tags"), nil
 	case "voicemails":
 		return common.ExtractRecordsFromPath("voicemails", "voicemails"), nil
 	case "folders":
