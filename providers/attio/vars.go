@@ -13,6 +13,7 @@ var (
 	ErrInvalidSignature             = errors.New("invalid webhook signature")
 	errUnsupportedSubscriptionEvent = errors.New("unsupported subscription event")
 	errObjectNotFound               = errors.New("object not found. Ensure it is activated in the workspace settings")
+	errTypeMismatch                 = errors.New("type mismatch")
 )
 
 //nolint:gochecknoglobals

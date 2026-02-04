@@ -2,6 +2,7 @@ package attio
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -58,6 +59,27 @@ func toRecordEvents(commonEvent common.SubscriptionEventType) (providerEvent, er
 
 	default:
 		return "", fmt.Errorf("%w: %s", errUnsupportedSubscriptionEvent, commonEvent)
+	}
+}
+
+// toCommonEvent converts an Attio provider event to a common event type.
+// Since every provider event has suffix indicating its type (created, updated, deleted),
+// we use that to map to common event types.
+func toCommonEvent(providerEvent providerEvent) (common.SubscriptionEventType, error) {
+	e := string(providerEvent)
+
+	switch {
+	case strings.HasSuffix(e, ".created"):
+		return common.SubscriptionEventTypeCreate, nil
+
+	case strings.HasSuffix(e, ".updated"):
+		return common.SubscriptionEventTypeUpdate, nil
+
+	case strings.HasSuffix(e, ".deleted"):
+		return common.SubscriptionEventTypeDelete, nil
+
+	default:
+		return common.SubscriptionEventTypeOther, fmt.Errorf("%w: %s", errUnsupportedSubscriptionEvent, e)
 	}
 }
 
