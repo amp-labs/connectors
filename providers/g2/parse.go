@@ -25,6 +25,7 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 // getMarshalledData accepts a list of records and returns a list of structured data ([]ReadResultRow).
 func getMarshalledData(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
 	var recordId string
+
 	data := make([]common.ReadResultRow, len(records))
 
 	for i, record := range records {
