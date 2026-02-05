@@ -85,9 +85,9 @@ func init() { // nolint:funlen
 						Delete: false,
 					},
 					Proxy:     false,
-					Read:      false,
+					Read:      true,
 					Subscribe: false,
-					Write:     false,
+					Write:     true,
 				},
 			},
 			ModuleSalesforceAccountEngagementDemo: {
@@ -101,9 +101,9 @@ func init() { // nolint:funlen
 						Delete: false,
 					},
 					Proxy:     false,
-					Read:      false,
+					Read:      true,
 					Subscribe: false,
-					Write:     false,
+					Write:     true,
 				},
 			},
 		},
@@ -138,8 +138,20 @@ func init() { // nolint:funlen
 					// ModuleDependencies specifies which modules REQUIRE this metadata item.
 					// Here, it means: "the CRM module depends on/requires the workspace metadata".
 					ModuleDependencies: &ModuleDependencies{
-						ModuleSalesforceCRM: ModuleDependency{},
+						ModuleSalesforceCRM:                   {},
+						ModuleSalesforceAccountEngagement:     {},
+						ModuleSalesforceAccountEngagementDemo: {},
 					},
+				},
+				{
+					DisplayName: "Business Unit ID",
+					DocsURL:     "https://help.salesforce.com/s/articleView?id=000381973&type=1",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleSalesforceAccountEngagement:     {},
+						ModuleSalesforceAccountEngagementDemo: {},
+					},
+					Name:   "businessUnitId",
+					Prompt: "Business Unit ID is found in Business Unit Setup within Salesforce Setup or Marketing Setup.",
 				},
 			},
 		},

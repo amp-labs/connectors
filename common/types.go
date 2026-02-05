@@ -369,6 +369,8 @@ type BatchWriteParam struct {
 	Batch BatchItems
 	// Headers contains additional headers to be added to the request.
 	Headers []WriteHeader // optional
+	// AllOrNone is accepted by Create and Update endpoint for output with partial success.
+	AllOrNone *bool
 }
 
 func TransformWriteHeaders(headers []WriteHeader, mode HeaderMode) []Header {
@@ -653,7 +655,7 @@ const (
 )
 
 type SubscriptionEventPreLoadData struct {
-	Request *http.Request
+	RequestHeaders *http.Header
 }
 
 // SubscriptionEvent is an interface for webhook events coming from the provider.
@@ -835,13 +837,17 @@ const (
 type SearchParams struct {
 	ObjectName string `json:"objectName" validate:"required"`
 
-	// fields to return in the search result.
+	// Fields to return in the search result.
 	Fields   datautils.StringSet `json:"fields"   validate:"required"`
 	Filter   SearchFilter        `json:"filter"   validate:"required"`
 	NextPage NextPageToken       `json:"nextPage" validate:"required"`
 
-	// page limit for the search. If omitted, return provider's default limit.
+	// Page Limit for the search. If omitted, return provider's default limit.
 	Limit int64 `json:"limit,omitempty"`
+
+	// AssociatedObjects specifies a list of related objects to fetch along with the main object.
+	// Optional.
+	AssociatedObjects []string
 }
 
 type SearchResult = ReadResult

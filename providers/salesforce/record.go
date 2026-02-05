@@ -6,6 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
 
 // GetRecordsByIds returns records matching identifiers.
@@ -42,9 +43,9 @@ func (c *Connector) GetRecordsByIds( // nolint:revive
 
 	readResult, err := common.ParseResult(
 		rsp,
-		getRecords,
-		getNextRecordsURL,
-		getSalesforceDataMarshaller(config.ReadParams),
+		core.GetRecords,
+		core.GetNextRecordsURL,
+		core.GetDataMarshallerForRead(config.ReadParams),
 		config.Fields,
 	)
 	if err != nil {

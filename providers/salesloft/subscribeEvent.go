@@ -5,7 +5,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha1" //nolint:gosec
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"log"
 	"maps"
@@ -50,11 +49,11 @@ func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.Subscripti
 
 // PreLoadData implements [common.SubscriptionEvent].
 func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadData) error {
-	if data == nil || data.Request == nil {
+	if data == nil || data.RequestHeaders == nil {
 		return fmt.Errorf("%w: request cannot be nil", errMissingParams)
 	}
 
-	eventValue := data.Request.Header.Get(eventHeader)
+	eventValue := data.RequestHeaders.Get(eventHeader)
 
 	log.Printf("event value: %s", eventValue)
 
@@ -101,7 +100,7 @@ func (c *Connector) VerifyWebhookMessage(ctx context.Context,
 
 func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
 	// Salesloft does not provide updated fields in webhook response.
-	return []string{}, errors.New("updated fields are not supported by Salesloft webhooks") //nolint:err113
+	return []string{}, nil
 }
 
 // nolint: godoclint
