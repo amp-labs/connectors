@@ -1,0 +1,42 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": 12500,
+      "key": "title",
+      "field_code": "title",
+      "field_name": "Title",
+      "field_type": "varchar",
+      "is_custom_field": false,
+      "is_optional_response_field": true,
+      "options": []
+    },
+    {
+      "id": 12501,
+      "key": "value",
+      "field_code": "value",
+      "field_name": "Value",
+      "field_type": "double",
+      "is_custom_field": false,
+      "is_optional_response_field": true,
+      "options": []
+    },
+    {
+      "id": 12600,
+      "key": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+      "field_code": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+      "field_name": "Expected Close Date",
+      "field_type": "date",
+      "is_custom_field": true,
+      "is_optional_response_field": true,
+      "options": []
+    }
+  ],
+  "additional_data": {
+    "pagination": {
+      "start": 0,
+      "limit": 500,
+      "more_items_in_collection": false
+    }
+  }
+}

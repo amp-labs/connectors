@@ -7,28 +7,28 @@ import (
 )
 
 const (
-	enum               = "enum"
-	set                = "set"
-	metadataAPIVersion = "api/v2"
-	metadataPageSize   = 500
+	enum             = "enum"
+	set              = "set"
+	apiVersion       = "api/v2"
+	metadataPageSize = 500
 )
 
 type Adapter struct {
-	Client  *common.JSONHTTPClient
-	BaseURL string
+	Client     *common.JSONHTTPClient
+	moduleinfo *providers.ModuleInfo
 }
 
 func NewAdapter(
 	client *common.JSONHTTPClient, info *providers.ModuleInfo,
 ) *Adapter {
 	return &Adapter{
-		Client:  client,
-		BaseURL: info.BaseURL,
+		Client:     client,
+		moduleinfo: info,
 	}
 }
 
-func (a *Adapter) getAPIURL(apiVersion, object string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.BaseURL, apiVersion, object)
+func (a *Adapter) getAPIURL(object string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(a.moduleinfo.BaseURL, apiVersion, object)
 }
 
 func (a *Adapter) constructMetadataURL(objectName string) (*urlbuilder.URL, error) {
@@ -36,5 +36,5 @@ func (a *Adapter) constructMetadataURL(objectName string) (*urlbuilder.URL, erro
 		objectName = metadataDiscoveryEndpoints[objectName]
 	}
 
-	return a.getAPIURL(metadataAPIVersion, objectName)
+	return a.getAPIURL(objectName)
 }

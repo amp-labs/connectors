@@ -119,8 +119,15 @@ func (a *Adapter) parseMetadata( // nolint: gocognit,gocyclo,cyclop,funlen
 		// process enums and sets fields
 		processFieldOptions(mdtFlds, fldRcd)
 
-		// Add it to the objects metadatas
-		mdt.AddFieldMetadata(fldRcd.Code, *mdtFlds)
+		// For custom fields, use the display name as key so it matches
+		// the resolved names from the read transformer.
+		// Built-in fields keep their code (already human-readable).
+		key := fldRcd.Code
+		if fldRcd.IsCustom {
+			key = fldRcd.Name
+		}
+
+		mdt.AddFieldMetadata(key, *mdtFlds)
 	}
 
 	// Ensure the response data array, has at least 1 record.
