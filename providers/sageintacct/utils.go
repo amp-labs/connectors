@@ -101,7 +101,7 @@ func flattenFields(pathParts []string, fields map[string]SageIntacctFieldDef) ma
 	result := make(map[string]common.FieldMetadata)
 
 	for fieldName, fieldDef := range fields {
-		parts := append(pathParts, fieldName)
+		parts := append(pathParts, fieldName) //nolint:gocritic
 		fullPath := jsonpath.ToNestedPath(parts...)
 
 		capitalizedParts := make([]string, len(parts))
@@ -127,7 +127,7 @@ func flattenGroups(pathParts []string, groups map[string]SageIntacctGroup) map[s
 	result := make(map[string]common.FieldMetadata)
 
 	for groupName, group := range groups {
-		parts := append(pathParts, groupName)
+		parts := append(pathParts, groupName) //nolint:gocritic
 		groupFields := flattenFields(parts, group.Fields)
 		maps.Copy(result, groupFields)
 	}
@@ -141,7 +141,7 @@ func flattenRefs(pathParts []string, refs map[string]SageIntacctRef) map[string]
 	result := make(map[string]common.FieldMetadata)
 
 	for refName, ref := range refs {
-		parts := append(pathParts, refName)
+		parts := append(pathParts, refName) //nolint:gocritic
 
 		refFields := flattenFields(parts, ref.Fields)
 		maps.Copy(result, refFields)
@@ -161,7 +161,7 @@ func convertBracketToDotNotation(path string) (string, error) {
 		return "", err
 	}
 
-	var dotNotationParts []string
+	dotNotationParts := make([]string, 0, len(parsedPathResult))
 	for _, segment := range parsedPathResult {
 		dotNotationParts = append(dotNotationParts, segment.Key)
 	}
@@ -170,7 +170,7 @@ func convertBracketToDotNotation(path string) (string, error) {
 }
 
 // convertFieldsToDotNotation converts bracket notation fields to dot notation.
-// Example: $['audit']['createdby'] -> audit.createdby
+// Example: $['audit']['createdby'] -> audit.createdby.
 func convertFieldsToDotNotation(fieldNames []string) ([]string, error) {
 	dotNotation := make([]string, 0, len(fieldNames))
 
@@ -179,6 +179,7 @@ func convertFieldsToDotNotation(fieldNames []string) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		dotNotation = append(dotNotation, dotNotationField)
 	}
 
