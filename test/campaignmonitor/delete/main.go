@@ -60,7 +60,7 @@ func Delete(ctx context.Context, conn *ap.Connector, payload common.DeleteParams
 	return res, nil
 }
 
-// unmarshal the delte response.
+// unmarshal the delete response.
 func constructResponse(res *common.DeleteResult) error {
 	jsonStr, err := json.MarshalIndent(res, "", " ")
 	if err != nil {

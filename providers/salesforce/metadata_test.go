@@ -124,7 +124,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 							"phone": {
 								DisplayName:  "Phone",
-								ValueType:    "other",
+								ValueType:    "string",
 								ProviderType: "phone",
 								ReadOnly:     goutils.Pointer(false),
 								IsCustom:     goutils.Pointer(false),
@@ -167,7 +167,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						Fields: map[string]common.FieldMetadata{
 							"id": {
 								DisplayName:  "Record ID",
-								ValueType:    "other",
+								ValueType:    "string",
 								ProviderType: "id",
 								ReadOnly:     goutils.Pointer(true),
 								IsCustom:     goutils.Pointer(false),
@@ -191,51 +191,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 									DisplayValue: "travel",
 								}},
 							},
-						},
-					},
-				},
-				Errors: map[string]error{},
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name:  "Compound fields appear as both flat and nested bracket notation fields",
-			Input: []string{"Organization"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.Body(`{"allOrNone":false,"compositeRequest":[{
-					"referenceId":"Organization",
-					"method":"GET",
-					"url":"/services/data/v60.0/sobjects/Organization/describe"
-				}]}`),
-				Then: mockserver.Response(http.StatusOK, responseOrgMeta),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
-			Expected: &common.ListObjectMetadataResult{
-				Result: map[string]common.ObjectMetadata{
-					"organization": {
-						DisplayName: "Organization",
-						Fields: map[string]common.FieldMetadata{
-							// Flat field: Latitude appears as a top-level field.
-							"latitude": {
-								DisplayName:  "Latitude",
-								ValueType:    "float",
-								ProviderType: "double",
+							"mailbox__c": {
+								DisplayName:  "MailBox",
+								ValueType:    "string",
+								ProviderType: "email",
 								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(false),
+								IsCustom:     goutils.Pointer(true),
 								IsRequired:   goutils.Pointer(false),
-								Values:       nil,
-							},
-							// Nested field: Latitude is also a component of the Address compound field.
-							// It appears in bracket notation alongside the flat field.
-							"$['address']['latitude']": {
-								DisplayName:  "Latitude",
-								ValueType:    "float",
-								ProviderType: "double",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
-								Values:       nil,
 							},
 						},
 					},
@@ -280,8 +242,16 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 							"createdbyid": {
 								DisplayName:  "Created By ID",
-								ValueType:    "other",
+								ValueType:    "string",
 								ProviderType: "reference",
+								ReadOnly:     goutils.Pointer(true),
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(false),
+							},
+							"photourl": {
+								DisplayName:  "Photo URL",
+								ValueType:    "string",
+								ProviderType: "url",
 								ReadOnly:     goutils.Pointer(true),
 								IsCustom:     goutils.Pointer(false),
 								IsRequired:   goutils.Pointer(false),
@@ -327,41 +297,41 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 					"emails": {
 						DisplayName: "Emails",
 						Fields: map[string]common.FieldMetadata{
-							"htmlMessage": {
-								DisplayName:  "HTML Message",
-								ValueType:    "string",
-								ProviderType: "string",
+							"listId": {
+								DisplayName:  "listId",
+								ValueType:    "int",
+								ProviderType: "Integer",
+								ReadOnly:     goutils.Pointer(true),
 								Values:       nil,
 							},
 							"sentAt": {
-								DisplayName:  "Sent At",
+								DisplayName:  "sentAt",
 								ValueType:    "datetime",
-								ProviderType: "datetime",
+								ProviderType: "DateTime",
 								ReadOnly:     goutils.Pointer(true),
 								Values:       nil,
 							},
 							"type": {
-								DisplayName:  "Type",
+								DisplayName:  "type",
 								ValueType:    "singleSelect",
-								ProviderType: "enum",
+								ProviderType: "Enum",
 								ReadOnly:     goutils.Pointer(true),
 								Values: []common.FieldValue{{
 									Value:        "html",
-									DisplayValue: "HTML",
+									DisplayValue: "html",
 								}, {
 									Value:        "text",
-									DisplayValue: "Text",
+									DisplayValue: "text",
 								}, {
 									Value:        "htmlAndText",
-									DisplayValue: "HTML and Text",
+									DisplayValue: "htmlAndText",
 								}},
 							},
 						},
 						FieldsMap: map[string]string{
-							"sentAt":          "Sent At",
-							"subject":         "Subject",
-							"textMessage":     "Text Message",
-							"trackerDomainId": "Tracker Domain ID",
+							"sentAt":          "sentAt",
+							"listId":          "listId",
+							"salesforceCmsId": "salesforceCmsId",
 						},
 					},
 				},

@@ -1,6 +1,7 @@
 package apollo
 
 import (
+	"maps"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -81,4 +82,49 @@ func searchRecords(fld string) common.RecordsFunc {
 
 		return records, nil
 	}
+}
+
+// getMarshaledData retrieves records and unnests the custom fields of apollo custom objects.
+func (c *Connector) customMarshaller(objectName string) common.MarshalFunc {
+	return func(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
+		data := make([]common.ReadResultRow, len(records))
+
+		for idx, record := range records {
+			customFields := make(map[string]any)
+
+			if rawCustomFields, exists := record["typed_custom_fields"]; exists {
+				if cstmFlds, ok := rawCustomFields.(map[string]any); ok {
+					maps.Copy(customFields, cstmFlds)
+				}
+			}
+
+			mergedRecord := make(map[string]any, len(record)+len(customFields))
+
+			maps.Copy(mergedRecord, record)
+			maps.Copy(mergedRecord, customFields)
+
+			if customFlds, exists := c.customFields[objectName]; exists {
+				for _, fds := range customFlds {
+					if val, exists := mergedRecord[fds.customMachineField]; exists {
+						mergedRecord[fds.fld] = val
+					}
+				}
+			}
+
+			data[idx] = common.ReadResultRow{
+				Fields: common.ExtractLowercaseFieldsFromRaw(fields, mergedRecord),
+				Raw:    mergedRecord,
+			}
+		}
+
+		return data, nil
+	}
+}
+
+func (c *Connector) apolloMarshaledData(objectName string) common.MarshalFunc {
+	if !usesFieldsResource.Has(objectName) {
+		return common.GetMarshaledData
+	}
+
+	return c.customMarshaller(objectName)
 }

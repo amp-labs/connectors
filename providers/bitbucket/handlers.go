@@ -98,7 +98,7 @@ func (c *Connector) constructReadURL(params common.ReadParams) (string, error) {
 		since := "updated_on >= " + params.Since.Format(time.RFC3339)
 		url.WithQueryParam("q", since)
 
-		// for readig repositories, so as we don't query all available repos
+		// for reading repositories, so as we don't query all available repos
 		// we set, list only membered repositories.
 
 		if params.ObjectName == "repositories" {

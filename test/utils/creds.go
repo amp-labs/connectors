@@ -42,11 +42,24 @@ func NewOauth2Client(
 	reader *credscanning.ProviderCredentials,
 	configProvider func(*credscanning.ProviderCredentials) *oauth2.Config,
 ) common.AuthenticatedHTTPClient {
-	client, err := common.NewOAuthHTTPClient(ctx,
+	options := []common.OAuthOption{
 		common.WithOAuthClient(http.DefaultClient),
 		common.WithOAuthConfig(configProvider(reader)),
 		common.WithOAuthToken(reader.GetOauthToken()),
-	)
+	}
+
+	// If the creds indicate which provider this is for, automatically apply any
+	// provider-specific token header attachment (e.g., Shopify uses X-Shopify-Access-Token).
+	if providerName := reader.Get(credscanning.Fields.Provider); providerName != "" {
+		providerInfo, err := providers.ReadInfo(providerName)
+		if err == nil {
+			if header := providers.CreateOauth2TokenHeaderAttachment(providerInfo); header != nil {
+				options = append(options, common.WithTokenHeaderAttachment(header))
+			}
+		}
+	}
+
+	client, err := common.NewOAuthHTTPClient(ctx, options...)
 	if err != nil {
 		Fail("error creating oauth", "error", err)
 	}

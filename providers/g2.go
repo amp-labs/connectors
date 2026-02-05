@@ -12,7 +12,7 @@ func init() {
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
 				Name:        "Authorization",
-				ValuePrefix: "Token token=",
+				ValuePrefix: "Bearer ",
 			},
 			DocsURL: "https://data.g2.com/api/docs?shell#g2-v2-api",
 		},
@@ -34,9 +34,17 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
 			Write:     false,
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					DisplayName: "Subject Product Id",
+					Name:        "subjectProductId",
+				},
+			},
 		},
 	})
 }

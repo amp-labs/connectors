@@ -1,0 +1,435 @@
+{
+  "modules": {
+    "gmail": {
+      "id": "gmail",
+      "path": "",
+      "objects": {
+        "delegates": {
+          "displayName": "Delegates",
+          "path": "/users/me/settings/delegates",
+          "responseKey": "delegates",
+          "fields": {
+            "delegateEmail": {
+              "displayName": "Delegate Email",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "verificationStatus": {
+              "displayName": "Verification Status",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            }
+          }
+        },
+        "drafts": {
+          "displayName": "Drafts",
+          "path": "/users/me/drafts",
+          "responseKey": "drafts",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "message": {
+              "displayName": "Message",
+              "valueType": "other",
+              "providerType": "object",
+              "readOnly": false
+            }
+          }
+        },
+        "filters": {
+          "displayName": "Filters",
+          "path": "/users/me/settings/filters",
+          "responseKey": "filter",
+          "fields": {
+            "action": {
+              "displayName": "Action",
+              "valueType": "other",
+              "providerType": "object",
+              "readOnly": false
+            },
+            "criteria": {
+              "displayName": "Criteria",
+              "valueType": "other",
+              "providerType": "object",
+              "readOnly": false
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            }
+          }
+        },
+        "forwardingAddresses": {
+          "displayName": "Forwarding Addresses",
+          "path": "/users/me/settings/forwardingAddresses",
+          "responseKey": "forwardingAddresses",
+          "fields": {
+            "forwardingEmail": {
+              "displayName": "Forwarding Email",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "verificationStatus": {
+              "displayName": "Verification Status",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            }
+          }
+        },
+        "history": {
+          "displayName": "History",
+          "path": "/users/me/history",
+          "responseKey": "history",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "labelsAdded": {
+              "displayName": "Labels Added",
+              "valueType": "other",
+              "providerType": "array",
+              "readOnly": false
+            },
+            "labelsRemoved": {
+              "displayName": "Labels Removed",
+              "valueType": "other",
+              "providerType": "array",
+              "readOnly": false
+            },
+            "messages": {
+              "displayName": "Messages",
+              "valueType": "other",
+              "providerType": "array",
+              "readOnly": false
+            },
+            "messagesAdded": {
+              "displayName": "Messages Added",
+              "valueType": "other",
+              "providerType": "array",
+              "readOnly": false
+            },
+            "messagesDeleted": {
+              "displayName": "Messages Deleted",
+              "valueType": "other",
+              "providerType": "array",
+              "readOnly": false
+            }
+          }
+        },
+        "identities": {
+          "displayName": "Identities",
+          "path": "/users/me/settings/cse/identities",
+          "responseKey": "cseIdentities",
+          "fields": {
+            "emailAddress": {
+              "displayName": "Email Address",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "primaryKeyPairId": {
+              "displayName": "Primary Key Pair Id",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "signAndEncryptKeyPairs": {
+              "displayName": "Sign And Encrypt Key Pairs",
+              "valueType": "other",
+              "providerType": "object",
+              "readOnly": false
+            }
+          }
+        },
+        "keypairs": {
+          "displayName": "Keypairs",
+          "path": "/users/me/settings/cse/keypairs",
+          "responseKey": "cseKeyPairs",
+          "fields": {
+            "disableTime": {
+              "displayName": "Disable Time",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "enablementState": {
+              "displayName": "Enablement State",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "keyPairId": {
+              "displayName": "Key Pair Id",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "pem": {
+              "displayName": "Pem",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "pkcs7": {
+              "displayName": "Pkcs 7",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "privateKeyMetadata": {
+              "displayName": "Private Key Metadata",
+              "valueType": "other",
+              "providerType": "array",
+              "readOnly": false
+            },
+            "subjectEmailAddresses": {
+              "displayName": "Subject Email Addresses",
+              "valueType": "other",
+              "providerType": "array",
+              "readOnly": false
+            }
+          }
+        },
+        "labels": {
+          "displayName": "Labels",
+          "path": "/users/me/labels",
+          "responseKey": "labels",
+          "fields": {
+            "color": {
+              "displayName": "Color",
+              "valueType": "other",
+              "providerType": "object",
+              "readOnly": false
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "labelListVisibility": {
+              "displayName": "Label List Visibility",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "messageListVisibility": {
+              "displayName": "Message List Visibility",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "messagesTotal": {
+              "displayName": "Messages Total",
+              "valueType": "int",
+              "providerType": "integer",
+              "readOnly": false
+            },
+            "messagesUnread": {
+              "displayName": "Messages Unread",
+              "valueType": "int",
+              "providerType": "integer",
+              "readOnly": false
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "threadsTotal": {
+              "displayName": "Threads Total",
+              "valueType": "int",
+              "providerType": "integer",
+              "readOnly": false
+            },
+            "threadsUnread": {
+              "displayName": "Threads Unread",
+              "valueType": "int",
+              "providerType": "integer",
+              "readOnly": false
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            }
+          }
+        },
+        "messages": {
+          "displayName": "Messages",
+          "path": "/users/me/messages",
+          "responseKey": "messages",
+          "fields": {
+            "$['payload']['body']": {
+              "displayName": "Message Body",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "$['payload']['body']['data']": {
+              "displayName": "Message Data",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "$['payload']['classificationLabelValues']": {
+              "displayName": "Classification Label Values",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "$['payload']['historyId']": {
+              "displayName": "History Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "$['payload']['internalDate']": {
+              "displayName": "Internal Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "$['payload']['labelIds']": {
+              "displayName": "Label Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "$['payload']['raw']": {
+              "displayName": "Raw",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "$['payload']['sizeEstimate']": {
+              "displayName": "Size Estimate",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "$['payload']['snippet']": {
+              "displayName": "Snippet",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "payload": {
+              "displayName": "Payload",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "threadId": {
+              "displayName": "Thread Id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "sendAs": {
+          "displayName": "Send As",
+          "path": "/users/me/settings/sendAs",
+          "responseKey": "sendAs",
+          "fields": {
+            "displayName": {
+              "displayName": "Display Name",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "isDefault": {
+              "displayName": "Is Default",
+              "valueType": "boolean",
+              "providerType": "boolean",
+              "readOnly": false
+            },
+            "isPrimary": {
+              "displayName": "Is Primary",
+              "valueType": "boolean",
+              "providerType": "boolean",
+              "readOnly": false
+            },
+            "replyToAddress": {
+              "displayName": "Reply To Address",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "sendAsEmail": {
+              "displayName": "Send As Email",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "signature": {
+              "displayName": "Signature",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "smtpMsa": {
+              "displayName": "Smtp Msa",
+              "valueType": "other",
+              "providerType": "object",
+              "readOnly": false
+            },
+            "treatAsAlias": {
+              "displayName": "Treat As Alias",
+              "valueType": "boolean",
+              "providerType": "boolean",
+              "readOnly": false
+            },
+            "verificationStatus": {
+              "displayName": "Verification Status",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            }
+          }
+        },
+        "threads": {
+          "displayName": "Threads",
+          "path": "/users/me/threads",
+          "responseKey": "threads",
+          "fields": {
+            "historyId": {
+              "displayName": "History Id",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            },
+            "messages": {
+              "displayName": "Messages",
+              "valueType": "other",
+              "providerType": "array",
+              "readOnly": false
+            },
+            "snippet": {
+              "displayName": "Snippet",
+              "valueType": "string",
+              "providerType": "string",
+              "readOnly": false
+            }
+          }
+        }
+      }
+    }
+  }
+}

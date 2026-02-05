@@ -22,10 +22,10 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
-			Read:      false,
+			Proxy:     true,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

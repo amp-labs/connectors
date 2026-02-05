@@ -130,7 +130,7 @@ func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilde
 		return a.getUpdateURL()
 	}
 
-	return nil, common.ErrUnsupportedBatchWriteType
+	return nil, common.ErrUnsupportedWriteType
 }
 
 func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
@@ -153,7 +153,7 @@ func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 
 	return &Payload{
 		Records:   items,
-		AllOrNone: goutils.Pointer(true),
+		AllOrNone: goutils.Pointer(false), // partial success enabled
 	}, nil
 }
 

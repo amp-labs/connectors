@@ -57,6 +57,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	if requestedPageSize <= 0 || requestedPageSize > maxPageSizeInt {
 		requestedPageSize = maxPageSizeInt
 	}
+
 	url.WithQueryParam(pageSizeKey, strconv.Itoa(requestedPageSize))
 	url.WithQueryParam(pageKey, "1")
 
@@ -348,6 +349,7 @@ func constructIDFieldFromObjectName(objectName string) string {
 					builder.WriteString(strings.ToUpper(parts[i][:1]) + parts[i][1:])
 				}
 			}
+
 			builder.WriteString("Id")
 
 			return builder.String()

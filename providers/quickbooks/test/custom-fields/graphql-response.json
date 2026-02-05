@@ -1,0 +1,38 @@
+{
+  "data": {
+    "appFoundationsCustomFieldDefinitions": [
+      {
+        "id": "540344",
+        "name": "ProjectCode",
+        "type": "StringType",
+        "legacyIdV2": null
+      },
+      {
+        "id": "540345",
+        "name": "Department",
+        "type": "StringType",
+        "legacyIdV2": null
+      },
+      {
+        "id": "540346",
+        "name": "BudgetAmount",
+        "type": "NumberType",
+        "legacyIdV2": null
+      },
+      {
+        "id": "540347",
+        "name": "StartDate",
+        "type": "DateType",
+        "legacyIdV2": null
+      },
+      {
+        "id": "540348",
+        "name": "Status",
+        "type": "ListType",
+        "legacyIdV2": null
+      }
+    ]
+  },
+  "errors": null
+}
+

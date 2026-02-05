@@ -40,12 +40,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{common.ErrMissingFields},
 		},
 		{
-			Name:         "Unsupported object name",
-			Input:        common.ReadParams{ObjectName: "butterflies", Fields: connectors.Fields("id")},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
 			Name:  "Correct error message is understood from JSON response",
 			Input: common.ReadParams{ObjectName: "users", Fields: connectors.Fields("id")},
 			Server: mockserver.Fixed{
@@ -108,7 +102,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Successful read with 25 entries, checking one row",
-			Input: common.ReadParams{ObjectName: "people", Fields: connectors.Fields("id")},
+			Input: common.ReadParams{ObjectName: "people", Fields: connectors.Fields("id", "hobby")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.Path("/v2/people"),
@@ -120,13 +114,17 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				// We are only interested to validate only first Read Row!
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"id": float64(164510523),
+						"id":    float64(164510523),
+						"hobby": "surfing", // custom field
 					},
 					Raw: map[string]any{
 						"first_name":             "Lynnelle",
 						"email_address":          "losbourn29@paypal.com",
 						"full_email_address":     "\"Lynnelle new\" <losbourn29@paypal.com>",
 						"person_company_website": "http://paypal.com",
+						"custom_fields": map[string]any{
+							"hobby": "surfing",
+						},
 					},
 				}},
 				NextPage: testroutines.URLTestServer + "/v2/people?page=2&per_page=100",

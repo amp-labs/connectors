@@ -521,3 +521,160 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		})
 	}
 }
+
+func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
+	t.Parallel()
+
+	errorForbidden := testutils.DataFromFile(t, "mail/forbidden.json")
+	errorNotFound := testutils.DataFromFile(t, "mail/not-found.html")
+	responseMessagesFirstPage := testutils.DataFromFile(t, "mail/read/messages/1-first-page.json")
+	responseMessagesLastPage := testutils.DataFromFile(t, "mail/read/messages/2-last-page.json")
+	responseMessageItem := testutils.DataFromFile(t, "mail/read/messages/message-item.json")
+
+	tests := []testroutines.Read{
+		{
+			Name:         "Read object must be included",
+			Input:        common.ReadParams{},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:         "At least one field is requested",
+			Input:        common.ReadParams{ObjectName: "messages"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFields},
+		},
+		{
+			Name:  "Error forbidden object",
+			Input: common.ReadParams{ObjectName: "messages", Fields: connectors.Fields("id")},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusForbidden, errorForbidden),
+			}.Server(),
+			ExpectedErrs: []error{
+				common.ErrForbidden,
+				errors.New("CSE is not enabled."), // nolint:goerr113
+			},
+		},
+		{
+			Name:  "HTML Error for not found object",
+			Input: common.ReadParams{ObjectName: "messages", Fields: connectors.Fields("id")},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentHTML(),
+				Always: mockserver.Response(http.StatusNotFound, errorNotFound),
+			}.Server(),
+			ExpectedErrs: []error{
+				common.ErrBadRequest,
+				common.ErrNotFound,
+				errors.New("The requested URL /gmail/v1/users/me/butterfly was not found on this server. That’s all we know"), // nolint:goerr113,lll
+			},
+		},
+		{
+			Name: "Read messages first page",
+			Input: common.ReadParams{
+				ObjectName: "messages",
+				Fields:     connectors.Fields("id"),
+				PageSize:   33,
+				Since: time.Date(2024, 9, 19, 23, 0, 0, 0,
+					time.FixedZone("UTC-8", -8*60*60)),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/gmail/v1/users/me/messages"),
+					mockcond.QueryParam("maxResults", "33"),      // from params
+					mockcond.QueryParam("q", "after:2024/09/20"), // it is 20 due to time zone
+				},
+				Then: mockserver.Response(http.StatusOK, responseMessagesFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id": "1993fb4b539b5a1a",
+					},
+					Raw: map[string]any{
+						"threadId": "1993fa50bd191f7b",
+					},
+				}, {
+					Fields: map[string]any{
+						"id": "1993fa50bd191f7b",
+					},
+					Raw: map[string]any{
+						"threadId": "1993fa50bd191f7b",
+					},
+				}},
+				NextPage: "08277485409175924556",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read messages second page without next cursor",
+			Input: common.ReadParams{
+				ObjectName: "messages",
+				Fields:     connectors.Fields("id", "$['payload']['body']", "threadId"),
+				NextPage:   "08277485409175924556",
+				Since:      time.Date(2024, 9, 31, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 1, 8, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					// Get collection of all messages. This is a list of identifiers.
+					If: mockcond.And{
+						mockcond.Path("/gmail/v1/users/me/messages"),
+						mockcond.QueryParam("maxResults", "500"), // default page size
+						mockcond.QueryParam("pageToken", "08277485409175924556"),
+						mockcond.QueryParam("q", "after:2024/10/01 before:2026/01/08"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseMessagesLastPage),
+				}, {
+					// Each message is fetched.
+					// The last page is a collection of messages with just 1 message where id=19174f3eeda702ed.
+					If:   mockcond.Path("/gmail/v1/users/me/messages/19174f3eeda702ed"),
+					Then: mockserver.Response(http.StatusOK, responseMessageItem),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"payload": map[string]any{
+							"body": map[string]any{
+								"size": float64(0), // nested field was requested
+							},
+						},
+						"id":       "19174f3eeda702ed",
+						"threadid": "19174f3eeda702ed", // fields are lower case
+					},
+					Raw: map[string]any{
+						"id":       "19174f3eeda702ed",
+						"threadId": "19174f3eeda702ed",
+						// Message content is embedded.
+						"snippet":      "Restart your 14-day free trial now.",
+						"sizeEstimate": float64(29817),
+						"historyId":    "31772",
+						"internalDate": "1769523000000",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestMailConnector(tt.Server.URL)
+			})
+		})
+	}
+}

@@ -2,164 +2,2797 @@
   "modules": {
     "account-engagement": {
       "id": "account-engagement",
+      "path": "",
       "objects": {
+        "campaigns": {
+          "displayName": "Campaigns",
+          "path": "campaigns",
+          "responseKey": "values",
+          "fields": {
+            "cost": {
+              "displayName": "cost",
+              "valueType": "float",
+              "providerType": "Float",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "folderId": {
+              "displayName": "folderId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "parentCampaignId": {
+              "displayName": "parentCampaignId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "salesforceId": {
+              "displayName": "salesforceId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/campaign-v5.html"
+        },
+        "custom-redirects": {
+          "displayName": "Custom Redirects",
+          "path": "custom-redirects",
+          "responseKey": "values",
+          "fields": {
+            "bitlyIsPersonalized": {
+              "displayName": "bitlyIsPersonalized",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "bitlyShortUrl": {
+              "displayName": "bitlyShortUrl",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "salesforceId": {
+              "displayName": "salesforceId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "trackedUrl": {
+              "displayName": "trackedUrl",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "vanityUrl": {
+              "displayName": "vanityUrl",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/custom-redirect-v5.html"
+        },
+        "dynamic-content-variations": {
+          "displayName": "Dynamic Content Variations",
+          "path": "dynamic-content-variations",
+          "responseKey": "values",
+          "fields": {
+            "comparison": {
+              "displayName": "comparison",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "content": {
+              "displayName": "content",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
+            "dynamicContentId": {
+              "displayName": "dynamicContentId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": false
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "operator": {
+              "displayName": "operator",
+              "valueType": "singleSelect",
+              "providerType": "Enum",
+              "readOnly": false,
+              "values": [
+                {
+                  "value": "is",
+                  "displayValue": "is"
+                },
+                {
+                  "value": "contains",
+                  "displayValue": "contains"
+                },
+                {
+                  "value": "between",
+                  "displayValue": "between"
+                },
+                {
+                  "value": "less-than",
+                  "displayValue": "less-than"
+                },
+                {
+                  "value": "less-than-or-equal",
+                  "displayValue": "less-than-or-equal"
+                },
+                {
+                  "value": "greater-than",
+                  "displayValue": "greater-than"
+                },
+                {
+                  "value": "greater-than-or-equal",
+                  "displayValue": "greater-than-or-equal"
+                }
+              ]
+            },
+            "value1": {
+              "displayName": "value1",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
+            "value2": {
+              "displayName": "value2",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/dynamic-content-variation.html"
+        },
+        "dynamic-contents": {
+          "displayName": "Dynamic Contents",
+          "path": "dynamic-contents",
+          "responseKey": "values",
+          "fields": {
+            "baseContent": {
+              "displayName": "baseContent",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
+            "basedOn": {
+              "displayName": "basedOn",
+              "valueType": "singleSelect",
+              "providerType": "Enum",
+              "readOnly": true,
+              "values": [
+                {
+                  "value": "default",
+                  "displayValue": "default"
+                },
+                {
+                  "value": "custom",
+                  "displayValue": "custom"
+                },
+                {
+                  "value": "grade",
+                  "displayValue": "grade"
+                },
+                {
+                  "value": "score",
+                  "displayValue": "score"
+                }
+              ]
+            },
+            "basedOnProspectApiFieldId": {
+              "displayName": "basedOnProspectApiFieldId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "embedCode": {
+              "displayName": "embedCode",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "embedUrl": {
+              "displayName": "embedUrl",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "folderId": {
+              "displayName": "folderId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": false
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
+            "tagReplacementLanguage": {
+              "displayName": "tagReplacementLanguage",
+              "valueType": "singleSelect",
+              "providerType": "Enum",
+              "readOnly": true,
+              "values": [
+                {
+                  "value": "pml",
+                  "displayValue": "pml"
+                },
+                {
+                  "value": "hml",
+                  "displayValue": "hml"
+                },
+                {
+                  "value": "undetermined",
+                  "displayValue": "undetermined"
+                }
+              ]
+            },
+            "trackerDomainId": {
+              "displayName": "trackerDomainId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": false
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/dynamic-content-v5.html"
+        },
+        "email-templates": {
+          "displayName": "Email Templates",
+          "path": "email-templates",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "Datetime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "tagReplacementLanguage": {
+              "displayName": "tagReplacementLanguage",
+              "valueType": "singleSelect",
+              "providerType": "Enum",
+              "readOnly": true,
+              "values": [
+                {
+                  "value": "pml",
+                  "displayValue": "pml"
+                },
+                {
+                  "value": "hml",
+                  "displayValue": "hml"
+                },
+                {
+                  "value": "undetermined",
+                  "displayValue": "undetermined"
+                }
+              ]
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "Datetime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/email-template-v5.html"
+        },
         "emails": {
           "displayName": "Emails",
           "path": "emails",
           "responseKey": "values",
           "fields": {
-            "name": {
-              "displayName": "Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "campaignId": {
-              "displayName": "Campaign ID",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "prospectId": {
-              "displayName": "Prospect ID",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "subject": {
-              "displayName": "Subject",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "textMessage": {
-              "displayName": "Text Message",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "htmlMessage": {
-              "displayName": "HTML Message",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "senderOptions": {
-              "displayName": "Sender Options",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "replyToOptions": {
-              "displayName": "Reply To Options",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "scheduledTime": {
-              "displayName": "Scheduled Time",
-              "valueType": "datetime",
-              "providerType": "datetime"
-            },
-            "isOperational": {
-              "displayName": "Is Operational",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "emailTemplateId": {
-              "displayName": "Email Template ID",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "trackerDomainId": {
-              "displayName": "Tracker Domain ID",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "folderId": {
-              "displayName": "Folder ID",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "id": {
-              "displayName": "Email ID",
-              "valueType": "int",
-              "providerType": "integer",
-              "readOnly": true
-            },
             "clientType": {
-              "displayName": "Client Type",
+              "displayName": "clientType",
               "valueType": "string",
-              "providerType": "string",
+              "providerType": "String",
               "readOnly": true
             },
             "createdById": {
-              "displayName": "Created By ID",
+              "displayName": "createdById",
               "valueType": "int",
-              "providerType": "integer",
+              "providerType": "Integer",
               "readOnly": true
             },
-            "listId": {
-              "displayName": "List ID",
+            "id": {
+              "displayName": "id",
               "valueType": "int",
-              "providerType": "integer",
+              "providerType": "Integer",
               "readOnly": true
             },
             "listEmailId": {
-              "displayName": "List Email ID",
+              "displayName": "listEmailId",
               "valueType": "int",
-              "providerType": "integer",
+              "providerType": "Integer",
               "readOnly": true
             },
-            "sentAt": {
-              "displayName": "Sent At",
-              "valueType": "datetime",
-              "providerType": "datetime",
-              "readOnly": true
-            },
-            "createdBy": {
-              "displayName": "Created By",
-              "valueType": "other",
-              "providerType": "object",
-              "readOnly": true
-            },
-            "campaign": {
-              "displayName": "Campaign",
-              "valueType": "other",
-              "providerType": "object",
-              "readOnly": true
-            },
-            "list": {
-              "displayName": "List",
-              "valueType": "other",
-              "providerType": "object",
-              "readOnly": true
-            },
-            "listEmail": {
-              "displayName": "List Email",
-              "valueType": "other",
-              "providerType": "object",
+            "listId": {
+              "displayName": "listId",
+              "valueType": "int",
+              "providerType": "Integer",
               "readOnly": true
             },
             "salesforceCmsId": {
-              "displayName": "Copied Salesforce CMS ID",
+              "displayName": "salesforceCmsId",
               "valueType": "string",
-              "providerType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "sentAt": {
+              "displayName": "sentAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
               "readOnly": true
             },
             "type": {
-              "displayName": "Type",
+              "displayName": "type",
               "valueType": "singleSelect",
-              "providerType": "enum",
+              "providerType": "Enum",
               "readOnly": true,
               "values": [
                 {
                   "value": "html",
-                  "displayValue": "HTML"
+                  "displayValue": "html"
                 },
                 {
                   "value": "text",
-                  "displayValue": "Text"
+                  "displayValue": "text"
                 },
                 {
                   "value": "htmlAndText",
-                  "displayValue": "HTML and Text"
+                  "displayValue": "htmlAndText"
                 }
               ]
             }
-          }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/email-v5.html"
+        },
+        "engagement-studio-programs": {
+          "displayName": "Engagement Studio Programs",
+          "path": "engagement-studio-programs",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "recipientListIds": {
+              "displayName": "recipientListIds",
+              "valueType": "other",
+              "providerType": "Array",
+              "readOnly": true
+            },
+            "salesforceId": {
+              "displayName": "salesforceId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "scheduleCreatedById": {
+              "displayName": "scheduleCreatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "Enum",
+              "readOnly": true,
+              "values": [
+                {
+                  "value": "draft",
+                  "displayValue": "draft"
+                },
+                {
+                  "value": "running",
+                  "displayValue": "running"
+                },
+                {
+                  "value": "paused",
+                  "displayValue": "paused"
+                },
+                {
+                  "value": "starting",
+                  "displayValue": "starting"
+                },
+                {
+                  "value": "scheduled",
+                  "displayValue": "scheduled"
+                }
+              ]
+            },
+            "suppressionListIds": {
+              "displayName": "suppressionListIds",
+              "valueType": "other",
+              "providerType": "Array",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/engagement-studio-program-v5.html"
+        },
+        "files": {
+          "displayName": "Files",
+          "path": "files",
+          "responseKey": "values",
+          "fields": {
+            "bitlyIsPersonalized": {
+              "displayName": "bitlyIsPersonalized",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "bitlyShortUrl": {
+              "displayName": "bitlyShortUrl",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isTracked": {
+              "displayName": "isTracked",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "salesforceId": {
+              "displayName": "salesforceId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "size": {
+              "displayName": "size",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "vanityUrl": {
+              "displayName": "vanityUrl",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/file-v5.html"
+        },
+        "folder-contents": {
+          "displayName": "Folder Contents",
+          "path": "folder-contents",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "folderId": {
+              "displayName": "folderId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "folderRef": {
+              "displayName": "folderRef",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "objectId": {
+              "displayName": "objectId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "objectName": {
+              "displayName": "objectName",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "objectRef": {
+              "displayName": "objectRef",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "objectType": {
+              "displayName": "objectType",
+              "valueType": "singleSelect",
+              "providerType": "Enum",
+              "readOnly": true,
+              "values": [
+                {
+                  "value": "objectId",
+                  "displayValue": "objectId"
+                }
+              ]
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/folder-contents-v5.html"
+        },
+        "folders": {
+          "displayName": "Folders",
+          "path": "folders",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "parentFolderId": {
+              "displayName": "parentFolderId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "path": {
+              "displayName": "path",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "usePermissions": {
+              "displayName": "usePermissions",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/folder-v5.html"
+        },
+        "form-fields": {
+          "displayName": "Form Fields",
+          "path": "form-fields",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "hasDependents": {
+              "displayName": "hasDependents",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "hasProgressives": {
+              "displayName": "hasProgressives",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "hasValues": {
+              "displayName": "hasValues",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "sortOrder": {
+              "displayName": "sortOrder",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/form-field-v5.html"
+        },
+        "form-handler-fields": {
+          "displayName": "Form Handler Fields",
+          "path": "form-handler-fields",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/form-handler-field-v5.html"
+        },
+        "form-handlers": {
+          "displayName": "Form Handlers",
+          "path": "form-handlers",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "embedCode": {
+              "displayName": "embedCode",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "salesforceId": {
+              "displayName": "salesforceId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/form-handler-v5.html"
+        },
+        "forms": {
+          "displayName": "Forms",
+          "path": "forms",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "embedCode": {
+              "displayName": "embedCode",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "isUseRedirectLocation": {
+              "displayName": "isUseRedirectLocation",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "salesforceCmsId": {
+              "displayName": "salesforceCmsId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "salesforceId": {
+              "displayName": "salesforceId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/form-v5.html"
+        },
+        "landing-pages": {
+          "displayName": "Landing Pages",
+          "path": "landing-pages",
+          "responseKey": "values",
+          "fields": {
+            "bitlyIsPersonalized": {
+              "displayName": "bitlyIsPersonalized",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "bitlyShortUrl": {
+              "displayName": "bitlyShortUrl",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "isUseRedirectLocation": {
+              "displayName": "isUseRedirectLocation",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "layoutCss": {
+              "displayName": "layoutCss",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "layoutCssGenerated": {
+              "displayName": "layoutCssGenerated",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "layoutTableBorder": {
+              "displayName": "layoutTableBorder",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "layoutType": {
+              "displayName": "layoutType",
+              "valueType": "singleSelect",
+              "providerType": "Enum",
+              "readOnly": true,
+              "values": [
+                {
+                  "value": "Layout Template",
+                  "displayValue": "Layout Template"
+                },
+                {
+                  "value": "Landing Page Builder",
+                  "displayValue": "Landing Page Builder"
+                },
+                {
+                  "value": "Legacy Page Builder",
+                  "displayValue": "Legacy Page Builder"
+                },
+                {
+                  "value": "Salesforce Builder",
+                  "displayValue": "Salesforce Builder"
+                }
+              ]
+            },
+            "salesforceCmsId": {
+              "displayName": "salesforceCmsId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "salesforceId": {
+              "displayName": "salesforceId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "vanityUrl": {
+              "displayName": "vanityUrl",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/landing-page-v5.html"
+        },
+        "layout-templates": {
+          "displayName": "Layout Templates",
+          "path": "layout-templates",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "siteSearchContent": {
+              "displayName": "siteSearchContent",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/layout-template-v5.html"
+        },
+        "lifecycle-histories": {
+          "displayName": "Lifecycle Histories",
+          "path": "lifecycle-histories",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "nextStageId": {
+              "displayName": "nextStageId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "previousStageId": {
+              "displayName": "previousStageId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "prospectId": {
+              "displayName": "prospectId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "secondsElapsed": {
+              "displayName": "secondsElapsed",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/lifecycle-history-v5.html"
+        },
+        "lifecycle-stages": {
+          "displayName": "Lifecycle Stages",
+          "path": "lifecycle-stages",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "isLocked": {
+              "displayName": "isLocked",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "matchType": {
+              "displayName": "matchType",
+              "valueType": "singleSelect",
+              "providerType": "Enum",
+              "readOnly": true,
+              "values": [
+                {
+                  "value": "all",
+                  "displayValue": "all"
+                },
+                {
+                  "value": "any",
+                  "displayValue": "any"
+                }
+              ]
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "position": {
+              "displayName": "position",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/lifecycle-stage-v5.html"
+        },
+        "list-emails": {
+          "displayName": "List Emails",
+          "path": "list-emails",
+          "responseKey": "values",
+          "fields": {
+            "clientType": {
+              "displayName": "clientType",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "isPaused": {
+              "displayName": "isPaused",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "isSent": {
+              "displayName": "isSent",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "operationalEmail": {
+              "displayName": "operationalEmail",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "sentAt": {
+              "displayName": "sentAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "Enum",
+              "readOnly": true,
+              "values": [
+                {
+                  "value": "html",
+                  "displayValue": "html"
+                },
+                {
+                  "value": "text",
+                  "displayValue": "text"
+                },
+                {
+                  "value": "htmlAndText",
+                  "displayValue": "htmlAndText"
+                }
+              ]
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/list-email-v5.html"
+        },
+        "list-memberships": {
+          "displayName": "List Memberships",
+          "path": "list-memberships",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/list-membership-v5.html"
+        },
+        "lists": {
+          "displayName": "Lists",
+          "path": "lists",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "isDynamic": {
+              "displayName": "isDynamic",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/list-v5.html"
+        },
+        "opportunities": {
+          "displayName": "Opportunities",
+          "path": "opportunities",
+          "responseKey": "values",
+          "fields": {
+            "campaignId": {
+              "displayName": "campaignId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "closedAt": {
+              "displayName": "closedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "probability": {
+              "displayName": "probability",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "salesforceId": {
+              "displayName": "salesforceId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "stage": {
+              "displayName": "stage",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "value": {
+              "displayName": "value",
+              "valueType": "float",
+              "providerType": "Float",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/opportunity-v5.html"
+        },
+        "prospect-accounts": {
+          "displayName": "Prospect Accounts",
+          "path": "prospect-accounts",
+          "responseKey": "values",
+          "fields": {
+            "annualRevenue": {
+              "displayName": "annualRevenue",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "assignedToId": {
+              "displayName": "assignedToId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "billingAddressOne": {
+              "displayName": "billingAddressOne",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "billingAddressTwo": {
+              "displayName": "billingAddressTwo",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "billingCity": {
+              "displayName": "billingCity",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "billingCountry": {
+              "displayName": "billingCountry",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "billingState": {
+              "displayName": "billingState",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "billingZip": {
+              "displayName": "billingZip",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "employees": {
+              "displayName": "employees",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "fax": {
+              "displayName": "fax",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "industry": {
+              "displayName": "industry",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "number": {
+              "displayName": "number",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "ownership": {
+              "displayName": "ownership",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "phone": {
+              "displayName": "phone",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "rating": {
+              "displayName": "rating",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "salesforceId": {
+              "displayName": "salesforceId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "shippingAddressOne": {
+              "displayName": "shippingAddressOne",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "shippingAddressTwo": {
+              "displayName": "shippingAddressTwo",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "shippingCity": {
+              "displayName": "shippingCity",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "shippingCountry": {
+              "displayName": "shippingCountry",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "shippingState": {
+              "displayName": "shippingState",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "shippingZip": {
+              "displayName": "shippingZip",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "sic": {
+              "displayName": "sic",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "site": {
+              "displayName": "site",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "tickerSymbol": {
+              "displayName": "tickerSymbol",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "website": {
+              "displayName": "website",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/prospect-account-v5.html"
+        },
+        "prospects": {
+          "displayName": "Prospects",
+          "path": "prospects",
+          "responseKey": "values",
+          "fields": {
+            "assignedToId": {
+              "displayName": "assignedToId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "campaignParameter": {
+              "displayName": "campaignParameter",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "contentParameter": {
+              "displayName": "contentParameter",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "convertedAt": {
+              "displayName": "convertedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "convertedFromObjectName": {
+              "displayName": "convertedFromObjectName",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "convertedFromObjectType": {
+              "displayName": "convertedFromObjectType",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "doNotSell": {
+              "displayName": "doNotSell",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "emailBouncedAt": {
+              "displayName": "emailBouncedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "emailBouncedReason": {
+              "displayName": "emailBouncedReason",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "firstActivityAt": {
+              "displayName": "firstActivityAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "firstAssignedAt": {
+              "displayName": "firstAssignedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "firstReferrerQuery": {
+              "displayName": "firstReferrerQuery",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "firstReferrerType": {
+              "displayName": "firstReferrerType",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "firstReferrerUrl": {
+              "displayName": "firstReferrerUrl",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "grade": {
+              "displayName": "grade",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "isEmailHardBounced": {
+              "displayName": "isEmailHardBounced",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "lastActivityAt": {
+              "displayName": "lastActivityAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "lifecycleStageId": {
+              "displayName": "lifecycleStageId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "mediumParameter": {
+              "displayName": "mediumParameter",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "password": {
+              "displayName": "password",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "recentInteraction": {
+              "displayName": "recentInteraction",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "salesforceAccountId": {
+              "displayName": "salesforceAccountId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "salesforceCampaignId": {
+              "displayName": "salesforceCampaignId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "salesforceContactId": {
+              "displayName": "salesforceContactId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "salesforceLastSync": {
+              "displayName": "salesforceLastSync",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "salesforceLeadId": {
+              "displayName": "salesforceLeadId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "salesforceUrl": {
+              "displayName": "salesforceUrl",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "sourceParameter": {
+              "displayName": "sourceParameter",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "termParameter": {
+              "displayName": "termParameter",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/prospect-v5.html"
+        },
+        "tagged-objects": {
+          "displayName": "Tagged Objects",
+          "path": "tagged-objects",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "objectId": {
+              "displayName": "objectId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "objectName": {
+              "displayName": "objectName",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "objectType": {
+              "displayName": "objectType",
+              "valueType": "singleSelect",
+              "providerType": "Enum",
+              "readOnly": true,
+              "values": [
+                {
+                  "value": "campaign",
+                  "displayValue": "campaign"
+                },
+                {
+                  "value": "custom-field",
+                  "displayValue": "custom-field"
+                },
+                {
+                  "value": "custom-redirect",
+                  "displayValue": "custom-redirect"
+                },
+                {
+                  "value": "dynamic-content",
+                  "displayValue": "dynamic-content"
+                },
+                {
+                  "value": "email",
+                  "displayValue": "email"
+                },
+                {
+                  "value": "email-template",
+                  "displayValue": "email-template"
+                },
+                {
+                  "value": "file",
+                  "displayValue": "file"
+                },
+                {
+                  "value": "form-field",
+                  "displayValue": "form-field"
+                },
+                {
+                  "value": "form-handler",
+                  "displayValue": "form-handler"
+                },
+                {
+                  "value": "form",
+                  "displayValue": "form"
+                },
+                {
+                  "value": "landing-page",
+                  "displayValue": "landing-page"
+                },
+                {
+                  "value": "layout-template",
+                  "displayValue": "layout-template"
+                },
+                {
+                  "value": "list",
+                  "displayValue": "list"
+                },
+                {
+                  "value": "prospect",
+                  "displayValue": "prospect"
+                },
+                {
+                  "value": "user",
+                  "displayValue": "user"
+                }
+              ]
+            },
+            "tagId": {
+              "displayName": "tagId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/tagged-object-v5.html"
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "tags",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "objectCount": {
+              "displayName": "objectCount",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/tag-v5.html"
+        },
+        "tracker-domains": {
+          "displayName": "Tracker Domains",
+          "path": "tracker-domains",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "defaultCampaignId": {
+              "displayName": "defaultCampaignId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "domain": {
+              "displayName": "domain",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "httpsStatus": {
+              "displayName": "httpsStatus",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "isPrimary": {
+              "displayName": "isPrimary",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "sslRequestedById": {
+              "displayName": "sslRequestedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "sslStatus": {
+              "displayName": "sslStatus",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "sslStatusDetails": {
+              "displayName": "sslStatusDetails",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "trackingCode": {
+              "displayName": "trackingCode",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "validatedAt": {
+              "displayName": "validatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "validationStatus": {
+              "displayName": "validationStatus",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "vanityUrlStatus": {
+              "displayName": "vanityUrlStatus",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/tracker-domain-v5.html"
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "users",
+          "responseKey": "values",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "firstName": {
+              "displayName": "firstName",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "jobTitle": {
+              "displayName": "jobTitle",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "role": {
+              "displayName": "role",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "roleName": {
+              "displayName": "roleName",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "salesforceId": {
+              "displayName": "salesforceId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "tagReplacementLanguage": {
+              "displayName": "tagReplacementLanguage",
+              "valueType": "singleSelect",
+              "providerType": "Enum",
+              "readOnly": true,
+              "values": [
+                {
+                  "value": "pml",
+                  "displayValue": "pml"
+                },
+                {
+                  "value": "hml",
+                  "displayValue": "hml"
+                },
+                {
+                  "value": "undetermined",
+                  "displayValue": "undetermined"
+                }
+              ]
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "username": {
+              "displayName": "username",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/user-v5.html"
+        },
+        "visitor-activities": {
+          "displayName": "Visitor Activities",
+          "path": "visitor-activities",
+          "responseKey": "values",
+          "fields": {
+            "campaignId": {
+              "displayName": "campaignId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "customRedirectId": {
+              "displayName": "customRedirectId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "details": {
+              "displayName": "details",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "emailId": {
+              "displayName": "emailId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "emailTemplateId": {
+              "displayName": "emailTemplateId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "fileId": {
+              "displayName": "fileId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "formHandlerId": {
+              "displayName": "formHandlerId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "formId": {
+              "displayName": "formId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "landingPageId": {
+              "displayName": "landingPageId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "listEmailId": {
+              "displayName": "listEmailId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "multivariateTestVariationId": {
+              "displayName": "multivariateTestVariationId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "opportunityId": {
+              "displayName": "opportunityId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "paidSearchAdId": {
+              "displayName": "paidSearchAdId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "prospectId": {
+              "displayName": "prospectId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "siteSearchQueryId": {
+              "displayName": "siteSearchQueryId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "typeName": {
+              "displayName": "typeName",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "visitId": {
+              "displayName": "visitId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "visitorId": {
+              "displayName": "visitorId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "visitorPageViewId": {
+              "displayName": "visitorPageViewId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/visitor-activity-v5.html"
+        },
+        "visitor-page-views": {
+          "displayName": "Visitor Page Views",
+          "path": "visitor-page-views",
+          "responseKey": "values",
+          "fields": {
+            "campaignId": {
+              "displayName": "campaignId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "durationInSeconds": {
+              "displayName": "durationInSeconds",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "salesforceId": {
+              "displayName": "salesforceId",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "visitId": {
+              "displayName": "visitId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "visitorId": {
+              "displayName": "visitorId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/visitor-page-view-v5.html"
+        },
+        "visitors": {
+          "displayName": "Visitors",
+          "path": "visitors",
+          "responseKey": "values",
+          "fields": {
+            "campaignParameter": {
+              "displayName": "campaignParameter",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "contentParameter": {
+              "displayName": "contentParameter",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "doNotSell": {
+              "displayName": "doNotSell",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "hostname": {
+              "displayName": "hostname",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "ipAddress": {
+              "displayName": "ipAddress",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "isIdentified": {
+              "displayName": "isIdentified",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "mediumParameter": {
+              "displayName": "mediumParameter",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "pageViewCount": {
+              "displayName": "pageViewCount",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "sourceParameter": {
+              "displayName": "sourceParameter",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "termParameter": {
+              "displayName": "termParameter",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "Datetime",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/visitor-v5.html"
+        },
+        "visits": {
+          "displayName": "Visits",
+          "path": "visits",
+          "responseKey": "values",
+          "fields": {
+            "campaignParameter": {
+              "displayName": "campaignParameter",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "contentParameter": {
+              "displayName": "contentParameter",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "durationInSeconds": {
+              "displayName": "durationInSeconds",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "firstVisitorPageViewAt": {
+              "displayName": "firstVisitorPageViewAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "lastVisitorPageViewAt": {
+              "displayName": "lastVisitorPageViewAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "mediumParameter": {
+              "displayName": "mediumParameter",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "prospectId": {
+              "displayName": "prospectId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "sourceParameter": {
+              "displayName": "sourceParameter",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "termParameter": {
+              "displayName": "termParameter",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "visitorId": {
+              "displayName": "visitorId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "visitorPageViewCount": {
+              "displayName": "visitorPageViewCount",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/visit-v5.html"
         }
       }
     }

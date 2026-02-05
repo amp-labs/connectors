@@ -27,6 +27,12 @@ var (
 
 	// ErrMissingFieldsMetadata is returned when the list of fields to create via UpsertMetadata is empty.
 	ErrMissingFieldsMetadata = errors.New("no fields metadata provided in UpsertMetadata")
+
+	// ErrMissingSearchFilters is returned when no field filters are provided for the Search operation.
+	ErrMissingSearchFilters = errors.New("no filters provided for Search operation")
+
+	// ErrPaginationControl is returned when controlling page size is not supported by connector..
+	ErrPaginationControl = errors.New("pagination cannot be controlled by page size")
 )
 
 func (p ReadParams) ValidateParams(withRequiredFields bool) error {
@@ -74,10 +80,10 @@ func (p DeleteParams) ValidateParams() error {
 }
 
 var (
-	// ErrUnknownBatchWriteType is returned when enum option for the write type is invalid.
-	ErrUnknownBatchWriteType = errors.New("unknown batch write type")
-	// ErrUnsupportedBatchWriteType is returned when connector doesn't implement batch write type.
-	ErrUnsupportedBatchWriteType = errors.New("batch write type is not supported")
+	// ErrUnknownWriteType is returned when enum option for the write type is invalid.
+	ErrUnknownWriteType = errors.New("unknown write type")
+	// ErrUnsupportedWriteType is returned when connector doesn't implement write type.
+	ErrUnsupportedWriteType = errors.New("write type is not supported")
 )
 
 func (p BatchWriteParam) ValidateParams() error {
@@ -86,8 +92,8 @@ func (p BatchWriteParam) ValidateParams() error {
 	}
 
 	// Neither "create" nor "update".
-	if p.Type != BatchWriteTypeCreate && p.Type != BatchWriteTypeUpdate {
-		return ErrUnknownBatchWriteType
+	if p.Type != WriteTypeCreate && p.Type != WriteTypeUpdate {
+		return ErrUnknownWriteType
 	}
 
 	if len(p.Batch) == 0 {
@@ -104,6 +110,22 @@ func (p *UpsertMetadataParams) ValidateParams() error {
 
 	if len(p.Fields) == 0 {
 		return ErrMissingFieldsMetadata
+	}
+
+	return nil
+}
+
+func (p SearchParams) ValidateParams(withRequiredFields bool) error {
+	if len(p.ObjectName) == 0 {
+		return ErrMissingObjects
+	}
+
+	if withRequiredFields && len(p.Fields) == 0 {
+		return ErrMissingFields
+	}
+
+	if len(p.Filter.FieldFilters) == 0 {
+		return ErrMissingSearchFilters
 	}
 
 	return nil

@@ -1,0 +1,45 @@
+{
+  "status": "success",
+  "count": 2,
+  "total_count": 2,
+  "current_page": 1,
+  "per_page": 100,
+  "next_page_link": "",
+  "prev_page_link": "",
+  "data": [
+    {
+      "id": 12345,
+      "role": "Admin",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "extension": 101,
+      "groups": [],
+      "owned_numbers": ["+14155551234"],
+      "shared_numbers": [],
+      "created_at": "2024-01-15",
+      "last_login_timestamp": "2024-03-15 10:30:00",
+      "timezone": "America/Los_Angeles",
+      "working_hours_type": "Always Open",
+      "available": "Yes",
+      "unavailability_reason": "",
+      "on_call": "No"
+    },
+    {
+      "id": 12346,
+      "role": "Agent",
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "extension": 102,
+      "groups": ["Sales"],
+      "owned_numbers": ["+14155555678"],
+      "shared_numbers": ["+14155559999"],
+      "created_at": "2024-02-20",
+      "last_login_timestamp": "2024-03-15 09:15:00",
+      "timezone": "America/New_York",
+      "working_hours_type": "Custom",
+      "available": "Yes",
+      "unavailability_reason": "",
+      "on_call": "Yes"
+    }
+  ]
+}

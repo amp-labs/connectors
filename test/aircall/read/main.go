@@ -27,56 +27,67 @@ func main() {
 	conn := testAircall.GetAircallConnector(ctx)
 
 	slog.Info("Testing basic read for calls")
+
 	if err := testRead(ctx, conn, "calls"); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("Testing basic read for users")
+
 	if err := testRead(ctx, conn, "users"); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("Testing basic read for teams")
+
 	if err := testRead(ctx, conn, "teams"); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("Testing basic read for tags")
+
 	if err := testRead(ctx, conn, "tags"); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("Testing basic read for contacts")
+
 	if err := testRead(ctx, conn, "contacts"); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("Testing basic read for numbers")
+
 	if err := testRead(ctx, conn, "numbers"); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("Testing time-based filtering/incremental sync for calls")
+
 	if err := testIncrementalRead(ctx, conn, "calls"); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("Testing pagination for tags")
+
 	if err := testPagination(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("Testing time-based filtering/incremental sync for users")
+
 	if err := testUsersFiltering(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("Testing pagination for contacts")
+
 	if err := testContactsPagination(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("Testing time-based filtering/incremental sync for contacts")
+
 	if err := testContactsFiltering(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
@@ -110,6 +121,7 @@ func testContactsPagination(ctx context.Context, conn *aircall.Connector) error 
 
 	// Read second page
 	params.NextPage = res.NextPage
+
 	res2, err := conn.Read(ctx, params)
 	if err != nil {
 		return fmt.Errorf("error reading %s page 2: %w", objectName, err)
@@ -138,6 +150,7 @@ func testContactsFiltering(ctx context.Context, conn *aircall.Connector) error {
 	if err != nil {
 		return fmt.Errorf("error reading contacts with range: %w", err)
 	}
+
 	slog.Info("Recent contacts results", "rows", res.Rows)
 
 	utils.DumpJSON(res, os.Stdout)
@@ -224,6 +237,7 @@ func testPagination(ctx context.Context, conn *aircall.Connector) error {
 
 	// Read second page
 	params.NextPage = res.NextPage
+
 	res2, err := conn.Read(ctx, params)
 	if err != nil {
 	}
@@ -252,6 +266,7 @@ func testUsersFiltering(ctx context.Context, conn *aircall.Connector) error {
 	if err != nil {
 		return fmt.Errorf("error reading users with range 1: %w", err)
 	}
+
 	slog.Info("Range 1 results", "rows", res.Rows)
 	utils.DumpJSON(res, os.Stdout)
 
@@ -267,6 +282,7 @@ func testUsersFiltering(ctx context.Context, conn *aircall.Connector) error {
 	if err != nil {
 		return fmt.Errorf("error reading users with range 2: %w", err)
 	}
+
 	slog.Info("Range 2 results", "rows", res2.Rows)
 	utils.DumpJSON(res2, os.Stdout)
 

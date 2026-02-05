@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -143,11 +144,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read Opportunity with Account association - AccountId added to SOQL and association extracted",
+			Name: "Read Opportunity with Accounts association - AccountId added to SOQL and association extracted",
 			Input: common.ReadParams{
 				ObjectName:        "opportunity",
 				Fields:            connectors.Fields("Name", "Amount", "StageName"),
-				AssociatedObjects: []string{"account"},
+				AssociatedObjects: []string{"accounts"},
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -173,7 +174,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 							"stagename": "Prospecting",
 						},
 						Associations: map[string][]common.Association{
-							"account": {
+							"accounts": {
 								{
 									ObjectId: "001ak00000OKNPHAA5",
 									Raw:      nil, // Parent relationships have empty Raw - workflow layer will fetch
@@ -398,6 +399,170 @@ func validateSingleAssociation(actualAssoc, expectedAssoc common.Association) bo
 	return true
 }
 
+func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
+	t.Parallel()
+
+	responseMissingHeader := testutils.DataFromFile(t, "pardot/read/emails/err-missing-header.json")
+	responseMissingQuery := testutils.DataFromFile(t, "pardot/read/emails/err-missing-query.json")
+	responseEmailsFirstPage := testutils.DataFromFile(t, "pardot/read/emails/1-first-page.json")
+	responseEmailsEmptyPage := testutils.DataFromFile(t, "pardot/read/emails/2-empty-page.json")
+
+	pardotHeader := http.Header{
+		"Pardot-Business-Unit-Id": []string{"test-business-unit-id"},
+	}
+
+	tests := []testroutines.Read{
+		{
+			Name:         "Read object must be included",
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:         "At least one field is requested",
+			Input:        common.ReadParams{ObjectName: "emails"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFields},
+		},
+		{
+			Name:  "Error Missing Header message is understood",
+			Input: common.ReadParams{ObjectName: "emails", Fields: connectors.Fields("id")},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, responseMissingHeader),
+			}.Server(),
+			ExpectedErrs: []error{
+				common.ErrBadRequest,
+				errors.New("A required header is missing: Pardot-Business-Unit-Id header not found on request."), // nolint:goerr113
+			},
+		},
+		{
+			Name:  "Error Missing Query message is understood",
+			Input: common.ReadParams{ObjectName: "emails", Fields: connectors.Fields("id")},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, responseMissingQuery),
+			}.Server(),
+			ExpectedErrs: []error{
+				common.ErrBadRequest,
+				errors.New("One or more required parameters are missing: fields"), // nolint:goerr113
+			},
+		},
+		{
+			Name: "Read emails first page",
+			Input: common.ReadParams{
+				ObjectName: "eMaILs",
+				Fields:     connectors.Fields("name", "subject"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v5/objects/emails"),
+					mockcond.QueryParam("limit", "1000"),
+					mockcond.Or{
+						mockcond.QueryParam("fields", "name,subject"),
+						mockcond.QueryParam("fields", "subject,name"),
+					},
+					mockcond.Header(pardotHeader),
+				},
+				Then: mockserver.Response(http.StatusOK, responseEmailsFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"name":    "Sending first email ever",
+						"subject": "Few Moments Later",
+					},
+					Raw: map[string]any{
+						"id":         float64(34277860),
+						"clientType": "Web",
+						"updatedAt":  "2025-05-16T11:27:08-07:00",
+					},
+				}, {
+					Fields: map[string]any{
+						"name":    "Second email, on the roll",
+						"subject": "Second email, unbelievable",
+					},
+					Raw: map[string]any{
+						"id":         float64(34277863),
+						"clientType": "Web",
+						"updatedAt":  "2025-05-16T11:29:03-07:00",
+					},
+				}},
+				NextPage: "https://pi.demo.pardot.com/api/v5/objects/emails?fields=id,name,subject,clientType,prospectId,listEmailId,updatedAt&nextPageToken=eyJvcmRlckJ5IjoiIiwiZmlsdGVycyI6W10sImxpbWl0IjoxLCJyZXN1bWVWYWx1ZSI6eyJpZCI6MzQyNzc4NjN9LCJwYWdlIjoyLCJyZWNDb3VudCI6MiwiZXhwaXJlVGltZSI6IjIwMjUtMDUtMTZUMjA6Mzc6MTMtMDc6MDAiLCJkZWxldGVkIjpudWxsfQ==", // nolint:lll
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Incremental read of emails last empty page",
+			Input: common.ReadParams{
+				ObjectName: "eMaILs",
+				Fields:     connectors.Fields("name"),
+				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
+					time.FixedZone("UTC-8", -8*60*60)),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v5/objects/emails"),
+					mockcond.QueryParam("limit", "1000"),
+					mockcond.QueryParam("fields", "name"),
+					mockcond.QueryParam("sentAtAfterOrEqualTo", "2024-09-19T04:30:45-08:00"),
+					mockcond.Header(pardotHeader),
+				},
+				Then: mockserver.Response(http.StatusOK, responseEmailsEmptyPage),
+			}.Server(),
+			Expected: &common.ReadResult{
+				Rows:     0,
+				Data:     []common.ReadResultRow{},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read Emails using next page token",
+			Input: common.ReadParams{
+				ObjectName: "eMaILs",
+				Fields:     connectors.Fields("name"),
+				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
+					time.FixedZone("UTC-8", -8*60*60)),
+				NextPage: testroutines.URLTestServer + "/api/v5/objects/emails?fields=id,name,subject,clientType,prospectId,listEmailId,updatedAt&nextPageToken=eyJvcmRlckJ5IjoiIiwiZmlsdGVycyI6W10sImxpbWl0IjoxLCJyZXN1bWVWYWx1ZSI6eyJpZCI6MzQyNzc4NjN9LCJwYWdlIjoyLCJyZWNDb3VudCI6MiwiZXhwaXJlVGltZSI6IjIwMjUtMDUtMTZUMjA6Mzc6MTMtMDc6MDAiLCJkZWxldGVkIjpudWxsfQ==", // nolint:lll
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v5/objects/emails"),
+					// Provider API doesn't allow these query parameters alongside with nextPageToken.
+					mockcond.QueryParamsMissing("sentAtAfterOrEqualTo", "limit"),
+					mockcond.Header(pardotHeader),
+				},
+				Then: mockserver.Response(http.StatusOK, responseEmailsEmptyPage),
+			}.Server(),
+			Expected: &common.ReadResult{
+				Rows:     0,
+				Data:     []common.ReadResultRow{},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestConnectorAccountEngagement(tt.Server.URL)
+			})
+		})
+	}
+}
+
 func constructTestConnector(serverURL string) (*Connector, error) {
 	return constructTestConnectorGeneral(serverURL, providers.ModuleSalesforceCRM)
 }
@@ -411,6 +576,10 @@ func constructTestConnectorGeneral(serverURL string, module common.ModuleID) (*C
 		WithAuthenticatedClient(mockutils.NewClient()),
 		WithWorkspace("test-workspace"),
 		WithModule(module),
+		WithMetadata(map[string]string{
+			"isDemo":         "true",
+			"businessUnitId": "test-business-unit-id",
+		}),
 	)
 	if err != nil {
 		return nil, err
@@ -418,6 +587,14 @@ func constructTestConnectorGeneral(serverURL string, module common.ModuleID) (*C
 
 	// for testing we want to redirect calls to our mock server
 	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, serverURL))
+
+	if connector.crmAdapter != nil {
+		connector.crmAdapter.SetUnitTestBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
+	}
+
+	if connector.pardotAdapter != nil {
+		connector.pardotAdapter.SetUnitTestBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
+	}
 
 	return connector, nil
 }

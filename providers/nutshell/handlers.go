@@ -245,7 +245,7 @@ func (c *Connector) buildUpdateRequest(
 }
 
 // Creating objects requires payload to be wrapped with some key.
-// The object name doesn't always match the payload key, the registry bellow hadnles this.
+// The object name doesn't always match the payload key, the registry bellow handles this.
 var payloadWrapperKeyRegistry = datautils.NewDefaultMap(map[string]string{ // nolint:gochecknoglobals
 	"audiences": "emAudiences",
 	"notes":     "data",

@@ -5,14 +5,21 @@ const Shopify Provider = "shopify"
 func init() {
 	SetInfo(Shopify, ProviderInfo{
 		DisplayName: "Shopify",
-		AuthType:    ApiKey,
+		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.myshopify.com",
-		ApiKeyOpts: &ApiKeyOpts{
-			AttachmentType: Header,
-			Header: &ApiKeyOptsHeader{
-				Name: "X-Shopify-Access-Token",
+		Oauth2Opts: &Oauth2Opts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://{{.workspace}}.myshopify.com/admin/oauth/authorize",
+			TokenURL:                  "https://{{.workspace}}.myshopify.com/admin/oauth/access_token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
+			DocsURL:                   "https://shopify.dev/docs/api/admin-graphql#authentication",
+			AccessTokenOpts: &AccessTokenOpts{
+				AttachmentType: AccessTokenHeaderAttachment,
+				Header: &AccessTokenOptsHeader{
+					Name: "X-Shopify-Access-Token",
+				},
 			},
-			DocsURL: "https://shopify.dev/docs/api/admin-graphql#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -21,7 +28,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,

@@ -1,0 +1,6 @@
+{
+  "query": "query Customers($first: Int!, $after: String, $query: String) {\n  customers(first: $first, after: $after, query: $query) {\n    nodes {\n      id\n      firstName\n      lastName\n      displayName\n      createdAt\n      updatedAt\n      state\n      note\n      tags\n      verifiedEmail\n      taxExempt\n      taxExemptions\n      locale\n      numberOfOrders\n      lifetimeDuration\n      canDelete\n      amountSpent {\n        amount\n        currencyCode\n      }\n      email\n      phone\n      defaultAddress {\n        id\n        firstName\n        lastName\n        address1\n        address2\n        city\n        province\n        provinceCode\n        country\n        countryCodeV2\n        zip\n        phone\n        company\n        formattedArea\n      }\n      image {\n        url\n        altText\n      }\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n",
+  "variables": {
+    "first": 100
+  }
+}

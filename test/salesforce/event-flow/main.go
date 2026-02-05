@@ -99,8 +99,8 @@ func testCDC(conn *salesforce.Connector, ctx context.Context, creds salesforce.C
 	printWithField("Event channel deleted", "response", resp)
 }
 
-func testChangeDataCaptureChannelMembership(conn *salesforce.Connector, ctx context.Context, channelName string, objecName string) (*salesforce.EventChannelMember, error) {
-	eventName := getCDCEventName(objecName)
+func testChangeDataCaptureChannelMembership(conn *salesforce.Connector, ctx context.Context, channelName string, objectName string) (*salesforce.EventChannelMember, error) {
+	eventName := getCDCEventName(objectName)
 	rawChannelName := getRawChannelNameFromChannel(channelName)
 
 	member := &salesforce.EventChannelMember{

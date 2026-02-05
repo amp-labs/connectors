@@ -9,8 +9,11 @@ import (
 )
 
 func (c *Connector) BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error) {
-	// Delegated.
-	return c.batchAdapter.BatchWrite(ctx, params)
+	if c.crmAdapter != nil {
+		return c.crmAdapter.BatchWrite(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
 }
 
 // Write will write data to Salesforce.

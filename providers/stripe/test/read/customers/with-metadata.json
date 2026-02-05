@@ -1,0 +1,40 @@
+{
+    "object": "list",
+    "data": [
+        {
+            "id": "cus_test123",
+            "object": "customer",
+            "address": null,
+            "balance": 0,
+            "created": 1737488307,
+            "currency": null,
+            "default_source": null,
+            "delinquent": false,
+            "description": null,
+            "discount": null,
+            "email": "test@example.com",
+            "invoice_prefix": "47DCFEF2",
+            "invoice_settings": {
+                "custom_fields": null,
+                "default_payment_method": null,
+                "footer": null,
+                "rendering_options": null
+            },
+            "livemode": false,
+            "metadata": {
+                "order_id": "6735",
+                "user_id": "456",
+                "internal_ref": "REF-2024-001"
+            },
+            "name": "Test Customer",
+            "next_invoice_sequence": 1,
+            "phone": null,
+            "preferred_locales": [],
+            "shipping": null,
+            "tax_exempt": "none",
+            "test_clock": null
+        }
+    ],
+    "has_more": false,
+    "url": "/v1/customers"
+}
