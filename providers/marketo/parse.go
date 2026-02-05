@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -70,4 +71,44 @@ func usesStandardId(object string) bool {
 
 func usesMarketoGUID(object string) bool {
 	return slices.Contains(marketoGUIDResponseObjects, object)
+}
+
+func constructStaticNextPageURL(url *urlbuilder.URL) common.NextPageFunc {
+	return func(node *ajson.Node) (string, error) {
+		jsonParser := jsonquery.New(node)
+
+		var offset string
+
+		off, ok := url.GetFirstQueryParam("offset")
+		if !ok {
+			off = "0"
+		}
+
+		prevOffset, err := strconv.Atoi(off)
+		if err != nil {
+			return "", err
+		}
+
+		data, err := jsonParser.ArrayOptional("result")
+		if err != nil {
+			return "", err
+		}
+
+		if len(data) == maxReturn {
+			newOffset := maxReturn + prevOffset
+			offset = strconv.Itoa(newOffset)
+		}
+
+		url.WithQueryParam("offset", offset)
+
+		return url.String(), nil
+	}
+}
+
+func nextRecordsURL(objectName string, url *urlbuilder.URL) common.NextPageFunc {
+	if assetsObjects.Has(objectName) {
+		return constructStaticNextPageURL(url)
+	}
+
+	return getNextRecordsURL
 }
