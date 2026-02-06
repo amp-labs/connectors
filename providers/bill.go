@@ -4,10 +4,21 @@ const Bill Provider = "bill"
 
 func init() {
 	SetInfo(Bill, ProviderInfo{
-		DisplayName:        "Bill",
-		AuthType:           Custom,
-		BaseURL:            "https://gateway.prod.bill.com",
-		PostAuthInfoNeeded: true,
+		DisplayName: "Bill",
+		AuthType:    Custom,
+		BaseURL:     "https://gateway.prod.bill.com",
+		CustomOpts: &CustomAuthOpts{
+			Headers: []CustomAuthHeader{
+				{
+					Name:          "sessionId",
+					ValueTemplate: "{{.sessionId}}",
+				},
+				{
+					Name:          "devKey",
+					ValueTemplate: "{{.devKey}}",
+				},
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -20,6 +31,7 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1765453519/BILL.D-4df6115f_lywcbk.svg",
@@ -57,6 +69,12 @@ func init() {
 					Prompt:      "Enter your BILL Developer Key",
 				},
 			},
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "sessionId",
+				},
+			},
 		},
+		PostAuthInfoNeeded: true,
 	})
 }
