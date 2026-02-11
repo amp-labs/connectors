@@ -1,170 +1,166 @@
 package phoneburner
 
 import (
+	"net/http"
 	"testing"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
 
-func TestListObjectMetadata(t *testing.T) {
+func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	conn, err := NewConnector(common.ConnectorParams{
-		AuthenticatedClient: mockutils.NewClient(),
-	})
-	if err != nil {
-		t.Fatalf("failed to construct connector: %v", err)
+	tests := []testroutines.Metadata{
+		{
+			Name:       "Successful metadata for contacts, folders, members, voicemails, and dialsession",
+			Input:      []string{"contacts", "folders", "members", "voicemails", "dialsession"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "Contacts",
+						Fields: map[string]common.FieldMetadata{
+							"contact_user_id": {
+								DisplayName:  "Contact User Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"first_name": {
+								DisplayName:  "First Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"folders": {
+						DisplayName: "Folders",
+						Fields: map[string]common.FieldMetadata{
+							"folder_id": {
+								DisplayName:  "Folder Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"folder_name": {
+								DisplayName:  "Folder Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"members": {
+						DisplayName: "Members",
+						Fields: map[string]common.FieldMetadata{
+							"user_id": {
+								DisplayName:  "User Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"email_address": {
+								DisplayName:  "Email Address",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"voicemails": {
+						DisplayName: "Voicemails",
+						Fields: map[string]common.FieldMetadata{
+							"recording_id": {
+								DisplayName:  "Recording Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"dialsession": {
+						DisplayName: "Dial Sessions",
+						Fields: map[string]common.FieldMetadata{
+							"dialsession_id": {
+								DisplayName:  "Dialsession Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"start_when": {
+								DisplayName:  "Start When",
+								ValueType:    "datetime",
+								ProviderType: "datetime",
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:         "Empty objects returns missing objects error",
+			Input:        nil,
+			Server:       mockserver.Dummy(),
+			Expected:     nil,
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:       "Unsupported object returns object not supported error",
+			Input:      []string{"contacts", "unknown_object"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "Contacts",
+						Fields: map[string]common.FieldMetadata{
+							"contact_user_id": {
+								DisplayName:  "Contact User Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+				},
+				Errors: map[string]error{
+					"unknown_object": mockutils.ExpectedSubsetErrors{common.ErrObjectNotSupported},
+				},
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
-	got, err := conn.ListObjectMetadata(
-		t.Context(),
-		[]string{"contacts", "folders", "members", "voicemails", "dialsession"},
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+				return constructTestConnector(tt.Server.URL)
+			})
+		})
+	}
+}
+
+func constructTestConnector(serverURL string) (*Connector, error) {
+	connector, err := NewConnector(
+		common.ConnectorParams{
+			Module:              common.ModuleRoot,
+			AuthenticatedClient: &http.Client{},
+			Workspace:           "test-workspace",
+		},
 	)
 	if err != nil {
-		t.Fatalf("ListObjectMetadata returned error: %v", err)
+		return nil, err
 	}
 
-	want := &common.ListObjectMetadataResult{
-		Result: map[string]common.ObjectMetadata{
-			"contacts": {
-				DisplayName: "Contacts",
-				Fields: map[string]common.FieldMetadata{
-					"contact_user_id": {
-						DisplayName:  "Contact User Id",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-					"first_name": {
-						DisplayName:  "First Name",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-				},
-			},
-			"folders": {
-				DisplayName: "Folders",
-				Fields: map[string]common.FieldMetadata{
-					"folder_id": {
-						DisplayName:  "Folder Id",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-					"folder_name": {
-						DisplayName:  "Folder Name",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-				},
-			},
-			"members": {
-				DisplayName: "Members",
-				Fields: map[string]common.FieldMetadata{
-					"user_id": {
-						DisplayName:  "User Id",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-					"email_address": {
-						DisplayName:  "Email Address",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-				},
-			},
-			"voicemails": {
-				DisplayName: "Voicemails",
-				Fields: map[string]common.FieldMetadata{
-					"recording_id": {
-						DisplayName:  "Recording Id",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-					"name": {
-						DisplayName:  "Name",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-				},
-			},
-			"dialsession": {
-				DisplayName: "Dial Sessions",
-				Fields: map[string]common.FieldMetadata{
-					"dialsession_id": {
-						DisplayName:  "Dialsession Id",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-					"start_when": {
-						DisplayName:  "Start When",
-						ValueType:    "datetime",
-						ProviderType: "datetime",
-					},
-				},
-			},
-		},
-		Errors: nil,
-	}
+	// Override the base URL to point to the test server.
+	connector.SetUnitTestBaseURL(serverURL)
 
-	if !testroutines.ComparatorSubsetMetadata("", got, want) {
-		t.Fatalf("metadata result mismatch: expected subset not found")
-	}
-}
-
-func TestListObjectMetadata_EmptyObjects(t *testing.T) {
-	t.Parallel()
-
-	conn, err := NewConnector(common.ConnectorParams{
-		AuthenticatedClient: mockutils.NewClient(),
-	})
-	if err != nil {
-		t.Fatalf("failed to construct connector: %v", err)
-	}
-
-	_, err = conn.ListObjectMetadata(t.Context(), nil)
-	if err == nil {
-		t.Fatalf("expected error, got nil")
-	}
-	if err != common.ErrMissingObjects {
-		t.Fatalf("expected %v, got %v", common.ErrMissingObjects, err)
-	}
-}
-
-func TestListObjectMetadata_UnsupportedObject(t *testing.T) {
-	t.Parallel()
-
-	conn, err := NewConnector(common.ConnectorParams{
-		AuthenticatedClient: mockutils.NewClient(),
-	})
-	if err != nil {
-		t.Fatalf("failed to construct connector: %v", err)
-	}
-
-	got, err := conn.ListObjectMetadata(t.Context(), []string{"contacts", "unknown_object"})
-	if err != nil {
-		t.Fatalf("ListObjectMetadata returned error: %v", err)
-	}
-
-	want := &common.ListObjectMetadataResult{
-		Result: map[string]common.ObjectMetadata{
-			"contacts": {
-				DisplayName: "Contacts",
-				Fields: map[string]common.FieldMetadata{
-					"contact_user_id": {
-						DisplayName:  "Contact User Id",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-				},
-			},
-		},
-		Errors: map[string]error{
-			"unknown_object": common.ErrObjectNotSupported,
-		},
-	}
-
-	if !testroutines.ComparatorSubsetMetadata("", got, want) {
-		t.Fatalf("metadata result mismatch: expected subset not found")
-	}
+	return connector, nil
 }
