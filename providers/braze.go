@@ -7,6 +7,7 @@ const (
 	BrazeEU Provider = "brazeEU"
 )
 
+// nolint: funlen
 func init() {
 	SetInfo(Braze, ProviderInfo{
 		DisplayName: "Braze",
