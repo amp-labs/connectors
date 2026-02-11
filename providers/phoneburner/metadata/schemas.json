@@ -6,7 +6,7 @@
       "objects": {
         "contacts": {
           "displayName": "Contacts",
-          "path": "/rest/1/contacts",
+          "path": "/contacts",
           "responseKey": "contacts",
           "fields": {
             "contact_user_id": {
@@ -88,7 +88,7 @@
         },
         "folders": {
           "displayName": "Folders",
-          "path": "/rest/1/folders",
+          "path": "/folders",
           "responseKey": "folders",
           "fields": {
             "folder_id": {
@@ -105,7 +105,7 @@
         },
         "members": {
           "displayName": "Members",
-          "path": "/rest/1/members",
+          "path": "/members",
           "responseKey": "members",
           "fields": {
             "user_id": {
@@ -157,7 +157,7 @@
         },
         "voicemails": {
           "displayName": "Voicemails",
-          "path": "/rest/1/voicemails",
+          "path": "/voicemails",
           "responseKey": "voicemails",
           "fields": {
             "recording_id": {
@@ -184,7 +184,7 @@
         },
         "phonenumber": {
           "displayName": "Phone Number",
-          "path": "/rest/1/phonenumber/{phone_number}",
+          "path": "/phonenumber/{phone_number}",
           "responseKey": "phonenumber",
           "fields": {
             "phone_number": {
@@ -196,7 +196,7 @@
         },
         "dialsession": {
           "displayName": "Dial Sessions",
-          "path": "/rest/1/dialsession",
+          "path": "/dialsession",
           "responseKey": "dialsessions",
           "fields": {
             "dialsession_id": {
@@ -238,7 +238,7 @@
         },
         "customfields": {
           "displayName": "Custom Fields",
-          "path": "/rest/1/customfields",
+          "path": "/customfields",
           "responseKey": "customfields",
           "fields": {
             "custom_field_id": {
