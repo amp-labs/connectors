@@ -529,6 +529,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	errorNotFound := testutils.DataFromFile(t, "mail/not-found.html")
 	responseMessagesFirstPage := testutils.DataFromFile(t, "mail/read/messages/1-first-page.json")
 	responseMessagesLastPage := testutils.DataFromFile(t, "mail/read/messages/2-last-page.json")
+	responseMessageItem := testutils.DataFromFile(t, "mail/read/messages/message-item.json")
 
 	tests := []testroutines.Read{
 		{
@@ -613,30 +614,50 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Read messages second page without next cursor",
 			Input: common.ReadParams{
 				ObjectName: "messages",
-				Fields:     connectors.Fields("id"),
+				Fields:     connectors.Fields("id", "$['payload']['body']", "threadId"),
 				NextPage:   "08277485409175924556",
 				Since:      time.Date(2024, 9, 31, 0, 0, 0, 0, time.UTC),
 				Until:      time.Date(2026, 1, 8, 0, 0, 0, 0, time.UTC),
 			},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/gmail/v1/users/me/messages"),
-					mockcond.QueryParam("maxResults", "500"), // default page size
-					mockcond.QueryParam("pageToken", "08277485409175924556"),
-					mockcond.QueryParam("q", "after:2024/10/01 before:2026/01/08"),
-				},
-				Then: mockserver.Response(http.StatusOK, responseMessagesLastPage),
+				Cases: mockserver.Cases{{
+					// Get collection of all messages. This is a list of identifiers.
+					If: mockcond.And{
+						mockcond.Path("/gmail/v1/users/me/messages"),
+						mockcond.QueryParam("maxResults", "500"), // default page size
+						mockcond.QueryParam("pageToken", "08277485409175924556"),
+						mockcond.QueryParam("q", "after:2024/10/01 before:2026/01/08"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseMessagesLastPage),
+				}, {
+					// Each message is fetched.
+					// The last page is a collection of messages with just 1 message where id=19174f3eeda702ed.
+					If:   mockcond.Path("/gmail/v1/users/me/messages/19174f3eeda702ed"),
+					Then: mockserver.Response(http.StatusOK, responseMessageItem),
+				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"id": "19174f3eeda702ed",
+						"payload": map[string]any{
+							"body": map[string]any{
+								"size": float64(0), // nested field was requested
+							},
+						},
+						"id":       "19174f3eeda702ed",
+						"threadid": "19174f3eeda702ed", // fields are lower case
 					},
 					Raw: map[string]any{
+						"id":       "19174f3eeda702ed",
 						"threadId": "19174f3eeda702ed",
+						// Message content is embedded.
+						"snippet":      "Restart your 14-day free trial now.",
+						"sizeEstimate": float64(29817),
+						"historyId":    "31772",
+						"internalDate": "1769523000000",
 					},
 				}},
 				NextPage: "",

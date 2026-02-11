@@ -88,3 +88,7 @@ func (a *Adapter) getWriteURL(objectName string) (*urlbuilder.URL, error) {
 	// Write/Delete share the same URLs as read.
 	return a.getReadURL(objectName)
 }
+
+func (a *Adapter) getMessageURL(messageID string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(a.ModuleInfo().BaseURL, apiVersion, "users/me/messages", messageID)
+}
