@@ -223,43 +223,6 @@
               "providerType": "string"
             }
           }
-        },
-        "customfields": {
-          "displayName": "Custom Fields",
-          "path": "/customfields",
-          "responseKey": "customfields",
-          "fields": {
-            "custom_field_id": {
-              "displayName": "Custom Field Id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "display_name": {
-              "displayName": "Display Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "type_id": {
-              "displayName": "Type Id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "type_name": {
-              "displayName": "Type Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "display_order": {
-              "displayName": "Display Order",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "value": {
-              "displayName": "Value",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
         }
       }
     }
