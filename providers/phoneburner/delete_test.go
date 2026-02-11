@@ -1,7 +1,6 @@
 package phoneburner
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -16,7 +15,7 @@ import (
 func TestDelete(t *testing.T) { //nolint:funlen,cyclop
 	t.Parallel()
 
-	respUnauthorized := testutils.DataFromFile(t, "metadata/error-unauthorized.json")
+	respUnauthorized := testutils.DataFromFile(t, "read/error-unauthorized.json")
 
 	tests := []testroutines.Delete{
 		{
@@ -76,32 +75,6 @@ func TestDelete(t *testing.T) { //nolint:funlen,cyclop
 			Expected: &common.DeleteResult{Success: true},
 		},
 		{
-			Name:  "Delete custom field",
-			Input: common.DeleteParams{ObjectName: "customfields", RecordId: "215"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodDELETE(),
-					mockcond.Path("/rest/1/customfields/215"),
-				},
-				Then: mockserver.Response(http.StatusNoContent),
-			}.Server(),
-			Expected: &common.DeleteResult{Success: true},
-		},
-		{
-			Name:  "Delete phone number",
-			Input: common.DeleteParams{ObjectName: "phonenumber", RecordId: "6025551234"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodDELETE(),
-					mockcond.Path("/rest/1/phonenumber/6025551234"),
-				},
-				Then: mockserver.Response(http.StatusNoContent),
-			}.Server(),
-			Expected: &common.DeleteResult{Success: true},
-		},
-		{
 			Name:  "Provider envelope error is mapped for delete (200 with http_status=401)",
 			Input: common.DeleteParams{ObjectName: "contacts", RecordId: "30919347"},
 			Server: mockserver.Conditional{
@@ -115,13 +88,10 @@ func TestDelete(t *testing.T) { //nolint:funlen,cyclop
 			ExpectedErrs: []error{common.ErrAccessToken},
 		},
 		{
-			Name:   "Unsupported delete object returns not supported",
-			Input:  common.DeleteParams{ObjectName: "dialsession", RecordId: "1"},
-			Server: mockserver.Dummy(),
-			ExpectedErrs: []error{
-				common.ErrOperationNotSupportedForObject,
-				errors.New("dialsession does not support delete"),
-			},
+			Name:         "Unsupported delete object returns not supported",
+			Input:        common.DeleteParams{ObjectName: "dialsession", RecordId: "1"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 	}
 

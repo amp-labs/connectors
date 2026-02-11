@@ -2,6 +2,7 @@ package phoneburner
 
 import (
 	"net/http"
+	"sort"
 	"testing"
 	"time"
 
@@ -17,13 +18,13 @@ import (
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	responseContacts := testutils.DataFromFile(t, "metadata/contacts.json")
-	responseCustomFields := testutils.DataFromFile(t, "metadata/customfields.json")
-	responseDialSessions := testutils.DataFromFile(t, "metadata/dialsession.json")
-	responseFolders := testutils.DataFromFile(t, "metadata/folders.json")
-	responseMembers := testutils.DataFromFile(t, "metadata/members.json")
-	responseVoicemails := testutils.DataFromFile(t, "metadata/voicemails.json")
-	responseUnauthorized := testutils.DataFromFile(t, "metadata/error-unauthorized.json")
+	responseContacts := testutils.DataFromFile(t, "read/contacts.json")
+	responseDialSessions := testutils.DataFromFile(t, "read/dialsession.json")
+	responseFolders := testutils.DataFromFile(t, "read/folders.json")
+	responseMembers := testutils.DataFromFile(t, "read/members.json")
+	responseTags := testutils.DataFromFile(t, "read/tags.json")
+	responseVoicemails := testutils.DataFromFile(t, "read/voicemails.json")
+	responseUnauthorized := testutils.DataFromFile(t, "read/error-unauthorized.json")
 
 	tests := []testroutines.Read{
 		{
@@ -81,38 +82,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			},
 		},
 		{
-			Name:  "Read contacts flattens custom fields",
-			Input: common.ReadParams{ObjectName: "contacts", Fields: connectors.Fields("contact_user_id", "my_custom_field")},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/rest/1/contacts"),
-					mockcond.QueryParam("page_size", "100"),
-					mockcond.QueryParam("page", "1"),
-				},
-				Then: mockserver.Response(http.StatusOK, responseContacts),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"contact_user_id": "30919237",
-						"my_custom_field": "my value",
-					},
-					Raw: map[string]any{
-						"custom_fields": []any{map[string]any{
-							"name":  "My custom field",
-							"type":  "1",
-							"value": "my value",
-						}},
-					},
-				}},
-				NextPage: "",
-				Done:     true,
-			},
-		},
-		{
 			Name:  "Provider envelope error is mapped (200 with http_status=401)",
 			Input: common.ReadParams{ObjectName: "contacts", Fields: connectors.Fields("contact_user_id")},
 			Server: mockserver.Conditional{
@@ -125,39 +94,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Then: mockserver.Response(http.StatusOK, responseUnauthorized),
 			}.Server(),
 			ExpectedErrs: []error{common.ErrAccessToken},
-		},
-		{
-			Name:  "Read custom fields",
-			Input: common.ReadParams{ObjectName: "customfields", Fields: connectors.Fields("custom_field_id", "display_name")},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/rest/1/customfields"),
-					mockcond.QueryParam("page_size", "100"),
-					mockcond.QueryParam("page", "1"),
-				},
-				Then: mockserver.Response(http.StatusOK, responseCustomFields),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"custom_field_id": "215",
-						"display_name":    "My custom field",
-					},
-					Raw: map[string]any{
-						"custom_field_id": "215",
-						"display_name":    "My custom field",
-						"type_id":         "1",
-						"type_name":       "Text Field",
-						"display_order":   "0",
-						"value":           "Example",
-					},
-				}},
-				NextPage: "",
-				Done:     true,
-			},
 		},
 		{
 			Name:  "Read dial sessions (has next page)",
@@ -220,6 +156,44 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				}},
 				NextPage: "",
 				Done:     true,
+			},
+		},
+		{
+			Name:  "Read tags (has next page)",
+			Input: common.ReadParams{ObjectName: "tags", Fields: connectors.Fields("id", "title")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/rest/1/tags"),
+					mockcond.QueryParam("page_size", "100"),
+					mockcond.QueryParam("page", "1"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseTags),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":    float64(1),
+						"title": "Tag #1",
+					},
+					Raw: map[string]any{
+						"id":    float64(1),
+						"title": "Tag #1",
+					},
+				}, {
+					Fields: map[string]any{
+						"id":    float64(2),
+						"title": "Tag #2",
+					},
+					Raw: map[string]any{
+						"id":    float64(2),
+						"title": "Tag #2",
+					},
+				}},
+				NextPage: testroutines.URLTestServer + "/rest/1/tags?page=2&page_size=100",
+				Done:     false,
 			},
 		},
 		{
@@ -307,7 +281,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/rest/1/folders"),
 				Then:  mockserver.Response(http.StatusOK, responseFolders),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: comparatorSubsetReadOrderByFolderID,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -343,6 +317,21 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			})
 		})
 	}
+}
+
+func comparatorSubsetReadOrderByFolderID(serverURL string, actual, expected *common.ReadResult) bool {
+	sort.Slice(actual.Data, func(i, j int) bool {
+		ai, _ := actual.Data[i].Fields["folder_id"].(string)
+		aj, _ := actual.Data[j].Fields["folder_id"].(string)
+		return ai < aj
+	})
+	sort.Slice(expected.Data, func(i, j int) bool {
+		ai, _ := expected.Data[i].Fields["folder_id"].(string)
+		aj, _ := expected.Data[j].Fields["folder_id"].(string)
+		return ai < aj
+	})
+
+	return testroutines.ComparatorSubsetRead(serverURL, actual, expected)
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {

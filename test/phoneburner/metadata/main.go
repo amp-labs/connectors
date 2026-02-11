@@ -13,7 +13,7 @@ func main() {
 	ctx := context.Background()
 	conn := connTest.GetPhoneBurnerConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"customfields"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"contacts", "folders", "members", "voicemails", "dialsession", "tags"})
 	if err != nil {
 		log.Fatal("Error fetching metadata: ", err)
 	}
@@ -24,4 +24,3 @@ func main() {
 
 	utils.DumpJSON(m, os.Stdout)
 }
-

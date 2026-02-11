@@ -18,10 +18,9 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 	respContact := testutils.DataFromFile(t, "write/contact.json")
 	respFolder := testutils.DataFromFile(t, "write/folder.json")
-	respCustomField := testutils.DataFromFile(t, "write/customfield.json")
 	respMember := testutils.DataFromFile(t, "write/member.json")
 	respDialsession := testutils.DataFromFile(t, "write/dialsession.json")
-	respUnauthorized := testutils.DataFromFile(t, "metadata/error-unauthorized.json")
+	respUnauthorized := testutils.DataFromFile(t, "read/error-unauthorized.json")
 
 	tests := []testroutines.Write{
 		{
@@ -106,29 +105,6 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Data: map[string]any{
 					"folder_id":   "11888",
 					"folder_name": "Folder #1",
-				},
-			},
-		},
-		{
-			Name:  "Create custom field (form encoded)",
-			Input: common.WriteParams{ObjectName: "customfields", RecordData: map[string]any{"display_name": "Test field 1", "type": 1}},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPOST(),
-					mockcond.Path("/rest/1/customfields"),
-					mockcond.HeaderContentURLFormEncoded(),
-					mockcond.Body("display_name=Test+field+1&type=1"),
-				},
-				Then: mockserver.Response(http.StatusOK, respCustomField),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
-			Expected: &common.WriteResult{
-				Success:  true,
-				RecordId: "215",
-				Data: map[string]any{
-					"display_name": "Test field 1",
-					"type_name":    "Text Field",
 				},
 			},
 		},

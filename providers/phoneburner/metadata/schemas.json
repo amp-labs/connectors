@@ -6,7 +6,7 @@
       "objects": {
         "contacts": {
           "displayName": "Contacts",
-          "path": "/rest/1/contacts",
+          "path": "/contacts",
           "responseKey": "contacts",
           "fields": {
             "contact_user_id": {
@@ -88,7 +88,7 @@
         },
         "folders": {
           "displayName": "Folders",
-          "path": "/rest/1/folders",
+          "path": "/folders",
           "responseKey": "folders",
           "fields": {
             "folder_id": {
@@ -105,7 +105,7 @@
         },
         "members": {
           "displayName": "Members",
-          "path": "/rest/1/members",
+          "path": "/members",
           "responseKey": "members",
           "fields": {
             "user_id": {
@@ -157,7 +157,7 @@
         },
         "voicemails": {
           "displayName": "Voicemails",
-          "path": "/rest/1/voicemails",
+          "path": "/voicemails",
           "responseKey": "voicemails",
           "fields": {
             "recording_id": {
@@ -182,21 +182,9 @@
             }
           }
         },
-        "phonenumber": {
-          "displayName": "Phone Number",
-          "path": "/rest/1/phonenumber/{phone_number}",
-          "responseKey": "phonenumber",
-          "fields": {
-            "phone_number": {
-              "displayName": "Phone Number",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "dialsession": {
           "displayName": "Dial Sessions",
-          "path": "/rest/1/dialsession",
+          "path": "/dialsession",
           "responseKey": "dialsessions",
           "fields": {
             "dialsession_id": {
@@ -236,38 +224,18 @@
             }
           }
         },
-        "customfields": {
-          "displayName": "Custom Fields",
-          "path": "/rest/1/customfields",
-          "responseKey": "customfields",
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags",
+          "responseKey": "tags",
           "fields": {
-            "custom_field_id": {
-              "displayName": "Custom Field Id",
-              "valueType": "string",
-              "providerType": "string"
+            "id": {
+              "displayName": "Tag Id",
+              "valueType": "int",
+              "providerType": "integer"
             },
-            "display_name": {
-              "displayName": "Display Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "type_id": {
-              "displayName": "Type Id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "type_name": {
-              "displayName": "Type Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "display_order": {
-              "displayName": "Display Order",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "value": {
-              "displayName": "Value",
+            "title": {
+              "displayName": "Title",
               "valueType": "string",
               "providerType": "string"
             }

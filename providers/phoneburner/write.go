@@ -18,6 +18,10 @@ import (
 // https://www.phoneburner.com/developer/route_list
 
 func buildWriteRequest(ctx context.Context, baseURL string, params common.WriteParams) (*http.Request, error) {
+	if params.ObjectName == "" {
+		return nil, common.ErrMissingObjects
+	}
+
 	url, method, err := buildWriteURL(baseURL, params)
 	if err != nil {
 		return nil, err
@@ -43,7 +47,7 @@ func buildWriteRequest(ctx context.Context, baseURL string, params common.WriteP
 
 func buildWriteURL(baseURL string, params common.WriteParams) (*urlbuilder.URL, string, error) {
 	switch params.ObjectName {
-	case "contacts", "members", "folders", "customfields":
+	case "contacts", "members", "folders":
 		if params.RecordId == "" {
 			u, err := urlbuilder.New(baseURL, restPrefix, restVer, params.ObjectName)
 			return u, http.MethodPost, err
@@ -75,7 +79,7 @@ func buildWriteBody(params common.WriteParams) ([]byte, string, error) {
 			return nil, "", err
 		}
 		return b, "application/json", nil
-	case "contacts", "members", "customfields":
+	case "contacts", "members":
 		b, err := encodeForm(record)
 		if err != nil {
 			return nil, "", err
@@ -207,29 +211,6 @@ func parseWriteResponse(
 		}
 
 		data, err := jsonquery.Convertor.ObjectToMap(memberNode)
-		if err != nil {
-			return nil, err
-		}
-
-		return &common.WriteResult{Success: true, RecordId: recordID, Data: data}, nil
-	case "customfields":
-		wrapper, err := jsonquery.New(body).ObjectOptional("customfields")
-		if err != nil || wrapper == nil {
-			return &common.WriteResult{Success: true, RecordId: params.RecordId}, nil
-		}
-
-		array, err := jsonquery.New(wrapper).ArrayOptional("customfields")
-		if err != nil || len(array) == 0 {
-			return &common.WriteResult{Success: true, RecordId: params.RecordId}, nil
-		}
-
-		node := array[0]
-		recordID, err := jsonquery.New(node).TextWithDefault("custom_field_id", params.RecordId)
-		if err != nil {
-			return nil, err
-		}
-
-		data, err := jsonquery.Convertor.ObjectToMap(node)
 		if err != nil {
 			return nil, err
 		}

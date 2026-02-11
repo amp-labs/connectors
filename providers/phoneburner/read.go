@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"sort"
 	"strconv"
 	"time"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -26,29 +26,42 @@ const (
 var (
 	paginatedObjects = datautils.NewStringSet(
 		"contacts",
-		"customfields",
 		"dialsession",
 		"members",
+		"tags",
 		"voicemails",
 	)
 )
 
 func buildReadRequest(ctx context.Context, baseURL string, params common.ReadParams) (*http.Request, error) {
+	url, err := buildReadURL(baseURL, params)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Accept", "application/json")
+
+	return req, nil
+}
+
+func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, error) {
 	if len(params.NextPage) != 0 {
 		// Next page.
-		url, err := urlbuilder.New(params.NextPage.String())
-		if err != nil {
-			return nil, err
-		}
+		return urlbuilder.New(params.NextPage.String())
+	}
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
-		if err != nil {
-			return nil, err
-		}
+	if params.ObjectName == "" {
+		return nil, common.ErrMissingObjects
+	}
 
-		req.Header.Set("Accept", "application/json")
-
-		return req, nil
+	// Validate object support early (avoid issuing requests for unsupported objects).
+	if _, err := recordsFunc(params.ObjectName); err != nil {
+		return nil, err
 	}
 
 	url, err := urlbuilder.New(baseURL, restPrefix, restVer, params.ObjectName)
@@ -59,7 +72,7 @@ func buildReadRequest(ctx context.Context, baseURL string, params common.ReadPar
 	// Many PhoneBurner list endpoints support page-based pagination. Defaulting these parameters
 	// makes NextPage generation deterministic.
 	if paginatedObjects.Has(params.ObjectName) {
-		url.WithQueryParam("page_size", strconv.Itoa(100))
+		url.WithQueryParam("page_size", readhelper.PageSizeWithDefaultStr(params, "100"))
 		url.WithQueryParam("page", "1")
 	}
 
@@ -83,14 +96,7 @@ func buildReadRequest(ctx context.Context, baseURL string, params common.ReadPar
 		}
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("Accept", "application/json")
-
-	return req, nil
+	return url, nil
 }
 
 func parseReadResponse(
@@ -114,15 +120,6 @@ func parseReadResponse(
 	}
 
 	switch params.ObjectName {
-	case "contacts":
-		// Contacts can include a "custom_fields" array.
-		return common.ParseResult(
-			response,
-			common.MakeRecordsFunc("contacts", "contacts"),
-			nextRecordsURL(url.String(), params.ObjectName),
-			common.MakeMarshaledDataFunc(flattenContactCustomFields),
-			params.Fields,
-		)
 	case "members":
 		if !params.Since.IsZero() || !params.Until.IsZero() {
 			return common.ParseResultFiltered(
@@ -200,7 +197,7 @@ func interpretPhoneBurnerEnvelopeError(response *common.JSONHTTPResponse) error 
 		httpStatus = http.StatusBadRequest
 	}
 
-	if httpStatus >= 400 || (status != "" && status != "success") {
+	if !httpkit.Status2xx(httpStatus) || (status != "" && status != "success") {
 		raw, err := jsonquery.Convertor.ObjectToMap(body)
 		if err != nil {
 			return err
@@ -222,16 +219,22 @@ func interpretPhoneBurnerEnvelopeError(response *common.JSONHTTPResponse) error 
 
 func recordsFunc(objectName string) (common.RecordsFunc, error) {
 	switch objectName {
+	// Docs: https://www.phoneburner.com/developer/route_list#contacts
 	case "contacts":
 		return common.ExtractRecordsFromPath("contacts", "contacts"), nil
-	case "customfields":
-		return common.ExtractRecordsFromPath("customfields", "customfields"), nil
+	// Docs: https://www.phoneburner.com/developer/route_list#dialsession
 	case "dialsession":
 		return common.ExtractRecordsFromPath("dialsessions", "dialsessions"), nil
+	// Docs: https://www.phoneburner.com/developer/route_list#members
 	case "members":
 		return common.ExtractRecordsFromPath("members", "members"), nil
+	// Docs: https://www.phoneburner.com/developer/route_list#tags
+	case "tags":
+		return common.ExtractRecordsFromPath("tags", "tags"), nil
+	// Docs: https://www.phoneburner.com/developer/route_list#voicemails
 	case "voicemails":
 		return common.ExtractRecordsFromPath("voicemails", "voicemails"), nil
+	// Docs: https://www.phoneburner.com/developer/route_list#folders
 	case "folders":
 		return extractFoldersRecords(), nil
 	default:
@@ -306,13 +309,6 @@ func extractFoldersRecords() common.RecordsFunc {
 
 			out = append(out, obj)
 		}
-
-		// Map iteration order is non-deterministic; keep output stable for tests and consumers.
-		sort.Slice(out, func(i, j int) bool {
-			ai, _ := out[i]["folder_id"].(string)
-			aj, _ := out[j]["folder_id"].(string)
-			return ai < aj
-		})
 
 		return out, nil
 	}

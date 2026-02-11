@@ -13,6 +13,20 @@ import (
 // https://www.phoneburner.com/developer/route_list
 
 func buildDeleteRequest(ctx context.Context, baseURL string, params common.DeleteParams) (*http.Request, error) {
+	if params.ObjectName == "" {
+		return nil, common.ErrMissingObjects
+	}
+	if params.RecordId == "" {
+		return nil, common.ErrMissingRecordID
+	}
+
+	switch params.ObjectName {
+	case "contacts", "folders", "members":
+		// supported
+	default:
+		return nil, common.ErrOperationNotSupportedForObject
+	}
+
 	// All supported deletes are path-ID deletes:
 	//   DELETE /rest/1/{object}/{id}
 	url, err := urlbuilder.New(baseURL, restPrefix, restVer, params.ObjectName, params.RecordId)
@@ -51,4 +65,3 @@ func parseDeleteResponse(
 		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, response.Code)
 	}
 }
-

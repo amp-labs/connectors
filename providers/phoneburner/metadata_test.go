@@ -3,233 +3,130 @@ package phoneburner
 import (
 	"testing"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
-	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
-	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadata(t *testing.T) {
 	t.Parallel()
 
-	responseCustomFields := testutils.DataFromFile(t, "metadata/customfields.json")
-	server := mockserver.Conditional{
-		Setup: mockserver.ContentJSON(),
-		If: mockcond.And{
-			mockcond.Path("/rest/1/customfields"),
-			mockcond.QueryParam("page_size", "100"),
-			mockcond.QueryParam("page", "1"),
-		},
-		Then: mockserver.Response(200, responseCustomFields),
-	}.Server()
-
-	conn, err := NewConnector(common.ConnectorParams{
-		AuthenticatedClient: mockutils.NewClient(),
-	})
-	if err != nil {
-		t.Fatalf("failed to construct connector: %v", err)
-	}
-
-	conn.SetBaseURL(mockutils.ReplaceURLOrigin(conn.HTTPClient().Base, server.URL))
-
-	got, err := conn.ListObjectMetadata(
-		t.Context(),
-		[]string{"contacts", "folders", "members", "voicemails", "phonenumber", "dialsession", "customfields"},
-	)
-	if err != nil {
-		t.Fatalf("ListObjectMetadata returned error: %v", err)
-	}
-
-	if len(got.Errors) != 0 {
-		t.Fatalf("expected no metadata errors, got: %v", got.Errors)
-	}
-
-	want := &common.ListObjectMetadataResult{
-		Result: map[string]common.ObjectMetadata{
-			"contacts": {
-				DisplayName: "Contacts",
-				Fields: map[string]common.FieldMetadata{
-					"contact_user_id": {
-						DisplayName:  "Contact User Id",
-						ValueType:    "string",
-						ProviderType: "string",
+	tests := []testroutines.Metadata{
+		{
+			Name:       "Successful metadata for contacts, folders, members, voicemails, dialsession and tags",
+			Input:      []string{"contacts", "folders", "members", "voicemails", "dialsession", "tags"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "Contacts",
+						Fields: map[string]common.FieldMetadata{
+							"contact_user_id": {
+								DisplayName:  "Contact User Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"first_name": {
+								DisplayName:  "First Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
 					},
-					"first_name": {
-						DisplayName:  "First Name",
-						ValueType:    "string",
-						ProviderType: "string",
+					"folders": {
+						DisplayName: "Folders",
+						Fields: map[string]common.FieldMetadata{
+							"folder_id": {
+								DisplayName:  "Folder Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
 					},
-					"my_custom_field": {
-						DisplayName:  "My custom field",
-						ValueType:    "string",
-						ProviderType: "Text Field",
-						IsCustom:     goutils.Pointer(true),
+					"members": {
+						DisplayName: "Members",
+						Fields: map[string]common.FieldMetadata{
+							"user_id": {
+								DisplayName:  "User Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
 					},
-				},
-			},
-			"folders": {
-				DisplayName: "Folders",
-				Fields: map[string]common.FieldMetadata{
-					"folder_id": {
-						DisplayName:  "Folder Id",
-						ValueType:    "string",
-						ProviderType: "string",
+					"voicemails": {
+						DisplayName: "Voicemails",
+						Fields: map[string]common.FieldMetadata{
+							"recording_id": {
+								DisplayName:  "Recording Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
 					},
-					"folder_name": {
-						DisplayName:  "Folder Name",
-						ValueType:    "string",
-						ProviderType: "string",
+					"dialsession": {
+						DisplayName: "Dial Sessions",
+						Fields: map[string]common.FieldMetadata{
+							"dialsession_id": {
+								DisplayName:  "Dialsession Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
 					},
-				},
-			},
-			"members": {
-				DisplayName: "Members",
-				Fields: map[string]common.FieldMetadata{
-					"user_id": {
-						DisplayName:  "User Id",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-					"email_address": {
-						DisplayName:  "Email Address",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-				},
-			},
-			"voicemails": {
-				DisplayName: "Voicemails",
-				Fields: map[string]common.FieldMetadata{
-					"recording_id": {
-						DisplayName:  "Recording Id",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-					"name": {
-						DisplayName:  "Name",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-				},
-			},
-			"phonenumber": {
-				DisplayName: "Phone Number",
-				Fields: map[string]common.FieldMetadata{
-					"phone_number": {
-						DisplayName:  "Phone Number",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-				},
-			},
-			"dialsession": {
-				DisplayName: "Dial Sessions",
-				Fields: map[string]common.FieldMetadata{
-					"dialsession_id": {
-						DisplayName:  "Dialsession Id",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-					"start_when": {
-						DisplayName:  "Start When",
-						ValueType:    "datetime",
-						ProviderType: "datetime",
-					},
-				},
-			},
-			"customfields": {
-				DisplayName: "Custom Fields",
-				Fields: map[string]common.FieldMetadata{
-					"custom_field_id": {
-						DisplayName:  "Custom Field Id",
-						ValueType:    "string",
-						ProviderType: "string",
-					},
-					"display_name": {
-						DisplayName:  "Display Name",
-						ValueType:    "string",
-						ProviderType: "string",
+					"tags": {
+						DisplayName: "Tags",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Tag Id",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+						},
 					},
 				},
 			},
 		},
-		Errors: nil,
-	}
-
-	if !testroutines.ComparatorSubsetMetadata("", got, want) {
-		t.Fatalf("metadata result mismatch: expected subset not found")
-	}
-}
-
-func TestListObjectMetadata_EmptyObjects(t *testing.T) {
-	t.Parallel()
-
-	conn, err := NewConnector(common.ConnectorParams{
-		AuthenticatedClient: mockutils.NewClient(),
-	})
-	if err != nil {
-		t.Fatalf("failed to construct connector: %v", err)
-	}
-
-	_, err = conn.ListObjectMetadata(t.Context(), nil)
-	if err == nil {
-		t.Fatalf("expected error, got nil")
-	}
-	if err != common.ErrMissingObjects {
-		t.Fatalf("expected %v, got %v", common.ErrMissingObjects, err)
-	}
-}
-
-func TestListObjectMetadata_UnsupportedObject(t *testing.T) {
-	t.Parallel()
-
-	responseCustomFields := testutils.DataFromFile(t, "metadata/customfields.json")
-	server := mockserver.Conditional{
-		Setup: mockserver.ContentJSON(),
-		If: mockcond.And{
-			mockcond.Path("/rest/1/customfields"),
-			mockcond.QueryParam("page_size", "100"),
-			mockcond.QueryParam("page", "1"),
+		{
+			Name:         "Object must be included",
+			Input:        nil,
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
-		Then: mockserver.Response(200, responseCustomFields),
-	}.Server()
-
-	conn, err := NewConnector(common.ConnectorParams{
-		AuthenticatedClient: mockutils.NewClient(),
-	})
-	if err != nil {
-		t.Fatalf("failed to construct connector: %v", err)
-	}
-
-	conn.SetBaseURL(mockutils.ReplaceURLOrigin(conn.HTTPClient().Base, server.URL))
-
-	got, err := conn.ListObjectMetadata(t.Context(), []string{"contacts", "unknown_object"})
-	if err != nil {
-		t.Fatalf("ListObjectMetadata returned error: %v", err)
-	}
-
-	want := &common.ListObjectMetadataResult{
-		Result: map[string]common.ObjectMetadata{
-			"contacts": {
-				DisplayName: "Contacts",
-				Fields: map[string]common.FieldMetadata{
-					"contact_user_id": {
-						DisplayName:  "Contact User Id",
-						ValueType:    "string",
-						ProviderType: "string",
+		{
+			Name:       "Unsupported object returns metadata error entry",
+			Input:      []string{"contacts", "unknown_object"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "Contacts",
+						Fields: map[string]common.FieldMetadata{
+							"contact_user_id": {
+								DisplayName:  "Contact User Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
 					},
+				},
+				Errors: map[string]error{
+					"unknown_object": mockutils.ExpectedSubsetErrors{common.ErrObjectNotSupported},
 				},
 			},
 		},
-		Errors: map[string]error{
-			"unknown_object": common.ErrObjectNotSupported,
-		},
 	}
 
-	if !testroutines.ComparatorSubsetMetadata("", got, want) {
-		t.Fatalf("metadata result mismatch: expected subset not found")
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+				return constructTestConnector(tt.Server.URL)
+			})
+		})
 	}
 }
