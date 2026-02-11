@@ -45,6 +45,7 @@ func init() {
 				{
 					Name:        "workspace",
 					DisplayName: "Instance ID",
+					Prompt:      "Instance ID where your data is being hosted (ex: iad-01, au-01)",
 				},
 			},
 		},
@@ -89,6 +90,7 @@ func init() {
 				{
 					Name:        "workspace",
 					DisplayName: "Instance ID",
+					Prompt:      "Instance ID where your data is being hosted (ex: fra-01, fra-02)",
 				},
 			},
 		},
