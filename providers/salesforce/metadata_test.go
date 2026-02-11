@@ -332,7 +332,6 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 							"sentAt":          "sentAt",
 							"listId":          "listId",
 							"salesforceCmsId": "salesforceCmsId",
-							"campaign":        "campaign",
 						},
 					},
 				},

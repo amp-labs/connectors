@@ -143,16 +143,16 @@ func init() { // nolint:funlen
 						ModuleSalesforceAccountEngagementDemo: {},
 					},
 				},
-				{
-					DisplayName: "Business Unit ID",
-					DocsURL:     "https://help.salesforce.com/s/articleView?id=000381973&type=1",
-					ModuleDependencies: &ModuleDependencies{
-						ModuleSalesforceAccountEngagement:     {},
-						ModuleSalesforceAccountEngagementDemo: {},
-					},
-					Name:   "businessUnitId",
-					Prompt: "Business Unit ID is found in Business Unit Setup within Salesforce Setup or Marketing Setup.",
-				},
+				// {
+				// 	DisplayName: "Business Unit ID",
+				// 	DocsURL:     "https://help.salesforce.com/s/articleView?id=000381973&type=1",
+				// 	ModuleDependencies: &ModuleDependencies{
+				// 		ModuleSalesforceAccountEngagement:     {},
+				// 		ModuleSalesforceAccountEngagementDemo: {},
+				// 	},
+				// 	Name:   "businessUnitId",
+				// 	Prompt: "Business Unit ID is found in Business Unit Setup within Salesforce Setup or Marketing Setup.",
+				// },
 			},
 		},
 	})
