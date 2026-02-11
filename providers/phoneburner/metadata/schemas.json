@@ -223,6 +223,23 @@
               "providerType": "string"
             }
           }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags",
+          "responseKey": "tags",
+          "fields": {
+            "id": {
+              "displayName": "Tag Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "title": {
+              "displayName": "Title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
         }
       }
     }

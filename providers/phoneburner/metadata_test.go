@@ -17,7 +17,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	tests := []testroutines.Metadata{
 		{
 			Name:       "Successful metadata for contacts, folders, members, voicemails, and dialsession",
-			Input:      []string{"contacts", "folders", "members", "voicemails", "dialsession"},
+			Input:      []string{"contacts", "folders", "members", "voicemails", "dialsession", "tags"},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -94,6 +94,21 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Start When",
 								ValueType:    "datetime",
 								ProviderType: "datetime",
+							},
+						},
+					},
+					"tags": {
+						DisplayName: "Tags",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Tag Id",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+							"title": {
+								DisplayName:  "Title",
+								ValueType:    "string",
+								ProviderType: "string",
 							},
 						},
 					},
