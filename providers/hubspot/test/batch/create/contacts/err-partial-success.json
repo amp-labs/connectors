@@ -1,0 +1,32 @@
+{
+  "completedAt": "2025-11-04T20:29:54.897Z",
+  "status": "COMPLETE",
+  "startedAt": "2025-11-04T20:29:54.816Z",
+  "results": [
+    {
+      "id": "171596044870",
+      "properties": {
+        "createdate": "2025-11-03T23:36:13.632Z",
+        "email": "siena.dyer@hubspot.com",
+        "firstname": "Siena",
+        "lastname": "Dyer"
+      },
+      "createdAt": "2025-11-03T23:36:13.632Z",
+      "updatedAt": "2025-11-03T23:36:13.632Z",
+      "archived": false,
+      "url": "https://app.hubspot.com/contacts/44237313/record/0-1/171596044870"
+    }
+  ],
+  "errors": [
+    {
+      "status": "error",
+      "category": "CONFLICT",
+      "message": "Contact already exists. Existing ID: 171591000198",
+      "context": {
+        "objectWriteTraceId": ["0"],
+        "existingId": ["171591000198"]
+      }
+    }
+  ],
+  "numErrors": 1
+}

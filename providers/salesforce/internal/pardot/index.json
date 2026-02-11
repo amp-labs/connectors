@@ -1,0 +1,164 @@
+{
+  "data": [
+    {
+      "name": "campaigns",
+      "displayName": "Campaigns",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/campaign-v5.html"
+    },
+    {
+      "name": "custom-redirects",
+      "displayName": "Custom Redirects",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/custom-redirect-v5.html"
+    },
+    {
+      "name": "dynamic-contents",
+      "displayName": "Dynamic Contents",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/dynamic-content-v5.html"
+    },
+    {
+      "name": "dynamic-content-variations",
+      "displayName": "Dynamic Content Variations",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/dynamic-content-variation.html"
+    },
+    {
+      "name": "emails",
+      "displayName": "Emails",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/email-v5.html"
+    },
+    {
+      "name": "email-templates",
+      "displayName": "Email Templates",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/email-template-v5.html"
+    },
+    {
+      "name": "engagement-studio-programs",
+      "displayName": "Engagement Studio Programs",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/engagement-studio-program-v5.html"
+    },
+    {
+      "name": "files",
+      "displayName": "Files",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/file-v5.html"
+    },
+    {
+      "name": "folders",
+      "displayName": "Folders",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/folder-v5.html"
+    },
+    {
+      "name": "folder-contents",
+      "displayName": "Folder Contents",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/folder-contents-v5.html"
+    },
+    {
+      "name": "forms",
+      "displayName": "Forms",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/form-v5.html"
+    },
+    {
+      "name": "form-fields",
+      "displayName": "Form Fields",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/form-field-v5.html"
+    },
+    {
+      "name": "form-handlers",
+      "displayName": "Form Handlers",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/form-handler-v5.html"
+    },
+    {
+      "name": "form-handler-fields",
+      "displayName": "Form Handler Fields",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/form-handler-field-v5.html"
+    },
+    {
+      "name": "landing-pages",
+      "displayName": "Landing Pages",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/landing-page-v5.html"
+    },
+    {
+      "name": "layout-templates",
+      "displayName": "Layout Templates",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/layout-template-v5.html"
+    },
+    {
+      "name": "lifecycle-stages",
+      "displayName": "Lifecycle Stages",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/lifecycle-stage-v5.html"
+    },
+    {
+      "name": "lifecycle-histories",
+      "displayName": "Lifecycle Histories",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/lifecycle-history-v5.html"
+    },
+    {
+      "name": "lists",
+      "displayName": "Lists",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/list-v5.html"
+    },
+    {
+      "name": "list-emails",
+      "displayName": "List Emails",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/list-email-v5.html"
+    },
+    {
+      "name": "list-memberships",
+      "displayName": "List Memberships",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/list-membership-v5.html"
+    },
+    {
+      "name": "opportunities",
+      "displayName": "Opportunities",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/opportunity-v5.html"
+    },
+    {
+      "name": "prospects",
+      "displayName": "Prospects",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/prospect-v5.html"
+    },
+    {
+      "name": "tags",
+      "displayName": "Tags",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/tag-v5.html"
+    },
+    {
+      "name": "tagged-objects",
+      "displayName": "Tagged Objects",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/tagged-object-v5.html"
+    },
+    {
+      "name": "prospect-accounts",
+      "displayName": "Prospect Accounts",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/prospect-account-v5.html"
+    },
+    {
+      "name": "tracker-domains",
+      "displayName": "Tracker Domains",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/tracker-domain-v5.html"
+    },
+    {
+      "name": "users",
+      "displayName": "Users",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/user-v5.html"
+    },
+    {
+      "name": "visitors",
+      "displayName": "Visitors",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/visitor-v5.html"
+    },
+    {
+      "name": "visitor-activities",
+      "displayName": "Visitor Activities",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/visitor-activity-v5.html"
+    },
+    {
+      "name": "visits",
+      "displayName": "Visits",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/visit-v5.html"
+    },
+    {
+      "name": "visitor-page-views",
+      "displayName": "Visitor Page Views",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/visitor-page-view-v5.html"
+    }
+  ]
+}

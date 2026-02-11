@@ -18,6 +18,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 
 	errConflictExisting := testutils.DataFromFile(t, "batch/create/contacts/err-conflict.json")
 	errManyInvalidFields := testutils.DataFromFile(t, "batch/create/contacts/err-many-invalid-properties.json")
+	errPartialSuccess := testutils.DataFromFile(t, "batch/create/contacts/err-partial-success.json")
 	responseCreateContacts := testutils.DataFromFile(t, "batch/create/contacts/success.json")
 
 	createRecords := common.BatchItems{{
@@ -139,6 +140,55 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Results:      nil,
 				SuccessCount: 0,
 				FailureCount: 2,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Partial success where first contact already exists",
+			Input: &common.BatchWriteParam{
+				ObjectName: "contacts",
+				Type:       common.WriteTypeCreate,
+				Batch:      createRecords,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/crm/v3/objects/contacts/batch/create"),
+				},
+				Then: mockserver.Response(http.StatusMultiStatus, errPartialSuccess),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetBatchWrite,
+			Expected: &common.BatchWriteResult{
+				Status: common.BatchStatusPartial,
+				// objectWriteTraceId is removed from all errors (internal field)
+				Errors: []any{mockutils.JSONErrorWrapper(`{
+					"status": "error",
+					"category": "CONFLICT",
+					"message": "Contact already exists. Existing ID: 171591000198",
+					"context": {"existingId": ["171591000198"]}
+				}`)},
+				Results: []common.WriteResult{{
+					Success:  false,
+					RecordId: "",
+					Errors: []any{mockutils.JSONErrorWrapper(`{
+						"status": "error",
+						"category": "CONFLICT",
+						"message": "Contact already exists. Existing ID: 171591000198",
+						"context": {"existingId": ["171591000198"]}
+					}`)},
+					Data: nil,
+				}, {
+					Success:  true,
+					RecordId: "171596044870",
+					Errors:   nil,
+					Data: map[string]any{
+						"email":     "siena.dyer@hubspot.com",
+						"firstname": "Siena",
+					},
+				}},
+				SuccessCount: 1,
+				FailureCount: 1,
 			},
 			ExpectedErrs: nil,
 		},
@@ -320,17 +370,22 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
 				Status: common.BatchStatusPartial,
+				// Top-level errors are sanitized (ids removed from context)
 				Errors: []any{mockutils.JSONErrorWrapper(`{
 					  "status": "error",
 					  "category": "OBJECT_NOT_FOUND",
-					  "message": "Could not get some CONTACT objects, they may be deleted or not exist. Check that ids are valid.",
-					  "context": {"ids": [""]}
+					  "message": "Could not get some CONTACT objects, they may be deleted or not exist. Check that ids are valid."
 				}`)},
 				Results: []common.WriteResult{{
 					Success:  false,
 					RecordId: "unknownIdentifier888",
-					Errors:   []any{common.ErrBatchUnprocessedRecord},
-					Data:     nil,
+					// Per-record error matched by ID and sanitized
+					Errors: []any{mockutils.JSONErrorWrapper(`{
+						"status": "error",
+						"category": "OBJECT_NOT_FOUND",
+						"message": "Could not get some CONTACT objects, they may be deleted or not exist. Check that ids are valid."
+					}`)},
+					Data: nil,
 				}, {
 					Success:  true,
 					RecordId: "171591000199",

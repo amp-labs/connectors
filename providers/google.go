@@ -61,7 +61,7 @@ func init() {
 				Support: Support{
 					Read:      true,
 					Subscribe: false,
-					Write:     false,
+					Write:     true,
 				},
 			},
 		},
