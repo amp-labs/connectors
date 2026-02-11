@@ -16,6 +16,9 @@ const (
 
 // SOQLBuilder builder of Salesforce Object Query Language.
 // It constructs query dynamically.
+//
+// Check the "SOQL and SOSL Reference" book:
+// https://resources.docs.salesforce.com/latest/latest/en-us/sfdc/pdf/salesforce_soql_sosl.pdf
 type SOQLBuilder struct {
 	fields string
 	from   string
@@ -44,8 +47,8 @@ func (s *SOQLBuilder) From(from string) *SOQLBuilder {
 	return s
 }
 
-func (s *SOQLBuilder) Limit(l int) *SOQLBuilder {
-	s.limit = strconv.Itoa(l)
+func (s *SOQLBuilder) Limit(limit int64) *SOQLBuilder {
+	s.limit = strconv.FormatInt(limit, 10)
 
 	return s
 }
@@ -71,6 +74,13 @@ func (s *SOQLBuilder) WithIDs(identifiers []string) *SOQLBuilder {
 	// nolint:lll
 	// https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_fields.htm
 	return s.Where(fmt.Sprintf("Id IN (%v)", identifiersList))
+}
+
+// SelectCount sets the query to use COUNT() instead of field selection.
+func (s *SOQLBuilder) SelectCount() *SOQLBuilder {
+	s.fields = "COUNT()"
+
+	return s
 }
 
 func (s *SOQLBuilder) String() string {

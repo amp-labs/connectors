@@ -30,13 +30,13 @@ func (c *Connector) Search(ctx context.Context, config common.ReadParams, url *u
 
 	if !config.Since.IsZero() {
 		if config.ObjectName == contacts {
-			return manualIncrementalSync(node, recordsFieldKey, config, updatedAt, time.RFC3339, getNextRecords)
+			return c.manualIncrementalSync(node, recordsFieldKey, config, updatedAt, time.RFC3339, getNextRecords)
 		}
 
 		// We cannot filter records by the updatedAt field because the API response does not include it,
 		// even though sorting by it is supported. So we currently use the createdAt field.
 		if config.ObjectName == accounts {
-			return manualIncrementalSync(node, recordsFieldKey, config, createdAt, time.RFC3339, getNextRecords)
+			return c.manualIncrementalSync(node, recordsFieldKey, config, createdAt, time.RFC3339, getNextRecords)
 		}
 	}
 
@@ -44,7 +44,7 @@ func (c *Connector) Search(ctx context.Context, config common.ReadParams, url *u
 		resp,
 		searchRecords(config.ObjectName),
 		getNextRecords,
-		apolloMarshaledData(config.ObjectName),
+		c.apolloMarshaledData(config.ObjectName),
 		config.Fields,
 	)
 }
@@ -53,7 +53,7 @@ func (c *Connector) Search(ctx context.Context, config common.ReadParams, url *u
 //
 // Apollo lacks native incremental sync support. This function iterates through records
 // and returns those created or updated after the specified timestamp.
-func manualIncrementalSync(node *ajson.Node, recordsKey string, config common.ReadParams, //nolint:cyclop
+func (c *Connector) manualIncrementalSync(node *ajson.Node, recordsKey string, config common.ReadParams, //nolint:cyclop
 	timestampKey string, timestampFormat string, nextPageFunc common.NextPageFunc,
 ) (*common.ReadResult, error) {
 	records, nextPage, err := readhelper.FilterSortedRecords(node, recordsKey,
@@ -62,7 +62,7 @@ func manualIncrementalSync(node *ajson.Node, recordsKey string, config common.Re
 		return nil, err
 	}
 
-	rows, err := getMarshaledData(records, config.Fields.List())
+	rows, err := c.customMarshaller(config.ObjectName)(records, config.Fields.List())
 	if err != nil {
 		return nil, err
 	}

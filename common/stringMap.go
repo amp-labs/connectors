@@ -19,7 +19,7 @@ var (
 type StringMap map[string]any
 
 func ToStringMap(m map[string]any) StringMap {
-	return StringMap(m)
+	return m
 }
 
 func (m StringMap) Keys() []string {

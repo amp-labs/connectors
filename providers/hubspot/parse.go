@@ -3,6 +3,7 @@ package hubspot
 import (
 	"context"
 	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -134,6 +135,8 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 
 // getDataMarshaller returns a function that accepts a list of records and fields
 // and returns a list of structured data ([]ReadResultRow).
+//
+//nolint:gocognit
 func (c *Connector) getDataMarshaller(
 	ctx context.Context,
 	objName string,
@@ -161,6 +164,17 @@ func (c *Connector) getDataMarshaller(
 				}
 
 				result.Fields = common.ExtractLowercaseFieldsFromRaw(fields, recordProperties)
+
+				// Some fields like "id" exist at the top level of the record,
+				// not inside the "properties" object. Add those if requested.
+				for _, field := range fields {
+					lowercaseField := strings.ToLower(field)
+					if _, exists := result.Fields[lowercaseField]; !exists {
+						if value, ok := record[lowercaseField]; ok {
+							result.Fields[lowercaseField] = value
+						}
+					}
+				}
 			}
 
 			data[i] = result
