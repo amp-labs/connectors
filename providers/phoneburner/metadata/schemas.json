@@ -182,18 +182,6 @@
             }
           }
         },
-        "phonenumber": {
-          "displayName": "Phone Number",
-          "path": "/phonenumber/{phone_number}",
-          "responseKey": "phonenumber",
-          "fields": {
-            "phone_number": {
-              "displayName": "Phone Number",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "dialsession": {
           "displayName": "Dial Sessions",
           "path": "/dialsession",
