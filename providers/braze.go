@@ -1,9 +1,11 @@
 package providers
 
-const Braze Provider = "braze"
+const (
+	Braze Provider = "braze"
 
-// BrazeEU serves customers using braze's france data-center only, the rest should use Braze.
-const BrazeEU Provider = "brazeEU"
+	// BrazeEU serves customers using braze's france data-center only, the rest should use Braze.
+	BrazeEU Provider = "brazeEU"
+)
 
 func init() {
 	SetInfo(Braze, ProviderInfo{
