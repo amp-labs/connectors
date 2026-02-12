@@ -2,6 +2,7 @@ package batch
 
 import (
 	"context"
+	"maps"
 	"strconv"
 	"time"
 
@@ -312,9 +313,7 @@ func sanitizeError(errObj Issue) Issue {
 
 	// Create a shallow copy to avoid modifying the original
 	sanitized := make(map[string]any, len(errMap))
-	for k, v := range errMap {
-		sanitized[k] = v
-	}
+	maps.Copy(sanitized, errMap)
 
 	// Remove internal fields from context if present
 	if context, ok := sanitized["context"].(map[string]any); ok {
