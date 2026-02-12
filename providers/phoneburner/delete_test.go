@@ -75,19 +75,6 @@ func TestDelete(t *testing.T) { //nolint:funlen,cyclop
 			Expected: &common.DeleteResult{Success: true},
 		},
 		{
-			Name:  "Delete tag",
-			Input: common.DeleteParams{ObjectName: "tags", RecordId: "1"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodDELETE(),
-					mockcond.Path("/rest/1/tags/1"),
-				},
-				Then: mockserver.Response(http.StatusNoContent),
-			}.Server(),
-			Expected: &common.DeleteResult{Success: true},
-		},
-		{
 			Name:  "Provider envelope error is mapped for delete (200 with http_status=401)",
 			Input: common.DeleteParams{ObjectName: "contacts", RecordId: "30919347"},
 			Server: mockserver.Conditional{

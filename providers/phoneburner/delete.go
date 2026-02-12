@@ -21,7 +21,7 @@ func buildDeleteRequest(ctx context.Context, baseURL string, params common.Delet
 	}
 
 	switch params.ObjectName {
-	case "contacts", "folders", "members", "tags":
+	case "contacts", "folders", "members":
 		// supported
 	default:
 		return nil, common.ErrOperationNotSupportedForObject

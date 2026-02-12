@@ -1,7 +1,6 @@
 package phoneburner
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -176,7 +175,6 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Server: mockserver.Dummy(),
 			ExpectedErrs: []error{
 				common.ErrOperationNotSupportedForObject,
-				errors.New("voicemails does not support write"),
 			},
 		},
 	}
