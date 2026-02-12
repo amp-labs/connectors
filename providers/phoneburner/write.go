@@ -59,6 +59,10 @@ func buildWriteURL(baseURL string, params common.WriteParams) (*urlbuilder.URL, 
 		// Create only.
 		u, err := urlbuilder.New(baseURL, restPrefix, restVer, params.ObjectName)
 		return u, http.MethodPost, err
+	case "tags":
+		// Create only.
+		u, err := urlbuilder.New(baseURL, restPrefix, restVer, params.ObjectName)
+		return u, http.MethodPost, err
 	default:
 		return nil, "", common.ErrOperationNotSupportedForObject
 	}
@@ -72,7 +76,7 @@ func buildWriteBody(params common.WriteParams) ([]byte, string, error) {
 
 	// PhoneBurner endpoints are mixed: some are JSON-body, others are form-url-encoded.
 	switch params.ObjectName {
-	case "dialsession", "folders":
+	case "dialsession", "folders", "tags":
 		// JSON payload.
 		b, err := json.Marshal(record)
 		if err != nil {
@@ -255,6 +259,43 @@ func parseWriteResponse(
 		}
 
 		return &common.WriteResult{Success: true, Data: data}, nil
+	case "tags":
+		tagNode, err := jsonquery.New(body).ObjectOptional("tag")
+		if err != nil || tagNode == nil {
+			return &common.WriteResult{Success: true, RecordId: params.RecordId}, nil
+		}
+
+		id, err := jsonquery.New(tagNode).IntegerWithDefault("id", 0)
+		if err != nil {
+			return nil, err
+		}
+
+		title, err := jsonquery.New(tagNode).StrWithDefault("title", "")
+		if err != nil {
+			return nil, err
+		}
+		if title == "" {
+			// Some endpoints return the tag name under "tag" instead of "title".
+			title, err = jsonquery.New(tagNode).StrWithDefault("tag", "")
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		recordID, err := jsonquery.New(tagNode).TextWithDefault("id", params.RecordId)
+		if err != nil {
+			return nil, err
+		}
+
+		data := map[string]any{}
+		if id != 0 {
+			data["id"] = id
+		}
+		if title != "" {
+			data["title"] = title
+		}
+
+		return &common.WriteResult{Success: true, RecordId: recordID, Data: data}, nil
 	default:
 		return nil, common.ErrOperationNotSupportedForObject
 	}

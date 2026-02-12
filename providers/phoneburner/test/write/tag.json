@@ -1,0 +1,14 @@
+{
+  "_links": {
+    "self": {
+      "href": "/rest/1/contact/tags"
+    }
+  },
+  "http_status": 202,
+  "status": "success",
+  "tag": {
+    "id": 8330488,
+    "tag": "amp-wd-at"
+  }
+}
+
