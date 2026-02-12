@@ -20,6 +20,8 @@ func (a Adapter) buildDeleteRequest(ctx context.Context, params common.DeletePar
 		return nil, err
 	}
 
+	common.Headers(common.TransformWriteHeaders(params.Headers, common.HeaderModeOverwrite)).ApplyToRequest(req)
+
 	return req, nil
 }
 

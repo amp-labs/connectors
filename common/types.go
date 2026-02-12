@@ -270,6 +270,9 @@ type DeleteParams struct {
 
 	// The external ID of the object instance we are removing.
 	RecordId string // required
+
+	// Headers contains additional headers to be added to the delete request.
+	Headers []WriteHeader // optional
 }
 
 // NextPageToken is an opaque token that can be used to get the next page of results.
