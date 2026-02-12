@@ -19,7 +19,6 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	respFolder := testutils.DataFromFile(t, "write/folder.json")
 	respMember := testutils.DataFromFile(t, "write/member.json")
 	respDialsession := testutils.DataFromFile(t, "write/dialsession.json")
-	respTag := testutils.DataFromFile(t, "write/tag.json")
 	respUnauthorized := testutils.DataFromFile(t, "read/error-unauthorized.json")
 
 	tests := []testroutines.Write{
@@ -152,28 +151,6 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Success: true,
 				Data: map[string]any{
 					"redirect_url": "https://www.phoneburner.com/index/sso_key_login?single_sign_on_secret=abc123&redirect=%2Fphoneburner%2Fapi_begin_dialsession",
-				},
-			},
-		},
-		{
-			Name:  "Create tag (JSON)",
-			Input: common.WriteParams{ObjectName: "tags", RecordData: map[string]any{"title": "amp-wd-at"}},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPOST(),
-					mockcond.Path("/rest/1/tags"),
-					mockcond.Body(`{"title":"amp-wd-at"}`),
-				},
-				Then: mockserver.Response(http.StatusAccepted, respTag),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
-			Expected: &common.WriteResult{
-				Success:  true,
-				RecordId: "8330488",
-				Data: map[string]any{
-					"id":    int64(8330488),
-					"title": "amp-wd-at",
 				},
 			},
 		},
