@@ -25,7 +25,9 @@ func (a *Adapter) buildDeleteRequest(ctx context.Context, params common.DeletePa
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
-	req.Header.Add("Pardot-Business-Unit-Id", a.businessUnitID)
+	common.Headers(common.TransformWriteHeaders(params.Headers, common.HeaderModeOverwrite)).ApplyToRequest(req)
+
+	req.Header.Set("Pardot-Business-Unit-Id", a.businessUnitID)
 
 	return req, nil
 }
