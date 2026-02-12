@@ -275,7 +275,6 @@ func parseWriteResponse(
 			return nil, err
 		}
 		if title == "" {
-			// Some endpoints return the tag name under "tag" instead of "title".
 			title, err = jsonquery.New(tagNode).StrWithDefault("tag", "")
 			if err != nil {
 				return nil, err
