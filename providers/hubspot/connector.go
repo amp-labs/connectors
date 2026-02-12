@@ -1,6 +1,8 @@
 package hubspot
 
 import (
+	"context"
+
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
@@ -67,4 +69,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	return conn, nil
+}
+
+func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error) {
+	// Delegated.
+	return c.crmAdapter.Search(ctx, params)
 }
