@@ -71,5 +71,8 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		url.WithQueryParam("filter[updatedAt]", fmtTime)
 	}
 
+	// Sort chronologically to get earliest records first
+	url.WithQueryParam("sort", "updatedAt")
+
 	return url, nil
 }
