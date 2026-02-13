@@ -11,7 +11,7 @@ import (
 )
 
 // Read reads data from Hubspot. If Since is set, it will use the
-// Search endpoint instead to filter records, but it will be
+// SearchLegacy endpoint instead to filter records, but it will be
 // limited to a maximum of 10,000 records. This is a limit of the
 // search endpoint. If Since is not set, it will use the read endpoint.
 // In case Deleted objects won’t appear in any search results.
@@ -63,7 +63,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			AssociatedObjects: config.AssociatedObjects,
 		}
 
-		return c.Search(ctx, searchParams)
+		return c.SearchLegacy(ctx, searchParams)
 	}
 
 	url, err := c.buildReadURL(config)
