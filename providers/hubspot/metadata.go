@@ -14,7 +14,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/simultaneously"
-	"github.com/amp-labs/connectors/providers/hubspot/metadata"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/metadata"
 )
 
 type objectMetadataResult struct {
@@ -31,7 +31,7 @@ func (c *Connector) UpsertMetadata(
 	ctx context.Context, params *common.UpsertMetadataParams,
 ) (*common.UpsertMetadataResult, error) {
 	// Delegated.
-	return c.customAdapter.UpsertMetadata(ctx, params)
+	return c.crmAdapter.UpsertMetadata(ctx, params)
 }
 
 // ListObjectMetadata returns object metadata for each object name provided.
