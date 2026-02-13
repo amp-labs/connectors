@@ -1,6 +1,6 @@
 module github.com/amp-labs/connectors
 
-go 1.25.0
+go 1.26
 
 require (
 	github.com/PuerkitoBio/goquery v1.11.0
@@ -22,7 +22,7 @@ require (
 	github.com/iancoleman/strcase v0.3.0
 	github.com/invopop/jsonschema v0.13.0
 	github.com/invopop/yaml v0.3.1
-	github.com/kaptinlin/jsonschema v0.6.9
+	github.com/kaptinlin/jsonschema v0.6.11
 	github.com/mitchellh/hashstructure v1.1.0
 	github.com/spyzhov/ajson v0.9.6
 	github.com/stretchr/testify v1.11.1
@@ -30,7 +30,7 @@ require (
 	go.uber.org/atomic v1.11.0
 	golang.org/x/net v0.49.0
 	golang.org/x/oauth2 v0.34.0
-	golang.org/x/text v0.33.0
+	golang.org/x/text v0.34.0
 )
 
 require (
@@ -63,9 +63,9 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
-	github.com/kaptinlin/go-i18n v0.2.3 // indirect
-	github.com/kaptinlin/jsonpointer v0.4.9 // indirect
-	github.com/kaptinlin/messageformat-go v0.4.9 // indirect
+	github.com/kaptinlin/go-i18n v0.2.4 // indirect
+	github.com/kaptinlin/jsonpointer v0.4.11 // indirect
+	github.com/kaptinlin/messageformat-go v0.4.11 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
