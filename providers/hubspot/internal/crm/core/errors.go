@@ -13,7 +13,7 @@ import (
 func InterpretJSONError(res *http.Response, body []byte) error {
 	apiError := &HubspotError{}
 	if err := json.Unmarshal(body, &apiError); err != nil {
-		return fmt.Errorf("json.Unmarshal failed: %w", err)
+		return fmt.Errorf("status code %v and json.Unmarshal failed: %w", res.StatusCode, err)
 	}
 
 	headers := common.GetResponseHeaders(res)
