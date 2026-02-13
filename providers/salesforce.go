@@ -72,6 +72,11 @@ func init() { // nolint:funlen
 					Read:      true,
 					Subscribe: true,
 					Write:     true,
+					Search: SearchSupport{
+						Operators: SearchOperators{
+							Equals: true,
+						},
+					},
 				},
 			},
 			ModuleSalesforceAccountEngagement: {
