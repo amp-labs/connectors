@@ -18,7 +18,7 @@ func TestDelete(t *testing.T) {
 		{
 			Name: "Delete successfully",
 			Input: common.DeleteParams{
-				ObjectName: "contact-lists",
+				ObjectName: "contact-lists/csv",
 				RecordId:   "6972b6679feab382af08f409",
 			},
 			Server: mockserver.Conditional{

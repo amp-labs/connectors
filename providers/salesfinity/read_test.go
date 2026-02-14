@@ -33,7 +33,7 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
-					mockcond.QueryParam("limit", "10"),
+					mockcond.QueryParam("limit", "100"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseReadEmpty),
 			}.Server(),
@@ -54,7 +54,7 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
-					mockcond.QueryParam("limit", "10"),
+					mockcond.QueryParam("limit", "100"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLog),
 			}.Server(),
@@ -91,7 +91,7 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
-					mockcond.QueryParam("limit", "10"),
+					mockcond.QueryParam("limit", "100"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLogFirstPage),
 			}.Server(),
@@ -110,7 +110,7 @@ func TestRead(t *testing.T) {
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/v1/call-log?limit=10&page=2",
+				NextPage: testroutines.URLTestServer + "/v1/call-log?limit=100&page=2",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -120,7 +120,7 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "call-log",
 				Fields:     connectors.Fields("_id", "updatedAt", "from"),
-				NextPage:   testroutines.URLTestServer + "/v1/call-log?limit=10&page=2",
+				NextPage:   testroutines.URLTestServer + "/v1/call-log?limit=100&page=2",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -196,7 +196,7 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/v1/contact-lists/csv"),
-					mockcond.QueryParam("limit", "10"),
+					mockcond.QueryParam("limit", "100"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContactListsCsv),
 			}.Server(),
@@ -244,7 +244,7 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
-					mockcond.QueryParam("limit", "10"),
+					mockcond.QueryParam("limit", "100"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLog),
 			}.Server(),
@@ -278,7 +278,7 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
-					mockcond.QueryParam("limit", "10"),
+					mockcond.QueryParam("limit", "100"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLogFirstPage),
 			}.Server(),
@@ -301,7 +301,7 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/v1/contact-lists/csv"),
-					mockcond.QueryParam("limit", "10"),
+					mockcond.QueryParam("limit", "100"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContactListsCsv),
 			}.Server(),
