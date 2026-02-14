@@ -32,7 +32,7 @@ const ( //nolint:gochecknoglobals
 	fields               = "fields"
 
 	newLeadActivityType = "12"
-	startingIDIdx       = "1"
+	maxReturn           = 200
 )
 
 type pagingTokenResponse struct {
