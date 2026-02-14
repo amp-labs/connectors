@@ -75,7 +75,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 func (c *Connector) BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error) {
 	// Delegated.
-	return c.batchAdapter.BatchWrite(ctx, params)
+	return c.crmAdapter.BatchWrite(ctx, params)
 }
 
 func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {

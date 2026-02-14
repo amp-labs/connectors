@@ -9,6 +9,8 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/readhelper"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
 const (
@@ -67,9 +69,17 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 
 	return common.ParseResult(
 		rsp,
-		getRecords,
-		getNextRecordsAfter,
-		c.getDataMarshaller(ctx, config.ObjectName, config.AssociatedObjects),
+		core.GetRecords,
+		core.GetNextRecordsAfter,
+		readhelper.ChainedMarshaller(
+			core.GetDataMarshaller(),
+			// Enhance records with associations by fetching these relationships.
+			func(rows []common.ReadResultRow) error {
+				return c.crmAdapter.AssociationsStrategy.FillAssociations(ctx,
+					config.ObjectName, config.AssociatedObjects, rows,
+				)
+			},
+		),
 		config.Fields,
 	)
 }
@@ -109,7 +119,7 @@ func (c *Connector) searchCRM(
 	return common.ParseResult(
 		rsp,
 		common.ExtractOptionalRecordsFromPath(config.ObjectName),
-		getNextRecordsURLCRM,
+		core.GetNextRecordsURLCRM,
 		common.GetMarshaledData,
 		config.Fields,
 	)
