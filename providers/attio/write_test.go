@@ -75,7 +75,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Create notes as POST",
-			Input: common.WriteParams{ObjectName: "notes"},
+			Input: common.WriteParams{ObjectName: "notes", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPOST(),
