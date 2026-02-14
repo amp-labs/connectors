@@ -77,9 +77,11 @@ func createContactList(ctx context.Context, conn *salesfinity.Connector, userID 
 	return res
 }
 
+// Currently the contact-list object does not support delete.
+// When creating its also added on contact-lists/csv, this is to remove it from there.
 func deleteContactList(ctx context.Context, conn *salesfinity.Connector, listID string) *common.DeleteResult {
 	res, err := conn.Delete(ctx, common.DeleteParams{
-		ObjectName: "contact-lists",
+		ObjectName: "contact-lists/csv",
 		RecordId:   listID,
 	})
 	if err != nil {

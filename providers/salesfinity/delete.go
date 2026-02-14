@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/httpkit"
 )
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
@@ -14,12 +15,7 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 	if err != nil {
 		return nil, err
 	}
-	// The Salesfinity API exposes contact lists in two ways: "contact-lists" for Create
-	// and "contact-lists/csv" for reading/deleting the same lists in CSV form.
-	// Delete is done via the CSV endpoint, so we append "csv" to the path when the object is "contact-lists".
-	if params.ObjectName == "contact-lists" {
-		url.AddPath("csv")
-	}
+
 	url.AddPath(params.RecordId)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
@@ -36,7 +32,7 @@ func (c *Connector) parseDeleteResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.DeleteResult, error) {
-	if resp.Code != http.StatusNoContent && resp.Code != http.StatusOK {
+	if !httpkit.Status2xx(resp.Code) {
 		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, resp.Code)
 	}
 

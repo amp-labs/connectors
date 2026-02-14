@@ -3,7 +3,6 @@ package salesfinity
 import (
 	"context"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -16,18 +15,15 @@ import (
 
 const (
 	apiVersion      = "v1"
-	defaultPageSize = 10 // https://docs.salesfinity.ai/api-reference/endpoint/call-log
+	defaultPageSize = "100" // https://docs.salesfinity.ai/api-reference/endpoint/call-log
 )
 
 var objectTimeField = datautils.NewDefaultMap( //nolint:gochecknoglobals
-	datautils.Map[string, string]{}, func(key string) string {
-		switch key {
-		case "call-log":
-			return "updatedAt"
-		default:
-			return ""
-		}
-	})
+	datautils.Map[string, string]{
+		"call-log": "updatedAt",
+	},
+	func(key string) string { return "" },
+)
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if params.NextPage != "" {
@@ -39,11 +35,8 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	pageSize := defaultPageSize
-	if params.PageSize > 0 {
-		pageSize = params.PageSize
-	}
-	url.WithQueryParam("limit", strconv.Itoa(pageSize))
+	pageSize := readhelper.PageSizeWithDefaultStr(params, defaultPageSize)
+	url.WithQueryParam("limit", pageSize)
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
@@ -81,16 +74,16 @@ func makeFilterFunc(params common.ReadParams, request *http.Request) common.Reco
 
 func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		nextPageNum, err := jsonquery.New(node, "pagination").IntegerOptional("next")
+		nextPageNum, err := jsonquery.New(node, "pagination").TextWithDefault("next", "")
 		if err != nil {
 			return "", err
 		}
 
-		if nextPageNum == nil {
+		if nextPageNum == "" {
 			return "", nil
 		}
 
-		reqLink.WithQueryParam("page", strconv.FormatInt(*nextPageNum, 10))
+		reqLink.WithQueryParam("page", nextPageNum)
 
 		return reqLink.String(), nil
 	}

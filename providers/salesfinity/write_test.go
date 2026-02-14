@@ -22,26 +22,7 @@ func TestWrite(t *testing.T) {
 			Name: "Create contact list successfully",
 			Input: common.WriteParams{
 				ObjectName: "contact-lists",
-				RecordData: map[string]any{
-					"name":    "Test Contact List",
-					"user_id": "695ee359f1bbcd2c51d4ae1a",
-					"contacts": []any{
-						map[string]any{
-							"first_name": "John",
-							"last_name":  "Doe",
-							"email":      "john.doe@example.com",
-							"company":    "Example Corp",
-							"title":      "Software Engineer",
-							"phone_numbers": []any{
-								map[string]any{
-									"type":         "mobile",
-									"number":       "5551234567",
-									"country_code": "+1",
-								},
-							},
-						},
-					},
-				},
+				RecordData: "dummy",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
