@@ -1,0 +1,929 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/v1",
+      "objects": {
+        "teams": {
+          "displayName": "Teams",
+          "path": "/teams",
+          "responseKey": "teams",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "domain": {
+              "displayName": "domain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "logo": {
+              "displayName": "logo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "about": {
+              "displayName": "about",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isDefault": {
+              "displayName": "isDefault",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deleted": {
+              "displayName": "deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "mail_warm_topics": {
+              "displayName": "mail_warm_topics",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "mail_warm_schedule": {
+              "displayName": "mail_warm_schedule",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "inbox_auto_tag_settings": {
+              "displayName": "inbox_auto_tag_settings",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "snippets": {
+              "displayName": "snippets",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "users": {
+              "displayName": "users",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "OrgId": {
+              "displayName": "OrgId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "senders": {
+          "displayName": "Senders",
+          "path": "/senders",
+          "responseKey": "senders",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "send_as": {
+              "displayName": "send_as",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "signature": {
+              "displayName": "signature",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "warm": {
+              "displayName": "warm",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "disabled": {
+              "displayName": "disabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "max_per_day": {
+              "displayName": "max_per_day",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "global_max_per_day": {
+              "displayName": "global_max_per_day",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "TeamId": {
+              "displayName": "TeamId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "sender-profiles": {
+          "displayName": "Sender Profiles",
+          "path": "/sender-profiles",
+          "responseKey": "senderProfiles",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "TeamId": {
+              "displayName": "TeamId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "OrgId": {
+              "displayName": "OrgId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "UserId": {
+              "displayName": "UserId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sender_disable_strategy": {
+              "displayName": "sender_disable_strategy",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "Senders": {
+              "displayName": "Senders",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "twitterIdentity": {
+              "displayName": "twitterIdentity",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "linkedinIdentity": {
+              "displayName": "linkedinIdentity",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "labels": {
+          "displayName": "Labels",
+          "path": "/labels",
+          "responseKey": "data",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "color": {
+              "displayName": "color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "OrgId": {
+              "displayName": "OrgId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "contact/all": {
+          "displayName": "Contacts",
+          "path": "/contact/all",
+          "responseKey": "contacts",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_name": {
+              "displayName": "company_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone": {
+              "displayName": "phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "linkedin_url": {
+              "displayName": "linkedin_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "twitter": {
+              "displayName": "twitter",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "verified": {
+              "displayName": "verified",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "replied": {
+              "displayName": "replied",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "conversation_title": {
+              "displayName": "conversation_title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_message_text": {
+              "displayName": "last_message_text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_message_date": {
+              "displayName": "last_message_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "labels": {
+              "displayName": "labels",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "ContactConfig": {
+              "displayName": "ContactConfig",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "Campaign": {
+              "displayName": "Campaign",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "TeamId": {
+              "displayName": "TeamId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "CampaignId": {
+              "displayName": "CampaignId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "campaigns/overview": {
+          "displayName": "Campaigns",
+          "path": "/campaigns/overview",
+          "responseKey": "campaigns",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "track_domain": {
+              "displayName": "track_domain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "disabled": {
+              "displayName": "disabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_draft": {
+              "displayName": "is_draft",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "TeamId": {
+              "displayName": "TeamId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "User": {
+              "displayName": "User",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "contactedCount": {
+              "displayName": "contactedCount",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "openCount": {
+              "displayName": "openCount",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "replyCount": {
+              "displayName": "replyCount",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "emailSentCount": {
+              "displayName": "emailSentCount",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "linkedInSentCount": {
+              "displayName": "linkedInSentCount",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "twitterSentCount": {
+              "displayName": "twitterSentCount",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "bounces": {
+              "displayName": "bounces",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "opt_outs": {
+              "displayName": "opt_outs",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "contactCount": {
+              "displayName": "contactCount",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "verifiedContactCount": {
+              "displayName": "verifiedContactCount",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "org": {
+          "displayName": "Organization",
+          "path": "/org",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "domain": {
+              "displayName": "domain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "logo": {
+              "displayName": "logo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "activeSubscription": {
+              "displayName": "activeSubscription",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "current_plan": {
+              "displayName": "current_plan",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "trial_ends": {
+              "displayName": "trial_ends",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "onboarding_completed": {
+              "displayName": "onboarding_completed",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_enterprise": {
+              "displayName": "is_enterprise",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "whitelabel": {
+              "displayName": "whitelabel",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "email_senders_limit": {
+              "displayName": "email_senders_limit",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "email_senders_used": {
+              "displayName": "email_senders_used",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "linkedin_senders_limit": {
+              "displayName": "linkedin_senders_limit",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "linkedin_senders_used": {
+              "displayName": "linkedin_senders_used",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "twitter_senders_limit": {
+              "displayName": "twitter_senders_limit",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "twitter_senders_used": {
+              "displayName": "twitter_senders_used",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "email_limit": {
+              "displayName": "email_limit",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "email_limit_used": {
+              "displayName": "email_limit_used",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "contact_limit": {
+              "displayName": "contact_limit",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "verification_credits": {
+              "displayName": "verification_credits",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "mail_warm_reply_rate": {
+              "displayName": "mail_warm_reply_rate",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "read_emulation": {
+              "displayName": "read_emulation",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "randomize_send_amount": {
+              "displayName": "randomize_send_amount",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "Price": {
+              "displayName": "Price",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "managed-domains": {
+          "displayName": "Managed Domains",
+          "path": "/managed-domains",
+          "responseKey": "domains",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "computed_status": {
+              "displayName": "computed_status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "price": {
+              "displayName": "price",
+              "valueType": "int",
+              "providerType": "number"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mailboxCount": {
+              "displayName": "mailboxCount",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_cancellation_pending": {
+              "displayName": "is_cancellation_pending",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "current_period_end": {
+              "displayName": "current_period_end",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "managed-mailboxes": {
+          "displayName": "Managed Mailboxes",
+          "path": "/managed-mailboxes",
+          "responseKey": "mailboxes",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "firstName": {
+              "displayName": "firstName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastName": {
+              "displayName": "lastName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "computed_status": {
+              "displayName": "computed_status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "price": {
+              "displayName": "price",
+              "valueType": "int",
+              "providerType": "number"
+            },
+            "is_cancellation_pending": {
+              "displayName": "is_cancellation_pending",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "current_period_end": {
+              "displayName": "current_period_end",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ManagedDomain": {
+              "displayName": "ManagedDomain",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "Team": {
+              "displayName": "Team",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "placement-tests": {
+          "displayName": "Placement Tests",
+          "path": "/placement-tests",
+          "responseKey": "tests",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tracking_code": {
+              "displayName": "tracking_code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "score": {
+              "displayName": "score",
+              "valueType": "int",
+              "providerType": "number"
+            },
+            "credit_cost": {
+              "displayName": "credit_cost",
+              "valueType": "int",
+              "providerType": "number"
+            },
+            "total_seeds": {
+              "displayName": "total_seeds",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "auto_send": {
+              "displayName": "auto_send",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "results_summary": {
+              "displayName": "results_summary",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sender": {
+              "displayName": "sender",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sent_at": {
+              "displayName": "sent_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "auto/identitys": {
+          "displayName": "Identities",
+          "path": "/auto/identitys",
+          "responseKey": "identities",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "username": {
+              "displayName": "username",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "TeamId": {
+              "displayName": "TeamId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "conversation/latest-by-profile": {
+          "displayName": "Conversations",
+          "path": "/conversation/latest-by-profile",
+          "responseKey": "data.conversations",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_activity_at": {
+              "displayName": "last_activity_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_unread": {
+              "displayName": "is_unread",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "platform_type": {
+              "displayName": "platform_type",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "inbox_mood": {
+              "displayName": "inbox_mood",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_id": {
+              "displayName": "contact_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "labels": {
+              "displayName": "labels",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        }
+      }
+    }
+  }
+}
