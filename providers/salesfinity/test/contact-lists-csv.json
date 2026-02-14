@@ -1,0 +1,19 @@
+{
+    "data": [
+        {
+            "_id": "test_list_id_001",
+            "name": "Test Contact List 1",
+            "user": "test_user_id_001"
+        },
+        {
+            "_id": "test_list_id_002",
+            "name": "Test Contact List 2",
+            "user": "test_user_id_002"
+        }
+    ],
+    "pagination": {
+        "total": 2,
+        "page": 1,
+        "next": null
+    }
+}
