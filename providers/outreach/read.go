@@ -9,7 +9,14 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-const includeQueryParam = "include"
+const (
+	includeQueryParam = "include"
+
+	// defaultPageSize is the maximum page size supported by the Outreach API.
+	// Setting page[size] explicitly forces the API to use cursor-based pagination (page[after] tokens)
+	// instead of the deprecated offset-based pagination (page[offset]), which has a hard cap of 1000 records.
+	defaultPageSize = "1000"
+)
 
 // Read retrieves data based on the provided configuration parameters.
 //
@@ -61,14 +68,22 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
-	// If Since is present, we turn it into the format the Outreach API expects
-	if !config.Since.IsZero() {
-		t := config.Since.Format(time.DateOnly)
-		// Add `..inf` to filter for all records updated after the given time.
-		// See: https://developers.outreach.io/api/making-requests/#filter-by-greater-than-or-equal-to-condition
-		fmtTime := t + "..inf"
-		url.WithQueryParam("filter[updatedAt]", fmtTime)
+	// Use page[size] to force cursor-based pagination instead of deprecated offset pagination.
+	url.WithQueryParam("page[size]", defaultPageSize)
+
+	// Outreach supports range filters: filter[updatedAt]=start..end
+	// Note: Outreach only allows "inf" at the end of the range, not the start.
+	// See: https://developers.outreach.io/api/making-requests/#filter-by-greater-than-or-equal-to-condition
+	switch {
+	case !config.Since.IsZero() && !config.Until.IsZero():
+		url.WithQueryParam("filter[updatedAt]",
+			config.Since.Format(time.DateOnly)+".."+config.Until.Format(time.DateOnly))
+	case !config.Since.IsZero():
+		url.WithQueryParam("filter[updatedAt]",
+			config.Since.Format(time.DateOnly)+"..inf")
+	case !config.Until.IsZero():
+		url.WithQueryParam("filter[updatedAt]",
+			"1970-01-01.."+config.Until.Format(time.DateOnly))
 	}
 
 	return url, nil
