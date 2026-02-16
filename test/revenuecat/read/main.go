@@ -16,9 +16,11 @@ import (
 )
 
 func main() {
+	// Handle Ctrl-C gracefully.
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
+	// Set up slog logging.
 	utils.SetupLogging()
 
 	conn := revenuecat.GetRevenueCatConnector(ctx)
