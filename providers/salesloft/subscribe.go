@@ -7,6 +7,7 @@ import (
 	"maps"
 	"slices"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/amp-labs/connectors"
@@ -403,7 +404,7 @@ func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error
 
 // toModuleEventName converts a common event type into one or more Salesloft module events using the mapping.
 func toModuleEventName(objectName common.ObjectName, eventType common.SubscriptionEventType) ([]moduleEvent, error) {
-	mapping, exists := salesloftEventMappings[objectName]
+	mapping, exists := findEventMapping(objectName)
 	if !exists {
 		return nil, fmt.Errorf("%w: %s", errUnsupportedObject, objectName)
 	}
@@ -420,7 +421,7 @@ func validateSubscriptionEvents(subscriptionEvents map[common.ObjectName]common.
 	var validationErrors error
 
 	for objectName, events := range subscriptionEvents {
-		mapping, exist := salesloftEventMappings[objectName]
+		mapping, exist := findEventMapping(objectName)
 		if !exist {
 			validationErrors = errors.Join(validationErrors,
 				fmt.Errorf("%s %w", objectName, errUnsupportedObject))
@@ -486,7 +487,7 @@ func (m eventMapping) getAllSupportedEvents() []moduleEvent {
 
 // moduleEventToCommon converts a provider event back to common event type.
 func moduleEventToCommon(e moduleEvent, objectName common.ObjectName) (common.SubscriptionEventType, bool) {
-	mapping, exists := salesloftEventMappings[objectName]
+	mapping, exists := findEventMapping(objectName)
 	if !exists {
 		return "", false
 	}
@@ -655,6 +656,37 @@ func categorizeSubscriptions(
 	}
 
 	return subscriptionsToDelete, subscriptionsToKeep
+}
+
+// findEventMapping looks up the event mapping for a given object name using flexible matching.
+// It first tries an exact key match, then checks the last "/" segment of each map key.
+// For example, input "emails" will match the key "activities/emails" via last-segment matching.
+func findEventMapping(objectName common.ObjectName) (salesloftObjectMapping, bool) {
+	// Exact key match.
+	if mapping, exists := salesloftEventMappings[objectName]; exists {
+		return mapping, true
+	}
+
+	// Match against the last segment of each key (e.g., "emails" matches "activities/emails").
+	input := string(objectName)
+
+	for key, mapping := range salesloftEventMappings {
+		keyStr := string(key)
+		if lastPathSegment(keyStr) == input {
+			return mapping, true
+		}
+	}
+
+	return salesloftObjectMapping{}, false
+}
+
+// lastPathSegment returns the part after the last "/" in s, or s itself if there is no "/".
+func lastPathSegment(s string) string {
+	if idx := strings.LastIndex(s, "/"); idx >= 0 {
+		return s[idx+1:]
+	}
+
+	return s
 }
 
 // getObjectMapByModuleEvent searches salesloftEventMappings to find which object a module event belongs to.
