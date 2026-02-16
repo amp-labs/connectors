@@ -68,10 +68,16 @@ func init() { // nolint:funlen
 						Upsert: true,
 						Delete: true,
 					},
+					Delete:    true,
 					Proxy:     true,
 					Read:      true,
 					Subscribe: true,
 					Write:     true,
+					Search: SearchSupport{
+						Operators: SearchOperators{
+							Equals: true,
+						},
+					},
 				},
 			},
 			ModuleSalesforceAccountEngagement: {
@@ -114,6 +120,7 @@ func init() { // nolint:funlen
 				Upsert: true,
 				Delete: true,
 			},
+			Delete:    true,
 			Proxy:     true,
 			Read:      true,
 			Subscribe: true,

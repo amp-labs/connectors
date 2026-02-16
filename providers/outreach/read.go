@@ -71,5 +71,9 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		url.WithQueryParam("filter[updatedAt]", fmtTime)
 	}
 
+	// Sort reverse chronologically to get newest records first
+	// https://developers.outreach.io/api/making-requests/#sort-by-descending-attribute
+	url.WithQueryParam("sort", "-updatedAt")
+
 	return url, nil
 }
