@@ -23,13 +23,6 @@ func TestRead(t *testing.T) {
 	  "url":"/v2/projects/proj_123/products"
 	}`)
 
-	firstPageWithAbsoluteNext := []byte(`{
-	  "object":"list",
-	  "items":[{"id":"prod_1","object":"product"}],
-	  "next_page":"` + testroutines.URLTestServer + `/v2/projects/proj_123/products?starting_after=prod_1",
-	  "url":"/v2/projects/proj_123/products"
-	}`)
-
 	lastPage := []byte(`{
 	  "object":"list",
 	  "items":[{"id":"prod_3","object":"product"}],
@@ -164,7 +157,16 @@ func TestRead(t *testing.T) {
 							mockcond.Path("/v2/projects/proj_123/products"),
 							mockcond.QueryParam("limit", defaultPageSize),
 						},
-						Then: mockserver.Response(http.StatusOK, firstPageWithAbsoluteNext),
+						Then: func(w http.ResponseWriter, r *http.Request) {
+							nextPage := "http://" + r.Host + "/v2/projects/proj_123/products?starting_after=prod_1"
+							firstPage := []byte(`{
+							  "object":"list",
+							  "items":[{"id":"prod_1","object":"product"}],
+							  "next_page":"` + nextPage + `",
+							  "url":"/v2/projects/proj_123/products"
+							}`)
+							mockserver.Response(http.StatusOK, firstPage)(w, r)
+						},
 					},
 				},
 				Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
