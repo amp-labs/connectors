@@ -35,9 +35,17 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     false,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
 			Write:     false,
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "project_id",
+					DisplayName: "Project ID",
+				},
+			},
 		},
 	})
 }
