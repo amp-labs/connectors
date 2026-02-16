@@ -2,199 +2,226 @@ package revenuecat
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"testing"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
+	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
 
-func TestRead_Products_PaginatesUsingNextPage(t *testing.T) {
+func TestRead(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
-
-	firstPage := []byte(`{
+	firstPageWithRelativeNext := []byte(`{
 	  "object":"list",
 	  "items":[{"id":"prod_1","object":"product"},{"id":"prod_2","object":"product"}],
 	  "next_page":"/v2/projects/proj_123/products?starting_after=prod_2",
 	  "url":"/v2/projects/proj_123/products"
 	}`)
 
-	secondPage := []byte(`{
+	firstPageWithAbsoluteNext := []byte(`{
+	  "object":"list",
+	  "items":[{"id":"prod_1","object":"product"}],
+	  "next_page":"` + testroutines.URLTestServer + `/v2/projects/proj_123/products?starting_after=prod_1",
+	  "url":"/v2/projects/proj_123/products"
+	}`)
+
+	lastPage := []byte(`{
 	  "object":"list",
 	  "items":[{"id":"prod_3","object":"product"}],
 	  "url":"/v2/projects/proj_123/products"
 	}`)
 
-	server := mockserver.Switch{
-		Setup: mockserver.ContentJSON(),
-		Cases: []mockserver.Case{
-			{
-				If: mockcond.And{
-					mockcond.MethodGET(),
-					mockcond.Path("/v2/projects/proj_123/products"),
-					mockcond.QueryParam("limit", defaultPageSize),
+	tests := []testroutines.Read{
+		{
+			Name:         "Read object must be included",
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:         "At least one field is requested",
+			Input:        common.ReadParams{ObjectName: "products"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFields},
+		},
+		{
+			Name:  "Read products uses default limit",
+			Input: common.ReadParams{ObjectName: "products", Fields: datautils.NewStringSet("id")},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/v2/projects/proj_123/products"),
+							mockcond.QueryParam("limit", defaultPageSize),
+						},
+						Then: mockserver.Response(http.StatusOK, lastPage),
+					},
 				},
-				Then: mockserver.Response(200, firstPage),
-			},
-			{
-				If: mockcond.And{
-					mockcond.MethodGET(),
-					mockcond.Path("/v2/projects/proj_123/products"),
-					mockcond.QueryParam("starting_after", "prod_2"),
-				},
-				Then: mockserver.Response(200, secondPage),
+				Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"id": "prod_3"},
+					Raw:    map[string]any{"id": "prod_3"},
+				}},
+				NextPage: "",
+				Done:     true,
 			},
 		},
-		Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
-	}.Server()
-	t.Cleanup(server.Close)
-
-	conn := mustTestConnector(t, server.URL, "proj_123")
-
-	out1, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "products",
-		Fields:     datautils.NewStringSet("id"),
-	})
-	if err != nil {
-		t.Fatalf("read first page error: %v", err)
+		{
+			Name:  "Read products uses PageSize as limit",
+			Input: common.ReadParams{ObjectName: "products", Fields: datautils.NewStringSet("id"), PageSize: 7},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/v2/projects/proj_123/products"),
+							mockcond.QueryParam("limit", "7"),
+						},
+						Then: mockserver.Response(http.StatusOK, lastPage),
+					},
+				},
+				Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name:  "Read products returns relative next page token",
+			Input: common.ReadParams{ObjectName: "products", Fields: datautils.NewStringSet("id")},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/v2/projects/proj_123/products"),
+							mockcond.QueryParam("limit", defaultPageSize),
+						},
+						Then: mockserver.Response(http.StatusOK, firstPageWithRelativeNext),
+					},
+				},
+				Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     2,
+				NextPage: "/v2/projects/proj_123/products?starting_after=prod_2",
+				Done:     false,
+			},
+		},
+		{
+			Name: "Read products accepts relative NextPage token and resolves it",
+			Input: common.ReadParams{
+				ObjectName: "products",
+				Fields:     datautils.NewStringSet("id"),
+				NextPage:   "/v2/projects/proj_123/products?starting_after=prod_2",
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/v2/projects/proj_123/products"),
+							mockcond.QueryParam("starting_after", "prod_2"),
+						},
+						Then: mockserver.Response(http.StatusOK, lastPage),
+					},
+				},
+				Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name:  "Read products returns absolute next page token",
+			Input: common.ReadParams{ObjectName: "products", Fields: datautils.NewStringSet("id")},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/v2/projects/proj_123/products"),
+							mockcond.QueryParam("limit", defaultPageSize),
+						},
+						Then: mockserver.Response(http.StatusOK, firstPageWithAbsoluteNext),
+					},
+				},
+				Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: testroutines.URLTestServer + "/v2/projects/proj_123/products?starting_after=prod_1",
+				Done:     false,
+			},
+		},
+		{
+			Name: "Read products accepts absolute NextPage URL",
+			Input: common.ReadParams{
+				ObjectName: "products",
+				Fields:     datautils.NewStringSet("id"),
+				NextPage:   testroutines.URLTestServer + "/v2/projects/proj_123/products?starting_after=prod_1",
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/v2/projects/proj_123/products"),
+							mockcond.QueryParam("starting_after", "prod_1"),
+						},
+						Then: mockserver.Response(http.StatusOK, lastPage),
+					},
+				},
+				Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: "",
+				Done:     true,
+			},
+		},
 	}
-	if out1.NextPage.String() == "" {
-		t.Fatalf("expected next page token to be set")
-	}
 
-	out2, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "products",
-		Fields:     datautils.NewStringSet("id"),
-		NextPage:   out1.NextPage,
-	})
-	if err != nil {
-		t.Fatalf("read second page error: %v", err)
-	}
-	if out2.NextPage.String() != "" {
-		t.Fatalf("expected no next page token on last page, got: %s", out2.NextPage.String())
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestReadConnector(tt.Server.URL, "proj_123")
+			})
+		})
 	}
 }
 
-func TestRead_Products_UsesPageSizeAsLimit(t *testing.T) {
-	t.Parallel()
-
-	ctx := context.Background()
-
-	body := []byte(`{
-	  "object":"list",
-	  "items":[{"id":"prod_1","object":"product"}],
-	  "url":"/v2/projects/proj_123/products"
-	}`)
-
-	server := mockserver.Switch{
-		Setup: mockserver.ContentJSON(),
-		Cases: []mockserver.Case{
-			{
-				If: mockcond.And{
-					mockcond.MethodGET(),
-					mockcond.Path("/v2/projects/proj_123/products"),
-					mockcond.QueryParam("limit", "7"),
-				},
-				Then: mockserver.Response(200, body),
-			},
-		},
-		Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
-	}.Server()
-	t.Cleanup(server.Close)
-
-	conn := mustTestConnector(t, server.URL, "proj_123")
-
-	_, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "products",
-		Fields:     datautils.NewStringSet("id"),
-		PageSize:   7,
-	})
-	if err != nil {
-		t.Fatalf("read error: %v", err)
-	}
-}
-
-func TestRead_Products_AllowsAbsoluteNextPageURL(t *testing.T) {
-	t.Parallel()
-
-	ctx := context.Background()
-
-	secondPage := []byte(`{
-	  "object":"list",
-	  "items":[{"id":"prod_2","object":"product"}],
-	  "url":"/v2/projects/proj_123/products"
-	}`)
-
-	server := mockserver.Switch{
-		Setup: mockserver.ContentJSON(),
-		Cases: []mockserver.Case{
-			{
-				If: mockcond.And{
-					mockcond.MethodGET(),
-					mockcond.Path("/v2/projects/proj_123/products"),
-					mockcond.QueryParam("limit", defaultPageSize),
-				},
-				Then: func(w http.ResponseWriter, r *http.Request) {
-					// Provide an absolute next_page URL.
-					nextPage := fmt.Sprintf("http://%s/v2/projects/proj_123/products?starting_after=prod_1", r.Host)
-					firstPage := []byte(`{
-					  "object":"list",
-					  "items":[{"id":"prod_1","object":"product"}],
-					  "next_page":"` + nextPage + `",
-					  "url":"/v2/projects/proj_123/products"
-					}`)
-					mockserver.Response(200, firstPage)(w, r)
-				},
-			},
-			{
-				If: mockcond.And{
-					mockcond.MethodGET(),
-					mockcond.Path("/v2/projects/proj_123/products"),
-					mockcond.QueryParam("starting_after", "prod_1"),
-				},
-				Then: mockserver.Response(200, secondPage),
-			},
-		},
-		Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
-	}.Server()
-	t.Cleanup(server.Close)
-
-	conn := mustTestConnector(t, server.URL, "proj_123")
-
-	out1, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "products",
-		Fields:     datautils.NewStringSet("id"),
-	})
-	if err != nil {
-		t.Fatalf("read first page error: %v", err)
-	}
-	if out1.NextPage.String() == "" {
-		t.Fatalf("expected next page token to be set")
-	}
-
-	_, err = conn.Read(ctx, common.ReadParams{
-		ObjectName: "products",
-		Fields:     datautils.NewStringSet("id"),
-		NextPage:   out1.NextPage,
-	})
-	if err != nil {
-		t.Fatalf("read second page error: %v", err)
-	}
-}
-
-func mustTestConnector(t *testing.T, baseURL, projectID string) *Connector {
-	t.Helper()
-
+func constructTestReadConnector(baseURL, projectID string) (*Connector, error) {
 	ctx := context.Background()
 
 	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, "Authorization", "Bearer test")
 	if err != nil {
-		t.Fatalf("auth client error: %v", err)
+		return nil, err
 	}
 
 	conn, err := NewConnector(common.ConnectorParams{
@@ -204,10 +231,9 @@ func mustTestConnector(t *testing.T, baseURL, projectID string) *Connector {
 		},
 	})
 	if err != nil {
-		t.Fatalf("connector init error: %v", err)
+		return nil, err
 	}
 
 	conn.SetUnitTestBaseURL(baseURL)
-
-	return conn
+	return conn, nil
 }
