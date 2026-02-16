@@ -2,7 +2,6 @@ package revenuecat
 
 import (
 	"context"
-	"errors"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -40,8 +39,12 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		next := params.NextPage.String()
 
 		// `next_page` may be relative; anchor it on BaseURL.
-		if parsed, err := url.Parse(next); err == nil && parsed.Scheme == "" && strings.HasPrefix(next, "/") {
-			return urlbuilder.New(c.ProviderInfo().BaseURL, strings.TrimPrefix(next, "/"))
+		if parsed, err := url.Parse(next); err == nil && parsed.Scheme == "" {
+			base, err2 := url.Parse(c.ProviderInfo().BaseURL)
+			if err2 != nil {
+				return nil, err2
+			}
+			return urlbuilder.New(base.ResolveReference(parsed).String())
 		}
 
 		return urlbuilder.New(next)
@@ -82,23 +85,18 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	_ = ctx
 
-	body, ok := resp.Body()
-	if !ok {
-		return nil, errors.New("revenuecat: empty response body")
-	}
-
 	recordsKey := metadata.Schemas.LookupArrayFieldName(c.Module(), params.ObjectName)
 
 	return common.ParseResult(resp,
 		common.ExtractOptionalRecordsFromPath(recordsKey),
-		nextPageFromListObject(body),
+		nextPageFromListObject(),
 		common.GetMarshaledData,
 		params.Fields,
 	)
 }
 
-func nextPageFromListObject(root *ajson.Node) common.NextPageFunc {
-	return func(_ *ajson.Node) (string, error) {
+func nextPageFromListObject() common.NextPageFunc {
+	return func(root *ajson.Node) (string, error) {
 		// `next_page` is present only when more pages exist.
 		next, err := jsonquery.New(root).StrWithDefault("next_page", "")
 		if err != nil {
