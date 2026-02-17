@@ -95,7 +95,7 @@ func TestRead(t *testing.T) {
 			},
 		},
 		{
-			Name:  "Read products returns relative next page token",
+			Name:  "Read products returns absolute next page URL for relative next_page",
 			Input: common.ReadParams{ObjectName: "products", Fields: datautils.NewStringSet("id")},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -114,36 +114,8 @@ func TestRead(t *testing.T) {
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     2,
-				NextPage: "/v2/projects/proj_123/products?starting_after=prod_2",
+				NextPage: testroutines.URLTestServer + "/v2/projects/proj_123/products?starting_after=prod_2",
 				Done:     false,
-			},
-		},
-		{
-			Name: "Read products accepts relative NextPage token and resolves it",
-			Input: common.ReadParams{
-				ObjectName: "products",
-				Fields:     datautils.NewStringSet("id"),
-				NextPage:   "/v2/projects/proj_123/products?starting_after=prod_2",
-			},
-			Server: mockserver.Switch{
-				Setup: mockserver.ContentJSON(),
-				Cases: []mockserver.Case{
-					{
-						If: mockcond.And{
-							mockcond.MethodGET(),
-							mockcond.Path("/v2/projects/proj_123/products"),
-							mockcond.QueryParam("starting_after", "prod_2"),
-						},
-						Then: mockserver.Response(http.StatusOK, lastPage),
-					},
-				},
-				Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
-			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
-			Expected: &common.ReadResult{
-				Rows:     1,
-				NextPage: "",
-				Done:     true,
 			},
 		},
 		{

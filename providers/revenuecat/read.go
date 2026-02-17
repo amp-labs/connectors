@@ -35,18 +35,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
 	if len(params.NextPage) != 0 {
-		next := params.NextPage.String()
-
-		// `next_page` may be relative; anchor it on BaseURL.
-		if parsed, err := url.Parse(next); err == nil && parsed.Scheme == "" {
-			base, err2 := url.Parse(c.ProviderInfo().BaseURL)
-			if err2 != nil {
-				return nil, err2
-			}
-			return urlbuilder.New(base.ResolveReference(parsed).String())
-		}
-
-		return urlbuilder.New(next)
+		return urlbuilder.New(params.NextPage.String())
 	}
 
 	objectPath, err := metadata.Schemas.FindURLPath(common.ModuleRoot, params.ObjectName)
@@ -72,7 +61,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 }
 
 func (c *Connector) parseReadResponse(
-	ctx context.Context,
+	_ context.Context,
 	params common.ReadParams,
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
@@ -81,20 +70,30 @@ func (c *Connector) parseReadResponse(
 
 	return common.ParseResult(resp,
 		common.ExtractOptionalRecordsFromPath(recordsKey),
-		nextPageFromListObject(),
+		nextPageFromListObject(request.URL),
 		common.GetMarshaledData,
 		params.Fields,
 	)
 }
 
-func nextPageFromListObject() common.NextPageFunc {
+func nextPageFromListObject(previousRequestURL *url.URL) common.NextPageFunc {
 	return func(root *ajson.Node) (string, error) {
-		// `next_page` is present only when more pages exist.
-		next, err := jsonquery.New(root).StrWithDefault("next_page", "")
+		nextPage, err := jsonquery.New(root).StrWithDefault("next_page", "")
+		if err != nil || nextPage == "" {
+			return "", err
+		}
+
+		parsed, err := url.Parse(nextPage)
 		if err != nil {
 			return "", err
 		}
 
-		return next, nil
+		// RevenueCat usually returns a relative path (e.g. "/v2/projects/...").
+		// Resolve against the *previous request URL* so we don't rely on ProviderInfo().BaseURL.
+		if parsed.Scheme == "" {
+			return previousRequestURL.ResolveReference(parsed).String(), nil
+		}
+
+		return nextPage, nil
 	}
 }
