@@ -99,6 +99,7 @@ import (
 	"github.com/amp-labs/connectors/providers/revenuecat"
 	"github.com/amp-labs/connectors/providers/ringcentral"
 	"github.com/amp-labs/connectors/providers/sageintacct"
+	"github.com/amp-labs/connectors/providers/salesfinity"
 	"github.com/amp-labs/connectors/providers/salesflare"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/providers/salesloft"
@@ -244,6 +245,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.ZendeskSupport:          wrapper(newZendeskSupportConnector),
 	providers.Zoho:                    wrapper(newZohoConnector),
 	providers.Zoom:                    wrapper(newZoomConnector),
+	providers.Salesfinity:             wrapper(newSalesfinityConnector),
 }
 
 type outputConstructorFunc func(p common.ConnectorParams) (connectors.Connector, error)
@@ -987,4 +989,8 @@ func newDropboxSignConnector(params common.ConnectorParams) (*dropboxsign.Connec
 
 func newCallRail(params common.ConnectorParams) (*callrail.Connector, error) {
 	return callrail.NewConnector(params)
+}
+
+func newSalesfinityConnector(params common.ConnectorParams) (*salesfinity.Connector, error) {
+	return salesfinity.NewConnector(params)
 }
