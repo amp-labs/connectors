@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -60,7 +59,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		apiVersion,
 		"projects",
 		c.ProjectID,
-		strings.TrimPrefix(objectPath, "/"),
+		objectPath,
 	)
 	if err != nil {
 		return nil, err
