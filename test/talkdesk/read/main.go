@@ -90,7 +90,7 @@ func readDNCL(ctx context.Context, conn *talkdesk.Connector) error {
 func readRecordLists(ctx context.Context, conn *talkdesk.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "record-lists",
-		Since:      time.Now().Add(-7020 * time.Hour),
+		Since:      time.Now().Add(-100000 * time.Hour),
 		Fields:     connectors.Fields("status", "name", "category", "id"),
 	}
 
