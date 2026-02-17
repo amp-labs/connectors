@@ -14,7 +14,7 @@ func getRecords(objectName string) common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
 		keys := responseKeys[objectName]
 		if len(keys) > 1 {
-			rcds, err := jsonquery.New(node, "_embedded").ArrayOptional(objectName)
+			rcds, err := jsonquery.New(node, keys[0]).ArrayOptional(keys[1])
 			if err != nil {
 				return nil, err
 			}
