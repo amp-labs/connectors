@@ -77,8 +77,6 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	_ = ctx
-
 	recordsKey := metadata.Schemas.LookupArrayFieldName(c.Module(), params.ObjectName)
 
 	return common.ParseResult(resp,
