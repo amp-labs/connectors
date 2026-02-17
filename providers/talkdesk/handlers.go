@@ -28,8 +28,8 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		}
 	case !params.Since.IsZero():
 		if filtersByUpdates.Has(params.ObjectName) {
-			url.WithQueryParam("updated_at_from", params.Since.UTC().Format(time.RFC3339Nano))
-			url.WithQueryParam("updated_at_to", time.Now().UTC().Format(time.RFC3339Nano))
+			url.WithQueryParam("updated_at_from", params.Since.UTC().Format(time.RFC3339))
+			url.WithQueryParam("updated_at_to", time.Now().UTC().Format(time.RFC3339))
 		}
 
 		if filtersByCreation.Has(params.ObjectName) {
