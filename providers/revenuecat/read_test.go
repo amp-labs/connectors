@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -221,7 +222,9 @@ func TestRead(t *testing.T) {
 func constructTestReadConnector(baseURL, projectID string) (*Connector, error) {
 	ctx := context.Background()
 
-	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, "Authorization", "Bearer test")
+	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, "Authorization", "Bearer test",
+		common.WithHeaderClient(mockutils.NewClient()),
+	)
 	if err != nil {
 		return nil, err
 	}

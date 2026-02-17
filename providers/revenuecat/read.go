@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 	"net/url"
-	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/revenuecat/metadata"
@@ -66,12 +66,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// List endpoints support forward pagination via `limit`.
-	limit := defaultPageSize
-	if params.PageSize > 0 {
-		limit = strconv.Itoa(params.PageSize)
-	}
-
-	url.WithQueryParam("limit", limit)
+	url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, defaultPageSize))
 
 	return url, nil
 }
