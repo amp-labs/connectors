@@ -1,0 +1,62 @@
+{
+  "count": 10,
+  "page": 1,
+  "per_page": 10,
+  "total": 10,
+  "total_pages": 5,
+  "_embedded": [
+    {
+      "id": 1889,
+      "contact_id": "753",
+      "interaction_id": "c5572384a4c340c2b326965fdb13ca0e",
+      "timestamp": "2022-08-23T10:36:17.803596Z",
+      "phone_status": "SAFE",
+      "phone_message": "valid",
+      "phone_success": true,
+      "phone_formatted": "969-999-999",
+      "phone_local_format": "969-999-999",
+      "phone_valid": true,
+      "phone_risk_score": 10,
+      "phone_recent_abuse": false,
+      "phone_voip": true,
+      "phone_prepaid": false,
+      "phone_risky": false,
+      "phone_active": true,
+      "phone_carrier": "VODAFONE",
+      "phone_line_type": "VoIP",
+      "phone_country": "PT",
+      "phone_region": "PT",
+      "phone_dialing_code": 351,
+      "phone_request_id": "requestId1",
+      "phone_call_attestation_type": "TN-Validation-Passed-C",
+      "phone_call_attestation_valid": true,
+      "voice_operation": "VERIFY",
+      "voice_risk_score": 27.99999713897705,
+      "voice_result": "SUCCESS",
+      "overall_risk_score": 27.99999713897705,
+      "is_deleted": false,
+      "phone_number": "+351912345678",
+      "voice_type": "PASSIVE"
+    }
+  ],
+  "_links": {
+    "first": {
+      "href": "https://api-docs.talkdesk.org/identity/activities?filter=voice_type%20eq%20%27PASSIVE%27%20and%20contact_id%20eq%20%27753%27%20and%20%20interaction_id%20eq%20%27c5572384a4c340c2b326965fdb13ca0e%27&page=2"
+    },
+    "last": {
+      "href": "https://api-docs.talkdesk.org/identity/activities?filter=voice_type%20eq%20%27PASSIVE%27%20and%20contact_id%20eq%20%27753%27%20and%20%20interaction_id%20eq%20%27c5572384a4c340c2b326965fdb13ca0e%27&page=10"
+    },
+    "next": {
+      "href": "https://api-docs.talkdesk.org/identity/activities?filter=voice_type%20eq%20%27PASSIVE%27%20and%20contact_id%20eq%20%27753%27%20and%20%20interaction_id%20eq%20%27c5572384a4c340c2b326965fdb13ca0e%27&page=3"
+    },
+    "prev": {
+      "href": "https://api-docs.talkdesk.org/identity/activities?filter=voice_type%20eq%20%27PASSIVE%27%20and%20contact_id%20eq%20%27753%27%20and%20%20interaction_id%20eq%20%27c5572384a4c340c2b326965fdb13ca0e%27&page=1"
+    },
+    "self": {
+      "href": "https://api-docs.talkdesk.org/identity/activities?filter=voice_type%20eq%20%27PASSIVE%27%20and%20contact_id%20eq%20%27753%27%20and%20%20interaction_id%20eq%20%27c5572384a4c340c2b326965fdb13ca0e%27"
+    },
+    "show": {
+      "href": "https://api-docs.talkdesk.org/identity/activities?page=1&per_page=10"
+    }
+  }
+}
