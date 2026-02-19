@@ -1,0 +1,28 @@
+{
+  "http_status": 200,
+  "status": "success",
+  "members": {
+    "total_results": 1,
+    "members": [
+      {
+        "user_id": "1234567",
+        "username": "demo_user",
+        "first_name": "Saul",
+        "last_name": "Goodman",
+        "email_address": "saul@example.com",
+        "date_added": "2013-01-17 17:12:13",
+        "phone": "9492181234",
+        "display_name": "Standard Account",
+        "subscription_status": "1",
+        "_link": {
+          "self": {
+            "href": "/rest/1/members/1234567"
+          }
+        }
+      }
+    ],
+    "page": 1,
+    "page_size": 1,
+    "total_pages": 1
+  }
+}

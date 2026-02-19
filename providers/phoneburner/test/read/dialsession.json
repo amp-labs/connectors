@@ -1,0 +1,30 @@
+{
+  "http_status": 200,
+  "status": "success",
+  "dialsessions": {
+    "page": 1,
+    "page_size": 3,
+    "total_pages": 25,
+    "total_results": 75,
+    "dialsessions": [
+      {
+        "dialsession_id": "49463",
+        "callerid": null,
+        "start_when": "2013-11-04 08:16:08",
+        "end_when": null,
+        "connected_when": null,
+        "disconnected_when": null,
+        "call_count": 0
+      },
+      {
+        "dialsession_id": "70384",
+        "callerid": "9495551234",
+        "start_when": "2023-04-30 15:31:03",
+        "end_when": "2023-04-30 15:33:29",
+        "connected_when": "2023-04-30 15:33:15",
+        "disconnected_when": "2023-04-30 15:33:29",
+        "call_count": 1
+      }
+    ]
+  }
+}
