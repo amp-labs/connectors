@@ -29,10 +29,6 @@ type Connector struct {
 	crmAdapter    *crm.Adapter    // used for connectors.DeleteConnector capabilities.
 }
 
-const (
-	ModuleCRMVersion = "v3"
-)
-
 var _ connectors.WebhookVerifierConnector = &Connector{}
 
 // NewConnector returns a new Hubspot connector.
