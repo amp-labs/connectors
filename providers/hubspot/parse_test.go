@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
 func TestGetDataMarshaller(t *testing.T) { //nolint:funlen
@@ -213,13 +214,13 @@ func TestGetDataMarshaller(t *testing.T) { //nolint:funlen
 			name:        "Missing id returns error",
 			records:     []map[string]any{{"properties": map[string]any{}}},
 			fields:      []string{"email"},
-			expectedErr: errMissingId,
+			expectedErr: core.ErrMissingId,
 		},
 		{
 			name:        "Missing properties with fields requested returns error",
 			records:     []map[string]any{{"id": "123"}},
 			fields:      []string{"email"},
-			expectedErr: ErrNotObject,
+			expectedErr: core.ErrNotObject,
 		},
 	}
 
