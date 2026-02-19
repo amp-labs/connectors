@@ -72,7 +72,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		connector.ProviderContext.Module(),
 		operations.DeleteHandlers{
 			BuildRequest:  connector.buildDeleteRequest,
-			ParseResponse: connector.parseDeleteResponse,
+			ParseResponse: parseDeleteResponse,
 			ErrorHandler:  common.InterpretError,
 		},
 	)
@@ -108,13 +108,4 @@ func (c *Connector) parseWriteResponse(
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
 	return buildDeleteRequest(ctx, c.ProviderInfo().BaseURL, params)
-}
-
-func (c *Connector) parseDeleteResponse(
-	ctx context.Context,
-	params common.DeleteParams,
-	request *http.Request,
-	response *common.JSONHTTPResponse,
-) (*common.DeleteResult, error) {
-	return parseDeleteResponse(ctx, params, request, response)
 }
