@@ -133,7 +133,7 @@ func parseReadResponse(
 					readhelper.NewTimeBoundary(),
 					"date_added",
 					"2006-01-02 15:04:05",
-					nextRecordsURL(url.String(), params.ObjectName),
+					nextRecordsURL(url, params.ObjectName),
 				),
 				common.MakeMarshaledDataFunc(nil),
 				params.Fields,
@@ -150,7 +150,7 @@ func parseReadResponse(
 					readhelper.NewTimeBoundary(),
 					"created_when",
 					"2006-01-02 15:04:05",
-					nextRecordsURL(url.String(), params.ObjectName),
+					nextRecordsURL(url, params.ObjectName),
 				),
 				common.MakeMarshaledDataFunc(nil),
 				params.Fields,
@@ -166,7 +166,7 @@ func parseReadResponse(
 	return common.ParseResult(
 		response,
 		records,
-		nextRecordsURL(url.String(), params.ObjectName),
+		nextRecordsURL(url, params.ObjectName),
 		common.GetMarshaledData,
 		params.Fields,
 	)
@@ -244,12 +244,16 @@ func recordsFunc(objectName string) (common.RecordsFunc, error) {
 	}
 }
 
-func nextRecordsURL(requestURL string, objectName string) common.NextPageFunc {
+func nextRecordsURL(requestURL *urlbuilder.URL, objectName string) common.NextPageFunc {
 	if !paginatedObjects.Has(objectName) {
 		return func(*ajson.Node) (string, error) { return "", nil }
 	}
-
+	
 	return func(node *ajson.Node) (string, error) {
+		if requestURL == nil {
+			return "", nil
+		}
+
 		wrapper, err := jsonquery.New(node).ObjectRequired(paginationWrapperKey(objectName))
 		if err != nil {
 			return "", err
@@ -269,14 +273,8 @@ func nextRecordsURL(requestURL string, objectName string) common.NextPageFunc {
 			return "", nil
 		}
 
-		nextURL, err := urlbuilder.New(requestURL)
-		if err != nil {
-			return "", err
-		}
-
-		nextURL.WithQueryParam("page", strconv.Itoa(int(page)+1))
-
-		return nextURL.String(), nil
+		requestURL.WithQueryParam("page", strconv.Itoa(int(page)+1))
+		return requestURL.String(), nil
 	}
 }
 
