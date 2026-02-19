@@ -87,7 +87,7 @@ func (a *Adapter) parseReadResponse(
 		}
 
 		marshaller = readhelper.MakeMarshaledSelectedDataFunc(
-			embedMessageFields(params, messages),
+			embedMessageFields(messages),
 			embedMessageRaw(messages),
 		)
 	}
