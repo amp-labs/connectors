@@ -8,6 +8,9 @@ var (
 
 	// "cm/core/va/cases" updates by update_at.
 
+	// responseKeys represent the fields that stores list of records in the read response
+	// these are manually retrieved.
+	// example:   https://docs.talkdesk.com/reference/record-lists
 	responseKeys = map[string][]string{ // nolint: gochecknoglobals
 		"apps":                             {"_embedded", "apps"},
 		"contacts":                         {"_embedded", "contacts"},
