@@ -79,7 +79,8 @@ func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, er
 	// Apply time scoping when the provider supports it.
 	switch params.ObjectName {
 	case "contacts":
-		// Docs: updated_from / update_to in "YYYY-MM-DD HH:ii:ss" format.
+		// Docs: https://www.phoneburner.com/developer/route_list#contacts
+		// updated_from / update_to in "YYYY-MM-DD HH:ii:ss" format.
 		if !params.Since.IsZero() {
 			url.WithQueryParam("updated_from", params.Since.Format("2006-01-02 15:04:05"))
 		}
@@ -87,7 +88,8 @@ func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, er
 			url.WithQueryParam("update_to", params.Until.Format("2006-01-02 15:04:05"))
 		}
 	case "dialsession":
-		// Docs: date_start / date_end in "YYYY-MM-DD" format.
+		// Docs: https://www.phoneburner.com/developer/route_list#dialsession
+		// date_start / date_end in "YYYY-MM-DD" format.
 		if !params.Since.IsZero() {
 			url.WithQueryParam("date_start", params.Since.Format(time.DateOnly))
 		}
