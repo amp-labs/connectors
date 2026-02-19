@@ -10,13 +10,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const (
-	// DefaultPageSize is the default page size for paginated requests.
-	// HubSpot's read endpoints support max 100 records per page.
-	DefaultPageSize    = "100"
-	DefaultPageSizeInt = 100
-)
-
 // Option is a function which mutates the hubspot connector configuration.
 type Option = func(params *parameters)
 

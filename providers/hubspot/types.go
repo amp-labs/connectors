@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
 type SearchParams struct {
@@ -38,7 +39,7 @@ func (p SearchParams) ValidateParams() error {
 type searchCRMParams struct {
 	SearchParams
 
-	PageSize int
+	PageSize int64
 }
 
 func (p searchCRMParams) payload() (searchCRMPayload, error) {
@@ -53,7 +54,7 @@ func (p searchCRMParams) payload() (searchCRMPayload, error) {
 		}
 	}
 
-	pageSize := DefaultPageSizeInt
+	pageSize := core.DefaultPageSizeInt
 	if p.PageSize != 0 {
 		pageSize = p.PageSize
 	}
@@ -65,8 +66,8 @@ func (p searchCRMParams) payload() (searchCRMPayload, error) {
 }
 
 type searchCRMPayload struct {
-	Offset int `json:"offset"`
-	Count  int `json:"count"`
+	Offset int   `json:"offset"`
+	Count  int64 `json:"count"`
 }
 
 type SortBy struct {
