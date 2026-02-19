@@ -114,14 +114,11 @@ func parseWriteResponse(
 
 	switch params.ObjectName {
 	case "contacts":
-		contactsWrapper, err := jsonquery.New(body).ObjectOptional("contacts")
-		if err != nil || contactsWrapper == nil {
-			return &common.WriteResult{Success: true, RecordId: params.RecordId}, nil
-		}
+		contacts := jsonquery.New(body, "contacts")
 
-		contactNode, err := jsonquery.New(contactsWrapper).ObjectOptional("contacts")
+		contactNode, err := contacts.ObjectOptional("contacts")
 		if err != nil || contactNode == nil {
-			array, err2 := jsonquery.New(contactsWrapper).ArrayOptional("contacts")
+			array, err2 := contacts.ArrayOptional("contacts")
 			if err2 != nil || len(array) == 0 {
 				return &common.WriteResult{Success: true, RecordId: params.RecordId}, nil
 			}
@@ -140,14 +137,11 @@ func parseWriteResponse(
 
 		return &common.WriteResult{Success: true, RecordId: recordID, Data: data}, nil
 	case "members":
-		membersWrapper, err := jsonquery.New(body).ObjectOptional("members")
-		if err != nil || membersWrapper == nil {
-			return &common.WriteResult{Success: true, RecordId: params.RecordId}, nil
-		}
+		members := jsonquery.New(body, "members")
 
-		memberNode, err := jsonquery.New(membersWrapper).ObjectOptional("members")
+		memberNode, err := members.ObjectOptional("members")
 		if err != nil || memberNode == nil {
-			array, err2 := jsonquery.New(membersWrapper).ArrayOptional("members")
+			array, err2 := members.ArrayOptional("members")
 			if err2 != nil || len(array) == 0 {
 				return &common.WriteResult{Success: true, RecordId: params.RecordId}, nil
 			}
