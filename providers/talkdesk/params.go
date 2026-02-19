@@ -34,7 +34,7 @@ var (
 		"campaigns/results":                {"_embedded", "results"},
 		"service-providers-resource-types": {"_embedded", "resource_types"},
 		"users/resource-types":             {"_embedded", "resource_types"},
-		"v2/users":                         {"_embedded", "users"},
+		"v2/Users":                         {"_embedded", "users"},
 		"account-wallet":                   {"_embedded", "wallets"},
 		"cases":                            {"_embedded", "cases"},
 		"cases/fields":                     {"_embedded", "fields"},
@@ -46,4 +46,6 @@ var (
 		"webhooks":                         {"_embedded", "webhooks"},
 		"call-recordings":                  {"_embedded", "call_recordings"},
 	}
+
+	usesPUTForUpdates = datautils.NewSet("attributes", "prompts") // nolint: gochecknoglobals
 )
