@@ -2,6 +2,7 @@ package phoneburner
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -48,8 +49,13 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					mockcond.MethodPOST(),
 					mockcond.Path("/rest/1/contacts"),
 					mockcond.HeaderContentURLFormEncoded(),
-					// url.Values.Encode sorts keys: first_name=...&last_name=...
-					mockcond.Body("first_name=Johnny&last_name=Demo"),
+					mockcond.Permute(
+						func(parts []string) mockcond.Condition {
+							return mockcond.Body(strings.Join(parts, "&"))
+						},
+						"first_name=Johnny",
+						"last_name=Demo",
+					),
 				},
 				Then: mockserver.Response(http.StatusOK, respContact),
 			}.Server(),
