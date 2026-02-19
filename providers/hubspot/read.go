@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
@@ -79,7 +80,15 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		rsp,
 		core.GetRecords,
 		core.GetNextRecordsURL,
-		c.getDataMarshaller(ctx, config.ObjectName, config.AssociatedObjects),
+		readhelper.ChainedMarshaller(
+			core.GetDataMarshaller(),
+			// Enhance records with associations by fetching these relationships.
+			func(rows []common.ReadResultRow) error {
+				return c.crmAdapter.AssociationsStrategy.FillAssociations(ctx,
+					config.ObjectName, config.AssociatedObjects, rows,
+				)
+			},
+		),
 		config.Fields,
 	)
 }

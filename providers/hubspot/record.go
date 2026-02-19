@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
@@ -78,7 +79,13 @@ func (c *Connector) GetRecordsByIds(
 		return nil, err
 	}
 
-	return c.getDataMarshaller(ctx, objectName, associations)(records, fields)
+	return readhelper.ChainedMarshaller(
+		core.GetDataMarshaller(),
+		// Enhance records with associations by fetching these relationships.
+		func(rows []common.ReadResultRow) error {
+			return c.crmAdapter.AssociationsStrategy.FillAssociations(ctx, objectName, associations, rows)
+		},
+	)(records, fields)
 }
 
 func (c *Connector) getBatchRecordsURL(objectName string, associations []string) (string, error) {
