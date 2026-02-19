@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
 // Read reads data from Hubspot. If Since is set, it will use the
@@ -21,7 +22,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if crmObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
+	if core.ObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
 		// Objects outside ObjectAPI have different endpoint while both are part of CRM module.
 		// For instance Lists are fully returned only via Search endpoint.
 		return c.searchCRM(ctx, searchCRMParams{
@@ -110,7 +111,7 @@ func makeCRMObjectsQueryValues(config common.ReadParams) []string {
 		out = append(out, "archived", "true")
 	}
 
-	out = append(out, "limit", DefaultPageSize)
+	out = append(out, "limit", core.DefaultPageSize)
 
 	return out
 }
