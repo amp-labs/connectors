@@ -4,13 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"net/url"
-	"sort"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
@@ -83,7 +81,7 @@ func buildWriteBody(params common.WriteParams) ([]byte, string, error) {
 		}
 		return b, "application/json", nil
 	case "contacts", "members":
-		b, err := encodeForm(record)
+		b, err := httpkit.EncodeForm(record)
 		if err != nil {
 			return nil, "", err
 		}
@@ -91,58 +89,6 @@ func buildWriteBody(params common.WriteParams) ([]byte, string, error) {
 	default:
 		return nil, "", common.ErrOperationNotSupportedForObject
 	}
-}
-
-func encodeForm(record map[string]any) ([]byte, error) {
-	values := url.Values{}
-
-	keys := make([]string, 0, len(record))
-	for k := range record {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	for _, k := range keys {
-		v := record[k]
-		if v == nil {
-			continue
-		}
-
-		switch typed := v.(type) {
-		case string:
-			values.Set(k, typed)
-		case []string:
-			for _, item := range typed {
-				values.Add(k, item)
-			}
-		case []any:
-			for _, item := range typed {
-				if item == nil {
-					continue
-				}
-				switch itemTyped := item.(type) {
-				case map[string]any, []any:
-					b, err := json.Marshal(itemTyped)
-					if err != nil {
-						return nil, err
-					}
-					values.Add(k, string(b))
-				default:
-					values.Add(k, fmt.Sprint(item))
-				}
-			}
-		case map[string]any:
-			b, err := json.Marshal(typed)
-			if err != nil {
-				return nil, err
-			}
-			values.Set(k, string(b))
-		default:
-			values.Set(k, fmt.Sprint(v))
-		}
-	}
-
-	return []byte(values.Encode()), nil
 }
 
 func parseWriteResponse(
