@@ -8,7 +8,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -334,15 +333,3 @@ func comparatorSubsetReadOrderByFolderID(serverURL string, actual, expected *com
 	return testroutines.ComparatorSubsetRead(serverURL, actual, expected)
 }
 
-func constructTestConnector(serverURL string) (*Connector, error) {
-	conn, err := NewConnector(common.ConnectorParams{
-		AuthenticatedClient: mockutils.NewClient(),
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	conn.SetBaseURL(mockutils.ReplaceURLOrigin(conn.HTTPClient().Base, serverURL))
-
-	return conn, nil
-}
