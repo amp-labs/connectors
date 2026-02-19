@@ -16,6 +16,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	switch {
+	// The updates or creates filter requires passing both 'from' and 'to' values, and fails if only one is provided.
+	// If both 'since' and 'until' are provided, we use them.
+	// If we only have since, se set the until to now.
+	// Similar when given only Until we set the since to 1970-01-01
+	// There is no documentation for this, tests led to this.
 	case !params.Since.IsZero() && !params.Until.IsZero():
 		if filtersByUpdates.Has(params.ObjectName) {
 			url.WithQueryParam("updated_at_from", params.Since.UTC().Format(time.RFC3339))
@@ -26,6 +31,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 			url.WithQueryParam("created_at_from", params.Since.UTC().Format(time.RFC3339))
 			url.WithQueryParam("created_at_to", params.Until.UTC().Format(time.RFC3339))
 		}
+
 	case !params.Since.IsZero():
 		if filtersByUpdates.Has(params.ObjectName) {
 			url.WithQueryParam("updated_at_from", params.Since.UTC().Format(time.RFC3339))
@@ -38,13 +44,13 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		}
 	case !params.Until.IsZero():
 		if filtersByUpdates.Has(params.ObjectName) {
-			url.WithQueryParam("updated_at_from", params.Since.UTC().Format(time.RFC3339))
-			url.WithQueryParam("updated_at_to", time.Now().UTC().Format(time.RFC3339))
+			url.WithQueryParam("updated_at_from", time.Unix(0, 0).UTC().Format(time.RFC3339))
+			url.WithQueryParam("updated_at_to", params.Until.UTC().Format(time.RFC3339))
 		}
 
 		if filtersByCreation.Has(params.ObjectName) {
-			url.WithQueryParam("created_at_from", params.Since.UTC().Format(time.RFC3339))
-			url.WithQueryParam("created_at_to", time.Now().UTC().Format(time.RFC3339))
+			url.WithQueryParam("created_at_from", time.Unix(0, 0).UTC().Format(time.RFC3339))
+			url.WithQueryParam("created_at_to", params.Until.UTC().Format(time.RFC3339))
 		}
 	}
 
