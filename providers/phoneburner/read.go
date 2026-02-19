@@ -79,7 +79,8 @@ func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, er
 	// Apply time scoping when the provider supports it.
 	switch params.ObjectName {
 	case "contacts":
-		// Docs: updated_from / update_to in "YYYY-MM-DD HH:ii:ss" format.
+		// Docs: https://www.phoneburner.com/developer/route_list#contacts
+		// updated_from / update_to in "YYYY-MM-DD HH:ii:ss" format.
 		if !params.Since.IsZero() {
 			url.WithQueryParam("updated_from", params.Since.Format("2006-01-02 15:04:05"))
 		}
@@ -87,7 +88,8 @@ func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, er
 			url.WithQueryParam("update_to", params.Until.Format("2006-01-02 15:04:05"))
 		}
 	case "dialsession":
-		// Docs: date_start / date_end in "YYYY-MM-DD" format.
+		// Docs: https://www.phoneburner.com/developer/route_list#dialsession
+		// date_start / date_end in "YYYY-MM-DD" format.
 		if !params.Since.IsZero() {
 			url.WithQueryParam("date_start", params.Since.Format(time.DateOnly))
 		}
@@ -100,13 +102,11 @@ func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, er
 }
 
 func parseReadResponse(
-	ctx context.Context,
+	_ context.Context,
 	params common.ReadParams,
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	_ = ctx
-
 	// PhoneBurner sometimes encodes errors in a 2xx response body using an envelope like:
 	// { "http_status": 401, "status": "error", ... }
 	// Convert these "200-with-error" responses into proper HTTP errors.
@@ -131,7 +131,7 @@ func parseReadResponse(
 					readhelper.NewTimeBoundary(),
 					"date_added",
 					"2006-01-02 15:04:05",
-					nextRecordsURL(url.String(), params.ObjectName),
+					nextRecordsURL(url, params.ObjectName),
 				),
 				common.MakeMarshaledDataFunc(nil),
 				params.Fields,
@@ -148,7 +148,7 @@ func parseReadResponse(
 					readhelper.NewTimeBoundary(),
 					"created_when",
 					"2006-01-02 15:04:05",
-					nextRecordsURL(url.String(), params.ObjectName),
+					nextRecordsURL(url, params.ObjectName),
 				),
 				common.MakeMarshaledDataFunc(nil),
 				params.Fields,
@@ -164,7 +164,7 @@ func parseReadResponse(
 	return common.ParseResult(
 		response,
 		records,
-		nextRecordsURL(url.String(), params.ObjectName),
+		nextRecordsURL(url, params.ObjectName),
 		common.GetMarshaledData,
 		params.Fields,
 	)
@@ -236,18 +236,23 @@ func recordsFunc(objectName string) (common.RecordsFunc, error) {
 		return common.ExtractRecordsFromPath("voicemails", "voicemails"), nil
 	// Docs: https://www.phoneburner.com/developer/route_list#folders
 	case "folders":
+		// Note: folders payload is an object-of-objects (not a JSON array), so we must flatten it.
 		return extractFoldersRecords(), nil
 	default:
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 }
 
-func nextRecordsURL(requestURL string, objectName string) common.NextPageFunc {
+func nextRecordsURL(requestURL *urlbuilder.URL, objectName string) common.NextPageFunc {
 	if !paginatedObjects.Has(objectName) {
 		return func(*ajson.Node) (string, error) { return "", nil }
 	}
-
+	
 	return func(node *ajson.Node) (string, error) {
+		if requestURL == nil {
+			return "", nil
+		}
+
 		wrapper, err := jsonquery.New(node).ObjectRequired(paginationWrapperKey(objectName))
 		if err != nil {
 			return "", err
@@ -267,14 +272,8 @@ func nextRecordsURL(requestURL string, objectName string) common.NextPageFunc {
 			return "", nil
 		}
 
-		nextURL, err := urlbuilder.New(requestURL)
-		if err != nil {
-			return "", err
-		}
-
-		nextURL.WithQueryParam("page", strconv.Itoa(int(page)+1))
-
-		return nextURL.String(), nil
+		requestURL.WithQueryParam("page", strconv.Itoa(int(page)+1))
+		return requestURL.String(), nil
 	}
 }
 

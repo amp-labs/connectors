@@ -10,12 +10,12 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
 
-func TestListObjectMetadata(t *testing.T) {
+func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	tests := []testroutines.Metadata{
 		{
-			Name:       "Successful metadata for contacts, folders, members, voicemails, dialsession and tags",
+			Name:       "Successful metadata for contacts, folders, members, voicemails, and dialsession",
 			Input:      []string{"contacts", "folders", "members", "voicemails", "dialsession", "tags"},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -44,6 +44,11 @@ func TestListObjectMetadata(t *testing.T) {
 								ValueType:    "string",
 								ProviderType: "string",
 							},
+							"folder_name": {
+								DisplayName:  "Folder Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
 						},
 					},
 					"members": {
@@ -51,6 +56,11 @@ func TestListObjectMetadata(t *testing.T) {
 						Fields: map[string]common.FieldMetadata{
 							"user_id": {
 								DisplayName:  "User Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"email_address": {
+								DisplayName:  "Email Address",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
@@ -64,6 +74,11 @@ func TestListObjectMetadata(t *testing.T) {
 								ValueType:    "string",
 								ProviderType: "string",
 							},
+							"name": {
+								DisplayName:  "Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
 						},
 					},
 					"dialsession": {
@@ -73,6 +88,11 @@ func TestListObjectMetadata(t *testing.T) {
 								DisplayName:  "Dialsession Id",
 								ValueType:    "string",
 								ProviderType: "string",
+							},
+							"start_when": {
+								DisplayName:  "Start When",
+								ValueType:    "datetime",
+								ProviderType: "datetime",
 							},
 						},
 					},
@@ -84,19 +104,27 @@ func TestListObjectMetadata(t *testing.T) {
 								ValueType:    "int",
 								ProviderType: "integer",
 							},
+							"title": {
+								DisplayName:  "Title",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
 						},
 					},
 				},
+				Errors: map[string]error{},
 			},
+			ExpectedErrs: nil,
 		},
 		{
-			Name:         "Object must be included",
+			Name:         "Empty objects returns missing objects error",
 			Input:        nil,
 			Server:       mockserver.Dummy(),
+			Expected:     nil,
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:       "Unsupported object returns metadata error entry",
+			Name:       "Unsupported object returns object not supported error",
 			Input:      []string{"contacts", "unknown_object"},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -117,10 +145,12 @@ func TestListObjectMetadata(t *testing.T) {
 					"unknown_object": mockutils.ExpectedSubsetErrors{common.ErrObjectNotSupported},
 				},
 			},
+			ExpectedErrs: nil,
 		},
 	}
 
 	for _, tt := range tests {
+		// nolint:varnamelen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
@@ -129,4 +159,22 @@ func TestListObjectMetadata(t *testing.T) {
 			})
 		})
 	}
+}
+
+func constructTestConnector(serverURL string) (*Connector, error) {
+	connector, err := NewConnector(
+		common.ConnectorParams{
+			Module:              common.ModuleRoot,
+			AuthenticatedClient: mockutils.NewClient(),
+			Workspace:           "test-workspace",
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// Override the base URL to point to the test server.
+	connector.SetUnitTestBaseURL(serverURL)
+
+	return connector, nil
 }
