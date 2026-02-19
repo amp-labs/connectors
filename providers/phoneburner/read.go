@@ -238,6 +238,7 @@ func recordsFunc(objectName string) (common.RecordsFunc, error) {
 		return common.ExtractRecordsFromPath("voicemails", "voicemails"), nil
 	// Docs: https://www.phoneburner.com/developer/route_list#folders
 	case "folders":
+		// Note: folders payload is an object-of-objects (not a JSON array), so we must flatten it.
 		return extractFoldersRecords(), nil
 	default:
 		return nil, common.ErrOperationNotSupportedForObject
