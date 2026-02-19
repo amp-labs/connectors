@@ -102,13 +102,11 @@ func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, er
 }
 
 func parseReadResponse(
-	ctx context.Context,
+	_ context.Context,
 	params common.ReadParams,
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	_ = ctx
-
 	// PhoneBurner sometimes encodes errors in a 2xx response body using an envelope like:
 	// { "http_status": 401, "status": "error", ... }
 	// Convert these "200-with-error" responses into proper HTTP errors.
