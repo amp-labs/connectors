@@ -68,8 +68,8 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 
 	return common.ParseResult(
 		rsp,
-		getRecords,
-		getNextRecordsAfter,
+		core.GetRecords,
+		core.GetNextRecordsAfter,
 		c.getDataMarshaller(ctx, config.ObjectName, config.AssociatedObjects),
 		config.Fields,
 	)
@@ -110,7 +110,7 @@ func (c *Connector) searchCRM(
 	return common.ParseResult(
 		rsp,
 		common.ExtractOptionalRecordsFromPath(config.ObjectName),
-		getNextRecordsURLCRM,
+		core.GetNextRecordsURLCRM,
 		common.GetMarshaledData,
 		config.Fields,
 	)
