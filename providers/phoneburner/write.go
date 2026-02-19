@@ -48,7 +48,7 @@ func buildWriteRequest(ctx context.Context, baseURL string, params common.WriteP
 func buildWriteURL(baseURL string, params common.WriteParams) (*urlbuilder.URL, string, error) {
 	switch params.ObjectName {
 	case "contacts", "members", "folders":
-		if params.RecordId == "" {
+		if params.IsCreate() {
 			u, err := urlbuilder.New(baseURL, restPrefix, restVer, params.ObjectName)
 			return u, http.MethodPost, err
 		}
@@ -57,6 +57,9 @@ func buildWriteURL(baseURL string, params common.WriteParams) (*urlbuilder.URL, 
 		return u, http.MethodPut, err
 	case "dialsession":
 		// Create only.
+		if params.IsUpdate() {
+			return nil, "", common.ErrOperationNotSupportedForObject
+		}
 		u, err := urlbuilder.New(baseURL, restPrefix, restVer, params.ObjectName)
 		return u, http.MethodPost, err
 	default:
