@@ -2,7 +2,6 @@ package marketo
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -14,14 +13,6 @@ import (
 func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error) {
 	url, err := c.constructSearchURL(ctx, params)
 	if err != nil {
-		// If this is the case, we return a zero records response.
-		if errors.Is(err, ErrZeroRecords) {
-			return &common.ReadResult{
-				Data: []common.ReadResultRow{},
-				Done: true,
-			}, nil
-		}
-
 		return nil, err
 	}
 
@@ -38,6 +29,7 @@ func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*c
 	)
 }
 
+// constructSearchURL adds query params to the URL for searching  based on a filter and params set of values.
 func (c *Connector) constructSearchURL(ctx context.Context, params *common.SearchParams) (*urlbuilder.URL, error) {
 	if params.NextPage != "" {
 		return urlbuilder.New(params.NextPage.String())
@@ -52,6 +44,8 @@ func (c *Connector) constructSearchURL(ctx context.Context, params *common.Searc
 		url.WithQueryParam(flt.FieldName, fmt.Sprintf("%s", flt.Value))
 	}
 
+	// The activities API behaves uniquely in terms of required fields to filter on.
+	// Therefore, we check if the mandatory filter fields are present in the filter parameters."
 	if err := c.handleSearchActivitiesAPI(ctx, url, params); err != nil {
 		return nil, err
 	}
@@ -65,12 +59,13 @@ func (c *Connector) constructSearchURL(ctx context.Context, params *common.Searc
 	return url, nil
 }
 
+// handleSearchActivitiesAPI checks/adds the mandatory query parameters for reading activities.
 func (c *Connector) handleSearchActivitiesAPI(ctx context.Context, url *urlbuilder.URL, params *common.SearchParams,
 ) error {
 	if params.ObjectName == activities { //nolint:nestif
 		var activityIDs string
 
-		// searching in activities, requires passing activityFields, with the other searching criteria.
+		// searching in activities, requires passing activityTypeIds, with/without the other searching criteria.
 		for _, flt := range params.Filter.FieldFilters {
 			if flt.FieldName == "activityTypeIds" {
 				ids, err := common.AssertType[string](flt.Value)
@@ -98,6 +93,8 @@ func (c *Connector) handleSearchActivitiesAPI(ctx context.Context, url *urlbuild
 	return nil
 }
 
+// addSearchActivityNextParam adds the query parameter nextPageToken in the activities reading URL.
+// Its mandatory hence if there is zero valued since, we use the custom value 1970-01-01.
 func (c *Connector) addSearchActivityNextParam(ctx context.Context, url *urlbuilder.URL, params *common.SearchParams,
 ) error {
 	if params.NextPage != "" {

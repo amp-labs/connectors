@@ -73,6 +73,9 @@ func usesMarketoGUID(object string) bool {
 	return slices.Contains(marketoGUIDResponseObjects, object)
 }
 
+// constructStaticNextPageURL constructs the next page url for static API.
+// static API uses offset pagination, while the leads API uses cusrsor pagination.
+// Ex: https://experienceleague.adobe.com/en/docs/marketo-developer/marketo/rest/channels
 func constructStaticNextPageURL(url *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		jsonParser := jsonquery.New(node)
@@ -106,6 +109,10 @@ func constructStaticNextPageURL(url *urlbuilder.URL) common.NextPageFunc {
 }
 
 func nextRecordsURL(objectName string, url *urlbuilder.URL) common.NextPageFunc {
+	// reading the assets API uses offset pagination, while Leads API uses cursor
+	//  pagination.
+	// ref: https://developer.adobe.com/marketo-apis/api/asset/#operation/getAllChannelsUsingGET
+	// ref: https://developer.adobe.com/marketo-apis/api/mapi
 	if assetsObjects.Has(objectName) {
 		return constructStaticNextPageURL(url)
 	}

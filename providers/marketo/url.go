@@ -141,7 +141,7 @@ func (c *Connector) constructURLQueries(
 		return c.handleLeadsAPI(ctx, url, params)
 	}
 
-	// Handle other idfiltering objects like opportuities, companies
+	// TODO:  Handle other id filtering objects like opportunities, companies
 
 	return "", nil
 }
