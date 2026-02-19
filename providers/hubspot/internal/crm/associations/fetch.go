@@ -1,9 +1,10 @@
-package hubspot
+package associations
 
 import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -67,9 +68,9 @@ func getUniqueIDs(data *[]common.ReadResultRow) []string {
 	return ids
 }
 
-// fillAssociations fills the associations for the given object names and data.
+// FillAssociations fills the associations for the given object names and data.
 // Note that the data is modified in place.
-func (c *Connector) fillAssociations(
+func (s Strategy) FillAssociations(
 	ctx context.Context,
 	fromObjName string,
 	data *[]common.ReadResultRow,
@@ -78,7 +79,7 @@ func (c *Connector) fillAssociations(
 	ids := getUniqueIDs(data)
 
 	for _, associatedObject := range toAssociatedObjects {
-		associations, err := c.getObjectAssociations(ctx, fromObjName, ids, associatedObject)
+		associations, err := s.fetchObjectAssociations(ctx, fromObjName, ids, associatedObject)
 		if err != nil {
 			return err
 		}
@@ -101,9 +102,9 @@ func (c *Connector) fillAssociations(
 	return nil
 }
 
-// getObjectAssociations returns the associations for the given object names and IDs. It returns
+// fetchObjectAssociations returns the associations for the given object names and IDs. It returns
 // a mapping of object IDs to their associations.
-func (c *Connector) getObjectAssociations( //nolint:cyclop
+func (s Strategy) fetchObjectAssociations( //nolint:cyclop
 	ctx context.Context,
 	fromObject string,
 	fromIDs []string,
@@ -113,27 +114,29 @@ func (c *Connector) getObjectAssociations( //nolint:cyclop
 		return map[string][]common.Association{}, nil
 	}
 
-	hsURL := c.providerInfo.BaseURL + "/" + fmt.Sprintf("crm/v4/associations/%s/%s/batch/read", fromObject, toObject)
+	url, err := s.getAssociationsURL(fromObject, toObject)
+	if err != nil {
+		return nil, err
+	}
 
 	var inputs assocInputs
-
 	for _, id := range fromIDs {
 		inputs.Inputs = append(inputs.Inputs, assocId{Id: id})
 	}
 
 	// Do one big batch request to get all associations.
 	// See https://developers.hubspot.com/docs/guides/api/crm/associations/associations-v4#retrieve-associated-records
-	rsp, err := c.Client.Post(ctx, hsURL, &inputs)
+	rsp, err := s.clientCRM.Post(ctx, url.String(), &inputs)
 	if err != nil {
 		var httpErr *common.HTTPError
 
-		if errors.As(err, &httpErr) && httpErr.Status == 404 {
+		if errors.As(err, &httpErr) && httpErr.Status == http.StatusNotFound {
 			logging.Logger(ctx).Warn("no associations found", "fromObject", fromObject, "toObject", toObject)
 
 			return map[string][]common.Association{}, nil
-		} else {
-			return nil, fmt.Errorf("error fetching HubSpot associations: %w", err)
 		}
+
+		return nil, fmt.Errorf("error fetching HubSpot associations: %w", err)
 	}
 
 	output, err := common.UnmarshalJSON[assocOutput](rsp)
