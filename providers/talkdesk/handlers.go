@@ -83,6 +83,7 @@ func (c *Connector) parseReadResponse(
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	method := http.MethodPost
 
+	// example ref: https://docs.talkdesk.com/reference/record-lists
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
 	if err != nil {
 		return nil, err
