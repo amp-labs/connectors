@@ -1,7 +1,6 @@
 package phoneburner
 
 import (
-	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -166,7 +165,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
 		common.ConnectorParams{
 			Module:              common.ModuleRoot,
-			AuthenticatedClient: &http.Client{},
+			AuthenticatedClient: mockutils.NewClient(),
 			Workspace:           "test-workspace",
 		},
 	)
