@@ -19,7 +19,7 @@ func run() error {
 	ctx := context.Background()
 	connector := expensify.GetConnector(ctx)
 
-	m, err := connector.ListObjectMetadata(ctx, []string{"policyList"})
+	m, err := connector.ListObjectMetadata(ctx, []string{"policy"})
 	if err != nil {
 		log.Fatal(err)
 	}
