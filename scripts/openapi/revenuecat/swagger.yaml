@@ -1083,17 +1083,8 @@ paths:
                   type: app_store
                   app_store:
                     bundle_id: com.apple.Pages
-                    shared_secret: 1234567890abcdef1234567890abcdef
-                    subscription_private_key: >-
-                      -----BEGIN EC PRIVATE KEY-----
-
-                      MHQCAQEEIGAkwOF0qkGO19yJlIzQVcOg+HBfvLL4KDXDtL+MMHk2oAcGBSuBBAAK
-
-                      oUQDQgAEhDP7RaX4c6qOHkE1nIWMr5C90ybtr87VRGFm4VsfWqG47NPN+/dHcfwJ
-
-                      JPZGFgMcgvBc37AxQPPQjyXYjhhQDg==
-
-                      -----END EC PRIVATE KEY-----
+                    shared_secret: "<YOUR_APP_STORE_SHARED_SECRET>"
+                    subscription_private_key: "<YOUR_SUBSCRIPTION_PRIVATE_KEY_PEM>"
                     subscription_key_id: 6345942CC3
                     subscription_key_issuer: 5a049d62-1b9b-453c-b605-1988189d8129
               Play Store:
@@ -1449,11 +1440,11 @@ paths:
                   name: New App name
                   app_store:
                     bundle_id: com.my.new-app
-                    shared_secret: 1234567890abcdef1234567890abcdef
+                    shared_secret: "<YOUR_APP_STORE_SHARED_SECRET>"
               Update App Store App secret:
                 value:
                   app_store:
-                    shared_secret: 1234567890abcdef1234567890abcdef
+                    shared_secret: "<YOUR_APP_STORE_SHARED_SECRET>"
               Remove App Store App secret:
                 value:
                   app_store:
