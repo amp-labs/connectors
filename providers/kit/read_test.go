@@ -21,7 +21,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	responseTags := testutils.DataFromFile(t, "tags.json")
 	responseEmptyPageTags := testutils.DataFromFile(t, "emptypage_tags.json")
 	responseEmailTemplates := testutils.DataFromFile(t, "email_templates.json")
-
+	responseSubscribers := testutils.DataFromFile(t, "subscribers.json")
 	tests := []testroutines.Read{
 		{
 			Name:         "Read object must be included",
@@ -159,6 +159,47 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read subscriber with custom fields flattened to root level",
+			Input: common.ReadParams{
+				ObjectName: "subscribers",
+				Fields:     connectors.Fields("id", "first_name", "email_address", "state", "created_at", "category"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v4/subscribers"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseSubscribers),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":            float64(143),
+						"first_name":    "Alice",
+						"email_address": "alice@convertkit.dev",
+						"state":         "active",
+						"created_at":    "2023-01-27T11:43:55Z",
+						"category":      "One",
+					},
+					Raw: map[string]any{
+						"id":            float64(143),
+						"first_name":    "Alice",
+						"email_address": "alice@convertkit.dev",
+						"state":         "active",
+						"created_at":    "2023-01-27T11:43:55Z",
+						"fields": map[string]any{
+							"category": "One",
+						},
+					},
+				}},
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},
