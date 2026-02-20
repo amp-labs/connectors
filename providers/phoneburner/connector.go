@@ -50,7 +50,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		connector.ProviderContext.Module(),
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
-			ParseResponse: connector.parseReadResponse,
+			ParseResponse: parseReadResponse,
 			ErrorHandler:  common.InterpretError,
 		},
 	)
@@ -61,7 +61,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		connector.ProviderContext.Module(),
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
-			ParseResponse: connector.parseWriteResponse,
+			ParseResponse: parseWriteResponse,
 			ErrorHandler:  common.InterpretError,
 		},
 	)

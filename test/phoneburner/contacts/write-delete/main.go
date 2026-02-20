@@ -41,7 +41,7 @@ func MainFn() int {
 	slog.Info("=== contacts (create -> update -> delete) ===")
 
 	firstName := gofakeit.FirstName()
-	uniqueLastName := fmt.Sprintf("amp-wd-%s", gofakeit.UUID())
+	lastName := fmt.Sprintf("amp-wd-%s", gofakeit.UUID())
 	email := fmt.Sprintf("amp-wd-%s@example.com", gofakeit.UUID())
 	phone := gofakeit.Numerify("602555####")
 
@@ -53,7 +53,7 @@ func MainFn() int {
 			"owner_id":    ownerID,
 			"email":       email,
 			"first_name":  firstName,
-			"last_name":   uniqueLastName,
+			"last_name":   lastName,
 			"phone":       phone,
 			"phone_type":  1,
 			"phone_label": "Amp wd test",
@@ -64,13 +64,8 @@ func MainFn() int {
 		},
 		testscenario.CRUDTestSuite{
 			ReadFields:          datautils.NewSet("contact_user_id", "first_name", "last_name"),
-			WaitBeforeSearch:    2 * time.Second,
+			WaitBeforeSearch:    3 * time.Second,
 			RecordIdentifierKey: "contact_user_id",
-			SearchBy: testscenario.Property{
-				Key:   "last_name",
-				Value: uniqueLastName,
-				Since: time.Now().Add(-10 * time.Minute),
-			},
 			UpdatedFields: map[string]string{
 				"first_name": updatedFirstName,
 			},

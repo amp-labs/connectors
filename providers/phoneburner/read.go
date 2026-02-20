@@ -83,6 +83,8 @@ func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, er
 		// updated_from / update_to in "YYYY-MM-DD HH:ii:ss" format.
 		if !params.Since.IsZero() {
 			url.WithQueryParam("updated_from", params.Since.Format("2006-01-02 15:04:05"))
+			// include_new=1 ensures contacts created (not just updated) after updated_from are included.
+			url.WithQueryParam("include_new", "1")
 		}
 		if !params.Until.IsZero() {
 			url.WithQueryParam("update_to", params.Until.Format("2006-01-02 15:04:05"))

@@ -118,11 +118,7 @@ func parseWriteResponse(
 
 		contactNode, err := contacts.ObjectOptional("contacts")
 		if err != nil || contactNode == nil {
-			array, err2 := contacts.ArrayOptional("contacts")
-			if err2 != nil || len(array) == 0 {
-				return &common.WriteResult{Success: true, RecordId: params.RecordId}, nil
-			}
-			contactNode = array[0]
+			return &common.WriteResult{Success: true, RecordId: params.RecordId}, nil
 		}
 
 		recordID, err := jsonquery.New(contactNode).TextWithDefault("contact_user_id", params.RecordId)
@@ -141,11 +137,7 @@ func parseWriteResponse(
 
 		memberNode, err := members.ObjectOptional("members")
 		if err != nil || memberNode == nil {
-			array, err2 := members.ArrayOptional("members")
-			if err2 != nil || len(array) == 0 {
-				return &common.WriteResult{Success: true, RecordId: params.RecordId}, nil
-			}
-			memberNode = array[0]
+			return &common.WriteResult{Success: true, RecordId: params.RecordId}, nil
 		}
 
 		recordID, err := jsonquery.New(memberNode).TextWithDefault("user_id", params.RecordId)
