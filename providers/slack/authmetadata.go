@@ -15,7 +15,7 @@ import (
 func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error) {
 	logging.With(ctx, "provider", "slack", "step", "get_post_auth_info")
 
-	teamID, err := c.retrieveInstanceTeamID(ctx)
+	resp, teamID, err := c.retrieveInstanceTeamID(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -27,19 +27,21 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 	}
 
 	return &common.PostAuthInfo{
-		CatalogVars: &catalogVars,
+		ProviderWorkspaceRef: c.teamId,
+		RawResponse:          resp,
+		CatalogVars:          &catalogVars,
 	}, nil
 }
 
-func (c *Connector) retrieveInstanceTeamID(ctx context.Context) (string, error) {
+func (c *Connector) retrieveInstanceTeamID(ctx context.Context) (*common.JSONHTTPResponse, string, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "auth.test")
 	if err != nil {
-		return "", fmt.Errorf("failed to build Slack URL: %w", err)
+		return nil, "", fmt.Errorf("failed to build Slack URL: %w", err)
 	}
 
 	resp, err := c.JSONHTTPClient().Post(ctx, url.String(), nil)
 	if err != nil {
-		return "", fmt.Errorf("failed to execute Get API call: %w", err)
+		return nil, "", fmt.Errorf("failed to execute Get API call: %w", err)
 	}
 
 	return parseTeamIDResponse(resp)
@@ -49,22 +51,22 @@ type authTestResponse struct {
 	TeamID string `json:"team_id"`
 }
 
-func parseTeamIDResponse(resp *common.JSONHTTPResponse) (string, error) {
+func parseTeamIDResponse(resp *common.JSONHTTPResponse) (*common.JSONHTTPResponse, string, error) {
 	body, ok := resp.Body()
 	if !ok {
-		return "", common.ErrEmptyJSONHTTPResponse
+		return nil, "", common.ErrEmptyJSONHTTPResponse
 	}
 
 	authTestResp, err := jsonquery.ParseNode[authTestResponse](body)
 	if err != nil {
-		return "", fmt.Errorf("failed to parse team_id response: %w", err)
+		return nil, "", fmt.Errorf("failed to parse team_id response: %w", err)
 	}
 
 	if authTestResp.TeamID == "" {
-		return "", errors.New("failed to obtain team_id from auth.test API") // nolint: err113
+		return nil, "", errors.New("failed to obtain team_id from auth.test API") // nolint: err113
 	}
 
-	return authTestResp.TeamID, nil
+	return resp, authTestResp.TeamID, nil
 }
 
 type AuthMetadataVars struct {
