@@ -11,6 +11,8 @@ import (
 
 // nolint:gochecknoglobals
 // list of object names which support custom fields, currently only subscribers.
+// custom fields belong to subscribers rather than forms, sequences, or tags.
+// The GET API requests do not attach custom fields directly to forms, sequences, or tags.
 var objectsWithCustomFields = datautils.NewStringSet(objectNameSubscribers)
 
 // ListObjectMetadata creates metadata of object via reading objects using Kit API.
