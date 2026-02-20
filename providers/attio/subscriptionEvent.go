@@ -16,7 +16,7 @@ import (
 type (
 	SubscriptionEvent map[string]any
 
-	// AttioVerificationParams sends Secret in response when we subscribe to webhooks.
+	// AttioVerificationParams Attio sends Secret in response when we subscribe to webhooks.
 	// We use this secret to verify the webhook signatures.
 	AttioVerificationParams struct {
 		Secret string
