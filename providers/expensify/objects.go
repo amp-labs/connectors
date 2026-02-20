@@ -1,4 +1,4 @@
-package exensify
+package expensify
 
 import (
 	"github.com/amp-labs/connectors/internal/datautils"

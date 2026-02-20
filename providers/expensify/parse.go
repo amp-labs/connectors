@@ -1,4 +1,4 @@
-package exensify
+package expensify
 
 import (
 	"github.com/spyzhov/ajson"

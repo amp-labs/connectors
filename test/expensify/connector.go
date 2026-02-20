@@ -11,11 +11,11 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/exensify"
+	"github.com/amp-labs/connectors/providers/expensify"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-func GetConnector(ctx context.Context) *exensify.Connector {
+func GetConnector(ctx context.Context) *expensify.Connector {
 	filePath := credscanning.LoadPath(providers.Expensify)
 	reader := utils.MustCreateProvCredJSON(filePath, false, credscanning.Fields.ApiKey, credscanning.Fields.Secret)
 
@@ -27,7 +27,7 @@ func GetConnector(ctx context.Context) *exensify.Connector {
 		utils.Fail("error creating client", "error", err)
 	}
 
-	conn, err := exensify.NewConnector(
+	conn, err := expensify.NewConnector(
 		common.ConnectorParams{AuthenticatedClient: client},
 	)
 
