@@ -50,7 +50,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	return common.ParseResult(
 		jsonRes,
 		common.ExtractOptionalRecordsFromPath(readObjectResponseIdentifier.Get(config.ObjectName)),
-		// Expensify doesn't support pagination so makeNextRecordsURL always returns emptly string.
+		// Expensify doesn't support pagination so makeNextRecordsURL always returns empty string.
 		makeNextRecordsURL,
 		common.GetMarshaledData,
 		config.Fields,
