@@ -12,7 +12,6 @@ type Connector struct {
 
 	// Require authenticated client
 	common.RequireAuthenticatedClient
-	components.SchemaProvider
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
