@@ -66,6 +66,7 @@ func checkResponseCode(result map[string]any) error {
 		return fmt.Errorf("response code is missing in the response: %w", common.ErrMissingExpectedValues)
 	}
 
+	//nolint:mnd
 	if responseCode != float64(200) {
 		responseMessage, ok := result["responseMessage"].(string)
 		if !ok {
@@ -83,10 +84,11 @@ func buildReadBody(objectName string) (string, error) {
 		"type": "get",
 	}
 
+	// We build the body based on the object
 	if objectName == objectNamePolicy {
 		body["inputSettings"] = map[string]any{
 			"type":      "policyList",
-			"adminOnly": true,
+			"adminOnly": false,
 		}
 	}
 

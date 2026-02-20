@@ -44,6 +44,7 @@ func (c *Connector) fetchObjectMetadata(ctx context.Context, objectName string) 
 		return nil, err
 	}
 
+	//nolint:bodyclose
 	resp, err := c.executeRequest(ctx, body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get metadata for object %s: %w", objectName, err)
@@ -59,9 +60,11 @@ func (c *Connector) fetchObjectMetadata(ctx context.Context, objectName string) 
 		return nil, err
 	}
 
+	//nolint:varnamelen
 	records, ok := result[readObjectResponseIdentifier.Get(objectName)].([]any)
 	if !ok {
-		return nil, fmt.Errorf("failed to parse metadata response for object %s: %w", objectName, common.ErrMissingExpectedValues)
+		return nil, fmt.Errorf("failed to parse metadata response for object %s: %w",
+			objectName, common.ErrMissingExpectedValues)
 	}
 
 	if len(records) == 0 {
