@@ -8,6 +8,10 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
+// Read is implemented manually rather than using the standard components.Reader
+// because Expensify's response Content-Type is not application/json, so common.ParseJSONResponse
+// rejects it, which means common.ParseResult (which depends on JSONHTTPResponse) cannot be used.
+// We execute the request via the raw HTTPClient and build ReadResult directly from the parsed response map.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	err := config.ValidateParams(true)
 	if err != nil {

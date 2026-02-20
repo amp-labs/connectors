@@ -11,6 +11,10 @@ import (
 	"github.com/amp-labs/connectors/internal/simultaneously"
 )
 
+// ListObjectMetadata is implemented manually rather than using the standard components.SchemaProvider
+// because Expensify's response Content-Type is not application/json, so the standard JSONHTTPClient
+// and ParseJSONResponse cannot be used directly. We use the raw HTTPClient and manually unmarshal
+// the response instead of going through the generic component pipeline.
 func (c *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
