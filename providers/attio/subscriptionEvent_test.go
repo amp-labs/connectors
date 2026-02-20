@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/goutils"
 )
 
-func TestGetFieldName(t *testing.T) {
+func TestGetFieldNameFromObjectMetadata(t *testing.T) {
 	t.Parallel()
 
 	metadata := &common.ListObjectMetadataResult{
@@ -82,7 +82,7 @@ func TestGetFieldName(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			result, err := GetFieldName(metadata, tt.objectID, tt.attributeID)
+			result, err := GetFieldNameFromObjectMetadata(metadata, tt.objectID, tt.attributeID)
 			if tt.expectedErr != nil {
 				if err == nil {
 					t.Fatalf("expected error %v, got nil", tt.expectedErr)
@@ -106,7 +106,7 @@ func TestGetFieldName(t *testing.T) {
 	}
 }
 
-func TestGetObjectName(t *testing.T) {
+func TestGetObjectNameFromObjectMetadata(t *testing.T) {
 	t.Parallel()
 
 	metadata := &common.ListObjectMetadataResult{
@@ -148,7 +148,7 @@ func TestGetObjectName(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			result, err := GetObjectName(metadata, tt.objectID)
+			result, err := GetObjectNameFromObjectMetadata(metadata, tt.objectID)
 			if tt.expectedErr != nil {
 				if err == nil {
 					t.Fatalf("expected error %v, got nil", tt.expectedErr)

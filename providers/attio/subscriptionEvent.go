@@ -239,9 +239,9 @@ func computeSignature(secret string, body []byte) []byte {
 	return h.Sum(nil)
 }
 
-// GetFieldName looks up a field's api_slug from metadata using the object_id and attribute_id.
+// GetFieldNameFromObjectMetadata looks up a field's api_slug from metadata using the object_id and attribute_id.
 // It returns an error if the object or attribute is not found.
-func GetFieldName(
+func GetFieldNameFromObjectMetadata(
 	metadata *common.ListObjectMetadataResult,
 	objectID string,
 	attributeID string,
@@ -260,9 +260,9 @@ func GetFieldName(
 	return "", fmt.Errorf("%w: attribute %q in object %q", common.ErrNotFound, attributeID, objectID)
 }
 
-// GetObjectName looks up an object's display name from metadata using the object_id.
+// GetObjectNameFromObjectMetadata looks up an object's display name from metadata using the object_id.
 // It returns an error if the object is not found.
-func GetObjectName(
+func GetObjectNameFromObjectMetadata(
 	metadata *common.ListObjectMetadataResult,
 	objectID string,
 ) (string, error) {
