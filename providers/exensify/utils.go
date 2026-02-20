@@ -67,7 +67,6 @@ func checkResponseCode(result map[string]any) error {
 	}
 
 	if responseCode != float64(200) {
-
 		responseMessage, ok := result["responseMessage"].(string)
 		if !ok {
 			responseMessage = "failed request with status code " + fmt.Sprint(responseCode)
@@ -80,7 +79,6 @@ func checkResponseCode(result map[string]any) error {
 }
 
 func buildReadBody(objectName string) (string, error) {
-
 	body := map[string]any{
 		"type": "get",
 	}

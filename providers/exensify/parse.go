@@ -5,6 +5,5 @@ import (
 )
 
 func makeNextRecordsURL(node *ajson.Node) (string, error) {
-
 	return "", nil
 }
