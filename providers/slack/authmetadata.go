@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
-// GetPostAuthInfo retrieves the instance teamId using HTTP GET API Call.
+// GetPostAuthInfo retrieves the instance teamId using HTTP POST API Call.
 func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error) {
 	logging.With(ctx, "provider", "slack", "step", "get_post_auth_info")
 
@@ -36,7 +36,7 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 func (c *Connector) retrieveInstanceTeamID(ctx context.Context) (*common.JSONHTTPResponse, string, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "auth.test")
 	if err != nil {
-		return nil, "", fmt.Errorf("failed to build Slack URL: %w", err)
+		return nil, "", fmt.Errorf("failed to build slack URL: %w", err)
 	}
 
 	resp, err := c.JSONHTTPClient().Post(ctx, url.String(), nil)
