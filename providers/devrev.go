@@ -1,6 +1,6 @@
 package providers
 
-const DevRev = "devrev"
+const DevRev Provider = "devrev"
 
 func init() {
 	SetInfo(DevRev, ProviderInfo{
