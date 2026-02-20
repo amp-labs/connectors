@@ -239,6 +239,41 @@ func computeSignature(secret string, body []byte) []byte {
 	return h.Sum(nil)
 }
 
+// GetFieldName looks up a field's api_slug from metadata using the object_id and attribute_id.
+// It returns an error if the object or attribute is not found.
+func GetFieldName(
+	metadata *common.ListObjectMetadataResult,
+	objectID string,
+	attributeID string,
+) (string, error) {
+	obj, ok := metadata.Result[objectID]
+	if !ok {
+		return "", fmt.Errorf("%w: object %q", common.ErrNotFound, objectID)
+	}
+
+	for fieldName, field := range obj.Fields {
+		if field.FieldId != nil && *field.FieldId == attributeID {
+			return fieldName, nil
+		}
+	}
+
+	return "", fmt.Errorf("%w: attribute %q in object %q", common.ErrNotFound, attributeID, objectID)
+}
+
+// GetObjectName looks up an object's display name from metadata using the object_id.
+// It returns an error if the object is not found.
+func GetObjectName(
+	metadata *common.ListObjectMetadataResult,
+	objectID string,
+) (string, error) {
+	obj, ok := metadata.Result[objectID]
+	if !ok {
+		return "", fmt.Errorf("%w: object %q", common.ErrNotFound, objectID)
+	}
+
+	return obj.DisplayName, nil
+}
+
 // Example: Webhook response
 /*
 {

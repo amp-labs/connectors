@@ -186,6 +186,7 @@ func (c *Connector) parseStandardOrCustomMetadata(
 			ValueType:    getFieldValueType(value.Type, value.IsMultiselect),
 			ProviderType: value.Type,
 			ReadOnly:     goutils.Pointer(!value.IsWritable),
+			FieldId:      goutils.Pointer(value.ID.AttributeID),
 			Values:       defaultValues,
 		}
 	}

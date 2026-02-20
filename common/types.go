@@ -654,6 +654,10 @@ type FieldMetadata struct {
 	// True means the field must have a value, false means it is optional.
 	IsRequired *bool
 
+	// FieldId is the provider's unique identifier for this field.
+	// It is nil when the provider does not expose field identifiers.
+	FieldId *string //nolint:revive
+
 	// Values is a list of possible values for this field.
 	// It is applicable only if the type is either singleSelect or multiSelect, otherwise slice is nil.
 	Values []FieldValue
