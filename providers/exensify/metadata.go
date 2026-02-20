@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -57,9 +56,11 @@ func (c *Connector) fetchObjectMetadata(ctx context.Context, objectName string) 
 		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
-	log.Printf("Metadata response for object %s: %+v", objectName, result)
+	if err = checkResponseCode(result); err != nil {
+		return nil, err
+	}
 
-	records, ok := result["policyList"].([]any)
+	records, ok := result[readObjectResponseIdentifier.Get(objectName)].([]any)
 	if !ok {
 		return nil, fmt.Errorf("failed to parse metadata response for object %s: %w", objectName, common.ErrMissingExpectedValues)
 	}

@@ -2,6 +2,7 @@ package exensify
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
@@ -27,11 +28,25 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, fmt.Errorf("error executing read request: %w", err)
 	}
 
-	jsonRes, err := common.ParseJSONResponse(resp, common.GetResponseBodyOnce(resp))
+	bodyBytes := common.GetResponseBodyOnce(resp)
+
+	var result map[string]any
+	if err = json.Unmarshal(bodyBytes, &result); err != nil {
+		return nil, fmt.Errorf("error parsing read response: %w", err)
+	}
+
+	if err = checkResponseCode(result); err != nil {
+		return nil, err
+	}
+
+	jsonRes, err := common.ParseJSONResponse(resp, bodyBytes)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing read response: %w", err)
+	}
 
 	return common.ParseResult(
 		jsonRes,
-		common.ExtractOptionalRecordsFromPath("policyList"),
+		common.ExtractOptionalRecordsFromPath(readObjectResponseIdentifier.Get(config.ObjectName)),
 		makeNextRecordsURL,
 		common.GetMarshaledData,
 		config.Fields,

@@ -16,3 +16,11 @@ const (
 var supportedObjectsByRead = datautils.NewSet( //nolint:gochecknoglobals
 	objectNamePolicy,
 )
+
+var readObjectResponseIdentifier = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+	objectNamePolicy: "policyList",
+},
+	func(objectName string) string {
+		return objectName
+	},
+)

@@ -34,13 +34,9 @@ func (c *Connector) executeRequest(ctx context.Context, body string) (*http.Resp
 		return nil, fmt.Errorf("failed to execute request: %w", err)
 	}
 
+	// Expensify content-Type is text even though it returns JSON,
+	//  so we need to set it to application/json manually for the response to be parsed correctly
 	resp.Header.Set("Content-Type", "application/json")
-
-	// var result map[string]any
-
-	// if err = json.Unmarshal(common.GetResponseBodyOnce(resp), &result); err != nil {
-	// 	return nil, fmt.Errorf("failed to unmarshal response: %w", err)
-	// }
 
 	return resp, nil
 }
@@ -60,6 +56,27 @@ func inferValueTypeFromData(value any) common.ValueType {
 	default:
 		return common.ValueTypeOther
 	}
+}
+
+// checkResponseCode validates the responseCode field in an Expensify API response.
+// Expensify returns HTTP 200 for all requests but signals failures via this field.
+func checkResponseCode(result map[string]any) error {
+	responseCode, ok := result["responseCode"]
+	if !ok {
+		return fmt.Errorf("response code is missing in the response: %w", common.ErrMissingExpectedValues)
+	}
+
+	if responseCode != float64(200) {
+
+		responseMessage, ok := result["responseMessage"].(string)
+		if !ok {
+			responseMessage = "failed request with status code " + fmt.Sprint(responseCode)
+		}
+
+		return fmt.Errorf("%w: %s", common.ErrRequestFailed, responseMessage)
+	}
+
+	return nil
 }
 
 func buildReadBody(objectName string) (string, error) {
