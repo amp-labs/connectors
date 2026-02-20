@@ -30,9 +30,9 @@ type SubscriptionRequest struct {
 	WebhookEndpoint string `json:"webhook_end_point" validate:"required"`
 }
 
-// subscriptionPayload is the payload structure for creating webhook subscriptions in Attio.
+// SubscriptionPayload is the payload structure for creating webhook subscriptions in Attio.
 // Reference: https://docs.attio.com/rest-api/endpoint-reference/webhooks/create-a-webhook#body-data
-type subscriptionPayload struct {
+type SubscriptionPayload struct {
 	Data subscriptionData `json:"data" validate:"required"`
 }
 

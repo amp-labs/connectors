@@ -133,7 +133,7 @@ func (c *Connector) DeleteSubscription(
 }
 
 func (c *Connector) createSubscriptions(ctx context.Context,
-	payload *subscriptionPayload,
+	payload *SubscriptionPayload,
 	updater common.WriteMethod,
 ) (*createSubscriptionsResponse, error) {
 	url, err := c.getSubscribeURL()
@@ -171,7 +171,7 @@ func buildPayload(
 	subscriptionEvents map[common.ObjectName]common.ObjectEvents,
 	standardObjects map[common.ObjectName]string,
 	webhookURL string,
-) (*subscriptionPayload, error) {
+) (*SubscriptionPayload, error) {
 	subscriptions := make([]subscription, 0)
 
 	for objectName, events := range subscriptionEvents {
@@ -198,7 +198,7 @@ func buildPayload(
 		}
 	}
 
-	payload := &subscriptionPayload{
+	payload := &SubscriptionPayload{
 		Data: subscriptionData{
 			TargetURL:     webhookURL,
 			Subscriptions: subscriptions,

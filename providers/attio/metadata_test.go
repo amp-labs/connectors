@@ -197,6 +197,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "string",
 								ProviderType: "text",
 								ReadOnly:     goutils.Pointer(true),
+								FieldId:      goutils.Pointer("14447479-3006-4c0d-8855-61f3001c4990"),
 								Values:       nil,
 							},
 							"domains": {
@@ -204,6 +205,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "multiSelect",
 								ProviderType: "domain",
 								ReadOnly:     goutils.Pointer(false),
+								FieldId:      goutils.Pointer("c86ffb39-178e-48cd-a613-c125ee2f439f"),
 								Values:       nil,
 							},
 							"name": {
@@ -211,6 +213,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "string",
 								ProviderType: "text",
 								ReadOnly:     goutils.Pointer(false),
+								FieldId:      goutils.Pointer("3646a06e-28bb-444f-8335-1df342a4c1f4"),
 								Values:       nil,
 							},
 							"team": {
@@ -218,6 +221,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "multiSelect",
 								ProviderType: "record-reference",
 								ReadOnly:     goutils.Pointer(false),
+								FieldId:      goutils.Pointer("6ae72bca-9421-4fa8-bae2-19ced262607a"),
 								Values: common.FieldValues{
 									{
 										Value:        "d0be3734-3b4d-4094-9925-9dd906941197",
@@ -230,6 +234,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "datetime",
 								ProviderType: "timestamp",
 								ReadOnly:     goutils.Pointer(true),
+								FieldId:      goutils.Pointer("548a073b-c739-46c7-878a-91739a2fac9c"),
 								Values:       nil,
 							},
 							"created_by": {
@@ -237,6 +242,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "other",
 								ProviderType: "actor-reference",
 								ReadOnly:     goutils.Pointer(true),
+								FieldId:      goutils.Pointer("9a748587-a979-4682-9a35-5b97d2f6d478"),
 								Values:       nil,
 							},
 						},
@@ -244,6 +250,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"record_id":  "record_id",
 							"domains":    "domains",
 							"name":       "name",
+							"team":       "team",
 							"created_at": "created_at",
 							"created_by": "created_by",
 						},
@@ -256,6 +263,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "string",
 								ProviderType: "text",
 								ReadOnly:     goutils.Pointer(true),
+								FieldId:      goutils.Pointer("06826311-cf4c-4c4b-a1fa-f14ce70d0004"),
 								Values:       nil,
 							},
 							"user_id": {
@@ -263,6 +271,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "string",
 								ProviderType: "text",
 								ReadOnly:     goutils.Pointer(false),
+								FieldId:      goutils.Pointer("529eea7a-2c2b-4d89-b2f7-acd3b3c6a719"),
 								Values:       nil,
 							},
 							"education": {
@@ -270,6 +279,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "multiSelect",
 								ProviderType: "select",
 								ReadOnly:     goutils.Pointer(false),
+								FieldId:      goutils.Pointer("89c07285-4d31-4fa7-9cbf-779c5f4debf1"),
 								Values: common.FieldValues{
 									{Value: "UG", DisplayValue: "UG"},
 									{Value: "PG", DisplayValue: "PG"},
