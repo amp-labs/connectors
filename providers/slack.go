@@ -41,5 +41,13 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722059450/media/slack_1722059449.svg",
 			},
 		},
+		PostAuthInfoNeeded: true,
+		Metadata: &ProviderMetadata{
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "teamId",
+				},
+			},
+		},
 	})
 }
