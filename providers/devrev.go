@@ -12,14 +12,14 @@ func init() {
 			Headers: []CustomAuthHeader{
 				{
 					Name:          "Authorization",
-					ValueTemplate: "Bearer {{ .pat }}",
+					ValueTemplate: "Bearer {{ .token }}",
 				},
 			},
 			Inputs: []CustomAuthInput{
 				{
-					Name:        "pat",
+					Name:        "token",
 					DisplayName: "Personal Access Token",
-					Prompt:      "Create a PAT in DevRev: Settings > Account > Personal Access Token.",
+					Prompt:      "Personal Access Token",
 					DocsURL:     "https://developer.devrev.ai/about/authentication",
 				},
 			},
