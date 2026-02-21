@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/atlassian/internal/confluence"
 	"github.com/amp-labs/connectors/providers/atlassian/internal/jira"
 )
 
@@ -19,7 +20,8 @@ type Connector struct {
 	common.RequireAuthenticatedClient
 	common.RequireWorkspace
 
-	Jira *jira.Adapter
+	Jira       *jira.Adapter
+	Confluence *confluence.Adapter
 
 	workspace string
 }
@@ -43,6 +45,15 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 		connector.Jira = adapter
 	}
 
+	if connector.Module() == providers.ModuleAtlassianConfluence {
+		adapter, err := confluence.NewAdapter(params)
+		if err != nil {
+			return nil, err
+		}
+
+		connector.Confluence = adapter
+	}
+
 	return connector, nil
 }
 
@@ -53,12 +64,20 @@ func (c *Connector) ListObjectMetadata(
 		return c.Jira.ListObjectMetadata(ctx, objectNames)
 	}
 
+	if c.Confluence != nil {
+		return c.Confluence.ListObjectMetadata(ctx, objectNames)
+	}
+
 	return nil, common.ErrNotImplemented
 }
 
 func (c *Connector) Read(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error) {
 	if c.Jira != nil {
 		return c.Jira.Read(ctx, params)
+	}
+
+	if c.Confluence != nil {
+		return c.Confluence.Read(ctx, params)
 	}
 
 	return nil, common.ErrNotImplemented
@@ -69,12 +88,20 @@ func (c *Connector) Write(ctx context.Context, params connectors.WriteParams) (*
 		return c.Jira.Write(ctx, params)
 	}
 
+	if c.Confluence != nil {
+		return c.Confluence.Write(ctx, params)
+	}
+
 	return nil, common.ErrNotImplemented
 }
 
 func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
 	if c.Jira != nil {
 		return c.Jira.Delete(ctx, params)
+	}
+
+	if c.Confluence != nil {
+		return c.Confluence.Delete(ctx, params)
 	}
 
 	return nil, common.ErrNotImplemented
@@ -87,6 +114,10 @@ func (c *Connector) SetUnitTestBaseURL(url string) {
 	// Replace base for respective module.
 	if c.Jira != nil {
 		c.Jira.SetUnitTestBaseURL(url)
+	}
+
+	if c.Confluence != nil {
+		c.Confluence.SetUnitTestBaseURL(url)
 	}
 }
 
