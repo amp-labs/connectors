@@ -73,6 +73,8 @@ func init() {
 		Metadata: &ProviderMetadata{
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
+					// Jira and Confluence modules require it for their BaseURLs.
+					// This is acquired using workspace.
 					Name: "cloudId",
 				},
 			},
@@ -82,7 +84,8 @@ func init() {
 					DisplayName: "App name",
 					DocsURL:     "https://support.atlassian.com/organization-administration/docs/update-your-product-and-site-url/",
 					ModuleDependencies: &ModuleDependencies{
-						ModuleAtlassianJira: ModuleDependency{},
+						ModuleAtlassianJira:       ModuleDependency{},
+						ModuleAtlassianConfluence: ModuleDependency{},
 					},
 				},
 			},
