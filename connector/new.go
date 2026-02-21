@@ -339,12 +339,7 @@ func newZendeskSupportConnector(
 func newAtlassianConnector(
 	params common.ConnectorParams,
 ) (*atlassian.Connector, error) {
-	return atlassian.NewConnector(
-		atlassian.WithAuthenticatedClient(params.AuthenticatedClient),
-		atlassian.WithModule(params.Module),
-		atlassian.WithWorkspace(params.Workspace),
-		atlassian.WithMetadata(params.Metadata),
-	)
+	return atlassian.NewConnector(params)
 }
 
 func newPipelinerConnector(

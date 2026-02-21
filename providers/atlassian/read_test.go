@@ -223,21 +223,20 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(mockutils.NewClient()),
-		WithWorkspace("test-workspace"),
-		WithModule(providers.ModuleAtlassianJira),
-		WithMetadata(map[string]string{
-			"cloudId": "ebc887b2-7e61-4059-ab35-71f15cc16e12", // any value will work for the test
-		}),
+		common.ConnectorParams{
+			Module:              providers.ModuleAtlassianJira,
+			AuthenticatedClient: mockutils.NewClient(),
+			Workspace:           "test-workspace",
+			Metadata: map[string]string{
+				"cloudId": "ebc887b2-7e61-4059-ab35-71f15cc16e12", // any random value will work for the test
+			},
+		},
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	connector.setBaseURL(
-		mockutils.ReplaceURLOrigin(connector.providerInfo.BaseURL, serverURL),
-		mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, serverURL),
-	)
+	connector.SetUnitTestBaseURL(mockutils.ReplaceURLOrigin(connector.ModuleInfo().BaseURL, serverURL))
 
 	return connector, nil
 }
