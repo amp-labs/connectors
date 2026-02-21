@@ -1,4 +1,4 @@
-package atlassian
+package jira
 
 import (
 	"context"
@@ -13,12 +13,12 @@ import (
 // https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-post
 // Update issue docs:
 // https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-put
-func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+func (a *Adapter) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
 	}
 
-	url, err := c.getModuleURL("issue")
+	url, err := a.getModuleURL("issue")
 	if err != nil {
 		return nil, err
 	}
@@ -27,10 +27,10 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	if len(config.RecordId) == 0 {
 		// writing to the entity without id means
 		// that we are extending 'List' resource and creating a new record
-		write = c.JSONHTTPClient().Post
+		write = a.JSONHTTPClient().Post
 	} else {
 		// only put is supported for updating 'Single' resource
-		write = c.JSONHTTPClient().Put
+		write = a.JSONHTTPClient().Put
 
 		url.AddPath(config.RecordId)
 	}
