@@ -1,13 +1,18 @@
 package crm
 
 import (
+	"context"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/batch"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/custom"
 )
 
 const apiVersion = "v3"
@@ -24,6 +29,12 @@ type Adapter struct {
 
 	// Supported operations
 	components.Deleter
+
+	// CRM module sub-adapters
+	// These delegate specialized subsets of CRM functionality to keep Connector modular and prevent code bloat.
+	customAdapter        *custom.Adapter // used for connectors.UpsertMetadataConnector capabilities.
+	batchAdapter         *batch.Adapter  // used for connectors.BatchWriteConnector capabilities.
+	AssociationsStrategy *associations.Strategy
 }
 
 // NewAdapter creates a new crm Adapter configured to work with Hubspot's APIs.
@@ -45,7 +56,24 @@ func constructor(base *components.Connector) (*Adapter, error) {
 		},
 	)
 
+	adapter.SetErrorHandler(core.InterpretJSONError)
+	adapter.customAdapter = custom.NewAdapter(adapter.JSONHTTPClient(), adapter.ModuleInfo())
+	adapter.batchAdapter = batch.NewAdapter(adapter.HTTPClient(), adapter.ModuleInfo())
+	adapter.AssociationsStrategy = associations.NewStrategy(adapter.JSONHTTPClient(), adapter.ModuleInfo())
+
 	return adapter, nil
+}
+
+func (a *Adapter) UpsertMetadata(
+	ctx context.Context, params *common.UpsertMetadataParams,
+) (*common.UpsertMetadataResult, error) {
+	return a.customAdapter.UpsertMetadata(ctx, params)
+}
+
+func (a *Adapter) BatchWrite(
+	ctx context.Context, params *common.BatchWriteParam,
+) (*common.BatchWriteResult, error) {
+	return a.batchAdapter.BatchWrite(ctx, params)
 }
 
 func (a *Adapter) getModuleURL() string {
