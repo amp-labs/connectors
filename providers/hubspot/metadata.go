@@ -14,7 +14,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/simultaneously"
-	"github.com/amp-labs/connectors/providers/hubspot/metadata"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/metadata"
 )
 
 type objectMetadataResult struct {

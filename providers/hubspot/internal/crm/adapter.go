@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
 const apiVersion = "v3"
