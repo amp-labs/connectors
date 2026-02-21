@@ -1,4 +1,4 @@
-package atlassian
+package jira
 
 import (
 	"context"
@@ -7,12 +7,12 @@ import (
 )
 
 // Delete removes Jira issue.
-func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*common.DeleteResult, error) {
+func (a *Adapter) Delete(ctx context.Context, config common.DeleteParams) (*common.DeleteResult, error) {
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
 	}
 
-	url, err := c.getModuleURL("issue")
+	url, err := a.getModuleURL("issue")
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +20,7 @@ func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*co
 	url.AddPath(config.RecordId)
 
 	// 204 NoContent is expected
-	_, err = c.JSONHTTPClient().Delete(ctx, url.String())
+	_, err = a.JSONHTTPClient().Delete(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
