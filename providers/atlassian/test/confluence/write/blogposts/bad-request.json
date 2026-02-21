@@ -1,0 +1,16 @@
+{
+  "errors": [
+    {
+      "status": 400,
+      "code": "INVALID_REQUEST_BODY",
+      "title": "Non-drafts cannot have empty titles",
+      "detail": null
+    },
+    {
+      "status": 400,
+      "code": "INVALID_REQUEST_BODY",
+      "title": "spaceId: must not be null",
+      "detail": null
+    }
+  ]
+}
