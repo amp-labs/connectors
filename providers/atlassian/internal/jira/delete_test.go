@@ -1,4 +1,4 @@
-package atlassian
+package jira
 
 import (
 	"net/http"
@@ -62,7 +62,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (testconn.TestableDeleter, error) {
-				return constructTestConnector(tt.Server)
+				return constructTestAdapter(tt.Server)
 			})
 		})
 	}

@@ -86,7 +86,7 @@ func TestGetPostAuthInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 			}
 
 			// for testing we want to redirect calls to our mock server
-			connector.SetUnitTestBaseURL(mockutils.ReplaceURLOrigin(connector.ModuleInfo().BaseURL, tt.server.URL))
+			connector.SetUnitTestMockServerBaseUrl(tt.server.URL)
 
 			if err != nil {
 				t.Fatalf("%s: failed to setup auth metadata connector %v", tt.name, err)

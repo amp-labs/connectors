@@ -1,4 +1,4 @@
-package atlassian
+package jira
 
 import (
 	"net/http"
@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
@@ -214,28 +215,26 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			t.Parallel()
 
 			tt.Run(t, func() (testconn.TestableReader, error) {
-				return constructTestConnector(tt.Server)
+				return constructTestAdapter(tt.Server)
 			})
 		})
 	}
 }
 
-func constructTestConnector(server *httptest.Server) (*Connector, error) {
-	connector, err := NewConnector(
-		common.ConnectorParams{
-			Module:              providers.ModuleAtlassianJira,
-			AuthenticatedClient: server.Client(),
-			Workspace:           "test-workspace",
-			Metadata: map[string]string{
-				"cloudId": "ebc887b2-7e61-4059-ab35-71f15cc16e12", // any random value will work for the test
-			},
+func constructTestAdapter(server *httptest.Server) (*Adapter, error) {
+	basicConn, err := components.NewBaseConnector(providers.Atlassian, common.ConnectorParams{
+		Module:              providers.ModuleAtlassianJira,
+		AuthenticatedClient: server.Client(),
+		Workspace:           "test-workspace",
+		Metadata: map[string]string{
+			"cloudId": "ebc887b2-7e61-4059-ab35-71f15cc16e12", // any random value will work for the test
 		},
-	)
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	connector.SetUnitTestMockServerBaseUrl(server.URL)
+	basicConn.SetUnitTestMockServerBaseUrl(server.URL)
 
-	return connector, nil
+	return NewAdapter(basicConn)
 }
