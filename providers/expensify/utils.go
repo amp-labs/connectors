@@ -99,3 +99,18 @@ func buildReadBody(objectName string) (string, error) {
 
 	return string(jsonBody), nil
 }
+
+func buildWriteBody(data any) (string, error) {
+	body := map[string]any{
+		"type": "create",
+	}
+
+	body["inputSettings"] = data
+
+	jsonBody, err := json.Marshal(body)
+	if err != nil {
+		return "", err
+	}
+
+	return string(jsonBody), nil
+}

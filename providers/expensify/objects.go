@@ -9,7 +9,10 @@ import (
 // although the API documentation doesn’t explicitly state that these fields are mandatory for fetching data, they are.
 
 const (
-	objectNamePolicy = "policy"
+	objectNamePolicy       = "policy"
+	objectNameReport       = "report"
+	objectNameExpenses     = "expenses"
+	objectNameExpenseRules = "expenseRules"
 )
 
 // Supported object names can be found under schemas.json.
@@ -23,4 +26,12 @@ var readObjectResponseIdentifier = datautils.NewDefaultMap(map[string]string{ //
 	func(objectName string) string {
 		return objectName
 	},
+)
+
+// Supported object names can be found under schemas.json.
+var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
+	objectNamePolicy,
+	objectNameReport,
+	objectNameExpenses,
+	objectNameExpenseRules,
 )
