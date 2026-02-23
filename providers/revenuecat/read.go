@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 	"net/url"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
@@ -20,6 +19,28 @@ const (
 	// Docs: https://www.revenuecat.com/docs/api/v2#tag/Pagination
 	defaultPageSize = "100"
 )
+
+// incrementalConfig is the per-object incremental-read config:
+// timestampKey is the unix-ms field representing last change; order is the API's guaranteed sort direction.
+// Objects absent from the map (e.g. subscriptions) have no suitable timestamp and fall back to MakeIdentityFilterFunc.
+type incrementalConfig struct {
+	timestampKey string
+	order        readhelper.TimeOrder
+}
+
+// Docs: https://www.revenuecat.com/docs/api/v2
+// List endpoints return items newest-first (ReverseOrder) unless noted otherwise.
+// Objects with no documented sort order use Unordered (safe fallback).
+var objectIncrementalConfig = map[string]incrementalConfig{ //nolint:gochecknoglobals
+	"customers":             {timestampKey: "last_seen_at", order: readhelper.Unordered},
+	"purchases":             {timestampKey: "purchased_at", order: readhelper.ReverseOrder},
+	"apps":                  {timestampKey: "created_at", order: readhelper.ReverseOrder},
+	"entitlements":          {timestampKey: "created_at", order: readhelper.ReverseOrder},
+	"offerings":             {timestampKey: "created_at", order: readhelper.ReverseOrder},
+	"products":              {timestampKey: "created_at", order: readhelper.ReverseOrder},
+	"metrics_overview":      {timestampKey: "last_updated_at", order: readhelper.Unordered},
+	"integrations_webhooks": {timestampKey: "created_at", order: readhelper.ReverseOrder},
+}
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if err := params.ValidateParams(true); err != nil {
@@ -86,6 +107,9 @@ func extractRecordsOptional(recordsKey string) common.NodeRecordsFunc {
 	}
 }
 
+// makeIncrementalFilterFunc selects the right filter for the object.
+// Without time bounds it is a no-op; with bounds it uses objectIncrementalConfig to
+// pick the timestamp key and ordering, falling back to identity if the object is absent.
 func makeIncrementalFilterFunc(
 	params common.ReadParams,
 	nextPageFunc common.NextPageFunc,
@@ -94,123 +118,19 @@ func makeIncrementalFilterFunc(
 		return readhelper.MakeIdentityFilterFunc(nextPageFunc)
 	}
 
-	return func(p common.ReadParams, body *ajson.Node, records []*ajson.Node) ([]*ajson.Node, string, error) {
-		if len(records) == 0 {
-			return records, "", nil
-		}
-
-		timestampKey, ok := chooseTimestampKey(records[0])
-		if !ok {
-			return readhelper.MakeIdentityFilterFunc(nextPageFunc)(p, body, records)
-		}
-
-		boundary := readhelper.NewTimeBoundary()
-
-		filtered := make([]*ajson.Node, 0, len(records))
-		pageTimestamps := make([]time.Time, 0, len(records))
-
-		for _, rec := range records {
-			ts, err := extractMillisTimestamp(rec, timestampKey)
-			if err != nil {
-				return nil, "", err
-			}
-
-			// If any record is missing a timestamp, we can't safely filter by time
-			// or determine order. Fall back to identity filter.
-			if ts.IsZero() {
-				return readhelper.MakeIdentityFilterFunc(nextPageFunc)(p, body, records)
-			}
-
-			pageTimestamps = append(pageTimestamps, ts)
-
-			if boundary.Contains(p, ts) {
-				filtered = append(filtered, rec)
-			}
-		}
-
-		nextPage, err := nextPageFunc(body)
-		if err != nil || nextPage == "" {
-			return filtered, nextPage, err
-		}
-
-		order := inferTimeOrder(pageTimestamps)
-		lastTS := pageTimestamps[len(pageTimestamps)-1]
-
-		switch order {
-		case readhelper.ReverseOrder:
-			if !p.Since.IsZero() && lastTS.Before(p.Since) {
-				return filtered, "", nil
-			}
-		case readhelper.ChronologicalOrder:
-			if !p.Until.IsZero() && lastTS.After(p.Until) {
-				return filtered, "", nil
-			}
-		default:
-		}
-
-		return filtered, nextPage, nil
-	}
-}
-
-func chooseTimestampKey(record *ajson.Node) (string, bool) {
-	candidates := []string{
-		"updated_at",
-		"last_updated_at",
-		"last_seen_at",
-		"created_at",
-		"first_seen_at",
-		"purchased_at",
+	cfg, ok := objectIncrementalConfig[params.ObjectName]
+	if !ok {
+		// No documented timestamp field for this object; pass all records through.
+		return readhelper.MakeIdentityFilterFunc(nextPageFunc)
 	}
 
-	for _, key := range candidates {
-		val, err := jsonquery.New(record).IntegerOptional(key)
-		if err == nil && val != nil {
-			return key, true
-		}
-	}
-
-	return "", false
-}
-
-func extractMillisTimestamp(record *ajson.Node, key string) (time.Time, error) {
-	val, err := jsonquery.New(record).IntegerOptional(key)
-	if err != nil {
-		return time.Time{}, err
-	}
-	if val == nil {
-		return time.Time{}, nil
-	}
-
-	return time.UnixMilli(*val), nil
-}
-
-func inferTimeOrder(timestamps []time.Time) readhelper.TimeOrder {
-	if len(timestamps) < 2 {
-		return readhelper.Unordered
-	}
-
-	nonDecreasing := true
-	nonIncreasing := true
-
-	for i := 1; i < len(timestamps); i++ {
-		if timestamps[i].Before(timestamps[i-1]) {
-			nonDecreasing = false
-		}
-		if timestamps[i].After(timestamps[i-1]) {
-			nonIncreasing = false
-		}
-	}
-
-	switch {
-	case nonIncreasing && !nonDecreasing:
-		return readhelper.ReverseOrder
-	case nonDecreasing && !nonIncreasing:
-		return readhelper.ChronologicalOrder
-	case nonDecreasing && nonIncreasing:
-		return readhelper.Unordered
-	default:
-		return readhelper.Unordered
-	}
+	return readhelper.MakeTimeFilterFunc(
+		cfg.order,
+		readhelper.NewTimeBoundary(),
+		cfg.timestampKey,
+		readhelper.TimestampFormatUnixMs,
+		nextPageFunc,
+	)
 }
 
 func nextPageFromListObject(previousRequestURL *url.URL) common.NextPageFunc {
