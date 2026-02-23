@@ -1,0 +1,34 @@
+{
+  "total": 1,
+  "_embedded": {
+    "contacts": [
+      {
+        "id": "6752b05a23552310c15446cc",
+        "name": "Nad",
+        "company": "",
+        "deleted_at": null,
+        "phones": [
+          {
+            "label": "",
+            "number": "+9779807463483"
+          }
+        ],
+        "emails": [],
+        "_links": {
+          "self": {
+            "href": "https://api.talkdeskapp.com/contacts/6752b05a23552310c15446cc"
+          },
+          "integrations": {
+            "href": "https://api.talkdeskapp.com/contacts/6752b05a23552310c15446cc/integrations"
+          }
+        }
+      }
+    ]
+  },
+  "count": 1,
+  "_links": {
+    "self": {
+      "href": "https://api.talkdeskapp.com/contacts?include_deleted=false&page=1&per_page=50"
+    }
+  }
+}
