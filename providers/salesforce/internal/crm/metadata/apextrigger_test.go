@@ -3,6 +3,7 @@ package metadata
 import (
 	"archive/zip"
 	"bytes"
+	"encoding/xml"
 	"strings"
 	"testing"
 )
@@ -173,32 +174,25 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 		t.Fatal("trigger file not found in zip")
 	}
 
-	// Must reference the object name.
-	if !strings.Contains(triggerCode, "trigger amp_Lead on Lead") {
-		t.Error("trigger code missing trigger declaration with object name")
-	}
+	expectedTriggerCode := `trigger amp_Lead on Lead (before insert, before update) {
+    if (Trigger.isBefore) {
+        for (Lead rec : Trigger.new) {
+            Boolean fieldChanged = false;
 
-	// Must contain both watch fields in insert conditions.
-	if !strings.Contains(triggerCode, "rec.Email") {
-		t.Error("trigger code missing Email field reference")
-	}
+            if (Trigger.isInsert) {
+                fieldChanged = (rec.Email != null && rec.Email != '') || (rec.Phone != null && rec.Phone != '');
+            } else if (Trigger.isUpdate) {
+                Lead oldRec = Trigger.oldMap.get(rec.Id);
+                fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
+            }
 
-	if !strings.Contains(triggerCode, "rec.Phone") {
-		t.Error("trigger code missing Phone field reference")
-	}
-
-	// Must contain update conditions with oldRec references.
-	if !strings.Contains(triggerCode, "oldRec.Email") {
-		t.Error("trigger code missing oldRec.Email reference for update condition")
-	}
-
-	if !strings.Contains(triggerCode, "oldRec.Phone") {
-		t.Error("trigger code missing oldRec.Phone reference for update condition")
-	}
-
-	// Must set the checkbox field.
-	if !strings.Contains(triggerCode, "rec.AmpTriggerSubscription__c = fieldChanged") {
-		t.Error("trigger code missing checkbox field assignment")
+            rec.AmpTriggerSubscription__c = fieldChanged;
+        }
+    }
+}
+`
+	if triggerCode != expectedTriggerCode {
+		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", triggerCode, expectedTriggerCode)
 	}
 
 	// Verify meta XML content.
@@ -207,12 +201,14 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 		t.Fatal("trigger meta XML file not found in zip")
 	}
 
-	if !strings.Contains(metaXML, "<apiVersion>61.0</apiVersion>") {
-		t.Error("meta XML missing correct API version")
-	}
-
-	if !strings.Contains(metaXML, "<status>Active</status>") {
-		t.Error("meta XML missing Active status")
+	expectedMetaXML := `<?xml version="1.0" encoding="UTF-8"?>
+<ApexTrigger xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <status>Active</status>
+</ApexTrigger>
+`
+	if metaXML != expectedMetaXML {
+		t.Errorf("meta XML mismatch.\nGot:\n%s\nWant:\n%s", metaXML, expectedMetaXML)
 	}
 
 	// Verify package.xml content.
@@ -221,12 +217,15 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 		t.Fatal("package.xml not found in zip")
 	}
 
-	if !strings.Contains(packageXML, "amp_Lead") {
-		t.Error("package.xml missing trigger member name")
-	}
-
-	if !strings.Contains(packageXML, "ApexTrigger") {
-		t.Error("package.xml missing ApexTrigger type")
+	expectedPackageXML := xml.Header + `<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>amp_Lead</members>
+        <name>ApexTrigger</name>
+    </types>
+    <version>61.0</version>
+</Package>`
+	if packageXML != expectedPackageXML {
+		t.Errorf("package.xml mismatch.\nGot:\n%s\nWant:\n%s", packageXML, expectedPackageXML)
 	}
 }
 

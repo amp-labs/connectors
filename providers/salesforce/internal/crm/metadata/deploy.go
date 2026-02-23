@@ -15,10 +15,20 @@ var ErrDeployFailed = errors.New("metadata: deploy failed")
 
 // DeployResult contains the outcome of a Salesforce Metadata API deployment.
 type DeployResult struct {
-	Done    bool
-	Status  string
-	Success bool
-	ID      string
+	Done              bool
+	Status            string
+	Success           bool
+	ID                string
+	ErrorMessage      string
+	ComponentFailures []ComponentFailure
+}
+
+// ComponentFailure describes a single component failure in a deployment.
+type ComponentFailure struct {
+	ComponentType string
+	FullName      string
+	Problem       string
+	ProblemType   string
 }
 
 // DeployMetadataZip initiates a deploy of a zip package to Salesforce via the Metadata API
@@ -63,11 +73,23 @@ func (a *Adapter) CheckDeployStatus(ctx context.Context, deployID string) (*Depl
 
 	result := &resp.Body.CheckDeployStatusResponse.Result
 
+	failures := make([]ComponentFailure, len(result.Details.ComponentFailures))
+	for i, cf := range result.Details.ComponentFailures {
+		failures[i] = ComponentFailure{
+			ComponentType: cf.ComponentType,
+			FullName:      cf.FullName,
+			Problem:       cf.Problem,
+			ProblemType:   cf.ProblemType,
+		}
+	}
+
 	return &DeployResult{
-		Done:    result.Done,
-		Status:  result.Status,
-		Success: result.Success,
-		ID:      result.ID,
+		Done:              result.Done,
+		Status:            result.Status,
+		Success:           result.Success,
+		ID:                result.ID,
+		ErrorMessage:      result.ErrorMessage,
+		ComponentFailures: failures,
 	}, nil
 }
 
@@ -180,10 +202,19 @@ type checkDeployStatusResponse struct {
 	Body    struct {
 		CheckDeployStatusResponse struct {
 			Result struct {
-				Done    bool   `xml:"done"`
-				Status  string `xml:"status"`
-				Success bool   `xml:"success"`
-				ID      string `xml:"id"`
+				Done         bool   `xml:"done"`
+				Status       string `xml:"status"`
+				Success      bool   `xml:"success"`
+				ID           string `xml:"id"`
+				ErrorMessage string `xml:"errorMessage"`
+				Details      struct {
+					ComponentFailures []struct {
+						ComponentType string `xml:"componentType"`
+						FullName      string `xml:"fullName"`
+						Problem       string `xml:"problem"`
+						ProblemType   string `xml:"problemType"`
+					} `xml:"componentFailures"`
+				} `xml:"details"`
 			} `xml:"result"`
 		} `xml:"checkDeployStatusResponse"`
 	} `xml:"Body"`
