@@ -1,0 +1,26 @@
+{
+  "id": "19c5a57884cc0fc0",
+  "threadId": "19c2643cde3cab88",
+  "labelIds": [
+    "DRAFT"
+  ],
+  "snippet": "(DRAFT) Good news. You are being upgraded from Basic",
+  "payload": {
+    "partId": "",
+    "mimeType": "multipart/alternative",
+    "filename": "",
+    "headers": [
+      {
+        "name": "Subject",
+        "value": "(DRAFT) Good news"
+      }
+    ],
+    "body": {
+      "size": 0
+    },
+    "parts": []
+  },
+  "sizeEstimate": 1924,
+  "historyId": "39895",
+  "internalDate": "1771042211000"
+}

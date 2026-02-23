@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/spyzhov/ajson"
@@ -22,19 +23,23 @@ import (
 //
 // Returns a map keyed by message ID containing the fully populated MessageRecords.
 func (a *Adapter) fetchMessages(
-	ctx context.Context, collectionResp *common.JSONHTTPResponse,
+	ctx context.Context, objectName string, collectionResp *common.JSONHTTPResponse,
 ) (MessageRecords, error) {
-	collection, err := common.UnmarshalJSON[MessagesCollection](collectionResp)
+	messageIDs, err := extractMessageIdentifiers(objectName, collectionResp)
 	if err != nil {
 		return nil, err
 	}
 
-	messagesChannel := make(chan MessageRecord, len(collection.Messages))
-	callbacks := make([]simultaneously.Job, 0, len(collection.Messages))
+	if len(messageIDs) == 0 {
+		return MessageRecords{}, nil
+	}
+
+	messagesChannel := make(chan MessageRecord, len(messageIDs))
+	callbacks := make([]simultaneously.Job, 0, len(messageIDs))
 
 	// Fan-out: create one job per message ID.
-	for _, message := range collection.Messages {
-		callbacks = append(callbacks, a.fetchMessage(messagesChannel, message.ID))
+	for _, messageID := range messageIDs {
+		callbacks = append(callbacks, a.fetchMessage(messagesChannel, messageID))
 	}
 
 	// Run all jobs concurrently. If any job fails, context is expected to cancel.
@@ -46,7 +51,7 @@ func (a *Adapter) fetchMessages(
 	close(messagesChannel)
 
 	// Fan-in: single goroutine owns the map.
-	messageRegistry := make(MessageRecords, len(collection.Messages))
+	messageRegistry := make(MessageRecords, len(messageIDs))
 
 	for message := range messagesChannel {
 		id, ok := message["id"].(string)
@@ -89,7 +94,7 @@ func (a *Adapter) fetchMessage(messagesChannel chan MessageRecord, messageId str
 	}
 }
 
-func embedMessageRaw(messages MessageRecords) common.RecordTransformer {
+func messagesEmbedMessageRaw(messages MessageRecords) common.RecordTransformer {
 	return func(node *ajson.Node) (map[string]any, error) {
 		root, err := jsonquery.Convertor.ObjectToMap(node)
 		if err != nil {
@@ -112,7 +117,7 @@ func embedMessageRaw(messages MessageRecords) common.RecordTransformer {
 	}
 }
 
-func embedMessageFields(params common.ReadParams, messages MessageRecords) readhelper.SelectedFieldsFunc {
+func messagesEmbedMessageFields(params common.ReadParams, messages MessageRecords) readhelper.SelectedFieldsFunc {
 	return func(node *ajson.Node) (map[string]any, string, error) {
 		root, err := jsonquery.Convertor.ObjectToMap(node)
 		if err != nil {
@@ -139,10 +144,100 @@ func embedMessageFields(params common.ReadParams, messages MessageRecords) readh
 	}
 }
 
+func draftsEmbedMessageRaw(messages MessageRecords) common.RecordTransformer {
+	return func(node *ajson.Node) (map[string]any, error) {
+		root, err := jsonquery.Convertor.ObjectToMap(node)
+		if err != nil {
+			return nil, err
+		}
+
+		messageID, err := jsonquery.New(node, "message").StringRequired("id")
+		if err != nil {
+			return nil, err
+		}
+
+		message, err := messages.findByID(messageID)
+		if err != nil {
+			return nil, err
+		}
+
+		// Draft has a 'message' field which we populate.
+		originalMessage, _ := root["message"].(map[string]any)
+		combinedMessage := make(map[string]any)
+		maps.Copy(combinedMessage, originalMessage)
+		maps.Copy(combinedMessage, message)
+		root["message"] = combinedMessage
+
+		return root, nil
+	}
+}
+
+func draftsEmbedMessageFields(params common.ReadParams, messages MessageRecords) readhelper.SelectedFieldsFunc {
+	return func(node *ajson.Node) (map[string]any, string, error) {
+		root, err := jsonquery.Convertor.ObjectToMap(node)
+		if err != nil {
+			return nil, "", err
+		}
+
+		identifier, err := jsonquery.New(node).StringRequired("id")
+		if err != nil {
+			return nil, "", err
+		}
+
+		messageID, err := jsonquery.New(node, "message").StringRequired("id")
+		if err != nil {
+			return nil, "", err
+		}
+
+		message, err := messages.findByID(messageID)
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Draft has a 'message' field which we populate.
+		originalMessage, _ := root["message"].(map[string]any)
+		combinedMessage := make(map[string]any)
+		maps.Copy(combinedMessage, originalMessage)
+		maps.Copy(combinedMessage, message)
+		root["message"] = combinedMessage
+
+		filtered := readhelper.SelectFields(root, params.Fields)
+
+		return filtered, identifier, nil
+	}
+}
+
+// MessagesCollection https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list
 type MessagesCollection struct {
-	Messages []struct {
+	Messages []messageSchema `json:"messages"`
+}
+
+type messageSchema struct {
+	ID string `json:"id"`
+}
+
+func (c MessagesCollection) getMessageIdentifiers() []string {
+	return datautils.ForEach(c.Messages, func(message messageSchema) string {
+		return message.ID
+	})
+}
+
+// DraftCollection https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.drafts/list
+type DraftCollection struct {
+	Drafts []draftSchema `json:"drafts"`
+}
+
+type draftSchema struct {
+	ID      string `json:"id"`
+	Message struct {
 		ID string `json:"id"`
-	} `json:"messages"`
+	} `json:"message"`
+}
+
+func (c DraftCollection) getMessageIdentifiers() []string {
+	return datautils.ForEach(c.Drafts, func(draft draftSchema) string {
+		return draft.Message.ID
+	})
 }
 
 // MessageRecord contains MessagePart and MessagePartBody.
@@ -161,4 +256,36 @@ func (m MessageRecords) findByID(identifier string) (MessageRecord, error) {
 	}
 
 	return message, nil
+}
+
+type messageIdentifiersHolder interface {
+	getMessageIdentifiers() []string
+}
+
+// extractMessageIdentifiers normalizes message IDs from Gmail collection response.
+//
+// Gmail returns message identifiers in different JSON shapes depending on the object:
+//   - messages 	-> IDs at messages[].id
+//   - drafts 	-> IDs at drafts[].message.id
+func extractMessageIdentifiers(objectName string, collectionResp *common.JSONHTTPResponse) ([]string, error) {
+	var (
+		collection messageIdentifiersHolder
+		err        error
+	)
+
+	switch objectName {
+	case objectNameMessages:
+		collection, err = common.UnmarshalJSON[MessagesCollection](collectionResp)
+	case objectNameDrafts:
+		collection, err = common.UnmarshalJSON[DraftCollection](collectionResp)
+	default:
+		return nil, fmt.Errorf( // nolint:err113
+			"message identifier extraction is not implemented for object %v", objectName)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return collection.getMessageIdentifiers(), nil
 }
