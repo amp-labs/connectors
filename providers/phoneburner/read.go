@@ -136,7 +136,9 @@ func parseReadResponse(
 		}
 	case objectVoicemails:
 		if !params.Since.IsZero() || !params.Until.IsZero() {
-			return parseFilteredObjectResponse(params, response, objectVoicemails, "created_when", nextRecordsURL(url, objectVoicemails))
+			return parseFilteredObjectResponse(
+				params, response, objectVoicemails, "created_when", nextRecordsURL(url, objectVoicemails),
+			)
 		}
 	}
 
