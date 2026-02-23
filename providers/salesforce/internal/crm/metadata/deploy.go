@@ -6,21 +6,12 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/xquery"
 )
 
-var (
-	ErrDeployFailed  = errors.New("metadata: deploy failed")
-	ErrDeployTimeout = errors.New("metadata: deploy timed out")
-)
-
-const (
-	deployPollInterval    = 5 * time.Second
-	deployPollMaxDuration = 5 * time.Minute
-)
+var ErrDeployFailed = errors.New("metadata: deploy failed")
 
 // DeployResult contains the outcome of a Salesforce Metadata API deployment.
 type DeployResult struct {
@@ -30,33 +21,54 @@ type DeployResult struct {
 	ID      string
 }
 
-// DeployMetadataZip deploys a zip package to Salesforce via the Metadata API SOAP deploy operation.
-// The zip should contain package.xml and the metadata components to deploy.
-// This is used for deploying APEX triggers and other components that require the deploy() API
-// rather than the upsertMetadata() API.
-func (a *Adapter) DeployMetadataZip(ctx context.Context, zipData []byte) error {
+// DeployMetadataZip initiates a deploy of a zip package to Salesforce via the Metadata API
+// SOAP deploy operation. Returns the async deployment ID for status polling.
+// Use CheckDeployStatus to poll for completion.
+func (a *Adapter) DeployMetadataZip(ctx context.Context, zipData []byte) (string, error) {
 	accessToken, present := common.GetAuthToken(ctx)
 	if !present {
-		return common.ErrMissingAccessToken
+		return "", common.ErrMissingAccessToken
 	}
 
-	token := accessToken.String()
-
-	deployID, err := a.deploy(ctx, token, zipData)
+	deployID, err := a.deploy(ctx, accessToken.String(), zipData)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrDeployFailed, err)
+		return "", fmt.Errorf("%w: %w", ErrDeployFailed, err)
 	}
 
-	result, err := a.pollDeployStatus(ctx, token, deployID)
+	return deployID, nil
+}
+
+// CheckDeployStatus checks the status of an async deployment once and returns the result.
+// The caller is responsible for polling in a loop until Done is true.
+func (a *Adapter) CheckDeployStatus(ctx context.Context, deployID string) (*DeployResult, error) {
+	accessToken, present := common.GetAuthToken(ctx)
+	if !present {
+		return nil, common.ErrMissingAccessToken
+	}
+
+	payload := fmt.Sprintf(`<md:checkDeployStatus xmlns:md="http://soap.sforce.com/2006/04/metadata">
+  <md:asyncProcessId>%s</md:asyncProcessId>
+  <md:includeDetails>true</md:includeDetails>
+</md:checkDeployStatus>`, deployID)
+
+	respBytes, err := a.performDeploySOAPRequest(ctx, []byte(payload), accessToken.String())
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrDeployFailed, err)
+		return nil, err
 	}
 
-	if !result.Success {
-		return fmt.Errorf("%w: status=%s", ErrDeployFailed, result.Status)
+	var resp checkDeployStatusResponse
+	if err := xml.Unmarshal(respBytes, &resp); err != nil {
+		return nil, fmt.Errorf("failed to parse deploy status response: %w", err)
 	}
 
-	return nil
+	result := &resp.Body.CheckDeployStatusResponse.Result
+
+	return &DeployResult{
+		Done:    result.Done,
+		Status:  result.Status,
+		Success: result.Success,
+		ID:      result.ID,
+	}, nil
 }
 
 // deploy sends a SOAP deploy request with the base64-encoded zip to the Metadata API.
@@ -90,46 +102,6 @@ func (a *Adapter) deploy(ctx context.Context, accessToken string, zipData []byte
 	}
 
 	return resp.Body.DeployResponse.Result.ID, nil
-}
-
-// pollDeployStatus polls the deployment status until completion or timeout.
-func (a *Adapter) pollDeployStatus(ctx context.Context, accessToken, deployID string) (*DeployResult, error) {
-	start := time.Now()
-
-	for time.Since(start) < deployPollMaxDuration {
-		select {
-		case <-ctx.Done():
-			return nil, ctx.Err()
-		case <-time.After(deployPollInterval):
-		}
-
-		payload := fmt.Sprintf(`<md:checkDeployStatus xmlns:md="http://soap.sforce.com/2006/04/metadata">
-  <md:asyncProcessId>%s</md:asyncProcessId>
-  <md:includeDetails>true</md:includeDetails>
-</md:checkDeployStatus>`, deployID)
-
-		respBytes, err := a.performDeploySOAPRequest(ctx, []byte(payload), accessToken)
-		if err != nil {
-			return nil, err
-		}
-
-		var resp checkDeployStatusResponse
-		if err := xml.Unmarshal(respBytes, &resp); err != nil {
-			return nil, fmt.Errorf("failed to parse deploy status response: %w", err)
-		}
-
-		result := &resp.Body.CheckDeployStatusResponse.Result
-		if result.Done {
-			return &DeployResult{
-				Done:    result.Done,
-				Status:  result.Status,
-				Success: result.Success,
-				ID:      result.ID,
-			}, nil
-		}
-	}
-
-	return nil, ErrDeployTimeout
 }
 
 // performDeploySOAPRequest sends a raw SOAP request for deploy operations.

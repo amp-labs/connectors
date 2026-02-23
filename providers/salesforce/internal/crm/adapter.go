@@ -82,14 +82,14 @@ func (a Adapter) Search(ctx context.Context, params *common.SearchParams) (*comm
 	return a.searchStrategy.Search(ctx, params)
 }
 
-func (a Adapter) DeployApexTrigger(ctx context.Context, params metadata.ApexTriggerParams) error {
+func (a Adapter) DeployMetadataZip(ctx context.Context, zipData []byte) (string, error) {
 	// Delegated.
-	return a.customAdapter.DeployApexTrigger(ctx, params)
+	return a.customAdapter.DeployMetadataZip(ctx, zipData)
 }
 
-func (a Adapter) DeleteApexTrigger(ctx context.Context, triggerName string) error {
+func (a Adapter) CheckDeployStatus(ctx context.Context, deployID string) (*metadata.DeployResult, error) {
 	// Delegated.
-	return a.customAdapter.DeleteApexTrigger(ctx, triggerName)
+	return a.customAdapter.CheckDeployStatus(ctx, deployID)
 }
 
 // Gateway access to URLs.

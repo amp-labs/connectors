@@ -3,7 +3,6 @@ package metadata
 import (
 	"archive/zip"
 	"bytes"
-	"context"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -72,28 +71,6 @@ func ConstructApexTrigger(params ApexTriggerParams) ([]byte, error) {
 // an APEX trigger from Salesforce. The returned zip bytes are ready for DeployMetadataZip.
 func ConstructDestructiveApexTrigger(triggerName string) ([]byte, error) {
 	return createTriggerDestructiveZip(triggerName)
-}
-
-// DeployApexTrigger constructs and deploys an APEX trigger to Salesforce.
-// It generates the trigger code from the provided parameters, packages it into a
-// deployment zip, and deploys via the Salesforce Metadata API.
-func (a *Adapter) DeployApexTrigger(ctx context.Context, params ApexTriggerParams) error {
-	zipData, err := ConstructApexTrigger(params)
-	if err != nil {
-		return fmt.Errorf("failed to construct apex trigger: %w", err)
-	}
-
-	return a.DeployMetadataZip(ctx, zipData)
-}
-
-// DeleteApexTrigger deletes an APEX trigger from Salesforce via destructive changes deployment.
-func (a *Adapter) DeleteApexTrigger(ctx context.Context, triggerName string) error {
-	zipData, err := ConstructDestructiveApexTrigger(triggerName)
-	if err != nil {
-		return fmt.Errorf("failed to construct destructive package: %w", err)
-	}
-
-	return a.DeployMetadataZip(ctx, zipData)
 }
 
 // generateTriggerCode dynamically generates APEX trigger code.

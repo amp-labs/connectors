@@ -3,7 +3,6 @@ package salesforce
 import (
 	"context"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/metadata"
 )
 
@@ -24,33 +23,41 @@ type ApexTriggerParams struct {
 	WatchFields []string
 }
 
+// DeployResult contains the outcome of a Salesforce Metadata API deployment.
+type DeployResult = metadata.DeployResult
+
 // GenerateApexTriggerName returns the standard APEX trigger name for a given Salesforce object.
 func GenerateApexTriggerName(objectName string) string {
 	return metadata.GenerateApexTriggerName(objectName)
 }
 
-// DeployApexTrigger constructs and deploys an APEX trigger to the connected Salesforce org.
-// The trigger sets a boolean checkbox field to true when any of the specified watch fields
-// change, enabling CDC (Change Data Capture) filter expressions.
-func (c *Connector) DeployApexTrigger(ctx context.Context, params ApexTriggerParams) error {
-	if c.crmAdapter != nil {
-		return c.crmAdapter.DeployApexTrigger(ctx, metadata.ApexTriggerParams{
-			ObjectName:        params.ObjectName,
-			TriggerName:       params.TriggerName,
-			CheckboxFieldName: params.CheckboxFieldName,
-			WatchFields:       params.WatchFields,
-		})
-	}
-
-	return common.ErrNotImplemented
+// ConstructApexTriggerZip builds a zipped deployment package for an APEX trigger that sets
+// a boolean checkbox field to true when any of the specified watch fields change.
+// The returned zip bytes are ready for DeployMetadataZip.
+func ConstructApexTriggerZip(params ApexTriggerParams) ([]byte, error) {
+	return metadata.ConstructApexTrigger(metadata.ApexTriggerParams{
+		ObjectName:        params.ObjectName,
+		TriggerName:       params.TriggerName,
+		CheckboxFieldName: params.CheckboxFieldName,
+		WatchFields:       params.WatchFields,
+	})
 }
 
-// DeleteApexTrigger removes an APEX trigger from the connected Salesforce org
-// via the Metadata API destructive changes mechanism.
-func (c *Connector) DeleteApexTrigger(ctx context.Context, triggerName string) error {
-	if c.crmAdapter != nil {
-		return c.crmAdapter.DeleteApexTrigger(ctx, triggerName)
-	}
+// ConstructDestructiveApexTriggerZip builds a zipped destructive changes package to delete
+// an APEX trigger from Salesforce. The returned zip bytes are ready for DeployMetadataZip.
+func ConstructDestructiveApexTriggerZip(triggerName string) ([]byte, error) {
+	return metadata.ConstructDestructiveApexTrigger(triggerName)
+}
 
-	return common.ErrNotImplemented
+// DeployMetadataZip initiates a deploy of a zip package to the connected Salesforce org
+// via the Metadata API. Returns the async deployment ID for status polling.
+// Use CheckDeployStatus to poll for completion.
+func (c *Connector) DeployMetadataZip(ctx context.Context, zipData []byte) (string, error) {
+	return c.crmAdapter.DeployMetadataZip(ctx, zipData)
+}
+
+// CheckDeployStatus checks the status of an async deployment once and returns the result.
+// The caller is responsible for polling in a loop until DeployResult.Done is true.
+func (c *Connector) CheckDeployStatus(ctx context.Context, deployID string) (*DeployResult, error) {
+	return c.crmAdapter.CheckDeployStatus(ctx, deployID)
 }
