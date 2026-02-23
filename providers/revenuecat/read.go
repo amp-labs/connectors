@@ -82,16 +82,7 @@ func (c *Connector) parseReadResponse(
 
 func extractRecordsOptional(recordsKey string) common.NodeRecordsFunc {
 	return func(node *ajson.Node) ([]*ajson.Node, error) {
-		records, err := jsonquery.New(node).ArrayOptional(recordsKey)
-		if err != nil {
-			return nil, err
-		}
-
-		if records == nil {
-			return []*ajson.Node{}, nil
-		}
-
-		return records, nil
+		return jsonquery.New(node).ArrayOptional(recordsKey)
 	}
 }
 
