@@ -115,6 +115,7 @@ import (
 	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/webex"
+	"github.com/amp-labs/connectors/providers/workday"
 	"github.com/amp-labs/connectors/providers/xero"
 	"github.com/amp-labs/connectors/providers/zendeskchat"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
@@ -248,6 +249,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Zoho:                    wrapper(newZohoConnector),
 	providers.Zoom:                    wrapper(newZoomConnector),
 	providers.Salesfinity:             wrapper(newSalesfinityConnector),
+	providers.Workday:                 wrapper(newWorkdayConnector),
 }
 
 type outputConstructorFunc func(p common.ConnectorParams) (connectors.Connector, error)
@@ -999,4 +1001,8 @@ func newSalesfinityConnector(params common.ConnectorParams) (*salesfinity.Connec
 
 func newSlackConnector(params common.ConnectorParams) (*slack.Connector, error) {
 	return slack.NewConnector(params)
+}
+
+func newWorkdayConnector(params common.ConnectorParams) (*workday.Connector, error) {
+	return workday.NewConnector(params)
 }

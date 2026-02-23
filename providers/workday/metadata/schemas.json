@@ -1,0 +1,271 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "auditLogs": {
+          "displayName": "Audit Logs",
+          "path": "/auditLogs",
+          "responseKey": "data",
+          "fields": {
+            "activityAction": {
+              "displayName": "activityAction",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deviceType": {
+              "displayName": "deviceType",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ipAddress": {
+              "displayName": "ipAddress",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "requestTime": {
+              "displayName": "requestTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sessionId": {
+              "displayName": "sessionId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "systemAccount": {
+              "displayName": "systemAccount",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "target": {
+              "displayName": "target",
+              "valueType": "other"
+            },
+            "taskDisplayName": {
+              "displayName": "taskDisplayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "taskId": {
+              "displayName": "taskId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userActivityEntryCount": {
+              "displayName": "userActivityEntryCount",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "userAgent": {
+              "displayName": "userAgent",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "currencies": {
+          "displayName": "Currencies",
+          "path": "/currencies",
+          "responseKey": "data",
+          "fields": {
+            "code": {
+              "displayName": "code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "descriptor": {
+              "displayName": "descriptor",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "precision": {
+              "displayName": "precision",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "jobChangeReasons": {
+          "displayName": "Job Change Reasons",
+          "path": "/jobChangeReasons",
+          "responseKey": "data",
+          "fields": {
+            "descriptor": {
+              "displayName": "descriptor",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isForContingentWorker": {
+              "displayName": "isForContingentWorker",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isForEmployee": {
+              "displayName": "isForEmployee",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "managerReason": {
+              "displayName": "managerReason",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "organizationTypes": {
+          "displayName": "Organization Types",
+          "path": "/organizationTypes",
+          "responseKey": "data",
+          "fields": {
+            "descriptor": {
+              "displayName": "descriptor",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "organizations": {
+          "displayName": "Organizations",
+          "path": "/organizations",
+          "responseKey": "data",
+          "fields": {
+            "descriptor": {
+              "displayName": "descriptor",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "supervisoryOrganizations": {
+          "displayName": "Supervisory Organizations",
+          "path": "/supervisoryOrganizations",
+          "responseKey": "data",
+          "fields": {
+            "code": {
+              "displayName": "code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "descriptor": {
+              "displayName": "descriptor",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "manager": {
+              "displayName": "manager",
+              "valueType": "other"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "workers": {
+              "displayName": "workers",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "workers": {
+          "displayName": "Workers",
+          "path": "/workers",
+          "responseKey": "data",
+          "fields": {
+            "businessTitle": {
+              "displayName": "businessTitle",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "descriptor": {
+              "displayName": "descriptor",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "href": {
+              "displayName": "href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isManager": {
+              "displayName": "isManager",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "primarySupervisoryOrganization": {
+              "displayName": "primarySupervisoryOrganization",
+              "valueType": "other"
+            },
+            "primaryWorkEmail": {
+              "displayName": "primaryWorkEmail",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primaryWorkPhone": {
+              "displayName": "primaryWorkPhone",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
