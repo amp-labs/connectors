@@ -91,9 +91,9 @@ func init() { // nolint:funlen
 						Delete: false,
 					},
 					Proxy:     false,
-					Read:      false,
+					Read:      true,
 					Subscribe: false,
-					Write:     false,
+					Write:     true,
 				},
 			},
 			ModuleSalesforceAccountEngagementDemo: {
@@ -107,9 +107,9 @@ func init() { // nolint:funlen
 						Delete: false,
 					},
 					Proxy:     false,
-					Read:      false,
+					Read:      true,
 					Subscribe: false,
-					Write:     false,
+					Write:     true,
 				},
 			},
 		},
@@ -125,6 +125,11 @@ func init() { // nolint:funlen
 			Read:      true,
 			Subscribe: true,
 			Write:     true,
+			Search: SearchSupport{
+				Operators: SearchOperators{
+					Equals: true,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -150,16 +155,16 @@ func init() { // nolint:funlen
 						ModuleSalesforceAccountEngagementDemo: {},
 					},
 				},
-				// {
-				// 	DisplayName: "Business Unit ID",
-				// 	DocsURL:     "https://help.salesforce.com/s/articleView?id=000381973&type=1",
-				// 	ModuleDependencies: &ModuleDependencies{
-				// 		ModuleSalesforceAccountEngagement:     {},
-				// 		ModuleSalesforceAccountEngagementDemo: {},
-				// 	},
-				// 	Name:   "businessUnitId",
-				// 	Prompt: "Business Unit ID is found in Business Unit Setup within Salesforce Setup or Marketing Setup.",
-				// },
+				{
+					DisplayName: "Business Unit ID",
+					DocsURL:     "https://help.salesforce.com/s/articleView?id=000381973&type=1",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleSalesforceAccountEngagement:     {},
+						ModuleSalesforceAccountEngagementDemo: {},
+					},
+					Name:   "businessUnitId",
+					Prompt: "Business Unit ID is found in Business Unit Setup within Salesforce Setup or Marketing Setup.",
+				},
 			},
 		},
 	})

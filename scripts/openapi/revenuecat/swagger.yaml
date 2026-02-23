@@ -1076,66 +1076,6 @@ paths:
             schema:
               $ref: '#/components/schemas/AppCreate'
               additionalProperties: false
-            examples:
-              App Store:
-                value:
-                  name: My App Store App
-                  type: app_store
-                  app_store:
-                    bundle_id: com.apple.Pages
-                    shared_secret: 1234567890abcdef1234567890abcdef
-                    subscription_private_key: >-
-                      -----BEGIN EC PRIVATE KEY-----
-
-                      MHQCAQEEIGAkwOF0qkGO19yJlIzQVcOg+HBfvLL4KDXDtL+MMHk2oAcGBSuBBAAK
-
-                      oUQDQgAEhDP7RaX4c6qOHkE1nIWMr5C90ybtr87VRGFm4VsfWqG47NPN+/dHcfwJ
-
-                      JPZGFgMcgvBc37AxQPPQjyXYjhhQDg==
-
-                      -----END EC PRIVATE KEY-----
-                    subscription_key_id: 6345942CC3
-                    subscription_key_issuer: 5a049d62-1b9b-453c-b605-1988189d8129
-              Play Store:
-                value:
-                  name: My Play Store App
-                  type: play_store
-                  play_store:
-                    package_name: com.android.app
-              Stripe:
-                value:
-                  name: My Stripe App
-                  type: stripe
-                  stripe:
-                    stripe_account_id: acct_adcdef123456
-              Amazon:
-                value:
-                  name: My Amazon App
-                  type: amazon
-                  amazon:
-                    package_name: com.amazon.android.app
-                    shared_secret: <Your Amazon Developer Identity Shared Key>
-              Web Billing:
-                value:
-                  name: My RevenueCat App
-                  type: rc_billing
-                  rc_billing:
-                    app_name: <Your app name>
-                    default_currency: USD
-              Roku:
-                value:
-                  name: My Roku App
-                  type: roku
-                  roku:
-                    roku_api_key: <Your Roku Pay API Key goes here>
-                    roku_channel_id: 123456
-                    roku_channel_name: History Channel
-              Paddle:
-                value:
-                  name: My Paddle App
-                  type: paddle
-                  paddle:
-                    paddle_api_key: <Your Paddle API Key goes here>
       responses:
         '201':
           description: Success. The app was created
@@ -1443,21 +1383,6 @@ paths:
                       type: boolean
                       example: true
               additionalProperties: false
-            examples:
-              Update App Store App properties:
-                value:
-                  name: New App name
-                  app_store:
-                    bundle_id: com.my.new-app
-                    shared_secret: 1234567890abcdef1234567890abcdef
-              Update App Store App secret:
-                value:
-                  app_store:
-                    shared_secret: 1234567890abcdef1234567890abcdef
-              Remove App Store App secret:
-                value:
-                  app_store:
-                    shared_secret: null
       responses:
         '200':
           description: Success. The app was updated
@@ -2827,17 +2752,6 @@ paths:
                     - $ref: >-
                         #/components/schemas/CreateAppStoreConnectInAppPurchaseInput
               additionalProperties: false
-            examples:
-              App Store Subscription:
-                summary: Creating a subscription product
-                value:
-                  store_information:
-                    duration: ONE_MONTH
-                    subscription_group_name: Premium Subscriptions
-                    subscription_group_id: sub_group_123
-              App Store In-App Purchase:
-                summary: Creating an in-app purchase product (no body needed)
-                value: {}
       responses:
         '201':
           description: Success. The product was pushed to the store
@@ -3051,51 +2965,6 @@ paths:
                   maxLength: 1500
                   example: Premium Monthly 2023
               additionalProperties: false
-            examples:
-              App Store:
-                value:
-                  store_identifier: com.revenuecat.magicweather.monthly9.99
-                  app_id: app1a2b3c4
-                  type: subscription
-                  display_name: Premium Monthly 2023
-              Play Store Billing Client 4:
-                value:
-                  store_identifier: com.revenuecat.magicweather.monthly
-                  app_id: app1a2b3c4
-                  type: subscription
-                  display_name: Premium Monthly 2023
-              Stripe:
-                value:
-                  store_identifier: prod_LryUFGrmehs0tk
-                  app_id: app1a2b3c4
-                  type: subscription
-                  display_name: Premium Monthly 2023
-              Amazon:
-                value:
-                  store_identifier: com.mysubscription.weekly
-                  app_id: app1a2b3c4
-                  type: subscription
-                  display_name: Premium Monthly 2023
-              Play Store Subscription Billing Client 5:
-                value:
-                  store_identifier: mySubscription:basePlanId
-                  app_id: app1a2b3c4
-                  type: subscription
-                  display_name: Premium Monthly 2023
-              Play Store One-time Billing Client 5:
-                value:
-                  store_identifier: myProductSku
-                  app_id: app1a2b3c4
-                  type: one_time
-                  display_name: Premium Lifetime 2023
-              Test Store:
-                value:
-                  store_identifier: monthly_premium
-                  app_id: app1a2b3c4
-                  type: subscription
-                  display_name: Premium Monthly
-                  subscription:
-                    duration: P1M
       responses:
         '201':
           description: Success. The product was created
@@ -4691,19 +4560,6 @@ paths:
                   items:
                     $ref: '#/components/schemas/PackageProductIDAssociation'
               additionalProperties: false
-            examples:
-              Single product for package (applies to any store):
-                value:
-                  products:
-                    - product_id: prod1a2b3c4d5e
-                      eligibility_criteria: all
-              Play Store with different products depending on SDK version (SDK v6+ and SDK <v5) for one package:
-                value:
-                  products:
-                    - product_id: prod1a2b3c4d5e
-                      eligibility_criteria: google_sdk_lt_6
-                    - product_id: prod445abb3188
-                      eligibility_criteria: google_sdk_ge_6
       responses:
         '200':
           description: Success. The products were attached to the package.
@@ -6495,28 +6351,6 @@ paths:
             nullable: false
             minLength: 1
             maxLength: 255
-          examples:
-            amazon:
-              value: 9aJscueFTxLPZXXo-AlBTkI0OnFXR2qiH14C1aqWnOT=:3:11..8
-              summary: 'Amazon Appstore '
-            app_store:
-              value: '100001234567890'
-              summary: Apple App Store
-            paddle:
-              value: txn_01jss4bz50g1z5yw121npeb3ag
-              summary: Paddle
-            play_store:
-              value: GPA.1234-5678-9012-34567..0
-              summary: Google Play Store
-            rc_billing:
-              value: txRcb553a54d4738816a63f1a05cfcb1723e3..1746748685
-              summary: RevenueCat Web Billing
-            roku:
-              value: 4ab8df12-3003-11f0-9646-8ac68bcdcaed
-              summary: Roku
-            stripe:
-              value: si_Rww1psqupbKxmt
-              summary: Stripe
       responses:
         '200':
           description: Success
@@ -6583,28 +6417,6 @@ paths:
             nullable: false
             minLength: 1
             maxLength: 255
-          examples:
-            amazon:
-              value: 9aJscueFTxLPZXXo-AlBTkI0OnFXR2qiH14C1aqWnOT=:3:11
-              summary: 'Amazon Appstore '
-            app_store:
-              value: '100001234567890'
-              summary: Apple App Store
-            paddle:
-              value: txn_01jss4bz50g1z5yw121npeb3ag
-              summary: Paddle
-            play_store:
-              value: GPA.1234-5678-9012-34567
-              summary: Google Play Store
-            rc_billing:
-              value: txRcb553a54d4738816a63f1a05cfcb1723e3
-              summary: RevenueCat Web Billing
-            roku:
-              value: 4ab8df12-3003-11f0-9646-8ac68bcdcaed
-              summary: Roku
-            stripe:
-              value: si_Rww1psqupbKxmt
-              summary: Stripe
       responses:
         '200':
           description: Success
@@ -10392,22 +10204,6 @@ components:
                     enum:
                       - parameter_error
                       - invalid_request
-          examples:
-            parameter_error:
-              value:
-                object: error
-                type: parameter_error
-                param: customer_id
-                message: id is too long
-                retryable: false
-                doc_url: https://errors.rev.cat/parameter-error
-            invalid_request:
-              value:
-                object: error
-                type: invalid_request
-                message: Content-Type not application/json
-                retryable: false
-                doc_url: https://errors.rev.cat/invalid-request
     Conflict:
       description: Conflict
       content:
@@ -10422,21 +10218,6 @@ components:
                     enum:
                       - resource_already_exists
                       - idempotency_error
-          examples:
-            resource_already_exists:
-              value:
-                object: error
-                type: resource_already_exists
-                message: Name is already taken
-                retryable: false
-                doc_url: https://errors.rev.cat/resource-already-exists
-            idempotency_error:
-              value:
-                object: error
-                type: idempotency_error
-                message: Idempotency key already used for a different request
-                retryable: false
-                doc_url: https://errors.rev.cat/idempotency-error
     Forbidden:
       description: Access denied
       content:
@@ -10578,29 +10359,6 @@ components:
                       - unprocessable_entity_error
                       - parameter_error
                       - store_error
-          examples:
-            unprocessable_entity:
-              value:
-                object: error
-                type: unprocessable_entity_error
-                message: Cannot delete a product that has purchases
-                retryable: false
-                doc_url: https://errors.rev.cat/unprocessable-entity-error
-            parameter_error:
-              value:
-                object: error
-                type: parameter_error
-                message: Date must in the future
-                retryable: false
-                doc_url: https://errors.rev.cat/parameter-error
-            store_error:
-              value:
-                object: error
-                type: store_error
-                message: There was a problem on the App Store
-                retryable: true
-                doc_url: https://errors.rev.cat/store-error
-                backoff_ms: 1000
 security:
   - BearerAuth: []
 servers:

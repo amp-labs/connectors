@@ -57,6 +57,30 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			Expected: &common.DeleteResult{Success: true},
 		},
+		{
+			Name: "Delete with custom headers",
+			Input: common.DeleteParams{
+				ObjectName: "Account",
+				RecordId:   "001XX0000012345",
+				Headers: []common.WriteHeader{
+					{Key: "Sforce-Call-Options", Value: "client=test-app"},
+					{Key: "X-Custom-Header", Value: "custom-value"},
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodDELETE(),
+					mockcond.Path("/services/data/v60.0/sobjects/Account/001XX0000012345"),
+					mockcond.Header(http.Header{
+						"Sforce-Call-Options": []string{"client=test-app"},
+						"X-Custom-Header":     []string{"custom-value"},
+					}),
+				},
+				Then: mockserver.Response(http.StatusNoContent),
+			}.Server(),
+			Expected: &common.DeleteResult{Success: true},
+		},
 	}
 
 	for _, tt := range tests {
@@ -101,6 +125,29 @@ func TestDeletePardot(t *testing.T) { // nolint:funlen,cyclop
 					mockcond.MethodDELETE(),
 					mockcond.Path("/api/v5/objects/prospects/55434595"),
 					mockcond.Header(pardotHeader),
+				},
+				Then: mockserver.Response(http.StatusOK),
+			}.Server(),
+			Expected: &common.DeleteResult{Success: true},
+		},
+		{
+			Name: "Delete with custom headers",
+			Input: common.DeleteParams{
+				ObjectName: "prosPecTs",
+				RecordId:   "55434596",
+				Headers: []common.WriteHeader{
+					{Key: "X-Custom-Header", Value: "pardot-custom-value"},
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodDELETE(),
+					mockcond.Path("/api/v5/objects/prospects/55434596"),
+					mockcond.Header(pardotHeader),
+					mockcond.Header(http.Header{
+						"X-Custom-Header": []string{"pardot-custom-value"},
+					}),
 				},
 				Then: mockserver.Response(http.StatusOK),
 			}.Server(),

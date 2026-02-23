@@ -107,6 +107,7 @@ import (
 	"github.com/amp-labs/connectors/providers/sellsy"
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/shopify"
+	"github.com/amp-labs/connectors/providers/slack"
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/snapchatads"
 	"github.com/amp-labs/connectors/providers/snowflake"
@@ -233,6 +234,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Sellsy:                  wrapper(newSellsyConnector),
 	providers.ServiceNow:              wrapper(newServiceNowConnector),
 	providers.Shopify:                 wrapper(newShopifyConnector),
+	providers.Slack:                   wrapper(newSlackConnector),
 	providers.Smartlead:               wrapper(newSmartleadConnector),
 	providers.SnapchatAds:             wrapper(newSnapchatAdsConnector),
 	providers.Snowflake:               wrapper(newSnowflakeConnector),
@@ -993,4 +995,8 @@ func newCallRail(params common.ConnectorParams) (*callrail.Connector, error) {
 
 func newSalesfinityConnector(params common.ConnectorParams) (*salesfinity.Connector, error) {
 	return salesfinity.NewConnector(params)
+}
+
+func newSlackConnector(params common.ConnectorParams) (*slack.Connector, error) {
+	return slack.NewConnector(params)
 }
