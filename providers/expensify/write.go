@@ -8,8 +8,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-// Write implements the WriteConnector interface for Amplitude.
-// It handles both JSON and HTML/text responses from the API.
 func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*common.WriteResult, error) {
 	if err := params.ValidateParams(); err != nil {
 		return nil, err
