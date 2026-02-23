@@ -82,6 +82,16 @@ func (a Adapter) Search(ctx context.Context, params *common.SearchParams) (*comm
 	return a.searchStrategy.Search(ctx, params)
 }
 
+func (a Adapter) DeployApexTrigger(ctx context.Context, params metadata.ApexTriggerParams) error {
+	// Delegated.
+	return a.customAdapter.DeployApexTrigger(ctx, params)
+}
+
+func (a Adapter) DeleteApexTrigger(ctx context.Context, triggerName string) error {
+	// Delegated.
+	return a.customAdapter.DeleteApexTrigger(ctx, triggerName)
+}
+
 // Gateway access to URLs.
 func (a Adapter) getModuleURL() string {
 	return a.ModuleInfo().BaseURL
