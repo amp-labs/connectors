@@ -24,7 +24,7 @@ var readObjectResponseIdentifier = datautils.NewDefaultMap(map[string]string{ //
 	},
 )
 
-// ref; https://integrations.expensify.com/Integration-Server/doc/#create
+// ref: https://integrations.expensify.com/Integration-Server/doc/#create
 var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
 	objectNamePolicy,
 	objectNameReport,

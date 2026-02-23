@@ -25,14 +25,14 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 	//nolint:bodyclose
 	resp, err := c.executeRequest(ctx, body)
 	if err != nil {
-		return nil, fmt.Errorf("error executing read request: %w", err)
+		return nil, fmt.Errorf("error executing write request: %w", err)
 	}
 
 	bodyBytes := common.GetResponseBodyOnce(resp)
 
 	var result map[string]any
 	if err = json.Unmarshal(bodyBytes, &result); err != nil {
-		return nil, fmt.Errorf("error parsing read response: %w", err)
+		return nil, fmt.Errorf("error parsing write response: %w", err)
 	}
 
 	// by default Expensify returns 200 status code even for errors,

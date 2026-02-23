@@ -23,7 +23,7 @@ func run() error {
 
 	conn := expensify.GetConnector(ctx)
 
-	err := testCreatingPolicty(ctx, conn)
+	err := testCreatingPolicy(ctx, conn)
 	if err != nil {
 		return err
 	}
@@ -36,7 +36,7 @@ func run() error {
 	return nil
 }
 
-func testCreatingPolicty(ctx context.Context, conn *cc.Connector) error {
+func testCreatingPolicy(ctx context.Context, conn *cc.Connector) error {
 	params := common.WriteParams{
 		ObjectName: "policy",
 		RecordData: map[string]any{
