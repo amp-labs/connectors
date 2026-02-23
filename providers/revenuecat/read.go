@@ -115,6 +115,8 @@ func makeIncrementalFilterFunc(
 				return nil, "", err
 			}
 
+			// If any record is missing a timestamp, we can't safely filter by time
+			// or determine order. Fall back to identity filter.
 			if ts.IsZero() {
 				return readhelper.MakeIdentityFilterFunc(nextPageFunc)(p, body, records)
 			}
