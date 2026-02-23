@@ -11,6 +11,7 @@ const (
 	objectNameExpenseRules = "expenseRules"
 )
 
+// ref: https://integrations.expensify.com/Integration-Server/doc/#read-get
 var supportedObjectsByRead = datautils.NewSet( //nolint:gochecknoglobals
 	objectNamePolicy,
 )
@@ -23,7 +24,7 @@ var readObjectResponseIdentifier = datautils.NewDefaultMap(map[string]string{ //
 	},
 )
 
-// Supported object names can be found under schemas.json.
+// ref; https://integrations.expensify.com/Integration-Server/doc/#create
 var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
 	objectNamePolicy,
 	objectNameReport,

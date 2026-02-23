@@ -33,25 +33,26 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 	callbacks := make([]simultaneously.Job, 0, len(objectNames))
 
 	for _, object := range objectNames {
-
 		obj := object
+
 		callbacks = append(callbacks, func(ctx context.Context) error {
 			metadata, err := c.fetchObjectMetadata(ctx, obj)
 			if err != nil {
 				mutex.Lock()
+
 				metadataResult.Errors[obj] = err
 				mutex.Unlock()
+
 				return nil //nolint:nilerr // intentionally collecting errors in map, not failing fast
 			}
 
 			mutex.Lock()
+
 			metadataResult.Result[obj] = *metadata
 			mutex.Unlock()
 
 			return nil
-
 		})
-
 	}
 
 	// This will block until all callbacks are done.

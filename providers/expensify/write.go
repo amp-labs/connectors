@@ -43,11 +43,14 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 		return nil, err
 	}
 
+	responseIdKey := params.ObjectName + "ID"
+
+	recordID, _ := result[responseIdKey].(string)
+
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: "",
+		RecordId: recordID,
 		Errors:   nil,
 		Data:     result,
 	}, nil
-
 }
