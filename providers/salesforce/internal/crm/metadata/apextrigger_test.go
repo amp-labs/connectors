@@ -4,8 +4,11 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/xml"
+	"fmt"
 	"strings"
 	"testing"
+
+	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
 
 func TestGenerateApexTriggerName(t *testing.T) {
@@ -201,12 +204,12 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 		t.Fatal("trigger meta XML file not found in zip")
 	}
 
-	expectedMetaXML := `<?xml version="1.0" encoding="UTF-8"?>
+	expectedMetaXML := fmt.Sprintf(`<?xml version="1.0" encoding="UTF-8"?>
 <ApexTrigger xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>61.0</apiVersion>
+    <apiVersion>%s</apiVersion>
     <status>Active</status>
 </ApexTrigger>
-`
+`, core.APIVersion)
 	if metaXML != expectedMetaXML {
 		t.Errorf("meta XML mismatch.\nGot:\n%s\nWant:\n%s", metaXML, expectedMetaXML)
 	}
@@ -217,13 +220,13 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 		t.Fatal("package.xml not found in zip")
 	}
 
-	expectedPackageXML := xml.Header + `<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+	expectedPackageXML := xml.Header + fmt.Sprintf(`<Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>Lead</members>
         <name>ApexTrigger</name>
     </types>
-    <version>61.0</version>
-</Package>`
+    <version>%s</version>
+</Package>`, core.APIVersion)
 	if packageXML != expectedPackageXML {
 		t.Errorf("package.xml mismatch.\nGot:\n%s\nWant:\n%s", packageXML, expectedPackageXML)
 	}

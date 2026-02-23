@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
 
 var (
@@ -14,10 +16,6 @@ var (
 	errRequiredParamsMet = errors.New("objectName, triggerName, and checkboxFieldName are required")
 )
 
-const (
-	// apexTriggerMetadataAPIVersion is the Salesforce API version for trigger metadata.
-	apexTriggerMetadataAPIVersion = "61.0"
-)
 
 // ApexTriggerParams contains the parameters for constructing and deploying an APEX trigger.
 type ApexTriggerParams struct {
@@ -116,7 +114,7 @@ func generateTriggerMetaXML() string {
     <apiVersion>%s</apiVersion>
     <status>Active</status>
 </ApexTrigger>
-`, apexTriggerMetadataAPIVersion)
+`, core.APIVersion)
 }
 
 // triggerPackageXML is the structure for Salesforce package.xml manifests.
@@ -135,7 +133,7 @@ type triggerPackageType struct {
 func createTriggerDeployZip(triggerName, triggerCode, triggerMetaXML string) ([]byte, error) {
 	pkg := triggerPackageXML{
 		Xmlns:   "http://soap.sforce.com/2006/04/metadata",
-		Version: apexTriggerMetadataAPIVersion,
+		Version: core.APIVersion,
 		Types: []triggerPackageType{
 			{
 				Members: []string{triggerName},
@@ -175,7 +173,7 @@ func createTriggerDeployZip(triggerName, triggerCode, triggerMetaXML string) ([]
 func createTriggerDestructiveZip(triggerName string) ([]byte, error) {
 	emptyPkg := triggerPackageXML{
 		Xmlns:   "http://soap.sforce.com/2006/04/metadata",
-		Version: apexTriggerMetadataAPIVersion,
+		Version: core.APIVersion,
 		Types:   []triggerPackageType{},
 	}
 
@@ -186,7 +184,7 @@ func createTriggerDestructiveZip(triggerName string) ([]byte, error) {
 
 	destructivePkg := triggerPackageXML{
 		Xmlns:   "http://soap.sforce.com/2006/04/metadata",
-		Version: apexTriggerMetadataAPIVersion,
+		Version: core.APIVersion,
 		Types: []triggerPackageType{
 			{
 				Members: []string{triggerName},
