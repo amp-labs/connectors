@@ -15,9 +15,6 @@ var (
 )
 
 const (
-	// triggerPrefix is the prefix used for generated APEX trigger names.
-	triggerPrefix = "amp_"
-
 	// apexTriggerMetadataAPIVersion is the Salesforce API version for trigger metadata.
 	apexTriggerMetadataAPIVersion = "61.0"
 )
@@ -41,7 +38,7 @@ type ApexTriggerParams struct {
 
 // GenerateApexTriggerName returns the standard APEX trigger name for a given Salesforce object.
 func GenerateApexTriggerName(objectName string) string {
-	return triggerPrefix + objectName
+	return objectName
 }
 
 // ConstructApexTrigger builds a zipped deployment package for an APEX trigger that sets

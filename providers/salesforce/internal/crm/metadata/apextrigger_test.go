@@ -19,17 +19,17 @@ func TestGenerateApexTriggerName(t *testing.T) {
 		{
 			name:       "Standard object",
 			objectName: "Lead",
-			expected:   "amp_Lead",
+			expected:   "Lead",
 		},
 		{
 			name:       "Custom object",
 			objectName: "MyObject__c",
-			expected:   "amp_MyObject__c",
+			expected:   "MyObject__c",
 		},
 		{
 			name:       "Empty object name",
 			objectName: "",
-			expected:   "amp_",
+			expected:   "",
 		},
 	}
 
@@ -58,7 +58,7 @@ func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
 			name: "Empty watch fields returns error",
 			params: ApexTriggerParams{
 				ObjectName:        "Lead",
-				TriggerName:       "amp_Lead",
+				TriggerName:       "Lead",
 				CheckboxFieldName: "AmpTriggerSubscription__c",
 				WatchFields:       nil,
 			},
@@ -68,7 +68,7 @@ func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
 			name: "Empty object name returns error",
 			params: ApexTriggerParams{
 				ObjectName:        "",
-				TriggerName:       "amp_Lead",
+				TriggerName:       "Lead",
 				CheckboxFieldName: "AmpTriggerSubscription__c",
 				WatchFields:       []string{"Email"},
 			},
@@ -88,7 +88,7 @@ func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
 			name: "Empty checkbox field name returns error",
 			params: ApexTriggerParams{
 				ObjectName:        "Lead",
-				TriggerName:       "amp_Lead",
+				TriggerName:       "Lead",
 				CheckboxFieldName: "",
 				WatchFields:       []string{"Email"},
 			},
@@ -98,28 +98,28 @@ func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
 			name: "Valid params with single watch field",
 			params: ApexTriggerParams{
 				ObjectName:        "Lead",
-				TriggerName:       "amp_Lead",
+				TriggerName:       "Lead",
 				CheckboxFieldName: "AmpTriggerSubscription__c",
 				WatchFields:       []string{"Email"},
 			},
 			expectFiles: []string{
 				"package.xml",
-				"triggers/amp_Lead.trigger",
-				"triggers/amp_Lead.trigger-meta.xml",
+				"triggers/Lead.trigger",
+				"triggers/Lead.trigger-meta.xml",
 			},
 		},
 		{
 			name: "Valid params with multiple watch fields",
 			params: ApexTriggerParams{
 				ObjectName:        "Contact",
-				TriggerName:       "amp_Contact",
+				TriggerName:       "Contact",
 				CheckboxFieldName: "AmpTriggerSubscription__c",
 				WatchFields:       []string{"Email", "Phone", "LastName"},
 			},
 			expectFiles: []string{
 				"package.xml",
-				"triggers/amp_Contact.trigger",
-				"triggers/amp_Contact.trigger-meta.xml",
+				"triggers/Contact.trigger",
+				"triggers/Contact.trigger-meta.xml",
 			},
 		},
 	}
@@ -156,7 +156,7 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 
 	params := ApexTriggerParams{
 		ObjectName:        "Lead",
-		TriggerName:       "amp_Lead",
+		TriggerName:       "Lead",
 		CheckboxFieldName: "AmpTriggerSubscription__c",
 		WatchFields:       []string{"Email", "Phone"},
 	}
@@ -169,12 +169,12 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 	files := readZipFiles(t, zipData)
 
 	// Verify trigger code content.
-	triggerCode, ok := files["triggers/amp_Lead.trigger"]
+	triggerCode, ok := files["triggers/Lead.trigger"]
 	if !ok {
 		t.Fatal("trigger file not found in zip")
 	}
 
-	expectedTriggerCode := `trigger amp_Lead on Lead (before insert, before update) {
+	expectedTriggerCode := `trigger Lead on Lead (before insert, before update) {
     if (Trigger.isBefore) {
         for (Lead rec : Trigger.new) {
             Boolean fieldChanged = false;
@@ -196,7 +196,7 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 	}
 
 	// Verify meta XML content.
-	metaXML, ok := files["triggers/amp_Lead.trigger-meta.xml"]
+	metaXML, ok := files["triggers/Lead.trigger-meta.xml"]
 	if !ok {
 		t.Fatal("trigger meta XML file not found in zip")
 	}
@@ -219,7 +219,7 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 
 	expectedPackageXML := xml.Header + `<Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
-        <members>amp_Lead</members>
+        <members>Lead</members>
         <name>ApexTrigger</name>
     </types>
     <version>61.0</version>
@@ -232,7 +232,7 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 func TestConstructDestructiveApexTrigger(t *testing.T) {
 	t.Parallel()
 
-	triggerName := "amp_Lead"
+	triggerName := "Lead"
 
 	zipData, err := ConstructDestructiveApexTrigger(triggerName)
 	if err != nil {
