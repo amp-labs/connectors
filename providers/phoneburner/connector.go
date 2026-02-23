@@ -84,26 +84,8 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	return buildReadRequest(ctx, c.ProviderInfo().BaseURL, params)
 }
 
-func (c *Connector) parseReadResponse(
-	ctx context.Context,
-	params common.ReadParams,
-	request *http.Request,
-	response *common.JSONHTTPResponse,
-) (*common.ReadResult, error) {
-	return parseReadResponse(ctx, params, request, response)
-}
-
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	return buildWriteRequest(ctx, c.ProviderInfo().BaseURL, params)
-}
-
-func (c *Connector) parseWriteResponse(
-	ctx context.Context,
-	params common.WriteParams,
-	request *http.Request,
-	response *common.JSONHTTPResponse,
-) (*common.WriteResult, error) {
-	return parseWriteResponse(ctx, params, request, response)
 }
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {

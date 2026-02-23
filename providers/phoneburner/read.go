@@ -21,16 +21,21 @@ const (
 	// https://www.phoneburner.com/developer/route_list
 	restPrefix = "rest"
 	restVer    = "1"
+
+	objectContacts    = "contacts"
+	objectMembers     = "members"
+	objectFolders     = "folders"
+	objectDialsession = "dialsession"
+	objectTags        = "tags"
+	objectVoicemails  = "voicemails"
 )
 
-var (
-	paginatedObjects = datautils.NewStringSet(
-		"contacts",
-		"dialsession",
-		"members",
-		"tags",
-		"voicemails",
-	)
+var paginatedObjects = datautils.NewStringSet( //nolint:gochecknoglobals
+	objectContacts,
+	objectDialsession,
+	objectMembers,
+	objectTags,
+	objectVoicemails,
 )
 
 func buildReadRequest(ctx context.Context, baseURL string, params common.ReadParams) (*http.Request, error) {
@@ -51,7 +56,6 @@ func buildReadRequest(ctx context.Context, baseURL string, params common.ReadPar
 
 func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, error) {
 	if len(params.NextPage) != 0 {
-		// Next page.
 		return urlbuilder.New(params.NextPage.String())
 	}
 
@@ -76,9 +80,15 @@ func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, er
 		url.WithQueryParam("page", "1")
 	}
 
-	// Apply time scoping when the provider supports it.
+	applyTimeScopingToURL(url, params)
+
+	return url, nil
+}
+
+// applyTimeScopingToURL adds object-specific time-filter query params.
+func applyTimeScopingToURL(url *urlbuilder.URL, params common.ReadParams) {
 	switch params.ObjectName {
-	case "contacts":
+	case objectContacts:
 		// Docs: https://www.phoneburner.com/developer/route_list#contacts
 		// updated_from / update_to in "YYYY-MM-DD HH:ii:ss" format.
 		if !params.Since.IsZero() {
@@ -89,7 +99,7 @@ func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, er
 		if !params.Until.IsZero() {
 			url.WithQueryParam("update_to", params.Until.Format("2006-01-02 15:04:05"))
 		}
-	case "dialsession":
+	case objectDialsession:
 		// Docs: https://www.phoneburner.com/developer/route_list#dialsession
 		// date_start / date_end in "YYYY-MM-DD" format.
 		if !params.Since.IsZero() {
@@ -99,8 +109,6 @@ func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, er
 			url.WithQueryParam("date_end", params.Until.Format(time.DateOnly))
 		}
 	}
-
-	return url, nil
 }
 
 func parseReadResponse(
@@ -122,39 +130,13 @@ func parseReadResponse(
 	}
 
 	switch params.ObjectName {
-	case "members":
+	case objectMembers:
 		if !params.Since.IsZero() || !params.Until.IsZero() {
-			return common.ParseResultFiltered(
-				params,
-				response,
-				common.MakeRecordsFunc("members", "members"),
-				readhelper.MakeTimeFilterFunc(
-					readhelper.ReverseOrder,
-					readhelper.NewTimeBoundary(),
-					"date_added",
-					"2006-01-02 15:04:05",
-					nextRecordsURL(url, params.ObjectName),
-				),
-				common.MakeMarshaledDataFunc(nil),
-				params.Fields,
-			)
+			return parseFilteredObjectResponse(params, response, objectMembers, "date_added", nextRecordsURL(url, objectMembers))
 		}
-	case "voicemails":
+	case objectVoicemails:
 		if !params.Since.IsZero() || !params.Until.IsZero() {
-			return common.ParseResultFiltered(
-				params,
-				response,
-				common.MakeRecordsFunc("voicemails", "voicemails"),
-				readhelper.MakeTimeFilterFunc(
-					readhelper.ReverseOrder,
-					readhelper.NewTimeBoundary(),
-					"created_when",
-					"2006-01-02 15:04:05",
-					nextRecordsURL(url, params.ObjectName),
-				),
-				common.MakeMarshaledDataFunc(nil),
-				params.Fields,
-			)
+			return parseFilteredObjectResponse(params, response, objectVoicemails, "created_when", nextRecordsURL(url, objectVoicemails))
 		}
 	}
 
@@ -168,6 +150,30 @@ func parseReadResponse(
 		records,
 		nextRecordsURL(url, params.ObjectName),
 		common.GetMarshaledData,
+		params.Fields,
+	)
+}
+
+// parseFilteredObjectResponse handles time-filtered reads for objects that do not natively
+// support server-side date filtering (members, voicemails).
+func parseFilteredObjectResponse(
+	params common.ReadParams,
+	response *common.JSONHTTPResponse,
+	objectName, timeField string,
+	nextPage common.NextPageFunc,
+) (*common.ReadResult, error) {
+	return common.ParseResultFiltered(
+		params,
+		response,
+		common.MakeRecordsFunc(objectName, objectName),
+		readhelper.MakeTimeFilterFunc(
+			readhelper.ReverseOrder,
+			readhelper.NewTimeBoundary(),
+			timeField,
+			"2006-01-02 15:04:05",
+			nextPage,
+		),
+		common.MakeMarshaledDataFunc(nil),
 		params.Fields,
 	)
 }
@@ -190,54 +196,66 @@ func interpretPhoneBurnerEnvelopeError(response *common.JSONHTTPResponse) error 
 		return err
 	}
 
-	httpStatus := int(httpStatusI)
+	httpStatus := resolveHTTPStatus(response.Code, status, int(httpStatusI))
+
+	if !httpkit.Status2xx(httpStatus) || (status != "" && status != "success") {
+		return buildEnvelopeHTTPError(body, httpStatus, response.Headers)
+	}
+
+	return nil
+}
+
+// resolveHTTPStatus normalises the PhoneBurner envelope status code.
+func resolveHTTPStatus(responseCode int, status string, rawStatus int) int {
+	httpStatus := rawStatus
 	if httpStatus == 0 {
-		httpStatus = response.Code
+		httpStatus = responseCode
 	}
 
 	if status != "" && status != "success" && httpStatus < 400 {
 		httpStatus = http.StatusBadRequest
 	}
 
-	if !httpkit.Status2xx(httpStatus) || (status != "" && status != "success") {
-		raw, err := jsonquery.Convertor.ObjectToMap(body)
-		if err != nil {
-			return err
-		}
+	return httpStatus
+}
 
-		bodyBytes, err := json.Marshal(raw)
-		if err != nil {
-			return err
-		}
-
-		return common.InterpretError(&http.Response{
-			StatusCode: httpStatus,
-			Header:     response.Headers,
-		}, bodyBytes)
+// buildEnvelopeHTTPError marshals the envelope body into a standard connector error.
+func buildEnvelopeHTTPError(body *ajson.Node, httpStatus int, headers http.Header) error {
+	raw, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return err
 	}
 
-	return nil
+	bodyBytes, err := json.Marshal(raw)
+	if err != nil {
+		return err
+	}
+
+	return common.InterpretError(&http.Response{
+		StatusCode: httpStatus,
+		Header:     headers,
+	}, bodyBytes)
 }
 
 func recordsFunc(objectName string) (common.RecordsFunc, error) {
 	switch objectName {
 	// Docs: https://www.phoneburner.com/developer/route_list#contacts
-	case "contacts":
-		return common.ExtractRecordsFromPath("contacts", "contacts"), nil
+	case objectContacts:
+		return common.ExtractRecordsFromPath(objectContacts, objectContacts), nil
 	// Docs: https://www.phoneburner.com/developer/route_list#dialsession
-	case "dialsession":
+	case objectDialsession:
 		return common.ExtractRecordsFromPath("dialsessions", "dialsessions"), nil
 	// Docs: https://www.phoneburner.com/developer/route_list#members
-	case "members":
-		return common.ExtractRecordsFromPath("members", "members"), nil
+	case objectMembers:
+		return common.ExtractRecordsFromPath(objectMembers, objectMembers), nil
 	// Docs: https://www.phoneburner.com/developer/route_list#tags
-	case "tags":
-		return common.ExtractRecordsFromPath("tags", "tags"), nil
+	case objectTags:
+		return common.ExtractRecordsFromPath(objectTags, objectTags), nil
 	// Docs: https://www.phoneburner.com/developer/route_list#voicemails
-	case "voicemails":
-		return common.ExtractRecordsFromPath("voicemails", "voicemails"), nil
+	case objectVoicemails:
+		return common.ExtractRecordsFromPath(objectVoicemails, objectVoicemails), nil
 	// Docs: https://www.phoneburner.com/developer/route_list#folders
-	case "folders":
+	case objectFolders:
 		// Note: folders payload is an object-of-objects (not a JSON array), so we must flatten it.
 		return extractFoldersRecords(), nil
 	default:
@@ -249,7 +267,7 @@ func nextRecordsURL(requestURL *urlbuilder.URL, objectName string) common.NextPa
 	if !paginatedObjects.Has(objectName) {
 		return func(*ajson.Node) (string, error) { return "", nil }
 	}
-	
+
 	return func(node *ajson.Node) (string, error) {
 		if requestURL == nil {
 			return "", nil
@@ -275,13 +293,14 @@ func nextRecordsURL(requestURL *urlbuilder.URL, objectName string) common.NextPa
 		}
 
 		requestURL.WithQueryParam("page", strconv.Itoa(int(page)+1))
+
 		return requestURL.String(), nil
 	}
 }
 
 func paginationWrapperKey(objectName string) string {
 	switch objectName {
-	case "dialsession":
+	case objectDialsession:
 		return "dialsessions"
 	default:
 		return objectName
@@ -290,7 +309,7 @@ func paginationWrapperKey(objectName string) string {
 
 func extractFoldersRecords() common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		foldersNode, err := jsonquery.New(node).ObjectRequired("folders")
+		foldersNode, err := jsonquery.New(node).ObjectRequired(objectFolders)
 		if err != nil {
 			return nil, err
 		}

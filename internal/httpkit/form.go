@@ -14,52 +14,73 @@ import (
 func EncodeForm(record map[string]any) ([]byte, error) {
 	values := url.Values{}
 
-	keys := make([]string, 0, len(record))
-	for k := range record {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	for _, k := range keys {
-		v := record[k]
-		if v == nil {
+	for _, key := range sortedKeys(record) {
+		val := record[key]
+		if val == nil {
 			continue
 		}
 
-		switch typed := v.(type) {
-		case string:
-			values.Set(k, typed)
-		case []string:
-			for _, item := range typed {
-				values.Add(k, item)
-			}
-		case []any:
-			for _, item := range typed {
-				if item == nil {
-					continue
-				}
-				switch itemTyped := item.(type) {
-				case map[string]any, []any:
-					b, err := json.Marshal(itemTyped)
-					if err != nil {
-						return nil, err
-					}
-					values.Add(k, string(b))
-				default:
-					values.Add(k, fmt.Sprint(item))
-				}
-			}
-		case map[string]any:
-			b, err := json.Marshal(typed)
-			if err != nil {
-				return nil, err
-			}
-			values.Set(k, string(b))
-		default:
-			values.Set(k, fmt.Sprint(v))
+		if err := encodeFormField(values, key, val); err != nil {
+			return nil, err
 		}
 	}
 
 	return []byte(values.Encode()), nil
 }
 
+func sortedKeys(record map[string]any) []string {
+	keys := make([]string, 0, len(record))
+	for key := range record {
+		keys = append(keys, key)
+	}
+
+	sort.Strings(keys)
+
+	return keys
+}
+
+func encodeFormField(values url.Values, key string, val any) error {
+	switch typed := val.(type) {
+	case string:
+		values.Set(key, typed)
+	case []string:
+		for _, item := range typed {
+			values.Add(key, item)
+		}
+	case []any:
+		return encodeFormSlice(values, key, typed)
+	case map[string]any:
+		b, err := json.Marshal(typed)
+		if err != nil {
+			return err
+		}
+
+		values.Set(key, string(b))
+	default:
+		values.Set(key, fmt.Sprint(val))
+	}
+
+	return nil
+}
+
+func encodeFormSlice(values url.Values, key string, items []any) error {
+	for _, item := range items {
+		if item == nil {
+			continue
+		}
+
+		switch itemTyped := item.(type) {
+		case map[string]any, []any:
+			b, err := json.Marshal(itemTyped)
+			if err != nil {
+				return err
+			}
+
+			values.Add(key, string(b))
+		default:
+			values.Add(key, fmt.Sprint(item))
+		}
+	}
+
+	return nil
+}
