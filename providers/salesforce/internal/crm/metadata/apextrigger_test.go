@@ -18,17 +18,17 @@ func TestGenerateApexTriggerName(t *testing.T) {
 		{
 			name:       "Standard object",
 			objectName: "Lead",
-			expected:   "AmpersandTrack_Lead",
+			expected:   "amp_Lead",
 		},
 		{
 			name:       "Custom object",
 			objectName: "MyObject__c",
-			expected:   "AmpersandTrack_MyObject__c",
+			expected:   "amp_MyObject__c",
 		},
 		{
 			name:       "Empty object name",
 			objectName: "",
-			expected:   "AmpersandTrack_",
+			expected:   "amp_",
 		},
 	}
 
@@ -57,7 +57,7 @@ func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
 			name: "Empty watch fields returns error",
 			params: ApexTriggerParams{
 				ObjectName:        "Lead",
-				TriggerName:       "AmpersandTrack_Lead",
+				TriggerName:       "amp_Lead",
 				CheckboxFieldName: "AmpTriggerSubscription__c",
 				WatchFields:       nil,
 			},
@@ -67,7 +67,7 @@ func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
 			name: "Empty object name returns error",
 			params: ApexTriggerParams{
 				ObjectName:        "",
-				TriggerName:       "AmpersandTrack_Lead",
+				TriggerName:       "amp_Lead",
 				CheckboxFieldName: "AmpTriggerSubscription__c",
 				WatchFields:       []string{"Email"},
 			},
@@ -87,7 +87,7 @@ func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
 			name: "Empty checkbox field name returns error",
 			params: ApexTriggerParams{
 				ObjectName:        "Lead",
-				TriggerName:       "AmpersandTrack_Lead",
+				TriggerName:       "amp_Lead",
 				CheckboxFieldName: "",
 				WatchFields:       []string{"Email"},
 			},
@@ -97,28 +97,28 @@ func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
 			name: "Valid params with single watch field",
 			params: ApexTriggerParams{
 				ObjectName:        "Lead",
-				TriggerName:       "AmpersandTrack_Lead",
+				TriggerName:       "amp_Lead",
 				CheckboxFieldName: "AmpTriggerSubscription__c",
 				WatchFields:       []string{"Email"},
 			},
 			expectFiles: []string{
 				"package.xml",
-				"triggers/AmpersandTrack_Lead.trigger",
-				"triggers/AmpersandTrack_Lead.trigger-meta.xml",
+				"triggers/amp_Lead.trigger",
+				"triggers/amp_Lead.trigger-meta.xml",
 			},
 		},
 		{
 			name: "Valid params with multiple watch fields",
 			params: ApexTriggerParams{
 				ObjectName:        "Contact",
-				TriggerName:       "AmpersandTrack_Contact",
+				TriggerName:       "amp_Contact",
 				CheckboxFieldName: "AmpTriggerSubscription__c",
 				WatchFields:       []string{"Email", "Phone", "LastName"},
 			},
 			expectFiles: []string{
 				"package.xml",
-				"triggers/AmpersandTrack_Contact.trigger",
-				"triggers/AmpersandTrack_Contact.trigger-meta.xml",
+				"triggers/amp_Contact.trigger",
+				"triggers/amp_Contact.trigger-meta.xml",
 			},
 		},
 	}
@@ -155,7 +155,7 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 
 	params := ApexTriggerParams{
 		ObjectName:        "Lead",
-		TriggerName:       "AmpersandTrack_Lead",
+		TriggerName:       "amp_Lead",
 		CheckboxFieldName: "AmpTriggerSubscription__c",
 		WatchFields:       []string{"Email", "Phone"},
 	}
@@ -168,13 +168,13 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 	files := readZipFiles(t, zipData)
 
 	// Verify trigger code content.
-	triggerCode, ok := files["triggers/AmpersandTrack_Lead.trigger"]
+	triggerCode, ok := files["triggers/amp_Lead.trigger"]
 	if !ok {
 		t.Fatal("trigger file not found in zip")
 	}
 
 	// Must reference the object name.
-	if !strings.Contains(triggerCode, "trigger AmpersandTrack_Lead on Lead") {
+	if !strings.Contains(triggerCode, "trigger amp_Lead on Lead") {
 		t.Error("trigger code missing trigger declaration with object name")
 	}
 
@@ -202,7 +202,7 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 	}
 
 	// Verify meta XML content.
-	metaXML, ok := files["triggers/AmpersandTrack_Lead.trigger-meta.xml"]
+	metaXML, ok := files["triggers/amp_Lead.trigger-meta.xml"]
 	if !ok {
 		t.Fatal("trigger meta XML file not found in zip")
 	}
@@ -221,7 +221,7 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 		t.Fatal("package.xml not found in zip")
 	}
 
-	if !strings.Contains(packageXML, "AmpersandTrack_Lead") {
+	if !strings.Contains(packageXML, "amp_Lead") {
 		t.Error("package.xml missing trigger member name")
 	}
 
@@ -233,7 +233,7 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 func TestConstructDestructiveApexTrigger(t *testing.T) {
 	t.Parallel()
 
-	triggerName := "AmpersandTrack_Lead"
+	triggerName := "amp_Lead"
 
 	zipData, err := ConstructDestructiveApexTrigger(triggerName)
 	if err != nil {

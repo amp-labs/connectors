@@ -16,7 +16,7 @@ var (
 
 const (
 	// triggerPrefix is the prefix used for generated APEX trigger names.
-	triggerPrefix = "AmpersandTrack_"
+	triggerPrefix = "amp_"
 
 	// apexTriggerMetadataAPIVersion is the Salesforce API version for trigger metadata.
 	apexTriggerMetadataAPIVersion = "61.0"
