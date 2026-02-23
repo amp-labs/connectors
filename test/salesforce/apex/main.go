@@ -1,8 +1,11 @@
 package main
 
 import (
+	"archive/zip"
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -53,6 +56,7 @@ func main() {
 	}
 
 	saveZip("deploy.zip", zipData)
+	printZipContents("deploy", zipData)
 
 	deployID := deploy(ctx, conn, zipData)
 	waitForDeploy(ctx, conn, deployID)
@@ -66,6 +70,7 @@ func main() {
 	}
 
 	saveZip("destructive.zip", destructiveZip)
+	printZipContents("destructive", destructiveZip)
 
 	deleteDeployID := deploy(ctx, conn, destructiveZip)
 	waitForDeploy(ctx, conn, deleteDeployID)
@@ -98,6 +103,33 @@ func saveZip(name string, data []byte) {
 	}
 
 	slog.Info("Saved zip", "path", path)
+}
+
+func printZipContents(label string, data []byte) {
+	reader, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
+	if err != nil {
+		utils.Fail("failed to read zip", "error", err)
+	}
+
+	fmt.Printf("\n--- %s zip contents ---\n", label)
+
+	for _, file := range reader.File {
+		rc, err := file.Open()
+		if err != nil {
+			utils.Fail("failed to open zip entry", "file", file.Name, "error", err)
+		}
+
+		content, err := io.ReadAll(rc)
+		rc.Close()
+
+		if err != nil {
+			utils.Fail("failed to read zip entry", "file", file.Name, "error", err)
+		}
+
+		fmt.Printf("\n[%s]\n%s\n", file.Name, string(content))
+	}
+
+	fmt.Printf("--- end %s ---\n\n", label)
 }
 
 func waitForDeploy(ctx context.Context, conn *salesforce.Connector, deployID string) {
