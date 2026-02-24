@@ -199,6 +199,7 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 
 		// Normal case: more data in current session, or incremental read done.
 		var nextPage common.NextPageToken
+
 		if !done && nextToken != nil {
 			encoded, encErr := encodeReadSessionToken(nextToken)
 			if encErr != nil {
@@ -282,7 +283,7 @@ func (c *Connector) createSessionForToken(
 	}
 
 	req := &storagepb.CreateReadSessionRequest{
-		Parent: fmt.Sprintf("projects/%s", c.project),
+		Parent: "projects/" + c.project,
 		ReadSession: &storagepb.ReadSession{
 			Table:      c.tablePath(params.ObjectName),
 			DataFormat: storagepb.DataFormat_ARROW,
@@ -301,23 +302,23 @@ func (c *Connector) createSessionForToken(
 
 	// Preserve window state from the input token.
 	newToken := &readSessionToken{
-		SessionName: session.Name,
+		SessionName: session.GetName(),
 		IsBackfill:  token.IsBackfill,
 		WindowStart: token.WindowStart,
 		WindowEnd:   token.WindowEnd,
 	}
 
-	if len(session.Streams) == 0 {
+	if len(session.GetStreams()) == 0 {
 		newToken.Streams = nil
 		newToken.ActiveStreams = 0
 
 		return newToken, nil
 	}
 
-	streams := make([]streamState, len(session.Streams))
-	for i, s := range session.Streams {
+	streams := make([]streamState, len(session.GetStreams()))
+	for i, s := range session.GetStreams() {
 		streams[i] = streamState{
-			Name:   s.Name,
+			Name:   s.GetName(),
 			Offset: 0,
 			Done:   false,
 		}
@@ -512,8 +513,8 @@ func (c *Connector) readFromStreams(
 
 	// Triage results: check for session expiry, count failures, collect rows.
 	var (
-		allRows     []common.ReadResultRow
-		streamErrs  []error
+		allRows      []common.ReadResultRow
+		streamErrs   []error
 		succeededAny bool
 	)
 
@@ -534,6 +535,7 @@ func (c *Connector) readFromStreams(
 		}
 
 		succeededAny = true
+
 		allRows = append(allRows, result.Rows...)
 		newStreams[result.StreamIndex].Offset += result.RowsRead
 		newStreams[result.StreamIndex].Done = result.Done
@@ -547,6 +549,7 @@ func (c *Connector) readFromStreams(
 	allDone := true
 
 	activeCount := 0
+
 	for _, s := range newStreams {
 		if !s.Done {
 			activeCount++
@@ -555,12 +558,12 @@ func (c *Connector) readFromStreams(
 	}
 
 	nextToken := &readSessionToken{
-		SessionName:  token.SessionName,
-		Streams:      newStreams,
+		SessionName:   token.SessionName,
+		Streams:       newStreams,
 		ActiveStreams: activeCount,
-		IsBackfill:   token.IsBackfill,
-		WindowStart:  token.WindowStart,
-		WindowEnd:    token.WindowEnd,
+		IsBackfill:    token.IsBackfill,
+		WindowStart:   token.WindowStart,
+		WindowEnd:     token.WindowEnd,
 	}
 
 	return allRows, nextToken, allDone, nil
@@ -597,7 +600,7 @@ func (c *Connector) readStreamChunk(
 
 	for len(rows) < maxRows {
 		response, err := rowStream.Recv()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			return streamResult{StreamIndex: streamIndex, Rows: rows, RowsRead: rowsRead, Done: true}
 		}
 
@@ -620,7 +623,7 @@ func (c *Connector) readStreamChunk(
 			return streamResult{StreamIndex: streamIndex, Err: fmt.Errorf("no Arrow schema received before record batch in stream %d", streamIndex)}
 		}
 
-		batchRows, err := parseArrowBatch(allocator, schemaBytes, arrowData.SerializedRecordBatch, requestedFields)
+		batchRows, err := parseArrowBatch(allocator, schemaBytes, arrowData.GetSerializedRecordBatch(), requestedFields)
 		if err != nil {
 			return streamResult{StreamIndex: streamIndex, Err: fmt.Errorf("failed to parse Arrow batch in stream %d: %w", streamIndex, err)}
 		}
@@ -689,10 +692,10 @@ func parseArrowBatch(
 		numRows := int(record.NumRows())
 		numCols := int(record.NumCols())
 
-		for i := 0; i < numRows; i++ {
+		for i := range numRows {
 			raw := make(map[string]any, numCols)
 
-			for j := 0; j < numCols; j++ {
+			for j := range numCols {
 				field := schema.Field(j)
 				col := record.Column(j)
 				raw[field.Name] = getArrowValue(col, i)
@@ -798,7 +801,7 @@ func getArrowValue(arr arrow.Array, idx int) any {
 
 		return result
 	default:
-		return fmt.Sprintf("%v", arr.ValueStr(idx))
+		return arr.ValueStr(idx)
 	}
 }
 

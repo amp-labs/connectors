@@ -20,7 +20,7 @@ func TestTokenRoundTrip(t *testing.T) {
 	t.Parallel()
 
 	original := &readSessionToken{
-		SessionName:  "projects/p/locations/us/sessions/abc123",
+		SessionName:   "projects/p/locations/us/sessions/abc123",
 		ActiveStreams: 2,
 		Streams: []streamState{
 			{Name: "stream-0", Offset: 1000, Done: false},
@@ -91,7 +91,7 @@ func TestTokenOmitsEmptyFields(t *testing.T) {
 
 	// Incremental read token — no window fields.
 	token := &readSessionToken{
-		SessionName:  "projects/p/locations/us/sessions/xyz",
+		SessionName:   "projects/p/locations/us/sessions/xyz",
 		ActiveStreams: 1,
 		Streams: []streamState{
 			{Name: "stream-0", Offset: 0, Done: false},
@@ -155,12 +155,12 @@ func TestResolveToken_NextPage(t *testing.T) {
 	c := &Connector{timestampColumn: "updated_at"}
 
 	original := &readSessionToken{
-		SessionName:  "session-123",
+		SessionName:   "session-123",
 		ActiveStreams: 1,
-		Streams:      []streamState{{Name: "s0", Offset: 50000}},
-		IsBackfill:   true,
-		WindowStart:  "2024-01-01T00:00:00Z",
-		WindowEnd:    "2024-01-31T00:00:00Z",
+		Streams:       []streamState{{Name: "s0", Offset: 50000}},
+		IsBackfill:    true,
+		WindowStart:   "2024-01-01T00:00:00Z",
+		WindowEnd:     "2024-01-31T00:00:00Z",
 	}
 
 	encoded, _ := encodeReadSessionToken(original)
@@ -459,4 +459,3 @@ func TestIsSessionExpired(t *testing.T) {
 		})
 	}
 }
-
