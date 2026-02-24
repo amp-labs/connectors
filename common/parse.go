@@ -2,9 +2,9 @@
 package common
 
 import (
-	"errors"
-	"fmt"
+	"encoding/json"
 	"maps"
+	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -196,26 +196,11 @@ func ExtractLowercaseFieldsFromRaw(fields []string, record map[string]any) map[s
 	return out
 }
 
-func GetMarshaledData(records []map[string]any, fields []string) ([]ReadResultRow, error) {
-	data := make([]ReadResultRow, len(records))
+// GetMarshaledData extracts the "id" field from the raw record and returns a list of ReadResultRow.
+var GetMarshaledData = GetMarshalledData //nolint:gochecknoglobals
 
-	for i, record := range records {
-		data[i] = ReadResultRow{
-			Fields: ExtractLowercaseFieldsFromRaw(fields, record),
-			Raw:    record,
-		}
-	}
-
-	return data, nil
-}
-
-var (
-	errMissingId        = errors.New("missing id field in raw record")
-	errUnexpectedIdType = errors.New("unexpected id type")
-)
-
-// GetMarshalledDataWithId is very similar to GetMarshaledData, but it also extracts the "id" field from the raw record.
-func GetMarshalledDataWithId(records []map[string]any, fields []string) ([]ReadResultRow, error) {
+// GetMarshalledData extracts the "id" field from the raw record and returns a list of ReadResultRow.
+func GetMarshalledData(records []map[string]any, fields []string) ([]ReadResultRow, error) {
 	data := make([]ReadResultRow, len(records))
 
 	fields = append(fields, "id")
@@ -227,14 +212,15 @@ func GetMarshalledDataWithId(records []map[string]any, fields []string) ([]ReadR
 			Raw:    record,
 		}
 
-		idAny := data[i].Fields["id"]
-		if idAny == nil {
-			return nil, errMissingId
-		}
+		var id string
 
-		id, ok := idAny.(string)
-		if !ok {
-			return nil, fmt.Errorf("%w: %T", errUnexpectedIdType, idAny)
+		switch v := data[i].Fields["id"].(type) {
+		case string:
+			id = v
+		case float64:
+			id = strconv.FormatFloat(v, 'f', -1, 64)
+		case json.Number:
+			id = v.String()
 		}
 
 		data[i].Id = id
@@ -257,6 +243,7 @@ func MakeMarshaledDataFunc(nodeRecordFunc RecordTransformer) MarshalFromNodeFunc
 			}
 		}
 
+		fields = append(fields, "id")
 		data := make([]ReadResultRow, len(records))
 
 		for index, nodeRecord := range records {
@@ -270,9 +257,23 @@ func MakeMarshaledDataFunc(nodeRecordFunc RecordTransformer) MarshalFromNodeFunc
 				return nil, err
 			}
 
+			extractedFields := ExtractLowercaseFieldsFromRaw(fields, record)
+
+			var recordID string
+
+			switch v := extractedFields["id"].(type) {
+			case string:
+				recordID = v
+			case float64:
+				recordID = strconv.FormatFloat(v, 'f', -1, 64)
+			case json.Number:
+				recordID = v.String()
+			}
+
 			data[index] = ReadResultRow{
-				Fields: ExtractLowercaseFieldsFromRaw(fields, record),
+				Fields: extractedFields,
 				Raw:    raw,
+				Id:     recordID,
 			}
 		}
 
