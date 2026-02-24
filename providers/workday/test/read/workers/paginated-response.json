@@ -1,0 +1,17 @@
+{
+  "data": [
+    {
+      "id": "3aa5550b7fe348b98d7b5741afc65534",
+      "descriptor": "Logan McNeil",
+      "primaryWorkEmail": "lmcneil@workday.net",
+      "isManager": true
+    },
+    {
+      "id": "7bc4660a8de249a89e3c6842bfd76645",
+      "descriptor": "Jane Smith",
+      "primaryWorkEmail": "jsmith@workday.net",
+      "isManager": false
+    }
+  ],
+  "total": 5
+}
