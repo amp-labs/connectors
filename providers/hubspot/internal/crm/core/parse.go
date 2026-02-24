@@ -2,9 +2,13 @@ package core
 
 import (
 	"errors"
+	"fmt"
+	"maps"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -62,4 +66,47 @@ func GetNextRecordsURLCRM(node *ajson.Node) (string, error) {
 	}
 
 	return strconv.FormatInt(offset, 10), nil
+}
+
+// GetDataMarshaller returns a function that accepts a list of records and fields
+// and returns a list of structured data ([]ReadResultRow).
+//
+//nolint:gocognit
+func GetDataMarshaller() common.MarshalFromNodeFunc {
+	return readhelper.MakeMarshaledSelectedDataFunc(
+		fieldsFromProperties(),
+		func(node *ajson.Node) (map[string]any, error) {
+			return jsonquery.Convertor.ObjectToMap(node)
+		},
+	)
+}
+
+func fieldsFromProperties() readhelper.SelectedFieldsFunc {
+	return func(node *ajson.Node, fields []string) (map[string]any, string, error) {
+		root, err := jsonquery.Convertor.ObjectToMap(node)
+		if err != nil {
+			return nil, "", err
+		}
+
+		identifier, err := jsonquery.New(node).StringRequired("id")
+		if err != nil {
+			return nil, "", fmt.Errorf("missing id field in raw record: %w", err)
+		}
+
+		properties, err := jsonquery.New(node).ObjectRequired("properties")
+		if err != nil {
+			return nil, "", err
+		}
+
+		propertiesMap, err := jsonquery.Convertor.ObjectToMap(properties)
+		if err != nil {
+			return nil, identifier, err
+		}
+
+		filteredRoot := readhelper.SelectFields(root, datautils.NewSetFromList(fields))
+		selected := readhelper.SelectFields(propertiesMap, datautils.NewSetFromList(fields))
+		maps.Copy(filteredRoot, selected)
+
+		return filteredRoot, identifier, nil
+	}
 }
