@@ -14,6 +14,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/simultaneously"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/metadata"
 )
 
@@ -111,7 +112,7 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 
 // getObjectMetadata returns object metadata for the given object name.
 func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
-	if crmObjectsWithoutPropertiesAPISupport.Has(objectName) {
+	if core.ObjectsWithoutPropertiesAPISupport.Has(objectName) {
 		return c.getObjectMetadataFromCRMSearch(ctx, objectName)
 	}
 
@@ -220,7 +221,7 @@ type AccountInfo struct {
 func (c *Connector) GetAccountInfo(ctx context.Context) (*AccountInfo, *common.JSONHTTPResponse, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
-	resp, err := c.Client.Get(ctx, "account-info/v3/details")
+	resp, err := c.Client.Get(ctx, fmt.Sprintf("account-info/%v/details", core.APIVersion3))
 	if err != nil {
 		return nil, resp, fmt.Errorf("error fetching HubSpot token info: %w", err)
 	}
@@ -357,14 +358,14 @@ var objectsWithExternalMetadataFields = datautils.Map[string, []externalFieldDis
 	"contacts": {
 		{
 			FieldNames:        []string{"hs_pipeline"},
-			EndpointPath:      "/crm/v3/pipelines/contacts",
+			EndpointPath:      fmt.Sprintf("/crm/%v/pipelines/contacts", core.APIVersion3),
 			ResponseProcessor: parsePipelineFieldValues,
 		},
 	},
 	"deals": {
 		{
 			FieldNames:        []string{"pipeline", "dealstage"},
-			EndpointPath:      "/crm/v3/pipelines/deals",
+			EndpointPath:      fmt.Sprintf("/crm/%v/pipelines/deals", core.APIVersion3),
 			ResponseProcessor: parsePipelineFieldValuesWithStages,
 		},
 	},

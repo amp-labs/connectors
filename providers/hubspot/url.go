@@ -9,6 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
 var errMissingValue = errors.New("missing value for query parameter")
@@ -16,7 +17,7 @@ var errMissingValue = errors.New("missing value for query parameter")
 // getURL is a helper to return the full URL considering the base URL & module.
 // TODO: replace queryArgs with urlbuilder.New().WithQueryParam().
 func (c *Connector) getURL(arg string, queryArgs ...string) (string, error) {
-	urlBase := c.moduleInfo.BaseURL + "/" + path.Join(ModuleCRMVersion, arg)
+	urlBase := c.moduleInfo.BaseURL + "/" + path.Join(core.APIVersion3, arg)
 
 	if len(queryArgs) > 0 {
 		vals := url.Values{}
@@ -67,7 +68,7 @@ func (c *Connector) getPropertiesURL(objectName string) (string, error) {
 
 // https://developers.hubspot.com/docs/api-reference/crm-schemas-v3/core/get-crm-object-schemas-v3-schemas-objectType
 func (c *Connector) getObjectSchemaURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.getRootProviderURL(), "crm-object-schemas", ModuleCRMVersion, "schemas", objectName)
+	return urlbuilder.New(c.getRootProviderURL(), "crm-object-schemas", core.APIVersion3, "schemas", objectName)
 }
 
 // Returns module agnostic Hubspot URL.

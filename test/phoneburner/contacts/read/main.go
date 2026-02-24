@@ -27,4 +27,3 @@ func main() {
 		Fields:     connectors.Fields("contact_user_id", "first_name", "last_name", "raw_phone"),
 	})
 }
-

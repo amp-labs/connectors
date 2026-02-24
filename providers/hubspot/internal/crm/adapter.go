@@ -10,8 +10,6 @@ import (
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
-const apiVersion = "v3"
-
 // Adapter handles CRUD operations (at the moment: delete only) against HubSpot's REST API.
 // It abstracts API endpoint construction, versioning, and JSON response processing
 // specific to the HubSpot CRUD feature.
@@ -53,5 +51,5 @@ func (a *Adapter) getModuleURL() string {
 }
 
 func (a *Adapter) getDeleteURL(objectName, recordID string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.getModuleURL(), apiVersion, "objects", objectName, recordID)
+	return urlbuilder.New(a.getModuleURL(), core.APIVersion3, "objects", objectName, recordID)
 }
