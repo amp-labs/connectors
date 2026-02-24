@@ -1,6 +1,7 @@
 package readhelper
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -8,6 +9,9 @@ import (
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
+
+// ErrTimestampKeyNotFound is returned when a unix-ms timestamp field is absent from a record.
+var ErrTimestampKeyNotFound = errors.New("bad since timestamp key: field not found")
 
 // TimestampFormatUnixMs is a special format string that signals the timestamp field
 // holds a Unix epoch value in milliseconds (int64), rather than a formatted string.
@@ -250,7 +254,7 @@ func extractUnixMsTimestamp(nodeRecord *ajson.Node, timestampKey string, zoom ..
 	}
 
 	if val == nil {
-		return nil, fmt.Errorf("error: bad since timestamp key: field %q not found", timestampKey)
+		return nil, fmt.Errorf("%w: %q", ErrTimestampKeyNotFound, timestampKey)
 	}
 
 	t := time.UnixMilli(*val)

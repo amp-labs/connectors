@@ -43,13 +43,13 @@ func constructor(base *components.Connector) (*Connector, error) {
 	}
 
 	connector.SchemaProvider = schema.NewCompositeSchemaProvider(
-		schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas),
+		schema.NewOpenAPISchemaProvider(connector.Module(), metadata.Schemas),
 	)
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
 		components.NewEmptyEndpointRegistry(),
-		connector.ProviderContext.Module(),
+		connector.Module(),
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
