@@ -14,6 +14,8 @@ var (
 	errUnsupportedSubscriptionEvent = errors.New("unsupported subscription event")
 	ErrMissingSignature             = errors.New("missing webhook signature header")
 	ErrInvalidSignature             = errors.New("invalid webhook signature")
+	errMissingId                    = errors.New("missing id field in record")
+	errUnexpectedIdType             = errors.New("unexpected type for id field in record")
 	//nolint:revive
 )
 

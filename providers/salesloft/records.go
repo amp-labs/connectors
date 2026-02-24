@@ -2,7 +2,6 @@ package salesloft
 
 import (
 	"context"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -29,7 +28,7 @@ func (c *Connector) GetRecordsByIds(ctx context.Context, objectName string,
 		return nil, err
 	}
 
-	url.WithQueryParam("ids", strings.Join(recordIds, ","))
+	url.WithQueryParamList("ids[]", recordIds)
 
 	rsp, err := c.Client.Get(ctx, url.String())
 	if err != nil {
@@ -39,7 +38,7 @@ func (c *Connector) GetRecordsByIds(ctx context.Context, objectName string,
 	parsed, err := common.ParseResult(rsp,
 		getRecords,
 		makeNextRecordsURL(url),
-		common.GetMarshaledData,
+		GetMarshalledDataWithIntId,
 		config.Fields,
 	)
 	if err != nil {
