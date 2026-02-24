@@ -32,9 +32,9 @@ type TopLevelPathMatcher struct{}
 func (TopLevelPathMatcher) IsPathMatching(path string) bool {
 	// Count ID parameters in the path
 	idCount := 0
-	parts := strings.Split(path, "/")
+	parts := strings.SplitSeq(path, "/")
 
-	for _, part := range parts {
+	for part := range parts {
 		if strings.HasPrefix(part, "{") && strings.HasSuffix(part, "}") {
 			idCount++
 			// Only allow {project_id}, reject all other IDs
@@ -48,7 +48,7 @@ func (TopLevelPathMatcher) IsPathMatching(path string) bool {
 	return idCount == 1
 }
 
-// extractEndpoints extracts all top-level endpoints and creates objectEndpoints mapping
+// extractEndpoints extracts all top-level endpoints and creates objectEndpoints mapping.
 func extractEndpoints(explorer *api3.Explorer[any]) (map[string]string, error) {
 	// Get endpoint operations to extract paths
 	endpoints, err := explorer.GetEndpointOperations(TopLevelPathMatcher{}, http.MethodGet)
@@ -65,6 +65,7 @@ func extractEndpoints(explorer *api3.Explorer[any]) (map[string]string, error) {
 		if !found {
 			continue
 		}
+
 		if objectName == "" {
 			continue
 		}
@@ -80,15 +81,16 @@ func extractEndpoints(explorer *api3.Explorer[any]) (map[string]string, error) {
 	return objectEndpoints, nil
 }
 
-// removeListSuffix removes "List" suffix from display names (case-insensitive)
+// removeListSuffix removes "List" suffix from display names (case-insensitive).
 func removeListSuffix(displayName string) string {
 	displayName = strings.TrimSuffix(displayName, "List")
 	displayName = strings.TrimSuffix(displayName, "list")
 	displayName = strings.TrimSuffix(displayName, "LIST")
+
 	return displayName
 }
 
-// processObjects processes the extracted objects and builds schemas and registry
+// processObjects processes the extracted objects and builds schemas and registry.
 func processObjects(
 	objects metadatadef.Schemas[any],
 	schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any],

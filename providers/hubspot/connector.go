@@ -5,10 +5,10 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/batch"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/custom"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/batch"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/custom"
 )
 
 // Connector provides integration with Hubspot provider.
