@@ -36,6 +36,7 @@ func performMetadataAPICall[R any](ctx context.Context, adapter *Adapter, payloa
     <soapenv:Body xmlns="http://soap.sforce.com/2006/04/metadata"/>
 </soapenv:Envelope>
 `
+
 	return performSOAPCall[R](ctx, adapter, template, payload, getSOAPHeaders())
 }
 
@@ -50,11 +51,13 @@ func performDeploySOAPRequest[R any](ctx context.Context, adapter *Adapter, payl
     </soapenv:Header>
     <soapenv:Body/>
 </soapenv:Envelope>`
+
 	return performSOAPCall[R](ctx, adapter, template, payload, getDeploySOAPHeaders())
 }
 
 func performSOAPCall[R any](ctx context.Context, adapter *Adapter,
-	template string, payload any, headers []common.Header) (*R, error) {
+	template string, payload any, headers []common.Header,
+) (*R, error) {
 	data, err := xml.MarshalIndent(payload, "", "  ")
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrMetadataMarshal, err)

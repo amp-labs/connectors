@@ -16,7 +16,6 @@ var (
 	errRequiredParamsMet = errors.New("objectName, triggerName, and checkboxFieldName are required")
 )
 
-
 // ApexTriggerParams contains the parameters for constructing and deploying an APEX trigger.
 type ApexTriggerParams struct {
 	// ObjectName is the Salesforce object the trigger runs on (e.g., "Lead").

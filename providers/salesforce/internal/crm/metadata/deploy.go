@@ -8,7 +8,6 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/xquery"
 )
 
 var ErrDeployFailed = errors.New("metadata: deploy failed")
@@ -35,12 +34,7 @@ type ComponentFailure struct {
 // SOAP deploy operation. Returns the async deployment ID for status polling.
 // Use CheckDeployStatus to poll for completion.
 func (a *Adapter) DeployMetadataZip(ctx context.Context, zipData []byte) (string, error) {
-	accessToken, present := common.GetAuthToken(ctx)
-	if !present {
-		return "", common.ErrMissingAccessToken
-	}
-
-	deployID, err := a.deploy(ctx, accessToken.String(), zipData)
+	deployID, err := a.deploy(ctx, zipData)
 	if err != nil {
 		return "", fmt.Errorf("%w: %w", ErrDeployFailed, err)
 	}
@@ -85,7 +79,7 @@ func (a *Adapter) CheckDeployStatus(ctx context.Context, deployID string) (*Depl
 
 // deploy sends a SOAP deploy request with the base64-encoded zip to the Metadata API.
 // Returns the async deployment ID for status polling.
-func (a *Adapter) deploy(ctx context.Context, accessToken string, zipData []byte) (string, error) {
+func (a *Adapter) deploy(ctx context.Context, zipData []byte) (string, error) {
 	encodedZip := base64.StdEncoding.EncodeToString(zipData)
 
 	payload := fmt.Sprintf(`<md:deploy xmlns:md="http://soap.sforce.com/2006/04/metadata">
@@ -109,57 +103,6 @@ func (a *Adapter) deploy(ctx context.Context, accessToken string, zipData []byte
 	}
 
 	return resp.Body.DeployResponse.Result.ID, nil
-}
-
-// performDeploySOAPRequest sends a raw SOAP request for deploy operations.
-// Unlike performSOAPRequest, this uses a deploy-specific envelope without AllOrNoneHeader.
-func (a *Adapter) performDeploySOAPRequest(ctx context.Context, xmlPayload []byte, accessToken string) ([]byte, error) {
-	body, err := xquery.NewXML(xmlPayload)
-	if err != nil {
-		return nil, err
-	}
-
-	body, err = putInsideDeployEnvelope(body, accessToken)
-	if err != nil {
-		return nil, err
-	}
-
-	url, err := a.getSoapURL()
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := a.XMLClient.Post(ctx, url.String(), body, getDeploySOAPHeaders()...)
-	if err != nil {
-		return nil, errors.Join(ErrDeployFailed, err)
-	}
-
-	return []byte(resp.Body.RawXML()), nil
-}
-
-func putInsideDeployEnvelope(content *xquery.XML, accessToken string) (*xquery.XML, error) {
-	template := `<?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-                  xmlns:md="http://soap.sforce.com/2006/04/metadata">
-    <soapenv:Header>
-        <md:SessionHeader>
-            <md:sessionId>TODO----accessToken</md:sessionId>
-        </md:SessionHeader>
-    </soapenv:Header>
-    <soapenv:Body/>
-</soapenv:Envelope>`
-
-	envelope, err := xquery.NewXML([]byte(template))
-	if err != nil {
-		return nil, err
-	}
-
-	session := envelope.FindOne("//md:sessionId").GetChild()
-	session.SetDataText(accessToken)
-
-	envelope.FindOne("//soapenv:Body").SetDataNode(content)
-
-	return envelope, nil
 }
 
 func getDeploySOAPHeaders() []common.Header {
