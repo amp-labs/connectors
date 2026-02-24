@@ -197,10 +197,7 @@ func ExtractLowercaseFieldsFromRaw(fields []string, record map[string]any) map[s
 }
 
 // GetMarshaledData extracts the "id" field from the raw record and returns a list of ReadResultRow.
-var GetMarshaledData = GetMarshalledData //nolint:gochecknoglobals
-
-// GetMarshalledData extracts the "id" field from the raw record and returns a list of ReadResultRow.
-func GetMarshalledData(records []map[string]any, fields []string) ([]ReadResultRow, error) {
+func GetMarshaledData(records []map[string]any, fields []string) ([]ReadResultRow, error) {
 	data := make([]ReadResultRow, len(records))
 
 	fields = append(fields, "id")

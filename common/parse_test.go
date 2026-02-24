@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetMarshalledData(t *testing.T) {
+func TestGetMarshaledData(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -71,7 +71,7 @@ func TestGetMarshalledData(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			result, err := GetMarshalledData(tt.records, tt.fields)
+			result, err := GetMarshaledData(tt.records, tt.fields)
 			require.NoError(t, err)
 			require.Len(t, result, 1)
 			assert.Equal(t, tt.expectedId, result[0].Id)
@@ -79,7 +79,7 @@ func TestGetMarshalledData(t *testing.T) {
 	}
 }
 
-func TestGetMarshalledDataMultipleRecords(t *testing.T) {
+func TestGetMarshaledDataMultipleRecords(t *testing.T) {
 	t.Parallel()
 
 	records := []map[string]any{
@@ -88,7 +88,7 @@ func TestGetMarshalledDataMultipleRecords(t *testing.T) {
 		{"id": json.Number("300"), "name": "Carol"},
 	}
 
-	result, err := GetMarshalledData(records, []string{"name"})
+	result, err := GetMarshaledData(records, []string{"name"})
 	require.NoError(t, err)
 	require.Len(t, result, 3)
 
