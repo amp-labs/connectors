@@ -19,7 +19,6 @@ import (
 	"github.com/apache/arrow/go/v15/arrow/array"
 	"github.com/apache/arrow/go/v15/arrow/ipc"
 	"github.com/apache/arrow/go/v15/arrow/memory"
-	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -120,11 +119,7 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 		pageSize = DefaultPageSize
 	}
 
-	storageClient, err := c.getStorageClient(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create storage client: %w", err)
-	}
-	defer storageClient.Close()
+	storageClient := c.storageClient
 
 	// Determine the read token: either parse from NextPage or create initial state.
 	token, err := c.resolveToken(params)
@@ -436,14 +431,6 @@ func isSessionExpired(err error) bool {
 // Storage client
 // =============================================================================
 
-// getStorageClient creates a new BigQuery Storage Read API gRPC client.
-// The Storage API requires separate authentication from the BigQuery SQL client
-// because it uses gRPC transport, not HTTP.
-func (c *Connector) getStorageClient(ctx context.Context) (*bqstorage.BigQueryReadClient, error) {
-	return bqstorage.NewBigQueryReadClient(ctx,
-		option.WithCredentialsJSON(c.credentials),
-	)
-}
 
 // =============================================================================
 // Parallel stream reading

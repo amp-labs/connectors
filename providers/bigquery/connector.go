@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/bigquery"
+	bqstorage "cloud.google.com/go/bigquery/storage/apiv1"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/reader"
@@ -13,8 +14,9 @@ import (
 )
 
 var (
-	errMissingDataset = errors.New("missing dataset in metadata")
-	errMissingProject = errors.New("missing project in metadata")
+	errMissingProject         = errors.New("missing project in metadata")
+	errMissingDataset         = errors.New("missing dataset in metadata")
+	errMissingTimestampColumn = errors.New("missing timestampColumn in metadata: required for incremental reads and backfill windowing")
 )
 
 // Connector provides BigQuery read operations using the Storage Read API.
@@ -23,7 +25,7 @@ var (
 //
 // Pass a *BigQueryAuth as CustomAuthenticatedClient. This bundles:
 //   - A pre-authenticated *bigquery.Client (for metadata/schema queries)
-//   - Raw service account JSON credentials (for Storage Read API gRPC clients)
+//   - A pre-authenticated *bqstorage.BigQueryReadClient (for Storage Read API)
 //   - A TimestampColumn name (for incremental reads and backfill windowing)
 //
 // # Required Metadata
@@ -59,9 +61,8 @@ type Connector struct {
 	// dataset is the BigQuery dataset name.
 	dataset string
 
-	// credentials is the service account JSON for Storage Read API authentication.
-	// The Storage API uses gRPC and cannot share the HTTP-based bigquery.Client.
-	credentials []byte
+	// storageClient is the pre-authenticated BigQuery Storage Read API client.
+	storageClient *bqstorage.BigQueryReadClient
 
 	// timestampColumn is the column used for time-based filtering and backfill windowing.
 	// Must be TIMESTAMP or DATETIME type. Required for all reads.
@@ -73,16 +74,16 @@ type Connector struct {
 // Example usage:
 //
 //	auth := &bigquery.BigQueryAuth{
-//	    Client:          bqClient,         // pre-authenticated *bigquery.Client
-//	    Credentials:     serviceAccountJSON, // raw JSON bytes
-//	    TimestampColumn: "my_timestamp_col", // required: column for incremental reads & backfill windowing
+//	    Client:        bqClient,      // pre-authenticated *bigquery.Client
+//	    StorageClient: storageClient, // pre-authenticated Storage Read API client
 //	}
 //
 //	conn, err := bigquery.NewConnector(common.ConnectorParams{
 //	    CustomAuthenticatedClient: auth,
 //	    Metadata: map[string]string{
-//	        "project": "my-gcp-project",
-//	        "dataset": "analytics",
+//	        "project":         "my-gcp-project",
+//	        "dataset":         "analytics",
+//	        "timestampColumn": "updated_at",
 //	    },
 //	})
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -102,8 +103,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	}
 
 	connector.handle = auth.Client
-	connector.credentials = auth.Credentials
-	connector.timestampColumn = auth.TimestampColumn
+	connector.storageClient = auth.StorageClient
 
 	// Extract required metadata.
 	connector.project, ok = params.Metadata["project"]
@@ -114,6 +114,11 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	connector.dataset, ok = params.Metadata["dataset"]
 	if !ok || connector.dataset == "" {
 		return nil, errMissingDataset
+	}
+
+	connector.timestampColumn, ok = params.Metadata["timestampColumn"]
+	if !ok || connector.timestampColumn == "" {
+		return nil, errMissingTimestampColumn
 	}
 
 	return connector, nil
@@ -128,11 +133,21 @@ func constructor(base *components.Connector) (*Connector, error) {
 	return connector, nil
 }
 
-// Close closes the BigQuery client connection.
+// Close closes the BigQuery client connections.
 func (c *Connector) Close() error {
-	if c.handle == nil {
-		return nil
+	var errs []error
+
+	if c.storageClient != nil {
+		if err := c.storageClient.Close(); err != nil {
+			errs = append(errs, err)
+		}
 	}
 
-	return c.handle.Close()
+	if c.handle != nil {
+		if err := c.handle.Close(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+
+	return errors.Join(errs...)
 }

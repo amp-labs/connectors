@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"cloud.google.com/go/bigquery"
+	bqstorage "cloud.google.com/go/bigquery/storage/apiv1"
 	"github.com/amp-labs/connectors/common"
 	connectorbq "github.com/amp-labs/connectors/providers/bigquery"
 	"github.com/amp-labs/connectors/test/utils"
@@ -56,24 +57,31 @@ func GetBigQueryConnector(ctx context.Context) *connectorbq.Connector {
 		utils.Fail("error reading service account file", "path", credsFile, "error", err)
 	}
 
+	credOption := option.WithCredentialsJSON(serviceAccountJSON)
+
 	// Create BigQuery client.
-	client, err := bigquery.NewClient(ctx, project, option.WithCredentialsJSON(serviceAccountJSON))
+	client, err := bigquery.NewClient(ctx, project, credOption)
 	if err != nil {
 		utils.Fail("error creating BigQuery client", "error", err)
 	}
 
-	// Create auth wrapper with both clients.
+	// Create Storage Read API client.
+	storageClient, err := bqstorage.NewBigQueryReadClient(ctx, credOption)
+	if err != nil {
+		utils.Fail("error creating BigQuery Storage client", "error", err)
+	}
+
 	auth := &connectorbq.BigQueryAuth{
-		Client:          client,
-		Credentials:     serviceAccountJSON,
-		TimestampColumn: timestampColumn,
+		Client:        client,
+		StorageClient: storageClient,
 	}
 
 	conn, err := connectorbq.NewConnector(common.ConnectorParams{
 		CustomAuthenticatedClient: auth,
 		Metadata: map[string]string{
-			"project": project,
-			"dataset": dataset,
+			"project":         project,
+			"dataset":         dataset,
+			"timestampColumn": timestampColumn,
 		},
 	})
 	if err != nil {
