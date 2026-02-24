@@ -38,7 +38,7 @@ func (c *Connector) GetRecordsByIds(ctx context.Context, objectName string,
 	parsed, err := common.ParseResult(rsp,
 		getRecords,
 		makeNextRecordsURL(url),
-		GetMarshalledDataWithIntId,
+		common.GetMarshalledDataWithId,
 		config.Fields,
 	)
 	if err != nil {

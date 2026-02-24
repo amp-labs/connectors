@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -232,12 +233,18 @@ func GetMarshalledDataWithId(records []map[string]any, fields []string) ([]ReadR
 			return nil, errMissingId
 		}
 
-		id, ok := idAny.(string)
-		if !ok {
+		var idStr string
+
+		switch v := idAny.(type) {
+		case string:
+			idStr = v
+		case float64:
+			idStr = strconv.FormatInt(int64(v), 10)
+		default:
 			return nil, fmt.Errorf("%w: %T", errUnexpectedIdType, idAny)
 		}
 
-		data[i].Id = id
+		data[i].Id = idStr
 	}
 
 	return data, nil

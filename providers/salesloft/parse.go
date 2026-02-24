@@ -2,7 +2,6 @@ package salesloft
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -63,34 +62,4 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 
 		return reqLink.String(), nil
 	}
-}
-
-// GetMarshalledDataWithIntId is very similar to common.GetMarshalledDataWithId, but handles the case where
-// the "id" field is a numeric integer (float64) rather than a string, converting it to a string for the result.
-func GetMarshalledDataWithIntId(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
-	data := make([]common.ReadResultRow, len(records))
-
-	fields = append(fields, "id")
-
-	//nolint:varnamelen
-	for i, record := range records {
-		data[i] = common.ReadResultRow{
-			Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
-			Raw:    record,
-		}
-
-		idAny := data[i].Fields["id"]
-		if idAny == nil {
-			return nil, common.ErrMissingRecordID
-		}
-
-		intID, ok := idAny.(float64)
-		if !ok {
-			return nil, fmt.Errorf("%w: %T", common.ErrFieldTypeUnknown, idAny)
-		}
-
-		data[i].Id = strconv.FormatInt(int64(intID), 10)
-	}
-
-	return data, nil
 }
