@@ -38,6 +38,7 @@ import (
 	"github.com/amp-labs/connectors/providers/constantcontact"
 	"github.com/amp-labs/connectors/providers/copper"
 	"github.com/amp-labs/connectors/providers/customerapp"
+	"github.com/amp-labs/connectors/providers/devrev"
 	"github.com/amp-labs/connectors/providers/dixa"
 	"github.com/amp-labs/connectors/providers/docusign"
 	"github.com/amp-labs/connectors/providers/drift"
@@ -250,6 +251,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Zoho:                    wrapper(newZohoConnector),
 	providers.Zoom:                    wrapper(newZoomConnector),
 	providers.Salesfinity:             wrapper(newSalesfinityConnector),
+	providers.DevRev:                  wrapper(newDevRevConnector),
 }
 
 type outputConstructorFunc func(p common.ConnectorParams) (connectors.Connector, error)
@@ -1005,4 +1007,8 @@ func newSalesfinityConnector(params common.ConnectorParams) (*salesfinity.Connec
 
 func newSlackConnector(params common.ConnectorParams) (*slack.Connector, error) {
 	return slack.NewConnector(params)
+}
+
+func newDevRevConnector(params common.ConnectorParams) (*devrev.Connector, error) {
+	return devrev.NewConnector(params)
 }
