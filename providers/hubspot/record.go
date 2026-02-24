@@ -2,14 +2,15 @@ package hubspot
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
 //nolint:gochecknoglobals
@@ -28,8 +29,6 @@ var (
    https://developers.hubspot.com/beta-docs/reference/api/crm/objects/line_items
    https://developers.hubspot.com/beta-docs/reference/api/crm/objects/products
 */
-
-var errMissingId = errors.New("missing id field in raw record")
 
 //nolint:revive,funlen
 func (c *Connector) GetRecordsByIds(
@@ -75,12 +74,18 @@ func (c *Connector) GetRecordsByIds(
 		return nil, common.ErrEmptyJSONHTTPResponse
 	}
 
-	records, err := getRecords(resBody)
+	records, err := core.GetRecords(resBody)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.getDataMarshaller(ctx, objectName, associations)(records, fields)
+	return readhelper.ChainedMarshaller(
+		core.GetDataMarshaller(),
+		// Enhance records with associations by fetching these relationships.
+		func(rows []common.ReadResultRow) error {
+			return c.crmAdapter.AssociationsStrategy.FillAssociations(ctx, objectName, associations, rows)
+		},
+	)(records, fields)
 }
 
 func (c *Connector) getBatchRecordsURL(objectName string, associations []string) (string, error) {
