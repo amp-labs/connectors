@@ -34,11 +34,11 @@ func (a *Adapter) getPropertyUpdateURL(objectName, propertyName string) (*urlbui
 // nolint:lll
 // https://developers.hubspot.com/docs/api-reference/crm-properties-v3/groups/get-crm-v3-properties-objectType-groups-groupName
 func (a *Adapter) getPropertyGroupNameURL(objectName, groupName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.moduleInfo.BaseURL, "properties", core.APIVersion3, objectName, "groups", groupName)
+	return urlbuilder.New(a.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, "groups", groupName)
 }
 
 // nolint:lll
 // https://developers.hubspot.com/docs/api-reference/crm-properties-v3/groups/post-crm-v3-properties-objectType-groups
 func (a *Adapter) getPropertyGroupNameCreationURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.moduleInfo.BaseURL, "properties", core.APIVersion3, objectName, "groups")
+	return urlbuilder.New(a.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, "groups")
 }
