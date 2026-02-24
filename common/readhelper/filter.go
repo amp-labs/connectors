@@ -214,8 +214,8 @@ func hasNextPage(order TimeOrder, idx int, recordsLen int) bool {
 		// If last record on this page is still inside range, there might be more.
 		return idx == recordsLen-1
 	case ReverseOrder:
-		// If last record on page (oldest) is still inside range, older pages may still contain in-range records.
-		return idx == recordsLen-1
+		// If first record in reverse-ordered page is still inside range, there might be more.
+		return idx == 0
 	default:
 		return false
 	}
