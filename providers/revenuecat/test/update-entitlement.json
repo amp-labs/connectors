@@ -1,0 +1,9 @@
+{
+  "object": "entitlement",
+  "id": "entl_abc123",
+  "lookup_key": "premium",
+  "display_name": "Premium Plus Access",
+  "created_at": 1700000000000,
+  "project_id": "proj_123",
+  "products": []
+}
