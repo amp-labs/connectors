@@ -133,4 +133,28 @@ func TestGetRecordsByCalls(ctx context.Context, conn *salesloft.Connector) {
 	fmt.Printf("\nSuccessfully fetched %d accounts:\n", len(res))
 	utils.DumpJSON(res, os.Stdout)
 
+	// Step 3: Verify we got all the records we created
+	if len(res) != len(recordIDs) {
+		utils.Fail("mismatch in record count", "expected", len(recordIDs), "got", len(res))
+	}
+
+	// Verify all record IDs are present in the results
+	foundIDs := make(map[string]bool)
+
+	for _, record := range res {
+		if id, ok := record.Fields["id"].(float64); ok {
+			foundIDs[fmt.Sprintf("%.0f", id)] = true
+		}
+	}
+
+	for _, expectedID := range recordIDs {
+		if !foundIDs[expectedID] {
+			utils.Fail("expected record ID not found in results", "recordId", expectedID)
+		}
+	}
+
+	fmt.Println("\n✓ All created accounts were successfully retrieved!")
+
+	fmt.Println("\n✓ Test completed successfully!")
+	fmt.Println("✓ All test accounts have been cleaned up.")
 }

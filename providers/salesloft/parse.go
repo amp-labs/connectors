@@ -81,15 +81,15 @@ func GetMarshalledDataWithIntId(records []map[string]any, fields []string) ([]co
 
 		idAny := data[i].Fields["id"]
 		if idAny == nil {
-			return nil, errMissingId
+			return nil, common.ErrMissingRecordID
 		}
 
-		intId, ok := idAny.(float64)
+		intID, ok := idAny.(float64)
 		if !ok {
-			return nil, fmt.Errorf("%w: %T", errUnexpectedIdType, idAny)
+			return nil, fmt.Errorf("%w: %T", common.ErrFieldTypeUnknown, idAny)
 		}
 
-		data[i].Id = strconv.FormatInt(int64(intId), 10)
+		data[i].Id = strconv.FormatInt(int64(intID), 10)
 	}
 
 	return data, nil
