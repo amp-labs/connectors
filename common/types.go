@@ -270,6 +270,9 @@ type DeleteParams struct {
 
 	// The external ID of the object instance we are removing.
 	RecordId string // required
+
+	// Headers contains additional headers to be added to the delete request.
+	Headers []WriteHeader // optional
 }
 
 // NextPageToken is an opaque token that can be used to get the next page of results.
@@ -358,6 +361,25 @@ const (
 	WriteTypeUpsert WriteType = "upsert"
 )
 
+// BatchPolicy configures the behavior of batch write operations.
+// This struct is extensible for future batch configuration options.
+type BatchPolicy struct {
+	// AllOrNone controls whether partial success is allowed.
+	// When true, if any record fails, the entire batch is rolled back.
+	// When false (default), successful records are committed even if others fail.
+	// If nil, defaults to false (partial success allowed).
+	AllOrNone *bool `json:"allOrNone,omitempty"`
+}
+
+// GetAllOrNone returns the AllOrNone value, defaulting to false if nil.
+func (p *BatchPolicy) GetAllOrNone() bool {
+	if p == nil || p.AllOrNone == nil {
+		return false
+	}
+
+	return *p.AllOrNone
+}
+
 // BatchWriteParam defines the input required to execute a batch write operation.
 // It allows creating, updating, or upserting multiple records in a single request.
 type BatchWriteParam struct {
@@ -369,6 +391,25 @@ type BatchWriteParam struct {
 	Batch BatchItems
 	// Headers contains additional headers to be added to the request.
 	Headers []WriteHeader // optional
+	// Policy configures batch write behavior (partial success, etc.)
+	Policy *BatchPolicy
+	// Deprecated: Use Policy.AllOrNone instead.
+	AllOrNone *bool
+}
+
+// GetAllOrNone returns the effective AllOrNone value.
+// Prefers Policy.AllOrNone if set, falls back to deprecated AllOrNone field,
+// defaults to false (partial success allowed) if neither is set.
+func (p BatchWriteParam) GetAllOrNone() bool {
+	if p.Policy != nil && p.Policy.AllOrNone != nil {
+		return *p.Policy.AllOrNone
+	}
+
+	if p.AllOrNone != nil {
+		return *p.AllOrNone
+	}
+
+	return false // default: partial success allowed
 }
 
 func TransformWriteHeaders(headers []WriteHeader, mode HeaderMode) []Header {
@@ -817,7 +858,7 @@ const (
 
 type SearchFilter struct {
 	// multiple filters are joined by `and` by default.
-	FieldFilters []FieldFilter `json:"filters" validate:"required,dive"`
+	FieldFilters []FieldFilter `json:"fieldFilters" validate:"required,dive"`
 }
 
 type FieldFilter struct {
@@ -836,16 +877,16 @@ type SearchParams struct {
 	ObjectName string `json:"objectName" validate:"required"`
 
 	// Fields to return in the search result.
-	Fields   datautils.StringSet `json:"fields"   validate:"required"`
-	Filter   SearchFilter        `json:"filter"   validate:"required"`
-	NextPage NextPageToken       `json:"nextPage" validate:"required"`
+	Fields   datautils.StringSet `json:"fields"             validate:"required"`
+	Filter   SearchFilter        `json:"filter"             validate:"required"`
+	NextPage NextPageToken       `json:"nextPage,omitempty"`
 
 	// Page Limit for the search. If omitted, return provider's default limit.
 	Limit int64 `json:"limit,omitempty"`
 
 	// AssociatedObjects specifies a list of related objects to fetch along with the main object.
 	// Optional.
-	AssociatedObjects []string
+	AssociatedObjects []string `json:"associatedObjects,omitempty"`
 }
 
 type SearchResult = ReadResult

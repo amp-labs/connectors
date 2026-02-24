@@ -3,8 +3,12 @@ package associations
 import "github.com/amp-labs/connectors/common"
 
 // FieldsForSelectQueryRead adds fields for associated objects to the fields list.
+// Id is always included so the response has a top-level Id for ReadResultRow.
 func FieldsForSelectQueryRead(params *common.ReadParams) []string {
 	fields := params.Fields.List()
+	if !containsField(fields, "Id") {
+		fields = append([]string{"Id"}, fields...)
+	}
 
 	if params.AssociatedObjects == nil {
 		return fields
@@ -19,6 +23,9 @@ func FieldsForSelectQueryRead(params *common.ReadParams) []string {
 
 func FieldsForSelectQuerySearch(params *common.SearchParams) []string {
 	fields := params.Fields.List()
+	if !containsField(fields, "Id") {
+		fields = append([]string{"Id"}, fields...)
+	}
 
 	if params.AssociatedObjects == nil {
 		return fields
