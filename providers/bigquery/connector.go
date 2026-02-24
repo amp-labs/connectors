@@ -7,36 +7,40 @@ import (
 	"cloud.google.com/go/bigquery"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
-	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
-	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 )
 
 var (
-	errInvalidCustomAuthenticatedClient = errors.New("invalid custom authenticated client: expected *bigquery.Client")
-	errMissingDataset                   = errors.New("missing dataset in metadata")
-	errMissingProject                   = errors.New("missing project in metadata")
-	errMissingCredentials               = errors.New("missing credentials in metadata")
-	metadataDatasetKey                  = "dataset"
-	metadataProjectKey                  = "project"
-	metadataCredentialsKey              = "credentials"
+	errMissingDataset = errors.New("missing dataset in metadata")
+	errMissingProject = errors.New("missing project in metadata")
 )
 
-// Connector provides BigQuery read/write operations using the Storage Read API.
+// Connector provides BigQuery read operations using the Storage Read API.
 //
 // # Authentication
 //
-// This connector requires a pre-authenticated *bigquery.Client passed via
-// CustomAuthenticatedClient. Additionally, the Storage Read API requires
-// separate credentials passed via metadata["credentials"] as a JSON string.
+// Pass a *BigQueryAuth as CustomAuthenticatedClient. This bundles:
+//   - A pre-authenticated *bigquery.Client (for metadata/schema queries)
+//   - Raw service account JSON credentials (for Storage Read API gRPC clients)
+//   - A TimestampColumn name (for incremental reads and backfill windowing)
 //
 // # Required Metadata
 //
-//   - project: GCP project ID
-//   - dataset: BigQuery dataset name
-//   - credentials: Service account JSON for Storage API authentication
+//   - project: GCP project ID (e.g., "my-gcp-project")
+//   - dataset: BigQuery dataset name (e.g., "analytics")
+//
+// # How reading works
+//
+// The connector uses the BigQuery Storage Read API for all data reads. This API
+// provides parallel streaming via Arrow format, which is significantly faster than
+// the SQL query API for large datasets.
+//
+// For incremental reads (Since/Until set), the connector applies a RowRestriction
+// filter on the TimestampColumn. For full backfills (no Since), the connector
+// automatically partitions the table into 30-day time windows to ensure each
+// Storage API session completes within its 6-hour lifetime. See read.go for details.
 type Connector struct {
 	*components.Connector
 
@@ -45,10 +49,8 @@ type Connector struct {
 
 	components.SchemaProvider
 	components.Reader
-	components.Writer
-	components.Deleter
 
-	// handle is the pre-authenticated BigQuery client for SQL operations.
+	// handle is the pre-authenticated BigQuery client for SQL/metadata operations.
 	handle *bigquery.Client
 
 	// project is the GCP project ID.
@@ -57,41 +59,62 @@ type Connector struct {
 	// dataset is the BigQuery dataset name.
 	dataset string
 
-	// credentials is the service account JSON for Storage API authentication.
-	// The Storage API requires separate auth from the main BigQuery client.
+	// credentials is the service account JSON for Storage Read API authentication.
+	// The Storage API uses gRPC and cannot share the HTTP-based bigquery.Client.
 	credentials []byte
+
+	// timestampColumn is the column used for time-based filtering and backfill windowing.
+	// Must be TIMESTAMP or DATETIME type. Required for all reads.
+	timestampColumn string
 }
 
 // NewConnector creates a new BigQuery connector.
+//
+// Example usage:
+//
+//	auth := &bigquery.BigQueryAuth{
+//	    Client:          bqClient,         // pre-authenticated *bigquery.Client
+//	    Credentials:     serviceAccountJSON, // raw JSON bytes
+//	    TimestampColumn: "my_timestamp_col", // required: column for incremental reads & backfill windowing
+//	}
+//
+//	conn, err := bigquery.NewConnector(common.ConnectorParams{
+//	    CustomAuthenticatedClient: auth,
+//	    Metadata: map[string]string{
+//	        "project": "my-gcp-project",
+//	        "dataset": "analytics",
+//	    },
+//	})
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	connector, err := components.Initialize(providers.BigQuery, params, constructor)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize connector: %w", err)
 	}
 
-	var ok bool
-	connector.handle, ok = params.CustomAuthenticatedClient.(*bigquery.Client)
-	if !ok || connector.handle == nil {
-		return nil, errInvalidCustomAuthenticatedClient
+	// Extract and validate the auth wrapper.
+	auth, ok := params.CustomAuthenticatedClient.(*BigQueryAuth)
+	if !ok || auth == nil {
+		return nil, errInvalidAuthClient
 	}
 
-	connector.project, ok = params.Metadata[metadataProjectKey]
+	if err := auth.Validate(); err != nil {
+		return nil, fmt.Errorf("invalid BigQueryAuth: %w", err)
+	}
+
+	connector.handle = auth.Client
+	connector.credentials = auth.Credentials
+	connector.timestampColumn = auth.TimestampColumn
+
+	// Extract required metadata.
+	connector.project, ok = params.Metadata["project"]
 	if !ok || connector.project == "" {
 		return nil, errMissingProject
 	}
 
-	connector.dataset, ok = params.Metadata[metadataDatasetKey]
+	connector.dataset, ok = params.Metadata["dataset"]
 	if !ok || connector.dataset == "" {
 		return nil, errMissingDataset
 	}
-
-	// Credentials are required for the Storage Read API.
-	credsStr, ok := params.Metadata[metadataCredentialsKey]
-	if !ok || credsStr == "" {
-		return nil, errMissingCredentials
-	}
-
-	connector.credentials = []byte(credsStr)
 
 	return connector, nil
 }
@@ -101,8 +124,6 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 	connector.SchemaProvider = schema.NewDelegateSchemaProvider(connector.listObjectMetadata)
 	connector.Reader = reader.NewDelegateReader(connector.Read)
-	connector.Writer = writer.NewDelegateWriter(connector.Write)
-	connector.Deleter = deleter.NewDelegateDeleter(connector.Delete)
 
 	return connector, nil
 }

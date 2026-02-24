@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -84,6 +85,7 @@ func main() {
 	params := common.ReadParams{
 		ObjectName: tableName,
 		PageSize:   pageSize,
+		Since:      time.Now().Add(-30 * 24 * time.Hour),
 	}
 
 	if len(fieldsList) > 0 {
