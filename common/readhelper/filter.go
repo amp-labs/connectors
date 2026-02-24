@@ -135,7 +135,8 @@ func MakeIdentityFilterFunc(nextPageFunc common.NextPageFunc) common.RecordsFilt
 //   - order: defines the chronological order of the input records.
 //   - boundary: defines whether Since/Until are inclusive or exclusive.
 //   - timestampKey: JSON key used to extract the timestamp value from each record.
-//   - timestampFormat: time format layout for parsing timestamps.
+//   - timestampFormat: time format layout for parsing timestamps. Use [TimestampFormatUnixMs]
+//     for fields that store millisecond epoch integers instead of formatted strings.
 //   - nextPageFunc: function used to determine the next page token from the response body.
 func MakeTimeFilterFunc(
 	order TimeOrder, boundary *TimeBoundary,
