@@ -181,7 +181,8 @@ func (c *Connector) getDataMarshaller(
 		}
 
 		if len(associatedObjects) > 0 {
-			if err := c.fillAssociations(ctx, objName, &data, associatedObjects); err != nil {
+			err := c.crmAdapter.AssociationsStrategy.FillAssociations(ctx, objName, &data, associatedObjects)
+			if err != nil {
 				return nil, err
 			}
 		}
