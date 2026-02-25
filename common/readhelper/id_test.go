@@ -158,10 +158,10 @@ func TestMakeGetMarshaledDataWithId(t *testing.T) {
 			expectedFields: []string{"name"},
 		},
 		{
-			name:       "empty records returns empty slice",
-			objectName: "contacts",
-			records:    []map[string]any{},
-			fields:     []string{"name"},
+			name:        "empty records returns empty slice",
+			objectName:  "contacts",
+			records:     []map[string]any{},
+			fields:      []string{"name"},
 			expectedIds: []string{},
 		},
 		{
