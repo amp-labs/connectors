@@ -61,11 +61,16 @@ func (c *Connector) parseReadResponse(
 		return nil, err
 	}
 
+	registry, err := c.fetchCustomFieldDefinitions(ctx, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
 	return common.ParseResult(
 		response,
-		common.ExtractRecordsFromPath("data"), // records live in the "data" array
+		common.MakeRecordsFunc("data"), // records live in the "data" array
 		makeNextRecordsURL(reqURL),
-		common.GetMarshaledData,
+		common.MakeMarshaledDataFunc(c.attachReadCustomFields(registry)),
 		params.Fields,
 	)
 }
