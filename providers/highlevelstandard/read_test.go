@@ -40,7 +40,9 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{},
+						Fields: map[string]any{
+							"id": "67922facc1844a515a6d72e5",
+						},
 						Raw: map[string]any{
 							"customFields": []any{},
 							"name":         "Msoft",
@@ -55,6 +57,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"updatedAt": "2025-01-23T12:01:48.430Z",
 							"id":        "67922facc1844a515a6d72e5",
 						},
+						Id: "67922facc1844a515a6d72e5",
 					},
 				},
 				Done: true,
@@ -76,7 +79,9 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{},
+						Fields: map[string]any{
+							"id": "c5d87HDX906XNUdQD3rS",
+						},
 						Raw: map[string]any{
 							"id":          "c5d87HDX906XNUdQD3rS",
 							"name":        "test",
@@ -86,6 +91,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"dateAdded":   "2025-01-24T13:13:05.541Z",
 							"dateUpdated": "2025-01-24T13:22:00.493Z",
 						},
+						Id: "c5d87HDX906XNUdQD3rS",
 					},
 				},
 				Done: true,
