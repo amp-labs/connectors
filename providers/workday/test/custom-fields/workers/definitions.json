@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "id": "cf_001",
+      "webServiceAlias": "customField_departmentCode",
+      "descriptor": "Department Code",
+      "fieldType": "Text"
+    },
+    {
+      "id": "cf_002",
+      "webServiceAlias": "customField_yearsExperience",
+      "descriptor": "Years Experience",
+      "fieldType": "Numeric"
+    }
+  ]
+}
