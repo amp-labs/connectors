@@ -4,9 +4,8 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
-
-const ModuleCRMVersion = "v3"
 
 type Adapter struct {
 	Client     *common.JSONHTTPClient
@@ -23,23 +22,23 @@ func NewAdapter(client *common.JSONHTTPClient, moduleInfo *providers.ModuleInfo)
 // nolint:lll
 // https://developers.hubspot.com/docs/api-reference/crm-properties-v3/properties/post-crm-properties-v3-objectType-batch-create
 func (a *Adapter) getPropertyBatchCreateURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.moduleInfo.BaseURL, "properties", ModuleCRMVersion, objectName, "/batch/create")
+	return urlbuilder.New(a.moduleInfo.BaseURL, "properties", core.APIVersion3, objectName, "/batch/create")
 }
 
 // nolint:lll
 // https://developers.hubspot.com/docs/api-reference/crm-properties-v3/properties/patch-crm-properties-v3-objectType-propertyName
 func (a *Adapter) getPropertyUpdateURL(objectName, propertyName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.moduleInfo.BaseURL, "properties", ModuleCRMVersion, objectName, propertyName)
+	return urlbuilder.New(a.moduleInfo.BaseURL, "properties", core.APIVersion3, objectName, propertyName)
 }
 
 // nolint:lll
 // https://developers.hubspot.com/docs/api-reference/crm-properties-v3/groups/get-crm-v3-properties-objectType-groups-groupName
 func (a *Adapter) getPropertyGroupNameURL(objectName, groupName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.moduleInfo.BaseURL, "properties", ModuleCRMVersion, objectName, "groups", groupName)
+	return urlbuilder.New(a.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, "groups", groupName)
 }
 
 // nolint:lll
 // https://developers.hubspot.com/docs/api-reference/crm-properties-v3/groups/post-crm-v3-properties-objectType-groups
 func (a *Adapter) getPropertyGroupNameCreationURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.moduleInfo.BaseURL, "properties", ModuleCRMVersion, objectName, "groups")
+	return urlbuilder.New(a.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, "groups")
 }
