@@ -19,7 +19,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	if params.RecordId != "" {
+	if !params.IsCreate() {
 		url.AddPath(params.RecordId)
 		method = http.MethodPatch
 	}
