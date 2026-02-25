@@ -153,11 +153,7 @@ func TestGetRecords(t *testing.T) {
 		{
 			name:    "Result item not an object",
 			json:    `{"results": [123]}`,
-<<<<<<< HEAD
 			wantErr: testutils.StringError("collection is not an array"),
-=======
-			wantErr: jsonquery.ErrNotObject,
->>>>>>> 351b036a (tidy(hubspot): Simplify parse methods)
 		},
 	}
 
