@@ -111,8 +111,6 @@ func CheckErrors(t *testing.T, name string, expectedErrs []error, actualErr erro
 
 	// check every error
 	for _, expectedErr := range expectedErrs {
-		if !errors.Is(actualErr, expectedErr) && !strings.Contains(actualErr.Error(), expectedErr.Error()) {
-			t.Fatalf("%s: expected Error: (%v), got: (%v)", name, expectedErr, actualErr)
-		}
+		CheckError(t, name, expectedErr, actualErr)
 	}
 }
