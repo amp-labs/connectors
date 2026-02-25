@@ -222,9 +222,18 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
+	return constructTestConnectorGeneral(serverURL, providers.ModuleAtlassianJira)
+}
+
+// nolint:unused
+func constructTestConnectorConfluence(serverURL string) (*Connector, error) {
+	return constructTestConnectorGeneral(serverURL, providers.ModuleAtlassianConfluence)
+}
+
+func constructTestConnectorGeneral(serverURL string, module common.ModuleID) (*Connector, error) {
 	connector, err := NewConnector(
 		common.ConnectorParams{
-			Module:              providers.ModuleAtlassianJira,
+			Module:              module,
 			AuthenticatedClient: mockutils.NewClient(),
 			Workspace:           "test-workspace",
 			Metadata: map[string]string{
