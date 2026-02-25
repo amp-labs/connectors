@@ -29,7 +29,7 @@ func TestGetRecordByIds(t *testing.T) {
 			Input: common.ReadByIdsParams{
 				ObjectName: "people",
 				Fields:     []string{"email_address"},
-				RecordIds:       []string{"164510523", "164510464"},
+				RecordIds:  []string{"164510523", "164510464"},
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -78,7 +78,7 @@ func TestGetRecordByIds(t *testing.T) {
 			Input: common.ReadByIdsParams{
 				ObjectName: "accounts",
 				Fields:     []string{"name"},
-				RecordIds:       []string{"48371814", "48371806"},
+				RecordIds:  []string{"48371814", "48371806"},
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -123,7 +123,7 @@ func TestGetRecordByIds(t *testing.T) {
 			Input: common.ReadByIdsParams{
 				ObjectName: "users",
 				Fields:     []string{"email"},
-				RecordIds:       []string{"49067"},
+				RecordIds:  []string{"49067"},
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),

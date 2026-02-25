@@ -8,7 +8,11 @@ import (
 )
 
 // Reference: https://developers.salesloft.com/docs/api/account-stages-index/
-func (c *Connector) GetRecordsByIds(ctx context.Context, params common.ReadByIdsParams) ([]common.ReadResultRow, error) {
+//
+//nolint:godoclint,revive
+func (c *Connector) GetRecordsByIds(ctx context.Context,
+	params common.ReadByIdsParams,
+) ([]common.ReadResultRow, error) {
 	// Sanitize method arguments.
 	config := common.ReadParams{
 		ObjectName: params.ObjectName,

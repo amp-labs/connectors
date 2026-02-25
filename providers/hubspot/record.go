@@ -30,7 +30,9 @@ var (
 */
 
 //nolint:revive,funlen
-func (c *Connector) GetRecordsByIds(ctx context.Context, params common.ReadByIdsParams) ([]common.ReadResultRow, error) {
+func (c *Connector) GetRecordsByIds(ctx context.Context,
+	params common.ReadByIdsParams,
+) ([]common.ReadResultRow, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
 	singularObjName := naming.NewSingularString(params.ObjectName).String()

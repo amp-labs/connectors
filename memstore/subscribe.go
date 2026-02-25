@@ -381,8 +381,10 @@ func (c *Connector) VerifyWebhookMessage(
 // the complete record. If associations are requested, they will be populated in the
 // Associations field of each row. Returns an error if the storage operation fails.
 //
-//nolint:cyclop,nestif,funlen // complexity from filtering
-func (c *Connector) GetRecordsByIds(_ context.Context, params common.ReadByIdsParams) ([]common.ReadResultRow, error) {
+//nolint:cyclop,nestif,funlen,revive // complexity from filtering
+func (c *Connector) GetRecordsByIds(_ context.Context,
+	params common.ReadByIdsParams,
+) ([]common.ReadResultRow, error) {
 	// First, collect all the records
 	records := make([]map[string]any, 0, len(params.RecordIds))
 	results := make([]common.ReadResultRow, 0, len(params.RecordIds))

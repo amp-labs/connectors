@@ -10,7 +10,11 @@ import (
 )
 
 // GetRecordsByIds returns records matching identifiers.
-func (c *Connector) GetRecordsByIds(ctx context.Context, params common.ReadByIdsParams) ([]common.ReadResultRow, error) {
+//
+//nolint:revive
+func (c *Connector) GetRecordsByIds(ctx context.Context,
+	params common.ReadByIdsParams,
+) ([]common.ReadResultRow, error) {
 	// Sanitize method arguments.
 	config := recordsByIDsParams{
 		ReadParams: common.ReadParams{

@@ -14,7 +14,11 @@ var _ connectors.BatchRecordReaderConnector = &Connector{}
 
 // GetRecordsByIds implements BatchRecordReaderConnector for Outreach.
 // It fetches records for the given object and IDs, returning a ReadResult for each.
-func (c *Connector) GetRecordsByIds(ctx context.Context, params common.ReadByIdsParams) ([]common.ReadResultRow, error) {
+//
+//nolint:revive
+func (c *Connector) GetRecordsByIds(ctx context.Context,
+	params common.ReadByIdsParams,
+) ([]common.ReadResultRow, error) {
 	// Sanitize method arguments.
 	config := common.ReadParams{
 		ObjectName:        params.ObjectName,

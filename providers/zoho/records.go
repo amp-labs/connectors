@@ -9,7 +9,10 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-func (c *Connector) GetRecordsByIds(ctx context.Context, params common.ReadByIdsParams) ([]common.ReadResultRow, error) {
+//nolint:revive
+func (c *Connector) GetRecordsByIds(ctx context.Context,
+	params common.ReadByIdsParams,
+) ([]common.ReadResultRow, error) {
 	if len(params.RecordIds) == 0 {
 		return nil, fmt.Errorf("%w: recordIds is empty", errMissingParams)
 	}
