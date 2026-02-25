@@ -130,7 +130,7 @@ func TestRead(t *testing.T) {
 			},
 		},
 		{
-			Name: "Read products supports connector-side incremental filtering (created_at) and can stop early",
+			Name: "Read products supports connector-side incremental filtering (created_at)",
 			Input: common.ReadParams{
 				ObjectName: "products",
 				Fields:     datautils.NewStringSet("id"),
@@ -157,8 +157,8 @@ func TestRead(t *testing.T) {
 					Fields: map[string]any{"id": "prod_new"},
 					Raw:    map[string]any{"id": "prod_new"},
 				}},
-				NextPage: "",
-				Done:     true,
+				NextPage: testroutines.URLTestServer + "/v2/projects/proj_123/products?starting_after=prod_old",
+				Done:     false,
 			},
 		},
 		{
