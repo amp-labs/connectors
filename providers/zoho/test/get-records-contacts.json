@@ -1,0 +1,29 @@
+{
+  "data": [
+    {
+      "Full_Name": "Ryan Dahl2",
+      "id": "6493490000001291001",
+      "Created_By": {
+        "name": "Joseph Karage",
+        "id": "6493490000000486001",
+        "email": "josephkarage@gmail.com"
+      }
+    },
+    {
+      "Full_Name": "Jane Smith",
+      "id": "6493490000001291002",
+      "Created_By": {
+        "name": "Joseph Karage",
+        "id": "6493490000000486001",
+        "email": "josephkarage@gmail.com"
+      }
+    }
+  ],
+  "info": {
+    "per_page": 200,
+    "next_page_token": null,
+    "count": 2,
+    "page": 1,
+    "more_records": false
+  }
+}

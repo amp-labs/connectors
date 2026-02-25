@@ -57,11 +57,11 @@ func main() {
 	// Step 2: Fetch the created records using GetRecordsByIds
 	fmt.Println("\nFetching accounts by IDs...")
 
-	res, err := conn.GetRecordsByIds(ctx,
-		"accounts",
-		recordIDs,
-		[]string{"id", "name", "domain", "industry", "numberOfEmployees"},
-		nil)
+	res, err := conn.GetRecordsByIds(ctx, common.ReadByIdsParams{
+		ObjectName: "accounts",
+		RecordIds:  recordIDs,
+		Fields:     []string{"id", "name", "domain", "industry", "numberOfEmployees"},
+	})
 	if err != nil {
 		utils.Fail("error getting records by ids", "error", err)
 	}

@@ -381,20 +381,14 @@ func (c *Connector) VerifyWebhookMessage(
 // the complete record. If associations are requested, they will be populated in the
 // Associations field of each row. Returns an error if the storage operation fails.
 //
-//nolint:revive,cyclop,nestif,funlen // recordIds parameter name; complexity from filtering
-func (c *Connector) GetRecordsByIds(
-	_ context.Context,
-	objectName string,
-	recordIds []string,
-	fields []string,
-	associations []string,
-) ([]common.ReadResultRow, error) {
+//nolint:cyclop,nestif,funlen // complexity from filtering
+func (c *Connector) GetRecordsByIds(_ context.Context, params common.ReadByIdsParams) ([]common.ReadResultRow, error) {
 	// First, collect all the records
-	records := make([]map[string]any, 0, len(recordIds))
-	results := make([]common.ReadResultRow, 0, len(recordIds))
+	records := make([]map[string]any, 0, len(params.RecordIds))
+	results := make([]common.ReadResultRow, 0, len(params.RecordIds))
 
-	for _, id := range recordIds {
-		record, err := c.storage.Get(objectName, id)
+	for _, id := range params.RecordIds {
+		record, err := c.storage.Get(params.ObjectName, id)
 		if err != nil {
 			// Skip records that don't exist (consistent with provider behavior)
 			if errors.Is(err, ErrRecordNotFound) {
@@ -411,17 +405,17 @@ func (c *Connector) GetRecordsByIds(
 	// Expand associations if requested
 	var associationsMap map[string]map[string][]common.Association
 
-	if len(associations) > 0 && len(records) > 0 {
+	if len(params.AssociatedObjects) > 0 && len(records) > 0 {
 		var err error
 
-		associationsMap, err = c.expandAssociations(objectName, records, associations)
+		associationsMap, err = c.expandAssociations(params.ObjectName, records, params.AssociatedObjects)
 		if err != nil {
 			return nil, fmt.Errorf("failed to expand associations: %w", err)
 		}
 	}
 
 	// Get the ID field name for extracting record IDs
-	idField := c.storage.GetIdFields()[ObjectName(objectName)]
+	idField := c.storage.GetIdFields()[ObjectName(params.ObjectName)]
 	if idField == "" {
 		idField = "id"
 	}
@@ -438,10 +432,10 @@ func (c *Connector) GetRecordsByIds(
 
 		// Filter fields if requested
 		filteredFields := record
-		if len(fields) > 0 {
-			filteredFields = make(map[string]any, len(fields))
+		if len(params.Fields) > 0 {
+			filteredFields = make(map[string]any, len(params.Fields))
 
-			for _, field := range fields {
+			for _, field := range params.Fields {
 				if value, exists := record[field]; exists {
 					filteredFields[field] = value
 				}

@@ -9,29 +9,18 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-//nolint:revive
-func (c *Connector) GetRecordsByIds(
-	ctx context.Context,
-	objectName string,
-	//nolint:revive
-	recordIds []string,
-	fields []string,
-	associations []string,
-) ([]common.ReadResultRow, error) {
-	if len(recordIds) == 0 {
+func (c *Connector) GetRecordsByIds(ctx context.Context, params common.ReadByIdsParams) ([]common.ReadResultRow, error) {
+	if len(params.RecordIds) == 0 {
 		return nil, fmt.Errorf("%w: recordIds is empty", errMissingParams)
 	}
 
-	url, err := c.getAPIURL(crmAPIVersion, objectName)
+	url, err := c.getAPIURL(crmAPIVersion, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	url.WithQueryParam("ids", strings.Join(recordIds, ","))
-
-	fieldsNames := strings.Join(fields, ",")
-
-	url.WithQueryParam("fields", fieldsNames)
+	url.WithQueryParam("ids", strings.Join(params.RecordIds, ","))
+	url.WithQueryParam("fields", strings.Join(params.Fields, ","))
 
 	res, err := c.Client.Get(ctx, url.String())
 	if err != nil {
@@ -42,7 +31,7 @@ func (c *Connector) GetRecordsByIds(
 		common.ExtractRecordsFromPath("data"),
 		getNextRecordsURL(url),
 		common.GetMarshaledData,
-		datautils.NewSetFromList(fields),
+		datautils.NewSetFromList(params.Fields),
 	)
 	if err != nil {
 		return nil, err

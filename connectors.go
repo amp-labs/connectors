@@ -150,15 +150,10 @@ type BatchRecordReaderConnector interface {
 	// singular-by-identity read that operates over multiple explicit IDs.
 	//
 	// The connector should:
-	//   - Fetch only the specified recordIds
-	//   - Respect requested fields and associations when supported by the provider
+	//   - Fetch only the specified params.RecordIds
+	//   - Respect params.Fields and params.AssociatedObjects when supported by the provider
 	//   - Return provider responses translated into ReadResultRow
-	GetRecordsByIds(
-		ctx context.Context,
-		objectName string,
-		recordIds []string, //nolint:revive
-		fields []string,
-		associations []string) ([]common.ReadResultRow, error)
+	GetRecordsByIds(ctx context.Context, params common.ReadByIdsParams) ([]common.ReadResultRow, error)
 }
 
 // WebhookVerifierConnector defines the interface for connectors that can

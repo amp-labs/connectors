@@ -14,32 +14,26 @@ var _ connectors.BatchRecordReaderConnector = &Connector{}
 
 // GetRecordsByIds implements BatchRecordReaderConnector for Outreach.
 // It fetches records for the given object and IDs, returning a ReadResult for each.
-func (c *Connector) GetRecordsByIds( //nolint:revive
-	ctx context.Context,
-	objectName string,
-	ids []string,
-	fields []string,
-	associations []string,
-) ([]common.ReadResultRow, error) {
+func (c *Connector) GetRecordsByIds(ctx context.Context, params common.ReadByIdsParams) ([]common.ReadResultRow, error) {
 	// Sanitize method arguments.
 	config := common.ReadParams{
-		ObjectName:        objectName,
-		Fields:            datautils.NewSetFromList(fields),
-		AssociatedObjects: associations,
+		ObjectName:        params.ObjectName,
+		Fields:            datautils.NewSetFromList(params.Fields),
+		AssociatedObjects: params.AssociatedObjects,
 	}
 
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
 
-	url, err := c.buildReadByIDsURL(objectName, ids)
+	url, err := c.buildReadByIDsURL(params.ObjectName, params.RecordIds)
 	if err != nil {
 		return nil, err
 	}
 
 	// Sets the query parameter `include` when the request has associated objects.
-	if len(associations) > 0 {
-		url.WithQueryParam(includeQueryParam, strings.Join(associations, ","))
+	if len(params.AssociatedObjects) > 0 {
+		url.WithQueryParam(includeQueryParam, strings.Join(params.AssociatedObjects, ","))
 	}
 
 	rsp, err := c.Client.Get(ctx, url.String())
