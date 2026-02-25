@@ -15,24 +15,30 @@ import (
 )
 
 const defaultPageSize = "100" // doc default 50; max 100 (from testing)
+// objectsWithoutLimitParam lists object names whose list endpoints do not accept
+// the limit query parameter (API returns 400 invalid_field for limit).
+var objectsWithoutLimitParam = datautils.NewSet( //nolint:gochecknoglobals
+	"artifacts",
+	"auth-tokens",
+	"dev-orgs.auth-connections",
+	"schemas.subtypes",
+	"webhooks",
+)
+
 // objectsWithModifiedDateFilter lists object names whose list endpoints support
 // modified_date.after and modified_date.before query parameter.
 var objectsWithModifiedDateFilter = datautils.NewSet( //nolint:gochecknoglobals
 	"accounts",
-	"artifacts",
-	"brands",
 	"code-changes",
 	"conversations",
 	"engagements",
 	"groups",
 	"incidents",
 	"jobs",
-	"links",
 	"meetings",
 	"parts",
 	"rev-orgs",
 	"rev-users",
-	"timeline-entries",
 	"works",
 )
 
@@ -58,7 +64,9 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	pageSize := readhelper.PageSizeWithDefaultStr(params, defaultPageSize)
-	url.WithQueryParam("limit", pageSize)
+	if !objectsWithoutLimitParam.Has(params.ObjectName) {
+		url.WithQueryParam("limit", pageSize)
+	}
 	// if object supports modified date filter, add the since and until query params
 	if objectsWithModifiedDateFilter.Has(params.ObjectName) {
 		if !params.Since.IsZero() {
