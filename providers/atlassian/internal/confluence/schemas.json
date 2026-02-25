@@ -1,0 +1,1032 @@
+{
+  "modules": {
+    "confluence": {
+      "id": "confluence",
+      "path": "",
+      "objects": {
+        "attachments": {
+          "displayName": "Attachments",
+          "path": "/attachments",
+          "responseKey": "results",
+          "fields": {
+            "_links": {
+              "displayName": "_links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "blogPostId": {
+              "displayName": "blogPostId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "comment": {
+              "displayName": "comment",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customContentId": {
+              "displayName": "customContentId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "downloadLink": {
+              "displayName": "downloadLink",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fileId": {
+              "displayName": "fileId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fileSize": {
+              "displayName": "fileSize",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mediaType": {
+              "displayName": "mediaType",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mediaTypeDescription": {
+              "displayName": "mediaTypeDescription",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pageId": {
+              "displayName": "pageId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "current",
+                  "displayValue": "current"
+                },
+                {
+                  "value": "draft",
+                  "displayValue": "draft"
+                },
+                {
+                  "value": "archived",
+                  "displayValue": "archived"
+                },
+                {
+                  "value": "historical",
+                  "displayValue": "historical"
+                },
+                {
+                  "value": "trashed",
+                  "displayValue": "trashed"
+                },
+                {
+                  "value": "deleted",
+                  "displayValue": "deleted"
+                },
+                {
+                  "value": "any",
+                  "displayValue": "any"
+                }
+              ]
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "webuiLink": {
+              "displayName": "webuiLink",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "blogposts": {
+          "displayName": "Blog Posts",
+          "path": "/blogposts",
+          "responseKey": "results",
+          "fields": {
+            "_links": {
+              "displayName": "_links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "authorId": {
+              "displayName": "authorId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "body": {
+              "displayName": "body",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spaceId": {
+              "displayName": "spaceId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "current",
+                  "displayValue": "current"
+                },
+                {
+                  "value": "draft",
+                  "displayValue": "draft"
+                },
+                {
+                  "value": "historical",
+                  "displayValue": "historical"
+                },
+                {
+                  "value": "trashed",
+                  "displayValue": "trashed"
+                },
+                {
+                  "value": "deleted",
+                  "displayValue": "deleted"
+                },
+                {
+                  "value": "any",
+                  "displayValue": "any"
+                }
+              ]
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "classification-levels": {
+          "displayName": "Classification Levels",
+          "path": "/classification-levels",
+          "responseKey": "",
+          "fields": {
+            "color": {
+              "displayName": "color",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "RED",
+                  "displayValue": "RED"
+                },
+                {
+                  "value": "RED_BOLD",
+                  "displayValue": "RED_BOLD"
+                },
+                {
+                  "value": "ORANGE",
+                  "displayValue": "ORANGE"
+                },
+                {
+                  "value": "YELLOW",
+                  "displayValue": "YELLOW"
+                },
+                {
+                  "value": "GREEN",
+                  "displayValue": "GREEN"
+                },
+                {
+                  "value": "BLUE",
+                  "displayValue": "BLUE"
+                },
+                {
+                  "value": "NAVY",
+                  "displayValue": "NAVY"
+                },
+                {
+                  "value": "TEAL",
+                  "displayValue": "TEAL"
+                },
+                {
+                  "value": "PURPLE",
+                  "displayValue": "PURPLE"
+                },
+                {
+                  "value": "GREY",
+                  "displayValue": "GREY"
+                },
+                {
+                  "value": "LIME",
+                  "displayValue": "LIME"
+                }
+              ]
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "guideline": {
+              "displayName": "guideline",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "order": {
+              "displayName": "order",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "DRAFT",
+                  "displayValue": "DRAFT"
+                },
+                {
+                  "value": "PUBLISHED",
+                  "displayValue": "PUBLISHED"
+                },
+                {
+                  "value": "ARCHIVED",
+                  "displayValue": "ARCHIVED"
+                }
+              ]
+            }
+          }
+        },
+        "data-policies/spaces": {
+          "displayName": "Data Policy Spaces",
+          "path": "/data-policies/spaces",
+          "responseKey": "results",
+          "fields": {
+            "_links": {
+              "displayName": "_links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "dataPolicy": {
+              "displayName": "dataPolicy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "icon": {
+              "displayName": "icon",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "footer-comments": {
+          "displayName": "Footer Comment Models",
+          "path": "/footer-comments",
+          "responseKey": "results",
+          "fields": {
+            "_links": {
+              "displayName": "_links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "attachmentId": {
+              "displayName": "attachmentId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "blogPostId": {
+              "displayName": "blogPostId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "body": {
+              "displayName": "body",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "customContentId": {
+              "displayName": "customContentId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "likes": {
+              "displayName": "likes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "operations": {
+              "displayName": "operations",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "pageId": {
+              "displayName": "pageId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parentCommentId": {
+              "displayName": "parentCommentId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "properties": {
+              "displayName": "properties",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "current",
+                  "displayValue": "current"
+                },
+                {
+                  "value": "draft",
+                  "displayValue": "draft"
+                },
+                {
+                  "value": "archived",
+                  "displayValue": "archived"
+                },
+                {
+                  "value": "historical",
+                  "displayValue": "historical"
+                },
+                {
+                  "value": "trashed",
+                  "displayValue": "trashed"
+                },
+                {
+                  "value": "deleted",
+                  "displayValue": "deleted"
+                },
+                {
+                  "value": "any",
+                  "displayValue": "any"
+                }
+              ]
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "versions": {
+              "displayName": "versions",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "inline-comments": {
+          "displayName": "Inline Comment Models",
+          "path": "/inline-comments",
+          "responseKey": "results",
+          "fields": {
+            "_links": {
+              "displayName": "_links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "blogPostId": {
+              "displayName": "blogPostId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "body": {
+              "displayName": "body",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "likes": {
+              "displayName": "likes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "operations": {
+              "displayName": "operations",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "pageId": {
+              "displayName": "pageId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parentCommentId": {
+              "displayName": "parentCommentId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "properties": {
+              "displayName": "properties",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "resolutionLastModifiedAt": {
+              "displayName": "resolutionLastModifiedAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "resolutionLastModifierId": {
+              "displayName": "resolutionLastModifierId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "resolutionStatus": {
+              "displayName": "resolutionStatus",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "open",
+                  "displayValue": "open"
+                },
+                {
+                  "value": "reopened",
+                  "displayValue": "reopened"
+                },
+                {
+                  "value": "resolved",
+                  "displayValue": "resolved"
+                },
+                {
+                  "value": "dangling",
+                  "displayValue": "dangling"
+                }
+              ]
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "current",
+                  "displayValue": "current"
+                },
+                {
+                  "value": "draft",
+                  "displayValue": "draft"
+                },
+                {
+                  "value": "archived",
+                  "displayValue": "archived"
+                },
+                {
+                  "value": "historical",
+                  "displayValue": "historical"
+                },
+                {
+                  "value": "trashed",
+                  "displayValue": "trashed"
+                },
+                {
+                  "value": "deleted",
+                  "displayValue": "deleted"
+                },
+                {
+                  "value": "any",
+                  "displayValue": "any"
+                }
+              ]
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "versions": {
+              "displayName": "versions",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "labels": {
+          "displayName": "Labels",
+          "path": "/labels",
+          "responseKey": "results",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "prefix": {
+              "displayName": "prefix",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "pages": {
+          "displayName": "Pages",
+          "path": "/pages",
+          "responseKey": "results",
+          "fields": {
+            "_links": {
+              "displayName": "_links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "authorId": {
+              "displayName": "authorId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "body": {
+              "displayName": "body",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastOwnerId": {
+              "displayName": "lastOwnerId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ownerId": {
+              "displayName": "ownerId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parentId": {
+              "displayName": "parentId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parentType": {
+              "displayName": "parentType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "page",
+                  "displayValue": "page"
+                },
+                {
+                  "value": "whiteboard",
+                  "displayValue": "whiteboard"
+                },
+                {
+                  "value": "database",
+                  "displayValue": "database"
+                },
+                {
+                  "value": "embed",
+                  "displayValue": "embed"
+                },
+                {
+                  "value": "folder",
+                  "displayValue": "folder"
+                }
+              ]
+            },
+            "position": {
+              "displayName": "position",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "spaceId": {
+              "displayName": "spaceId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "current",
+                  "displayValue": "current"
+                },
+                {
+                  "value": "draft",
+                  "displayValue": "draft"
+                },
+                {
+                  "value": "archived",
+                  "displayValue": "archived"
+                },
+                {
+                  "value": "historical",
+                  "displayValue": "historical"
+                },
+                {
+                  "value": "trashed",
+                  "displayValue": "trashed"
+                },
+                {
+                  "value": "deleted",
+                  "displayValue": "deleted"
+                },
+                {
+                  "value": "any",
+                  "displayValue": "any"
+                }
+              ]
+            },
+            "subtype": {
+              "displayName": "subtype",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "properties": {
+          "displayName": "App Properties",
+          "path": "/app/properties",
+          "responseKey": "results",
+          "fields": {
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "value": {
+              "displayName": "value",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "space-permissions": {
+          "displayName": "Space Permissions",
+          "path": "/space-permissions",
+          "responseKey": "results",
+          "fields": {
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "requiredPermissionIds": {
+              "displayName": "requiredPermissionIds",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "space-roles": {
+          "displayName": "Space Roles",
+          "path": "/space-roles",
+          "responseKey": "results",
+          "fields": {
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spacePermissions": {
+              "displayName": "spacePermissions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "SYSTEM",
+                  "displayValue": "SYSTEM"
+                },
+                {
+                  "value": "CUSTOM",
+                  "displayValue": "CUSTOM"
+                }
+              ]
+            }
+          }
+        },
+        "spaces": {
+          "displayName": "Spaces",
+          "path": "/spaces",
+          "responseKey": "results",
+          "fields": {
+            "_links": {
+              "displayName": "_links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "authorId": {
+              "displayName": "authorId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "currentActiveAlias": {
+              "displayName": "currentActiveAlias",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "homepageId": {
+              "displayName": "homepageId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "icon": {
+              "displayName": "icon",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "current",
+                  "displayValue": "current"
+                },
+                {
+                  "value": "archived",
+                  "displayValue": "archived"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "global",
+                  "displayValue": "global"
+                },
+                {
+                  "value": "collaboration",
+                  "displayValue": "collaboration"
+                },
+                {
+                  "value": "knowledge_base",
+                  "displayValue": "knowledge_base"
+                },
+                {
+                  "value": "personal",
+                  "displayValue": "personal"
+                },
+                {
+                  "value": "system",
+                  "displayValue": "system"
+                },
+                {
+                  "value": "onboarding",
+                  "displayValue": "onboarding"
+                },
+                {
+                  "value": "xflow_sample_space",
+                  "displayValue": "xflow_sample_space"
+                }
+              ]
+            }
+          }
+        },
+        "tasks": {
+          "displayName": "Tasks",
+          "path": "/tasks",
+          "responseKey": "results",
+          "fields": {
+            "assignedTo": {
+              "displayName": "assignedTo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "blogPostId": {
+              "displayName": "blogPostId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "body": {
+              "displayName": "body",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "completedAt": {
+              "displayName": "completedAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completedBy": {
+              "displayName": "completedBy",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "createdBy",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dueAt": {
+              "displayName": "dueAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "localId": {
+              "displayName": "localId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pageId": {
+              "displayName": "pageId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spaceId": {
+              "displayName": "spaceId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "complete",
+                  "displayValue": "complete"
+                },
+                {
+                  "value": "incomplete",
+                  "displayValue": "incomplete"
+                }
+              ]
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
