@@ -37,13 +37,16 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{},
+						Fields: map[string]any{
+							"id": float64(83192),
+						},
 						Raw: map[string]any{
 							"id":           float64(83192),
 							"name":         "Test Campaign",
 							"creationTime": "2024-12-31T09:17:29.106903Z",
 							"status":       "DRAFT",
 						},
+						Id: "83192",
 					},
 				},
 				NextPage: "100",
@@ -63,13 +66,16 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{},
+						Fields: map[string]any{
+							"id": float64(71110),
+						},
 						Raw: map[string]any{
 							"id":           float64(71110),
 							"emailAddress": "sample@gmail.com",
 							"firstName":    nil,
 							"lastName":     nil,
 						},
+						Id: "71110",
 					},
 				},
 				NextPage: "100",
@@ -89,13 +95,16 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{},
+						Fields: map[string]any{
+							"id": float64(188213),
+						},
 						Raw: map[string]any{
 							"id":           float64(188213),
 							"name":         "Test 2",
 							"listType":     "USER_LIST",
 							"creationTime": "2025-03-26T10:24:33.266015Z",
 						},
+						Id: "188213",
 					},
 				},
 				NextPage: "100",
