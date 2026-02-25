@@ -16,7 +16,7 @@ func CreateDataMarshallerWithAssociations(
 		core.GetDataMarshaller(),
 		// Enhance records with associations by fetching these relationships.
 		func(rows []common.ReadResultRow) error {
-			return filler.FillAssociations(ctx, objectName, &rows, associatedObjects)
+			return filler.FillAssociations(ctx, objectName, associatedObjects, rows)
 		},
 	)
 }

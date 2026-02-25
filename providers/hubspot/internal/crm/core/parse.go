@@ -1,7 +1,6 @@
 package core
 
 import (
-	"errors"
 	"fmt"
 	"maps"
 	"strconv"
@@ -11,11 +10,6 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
-)
-
-var (
-	ErrNotObject = errors.New("result is not an object")
-	ErrMissingId = errors.New("missing id field in raw record")
 )
 
 /*
@@ -43,10 +37,8 @@ func GetNextRecordsURL(node *ajson.Node) (string, error) {
 }
 
 // GetRecords returns the records from the response.
-func GetRecords(node *ajson.Node) ([]map[string]any, error) {
-	extractor := common.ExtractRecordsFromPath("results")
-
-	return extractor(node)
+func GetRecords(node *ajson.Node) ([]*ajson.Node, error) {
+	return jsonquery.New(node).ArrayRequired("results")
 }
 
 func GetNextRecordsURLCRM(node *ajson.Node) (string, error) {
