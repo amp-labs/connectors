@@ -33,7 +33,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     true,
+			Proxy: true,
 			// this cannot be true until we collect subject product ID again (see ENG-3708)
 			Read:      false,
 			Subscribe: false,

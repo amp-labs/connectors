@@ -12,7 +12,7 @@ import (
 
 // SelectedFieldsFunc returns a whitelist of the original record, it handles the nested fields too.
 // Second output is the identifier of this record.
-type SelectedFieldsFunc func(node *ajson.Node) (map[string]any, string, error)
+type SelectedFieldsFunc func(node *ajson.Node, fields []string) (map[string]any, string, error)
 
 func MakeMarshaledSelectedDataFunc(
 	selectFields SelectedFieldsFunc,
@@ -20,7 +20,7 @@ func MakeMarshaledSelectedDataFunc(
 ) common.MarshalFromNodeFunc {
 	return func(records []*ajson.Node, fields []string) ([]common.ReadResultRow, error) {
 		if selectFields == nil {
-			selectFields = func(node *ajson.Node) (map[string]any, string, error) {
+			selectFields = func(node *ajson.Node, f []string) (map[string]any, string, error) {
 				allFields, err := jsonquery.Convertor.ObjectToMap(node)
 				if err != nil {
 					return nil, "", err
@@ -44,16 +44,21 @@ func MakeMarshaledSelectedDataFunc(
 				return nil, err
 			}
 
-			selectedFields, identifier, err := selectFields(nodeRecord)
+			selectedFields, identifier, err := selectFields(nodeRecord, fields)
 			if err != nil {
 				return nil, err
 			}
 
-			data[index] = common.ReadResultRow{
-				Fields: selectedFields,
-				Id:     identifier,
-				Raw:    raw,
+			row := common.ReadResultRow{
+				Id:  identifier,
+				Raw: raw,
 			}
+
+			if len(selectedFields) != 0 {
+				row.Fields = selectedFields
+			}
+
+			data[index] = row
 		}
 
 		return data, nil

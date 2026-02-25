@@ -122,4 +122,3 @@ func cleanupDelete(ctx context.Context, conn *phoneburner.Connector, objectName,
 	}
 	return nil
 }
-

@@ -119,13 +119,16 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{},
+						Fields: map[string]any{
+							"id": "field1",
+						},
 						Raw: map[string]any{
 							"id":         "field1",
 							"text":       "Area of Interest",
 							"type":       "text",
 							"isRequired": false,
 						},
+						Id: "field1",
 					},
 				},
 				Done: true,

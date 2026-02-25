@@ -27,4 +27,3 @@ func main() {
 		Fields:     connectors.Fields("recording_id", "name", "created_when"),
 	})
 }
-

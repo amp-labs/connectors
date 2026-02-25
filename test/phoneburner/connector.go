@@ -42,4 +42,3 @@ func getOAuthConfig() func(*credscanning.ProviderCredentials) *oauth2.Config {
 		}
 	}
 }
-

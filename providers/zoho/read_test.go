@@ -90,6 +90,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						"Full_Name":    "Ryan Dahl2",
 						"id":           "6493490000001291001",
 					},
+					Id: "6493490000001291001",
 				}},
 				NextPage: "",
 				Done:     true,

@@ -137,6 +137,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 							"workspaceId":    "1007648505208900737",
 						},
 					},
+					Id: "52947912500572621",
 				}, {
 					Fields: map[string]any{
 						"id": "137982752092261989",
@@ -150,6 +151,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 							"workspaceId":    "1007648505208900737",
 						},
 					},
+					Id: "137982752092261989",
 				}},
 				Done: true,
 			},
@@ -179,6 +181,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 							"workspaceId":    "1007648505208900737",
 						},
 					},
+					Id: "52947912500572621",
 				}, {
 					Fields: map[string]any{
 						"id": "137982752092261989",
@@ -192,6 +195,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 							"workspaceId":    "1007648505208900737",
 						},
 					},
+					Id: "137982752092261989",
 				}},
 				// This is a non-sensitive JWT for pagination (does not grant access).
 				NextPage: "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiOjQ5NTM3MDc2MDE3NzYyMzgzNjAsInRvdGFsIjoxNzksInBhZ2VOdW1iZXIiOjAsInBhZ2VTaXplIjoxMDAsInRpbWUiOiIyMDIyLTA5LTEzVDA5OjMwOjAwWiIsImV4cCI6MTcxNjYyNjE0Nn0.o6SIJZFyjlxDC8m3HJM_TBn39M6WakXpbMXFXX3Iy9I", // nosemgrep: generic.secrets.security.detected-jwt-token.detected-jwt-token

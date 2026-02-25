@@ -27,4 +27,3 @@ func main() {
 		Fields:     connectors.Fields("folder_id", "folder_name"),
 	})
 }
-

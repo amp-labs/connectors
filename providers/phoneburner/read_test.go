@@ -332,4 +332,3 @@ func comparatorSubsetReadOrderByFolderID(serverURL string, actual, expected *com
 
 	return testroutines.ComparatorSubsetRead(serverURL, actual, expected)
 }
-
