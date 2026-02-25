@@ -1,7 +1,6 @@
 package capsule
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -36,7 +35,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Validation Failed (dueOn is required)"),
+				testutils.StringError("Validation Failed (dueOn is required)"),
 			},
 		},
 		{
@@ -48,7 +47,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Method not allowed"),
+				testutils.StringError("Method not allowed"),
 			},
 		},
 		{

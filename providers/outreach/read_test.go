@@ -1,7 +1,6 @@
 package outreach
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -43,7 +42,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrRetryable,
-				errors.New(string(unsupportedResponse)), //nolint:err113
+				testutils.StringError(string(unsupportedResponse)),
 			},
 		},
 		{
@@ -55,7 +54,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrForbidden,
-				errors.New(string(callsResponse)), //nolint:err113
+				testutils.StringError(string(callsResponse)),
 			},
 		},
 		{

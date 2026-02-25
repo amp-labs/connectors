@@ -1,7 +1,6 @@
 package gong
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -46,7 +45,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(
+				testutils.StringError(
 					"parties: must not be null, direction: must not be null, actualStart: must not be null",
 				),
 			},

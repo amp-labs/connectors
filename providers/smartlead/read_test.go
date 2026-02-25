@@ -1,7 +1,6 @@
 package smartlead
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -50,7 +49,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Cannot GET /api/v1/butterflies"),
+				testutils.StringError("Cannot GET /api/v1/butterflies"),
 			},
 		},
 		{

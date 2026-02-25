@@ -1,7 +1,6 @@
 package salesforce
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -45,7 +44,7 @@ func TestBulkQuery(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Always: mockserver.Response(http.StatusBadRequest, responseUnknownObject),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("sObject type 'Accout' is not supported"),
+				common.ErrBadRequest, testutils.StringError("sObject type 'Accout' is not supported"),
 			},
 		},
 		{

@@ -1,7 +1,6 @@
 package salesforce
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -49,7 +48,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Always: mockserver.Response(http.StatusBadRequest, responseUnknownObject),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("sObject type 'Accout' is not supported"),
+				common.ErrBadRequest, testutils.StringError("sObject type 'Accout' is not supported"),
 			},
 		},
 		{
@@ -432,7 +431,7 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("A required header is missing: Pardot-Business-Unit-Id header not found on request."), // nolint:goerr113
+				testutils.StringError("A required header is missing: Pardot-Business-Unit-Id header not found on request."), // nolint:goerr113
 			},
 		},
 		{
@@ -444,7 +443,7 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("One or more required parameters are missing: fields"), // nolint:goerr113
+				testutils.StringError("One or more required parameters are missing: fields"), // nolint:goerr113
 			},
 		},
 		{

@@ -41,7 +41,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Always: mockserver.Response(http.StatusBadRequest, unsupportedResponse),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrObjectNotSupported,
+				testutils.StringError("operation is not supported for this object in this module: arsenal does not support read"), // nolint:lll
 			},
 		},
 		{
@@ -250,7 +250,9 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If:    mockcond.MethodPOST(),
 				Then:  mockserver.Response(http.StatusNotFound, unsupportedResponse),
 			}.Server(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
+			ExpectedErrs: []error{
+				testutils.StringError("operation is not supported for this object in this module: arsenal does not support write"), // nolint:lll
+			},
 		},
 		{
 			Name: "Successful start a conversation",

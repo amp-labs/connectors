@@ -1,7 +1,6 @@
 package linkedin
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -56,7 +55,7 @@ func TestAdsDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrNotFound,
-				errors.New(
+				testutils.StringError(
 					"Not Found.",
 				),
 			},

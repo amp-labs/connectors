@@ -1,7 +1,6 @@
 package zoho
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -50,7 +49,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrCaller,
-				errors.New(string(unsupportedResponse)), //nolint:err113
+				testutils.StringError(string(unsupportedResponse)),
 			},
 		},
 		{

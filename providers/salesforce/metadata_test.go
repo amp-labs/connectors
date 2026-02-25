@@ -1,7 +1,6 @@
 package salesforce
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -405,7 +404,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Expected: nil,
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Can not specify 'required' for a CustomField of type Checkbox"), // nolint:err113
+				testutils.StringError("Can not specify 'required' for a CustomField of type Checkbox"), // nolint:err113
 			},
 		},
 		{

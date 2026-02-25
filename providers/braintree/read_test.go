@@ -1,7 +1,6 @@
 package braintree
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -57,7 +56,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Invalid search criteria provided"), // nolint:goerr113
+				testutils.StringError("Invalid search criteria provided"), // nolint:goerr113
 			},
 		},
 		{
