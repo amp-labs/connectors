@@ -8,12 +8,33 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/devrev/metadata"
 	"github.com/spyzhov/ajson"
 )
 
 const defaultPageSize = "100" // doc default 50; max 100 (from testing)
+// objectsWithModifiedDateFilter lists object names whose list endpoints support
+// modified_date.after and modified_date.before query parameter.
+var objectsWithModifiedDateFilter = datautils.NewSet( //nolint:gochecknoglobals
+	"accounts",
+	"artifacts",
+	"brands",
+	"code-changes",
+	"conversations",
+	"engagements",
+	"groups",
+	"incidents",
+	"jobs",
+	"links",
+	"meetings",
+	"parts",
+	"rev-orgs",
+	"rev-users",
+	"timeline-entries",
+	"works",
+)
 
 // buildReadRequest builds the HTTP request for listing objects.
 // Pagination is cursor-based (next_cursor). For objects in objectsWithModifiedDateFilter,Since/Until
