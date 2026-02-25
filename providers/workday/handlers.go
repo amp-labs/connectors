@@ -1,7 +1,9 @@
 package workday
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -110,6 +112,80 @@ func makeNextRecordsURL(reqURL *urlbuilder.URL) common.NextPageFunc {
 
 		return reqURL.String(), nil
 	}
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	method := http.MethodPost
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "ccx", "api", "v1", c.tenantName, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		url.AddPath(params.RecordId)
+
+		method = http.MethodPatch
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	recordID, err := jsonquery.New(body).TextWithDefault("id", params.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Data:     data,
+	}, nil
+}
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	url, err := urlbuilder.New(
+		c.ProviderInfo().BaseURL, "ccx", "api", "v1", c.tenantName, params.ObjectName, params.RecordId,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
+}
+
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context,
+	params common.DeleteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
 }
 
 func (c *Connector) interpretError(res *http.Response, body []byte) error {
