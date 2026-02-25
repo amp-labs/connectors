@@ -43,7 +43,7 @@ var objectsWithModifiedDateFilter = datautils.NewSet( //nolint:gochecknoglobals
 )
 
 // buildReadRequest builds the HTTP request for listing objects.
-// Pagination is cursor-based (next_cursor). For objects in objectsWithModifiedDateFilter,Since/Until
+// Pagination is cursor-based (next_cursor). For objects in objectsWithModifiedDateFilter, Since/Until
 // are sent as modified_date.after and modified_date.before; other objects
 // are filtered by modified_date on the client.
 // See https://devrev.dev/docs.
