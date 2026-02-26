@@ -153,7 +153,7 @@ func MakeTimeFilterFunc(
 //	    {"meta": {"info": {"created_at": "..."} }}
 //	Then zoom should be: []string{"meta", "info"}
 //	And timestampKey: "created_at"
-func MakeTimeFilterFuncWithZoom(
+func MakeTimeFilterFuncWithZoom( // nolint:cyclop
 	order TimeOrder, boundary *TimeBoundary,
 	zoom []string, timestampKey string, timestampFormat string,
 	nextPageFunc common.NextPageFunc,
@@ -165,11 +165,11 @@ func MakeTimeFilterFuncWithZoom(
 		}
 
 		var (
-			filtered []*ajson.Node
-			hasMore  bool
+			filtered   []*ajson.Node
+			stopPaging bool
 		)
 
-		for idx, nodeRecord := range records {
+		for _, nodeRecord := range records {
 			recordTimestamp, err := extractTimestamp(nodeRecord, timestampKey, timestampFormat, zoom...)
 			if err != nil {
 				return nil, "", err
@@ -177,40 +177,45 @@ func MakeTimeFilterFuncWithZoom(
 
 			if boundary.Contains(params, *recordTimestamp) {
 				filtered = append(filtered, nodeRecord)
-				hasMore = hasMore || hasNextPage(order, idx, len(records))
+
+				continue
+			}
+
+			switch order {
+			case ChronologicalOrder:
+				// [Time] oldest --> newest
+				// -------------[.......]---------- * --------------->
+				//           (since   UNTIL)     (record)
+				// If record is after the until, then anything further is too new.
+				if boundary.After(params, *recordTimestamp) {
+					stopPaging = true
+				}
+			case ReverseOrder:
+				// [Time] newest <-- oldest
+				// <-------------[.......]---------- * ---------------
+				//           (until   SINCE)     (record)
+				// If record is before the since, then anything further is even older.
+				if boundary.Before(params, *recordTimestamp) {
+					stopPaging = true
+				}
+			case Unordered:
+				// cannot infer anything
+			}
+
+			if stopPaging {
+				break
 			}
 		}
 
-		// When we can infer that no further pages will satisfy the time range,
-		// skip pagination entirely.
-		if !hasMore {
+		// Proven exhaustion.
+		if stopPaging {
 			return filtered, "", nil
 		}
 
+		// Continue normally.
 		next, err := nextPageFunc(body)
-		if err != nil {
-			return nil, next, fmt.Errorf("error: constructing next page value: %w", err)
-		}
 
-		return filtered, next, nil
-	}
-}
-
-// hasNextPage determines whether pagination should continue based on
-// record ordering and position within the current page.
-func hasNextPage(order TimeOrder, idx int, recordsLen int) bool {
-	switch order {
-	case Unordered:
-		// Pagination cannot be inferred; assume more pages exist.
-		return true
-	case ChronologicalOrder:
-		// If last record on this page is still inside range, there might be more.
-		return idx == recordsLen-1
-	case ReverseOrder:
-		// If first record in reverse-ordered page is still inside range, there might be more.
-		return idx == 0
-	default:
-		return false
+		return filtered, next, err
 	}
 }
 
