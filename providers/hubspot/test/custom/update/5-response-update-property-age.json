@@ -1,0 +1,26 @@
+{
+  "updatedAt": "2026-02-26T21:21:01.773Z",
+  "createdAt": "2025-09-04T23:25:42.320Z",
+  "name": "age__c",
+  "label": "Age",
+  "type": "number",
+  "fieldType": "number",
+  "description": "How old are you?",
+  "groupName": "integrationcreatedproperties",
+  "options": [],
+  "createdUserId": "76070032",
+  "updatedUserId": "76070032",
+  "displayOrder": -1,
+  "calculated": false,
+  "externalOptions": false,
+  "archived": false,
+  "hasUniqueValue": false,
+  "hidden": false,
+  "modificationMetadata": {
+    "archivable": true,
+    "readOnlyDefinition": false,
+    "readOnlyValue": false
+  },
+  "formField": true,
+  "dataSensitivity": "non_sensitive"
+}

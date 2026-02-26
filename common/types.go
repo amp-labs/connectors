@@ -93,6 +93,9 @@ var (
 	// ErrEmptyJSONHTTPResponse is returned when the JSONHTTPResponse is nil.
 	ErrEmptyJSONHTTPResponse = errors.New("empty json http response")
 
+	// ErrFailedUnmarshalling is returned when the HTTP response cannot be unmarshalled.
+	ErrFailedUnmarshalling = errors.New("json.Unmarshal failed")
+
 	// ErrEmptyRecordIdResponse is returned when the response body doesn't have record id.
 	ErrEmptyRecordIdResponse = errors.New("empty record id in response body")
 

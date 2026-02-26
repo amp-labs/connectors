@@ -1,0 +1,10 @@
+{
+  "name": "age__c",
+  "label": "Age",
+  "groupName": "integrationcreatedproperties",
+  "type": "number",
+  "fieldType": "number",
+  "description": "How old are you?",
+  "formField": true,
+  "dataSensitivity": "non_sensitive"
+}

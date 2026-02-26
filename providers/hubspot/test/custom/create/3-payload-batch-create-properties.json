@@ -1,0 +1,43 @@
+{
+  "inputs": [
+    {
+      "name": "age__c",
+      "label": "Age",
+      "groupName": "integrationcreatedproperties",
+      "type": "number",
+      "fieldType": "number",
+      "description": "How many years you lived.",
+      "formField": true,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "name": "interests__c",
+      "label": "Interests",
+      "groupName": "integrationcreatedproperties",
+      "type": "enumeration",
+      "fieldType": "select",
+      "description": "Topics that are of interest.",
+      "formField": true,
+      "dataSensitivity": "non_sensitive",
+      "options": [
+        {
+          "label": "art",
+          "value": "art",
+          "description": "art"
+        },
+        {
+          "label": "travel",
+          "value": "travel",
+          "description": "travel",
+          "displayOrder": 1
+        },
+        {
+          "label": "swimming",
+          "value": "swimming",
+          "description": "swimming",
+          "displayOrder": 2
+        }
+      ]
+    }
+  ]
+}

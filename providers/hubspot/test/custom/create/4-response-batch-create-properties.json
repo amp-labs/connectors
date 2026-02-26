@@ -1,0 +1,71 @@
+{
+  "completedAt": "2026-02-26T21:21:02.082Z",
+  "status": "COMPLETE",
+  "startedAt": "2026-02-26T21:21:01.716Z",
+  "results": [
+    {
+      "name": "age__c",
+      "label": "Age",
+      "type": "number",
+      "fieldType": "number",
+      "description": "How many years you lived.",
+      "groupName": "integrationcreatedproperties",
+      "options": [],
+      "displayOrder": -1,
+      "calculated": false,
+      "externalOptions": false,
+      "hasUniqueValue": false,
+      "hidden": false,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": false,
+        "readOnlyValue": false
+      },
+      "formField": true,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "name": "interests__c",
+      "label": "Interests",
+      "type": "enumeration",
+      "fieldType": "select",
+      "description": "Topics that are of interest.",
+      "groupName": "integrationcreatedproperties",
+      "options": [
+        {
+          "label": "art",
+          "value": "art",
+          "description": "art",
+          "displayOrder": 3,
+          "hidden": false
+        },
+        {
+          "label": "travel",
+          "value": "travel",
+          "description": "travel",
+          "displayOrder": 1,
+          "hidden": false
+        },
+        {
+          "label": "swimming",
+          "value": "swimming",
+          "description": "swimming",
+          "displayOrder": 2,
+          "hidden": false
+        }
+      ],
+      "displayOrder": -1,
+      "calculated": false,
+      "externalOptions": false,
+      "hasUniqueValue": false,
+      "hidden": false,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": false,
+        "readOnlyValue": false
+      },
+      "formField": true,
+      "dataSensitivity": "non_sensitive"
+    }
+  ]
+}

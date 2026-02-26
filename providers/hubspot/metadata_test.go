@@ -440,3 +440,282 @@ func TestPersonaFieldDisplayValuePrefersDescription(t *testing.T) {
 		t.Fatalf("expected second display value to fall back to label, got %q", metadata.Values[1].DisplayValue)
 	}
 }
+
+func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
+	t.Parallel()
+
+	// Test scenario #1.
+	payloadCreatedGroupName := testutils.DataFromFile(t, "custom/create/1-payload-create-property-group.json")
+	responseCreatedGroupName := testutils.DataFromFile(t, "custom/create/2-response-create-property-group.json")
+	payloadBatchCreateProperties1 := testutils.DataFromFile(t, "custom/create/3-payload-batch-create-properties.json")
+	responseBatchCreateProperties1 := testutils.DataFromFile(t, "custom/create/4-response-batch-create-properties.json")
+
+	// Test scenario #2.
+	responseReadPropertyGroup := testutils.DataFromFile(t, "custom/update/1-read-property-group.json")
+	payloadBatchCreateProperties2 := testutils.DataFromFile(t, "custom/update/2-payload-batch-create-properties.json")
+	responseBatchCreateProperties2 := testutils.DataFromFile(t, "custom/update/3-response-batch-create-properties.json")
+	payloadUpdateAge := testutils.DataFromFile(t, "custom/update/4-payload-update-property-age.json")
+	responseUpdateAge := testutils.DataFromFile(t, "custom/update/5-response-update-property-age.json")
+	payloadUpdateInterests := testutils.DataFromFile(t, "custom/update/6-payload-update-property-interests.json")
+	responseUpdateInterests := testutils.DataFromFile(t, "custom/update/7-response-update-property-interests.json")
+
+	tests := []testroutines.UpsertMetadata{
+		{
+			Name:         "At least one object name must be queried",
+			Input:        nil,
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFieldsMetadata},
+		},
+		{
+			Name: "Create properties in fresh new system",
+			// Description:
+			//		Group name does not exist and will be created.
+			//		Then batch create "age" and "interest" fields.
+			Input: &common.UpsertMetadataParams{
+				Fields: map[string][]common.FieldDefinition{
+					"Contact": {
+						{
+							FieldName:   "age__c",
+							DisplayName: "Age",
+							Description: "How many years you lived.",
+							ValueType:   common.ValueTypeInt,
+							Unique:      false,
+						},
+						{
+							FieldName:   "interests__c",
+							DisplayName: "Interests",
+							Description: "Topics that are of interest.",
+							ValueType:   common.ValueTypeMultiSelect,
+							Unique:      false,
+							StringOptions: &common.StringFieldOptions{
+								Values: []string{"art", "travel", "swimming"},
+							},
+						},
+					},
+				},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If: mockcond.And{ // Group name does not exist.
+						mockcond.MethodGET(),
+						mockcond.Path("/crm/v3/properties/Contact/groups/integrationcreatedproperties"),
+					},
+					Then: mockserver.Response(http.StatusNotFound), // empty body.
+				}, {
+					If: mockcond.And{ // Create group name.
+						mockcond.MethodPOST(),
+						mockcond.Path("/crm/v3/properties/Contact/groups"),
+						mockcond.BodyBytes(payloadCreatedGroupName),
+					},
+					Then: mockserver.Response(http.StatusCreated, responseCreatedGroupName),
+				}, {
+					If: mockcond.And{ // Create properties
+						mockcond.MethodPOST(),
+						mockcond.Path("/crm/v3/properties/Contact/batch/create"),
+						mockcond.BodyBytes(payloadBatchCreateProperties1),
+					},
+					Then: mockserver.Response(http.StatusCreated, responseBatchCreateProperties1),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetUpsertMetadata,
+			Expected: &common.UpsertMetadataResult{
+				Success: true,
+				Fields: map[string]map[string]common.FieldUpsertResult{
+					"Contact": {
+						"age__c": {
+							FieldName: "age__c",
+							Action:    "create",
+							Metadata: map[string]any{
+								"name":            "age__c",
+								"label":           "Age",
+								"type":            "number",
+								"fieldType":       "number",
+								"description":     "How many years you lived.",
+								"groupName":       "integrationcreatedproperties",
+								"options":         []any{},
+								"displayOrder":    float64(-1),
+								"calculated":      false,
+								"externalOptions": false,
+								"hasUniqueValue":  false,
+								"hidden":          false,
+								"formField":       true,
+								"dataSensitivity": "non_sensitive",
+							},
+						},
+						"interests__c": {
+							FieldName: "interests__c",
+							Action:    "create",
+							Metadata: map[string]any{
+								"name":        "interests__c",
+								"label":       "Interests",
+								"type":        "enumeration",
+								"fieldType":   "select",
+								"description": "Topics that are of interest.",
+								"groupName":   "integrationcreatedproperties",
+								"options": []any{
+									map[string]any{
+										"label":        "art",
+										"value":        "art",
+										"description":  "art",
+										"displayOrder": float64(3),
+										"hidden":       false,
+									},
+									map[string]any{
+										"label":        "travel",
+										"value":        "travel",
+										"description":  "travel",
+										"displayOrder": float64(1),
+										"hidden":       false,
+									},
+									map[string]any{
+										"label":        "swimming",
+										"value":        "swimming",
+										"description":  "swimming",
+										"displayOrder": float64(2),
+										"hidden":       false,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			Name: "Update existing properties and create some new",
+			// Description:
+			//		Group name already exists and will be retrieved.
+			//		Batch create will fail for "hobby" and "is-ready" but will be ok for "age" and "interests".
+			//		Dedicated calls will be made to update "age" and to update "interests".
+			Input: &common.UpsertMetadataParams{
+				Fields: map[string][]common.FieldDefinition{
+					"Contact": {
+						{
+							FieldName:   "hobby__c",
+							DisplayName: "Hobby",
+							Description: "Your hobby description",
+							ValueType:   common.ValueTypeString,
+							Unique:      true,
+						},
+						{
+							FieldName:   "age__c",
+							DisplayName: "Age",
+							Description: "How old are you?",
+							ValueType:   common.ValueTypeInt,
+							Unique:      false,
+						},
+						{
+							FieldName:   "interests__c",
+							DisplayName: "Interests",
+							Description: "Topics that are of interest.",
+							ValueType:   common.ValueTypeMultiSelect,
+							Unique:      false,
+							StringOptions: &common.StringFieldOptions{
+								Values: []string{"art", "travel", "swimming"},
+							},
+						},
+						{
+							FieldName:   "isready__c",
+							DisplayName: "IsReady",
+							Description: "Indicates the readiness for next steps.",
+							ValueType:   common.ValueTypeBoolean,
+							Unique:      false,
+						},
+					},
+				},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If: mockcond.And{ // Group name is fetched.
+						mockcond.MethodGET(),
+						mockcond.Path("/crm/v3/properties/Contact/groups/integrationcreatedproperties"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseReadPropertyGroup),
+				}, {
+					If: mockcond.And{ // Create properties
+						mockcond.MethodPOST(),
+						mockcond.Path("/crm/v3/properties/Contact/batch/create"),
+						mockcond.BodyBytes(payloadBatchCreateProperties2),
+					},
+					Then: mockserver.Response(http.StatusMultiStatus, responseBatchCreateProperties2),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodPATCH(),
+						mockcond.Path("/crm/v3/properties/Contact/age__c"),
+						mockcond.BodyBytes(payloadUpdateAge),
+					},
+					Then: mockserver.Response(http.StatusOK, responseUpdateAge),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodPATCH(),
+						mockcond.Path("/crm/v3/properties/Contact/interests__c"),
+						mockcond.BodyBytes(payloadUpdateInterests),
+					},
+					Then: mockserver.Response(http.StatusOK, responseUpdateInterests),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetUpsertMetadata,
+			Expected: &common.UpsertMetadataResult{
+				Success: true,
+				Fields: map[string]map[string]common.FieldUpsertResult{
+					"Contact": {
+						"age__c": {
+							FieldName: "age__c",
+							Action:    "update",
+							Metadata: map[string]any{
+								"label":       "Age",
+								"description": "How old are you?",
+							},
+						},
+						"interests__c": {
+							FieldName: "interests__c",
+							Action:    "update",
+							Metadata: map[string]any{
+								"label":       "Interests",
+								"description": "Topics that are of interest.",
+							},
+						},
+						"isready__c": {
+							FieldName: "isready__c",
+							Action:    "create",
+							Metadata: map[string]any{
+								"name":        "isready__c",
+								"label":       "IsReady",
+								"type":        "bool",
+								"fieldType":   "booleancheckbox",
+								"description": "Indicates the readiness for next steps.",
+								"groupName":   "integrationcreatedproperties",
+							},
+						},
+						"hobby__c": {
+							FieldName: "hobby__c",
+							Action:    "create",
+							Metadata: map[string]any{
+								"name":        "hobby__c",
+								"label":       "Hobby",
+								"type":        "string",
+								"fieldType":   "text",
+								"description": "Your hobby description",
+								"groupName":   "integrationcreatedproperties",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx := common.WithAuthToken(t.Context(), "TEST_ACCESS_TOKEN")
+
+			tt.RunWithContext(t, ctx, func() (connectors.UpsertMetadataConnector, error) {
+				return constructTestConnector(tt.Server.URL)
+			})
+		})
+	}
+}
