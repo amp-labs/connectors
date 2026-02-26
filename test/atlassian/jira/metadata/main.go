@@ -19,7 +19,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetAtlassianConnector(ctx)
+	conn := connTest.GetJiraConnector(ctx)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
 		"issue",

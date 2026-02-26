@@ -1,4 +1,4 @@
-package atlassian
+package jira
 
 import (
 	"bytes"
@@ -82,7 +82,7 @@ func (r ResponseStatusError) CombineErr(base error) error {
 	return fmt.Errorf("%w: %v - %v", base, r.Error, r.Message)
 }
 
-func (c *Connector) interpretHTMLError(res *http.Response, body []byte) error {
+func interpretHTMLError(res *http.Response, body []byte) error {
 	base := interpreter.DefaultStatusCodeMappingToErr(res, body)
 
 	document, err := goquery.NewDocumentFromReader(bytes.NewReader(body))

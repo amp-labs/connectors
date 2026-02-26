@@ -1,4 +1,4 @@
-package atlassian
+package jira
 
 import (
 	"context"
@@ -27,7 +27,7 @@ type issueRequest struct {
 // * ObjectName - ignored.
 // * NextPage - to get next page which may have no elements left.
 // * Since - to scope the time frame, precision is in minutes.
-func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+func (a *Adapter) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			"using Atlassian connector with unknown object", "objectName", config.ObjectName)
 	}
 
-	url, err := c.getSearchIssuesURL()
+	url, err := a.getSearchIssuesURL()
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		reqBody.NextPageToken = config.NextPage.String()
 	}
 
-	resp, err := c.JSONHTTPClient().Post(ctx, url.String(), reqBody)
+	resp, err := a.JSONHTTPClient().Post(ctx, url.String(), reqBody)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 }
 
-func (c *Connector) getSearchIssuesURL() (*urlbuilder.URL, error) {
+func (a *Adapter) getSearchIssuesURL() (*urlbuilder.URL, error) {
 	// https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-rest-api-3-search-jql-post
-	return c.getModuleURL("search/jql")
+	return a.getModuleURL("search/jql")
 }
