@@ -221,6 +221,7 @@ type AccountInfo struct {
 func (c *Connector) GetAccountInfo(ctx context.Context) (*AccountInfo, *common.JSONHTTPResponse, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
+	// https://developers.hubspot.com/docs/api-reference/account-account-info-v3/details/get-account-info-v3-details
 	resp, err := c.Client.Get(ctx, fmt.Sprintf("account-info/%v/details", core.APIVersion3))
 	if err != nil {
 		return nil, resp, fmt.Errorf("error fetching HubSpot token info: %w", err)
@@ -357,14 +358,16 @@ func (f fieldDescription) implyEnumerationType(fieldName string) (common.ValueTy
 var objectsWithExternalMetadataFields = datautils.Map[string, []externalFieldDiscovery]{ // nolint:gochecknoglobals
 	"contacts": {
 		{
-			FieldNames:        []string{"hs_pipeline"},
+			FieldNames: []string{"hs_pipeline"},
+			// https://developers.hubspot.com/docs/api-reference/crm-pipelines-v3/guide#retrieve-pipelines
 			EndpointPath:      fmt.Sprintf("/crm/%v/pipelines/contacts", core.APIVersion3),
 			ResponseProcessor: parsePipelineFieldValues,
 		},
 	},
 	"deals": {
 		{
-			FieldNames:        []string{"pipeline", "dealstage"},
+			FieldNames: []string{"pipeline", "dealstage"},
+			// https://developers.hubspot.com/docs/api-reference/crm-pipelines-v3/guide#retrieve-pipelines
 			EndpointPath:      fmt.Sprintf("/crm/%v/pipelines/deals", core.APIVersion3),
 			ResponseProcessor: parsePipelineFieldValuesWithStages,
 		},
