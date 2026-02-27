@@ -23,7 +23,7 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     false,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
 			Write:     false,
 		},
