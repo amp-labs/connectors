@@ -7,19 +7,14 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
+	"github.com/spyzhov/ajson"
 )
 
 func TestGetDataMarshaller(t *testing.T) { //nolint:funlen
 	t.Parallel()
-
-	// Connector configured with a stubbed AssociationsFiller.
-	connector := &Connector{
-		crmAdapter: &crm.Adapter{
-			AssociationsFiller: testFiller{},
-		},
-	}
 
 	tests := []struct {
 		name              string
@@ -221,13 +216,13 @@ func TestGetDataMarshaller(t *testing.T) { //nolint:funlen
 			name:        "Missing id returns error",
 			records:     []map[string]any{{"properties": map[string]any{}}},
 			fields:      []string{"email"},
-			expectedErr: core.ErrMissingId,
+			expectedErr: jsonquery.ErrKeyNotFound,
 		},
 		{
 			name:        "Missing properties with fields requested returns error",
 			records:     []map[string]any{{"id": "123"}},
 			fields:      []string{"email"},
-			expectedErr: core.ErrNotObject,
+			expectedErr: jsonquery.ErrKeyNotFound,
 		},
 		{
 			name: "Several records with associations",
@@ -286,9 +281,18 @@ func TestGetDataMarshaller(t *testing.T) { //nolint:funlen
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			result, err := connector.getDataMarshaller(
-				context.Background(), "contacts", tt.associatedObjects,
-			)(tt.records, tt.fields)
+			marshaller := associations.CreateDataMarshallerWithAssociations(
+				context.Background(),
+				&testFiller{},
+				"contacts",
+				tt.associatedObjects,
+			)
+
+			records, err := datautils.ForEachWithErr(tt.records, func(object map[string]any) (*ajson.Node, error) {
+				return jsonquery.Convertor.NodeFromMap(object)
+			})
+
+			result, err := marshaller(records, tt.fields)
 
 			if tt.expectedErr != nil {
 				if err == nil {
