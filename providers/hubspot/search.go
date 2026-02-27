@@ -24,13 +24,13 @@ const (
 	searchPageSize = "200"
 )
 
-// SearchLegacy uses the POST /search endpoint to filter object records and return the result.
+// ReadUsingSearchAPI uses the POST /search endpoint to filter object records and return the result.
 // This endpoint has a limit of 10,000 records. If the result has more than 10,000 records,
 // the caller should employ sorting to paginate through the result on the client side.
 // This endpoint paginates using paging.next.after which is to be used as an offset.
 // Archived results do not appear in search results.
 // Read more @ https://developers.hubspot.com/docs/api/crm/search
-func (c *Connector) SearchLegacy(ctx context.Context, config SearchParams) (*common.ReadResult, error) {
+func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams) (*common.ReadResult, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
 	if err := config.ValidateParams(); err != nil {
@@ -78,7 +78,7 @@ func (c *Connector) SearchLegacy(ctx context.Context, config SearchParams) (*com
 }
 
 // searchCRM is intended for objects outside HubSpot's ObjectAPI.
-// For objects within ObjectAPI, refer to the SearchLegacy method.
+// For objects within ObjectAPI, refer to the ReadUsingSearchAPI method.
 //
 // Case-by-case explanation:
 // * Lists
