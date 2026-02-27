@@ -82,7 +82,7 @@ func main() {
 	log.Println("Completed.")
 }
 
-// removeListSuffix strips the "List" suffix from display names;.
+// removeListSuffix strips the "List" suffix from display names.
 func removeListSuffix(displayName string) string {
 	s, _ := strings.CutSuffix(displayName, "List")
 
