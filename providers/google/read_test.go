@@ -1,7 +1,6 @@
 package google
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -48,7 +47,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Invalid page token value."),
+				testutils.StringError("Invalid page token value."),
 			},
 		},
 		{
@@ -61,7 +60,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				common.ErrNotFound,
-				errors.New("The requested URL /calendar/v3/calendarList?maxResults=3000&showDeleted=true was not found on this server."), // nolint:lll
+				testutils.StringError("The requested URL /calendar/v3/calendarList?maxResults=3000&showDeleted=true was not found on this server."), // nolint:lll
 			},
 		},
 		{
@@ -333,7 +332,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Page size must be less than or equal to 1000."),
+				testutils.StringError("Page size must be less than or equal to 1000."),
 			},
 		},
 		{
@@ -346,7 +345,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				common.ErrNotFound,
-				errors.New("The requested URL /v1/bananas was not found on this server."),
+				testutils.StringError("The requested URL /v1/bananas was not found on this server."),
 			},
 		},
 		{
@@ -553,7 +552,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrForbidden,
-				errors.New("CSE is not enabled."), // nolint:goerr113
+				testutils.StringError("CSE is not enabled."), // nolint:goerr113
 			},
 		},
 		{
@@ -566,7 +565,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				common.ErrNotFound,
-				errors.New("The requested URL /gmail/v1/users/me/butterfly was not found on this server. That’s all we know"), // nolint:goerr113,lll
+				testutils.StringError("The requested URL /gmail/v1/users/me/butterfly was not found on this server. That’s all we know"), // nolint:goerr113,lll
 			},
 		},
 		{

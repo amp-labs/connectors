@@ -2,7 +2,6 @@ package hubspot
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
 //nolint:gochecknoglobals
@@ -28,8 +28,6 @@ var (
    https://developers.hubspot.com/beta-docs/reference/api/crm/objects/line_items
    https://developers.hubspot.com/beta-docs/reference/api/crm/objects/products
 */
-
-var errMissingId = errors.New("missing id field in raw record")
 
 //nolint:revive,funlen
 func (c *Connector) GetRecordsByIds(
@@ -75,7 +73,7 @@ func (c *Connector) GetRecordsByIds(
 		return nil, common.ErrEmptyJSONHTTPResponse
 	}
 
-	records, err := getRecords(resBody)
+	records, err := core.GetRecords(resBody)
 	if err != nil {
 		return nil, err
 	}

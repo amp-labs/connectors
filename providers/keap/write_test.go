@@ -1,7 +1,6 @@
 package keap
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -40,7 +39,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(
+				testutils.StringError(
 					"Contact must contain an e-mail address or phone number",
 				),
 			},

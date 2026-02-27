@@ -8,9 +8,8 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
-
-const apiVersion = "v3"
 
 // Adapter handles batched record operations (create/update) against HubSpot's REST API.
 // It abstracts API endpoint construction, versioning, and JSON response processing
@@ -56,7 +55,7 @@ func (a *Adapter) getModuleURL() string {
 // nolint:lll
 // Contacts example: https://developers.hubspot.com/docs/api-reference/crm-contacts-v3/batch/post-crm-v3-objects-contacts-batch-create
 func (a *Adapter) getCreateURL(objectName common.ObjectName) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.getModuleURL(), apiVersion, "objects", objectName.String(), "batch/create")
+	return urlbuilder.New(a.getModuleURL(), core.APIVersion3, "objects", objectName.String(), "batch/create")
 }
 
 // getUpdateURL builds the HubSpot batch update endpoint for the given object type.
@@ -64,5 +63,5 @@ func (a *Adapter) getCreateURL(objectName common.ObjectName) (*urlbuilder.URL, e
 // nolint:lll
 // Contacts example: https://developers.hubspot.com/docs/api-reference/crm-contacts-v3/batch/post-crm-v3-objects-contacts-batch-update
 func (a *Adapter) getUpdateURL(objectName common.ObjectName) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.getModuleURL(), apiVersion, "objects", objectName.String(), "batch/update")
+	return urlbuilder.New(a.getModuleURL(), core.APIVersion3, "objects", objectName.String(), "batch/update")
 }

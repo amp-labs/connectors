@@ -96,6 +96,7 @@ func applyTimeScopingToURL(url *urlbuilder.URL, params common.ReadParams) {
 			// include_new=1 ensures contacts created (not just updated) after updated_from are included.
 			url.WithQueryParam("include_new", "1")
 		}
+
 		if !params.Until.IsZero() {
 			url.WithQueryParam("update_to", params.Until.Format("2006-01-02 15:04:05"))
 		}
@@ -105,6 +106,7 @@ func applyTimeScopingToURL(url *urlbuilder.URL, params common.ReadParams) {
 		if !params.Since.IsZero() {
 			url.WithQueryParam("date_start", params.Since.Format(time.DateOnly))
 		}
+
 		if !params.Until.IsZero() {
 			url.WithQueryParam("date_end", params.Until.Format(time.DateOnly))
 		}

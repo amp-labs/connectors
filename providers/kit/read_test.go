@@ -62,13 +62,16 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{},
+						Fields: map[string]any{
+							"id": float64(1),
+						},
 						Raw: map[string]any{
 							"id":    float64(1),
 							"name":  "ck_field_1_last_name",
 							"key":   "last_name",
 							"label": "Last name",
 						},
+						Id: "1",
 					},
 				},
 				Done: true,
@@ -114,12 +117,15 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{},
+						Fields: map[string]any{
+							"id": float64(5),
+						},
 						Raw: map[string]any{
 							"id":         float64(5),
 							"name":       "Tag B",
 							"created_at": "2023-02-17T11:43:55Z",
 						},
+						Id: "5",
 					},
 				},
 				Done: true,
@@ -149,13 +155,16 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{},
+						Fields: map[string]any{
+							"id": float64(9),
+						},
 						Raw: map[string]any{
 							"id":         float64(9),
 							"name":       "Custom HTML Template",
 							"is_default": false,
 							"category":   "HTML",
 						},
+						Id: "9",
 					},
 				},
 				Done: true,

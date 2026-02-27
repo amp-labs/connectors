@@ -1,7 +1,6 @@
 package stripe
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -56,7 +55,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(
+				testutils.StringError(
 					"No such customer: 'cus_Rd2zeYCh5b9gtC'",
 				),
 			},

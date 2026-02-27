@@ -1,7 +1,6 @@
 package dynamicscrm
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestDelete(t *testing.T) { // nolint:funlen,cyclop
@@ -41,7 +41,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Resource not found for the segment 'conacs'"),
+				testutils.StringError("Resource not found for the segment 'conacs'"),
 			},
 		},
 		{

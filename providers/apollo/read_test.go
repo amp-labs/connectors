@@ -69,6 +69,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						"user_id":                      "66302798d03b9601c7934ebf",
 						"same_account_reply_policy_cd": nil,
 					},
+					Id: "66e9e215ece19801b219997f",
 				}},
 				NextPage: "",
 				Done:     true,

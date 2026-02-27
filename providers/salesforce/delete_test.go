@@ -1,7 +1,6 @@
 package salesforce
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -38,7 +37,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 				Always: mockserver.Response(http.StatusNotFound, responseErrorFormat),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New("entity is deleted"),
+				testutils.StringError("entity is deleted"),
 			},
 		},
 		{
@@ -166,7 +165,7 @@ func TestDeletePardot(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("The requested record was not found."), // nolint:goerr113
+				testutils.StringError("The requested record was not found."), // nolint:goerr113
 			},
 		},
 	}

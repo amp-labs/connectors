@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/spyzhov/ajson"
@@ -112,8 +113,8 @@ func embedMessageRaw(messages MessageRecords) common.RecordTransformer {
 	}
 }
 
-func embedMessageFields(params common.ReadParams, messages MessageRecords) readhelper.SelectedFieldsFunc {
-	return func(node *ajson.Node) (map[string]any, string, error) {
+func embedMessageFields(messages MessageRecords) readhelper.SelectedFieldsFunc {
+	return func(node *ajson.Node, fields []string) (map[string]any, string, error) {
 		root, err := jsonquery.Convertor.ObjectToMap(node)
 		if err != nil {
 			return nil, "", err
@@ -129,8 +130,8 @@ func embedMessageFields(params common.ReadParams, messages MessageRecords) readh
 			return nil, "", err
 		}
 
-		filteredRoot := readhelper.SelectFields(root, params.Fields)
-		selected := readhelper.SelectFields(message, params.Fields)
+		filteredRoot := readhelper.SelectFields(root, datautils.NewSetFromList(fields))
+		selected := readhelper.SelectFields(message, datautils.NewSetFromList(fields))
 
 		// Combine fields of Message object from the Collection representation and from singular Item.
 		maps.Copy(filteredRoot, selected)
