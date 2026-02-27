@@ -153,7 +153,7 @@ func TestGetRecords(t *testing.T) {
 		{
 			name:    "Result item not an object",
 			json:    `{"results": [123]}`,
-			wantErr: jsonquery.ErrNotObject,
+			wantErr: testutils.StringError("collection is not an array"),
 		},
 	}
 
@@ -165,7 +165,16 @@ func TestGetRecords(t *testing.T) {
 			}
 
 			got, err := GetRecords(node)
-			testutils.CheckOutputWithError(t, tt.name, tt.want, tt.wantErr, got, err)
+			array, convErr := jsonquery.Convertor.ArrayToMap(got)
+			if convErr != nil {
+				err = errors.New("collection is not an array")
+			}
+
+			if len(array) == 0 {
+				array = nil
+			}
+
+			testutils.CheckOutputWithError(t, tt.name, tt.want, tt.wantErr, array, err)
 		})
 	}
 }

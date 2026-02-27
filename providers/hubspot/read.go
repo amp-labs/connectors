@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
@@ -79,7 +80,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		rsp,
 		core.GetRecords,
 		core.GetNextRecordsURL,
-		c.getDataMarshaller(ctx, config.ObjectName, config.AssociatedObjects),
+		associations.CreateDataMarshallerWithAssociations(
+			ctx, c.crmAdapter.AssociationsFiller, config.ObjectName, config.AssociatedObjects),
 		config.Fields,
 	)
 }
