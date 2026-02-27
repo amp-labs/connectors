@@ -14,7 +14,7 @@ import (
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	// The current version is v0 (alpha).
 	// See: https://docs.granola.ai/help-center/sharing/integrations/enterprise-api#what’s-the-api-versioning-strategy
-	u, err := urlbuilder.New(c.ProviderInfo().BaseURL, "v0", objectName)
+	u, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName)
 	if err != nil {
 		return nil, err
 	}
