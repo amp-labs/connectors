@@ -1,7 +1,6 @@
 package smartlead
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -52,7 +51,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Email account not found!"),
+				testutils.StringError("Email account not found!"),
 			},
 		},
 		{
@@ -64,7 +63,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(`"clinet_id" is not allowed`),
+				testutils.StringError(`"clinet_id" is not allowed`),
 			},
 		},
 		{

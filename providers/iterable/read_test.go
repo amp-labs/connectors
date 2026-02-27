@@ -1,7 +1,6 @@
 package iterable
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -53,7 +52,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(
+				testutils.StringError(
 					"not found: Action not found: Oh no- that url doesn't exist."),
 			},
 		},
@@ -106,7 +105,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(
+				testutils.StringError(
 					"Unable to bind 1734632773073 into a date time!Acceptable formats are ISO8601"),
 			},
 		},

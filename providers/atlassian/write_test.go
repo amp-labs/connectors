@@ -1,7 +1,6 @@
 package atlassian
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -41,7 +40,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("project:Specify a valid project ID or key"),
+				testutils.StringError("project:Specify a valid project ID or key"),
 			},
 		},
 		{
@@ -53,7 +52,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("issuetype:Specify an issue type"),
+				testutils.StringError("issuetype:Specify an issue type"),
 			},
 		},
 		{

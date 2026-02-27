@@ -1,7 +1,6 @@
 package gong
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -66,7 +65,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				}`),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("Failed to verify cursor"),
+				common.ErrBadRequest, testutils.StringError("Failed to verify cursor"),
 			},
 		},
 		{

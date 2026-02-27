@@ -1,7 +1,6 @@
 package zendesksupport
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -39,7 +38,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrServer,
-				errors.New("Internal Server Error"),
+				testutils.StringError("Internal Server Error"),
 			},
 		},
 		{

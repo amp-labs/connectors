@@ -1,7 +1,6 @@
 package zendesksupport
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -45,7 +44,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Always: mockserver.Response(http.StatusNotFound, responseErrorFormat),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("[InvalidEndpoint]Not found"),
+				common.ErrBadRequest, testutils.StringError("[InvalidEndpoint]Not found"),
 			},
 		},
 		{
@@ -56,7 +55,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Always: mockserver.Response(http.StatusForbidden, responseForbiddenError),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrForbidden, errors.New("[Forbidden]You do not have access to this page"),
+				common.ErrForbidden, testutils.StringError("[Forbidden]You do not have access to this page"),
 			},
 		},
 		{

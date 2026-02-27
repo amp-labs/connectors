@@ -1,7 +1,6 @@
 package atlassian
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -39,7 +38,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Issue does not exist or you do not have permission to see it"),
+				testutils.StringError("Issue does not exist or you do not have permission to see it"),
 			},
 		},
 		{

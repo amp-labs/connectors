@@ -1,7 +1,6 @@
 package stripe
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -48,7 +47,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(
+				testutils.StringError(
 					"Received unknown parameter: pineapple"),
 			},
 		},

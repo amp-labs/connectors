@@ -1,7 +1,6 @@
 package keap
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -63,7 +62,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("400 Bad Request: Your client has issued a malformed or illegal request."),
+				testutils.StringError("400 Bad Request: Your client has issued a malformed or illegal request."),
 			},
 		},
 		{
@@ -75,7 +74,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Keap - Page Not Found"),
+				testutils.StringError("Keap - Page Not Found"),
 			},
 		},
 		// {

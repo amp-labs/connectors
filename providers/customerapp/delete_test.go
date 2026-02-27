@@ -1,7 +1,6 @@
 package customerapp
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -61,7 +60,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(
+				testutils.StringError(
 					"not found (reference 01JCGC85CF663RT1V3FA04ZBNK)",
 				),
 			},
