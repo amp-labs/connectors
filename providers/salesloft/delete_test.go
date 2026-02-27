@@ -1,7 +1,6 @@
 package salesloft
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -40,7 +39,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("no Signal Registration found for integration id 5167 and given type"),
+				testutils.StringError("no Signal Registration found for integration id 5167 and given type"),
 			},
 		},
 		{

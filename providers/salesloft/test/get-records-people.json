@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "filtering": {},
+    "paging": {
+      "per_page": 100,
+      "current_page": 1,
+      "next_page": null,
+      "prev_page": null
+    },
+    "sorting": {
+      "sort_by": "updated_at",
+      "sort_direction": "DESC NULLS LAST"
+    }
+  },
+  "data": [
+    {
+      "id": 164510523,
+      "first_name": "Lynnelle",
+      "last_name": "new",
+      "email_address": "losbourn29@paypal.com",
+      "do_not_contact": false,
+      "custom_fields": {}
+    },
+    {
+      "id": 164510464,
+      "first_name": "Lynnelle",
+      "last_name": "Osbourn",
+      "email_address": "losbourn27@paypal.com",
+      "do_not_contact": false,
+      "custom_fields": {}
+    }
+  ]
+}

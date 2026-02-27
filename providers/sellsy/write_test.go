@@ -1,7 +1,6 @@
 package sellsy
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -34,7 +33,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Le contenu de la requête est invalide: le champ 'last_name' est manquant."),
+				testutils.StringError("Le contenu de la requête est invalide: le champ 'last_name' est manquant."),
 			},
 		},
 		{

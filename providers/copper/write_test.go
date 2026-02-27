@@ -1,7 +1,6 @@
 package copper
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -35,7 +34,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Invalid input: Validation errors: Name: can't be blank"),
+				testutils.StringError("Invalid input: Validation errors: Name: can't be blank"),
 			},
 		},
 		{

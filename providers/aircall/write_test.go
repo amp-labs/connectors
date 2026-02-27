@@ -1,7 +1,6 @@
 package aircall
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
@@ -401,7 +401,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrAccessToken,
-				errors.New("Unauthorized"), //nolint:goerr113
+				testutils.StringError("Unauthorized"),
 			},
 		},
 		{
@@ -416,7 +416,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrCaller,
-				errors.New("Missing required fields"), //nolint:goerr113
+				testutils.StringError("Missing required fields"),
 			},
 		},
 		{
@@ -431,7 +431,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrServer,
-				errors.New("Internal error"), //nolint:goerr113
+				testutils.StringError("Internal error"),
 			},
 		},
 	}

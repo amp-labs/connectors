@@ -1,7 +1,6 @@
 package salesflare
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -40,7 +39,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(
+				testutils.StringError(
 					`"value" must contain at least one of [name, email, prefix, firstname, middle, lastname, suffix]`,
 				),
 			},

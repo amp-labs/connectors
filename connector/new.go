@@ -115,6 +115,7 @@ import (
 	"github.com/amp-labs/connectors/providers/snowflake"
 	"github.com/amp-labs/connectors/providers/solarwinds"
 	"github.com/amp-labs/connectors/providers/stripe"
+	"github.com/amp-labs/connectors/providers/talkdesk"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/webex"
 	"github.com/amp-labs/connectors/providers/xero"
@@ -243,6 +244,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Snowflake:               wrapper(newSnowflakeConnector),
 	providers.SolarWindsServiceDesk:   wrapper(newSolarWindsConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
+	providers.Talkdesk:                wrapper(newTalkdeskConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
 	providers.Webex:                   wrapper(newWebexConnector),
 	providers.Xero:                    wrapper(newXeroConnector),
@@ -1011,4 +1013,8 @@ func newSlackConnector(params common.ConnectorParams) (*slack.Connector, error) 
 
 func newDevRevConnector(params common.ConnectorParams) (*devrev.Connector, error) {
 	return devrev.NewConnector(params)
+}
+
+func newTalkdeskConnector(params common.ConnectorParams) (*talkdesk.Connector, error) {
+	return talkdesk.NewConnector(params)
 }
