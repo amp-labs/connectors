@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -25,5 +26,14 @@ func main() {
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "contacts",
 		Fields:     connectors.Fields("contact_user_id", "first_name", "last_name", "raw_phone"),
+	})
+
+	// Incremental read — verifies PST timezone handling: Since=now-1h is always
+	// 7h ahead of PST "now", so this fails without the update_to fix in read.go.
+	slog.Info("=== Reading contacts incrementally (Since=now-1h) ===")
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "contacts",
+		Fields:     connectors.Fields("contact_user_id", "first_name", "last_name"),
+		Since:      time.Now().UTC().Add(-1 * time.Hour),
 	})
 }
