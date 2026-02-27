@@ -51,6 +51,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 func writeResponseKey(objectName string) string {
 	normalized := strings.ReplaceAll(objectName, "-", "_")
 	normalized = strings.ReplaceAll(normalized, ".", "_")
+
 	return naming.NewSingularString(normalized).String()
 }
 
@@ -67,6 +68,7 @@ func (c *Connector) parseWriteResponse(
 
 	// DevRev wraps the created/updated record under a singular key, e.g. {"article": {...}}
 	responseKey := writeResponseKey(params.ObjectName)
+
 	recordNode, err := jsonquery.New(body).ObjectRequired(responseKey)
 	if err != nil {
 		return nil, err
