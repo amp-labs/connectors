@@ -15,6 +15,39 @@ import (
 // resolved node is returned directly ("unwrap" semantics).
 const SelfReference = ""
 
+// zoomIn executes the zoom traversal stored in the Query and returns
+// the node located at the final zoom position.
+//
+// The Query acts as a traversal recipe:
+//
+//	q.node — starting JSON node
+//	q.zoom — ordered path of keys describing an expected object hierarchy
+//
+// Each zoom element must resolve through a JSON object while traversal
+// continues. All intermediate nodes are therefore required to be objects.
+// Encountering a non-object value during traversal results in ErrNotObject.
+//
+// JSON null is treated specially: a null value is considered a valid
+// terminal node. zoomIn may stop at null without error. Whether null is
+// acceptable is decided by the caller (Required vs Optional semantics).
+// Traversal requires objects; null terminates traversal but is not an error.
+//
+// Final node rules:
+//
+//	isUnwrap == true
+//	    The final zoom node is returned as-is. The node may be any JSON
+//	    value, including object, array, string, number, bool, or null.
+//
+//	isUnwrap == false
+//	    The caller intends to perform an additional key lookup. The
+//	    final zoom node must therefore be either an object or null.
+//	    A concrete non-object value (string, number, bool, or array)
+//	    results in ErrNotObject.
+//
+// Errors:
+//   - ErrNotObject if traversal encounters a concrete non-object value
+//     where an object is structurally required.
+//   - ErrKeyNotFound if a zoom key does not exist.
 func (q *Query) zoomIn(isUnwrap bool) (*ajson.Node, error) {
 	if len(q.zoom) == 0 {
 		// Nothing to zoom into.
