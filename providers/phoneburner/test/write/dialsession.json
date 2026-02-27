@@ -1,0 +1,12 @@
+{
+  "http_status": 201,
+  "status": "success",
+  "dialsessions": {
+    "redirect_url": "https://www.phoneburner.com/index/sso_key_login?single_sign_on_secret=abc123&redirect=%2Fphoneburner%2Fapi_begin_dialsession",
+    "errors": null,
+    "total_results": 0,
+    "page": 1,
+    "page_size": 0,
+    "total_pages": 0
+  }
+}

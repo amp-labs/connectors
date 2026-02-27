@@ -41,7 +41,12 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{},
+						Fields: map[string]any{
+							"id": map[string]any{
+								"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
+								"list_id":      "7ddc974a-2ab2-4a96-a83e-853eacb0329f",
+							},
+						},
 						Raw: map[string]any{
 							"id": map[string]any{
 								"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
@@ -68,7 +73,12 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
+					Fields: map[string]any{
+						"id": map[string]any{
+							"workspace_id":        "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
+							"workspace_member_id": "67af46e4-a450-4fee-a1d1-39729b3af771",
+						},
+					},
 					Raw: map[string]any{
 						"id": map[string]any{
 							"workspace_id":        "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
@@ -95,7 +105,12 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{},
+						Fields: map[string]any{
+							"id": map[string]any{
+								"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
+								"note_id":      "32dc76ee-d094-40e1-b176-0f8e1b772f0a",
+							},
+						},
 						Raw: map[string]any{
 							"id": map[string]any{
 								"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
@@ -122,7 +137,12 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{},
+						Fields: map[string]any{
+							"id": map[string]any{
+								"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
+								"task_id":      "4a585693-fa14-4ead-9e19-cc9251df59be",
+							},
+						},
 						Raw: map[string]any{
 							"id": map[string]any{
 								"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",

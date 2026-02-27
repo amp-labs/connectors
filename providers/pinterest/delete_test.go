@@ -1,7 +1,6 @@
 package pinterest
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -61,7 +60,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrNotFound,
-				errors.New(
+				testutils.StringError(
 					"Board not found",
 				),
 			},

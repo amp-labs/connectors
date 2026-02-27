@@ -207,6 +207,46 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	}
 }
 
+func TestListObjectMetadataWithCustomFields(t *testing.T) {
+	t.Parallel()
+
+	customfieldsresponse := testutils.DataFromFile(t, "custom_fields.json")
+
+	test := testroutines.Metadata{
+		Name:  "Successful metadata for subscribers with custom fields",
+		Input: []string{"subscribers"},
+		Server: mockserver.Conditional{
+			Setup: mockserver.ContentJSON(),
+			If:    mockcond.Path("/v4/custom_fields"),
+			Then:  mockserver.Response(http.StatusOK, customfieldsresponse),
+		}.Server(),
+		Comparator: testroutines.ComparatorSubsetMetadata,
+		Expected: &common.ListObjectMetadataResult{
+			Result: map[string]common.ObjectMetadata{
+				"subscribers": {
+					DisplayName: "Subscribers",
+					FieldsMap: map[string]string{
+						"created_at":    "created_at",
+						"email_address": "email_address",
+						"fields":        "fields",
+						"first_name":    "first_name",
+						"id":            "id",
+						"state":         "state",
+						// Custom fields from the API response
+						"last_name": "Last name",
+					},
+				},
+			},
+			Errors: map[string]error{},
+		},
+		ExpectedErrs: nil,
+	}
+
+	test.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+		return constructTestConnector(test.Server.URL)
+	})
+}
+
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),

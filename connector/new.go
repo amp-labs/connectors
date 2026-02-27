@@ -38,6 +38,7 @@ import (
 	"github.com/amp-labs/connectors/providers/constantcontact"
 	"github.com/amp-labs/connectors/providers/copper"
 	"github.com/amp-labs/connectors/providers/customerapp"
+	"github.com/amp-labs/connectors/providers/devrev"
 	"github.com/amp-labs/connectors/providers/dixa"
 	"github.com/amp-labs/connectors/providers/docusign"
 	"github.com/amp-labs/connectors/providers/drift"
@@ -89,6 +90,7 @@ import (
 	"github.com/amp-labs/connectors/providers/outplay"
 	"github.com/amp-labs/connectors/providers/outreach"
 	"github.com/amp-labs/connectors/providers/paddle"
+	"github.com/amp-labs/connectors/providers/phoneburner"
 	"github.com/amp-labs/connectors/providers/pinterest"
 	"github.com/amp-labs/connectors/providers/pipedrive"
 	"github.com/amp-labs/connectors/providers/pipeliner"
@@ -99,6 +101,7 @@ import (
 	"github.com/amp-labs/connectors/providers/revenuecat"
 	"github.com/amp-labs/connectors/providers/ringcentral"
 	"github.com/amp-labs/connectors/providers/sageintacct"
+	"github.com/amp-labs/connectors/providers/salesfinity"
 	"github.com/amp-labs/connectors/providers/salesflare"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/providers/salesloft"
@@ -106,11 +109,13 @@ import (
 	"github.com/amp-labs/connectors/providers/sellsy"
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/shopify"
+	"github.com/amp-labs/connectors/providers/slack"
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/snapchatads"
 	"github.com/amp-labs/connectors/providers/snowflake"
 	"github.com/amp-labs/connectors/providers/solarwinds"
 	"github.com/amp-labs/connectors/providers/stripe"
+	"github.com/amp-labs/connectors/providers/talkdesk"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/webex"
 	"github.com/amp-labs/connectors/providers/xero"
@@ -218,6 +223,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Pinterest:               wrapper(newPinterestConnector),
 	providers.Pipedrive:               wrapper(newPipedriveConnector),
 	providers.Pipeliner:               wrapper(newPipelinerConnector),
+	providers.PhoneBurner:             wrapper(newPhoneBurnerConnector),
 	providers.Podium:                  wrapper(newPodiumConnector),
 	providers.Pylon:                   wrapper(newPylonConnector),
 	providers.QuickBooks:              wrapper(newQuickbooksConnector),
@@ -232,11 +238,13 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Sellsy:                  wrapper(newSellsyConnector),
 	providers.ServiceNow:              wrapper(newServiceNowConnector),
 	providers.Shopify:                 wrapper(newShopifyConnector),
+	providers.Slack:                   wrapper(newSlackConnector),
 	providers.Smartlead:               wrapper(newSmartleadConnector),
 	providers.SnapchatAds:             wrapper(newSnapchatAdsConnector),
 	providers.Snowflake:               wrapper(newSnowflakeConnector),
 	providers.SolarWindsServiceDesk:   wrapper(newSolarWindsConnector),
 	providers.Stripe:                  wrapper(newStripeConnector),
+	providers.Talkdesk:                wrapper(newTalkdeskConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
 	providers.Webex:                   wrapper(newWebexConnector),
 	providers.Xero:                    wrapper(newXeroConnector),
@@ -244,6 +252,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.ZendeskSupport:          wrapper(newZendeskSupportConnector),
 	providers.Zoho:                    wrapper(newZohoConnector),
 	providers.Zoom:                    wrapper(newZoomConnector),
+	providers.Salesfinity:             wrapper(newSalesfinityConnector),
+	providers.DevRev:                  wrapper(newDevRevConnector),
 }
 
 type outputConstructorFunc func(p common.ConnectorParams) (connectors.Connector, error)
@@ -688,6 +698,10 @@ func newPodiumConnector(
 	return podium.NewConnector(params)
 }
 
+func newPhoneBurnerConnector(params common.ConnectorParams) (*phoneburner.Connector, error) {
+	return phoneburner.NewConnector(params)
+}
+
 func newLemlistConnector(
 	params common.ConnectorParams,
 ) (*lemlist.Connector, error) {
@@ -987,4 +1001,20 @@ func newDropboxSignConnector(params common.ConnectorParams) (*dropboxsign.Connec
 
 func newCallRail(params common.ConnectorParams) (*callrail.Connector, error) {
 	return callrail.NewConnector(params)
+}
+
+func newSalesfinityConnector(params common.ConnectorParams) (*salesfinity.Connector, error) {
+	return salesfinity.NewConnector(params)
+}
+
+func newSlackConnector(params common.ConnectorParams) (*slack.Connector, error) {
+	return slack.NewConnector(params)
+}
+
+func newDevRevConnector(params common.ConnectorParams) (*devrev.Connector, error) {
+	return devrev.NewConnector(params)
+}
+
+func newTalkdeskConnector(params common.ConnectorParams) (*talkdesk.Connector, error) {
+	return talkdesk.NewConnector(params)
 }

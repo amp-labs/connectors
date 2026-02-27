@@ -1,7 +1,6 @@
 package salesforce
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -49,7 +48,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Always: mockserver.Response(http.StatusBadRequest, responseUnknownObject),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("sObject type 'Accout' is not supported"),
+				common.ErrBadRequest, testutils.StringError("sObject type 'Accout' is not supported"),
 			},
 		},
 		{
@@ -94,7 +93,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/services/data/v60.0/query"),
-					mockcond.QueryParam("q", "SELECT City FROM leads"),
+					mockcond.QueryParam("q", "SELECT Id,City FROM leads"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseLeadsFirstPage),
 			}.Server(),
@@ -118,7 +117,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					mockcond.Path("/services/data/v60.0/query"),
 					mockcond.Permute(
 						queryParam("SELECT %v FROM contacts"),
-						"AssistantName", "Department",
+						"Id", "AssistantName", "Department",
 					),
 				},
 				Then: mockserver.Response(http.StatusOK, responseListContacts),
@@ -155,9 +154,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If: mockcond.And{
 					mockcond.Path("/services/data/v60.0/query"),
 					mockcond.Permute(
-						// AccountId should be added to the query, order may vary.
+						// Id and AccountId are always added when needed; order may vary.
 						queryParam("SELECT %v FROM opportunity"),
-						"Name", "Amount", "StageName", "AccountId",
+						"Id", "Name", "Amount", "StageName", "AccountId",
 					),
 				},
 				Then: mockserver.Response(http.StatusOK, responseOpportunityWithAccount),
@@ -225,9 +224,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If: mockcond.And{
 					mockcond.Path("/services/data/v60.0/query"),
 					mockcond.Permute(
-						// OpportunityContactRoles subquery should be added to the query, order may vary.
+						// Id is always added; OpportunityContactRoles subquery order may vary.
 						queryParam("SELECT %v FROM opportunity"),
-						"Name", "Amount", "StageName", "(SELECT FIELDS(STANDARD) FROM OpportunityContactRoles)",
+						"Id", "Name", "Amount", "StageName", "(SELECT FIELDS(STANDARD) FROM OpportunityContactRoles)",
 					),
 				},
 				Then: mockserver.Response(http.StatusOK, responseOpportunityWithContacts),
@@ -432,7 +431,7 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("A required header is missing: Pardot-Business-Unit-Id header not found on request."), // nolint:goerr113
+				testutils.StringError("A required header is missing: Pardot-Business-Unit-Id header not found on request."), // nolint:goerr113
 			},
 		},
 		{
@@ -444,7 +443,7 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("One or more required parameters are missing: fields"), // nolint:goerr113
+				testutils.StringError("One or more required parameters are missing: fields"), // nolint:goerr113
 			},
 		},
 		{

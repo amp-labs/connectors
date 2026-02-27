@@ -1,7 +1,6 @@
 package iterable
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -48,7 +47,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(`error.lists.deleteFailed(5052803)`),
+				testutils.StringError(`error.lists.deleteFailed(5052803)`),
 			},
 		},
 		{

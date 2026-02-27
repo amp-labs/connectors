@@ -1,7 +1,6 @@
 package microsoft
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -40,7 +39,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Always: mockserver.Response(http.StatusBadRequest, errorUnknownResource),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("Resource not found for the segment 'user'."),
+				common.ErrBadRequest, testutils.StringError("Resource not found for the segment 'user'."),
 			},
 		},
 		{

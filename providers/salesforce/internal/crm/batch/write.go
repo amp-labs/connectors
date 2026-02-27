@@ -153,7 +153,7 @@ func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 
 	return &Payload{
 		Records:   items,
-		AllOrNone: goutils.Pointer(false), // partial success enabled
+		AllOrNone: goutils.Pointer(params.GetAllOrNone()),
 	}, nil
 }
 

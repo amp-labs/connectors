@@ -450,6 +450,7 @@ type SubscribeSupport struct {
 type Support struct {
 	BatchWrite       *BatchWriteSupport `json:"batchWrite,omitempty"`
 	BulkWrite        BulkWriteSupport   `json:"bulkWrite" validate:"required"`
+	Delete           bool               `json:"delete"`
 	Proxy            bool               `json:"proxy"`
 	Read             bool               `json:"read"`
 	Search           SearchSupport      `json:"search"`

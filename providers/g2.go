@@ -33,18 +33,20 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     true,
-			Read:      true,
+			Proxy: true,
+			// this cannot be true until we collect subject product ID again (see ENG-3708)
+			Read:      false,
 			Subscribe: false,
 			Write:     false,
 		},
-		Metadata: &ProviderMetadata{
-			Input: []MetadataItemInput{
-				{
-					DisplayName: "Subject Product Id",
-					Name:        "subjectProductId",
-				},
-			},
-		},
+		// ENG-3708: remove subject product ID input for now
+		// Metadata: &ProviderMetadata{
+		// 	Input: []MetadataItemInput{
+		// 		{
+		// 			DisplayName: "Subject Product Id",
+		// 			Name:        "subjectProductId",
+		// 		},
+		// 	},
+		// },
 	})
 }

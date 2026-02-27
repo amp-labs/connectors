@@ -70,6 +70,7 @@ var readers = []scanning.Reader{
 	credscanning.Fields.Username.GetJSONReader(DefaultCredsFile),
 	credscanning.Fields.Password.GetJSONReader(DefaultCredsFile),
 	credscanning.Fields.ApiSecret.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.Token.GetJSONReader(DefaultCredsFile),
 }
 
 var debug = flag.Bool("debug", false, "Enable debug logging")

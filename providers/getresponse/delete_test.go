@@ -1,7 +1,6 @@
 package getresponse
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestDelete(t *testing.T) { // nolint:funlen,cyclop
@@ -97,7 +97,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrRetryable,
-				errors.New("retryable error"),
+				testutils.StringError("retryable error"),
 			},
 		},
 		{
@@ -109,7 +109,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrCaller,
-				errors.New("caller error"),
+				testutils.StringError("caller error"),
 			},
 		},
 		{
@@ -121,7 +121,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrAccessToken,
-				errors.New(`HTTP status 401: access token invalid: {"message": "Unauthorized"}`),
+				testutils.StringError(`HTTP status 401: access token invalid: {"message": "Unauthorized"}`),
 			},
 		},
 	}

@@ -1,7 +1,6 @@
 package salesforce
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -38,7 +37,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 				Always: mockserver.Response(http.StatusNotFound, responseErrorFormat),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New("entity is deleted"),
+				testutils.StringError("entity is deleted"),
 			},
 		},
 		{
@@ -52,6 +51,30 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 				If: mockcond.And{
 					mockcond.MethodDELETE(),
 					mockcond.Path("/services/data/v60.0/sobjects/contacts/003ak00000luULKAA2"),
+				},
+				Then: mockserver.Response(http.StatusNoContent),
+			}.Server(),
+			Expected: &common.DeleteResult{Success: true},
+		},
+		{
+			Name: "Delete with custom headers",
+			Input: common.DeleteParams{
+				ObjectName: "Account",
+				RecordId:   "001XX0000012345",
+				Headers: []common.WriteHeader{
+					{Key: "Sforce-Call-Options", Value: "client=test-app"},
+					{Key: "X-Custom-Header", Value: "custom-value"},
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodDELETE(),
+					mockcond.Path("/services/data/v60.0/sobjects/Account/001XX0000012345"),
+					mockcond.Header(http.Header{
+						"Sforce-Call-Options": []string{"client=test-app"},
+						"X-Custom-Header":     []string{"custom-value"},
+					}),
 				},
 				Then: mockserver.Response(http.StatusNoContent),
 			}.Server(),
@@ -107,6 +130,29 @@ func TestDeletePardot(t *testing.T) { // nolint:funlen,cyclop
 			Expected: &common.DeleteResult{Success: true},
 		},
 		{
+			Name: "Delete with custom headers",
+			Input: common.DeleteParams{
+				ObjectName: "prosPecTs",
+				RecordId:   "55434596",
+				Headers: []common.WriteHeader{
+					{Key: "X-Custom-Header", Value: "pardot-custom-value"},
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodDELETE(),
+					mockcond.Path("/api/v5/objects/prospects/55434596"),
+					mockcond.Header(pardotHeader),
+					mockcond.Header(http.Header{
+						"X-Custom-Header": []string{"pardot-custom-value"},
+					}),
+				},
+				Then: mockserver.Response(http.StatusOK),
+			}.Server(),
+			Expected: &common.DeleteResult{Success: true},
+		},
+		{
 			Name:  "Error on deleting missing record",
 			Input: common.DeleteParams{ObjectName: "prosPecTs", RecordId: "55434595"},
 			Server: mockserver.Conditional{
@@ -119,7 +165,7 @@ func TestDeletePardot(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("The requested record was not found."), // nolint:goerr113
+				testutils.StringError("The requested record was not found."), // nolint:goerr113
 			},
 		},
 	}

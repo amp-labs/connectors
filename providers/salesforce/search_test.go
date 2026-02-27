@@ -1,7 +1,6 @@
 package salesforce
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -63,7 +62,7 @@ func TestSearch(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Always: mockserver.Response(http.StatusBadRequest, responseUnknownObject),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New("sObject type 'Accout' is not supported"),
+				testutils.StringError("sObject type 'Accout' is not supported"),
 			},
 		},
 		{
@@ -102,7 +101,7 @@ func TestSearch(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					mockcond.Path("/services/data/v60.0/query"),
 					mockcond.Permute(
 						queryParam("SELECT %v FROM contacts WHERE Name = 'Paris'"),
-						"AssistantName", "Department",
+						"Id", "AssistantName", "Department",
 					),
 				},
 				Then: mockserver.Response(http.StatusOK, responseListContacts),
@@ -140,9 +139,9 @@ func TestSearch(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If: mockcond.And{
 					mockcond.Path("/services/data/v60.0/query"),
 					mockcond.Permute(
-						// AccountId should be added to the query, order may vary.
+						// Id and AccountId are always added when needed; order may vary.
 						queryParam("SELECT %v FROM opportunity WHERE Name = 'Paris'"),
-						"Name", "Amount", "StageName", "AccountId",
+						"Id", "Name", "Amount", "StageName", "AccountId",
 					),
 				},
 				Then: mockserver.Response(http.StatusOK, responseOpportunityWithAccount),
@@ -211,9 +210,9 @@ func TestSearch(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If: mockcond.And{
 					mockcond.Path("/services/data/v60.0/query"),
 					mockcond.Permute(
-						// OpportunityContactRoles subquery should be added to the query, order may vary.
+						// Id is always added; OpportunityContactRoles subquery order may vary.
 						queryParam("SELECT %v FROM opportunity WHERE Name = 'Paris'"),
-						"Name", "Amount", "StageName", "(SELECT FIELDS(STANDARD) FROM OpportunityContactRoles)",
+						"Id", "Name", "Amount", "StageName", "(SELECT FIELDS(STANDARD) FROM OpportunityContactRoles)",
 					),
 				},
 				Then: mockserver.Response(http.StatusOK, responseOpportunityWithContacts),

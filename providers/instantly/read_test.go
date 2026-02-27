@@ -1,7 +1,6 @@
 package instantly
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -56,7 +55,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Not Found"),
+				testutils.StringError("Not Found"),
 			},
 		},
 		{

@@ -34,7 +34,7 @@ func TestSoqlBuilderWithIDs(t *testing.T) {
 			})
 
 		output := soql.String()
-		assert.Equal(t, output, "SELECT shippingstreet FROM Account WHERE Id IN ("+
+		assert.Equal(t, output, "SELECT Id,shippingstreet FROM Account WHERE Id IN ("+
 			"'001ak00000OQ4RxAAL',"+
 			"'001ak00000OQ4RyAAL',"+
 			"'001ak00000OQ4TZAA1',"+

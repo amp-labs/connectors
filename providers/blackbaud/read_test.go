@@ -36,7 +36,9 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{},
+						Fields: map[string]any{
+							"id": "6802eae7-b10d-49b1-8ffd-ec5611d69af8",
+						},
 						Raw: map[string]any{
 							"id":                    "6802eae7-b10d-49b1-8ffd-ec5611d69af8",
 							"name":                  "US Dollar",
@@ -48,6 +50,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"active":                true,
 							"organization_currency": true,
 						},
+						Id: "6802eae7-b10d-49b1-8ffd-ec5611d69af8",
 					},
 				},
 				Done: true,
@@ -66,7 +69,9 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{},
+						Fields: map[string]any{
+							"id": "9ae04de3-0366-45b1-bdfa-3753ae64fc3f",
+						},
 						Raw: map[string]any{
 							"id":                    "9ae04de3-0366-45b1-bdfa-3753ae64fc3f",
 							"name":                  "Kyle Abrahms",
@@ -78,6 +83,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"constituent_type":      "Individual",
 							"sort_constituent_name": "Abrahms, Kyle",
 						},
+						Id: "9ae04de3-0366-45b1-bdfa-3753ae64fc3f",
 					},
 				},
 				Done: true,

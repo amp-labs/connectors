@@ -19,12 +19,12 @@ type leadActivity struct {
 }
 
 // Read retrieves data based on the provided common.ReadParams configuration parameters.
-func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	if err := config.ValidateParams(true); err != nil {
+func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+	if err := params.ValidateParams(true); err != nil {
 		return nil, err
 	}
 
-	url, nextPageToken, err := c.constructReadURL(ctx, config)
+	url, nextPageToken, err := c.constructReadURL(ctx, params)
 	if err != nil {
 		// If this is the case, we return a zero records response.
 		if errors.Is(err, ErrZeroRecords) {
@@ -44,8 +44,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	return common.ParseResult(res,
 		getRecords,
-		constructNextRecordsURL(config.ObjectName, nextPageToken),
+		constructNextRecordsURL(params.ObjectName, nextPageToken),
 		common.GetMarshaledData,
-		config.Fields,
+		params.Fields,
 	)
 }

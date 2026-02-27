@@ -1,7 +1,6 @@
 package monday
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -28,7 +27,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(`Cannot query field "random_field" on type "Board".`),
+				testutils.StringError(`Cannot query field "random_field" on type "Board".`),
 			},
 		},
 	}
