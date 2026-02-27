@@ -53,10 +53,12 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 func extractDataFromResponse(body *ajson.Node, objectName string) (map[string]any, error) {
 	jsonQuery := jsonquery.New(body)
+
 	arr, err := jsonQuery.ArrayOptional(objectName)
 	if err != nil {
 		return nil, err
 	}
+
 	if len(arr) == 0 {
 		return nil, common.ErrMissingExpectedValues
 	}
@@ -65,9 +67,11 @@ func extractDataFromResponse(body *ajson.Node, objectName string) (map[string]an
 	if err != nil {
 		return nil, err
 	}
+
 	if data == nil {
 		return nil, common.ErrMissingExpectedValues
 	}
+
 	return data, nil
 }
 

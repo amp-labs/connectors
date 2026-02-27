@@ -32,9 +32,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	if !params.Since.IsZero() {
 		url.WithQueryParam("created_after", params.Since.Format(time.RFC3339))
 	}
+
 	if !params.Until.IsZero() {
 		url.WithQueryParam("created_before", params.Until.Format(time.RFC3339))
 	}
+
 	if params.NextPage != "" {
 		url.WithQueryParam("cursor", params.NextPage.String())
 	}
@@ -60,9 +62,11 @@ func makeNextRecordsURL() common.NextPageFunc {
 		if err != nil {
 			return "", err
 		}
+
 		if cursor == nil {
 			return "", nil
 		}
+
 		return *cursor, nil
 	}
 }
