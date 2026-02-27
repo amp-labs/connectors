@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common/xquery"
@@ -35,6 +36,54 @@ func Body(expected string) Check {
 
 		return textEquals || jsonEquals || xmlEquals
 	}
+}
+
+// PermuteJSONBody returns a Condition expecting the request body to match
+// a template where array ordering may vary.
+//
+// The template may contain one or more placeholders using the syntax
+// "%name". Each placeholder corresponds to a PermuteSlot and is replaced
+// with every permutation of the slot's Values. All permutations across
+// all slots are generated automatically, allowing tests to ignore
+// ordering differences in serialized arrays.
+//
+// Example:
+//
+//	`{"properties":[%properties],"filters":[%filters]}`
+//
+// Multiple placeholders may be used in the same template. Each occurrence
+// of a placeholder receives the same permutation ordering.
+func PermuteJSONBody(template string, slots ...PermuteSlot) Condition {
+	var build func(int, string) Condition
+
+	build = func(i int, current string) Condition {
+		// base case: all slots filled
+		if i == len(slots) {
+			return Body(current)
+		}
+
+		slot := slots[i]
+		placeholder := "%" + slot.Name
+
+		return Permute(
+			func(order []string) Condition {
+				withQuotes := !slot.NoQuotes
+				replacement := render(order, withQuotes)
+
+				next := strings.ReplaceAll(
+					current,
+					placeholder,
+					replacement,
+				)
+
+				// recurse into next permutation layer
+				return build(i+1, next)
+			},
+			slot.Values...,
+		)
+	}
+
+	return build(0, template)
 }
 
 func jsonBodyMatch(actual []byte, expected string) bool {
@@ -87,4 +136,22 @@ func stringReplacer(text string, rules map[string]string) string {
 	}
 
 	return text
+}
+
+func render(values []string, quote bool) string {
+	if quote {
+		out := make([]string, len(values))
+		for i, v := range values {
+			out[i] = strconv.Quote(v)
+		}
+		return strings.Join(out, ",")
+	}
+
+	return strings.Join(values, ",")
+}
+
+type PermuteSlot struct {
+	Name     string
+	Values   []string
+	NoQuotes bool // optional: auto JSON quote
 }

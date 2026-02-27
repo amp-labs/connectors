@@ -2,14 +2,15 @@ package main
 
 import (
 	"context"
+	"log/slog"
+	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/amp-labs/connectors"
-	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/hubspot"
 	connTest "github.com/amp-labs/connectors/test/hubspot"
 	"github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
 func main() {
@@ -22,21 +23,17 @@ func main() {
 
 	conn := connTest.GetHubspotConnector(ctx)
 
-	testscenario.SearchThroughPages(ctx, conn, connectors.SearchParams{
+	res, err := conn.ReadUsingSearchAPI(ctx, hubspot.SearchParams{
 		ObjectName: "contacts",
 		Fields:     connectors.Fields("email", "phone", "company", "website", "lastname", "firstname"),
-		Filter: connectors.SearchFilter{
-			FieldFilters: []common.FieldFilter{
-				{
-					FieldName: "firstname",
-					Operator:  common.FilterOperatorEQ,
-					Value:     "Johnnie",
-				},
-			},
-		},
-		Limit: 50,
 		AssociatedObjects: []string{
 			"companies",
 		},
 	})
+	if err != nil {
+		utils.Fail("error reading from Hubspot", "error", err)
+	}
+
+	slog.Info("Reading contacts..")
+	utils.DumpJSON(res, os.Stdout)
 }

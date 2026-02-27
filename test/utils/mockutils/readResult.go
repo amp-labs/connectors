@@ -52,6 +52,50 @@ func (readResultComparator) SubsetFields(actual, expected *common.ReadResult) bo
 	return true
 }
 
+// SubsetAssociationsRaw checks that expected ReadResult.Associations are matching exactly,
+// but for each Association.Raw it only checks if every mentioned expected field is present in actual raw.
+func (readResultComparator) SubsetAssociationsRaw(actual, expected *common.ReadResult) bool {
+	if len(actual.Data) < len(expected.Data) {
+		return false
+	}
+
+	for i := range expected.Data {
+		if len(actual.Data[i].Associations) != len(expected.Data[i].Associations) {
+			return false
+		}
+
+		for key, expectedAssociations := range expected.Data[i].Associations {
+			actualAssociations, ok := actual.Data[i].Associations[key]
+			if !ok {
+				return false
+			}
+
+			if len(actualAssociations) != len(expectedAssociations) {
+				return false
+			}
+
+			for j := range expectedAssociations {
+				if actualAssociations[j].ObjectId != expectedAssociations[j].ObjectId {
+					return false
+				}
+
+				if actualAssociations[j].AssociationType != expectedAssociations[j].AssociationType {
+					return false
+				}
+
+				// Check if expected Raw is a subset of actual Raw
+				for field := range expectedAssociations[j].Raw {
+					if !reflect.DeepEqual(actualAssociations[j].Raw[field], expectedAssociations[j].Raw[field]) {
+						return false
+					}
+				}
+			}
+		}
+	}
+
+	return true
+}
+
 func invalidTest(message string) {
 	panic("invalid test, there is no point to check if empty set belongs to any set; " + message)
 }

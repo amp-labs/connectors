@@ -24,13 +24,13 @@ const (
 	searchPageSize = "200"
 )
 
-// Search uses the POST /search endpoint to filter object records and return the result.
+// ReadUsingSearchAPI uses the POST /search endpoint to filter object records and return the result.
 // This endpoint has a limit of 10,000 records. If the result has more than 10,000 records,
 // the caller should employ sorting to paginate through the result on the client side.
 // This endpoint paginates using paging.next.after which is to be used as an offset.
 // Archived results do not appear in search results.
 // Read more @ https://developers.hubspot.com/docs/api/crm/search
-func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.ReadResult, error) {
+func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams) (*common.ReadResult, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
 	if err := config.ValidateParams(); err != nil {
@@ -78,13 +78,13 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 }
 
 // searchCRM is intended for objects outside HubSpot's ObjectAPI.
-// For objects within ObjectAPI, refer to the Search method.
+// For objects within ObjectAPI, refer to the ReadUsingSearchAPI method.
 //
 // Case-by-case explanation:
 // * Lists
 //   - Provider API endpoint for search
 //     https://developers.hubspot.com/docs/guides/api/crm/lists/overview#search-for-a-list
-//   - Search always returns an array of items, unlike the usual "read" operation.
+//   - "Search" always returns an array of items, unlike the usual "read" operation.
 //     Therefore, the "retrieve" API endpoint is not used
 //     https://developers.hubspot.com/docs/guides/api/crm/lists/overview#retrieve-lists
 func (c *Connector) searchCRM(

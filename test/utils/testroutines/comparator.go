@@ -22,11 +22,10 @@ type Comparator[Output any] func(serverURL string, actual, expected Output) bool
 func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult) bool {
 	a := mockutils.ReadResultComparator.SubsetFields(actual, expected)
 	b := mockutils.ReadResultComparator.SubsetRaw(actual, expected)
-	c := ComparatorPagination(serverURL, actual, expected)
+	c := mockutils.ReadResultComparator.SubsetAssociationsRaw(actual, expected)
+	d := ComparatorPagination(serverURL, actual, expected)
 
-	return a &&
-		b &&
-		c
+	return a && b && c && d
 }
 
 // ComparatorPagination will check pagination related fields.
