@@ -3,6 +3,7 @@ package core
 import (
 	"testing"
 
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/spyzhov/ajson"
 )
@@ -34,27 +35,27 @@ func TestGetNextRecordsAfter(t *testing.T) {
 		{
 			name:    "Paging not an object",
 			json:    `{"paging": "not-an-object"}`,
-			wantErr: ErrNotObject,
+			wantErr: jsonquery.ErrNotObject,
 		},
 		{
-			name:    "Next missing in paging",
-			json:    `{"paging": {}}`,
-			wantErr: testutils.StringError("wrong key 'next'"),
+			name: "Next missing in paging",
+			json: `{"paging": {}}`,
+			want: "",
 		},
 		{
 			name:    "Next not an object",
 			json:    `{"paging": {"next": "not-an-object"}}`,
-			wantErr: ErrNotObject,
+			wantErr: jsonquery.ErrNotObject,
 		},
 		{
-			name:    "After missing in next",
-			json:    `{"paging": {"next": {}}}`,
-			wantErr: testutils.StringError("wrong key 'after'"),
+			name: "After missing in next",
+			json: `{"paging": {"next": {}}}`,
+			want: "",
 		},
 		{
 			name:    "After not a string",
 			json:    `{"paging": {"next": {"after": 123}}}`,
-			wantErr: ErrNotString,
+			wantErr: testutils.StringError("JSON value is not a string"),
 		},
 	}
 
@@ -98,7 +99,7 @@ func TestGetNextRecordsURL(t *testing.T) {
 		{
 			name:    "Link not a string",
 			json:    `{"paging": {"next": {"link": 123}}}`,
-			wantErr: ErrNotString,
+			wantErr: testutils.StringError("JSON value is not a string"),
 		},
 	}
 
@@ -138,17 +139,17 @@ func TestGetRecords(t *testing.T) {
 		{
 			name:    "Results missing",
 			json:    `{}`,
-			wantErr: testutils.StringError("wrong key 'results'"),
+			wantErr: jsonquery.ErrKeyNotFound,
 		},
 		{
 			name:    "Results not an array",
 			json:    `{"results": "not-an-array"}`,
-			wantErr: ErrNotArray,
+			wantErr: jsonquery.ErrNotArray,
 		},
 		{
 			name:    "Result item not an object",
 			json:    `{"results": [123]}`,
-			wantErr: ErrNotObject,
+			wantErr: jsonquery.ErrNotObject,
 		},
 	}
 
