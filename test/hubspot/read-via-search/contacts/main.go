@@ -23,14 +23,17 @@ func main() {
 
 	conn := connTest.GetHubspotConnector(ctx)
 
-	res, err := conn.SearchLegacy(ctx, hubspot.SearchParams{
-		ObjectName: "lists",
-		Fields:     connectors.Fields("listId", "name"),
+	res, err := conn.ReadUsingSearchAPI(ctx, hubspot.SearchParams{
+		ObjectName: "contacts",
+		Fields:     connectors.Fields("email", "phone", "company", "website", "lastname", "firstname"),
+		AssociatedObjects: []string{
+			"companies",
+		},
 	})
 	if err != nil {
 		utils.Fail("error reading from Hubspot", "error", err)
 	}
 
-	slog.Info("Reading lists..")
+	slog.Info("Reading contacts..")
 	utils.DumpJSON(res, os.Stdout)
 }
