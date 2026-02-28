@@ -14,7 +14,7 @@ import (
 
 const (
 	apiVersion      = "v0"
-	defaultPageSize = 10 // https://docs.granola.ai/api-reference/list-notes#parameter-page-size
+	defaultPageSize = 30 // https://docs.granola.ai/api-reference/list-notes#parameter-page-size
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -56,6 +56,15 @@ func (c *Connector) parseReadResponse(ctx context.Context, params common.ReadPar
 	)
 }
 
+/*
+	{
+		"notes": [
+		 ...
+		],
+		"hasMore": true,
+		"cursor": "eyJjcmVkZW50aWFsfQ=="
+	  }
+*/
 func makeNextRecordsURL() common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		cursor, err := jsonquery.New(node).StringOptional("cursor")
