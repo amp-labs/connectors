@@ -7,6 +7,7 @@ func init() {
 		DisplayName: "Granola",
 		AuthType:    ApiKey,
 		BaseURL:     "https://public-api.granola.ai",
+		// Bearer prefix required by Granola API (API key, not OAuth).
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
