@@ -1,0 +1,15 @@
+{
+    "notes": [
+        {
+            "id": "not_8xYzAbcDef",
+            "object": "note",
+            "title": "Final note",
+            "owner": {
+                "name": "Test User",
+                "email": "test@granola.ai"
+            },
+            "created_at": "2026-02-10T12:00:00Z"
+        }
+    ],
+    "hasMore": false
+}
