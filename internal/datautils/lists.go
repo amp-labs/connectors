@@ -1,5 +1,9 @@
 package datautils
 
+import (
+	"reflect"
+)
+
 // IndexedLists is a dynamic list of identifiable slices.
 // Each slice is associated to the unique comparable object.
 type IndexedLists[ID comparable, V any] map[ID][]V
@@ -71,4 +75,31 @@ func (l UniqueLists[ID, V]) GetBuckets() []ID {
 	}
 
 	return result
+}
+
+func SliceNoNil[T any](input ...T) []T {
+	output := make([]T, 0, len(input))
+
+	for _, data := range input {
+		if !isNil(data) {
+			output = append(output, data)
+		}
+	}
+
+	return output
+}
+
+func isNil[T any](t T) bool {
+	v := reflect.ValueOf(t)
+	if !v.IsValid() {
+		return true // untyped nil
+	}
+
+	// nolint:exhaustive
+	switch v.Kind() {
+	case reflect.Ptr, reflect.Interface, reflect.Slice, reflect.Map, reflect.Chan, reflect.Func:
+		return v.IsNil()
+	default:
+		return false
+	}
 }
