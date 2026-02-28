@@ -16,6 +16,7 @@ func TestWrite(t *testing.T) {
 	t.Parallel()
 
 	responseArticlesCreate := testutils.DataFromFile(t, "write-articles-create-response.json")
+	responseArticlesUpdate := testutils.DataFromFile(t, "write-articles-update-response.json")
 
 	tests := []testroutines.Write{
 		{
@@ -59,8 +60,9 @@ func TestWrite(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Method(http.MethodPost),
 					mockcond.Path("/articles.update"),
+					mockcond.Body(`{"id":"don:core:devrev:article/1","title":"updated title"}`),
 				},
-				Then: mockserver.Response(http.StatusOK, responseArticlesCreate),
+				Then: mockserver.Response(http.StatusOK, responseArticlesUpdate),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
@@ -68,7 +70,7 @@ func TestWrite(t *testing.T) {
 				RecordId: "don:core:devrev:article/1",
 				Data: map[string]any{
 					"id":    "don:core:devrev:article/1",
-					"title": "api test",
+					"title": "updated title",
 				},
 			},
 			ExpectedErrs: nil,

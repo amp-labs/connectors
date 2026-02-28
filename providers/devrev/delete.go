@@ -9,6 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/httpkit"
 )
 
 // DevRev uses POST for delete with object.delete endpoints.
@@ -37,7 +38,7 @@ func (c *Connector) parseDeleteResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.DeleteResult, error) {
-	if resp.Code < 200 || resp.Code > 299 {
+	if !httpkit.Status2xx(resp.Code) {
 		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, resp.Code)
 	}
 
