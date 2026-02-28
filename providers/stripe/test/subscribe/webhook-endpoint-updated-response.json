@@ -1,0 +1,18 @@
+{
+  "id": "we_123",
+  "object": "webhook_endpoint",
+  "api_version": null,
+  "application": null,
+  "created": 1766446720,
+  "description": null,
+  "enabled_events": [
+    "customer.created",
+    "customer.updated",
+    "customer.deleted",
+    "payment_intent.created"
+  ],
+  "livemode": false,
+  "metadata": {},
+  "status": "enabled",
+  "url": "https://webhook.site/test"
+}
