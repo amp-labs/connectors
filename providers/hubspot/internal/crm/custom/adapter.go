@@ -20,15 +20,15 @@ func NewAdapter(client *common.JSONHTTPClient, moduleInfo *providers.ModuleInfo)
 }
 
 // nolint:lll
-// https://developers.hubspot.com/docs/api-reference/crm-properties-v3/properties/post-crm-properties-v3-objectType-batch-create
+// https://developers.hubspot.com/docs/api-reference/crm-properties-v3/batch/post-crm-v3-properties-objectType-batch-create
 func (a *Adapter) getPropertyBatchCreateURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.moduleInfo.BaseURL, "properties", core.APIVersion3, objectName, "/batch/create")
+	return urlbuilder.New(a.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, "/batch/create")
 }
 
 // nolint:lll
-// https://developers.hubspot.com/docs/api-reference/crm-properties-v3/properties/patch-crm-properties-v3-objectType-propertyName
+// https://developers.hubspot.com/docs/api-reference/crm-properties-v3/core/patch-crm-v3-properties-objectType-propertyName
 func (a *Adapter) getPropertyUpdateURL(objectName, propertyName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.moduleInfo.BaseURL, "properties", core.APIVersion3, objectName, propertyName)
+	return urlbuilder.New(a.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, propertyName)
 }
 
 // nolint:lll

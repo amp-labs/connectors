@@ -2,6 +2,7 @@ package core
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -11,12 +12,12 @@ import (
 // InterpretJSONError interprets the error response from Hubspot
 // as per https://developers.hubspot.com/docs/api/error-handling.
 func InterpretJSONError(res *http.Response, body []byte) error {
+	headers := common.GetResponseHeaders(res)
+
 	apiError := &HubspotError{}
 	if err := json.Unmarshal(body, &apiError); err != nil {
-		return fmt.Errorf("status code %v and json.Unmarshal failed: %w", res.StatusCode, err)
+		return common.NewHTTPError(res.StatusCode, body, headers, errors.Join(common.ErrFailedUnmarshalling, err))
 	}
-
-	headers := common.GetResponseHeaders(res)
 
 	switch res.StatusCode {
 	// Hubspot sends us a 400 when the search endpoint returns over 10K records.

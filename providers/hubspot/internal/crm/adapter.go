@@ -78,6 +78,7 @@ func (a *Adapter) getModuleURL() string {
 	return a.ModuleInfo().BaseURL
 }
 
+// https://developers.hubspot.com/docs/api-reference/crm-objects-v3/basic/delete-crm-v3-objects-objectType-objectId
 func (a *Adapter) getDeleteURL(objectName, recordID string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(a.getModuleURL(), core.APIVersion3, "objects", objectName, recordID)
 }
