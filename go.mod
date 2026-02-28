@@ -28,9 +28,9 @@ require (
 	github.com/stretchr/testify v1.11.1
 	gitlab.com/c0b/go-ordered-json v0.0.0-20201030195603-febf46534d5a
 	go.uber.org/atomic v1.11.0
-	golang.org/x/net v0.49.0
+	golang.org/x/net v0.50.0
 	golang.org/x/oauth2 v0.34.0
-	golang.org/x/text v0.33.0
+	golang.org/x/text v0.34.0
 )
 
 require (
@@ -75,7 +75,7 @@ require (
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
 	github.com/woodsbury/decimal128 v1.3.0 // indirect
-	golang.org/x/sys v0.40.0 // indirect
+	golang.org/x/sys v0.41.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )
 
