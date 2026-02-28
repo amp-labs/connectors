@@ -2,6 +2,7 @@ package attio
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -125,4 +126,25 @@ func constructRequestBody(config common.ReadParams) map[string]any {
 	body["limit"] = DefaultPageSize
 
 	return body
+}
+
+func (c *Connector) readStandardOrCustomObjectsList(
+	ctx context.Context,
+) ([]objectData, error) {
+	url, err := c.getApiURL("objects")
+	if err != nil {
+		return nil, fmt.Errorf("failed to build objects URL: %w", err)
+	}
+
+	rsp, err := c.Client.Get(ctx, url.String())
+	if err != nil {
+		return nil, fmt.Errorf("failed to get objects: %w", err)
+	}
+
+	result, err := common.UnmarshalJSON[objectListResponse](rsp)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal objects response: %w", err)
+	}
+
+	return result.Data, nil
 }
