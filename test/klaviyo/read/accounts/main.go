@@ -28,9 +28,9 @@ func main() {
 		Fields:     connectors.Fields("contact_information"),
 	})
 	if err != nil {
-		utils.Fail("error reading from Klaviyo", "error", err)
+		utils.Fail("error reading from connector", "error", err)
 	}
 
-	fmt.Println("Reading accounts..")
+	fmt.Println("Reading...")
 	utils.DumpJSON(res, os.Stdout)
 }

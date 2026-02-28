@@ -113,7 +113,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Since:      time.Date(2024, 3, 4, 8, 22, 56, 0, time.UTC),
 				Filter:     "equals(messages.channel,'email')",
 			},
-			Comparator: testroutines.ComparatorSubsetRead,
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
 				If: mockcond.And{
@@ -124,6 +123,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseCampaigns),
 			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -146,6 +146,33 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						},
 					},
 				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Incremental read of campaigns using until",
+			Input: common.ReadParams{
+				ObjectName: "campaigns",
+				Fields:     connectors.Fields("name"),
+				Since:      time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentMIME("application/vnd.api+json"),
+				If: mockcond.And{
+					mockcond.Path("/api/campaigns"),
+					mockcond.QueryParam("filter",
+						"greater-than(updated_at,2024-01-01T00:00:00Z),"+
+							"less-than(updated_at,2025-01-01T00:00:00Z)"),
+					mockcond.Header(header),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCampaigns),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
 				NextPage: "",
 				Done:     true,
 			},
