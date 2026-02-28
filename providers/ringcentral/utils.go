@@ -159,3 +159,6 @@ func supportedOperations() components.EndpointRegistryInput {
 
 var creationTimeFrom = datautils.NewSet("webinars", "webinar/recordings", // nolint: gochecknoglobals
 	"webinar/company/recordings")
+
+var dateFromObjects = datautils.NewSet("call-log", "call-log-sync", // nolint: gochecknoglobals
+	"message-store", "a2p-sms/batches", "a2p-sms/messages")
