@@ -15,6 +15,63 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
+func TestListObjectMetadataCRM(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
+	dealFields := testutils.DataFromFile(t, "dealFields-with-custom.json")
+
+	tests := []testroutines.Metadata{
+		{
+			Name:  "Custom field keyed by display name",
+			Input: []string{"deals"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/v2/dealFields"),
+				Then:  mockserver.Response(http.StatusOK, dealFields),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"deals": {
+						DisplayName: "Deals",
+						Fields: map[string]common.FieldMetadata{
+							// Built-in field: keyed by field_code.
+							"title": {
+								DisplayName:  "Title",
+								ValueType:    "string",
+								ProviderType: "varchar",
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(false),
+							},
+							// Custom field: keyed by display name (not hash).
+							"Expected Close Date": {
+								DisplayName:  "Expected Close Date",
+								ValueType:    "date",
+								ProviderType: "date",
+								IsCustom:     goutils.Pointer(true),
+								IsRequired:   goutils.Pointer(false),
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+				return constructTestConnector(tt.Server.URL, providers.ModulePipedriveCRM)
+			})
+		})
+	}
+}
+
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 

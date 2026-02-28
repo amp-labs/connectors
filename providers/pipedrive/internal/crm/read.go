@@ -2,6 +2,7 @@ package crm
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -9,10 +10,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-const (
-	readAPIVersion = "api/v2"
-	data           = "data"
-)
+const data = "data"
 
 var supportsIncSync = datautils.NewSet("activities", "deals", "organizations", "persons") // nolint: gochecknoglobals
 
@@ -26,15 +24,26 @@ func (a *Adapter) Read(ctx context.Context, params common.ReadParams) (*common.R
 		return nil, err
 	}
 
+	// Fetch custom field definitions so we can resolve hash keys to display names.
+	// Graceful degradation: if this fails we proceed without custom field resolution.
+	customFieldDefs, err := a.requestCustomFields(ctx, params.ObjectName)
+	if err != nil {
+		slog.Warn("Failed to fetch custom field definitions, continuing without custom field resolution",
+			"object", params.ObjectName,
+			"error", err)
+
+		customFieldDefs = make(map[string]customFieldDef)
+	}
+
 	resp, err := a.Client.Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
 
 	return common.ParseResult(resp,
-		common.ExtractOptionalRecordsFromPath(data),
+		common.MakeRecordsFunc(data),
 		nextRecordsURL(url),
-		common.GetMarshaledData,
+		common.MakeMarshaledDataFunc(a.attachReadCustomFields(params.ObjectName, customFieldDefs)),
 		params.Fields,
 	)
 }
@@ -44,7 +53,7 @@ func (a *Adapter) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error
 		return urlbuilder.New(params.NextPage.String())
 	}
 
-	url, err := a.getAPIURL(readAPIVersion, params.ObjectName)
+	url, err := a.getAPIURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

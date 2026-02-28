@@ -13,6 +13,69 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
+func TestReadCRM(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
+	dealFields := testutils.DataFromFile(t, "dealFields-with-custom.json")
+	deals := testutils.DataFromFile(t, "deals-with-custom-fields.json")
+
+	tests := []testroutines.Read{
+		{
+			Name: "Read deals with custom fields flattened",
+			Input: common.ReadParams{
+				ObjectName: "deals",
+				Fields:     connectors.Fields("title", "Expected Close Date"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/api/v2/dealFields"),
+					Then: mockserver.Response(http.StatusOK, dealFields),
+				}, {
+					If:   mockcond.Path("/api/v2/deals"),
+					Then: mockserver.Response(http.StatusOK, deals),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"title": "Acme Corp Deal",
+						// Custom field resolved from hash to human-readable name (lowercased).
+						"expected close date": "2025-06-15",
+					},
+					Raw: map[string]any{
+						"id":       float64(1),
+						"title":    "Acme Corp Deal",
+						"value":    float64(5000),
+						"currency": "USD",
+						"status":   "open",
+						// Verify custom_fields is preserved intact in raw (not altered).
+						"custom_fields": map[string]any{
+							"a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2": "2025-06-15",
+						},
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestConnector(tt.Server.URL, providers.ModulePipedriveCRM)
+			})
+		})
+	}
+}
+
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
