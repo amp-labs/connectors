@@ -103,6 +103,15 @@ func WithCustomDynamicQueryParams(f DynamicQueryParamsGenerator) CustomAuthClien
 	}
 }
 
+// WithCustomBodyModifier sets a function that will be called on every request
+// to transform the request body. Use this for providers that require
+// credentials or other fixed fields to be injected into the request body.
+func WithCustomBodyModifier(f func(req *http.Request) error) CustomAuthClientOption {
+	return func(params *customClientParams) {
+		params.bodyModifier = f
+	}
+}
+
 // oauthClientParams is the internal configuration for the oauth http client.
 type customClientParams struct {
 	client         *http.Client
@@ -113,6 +122,7 @@ type customClientParams struct {
 	debug          func(req *http.Request, rsp *http.Response)
 	unauthorized   func(hdrs []Header, params []QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error)
 	isUnauthorized func(rsp *http.Response) (bool, error)
+	bodyModifier   func(req *http.Request) error
 }
 
 func (p *customClientParams) prepare() *customClientParams {
@@ -134,6 +144,7 @@ func newCustomAuthClient(_ context.Context, params *customClientParams) Authenti
 		debug:          params.debug,
 		unauthorized:   params.unauthorized,
 		isUnauthorized: params.isUnauthorized,
+		bodyModifier:   params.bodyModifier,
 	}
 }
 
@@ -146,6 +157,7 @@ type customAuthClient struct {
 	debug          func(req *http.Request, rsp *http.Response)
 	unauthorized   func(hdrs []Header, params []QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error)
 	isUnauthorized func(rsp *http.Response) (bool, error)
+	bodyModifier   func(req *http.Request) error
 }
 
 func (c *customAuthClient) CloseIdleConnections() {
@@ -210,6 +222,12 @@ func (c *customAuthClient) Do(req *http.Request) (*http.Response, error) {
 
 	if params != nil {
 		params.ApplyToRequest(req2)
+	}
+
+	if c.bodyModifier != nil {
+		if err := c.bodyModifier(req2); err != nil {
+			return nil, err
+		}
 	}
 
 	modifier, hasModifier := getRequestModifier(req2.Context()) //nolint:contextcheck
