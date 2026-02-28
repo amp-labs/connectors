@@ -14,10 +14,15 @@ func GetRevenueCatConnector(ctx context.Context) *revenuecat.Connector {
 	filePath := credscanning.LoadPath(providers.RevenueCat)
 
 	// Load credentials with metadata fields
-	reader := utils.MustCreateProvCredJSON(filePath, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false,
+		credscanning.Field{Name: "project_id", PathJSON: "metadata.project_id"},
+	)
 
 	params := common.ConnectorParams{
 		AuthenticatedClient: utils.NewAPIKeyClient(ctx, reader, providers.RevenueCat),
+		Metadata: map[string]string{
+			"project_id": reader.Get(credscanning.Field{Name: "project_id"}),
+		},
 	}
 
 	conn, err := revenuecat.NewConnector(params)
