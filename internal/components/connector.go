@@ -14,6 +14,27 @@ var ErrSupportNotConfigured = errors.New("support not configured")
 // TODO: Convert this to a type alias for easier usage when we go to go1.24: https://go.dev/doc/go1.24#language
 type ConnectorConstructor[T any] func(*Connector) (*T, error)
 
+// ConnectorConstructorWithParams is a function type for creating a connector instance
+// by building on a base Connector.
+//
+// The base Connector represents a provider from the catalog (providers.ProviderInfo)
+// and includes any values that are inferred or bootstrapped. Specific connectors
+// can embed this base to extend its behavior.
+//
+// It receives:
+//   - params: connector initialization parameters (ConnectorParams)
+//   - base: the initialized Connector built from the provider info
+//
+// Returns the typed connector (*T) or an error.
+//
+// Example:
+//
+//	var myConstructor ConnectorConstructorWithParams[MyConnectorType] =
+//	    func(params common.ConnectorParams, base *Connector) (*MyConnectorType, error) {
+//	        // embed base and initialize MyConnectorType
+//	    }
+type ConnectorConstructorWithParams[T any] func(common.ConnectorParams, *Connector) (*T, error)
+
 // Connector provides a reusable base for API connectors, embedding Transport
 // and explicitly defining core methods (JSONHTTPClient, HTTPClient, Provider, String)
 // to avoid ambiguity when combined with interfaces that embed fmt.Stringer.
@@ -24,10 +45,25 @@ type Connector struct {
 // Initialize initializes a connector with the given provider and parameters
 // by using Connector as a base type. It runs the constructor with the connector
 // and returns the connector as the specified T type.
+//
+// Deprecated: use Init.
 func Initialize[T any](
 	provider providers.Provider,
 	params common.ConnectorParams,
 	constructor ConnectorConstructor[T],
+) (conn *T, err error) {
+	return Init(provider, params, func(_ common.ConnectorParams, connector *Connector) (*T, error) {
+		return constructor(connector)
+	})
+}
+
+// Init initializes a connector with the given provider and parameters
+// by using Connector as a base type. It runs the constructor with the connector
+// and returns the connector as the specified T type.
+func Init[T any](
+	provider providers.Provider,
+	params common.ConnectorParams,
+	constructor ConnectorConstructorWithParams[T],
 ) (conn *T, err error) {
 	defer goutils.PanicRecovery(func(cause error) {
 		err = cause
@@ -44,7 +80,7 @@ func Initialize[T any](
 		return nil, err
 	}
 
-	conn, err = constructor(&Connector{Transport: transport})
+	conn, err = constructor(params, &Connector{Transport: transport})
 	if err != nil {
 		return nil, err
 	}
