@@ -1,7 +1,6 @@
 package mockutils
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -47,16 +46,7 @@ func (errorNormalizedComparator) ErrorEquals(actualErr, expectedErr any) bool {
 
 	// 3. Handle JSON case if expected is a JSON string.
 	if expectedJSON, ok := expectedErr.(JSONErrorWrapper); ok {
-		aJSON, err := json.Marshal(actualErr)
-		if err != nil {
-			return false
-		}
-
-		if jsonBodyMatch(aJSON, string(expectedJSON)) {
-			return true
-		}
-
-		return false
+		return JSONComparator.Equals(actualErr, string(expectedJSON))
 	}
 
 	// 4. Fallback string-based comparison.
@@ -87,18 +77,4 @@ func (c errorNormalizedComparator) EachErrorEquals(actual, expected []any) bool 
 	}
 
 	return true
-}
-
-func jsonBodyMatch(actual []byte, expected string) bool {
-	first := make(map[string]any)
-	if err := json.Unmarshal(actual, &first); err != nil {
-		return false
-	}
-
-	second := make(map[string]any)
-	if err := json.Unmarshal([]byte(expected), &second); err != nil {
-		return false
-	}
-
-	return reflect.DeepEqual(first, second)
 }

@@ -1,3 +1,4 @@
+// Package codec provides generic helpers for encoding and decoding.
 package codec
 
 import (
