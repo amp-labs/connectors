@@ -140,6 +140,7 @@ type parameters struct {
 	mediaType             string
 	autoSelectArrayItem   *bool
 	duplicatesResolver    DuplicatesResolver
+	versionPrefix         string
 }
 
 type Option = func(params *parameters)
@@ -247,5 +248,17 @@ func WithArrayItemAutoSelection() Option {
 func WithDuplicatesResolver(duplicatesResolver DuplicatesResolver) Option {
 	return func(params *parameters) {
 		params.duplicatesResolver = duplicatesResolver
+	}
+}
+
+// WithVersionPrefix sets a version prefix to strip from API paths
+// when generating object names.
+//
+// For example, if an API path is "/v1/customers/list", using
+// WithVersionPrefix("/v1/") will result in "customers/list" as
+// the object name.
+func WithVersionPrefix(prefix string) Option {
+	return func(params *parameters) {
+		params.versionPrefix = prefix
 	}
 }
