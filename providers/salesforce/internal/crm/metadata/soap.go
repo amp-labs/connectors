@@ -21,6 +21,43 @@ var (
 // It automatically handles SOAP envelope wrapping, session headers,
 // and unmarshalling the response into the expected [R] type.
 func performMetadataAPICall[R any](ctx context.Context, adapter *Adapter, payload any) (*R, error) {
+	template := `
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Header xmlns="http://soap.sforce.com/2006/04/metadata">
+        <AllOrNoneHeader>
+            <allOrNone>true</allOrNone>
+        </AllOrNoneHeader>
+        <SessionHeader>
+            <sessionId>TODO----accessToken</sessionId>
+        </SessionHeader>
+    </soapenv:Header>
+    <soapenv:Body xmlns="http://soap.sforce.com/2006/04/metadata"/>
+</soapenv:Envelope>
+`
+
+	return performSOAPCall[R](ctx, adapter, template, payload, getSOAPHeaders())
+}
+
+func performDeploySOAPRequest[R any](ctx context.Context, adapter *Adapter, payload any) (*R, error) {
+	template := `<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:md="http://soap.sforce.com/2006/04/metadata">
+    <soapenv:Header>
+        <md:SessionHeader>
+            <md:sessionId>TODO----accessToken</md:sessionId>
+        </md:SessionHeader>
+    </soapenv:Header>
+    <soapenv:Body/>
+</soapenv:Envelope>`
+
+	return performSOAPCall[R](ctx, adapter, template, payload, getDeploySOAPHeaders())
+}
+
+func performSOAPCall[R any](ctx context.Context, adapter *Adapter,
+	template string, payload any, headers []common.Header,
+) (*R, error) {
 	data, err := xml.MarshalIndent(payload, "", "  ")
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrMetadataMarshal, err)
@@ -31,7 +68,7 @@ func performMetadataAPICall[R any](ctx context.Context, adapter *Adapter, payloa
 		return nil, common.ErrMissingAccessToken
 	}
 
-	response, err := adapter.performSOAPRequest(ctx, data, accessToken.String())
+	response, err := adapter.performSOAPRequest(ctx, template, data, accessToken.String(), headers)
 	if err != nil {
 		return nil, err
 	}
@@ -57,13 +94,15 @@ type Envelope[B any] struct {
 // See: https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_header_sessionheader.htm
 //
 // Returns the raw SOAP response body.
-func (a *Adapter) performSOAPRequest(ctx context.Context, xmlPayload []byte, accessToken string) ([]byte, error) {
+func (a *Adapter) performSOAPRequest(
+	ctx context.Context, template string, xmlPayload []byte, accessToken string, headers []common.Header,
+) ([]byte, error) {
 	body, err := xquery.NewXML(xmlPayload)
 	if err != nil {
 		return nil, err
 	}
 
-	body, err = putInsideEnvelope(body, accessToken)
+	body, err = putInsideEnvelope(template, body, accessToken)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +112,7 @@ func (a *Adapter) performSOAPRequest(ctx context.Context, xmlPayload []byte, acc
 		return nil, err
 	}
 
-	resp, err := a.XMLClient.Post(ctx, url.String(), body, getSOAPHeaders()...)
+	resp, err := a.XMLClient.Post(ctx, url.String(), body, headers...)
 	if err != nil {
 		return nil, errors.Join(ErrMetadataCreate, err)
 	}
@@ -81,23 +120,7 @@ func (a *Adapter) performSOAPRequest(ctx context.Context, xmlPayload []byte, acc
 	return []byte(resp.Body.RawXML()), nil
 }
 
-func putInsideEnvelope(content *xquery.XML, accessToken string) (*xquery.XML, error) {
-	template := `
-<?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <soapenv:Header xmlns="http://soap.sforce.com/2006/04/metadata">
-        <AllOrNoneHeader>
-            <allOrNone>true</allOrNone>
-        </AllOrNoneHeader>
-        <SessionHeader>
-            <sessionId>TODO----accessToken</sessionId>
-        </SessionHeader>
-    </soapenv:Header>
-    <soapenv:Body xmlns="http://soap.sforce.com/2006/04/metadata"/>
-</soapenv:Envelope>
-`
-
+func putInsideEnvelope(template string, content *xquery.XML, accessToken string) (*xquery.XML, error) {
 	envelope, err := xquery.NewXML([]byte(template))
 	if err != nil {
 		return nil, err

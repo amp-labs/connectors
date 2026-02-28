@@ -82,6 +82,16 @@ func (a Adapter) Search(ctx context.Context, params *common.SearchParams) (*comm
 	return a.searchStrategy.Search(ctx, params)
 }
 
+func (a Adapter) DeployMetadataZip(ctx context.Context, zipData []byte) (string, error) {
+	// Delegated.
+	return a.customAdapter.DeployMetadataZip(ctx, zipData)
+}
+
+func (a Adapter) CheckDeployStatus(ctx context.Context, deployID string) (*metadata.DeployResult, error) {
+	// Delegated.
+	return a.customAdapter.CheckDeployStatus(ctx, deployID)
+}
+
 // Gateway access to URLs.
 func (a Adapter) getModuleURL() string {
 	return a.ModuleInfo().BaseURL
