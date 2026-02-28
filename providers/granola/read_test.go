@@ -25,6 +25,7 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "notes",
 				Fields:     connectors.Fields("id", "title", "created_at"),
+				PageSize:   10,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -46,6 +47,7 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "notes",
 				Fields:     connectors.Fields("id", "title", "created_at"),
+				PageSize:   10,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -188,6 +190,7 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "notes",
 				Fields:     connectors.Fields("id", "title"),
+				PageSize:   10,
 				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
 				Until:      time.Date(2026, 1, 31, 23, 59, 59, 0, time.UTC),
 			},
