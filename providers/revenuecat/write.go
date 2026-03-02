@@ -12,8 +12,6 @@ import (
 )
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	method := http.MethodPost
-
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "projects", c.ProjectID, params.ObjectName)
 	if err != nil {
 		return nil, err
@@ -21,7 +19,6 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	if !params.IsCreate() {
 		url.AddPath(params.RecordId)
-		method = http.MethodPatch
 	}
 
 	jsonData, err := json.Marshal(params.RecordData)
@@ -29,7 +26,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
 }
 
 func (c *Connector) parseWriteResponse(

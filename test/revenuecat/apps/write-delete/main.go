@@ -66,6 +66,9 @@ func createApp(ctx context.Context, conn *revenuecat.Connector) (string, error) 
 		RecordData: map[string]any{
 			"name": name,
 			"type": "app_store",
+			"app_store": map[string]any{
+				"bundle_id": "com.ampersand.test",
+			},
 		},
 	})
 	if err != nil {
