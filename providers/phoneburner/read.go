@@ -83,8 +83,12 @@ func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, er
 	return url, nil
 }
 
-// formatPST converts t to PhoneBurner's server timezone (PST, UTC-8) and
-// formats it as the "YYYY-MM-DD HH:MM:SS" string the API expects.
+// formatPST converts t to PST (UTC-8) and formats it as "YYYY-MM-DD HH:MM:SS".
+// PhoneBurner's API docs (https://www.phoneburner.com/developer/route_list#contacts)
+// do not explicitly state a timezone, but the server operates in PST and interprets
+// all timestamp params in that timezone. Sending UTC-formatted strings without
+// conversion causes PhoneBurner to treat them as PST values, which appear hours in
+// the future relative to its clock and triggers a 400 error.
 func formatPST(t time.Time) string {
 	return t.In(time.FixedZone("PST", -8*60*60)).Format("2006-01-02 15:04:05")
 }
@@ -98,9 +102,11 @@ func applyTimeScopingToURL(url *urlbuilder.URL, params common.ReadParams) {
 			url.WithQueryParam("updated_from", formatPST(params.Since))
 			url.WithQueryParam("include_new", "1")
 
-			// Always send update_to explicitly; omitting it lets PhoneBurner default
-			// to PST "now", which can be earlier than updated_from.
-			updateTo := time.Now().Add(24 * time.Hour)
+			// update_to must always be sent explicitly. If omitted, PhoneBurner defaults
+			// it to PST "now", which can be earlier than updated_from and causes a 400.
+			// We add 8h (the PST UTC offset) as a buffer to guarantee update_to > updated_from
+			// regardless of when this runs.
+			updateTo := time.Now().Add(8 * time.Hour)
 			if !params.Until.IsZero() {
 				updateTo = params.Until
 			}
