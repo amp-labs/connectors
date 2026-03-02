@@ -1,0 +1,36 @@
+{
+    "notes": [
+        {
+            "id": "not_1d3tmYTlCICgjy",
+            "object": "note",
+            "title": "Quarterly yoghurt budget review",
+            "owner": {
+                "name": "Oat Benson",
+                "email": "oat@granola.ai"
+            },
+            "created_at": "2026-01-27T15:30:00Z"
+        },
+        {
+            "id": "not_7hKpQ2LmZx91ab",
+            "object": "note",
+            "title": "Customer onboarding flow improvements",
+            "owner": {
+                "name": "Maya Tesfaye",
+                "email": "maya.tesfaye@granola.ai"
+            },
+            "created_at": "2026-01-29T10:15:00Z"
+        },
+        {
+            "id": "not_4Js8PdLwQe72rt",
+            "object": "note",
+            "title": "transaction latency analysis",
+            "owner": {
+                "name": "Eren Yeager",
+                "email": "eren.yeager@granola.ai"
+            },
+            "created_at": "2026-02-02T08:45:00Z"
+        }
+    ],
+    "hasMore": true,
+    "cursor": "eyJjcmVkZW50aWFsfQ=="
+}
