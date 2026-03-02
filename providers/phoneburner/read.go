@@ -83,9 +83,11 @@ func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, er
 	return url, nil
 }
 
-// phoneBurnerPST is PST (UTC-8). PhoneBurner compares timestamps in this timezone,
-// so all time params must be converted to PST before formatting.
-var phoneBurnerPST = time.FixedZone("PST", -8*60*60) //nolint:gochecknoglobals
+// formatPST converts t to PhoneBurner's server timezone (PST, UTC-8) and
+// formats it as the "YYYY-MM-DD HH:MM:SS" string the API expects.
+func formatPST(t time.Time) string {
+	return t.In(time.FixedZone("PST", -8*60*60)).Format("2006-01-02 15:04:05")
+}
 
 // applyTimeScopingToURL adds object-specific time-filter query params.
 func applyTimeScopingToURL(url *urlbuilder.URL, params common.ReadParams) {
@@ -93,17 +95,17 @@ func applyTimeScopingToURL(url *urlbuilder.URL, params common.ReadParams) {
 	case objectContacts:
 		// Docs: https://www.phoneburner.com/developer/route_list#contacts
 		if !params.Since.IsZero() {
-			url.WithQueryParam("updated_from", params.Since.In(phoneBurnerPST).Format("2006-01-02 15:04:05"))
+			url.WithQueryParam("updated_from", formatPST(params.Since))
 			url.WithQueryParam("include_new", "1")
 
 			// Always send update_to explicitly; omitting it lets PhoneBurner default
 			// to PST "now", which can be earlier than updated_from.
-			updateTo := time.Now().In(phoneBurnerPST).Add(24 * time.Hour)
+			updateTo := time.Now().Add(24 * time.Hour)
 			if !params.Until.IsZero() {
-				updateTo = params.Until.In(phoneBurnerPST)
+				updateTo = params.Until
 			}
 
-			url.WithQueryParam("update_to", updateTo.Format("2006-01-02 15:04:05"))
+			url.WithQueryParam("update_to", formatPST(updateTo))
 		}
 	case objectDialsession:
 		// Docs: https://www.phoneburner.com/developer/route_list#dialsession

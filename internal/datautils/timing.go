@@ -37,3 +37,8 @@ func (timing) Unix(input time.Time) string {
 func (timing) FormatRFC3339WithOffset(input time.Time) string {
 	return input.Format("2006-01-02T15:04:05-07:00")
 }
+
+// FormatRFC3339inLocation converts input to the given location and formats it as RFC3339.
+func (timing) FormatRFC3339inLocation(input time.Time, location *time.Location) string {
+	return input.In(location).Format("2006-01-02T15:04:05")
+}
