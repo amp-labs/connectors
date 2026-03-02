@@ -14,8 +14,8 @@ import (
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := metadata.Schemas.ObjectNames().GetList(common.ModuleRoot)
 
-	// customers: update + delete only (create is handled by the mobile SDK, not the REST API).
-	// products:  create + delete only (PATCH not supported by the API).
+	// customers: create + delete only (no generic update endpoint; attributes use a sub-path).
+	// products:  create + delete only (no update endpoint).
 	// apps, entitlements, offerings, integrations_webhooks: full create/update/delete.
 	writeSupport := []string{
 		"apps",

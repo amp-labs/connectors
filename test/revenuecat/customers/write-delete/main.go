@@ -8,11 +8,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/revenuecat"
 	connTest "github.com/amp-labs/connectors/test/revenuecat"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/brianvoe/gofakeit/v6"
 )
 
 func main() {
@@ -27,72 +27,50 @@ func MainFn() int {
 
 	conn := connTest.GetRevenueCatConnector(ctx)
 
-	// Customers cannot be created via the REST API (created by the mobile SDK).
-	// This test updates and deletes an existing customer.
-	slog.Info("=== customers (update -> delete) ===")
+	slog.Info("=== customers (create -> delete) ===")
 
-	customerID, err := getFirstCustomerID(ctx, conn)
+	customerID, err := createCustomer(ctx, conn)
 	if err != nil {
-		slog.Error("Failed to read customers (needed for customer_id)", "error", err)
+		slog.Error("Failed to create customer", "error", err)
 		return 1
 	}
-	slog.Info("Using customer", "id", customerID)
-
-	if err := updateCustomer(ctx, conn, customerID); err != nil {
-		slog.Error("Failed to update customer", "error", err, "customer_id", customerID)
-		return 1
-	}
+	defer func() {
+		if customerID != "" {
+			if err := deleteByID(ctx, conn, "customers", customerID); err != nil {
+				slog.Warn("Cleanup delete failed", "object", "customers", "id", customerID, "error", err)
+			}
+		}
+	}()
 
 	if err := deleteByID(ctx, conn, "customers", customerID); err != nil {
 		slog.Error("Failed to delete customer", "error", err, "customer_id", customerID)
 		return 1
 	}
+	customerID = ""
 
 	slog.Info("RevenueCat customers write-delete test completed successfully")
 	return 0
 }
 
-func getFirstCustomerID(ctx context.Context, conn *revenuecat.Connector) (string, error) {
-	res, err := conn.Read(ctx, common.ReadParams{
+func createCustomer(ctx context.Context, conn *revenuecat.Connector) (string, error) {
+	customerID := fmt.Sprintf("amp-wd-%s", gofakeit.UUID())
+	slog.Info("Creating customer", "id", customerID)
+
+	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "customers",
-		Fields:     connectors.Fields("id"),
-		PageSize:   1,
+		RecordData: map[string]any{
+			"id": customerID,
+		},
 	})
 	if err != nil {
 		return "", err
 	}
-
-	if len(res.Data) == 0 {
-		return "", fmt.Errorf("no customers found in project")
-	}
-
-	id, _ := res.Data[0].Raw["id"].(string)
-	if id == "" {
-		return "", fmt.Errorf("customer response missing id field")
-	}
-
-	return id, nil
-}
-
-func updateCustomer(ctx context.Context, conn *revenuecat.Connector, customerID string) error {
-	slog.Info("Updating customer attributes", "customer_id", customerID)
-
-	res, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: "customers",
-		RecordId:   customerID,
-		RecordData: map[string]any{
-			"attributes": map[string]any{
-				"$displayName": map[string]any{
-					"value": "Amp WD Test Customer",
-				},
-			},
-		},
-	})
-	if err != nil {
-		return err
-	}
 	utils.DumpJSON(res, os.Stdout)
-	return nil
+
+	if res.RecordId == "" {
+		return "", fmt.Errorf("customer create returned empty RecordId")
+	}
+	return res.RecordId, nil
 }
 
 func deleteByID(ctx context.Context, conn *revenuecat.Connector, objectName, recordID string) error {
