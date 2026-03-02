@@ -86,7 +86,7 @@ func updateOffering(ctx context.Context, conn *revenuecat.Connector, offeringID 
 		ObjectName: "offerings",
 		RecordId:   offeringID,
 		RecordData: map[string]any{
-			"display_name": "Amp WD Offering Updated",
+			"display_name": fmt.Sprintf("Amp WD Offering Updated %s", gofakeit.Word()),
 		},
 	})
 	if err != nil {
