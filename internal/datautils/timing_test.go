@@ -77,12 +77,12 @@ func TestFormatRFC3339inLocation(t *testing.T) {
 		{
 			name:     "UTC to PST",
 			location: pst,
-			expected: "2024-06-15T04:00:00",
+			expected: "2024-06-15 04:00:00",
 		},
 		{
 			name:     "UTC unchanged",
 			location: utc,
-			expected: "2024-06-15T12:00:00",
+			expected: "2024-06-15 12:00:00",
 		},
 	}
 

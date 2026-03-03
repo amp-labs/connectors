@@ -99,7 +99,7 @@ const (
 // conversion causes PhoneBurner to treat them as PST values, which appear hours in
 // the future relative to its clock and triggers a 400 error.
 func formatPST(t time.Time) string {
-	return t.In(time.FixedZone("PST", pstOffsetSeconds)).Format("2006-01-02 15:04:05")
+	return datautils.Time.FormatRFC3339inLocation(t, time.FixedZone("PST", pstOffsetSeconds))
 }
 
 // applyTimeScopingToURL adds object-specific time-filter query params.
