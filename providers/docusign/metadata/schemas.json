@@ -1,0 +1,1283 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "envelopes": {
+          "displayName": "Envelopes",
+          "path": "/v2.1/accounts/{accountId}/envelopes",
+          "responseKey": "envelopes",
+          "fields": {
+            "accessControlListBase64": {
+              "displayName": "accessControlListBase64",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "allowComments": {
+              "displayName": "allowComments",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "allowMarkup": {
+              "displayName": "allowMarkup",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "allowReassign": {
+              "displayName": "allowReassign",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "allowViewHistory": {
+              "displayName": "allowViewHistory",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "anySigner": {
+              "displayName": "anySigner",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "asynchronous": {
+              "displayName": "asynchronous",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "attachmentsUri": {
+              "displayName": "attachmentsUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "authoritativeCopy": {
+              "displayName": "authoritativeCopy",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "authoritativeCopyDefault": {
+              "displayName": "authoritativeCopyDefault",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "autoNavigation": {
+              "displayName": "autoNavigation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "brandId": {
+              "displayName": "brandId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "brandLock": {
+              "displayName": "brandLock",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "burnDefaultTabData": {
+              "displayName": "burnDefaultTabData",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "certificateUri": {
+              "displayName": "certificateUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completedDateTime": {
+              "displayName": "completedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "copyRecipientData": {
+              "displayName": "copyRecipientData",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdDateTime": {
+              "displayName": "createdDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customFields": {
+              "displayName": "customFields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "customFieldsUri": {
+              "displayName": "customFieldsUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "declinedDateTime": {
+              "displayName": "declinedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedDateTime": {
+              "displayName": "deletedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deliveredDateTime": {
+              "displayName": "deliveredDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "disableResponsiveDocument": {
+              "displayName": "disableResponsiveDocument",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "documentBase64": {
+              "displayName": "documentBase64",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "documentsCombinedUri": {
+              "displayName": "documentsCombinedUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "documentsUri": {
+              "displayName": "documentsUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emailBlurb": {
+              "displayName": "emailBlurb",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emailSettings": {
+              "displayName": "emailSettings",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "emailSubject": {
+              "displayName": "emailSubject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "enableWetSign": {
+              "displayName": "enableWetSign",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "enforceSignerVisibility": {
+              "displayName": "enforceSignerVisibility",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "envelopeAttachments": {
+              "displayName": "envelopeAttachments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "envelopeCustomMetadata": {
+              "displayName": "envelopeCustomMetadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "envelopeDocuments": {
+              "displayName": "envelopeDocuments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "envelopeId": {
+              "displayName": "envelopeId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "envelopeIdStamping": {
+              "displayName": "envelopeIdStamping",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "envelopeLocation": {
+              "displayName": "envelopeLocation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "envelopeMetadata": {
+              "displayName": "envelopeMetadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "envelopeUri": {
+              "displayName": "envelopeUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expireAfter": {
+              "displayName": "expireAfter",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expireDateTime": {
+              "displayName": "expireDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expireEnabled": {
+              "displayName": "expireEnabled",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "externalEnvelopeId": {
+              "displayName": "externalEnvelopeId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "folders": {
+              "displayName": "folders",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "hasComments": {
+              "displayName": "hasComments",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hasFormDataChanged": {
+              "displayName": "hasFormDataChanged",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hasWavFile": {
+              "displayName": "hasWavFile",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "holder": {
+              "displayName": "holder",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "initialSentDateTime": {
+              "displayName": "initialSentDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is21CFRPart11": {
+              "displayName": "is21CFRPart11",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isDynamicEnvelope": {
+              "displayName": "isDynamicEnvelope",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isSignatureProviderEnvelope": {
+              "displayName": "isSignatureProviderEnvelope",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isTicketRelatedEnvelope": {
+              "displayName": "isTicketRelatedEnvelope",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastModifiedDateTime": {
+              "displayName": "lastModifiedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lockInformation": {
+              "displayName": "lockInformation",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "messageLock": {
+              "displayName": "messageLock",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notification": {
+              "displayName": "notification",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "notificationUri": {
+              "displayName": "notificationUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "powerForm": {
+              "displayName": "powerForm",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "purgeCompletedDate": {
+              "displayName": "purgeCompletedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "purgeRequestDate": {
+              "displayName": "purgeRequestDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "purgeState": {
+              "displayName": "purgeState",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recipients": {
+              "displayName": "recipients",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "recipientsLock": {
+              "displayName": "recipientsLock",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recipientsUri": {
+              "displayName": "recipientsUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sender": {
+              "displayName": "sender",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sentDateTime": {
+              "displayName": "sentDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "signerCanSignOnMobile": {
+              "displayName": "signerCanSignOnMobile",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "signingLocation": {
+              "displayName": "signingLocation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "statusChangedDateTime": {
+              "displayName": "statusChangedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "statusDateTime": {
+              "displayName": "statusDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "templatesUri": {
+              "displayName": "templatesUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "transactionId": {
+              "displayName": "transactionId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uSigState": {
+              "displayName": "uSigState",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "useDisclosure": {
+              "displayName": "useDisclosure",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "voidedDateTime": {
+              "displayName": "voidedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "voidedReason": {
+              "displayName": "voidedReason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "workflow": {
+              "displayName": "workflow",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "folders": {
+          "displayName": "Folders",
+          "path": "/v2.1/accounts/{accountId}/folders",
+          "responseKey": "folders",
+          "fields": {
+            "errorDetails": {
+              "displayName": "errorDetails",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "filter": {
+              "displayName": "filter",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "folderId": {
+              "displayName": "folderId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "folderItems": {
+              "displayName": "folderItems",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "folders": {
+              "displayName": "folders",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "hasAccess": {
+              "displayName": "hasAccess",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hasSubFolders": {
+              "displayName": "hasSubFolders",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "itemCount": {
+              "displayName": "itemCount",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "parentFolderId": {
+              "displayName": "parentFolderId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parentFolderUri": {
+              "displayName": "parentFolderUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subFolderCount": {
+              "displayName": "subFolderCount",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uri": {
+              "displayName": "uri",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "templates": {
+          "displayName": "Templates",
+          "path": "/v2.1/accounts/{accountId}/templates",
+          "responseKey": "envelopeTemplates",
+          "fields": {
+            "accessControlListBase64": {
+              "displayName": "accessControlListBase64",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "allowComments": {
+              "displayName": "allowComments",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "allowMarkup": {
+              "displayName": "allowMarkup",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "allowReassign": {
+              "displayName": "allowReassign",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "allowViewHistory": {
+              "displayName": "allowViewHistory",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "anySigner": {
+              "displayName": "anySigner",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "asynchronous": {
+              "displayName": "asynchronous",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "attachmentsUri": {
+              "displayName": "attachmentsUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "authoritativeCopy": {
+              "displayName": "authoritativeCopy",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "authoritativeCopyDefault": {
+              "displayName": "authoritativeCopyDefault",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "autoMatch": {
+              "displayName": "autoMatch",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "autoMatchSpecifiedByUser": {
+              "displayName": "autoMatchSpecifiedByUser",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "autoNavigation": {
+              "displayName": "autoNavigation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "brandId": {
+              "displayName": "brandId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "brandLock": {
+              "displayName": "brandLock",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "burnDefaultTabData": {
+              "displayName": "burnDefaultTabData",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "certificateUri": {
+              "displayName": "certificateUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completedDateTime": {
+              "displayName": "completedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "copyRecipientData": {
+              "displayName": "copyRecipientData",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdDateTime": {
+              "displayName": "createdDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customFields": {
+              "displayName": "customFields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "customFieldsUri": {
+              "displayName": "customFieldsUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "declinedDateTime": {
+              "displayName": "declinedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedDateTime": {
+              "displayName": "deletedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deliveredDateTime": {
+              "displayName": "deliveredDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "disableResponsiveDocument": {
+              "displayName": "disableResponsiveDocument",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "documentBase64": {
+              "displayName": "documentBase64",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "documents": {
+              "displayName": "documents",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "documentsCombinedUri": {
+              "displayName": "documentsCombinedUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "documentsUri": {
+              "displayName": "documentsUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emailBlurb": {
+              "displayName": "emailBlurb",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emailSettings": {
+              "displayName": "emailSettings",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "emailSubject": {
+              "displayName": "emailSubject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "enableWetSign": {
+              "displayName": "enableWetSign",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "enforceSignerVisibility": {
+              "displayName": "enforceSignerVisibility",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "envelopeAttachments": {
+              "displayName": "envelopeAttachments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "envelopeCustomMetadata": {
+              "displayName": "envelopeCustomMetadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "envelopeDocuments": {
+              "displayName": "envelopeDocuments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "envelopeId": {
+              "displayName": "envelopeId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "envelopeIdStamping": {
+              "displayName": "envelopeIdStamping",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "envelopeLocation": {
+              "displayName": "envelopeLocation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "envelopeMetadata": {
+              "displayName": "envelopeMetadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "envelopeUri": {
+              "displayName": "envelopeUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expireAfter": {
+              "displayName": "expireAfter",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expireDateTime": {
+              "displayName": "expireDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expireEnabled": {
+              "displayName": "expireEnabled",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "externalEnvelopeId": {
+              "displayName": "externalEnvelopeId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "favoritedByMe": {
+              "displayName": "favoritedByMe",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "folderId": {
+              "displayName": "folderId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "folderIds": {
+              "displayName": "folderIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "folderName": {
+              "displayName": "folderName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "folders": {
+              "displayName": "folders",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "hasComments": {
+              "displayName": "hasComments",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hasFormDataChanged": {
+              "displayName": "hasFormDataChanged",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hasWavFile": {
+              "displayName": "hasWavFile",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "holder": {
+              "displayName": "holder",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "initialSentDateTime": {
+              "displayName": "initialSentDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is21CFRPart11": {
+              "displayName": "is21CFRPart11",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isAceGenTemplate": {
+              "displayName": "isAceGenTemplate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isDocGenTemplate": {
+              "displayName": "isDocGenTemplate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isDynamicEnvelope": {
+              "displayName": "isDynamicEnvelope",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isSignatureProviderEnvelope": {
+              "displayName": "isSignatureProviderEnvelope",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isTicketRelatedEnvelope": {
+              "displayName": "isTicketRelatedEnvelope",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastModified": {
+              "displayName": "lastModified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastModifiedBy": {
+              "displayName": "lastModifiedBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "lastModifiedDateTime": {
+              "displayName": "lastModifiedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastUsed": {
+              "displayName": "lastUsed",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lockInformation": {
+              "displayName": "lockInformation",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "messageLock": {
+              "displayName": "messageLock",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "newPassword": {
+              "displayName": "newPassword",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notification": {
+              "displayName": "notification",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "notificationUri": {
+              "displayName": "notificationUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "pageCount": {
+              "displayName": "pageCount",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "password": {
+              "displayName": "password",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "passwordProtected": {
+              "displayName": "passwordProtected",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "powerForm": {
+              "displayName": "powerForm",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "powerForms": {
+              "displayName": "powerForms",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "purgeCompletedDate": {
+              "displayName": "purgeCompletedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "purgeRequestDate": {
+              "displayName": "purgeRequestDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "purgeState": {
+              "displayName": "purgeState",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recipients": {
+              "displayName": "recipients",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "recipientsLock": {
+              "displayName": "recipientsLock",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recipientsUri": {
+              "displayName": "recipientsUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sender": {
+              "displayName": "sender",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sentDateTime": {
+              "displayName": "sentDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shared": {
+              "displayName": "shared",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "signerCanSignOnMobile": {
+              "displayName": "signerCanSignOnMobile",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "signingLocation": {
+              "displayName": "signingLocation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "statusChangedDateTime": {
+              "displayName": "statusChangedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "statusDateTime": {
+              "displayName": "statusDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "templateId": {
+              "displayName": "templateId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "templatesUri": {
+              "displayName": "templatesUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "transactionId": {
+              "displayName": "transactionId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uSigState": {
+              "displayName": "uSigState",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uri": {
+              "displayName": "uri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "useDisclosure": {
+              "displayName": "useDisclosure",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "voidedDateTime": {
+              "displayName": "voidedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "voidedReason": {
+              "displayName": "voidedReason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "workflow": {
+              "displayName": "workflow",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/v2.1/accounts/{accountId}/users",
+          "responseKey": "users",
+          "fields": {
+            "activationAccessCode": {
+              "displayName": "activationAccessCode",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company": {
+              "displayName": "company",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "connectConfigurations": {
+              "displayName": "connectConfigurations",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "countryCode": {
+              "displayName": "countryCode",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdDateTime": {
+              "displayName": "createdDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customSettings": {
+              "displayName": "customSettings",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "defaultAccountId": {
+              "displayName": "defaultAccountId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "enableConnectForUser": {
+              "displayName": "enableConnectForUser",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "errorDetails": {
+              "displayName": "errorDetails",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "firstName": {
+              "displayName": "firstName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "forgottenPasswordInfo": {
+              "displayName": "forgottenPasswordInfo",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "groupList": {
+              "displayName": "groupList",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "hasRemoteNotary": {
+              "displayName": "hasRemoteNotary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "homeAddress": {
+              "displayName": "homeAddress",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "initialsImageUri": {
+              "displayName": "initialsImageUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isAdmin": {
+              "displayName": "isAdmin",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isAlternateAdmin": {
+              "displayName": "isAlternateAdmin",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isManagedByScim": {
+              "displayName": "isManagedByScim",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isMembershipManagedByScim": {
+              "displayName": "isMembershipManagedByScim",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isNAREnabled": {
+              "displayName": "isNAREnabled",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "jobTitle": {
+              "displayName": "jobTitle",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastLogin": {
+              "displayName": "lastLogin",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastName": {
+              "displayName": "lastName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "licenseStatus": {
+              "displayName": "licenseStatus",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "licenseType": {
+              "displayName": "licenseType",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "loginStatus": {
+              "displayName": "loginStatus",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "middleName": {
+              "displayName": "middleName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "password": {
+              "displayName": "password",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "passwordExpiration": {
+              "displayName": "passwordExpiration",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "permissionProfileId": {
+              "displayName": "permissionProfileId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "permissionProfileName": {
+              "displayName": "permissionProfileName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "profileImageUri": {
+              "displayName": "profileImageUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sendActivationEmail": {
+              "displayName": "sendActivationEmail",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sendActivationOnInvalidLogin": {
+              "displayName": "sendActivationOnInvalidLogin",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "signatureImageUri": {
+              "displayName": "signatureImageUri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscribe": {
+              "displayName": "subscribe",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "suffixName": {
+              "displayName": "suffixName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uri": {
+              "displayName": "uri",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userAddedToAccountDateTime": {
+              "displayName": "userAddedToAccountDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userId": {
+              "displayName": "userId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userName": {
+              "displayName": "userName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userProfileLastModifiedDate": {
+              "displayName": "userProfileLastModifiedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userSettings": {
+              "displayName": "userSettings",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "userStatus": {
+              "displayName": "userStatus",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userType": {
+              "displayName": "userType",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "workAddress": {
+              "displayName": "workAddress",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}
