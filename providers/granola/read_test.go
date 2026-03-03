@@ -18,20 +18,20 @@ func TestRead(t *testing.T) {
 	responseReadEmpty := testutils.DataFromFile(t, "read-empty.json")
 	responseNotes := testutils.DataFromFile(t, "notes.json")
 	responseNotesLastPage := testutils.DataFromFile(t, "notes-last-page.json")
-
+	responseNote := testutils.DataFromFile(t, "note.json")
 	tests := []testroutines.Read{
 		{
 			Name: "Read empty items",
 			Input: common.ReadParams{
 				ObjectName: "notes",
 				Fields:     connectors.Fields("id", "title", "created_at"),
-				PageSize:   10,
+				PageSize:   4,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v0/notes"),
-					mockcond.QueryParam("page_size", "10"),
+					mockcond.Path("/v1/notes"),
+					mockcond.QueryParam("page_size", "4"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseReadEmpty),
 			}.Server(),
@@ -47,19 +47,20 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "notes",
 				Fields:     connectors.Fields("id", "title", "created_at"),
-				PageSize:   10,
+				PageSize:   4,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v0/notes"),
-					mockcond.QueryParam("page_size", "10"),
+					mockcond.Path("/v1/notes"),
+					mockcond.QueryParam("page_size", "4"),
 				},
+				Else: mockserver.Response(http.StatusOK, responseNote),
 				Then: mockserver.Response(http.StatusOK, responseNotes),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 3,
+				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{
@@ -75,34 +76,6 @@ func TestRead(t *testing.T) {
 							"created_at": "2026-01-27T15:30:00Z",
 						},
 					},
-					{
-						Fields: map[string]any{
-							"id":         "not_7hKpQ2LmZx91ab",
-							"title":      "Customer onboarding flow improvements",
-							"created_at": "2026-01-29T10:15:00Z",
-						},
-						Raw: map[string]any{
-							"id":         "not_7hKpQ2LmZx91ab",
-							"object":     "note",
-							"title":      "Customer onboarding flow improvements",
-							"owner":      map[string]any{"name": "Maya Tesfaye", "email": "maya.tesfaye@granola.ai"},
-							"created_at": "2026-01-29T10:15:00Z",
-						},
-					},
-					{
-						Fields: map[string]any{
-							"id":         "not_4Js8PdLwQe72rt",
-							"title":      "transaction latency analysis",
-							"created_at": "2026-02-02T08:45:00Z",
-						},
-						Raw: map[string]any{
-							"id":         "not_4Js8PdLwQe72rt",
-							"object":     "note",
-							"title":      "transaction latency analysis",
-							"owner":      map[string]any{"name": "Eren Yeager", "email": "eren.yeager@granola.ai"},
-							"created_at": "2026-02-02T08:45:00Z",
-						},
-					},
 				},
 				NextPage: "eyJjcmVkZW50aWFsfQ==",
 				Done:     false,
@@ -113,15 +86,16 @@ func TestRead(t *testing.T) {
 			Name: "Read notes second page using NextPage token",
 			Input: common.ReadParams{
 				ObjectName: "notes",
-				Fields:     connectors.Fields("id", "title", "created_at"),
+				Fields:     connectors.Fields("id", "title"),
 				NextPage:   "eyJjcmVkZW50aWFsfQ==",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v0/notes"),
+					mockcond.Path("/v1/notes"),
 					mockcond.QueryParam("cursor", "eyJjcmVkZW50aWFsfQ=="),
 				},
+				Else: mockserver.Response(http.StatusOK, responseNote),
 				Then: mockserver.Response(http.StatusOK, responseNotesLastPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
@@ -130,16 +104,12 @@ func TestRead(t *testing.T) {
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{
-							"id":         "not_8xYzAbcDef",
-							"title":      "Final note",
-							"created_at": "2026-02-10T12:00:00Z",
+							"id":    "not_1d3tmYTlCICgjy",
+							"title": "Quarterly yoghurt budget review",
 						},
 						Raw: map[string]any{
-							"id":         "not_8xYzAbcDef",
-							"object":     "note",
-							"title":      "Final note",
-							"owner":      map[string]any{"name": "Test User", "email": "test@granola.ai"},
-							"created_at": "2026-02-10T12:00:00Z",
+							"id":    "not_1d3tmYTlCICgjy",
+							"title": "Quarterly yoghurt budget review",
 						},
 					},
 				},
@@ -153,31 +123,24 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "notes",
 				Fields:     connectors.Fields("id", "title"),
-				PageSize:   50,
+				PageSize:   4,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v0/notes"),
-					mockcond.QueryParam("page_size", "50"),
+					mockcond.Path("/v1/notes"),
+					mockcond.QueryParam("page_size", "4"),
 				},
+				Else: mockserver.Response(http.StatusOK, responseNote),
 				Then: mockserver.Response(http.StatusOK, responseNotes),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 3,
+				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{"id": "not_1d3tmYTlCICgjy", "title": "Quarterly yoghurt budget review"},
 						Raw:    map[string]any{"id": "not_1d3tmYTlCICgjy", "object": "note", "title": "Quarterly yoghurt budget review", "owner": map[string]any{"name": "Oat Benson", "email": "oat@granola.ai"}, "created_at": "2026-01-27T15:30:00Z"},
-					},
-					{
-						Fields: map[string]any{"id": "not_7hKpQ2LmZx91ab", "title": "Customer onboarding flow improvements"},
-						Raw:    map[string]any{"id": "not_7hKpQ2LmZx91ab", "object": "note", "title": "Customer onboarding flow improvements", "owner": map[string]any{"name": "Maya Tesfaye", "email": "maya.tesfaye@granola.ai"}, "created_at": "2026-01-29T10:15:00Z"},
-					},
-					{
-						Fields: map[string]any{"id": "not_4Js8PdLwQe72rt", "title": "transaction latency analysis"},
-						Raw:    map[string]any{"id": "not_4Js8PdLwQe72rt", "object": "note", "title": "transaction latency analysis", "owner": map[string]any{"name": "Eren Yeager", "email": "eren.yeager@granola.ai"}, "created_at": "2026-02-02T08:45:00Z"},
 					},
 				},
 				NextPage: "eyJjcmVkZW50aWFsfQ==",
@@ -190,35 +153,28 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "notes",
 				Fields:     connectors.Fields("id", "title"),
-				PageSize:   10,
+				PageSize:   4,
 				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
 				Until:      time.Date(2026, 1, 31, 23, 59, 59, 0, time.UTC),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v0/notes"),
-					mockcond.QueryParam("page_size", "10"),
+					mockcond.Path("/v1/notes"),
+					mockcond.QueryParam("page_size", "4"),
 					mockcond.QueryParam("created_after", "2026-01-01T00:00:00Z"),
 					mockcond.QueryParam("created_before", "2026-01-31T23:59:59Z"),
 				},
+				Else: mockserver.Response(http.StatusOK, responseNote),
 				Then: mockserver.Response(http.StatusOK, responseNotes),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 3,
+				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{"id": "not_1d3tmYTlCICgjy", "title": "Quarterly yoghurt budget review"},
 						Raw:    map[string]any{"id": "not_1d3tmYTlCICgjy", "object": "note", "title": "Quarterly yoghurt budget review", "owner": map[string]any{"name": "Oat Benson", "email": "oat@granola.ai"}, "created_at": "2026-01-27T15:30:00Z"},
-					},
-					{
-						Fields: map[string]any{"id": "not_7hKpQ2LmZx91ab", "title": "Customer onboarding flow improvements"},
-						Raw:    map[string]any{"id": "not_7hKpQ2LmZx91ab", "object": "note", "title": "Customer onboarding flow improvements", "owner": map[string]any{"name": "Maya Tesfaye", "email": "maya.tesfaye@granola.ai"}, "created_at": "2026-01-29T10:15:00Z"},
-					},
-					{
-						Fields: map[string]any{"id": "not_4Js8PdLwQe72rt", "title": "transaction latency analysis"},
-						Raw:    map[string]any{"id": "not_4Js8PdLwQe72rt", "object": "note", "title": "transaction latency analysis", "owner": map[string]any{"name": "Eren Yeager", "email": "eren.yeager@granola.ai"}, "created_at": "2026-02-02T08:45:00Z"},
 					},
 				},
 				NextPage: "eyJjcmVkZW50aWFsfQ==",

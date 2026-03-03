@@ -16,7 +16,7 @@ import (
 func TestListObjectMetadata(t *testing.T) {
 	t.Parallel()
 	notesResponse := testutils.DataFromFile(t, "notes.json")
-
+	noteResponse := testutils.DataFromFile(t, "note.json")
 	tests := []testroutines.Metadata{
 		{
 			Name:         "At least one object name must be queried",
@@ -30,9 +30,10 @@ func TestListObjectMetadata(t *testing.T) {
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v0/notes"),
+					mockcond.Path("/v1/notes"),
 					mockcond.QueryParam("page_size", "1"),
 				},
+				Else: mockserver.Response(http.StatusOK, noteResponse),
 				Then: mockserver.Response(http.StatusOK, notesResponse),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -41,6 +42,30 @@ func TestListObjectMetadata(t *testing.T) {
 					"notes": {
 						DisplayName: "Notes",
 						Fields: map[string]common.FieldMetadata{
+							"attendees": {
+								DisplayName:  "attendees",
+								ValueType:    common.ValueTypeOther,
+								ProviderType: "",
+								Values:       nil,
+							},
+							"calendar_event": {
+								DisplayName:  "calendar_event",
+								ValueType:    common.ValueTypeOther,
+								ProviderType: "",
+								Values:       nil,
+							},
+							"created_at": {
+								DisplayName:  "created_at",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "",
+								Values:       nil,
+							},
+							"folder_membership": {
+								DisplayName:  "folder_membership",
+								ValueType:    common.ValueTypeOther,
+								ProviderType: "",
+								Values:       nil,
+							},
 							"id": {
 								DisplayName:  "id",
 								ValueType:    common.ValueTypeString,
@@ -53,20 +78,38 @@ func TestListObjectMetadata(t *testing.T) {
 								ProviderType: "",
 								Values:       nil,
 							},
-							"title": {
-								DisplayName:  "title",
-								ValueType:    common.ValueTypeString,
-								ProviderType: "",
-								Values:       nil,
-							},
 							"owner": {
 								DisplayName:  "owner",
 								ValueType:    common.ValueTypeOther,
 								ProviderType: "",
 								Values:       nil,
 							},
-							"created_at": {
-								DisplayName:  "created_at",
+							"summary_markdown": {
+								DisplayName:  "summary_markdown",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "",
+								Values:       nil,
+							},
+							"summary_text": {
+								DisplayName:  "summary_text",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "",
+								Values:       nil,
+							},
+							"title": {
+								DisplayName:  "title",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "",
+								Values:       nil,
+							},
+							"transcript": {
+								DisplayName:  "transcript",
+								ValueType:    common.ValueTypeOther,
+								ProviderType: "",
+								Values:       nil,
+							},
+							"updated_at": {
+								DisplayName:  "updated_at",
 								ValueType:    common.ValueTypeString,
 								ProviderType: "",
 								Values:       nil,
@@ -85,7 +128,7 @@ func TestListObjectMetadata(t *testing.T) {
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v0/notes"),
+					mockcond.Path("/v1/notes"),
 					mockcond.QueryParam("page_size", "1"),
 				},
 				Then: mockserver.Response(http.StatusInternalServerError),
@@ -106,7 +149,7 @@ func TestListObjectMetadata(t *testing.T) {
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v0/notes"),
+					mockcond.Path("/v1/notes"),
 					mockcond.QueryParam("page_size", "1"),
 				},
 				Then: mockserver.Response(http.StatusOK, []byte("{}")),
@@ -127,7 +170,7 @@ func TestListObjectMetadata(t *testing.T) {
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v0/notes"),
+					mockcond.Path("/v1/notes"),
 					mockcond.QueryParam("page_size", "1"),
 				},
 				Then: mockserver.Response(http.StatusOK, []byte(`{"notes": []}`)),

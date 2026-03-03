@@ -3,18 +3,18 @@ package granola
 import (
 	"context"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
 const (
-	apiVersion      = "v0"
-	defaultPageSize = 30 // https://docs.granola.ai/api-reference/list-notes#parameter-page-size
+	apiVersion      = "v1"
+	defaultPageSize = "30" // https://docs.granola.ai/api-reference/list-notes#parameter-page-size
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -23,11 +23,13 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	pageSize := defaultPageSize
-	if params.PageSize > 0 {
-		pageSize = params.PageSize
+	pageSize := readhelper.PageSizeWithDefaultStr(params, defaultPageSize)
+	// For "notes", use a smaller page size (4) so that
+	// subsequent per-note fetches stay under the 5 req/s limit.
+	if params.ObjectName == objectNotes {
+		pageSize = "4"
 	}
-	url.WithQueryParam("page_size", strconv.Itoa(pageSize))
+	url.WithQueryParam("page_size", pageSize)
 
 	if !params.Since.IsZero() {
 		url.WithQueryParam("created_after", params.Since.Format(time.RFC3339))
@@ -38,7 +40,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	if params.NextPage != "" {
-		url.WithQueryParam("cursor", params.NextPage.String())
+		url.WithUnencodedQueryParam("cursor", params.NextPage.String())
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -47,11 +49,30 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 func (c *Connector) parseReadResponse(ctx context.Context, params common.ReadParams,
 	_ *http.Request, resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	marshaller := common.MakeMarshaledDataFunc(nil)
+
+	// List Notes returns NoteSummary only.
+	// Get Note returns the full Note.
+	// See:
+	//   - https://docs.granola.ai/api-reference/list-notes
+	//   - https://docs.granola.ai/api-reference/get-note
+	if params.ObjectName == objectNotes {
+		notes, err := c.fetchNotes(ctx, resp)
+		if err != nil {
+			return nil, err
+		}
+
+		marshaller = readhelper.MakeMarshaledSelectedDataFunc(
+			embedFields(notes),
+			embedRaw(notes),
+		)
+	}
+
 	return common.ParseResult(
 		resp,
 		common.MakeRecordsFunc(params.ObjectName),
 		makeNextRecordsURL(),
-		common.MakeMarshaledDataFunc(nil),
+		marshaller,
 		params.Fields,
 	)
 }
