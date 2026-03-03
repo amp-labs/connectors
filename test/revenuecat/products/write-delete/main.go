@@ -93,6 +93,10 @@ func createProduct(ctx context.Context, conn *revenuecat.Connector, appID string
 			"store_identifier": storeIdentifier,
 			"type":             "subscription",
 			"app_id":           appID,
+			"title":            fmt.Sprintf("Amp WD Product %s", gofakeit.Word()),
+			"subscription": map[string]any{
+				"duration": "P1M",
+			},
 		},
 	})
 	if err != nil {
