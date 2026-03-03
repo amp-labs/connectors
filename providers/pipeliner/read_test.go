@@ -2,6 +2,7 @@ package pipeliner
 
 import (
 	"net/http"
+	"reflect"
 	"testing"
 	"time"
 
@@ -19,9 +20,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	responseNotFound := testutils.DataFromFile(t, "resource-not-found.json")
-	responseProfilesFirstPage := testutils.DataFromFile(t, "read-profiles-1-first-page.json")
-	responseProfilesSecondPage := testutils.DataFromFile(t, "read-profiles-2-second-page.json")
-	responseProfilesLastPage := testutils.DataFromFile(t, "read-profiles-3-last-page.json")
+	responseProfilesFirstPage := testutils.DataFromFile(t, "read/profiles/1-first-page.json")
+	responseProfilesSecondPage := testutils.DataFromFile(t, "read/profiles/2-second-page.json")
+	responseProfilesLastPage := testutils.DataFromFile(t, "read/profiles/3-last-page.json")
+	responseAccounts := testutils.DataFromFile(t, "read/accounts-with-associations.json")
 
 	tests := []testroutines.Read{
 		{
@@ -168,6 +170,78 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Accounts with associations",
+			Input: common.ReadParams{
+				ObjectName:        "Accounts",
+				Fields:            connectors.Fields("id"),
+				AssociatedObjects: []string{"industry", "customer_type"},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v100/rest/spaces/test-workspace/entities/Accounts"),
+					mockcond.QueryParam("first", "100"),
+					mockcond.QueryParam("expand", "industry,customer_type"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccounts),
+			}.Server(),
+			Comparator: compareSubsetAssociations(),
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id": "0f4daaff-ffdd-4fff-9109-843e45e9609c",
+					},
+					Raw: map[string]any{
+						"is_deleted": false,
+						"modified":   "2026-02-05 00:13:56.718423+00:00",
+						"created":    "2026-02-05 00:13:56.718423+00:00",
+						"customer_type": map[string]any{
+							"id":          "04444b3a-c669-03bc-2c49-bcd7f047d41a",
+							"modified":    "2018-09-03 17:18:26.215642+00:00",
+							"created":     "2018-09-03 17:18:26.215642+00:00",
+							"data_set_id": "3c439b9a-f92a-0dd6-9ff9-74b90f6ae536",
+							"option_name": "existing customer",
+						},
+						"industry": map[string]any{
+							"id":          "3e046e52-00e4-097b-b2a4-b58af0381541",
+							"modified":    "2018-09-03 17:18:26.215642+00:00",
+							"created":     "2018-09-03 17:18:26.215642+00:00",
+							"data_set_id": "d15960b8-c986-0a18-b587-67f0a78f827b",
+							"option_name": "Agriculture",
+						},
+					},
+					Associations: map[string][]common.Association{
+						"customer_type": {{
+							ObjectId:        "04444b3a-c669-03bc-2c49-bcd7f047d41a",
+							AssociationType: "customer_type",
+							Raw: map[string]any{
+								"id":          "04444b3a-c669-03bc-2c49-bcd7f047d41a",
+								"modified":    "2018-09-03 17:18:26.215642+00:00",
+								"created":     "2018-09-03 17:18:26.215642+00:00",
+								"data_set_id": "3c439b9a-f92a-0dd6-9ff9-74b90f6ae536",
+								"option_name": "existing customer",
+							},
+						}},
+						"industry": {{
+							ObjectId:        "3e046e52-00e4-097b-b2a4-b58af0381541",
+							AssociationType: "industry",
+							Raw: map[string]any{
+								"id":          "3e046e52-00e4-097b-b2a4-b58af0381541",
+								"modified":    "2018-09-03 17:18:26.215642+00:00",
+								"created":     "2018-09-03 17:18:26.215642+00:00",
+								"data_set_id": "d15960b8-c986-0a18-b587-67f0a78f827b",
+								"option_name": "Agriculture",
+							},
+						}},
+					},
+				}},
+				NextPage: "WyIwZjRkYWFmZi1mZmRkLTRmZmYtOTEwOS04NDNlNDVlOTYwOWMiXQ==",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {
@@ -179,6 +253,20 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
+	}
+}
+
+func compareSubsetAssociations() testroutines.Comparator[*common.ReadResult] {
+	return func(serverURL string, actual *common.ReadResult, expected *common.ReadResult) bool {
+		// Associations.
+		for index, datum := range expected.Data {
+			if !reflect.DeepEqual(datum.Associations, expected.Data[index].Associations) {
+				return false
+			}
+		}
+
+		// Usual subset comparison.
+		return testroutines.ComparatorSubsetRead(serverURL, actual, expected)
 	}
 }
 
