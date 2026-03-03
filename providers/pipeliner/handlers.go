@@ -36,11 +36,18 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		resp,
-		common.ExtractRecordsFromPath("data"),
+		getRecords,
 		getNextRecordsURL,
-		common.GetMarshaledData,
+		readhelper.ChainedMarshaller(
+			common.MakeMarshaledDataFunc(nil),
+			fillAssociations(params),
+		),
 		params.Fields,
 	)
+}
+
+func getRecords(node *ajson.Node) ([]*ajson.Node, error) {
+	return jsonquery.New(node).ArrayRequired("data")
 }
 
 func getNextRecordsURL(node *ajson.Node) (string, error) {
@@ -67,6 +74,10 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 
 		timestamp := datautils.Time.FormatRFC3339inUTC(params.Since)
 		url.WithQueryParam("filter[modified]", timestamp)
+	}
+
+	if len(params.AssociatedObjects) != 0 {
+		url.WithQueryParam("expand", strings.Join(params.AssociatedObjects, ","))
 	}
 
 	return url, nil
