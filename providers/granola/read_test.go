@@ -170,7 +170,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read notes with Since and Until adds created_after and created_before query params",
+			Name: "Read notes with Since and Until adds updated_after and updated_before query params",
 			Input: common.ReadParams{
 				ObjectName: "notes",
 				Fields:     connectors.Fields("id", "title"),

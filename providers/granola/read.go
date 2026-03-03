@@ -41,8 +41,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	pageSize := readhelper.PageSizeWithDefaultStr(params, defaultPageSize)
 	// For "notes" that need full note payloads, use a smaller page size (4) so that
 	// subsequent per-note fetches stay under the 5 req/s limit.
-	if needsFullNotesFetch(params) && params.PageSize > maxNotesPageSizeWithGetNote { //nolint:goconst
-		pageSize = "4"
+	if needsFullNotesFetch(params) {
+		if params.PageSize <= 0 || params.PageSize > maxNotesPageSizeWithGetNote {
+			pageSize = "4"
+		}
 	}
 	url.WithQueryParam("page_size", pageSize)
 

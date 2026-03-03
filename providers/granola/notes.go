@@ -15,8 +15,10 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-const objectNotes = "notes"
-const maxConcurrentNotesFetches = 4
+const (
+	objectNotes               = "notes"
+	maxConcurrentNotesFetches = 4
+)
 
 // NotesCollection is the response shape of the List Notes endpoint.
 type NotesCollection struct {
@@ -59,7 +61,6 @@ func (c *Connector) fetchNotes(
 	noteRegistry := make(NoteRecords, len(collection.Notes))
 
 	for note := range notesChannel {
-
 		id, ok := note["id"].(string)
 		if !ok {
 			return nil, errors.New("missing field 'id' in response for object 'notes'") // nolint:err113
