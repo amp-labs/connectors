@@ -14,19 +14,39 @@ import (
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := metadata.Schemas.ObjectNames().GetList(common.ModuleRoot)
 
-	// customers: create + delete only (no generic update endpoint; attributes use a sub-path).
-	// products:  create + delete only (no update endpoint).
-	// apps, entitlements, offerings, integrations_webhooks: full create/update/delete.
+	//nolint:lll
 	writeSupport := []string{
+		// https://www.revenuecat.com/docs/api-v2#tag/Project-Configuration/operation/create-app
 		"apps",
+		// https://www.revenuecat.com/docs/api-v2#tag/Customer/operation/create-customer
+		// No generic update endpoint; attributes are set via a sub-path.
 		"customers",
+		// https://www.revenuecat.com/docs/api-v2#tag/Entitlement/operation/create-entitlement
 		"entitlements",
+		// https://www.revenuecat.com/docs/api-v2#tag/Integration/operation/create-webhook-integration
 		"integrations_webhooks",
+		// https://www.revenuecat.com/docs/api-v2#tag/Offering/operation/create-offering
 		"offerings",
+		// https://www.revenuecat.com/docs/api-v2#tag/Product/operation/create-product
+		// No update endpoint; create and delete only.
 		"products",
 	}
 
-	deleteSupport := writeSupport
+	//nolint:lll
+	deleteSupport := []string{
+		// https://www.revenuecat.com/docs/api-v2#tag/Project-Configuration/operation/delete-app
+		"apps",
+		// https://www.revenuecat.com/docs/api-v2#tag/Customer/operation/delete-customer
+		"customers",
+		// https://www.revenuecat.com/docs/api-v2#tag/Entitlement/operation/delete-entitlement
+		"entitlements",
+		// https://www.revenuecat.com/docs/api-v2#tag/Integration/operation/delete-webhook-integration
+		"integrations_webhooks",
+		// https://www.revenuecat.com/docs/api-v2#tag/Offering/operation/delete-offering
+		"offerings",
+		// https://www.revenuecat.com/docs/api-v2#tag/Product/operation/delete-product
+		"products",
+	}
 
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
