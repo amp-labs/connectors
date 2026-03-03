@@ -26,6 +26,7 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "Contacts",
 		Fields:     connectors.Fields("id", "formatted_name", "account_position"),
+		Since:      utils.Timestamp("2026-02-20T00:13:56.718423+00:00"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Pipeliner", "error", err)
