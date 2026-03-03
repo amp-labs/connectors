@@ -157,13 +157,14 @@ func init() { // nolint:funlen
 				},
 				{
 					DisplayName: "Business Unit ID",
-					DocsURL:     "https://help.salesforce.com/s/articleView?id=000381973&type=1",
+					DocsURL:     "https://developer.salesforce.com/docs/marketing/pardot/guide/authentication.html",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleSalesforceAccountEngagement:     {},
 						ModuleSalesforceAccountEngagementDemo: {},
 					},
-					Name:   "businessUnitId",
-					Prompt: "Business Unit ID is found in Business Unit Setup within Salesforce Setup or Marketing Setup.",
+					Name: "businessUnitId",
+					Prompt: "Business Unit ID is the 18-character ID that starts with 0Uv, " +
+						"found in Business Unit Setup within Salesforce Setup or Marketing Setup.",
 				},
 			},
 		},
