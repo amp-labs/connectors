@@ -27,14 +27,21 @@ func TestListObjectMetadata(t *testing.T) {
 		{
 			Name:  "Successfully describe notes object by sampling first record from data array",
 			Input: []string{"notes"},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/v1/notes"),
-					mockcond.QueryParam("page_size", "1"),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/notes"),
+							mockcond.QueryParam("page_size", "1"),
+						},
+						Then: mockserver.Response(http.StatusOK, notesResponse),
+					},
+					{
+						If:   mockcond.Path("/v1/notes/not_1d3tmYTlCICgjy"),
+						Then: mockserver.Response(http.StatusOK, noteResponse),
+					},
 				},
-				Else: mockserver.Response(http.StatusOK, noteResponse),
-				Then: mockserver.Response(http.StatusOK, notesResponse),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{

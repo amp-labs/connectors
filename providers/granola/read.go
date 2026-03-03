@@ -26,6 +26,12 @@ var notesSummaryFields = datautils.NewStringSet( //nolint:gochecknoglobals
 	"created_at",
 )
 
+const maxNotesPageSizeWithGetNote = 4
+
+func needsFullNotesFetch(params common.ReadParams) bool {
+	return params.ObjectName == objectNotes && params.Fields.HasExtra(notesSummaryFields)
+}
+
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
 	if err != nil {
@@ -33,9 +39,9 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	pageSize := readhelper.PageSizeWithDefaultStr(params, defaultPageSize)
-	// For "notes", use a smaller page size (4) so that
+	// For "notes" that need full note payloads, use a smaller page size (4) so that
 	// subsequent per-note fetches stay under the 5 req/s limit.
-	if params.ObjectName == objectNotes {
+	if needsFullNotesFetch(params) && params.PageSize > maxNotesPageSizeWithGetNote { //nolint:goconst
 		pageSize = "4"
 	}
 	url.WithQueryParam("page_size", pageSize)
@@ -65,8 +71,7 @@ func (c *Connector) parseReadResponse(ctx context.Context, params common.ReadPar
 	// See:
 	//   - https://docs.granola.ai/api-reference/list-notes
 	//   - https://docs.granola.ai/api-reference/get-note
-	if params.ObjectName == objectNotes && params.Fields.HasExtra(notesSummaryFields) {
-
+	if needsFullNotesFetch(params) {
 		notes, err := c.fetchNotes(ctx, resp)
 		if err != nil {
 			return nil, err

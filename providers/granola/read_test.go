@@ -49,14 +49,21 @@ func TestRead(t *testing.T) {
 				Fields:     connectors.Fields("id", "title", "created_at"),
 				PageSize:   4,
 			},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/v1/notes"),
-					mockcond.QueryParam("page_size", "4"),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/notes"),
+							mockcond.QueryParam("page_size", "4"),
+						},
+						Then: mockserver.Response(http.StatusOK, responseNotes),
+					},
+					{
+						If:   mockcond.Path("/v1/notes/not_1d3tmYTlCICgjy"),
+						Then: mockserver.Response(http.StatusOK, responseNote),
+					},
 				},
-				Else: mockserver.Response(http.StatusOK, responseNote),
-				Then: mockserver.Response(http.StatusOK, responseNotes),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -89,14 +96,21 @@ func TestRead(t *testing.T) {
 				Fields:     connectors.Fields("id", "title"),
 				NextPage:   "eyJjcmVkZW50aWFsfQ==",
 			},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/v1/notes"),
-					mockcond.QueryParam("cursor", "eyJjcmVkZW50aWFsfQ=="),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/notes"),
+							mockcond.QueryParam("cursor", "eyJjcmVkZW50aWFsfQ=="),
+						},
+						Then: mockserver.Response(http.StatusOK, responseNotesLastPage),
+					},
+					{
+						If:   mockcond.Path("/v1/notes/not_1d3tmYTlCICgjy"),
+						Then: mockserver.Response(http.StatusOK, responseNote),
+					},
 				},
-				Else: mockserver.Response(http.StatusOK, responseNote),
-				Then: mockserver.Response(http.StatusOK, responseNotesLastPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -125,14 +139,21 @@ func TestRead(t *testing.T) {
 				Fields:     connectors.Fields("id", "title"),
 				PageSize:   4,
 			},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/v1/notes"),
-					mockcond.QueryParam("page_size", "4"),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/notes"),
+							mockcond.QueryParam("page_size", "4"),
+						},
+						Then: mockserver.Response(http.StatusOK, responseNotes),
+					},
+					{
+						If:   mockcond.Path("/v1/notes/not_1d3tmYTlCICgjy"),
+						Then: mockserver.Response(http.StatusOK, responseNote),
+					},
 				},
-				Else: mockserver.Response(http.StatusOK, responseNote),
-				Then: mockserver.Response(http.StatusOK, responseNotes),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -157,16 +178,23 @@ func TestRead(t *testing.T) {
 				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
 				Until:      time.Date(2026, 1, 31, 23, 59, 59, 0, time.UTC),
 			},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/v1/notes"),
-					mockcond.QueryParam("page_size", "4"),
-					mockcond.QueryParam("updated_after", "2026-01-01T00:00:00Z"),
-					mockcond.QueryParam("updated_before", "2026-01-31T23:59:59Z"),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/notes"),
+							mockcond.QueryParam("page_size", "4"),
+							mockcond.QueryParam("updated_after", "2026-01-01T00:00:00Z"),
+							mockcond.QueryParam("updated_before", "2026-01-31T23:59:59Z"),
+						},
+						Then: mockserver.Response(http.StatusOK, responseNotes),
+					},
+					{
+						If:   mockcond.Path("/v1/notes/not_1d3tmYTlCICgjy"),
+						Then: mockserver.Response(http.StatusOK, responseNote),
+					},
 				},
-				Else: mockserver.Response(http.StatusOK, responseNote),
-				Then: mockserver.Response(http.StatusOK, responseNotes),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{

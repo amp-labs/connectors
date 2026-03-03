@@ -16,6 +16,7 @@ import (
 )
 
 const objectNotes = "notes"
+const maxConcurrentNotesFetches = 4
 
 // NotesCollection is the response shape of the List Notes endpoint.
 type NotesCollection struct {
@@ -49,7 +50,7 @@ func (c *Connector) fetchNotes(
 	}
 
 	// Run all jobs concurrently. If any job fails, context is expected to cancel.
-	if err = simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
+	if err = simultaneously.DoCtx(ctx, maxConcurrentNotesFetches, callbacks...); err != nil {
 		return nil, err
 	}
 
@@ -57,9 +58,7 @@ func (c *Connector) fetchNotes(
 
 	noteRegistry := make(NoteRecords, len(collection.Notes))
 
-	readCount := 0
 	for note := range notesChannel {
-		readCount++
 
 		id, ok := note["id"].(string)
 		if !ok {
