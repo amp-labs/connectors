@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -15,6 +16,14 @@ import (
 const (
 	apiVersion      = "v1"
 	defaultPageSize = "30" // https://docs.granola.ai/api-reference/list-notes#parameter-page-size
+)
+
+var notesSummaryFields = datautils.NewStringSet( //nolint:gochecknoglobals
+	"id",
+	"object",
+	"title",
+	"owner",
+	"created_at",
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -56,7 +65,8 @@ func (c *Connector) parseReadResponse(ctx context.Context, params common.ReadPar
 	// See:
 	//   - https://docs.granola.ai/api-reference/list-notes
 	//   - https://docs.granola.ai/api-reference/get-note
-	if params.ObjectName == objectNotes {
+	if params.ObjectName == objectNotes && params.Fields.HasExtra(notesSummaryFields) {
+
 		notes, err := c.fetchNotes(ctx, resp)
 		if err != nil {
 			return nil, err

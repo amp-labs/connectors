@@ -162,8 +162,8 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/notes"),
 					mockcond.QueryParam("page_size", "4"),
-					mockcond.QueryParam("created_after", "2026-01-01T00:00:00Z"),
-					mockcond.QueryParam("created_before", "2026-01-31T23:59:59Z"),
+					mockcond.QueryParam("updated_after", "2026-01-01T00:00:00Z"),
+					mockcond.QueryParam("updated_before", "2026-01-31T23:59:59Z"),
 				},
 				Else: mockserver.Response(http.StatusOK, responseNote),
 				Then: mockserver.Response(http.StatusOK, responseNotes),
