@@ -103,7 +103,7 @@ func TestListObjectMetadata(t *testing.T) {
 	}
 }
 
-func constructTestConnector(serverURL string) (*Connector, error) {
+func constructTestConnector(serverURL string, metadata map[string]string) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),
 		WithMetadata(metadata),

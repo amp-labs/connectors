@@ -6,7 +6,10 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const restapiPrefix = "restapi"
+const (
+	restapiPrefix = "restapi"
+	versionPrefix = "v2.1"
+)
 
 type Connector struct {
 	BaseURL string

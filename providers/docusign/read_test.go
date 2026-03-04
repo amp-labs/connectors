@@ -21,6 +21,7 @@ func TestRead(t *testing.T) {
 	accountIdPathPrefix := "/restapi/v2.1/accounts/" + accountId
 
 	responseEnvelopesFirstPage := testutils.DataFromFile(t, "read-envelopes-first-page.json")
+	responseEnvelopesSecondPage := testutils.DataFromFile(t, "read-envelopes-second-page.json")
 
 	tests := []testroutines.Read{
 		{
@@ -54,7 +55,39 @@ func TestRead(t *testing.T) {
 				NextPage: "/accounts/devTest-123/envelopes?start_position=1&count=1&from_date=2024-03-04T07:22:33-08:00",
 				Done:     false,
 			},
-			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read Envelopes second page",
+			Input: common.ReadParams{
+				ObjectName: "envelopes",
+				Fields:     connectors.Fields("envelopeId", "documentsUri", "recipientsUri"),
+				NextPage:   common.NextPageToken(accountIdPathPrefix + "/envelopes?start_position=1&count=1&from_date=2024-03-04T07:22:33-08:00"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path(accountIdPathPrefix + "/envelopes?start_position=1&count=1&from_date=2024-03-04T07:22:33-08:00"),
+				Then:  mockserver.Response(http.StatusOK, responseEnvelopesSecondPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"envelopeid":    "02da2475-70f8-868f-819f-9fe0dd3f0160",
+						"documentsuri":  "/envelopes/02da2475-70f8-868f-819f-9fe0dd3f0160/documents",
+						"recipientsuri": "/envelopes/02da2475-70f8-868f-819f-9fe0dd3f0160/recipients",
+					},
+					Raw: map[string]any{
+						"envelopeid":    "02da2475-70f8-868f-819f-9fe0dd3f0160",
+						"documentsuri":  "/envelopes/02da2475-70f8-868f-819f-9fe0dd3f0160/documents",
+						"recipientsuri": "/envelopes/02da2475-70f8-868f-819f-9fe0dd3f0160/recipients",
+						"status":        "sent",
+						"emailSubject":  "Test Signing Group 1",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
 		},
 	}
 

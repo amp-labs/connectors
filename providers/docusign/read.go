@@ -2,6 +2,8 @@ package docusign
 
 import (
 	"context"
+	"fmt"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -54,7 +56,37 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 }
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
-	// Set NextPage
+	if config.NextPage != "" {
+		// /restapi/v2.1 is stripped from the nextUri value so we need to add them back for the full path.
+		// return urlbuilder.New(c.BaseURL, restapiPrefix, versionPrefix, config.NextPage.String())
+		tURL := fmt.Sprintf("%s/%s/%s/%s", c.BaseURL, restapiPrefix, versionPrefix, config.NextPage.String())
+		parsed, err := url.Parse(tURL)
+		if err != nil {
+			return nil, err
+		}
+
+		return urlbuilder.FromRawURL(parsed)
+		// if err != nil {
+		// 	return nil, err
+		// }
+
+		// fmt.Printf("%s\n", fPath.String())
+
+		// path, err := urlbuilder.New(c.BaseURL, restapiPrefix, versionPrefix)
+		// if err != nil {
+		// 	return nil, err
+		// }
+
+		// qParams, err := url.ParseQuery(parsed.RawQuery)
+		// if err != nil {
+		// 	return nil, err
+		// }
+		// for key, q := range qParams {
+		// 	path.WithQueryParamList(key, q)
+		// }
+
+		// return path, nil
+	}
 
 	path, err := metadata.Schemas.FindURLPath(common.ModuleRoot, config.ObjectName)
 	if err != nil {
