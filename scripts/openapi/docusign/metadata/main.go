@@ -21,9 +21,17 @@ var (
 		"/v2.1/accounts/{accountId}/folders",
 		"/v2.1/accounts/{accountId}/templates",
 		"/v2.1/accounts/{accountId}/users",
+		"/v2.1/accounts/{accountId}/bulk_send_batch",
+		"/v2.1/accounts/{accountId}/bulk_send_lists",
+		"/v2.1/accounts/{accountId}/users",
+		// Custom Tabs
+		"/v2.1/accounts/{accountId}/tab_definitions",
+		// Signing Group
+		"/v2.1/accounts/{accountId}/signing_groups",
 	}
 
 	// todo: display name overrides
+
 	objectNametoResponseField = datautils.NewDefaultMap(map[string]string{
 		"templates": "envelopeTemplates",
 	},
