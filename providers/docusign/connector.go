@@ -9,6 +9,8 @@ import (
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
+
+	accountId string
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -25,6 +27,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	// Convert metadata map to model which knows how to do variable substitution.
 	authMetadata := NewAuthMetadataVars(params.Metadata.Map)
+
+	conn.accountId = authMetadata.AccountId
 
 	// Read provider info
 	providerInfo, err := providers.ReadInfo(providers.Docusign, authMetadata)
