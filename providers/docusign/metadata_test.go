@@ -35,12 +35,12 @@ func TestListObjectMetadata(t *testing.T) {
 								ProviderType: "string",
 							},
 							"envelopeDocuments": {
-								DisplayName:  "envelope Documents",
+								DisplayName:  "envelopeDocuments",
 								ValueType:    "other",
-								ProviderType: "object",
+								ProviderType: "array",
 							},
 							"recipientsUri": {
-								DisplayName:  "RecipientUri",
+								DisplayName:  "recipientsUri",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
@@ -66,6 +66,23 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 						},
 					},
+				},
+			},
+		},
+		{
+			Name:         "Must query at least one object",
+			Input:        nil,
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:       "Unknown object",
+			Input:      []string{"doggo"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Errors: map[string]error{
+					"doggo": common.ErrObjectNotSupported,
 				},
 			},
 		},
