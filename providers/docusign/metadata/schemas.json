@@ -5,7 +5,7 @@
       "path": "",
       "objects": {
         "bulk_send_batch": {
-          "displayName": "Bulk_send_batch",
+          "displayName": "Bulk Send Batch",
           "path": "/v2.1/accounts/{accountId}/bulk_send_batch",
           "responseKey": "bulkBatchSummaries",
           "fields": {
@@ -62,7 +62,7 @@
           }
         },
         "bulk_send_lists": {
-          "displayName": "Bulk_send_lists",
+          "displayName": "Bulk Send Lists",
           "path": "/v2.1/accounts/{accountId}/bulk_send_lists",
           "responseKey": "bulkListSummaries",
           "fields": {
@@ -583,7 +583,7 @@
           }
         },
         "signing_groups": {
-          "displayName": "Signing_groups",
+          "displayName": "Signing Groups",
           "path": "/v2.1/accounts/{accountId}/signing_groups",
           "responseKey": "groups",
           "fields": {
@@ -640,7 +640,7 @@
           }
         },
         "tab_definitions": {
-          "displayName": "Tab_definitions",
+          "displayName": "Custom Tabs",
           "path": "/v2.1/accounts/{accountId}/tab_definitions",
           "responseKey": "tabs",
           "fields": {

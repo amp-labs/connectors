@@ -24,13 +24,16 @@ var (
 		"/v2.1/accounts/{accountId}/bulk_send_batch",
 		"/v2.1/accounts/{accountId}/bulk_send_lists",
 		"/v2.1/accounts/{accountId}/users",
-		// Custom Tabs
-		"/v2.1/accounts/{accountId}/tab_definitions",
-		// Signing Group
 		"/v2.1/accounts/{accountId}/signing_groups",
+		"/v2.1/accounts/{accountId}/tab_definitions",
 	}
 
-	// todo: display name overrides
+	overrideDisplayName = map[string]string{
+		"bulk_send_batch": "Bulk Send Batch",
+		"bulk_send_lists": "Bulk Send Lists",
+		"signing_groups":  "Signing Groups",
+		"tab_definitions": "Custom Tabs",
+	}
 
 	objectNametoResponseField = datautils.NewDefaultMap(map[string]string{
 		"templates": "envelopeTemplates",
@@ -82,7 +85,7 @@ func Objects() []metadatadef.Schema {
 	goutils.MustBeNil(err)
 
 	objects, err := explorer.ReadObjects(http.MethodGet,
-		api3.NewAllowPathStrategy(allowEndpoints), nil, nil,
+		api3.NewAllowPathStrategy(allowEndpoints), nil, overrideDisplayName,
 		api3.CustomMappingObjectCheck(objectNametoResponseField),
 	)
 
