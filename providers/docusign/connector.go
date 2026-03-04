@@ -6,6 +6,8 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
+const restapiPrefix = "restapi"
+
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient

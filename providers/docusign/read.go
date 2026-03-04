@@ -2,7 +2,7 @@ package docusign
 
 import (
 	"context"
-	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -13,7 +13,12 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-var defaultTimeRange = time.Now().AddDate(-2, 0, 0) // 2 years
+var (
+	defaultTimeRange = time.Now().AddDate(-2, 0, 0) // 2 years
+	defaultPageSize  = 1000
+
+	nextURIKey = "nextUri"
+)
 
 // make this work for envelopes first before tackling the other potential objects
 // there are established patterns.
@@ -80,7 +85,11 @@ func makeGetRecords(objectName string) common.NodeRecordsFunc {
 
 // todo: check next page / pagination
 func getNextRecordURL(node *ajson.Node) (string, error) {
-	return "", nil
+	nextUri, err := jsonquery.New(node).StringOptional(nextURIKey)
+	if err != nil {
+		return "", err
+	}
+	return *nextUri, nil
 }
 
 // For envelopes, `from_date` is required unless `envelope_ids`, `folder_ids`, or `transaction_ids` is provided.
@@ -112,18 +121,15 @@ func resolveEnvelopesQueryParams(url *urlbuilder.URL, config common.ReadParams) 
 		startTime = config.Since
 	}
 	url.WithQueryParam("from_date", startTime.UTC().Format(time.RFC3339))
-	// Placeholder: need to pass status or whatever from user
-	// Got data!!!
-	url.WithQueryParam("status", "created")
 
-	// doc says required with `from_date` but we'll see...
+	// doc says required with `to_date` but we'll see...
 	if !config.Until.IsZero() {
 		url.WithQueryParam("to_date", config.Until.Format(time.RFC3339))
 	}
 
-	count := 1000
+	count := defaultPageSize
 	if config.PageSize > 0 {
 		count = config.PageSize
 	}
-	url.WithQueryParam("count", fmt.Sprintf("%d", count))
+	url.WithQueryParam("count", strconv.Itoa(count))
 }

@@ -93,7 +93,11 @@ func TestListObjectMetadata(t *testing.T) {
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL)
+				connMetadata := map[string]string{
+					"server":     "devTest",
+					"account_id": "devTest-123",
+				}
+				return constructTestConnector(tt.Server.URL, connMetadata)
 			})
 		})
 	}
@@ -102,7 +106,7 @@ func TestListObjectMetadata(t *testing.T) {
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),
-		WithMetadata(map[string]string{"server": "demo"}),
+		WithMetadata(metadata),
 	)
 	if err != nil {
 		return nil, err

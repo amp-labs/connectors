@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/docusign/metadata"
+	"github.com/spyzhov/ajson"
 )
 
 var (
