@@ -178,6 +178,10 @@ type ReadParams struct {
 	//      Reference: https://apireference.getresponse.com/#operation/getCampaignList
 	Filter string // optional
 
+	// BuilderFilter is an optional Ampersand-style structured filter for read actions.
+	// Multiple field filters are joined by AND. Only the "eq" operator is supported.
+	BuilderFilter *SearchFilter // optional
+
 	// AssociatedObjects specifies a list of related objects to fetch along with the main object.
 	// It is optional and supported by the following connectors:
 	//	* HubSpot: Supported in Read operation, but not Search.
