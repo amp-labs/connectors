@@ -1,0 +1,3608 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/v3",
+      "objects": {
+        "candidates": {
+          "displayName": "Candidates",
+          "path": "/candidates",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "preferred_name": {
+              "displayName": "preferred_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company": {
+              "displayName": "company",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_activity_at": {
+              "displayName": "last_activity_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "private": {
+              "displayName": "private",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "can_email": {
+              "displayName": "can_email",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "time_zone": {
+              "displayName": "time_zone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "linked_user_ids": {
+              "displayName": "linked_user_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "phone_numbers": {
+              "displayName": "phone_numbers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "addresses": {
+              "displayName": "addresses",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "email_addresses": {
+              "displayName": "email_addresses",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "website_addresses": {
+              "displayName": "website_addresses",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "social_media_addresses": {
+              "displayName": "social_media_addresses",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "applications": {
+          "displayName": "Applications",
+          "path": "/applications",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "agency_note_id": {
+              "displayName": "agency_note_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "candidate_id": {
+              "displayName": "candidate_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "coordinator_id": {
+              "displayName": "coordinator_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "job_post_id": {
+              "displayName": "job_post_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "recruiter_id": {
+              "displayName": "recruiter_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "referrer_id": {
+              "displayName": "referrer_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "source_id": {
+              "displayName": "source_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "stage_id": {
+              "displayName": "stage_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "stage_name": {
+              "displayName": "stage_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "rejected", "displayValue": "rejected"},
+                {"value": "hired", "displayValue": "hired"},
+                {"value": "converted", "displayValue": "converted"},
+                {"value": "in_process", "displayValue": "in_process"}
+              ]
+            },
+            "needs_decision": {
+              "displayName": "needs_decision",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "prospect": {
+              "displayName": "prospect",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "rejected_at": {
+              "displayName": "rejected_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "last_activity_at": {
+              "displayName": "last_activity_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "location_address": {
+              "displayName": "location_address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "answers": {
+              "displayName": "answers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "prospective_job_ids": {
+              "displayName": "prospective_job_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "application_stages": {
+          "displayName": "Application Stages",
+          "path": "/application_stages",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "application_id": {
+              "displayName": "application_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "job_interview_stage_id": {
+              "displayName": "job_interview_stage_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "entered_at": {
+              "displayName": "entered_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "exited_at": {
+              "displayName": "exited_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "days_in_stage": {
+              "displayName": "days_in_stage",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "current": {
+              "displayName": "current",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "applied_candidate_tags": {
+          "displayName": "Applied Candidate Tags",
+          "path": "/applied_candidate_tags",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "candidate_tag_id": {
+              "displayName": "candidate_tag_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "candidate_id": {
+              "displayName": "candidate_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "approval_flows": {
+          "displayName": "Approval Flows",
+          "path": "/approval_flows",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "offer_id": {
+              "displayName": "offer_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "approval_type": {
+              "displayName": "approval_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "open_job", "displayValue": "open_job"},
+                {"value": "offer_job", "displayValue": "offer_job"},
+                {"value": "offer_candidate", "displayValue": "offer_candidate"}
+              ]
+            },
+            "sequential": {
+              "displayName": "sequential",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "requested_by_id": {
+              "displayName": "requested_by_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "approval_status": {
+              "displayName": "approval_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "pending", "displayValue": "pending"},
+                {"value": "rejected", "displayValue": "rejected"},
+                {"value": "approved", "displayValue": "approved"}
+              ]
+            },
+            "approver_groups": {
+              "displayName": "approver_groups",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "approver_groups": {
+          "displayName": "Approver Groups",
+          "path": "/approver_groups",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "approval_flow_id": {
+              "displayName": "approval_flow_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "approvals_required": {
+              "displayName": "approvals_required",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "sort_order": {
+              "displayName": "sort_order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "required_for_exception": {
+              "displayName": "required_for_exception",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "resolved_at": {
+              "displayName": "resolved_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "approvers": {
+          "displayName": "Approvers",
+          "path": "/approvers",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "sort_order": {
+              "displayName": "sort_order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "waiting", "displayValue": "waiting"},
+                {"value": "due", "displayValue": "due"},
+                {"value": "approved", "displayValue": "approved"},
+                {"value": "rejected", "displayValue": "rejected"}
+              ]
+            },
+            "resolved_by_id": {
+              "displayName": "resolved_by_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "resolved_at": {
+              "displayName": "resolved_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "request_sent_at": {
+              "displayName": "request_sent_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "version_sent": {
+              "displayName": "version_sent",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "reminder_sent_at": {
+              "displayName": "reminder_sent_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "reminder_sent_by_id": {
+              "displayName": "reminder_sent_by_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "reminders_sent": {
+              "displayName": "reminders_sent",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "approver_group_id": {
+              "displayName": "approver_group_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "added_by_custom_field_id": {
+              "displayName": "added_by_custom_field_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "send_auto_reminder_at": {
+              "displayName": "send_auto_reminder_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "auto_reminders_sent": {
+              "displayName": "auto_reminders_sent",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "attachments": {
+          "displayName": "Attachments",
+          "path": "/attachments",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "application_id": {
+              "displayName": "application_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "candidate_id": {
+              "displayName": "candidate_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "resume", "displayValue": "resume"},
+                {"value": "cover_letter", "displayValue": "cover_letter"},
+                {"value": "take_home_test", "displayValue": "take_home_test"},
+                {"value": "offer_packet", "displayValue": "offer_packet"},
+                {"value": "offer_letter", "displayValue": "offer_letter"},
+                {"value": "signed_offer_letter", "displayValue": "signed_offer_letter"},
+                {"value": "other", "displayValue": "other"},
+                {"value": "form_attachment", "displayValue": "form_attachment"},
+                {"value": "midfunnel_agreement", "displayValue": "midfunnel_agreement"},
+                {"value": "automated_agreement", "displayValue": "automated_agreement"}
+              ]
+            },
+            "filename": {
+              "displayName": "filename",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "blocked_spam_sources": {
+          "displayName": "Blocked Spam Sources",
+          "path": "/blocked_spam_sources",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "source_type": {
+              "displayName": "source_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "value": {
+              "displayName": "value",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "note": {
+              "displayName": "note",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "bulk_requests": {
+          "displayName": "Bulk Requests",
+          "path": "/bulk_requests",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "bulk_action_uuid": {
+              "displayName": "bulk_action_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "requested_by_user_id": {
+              "displayName": "requested_by_user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "record_count": {
+              "displayName": "record_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "success_count": {
+              "displayName": "success_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "failure_count": {
+              "displayName": "failure_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "callback_url": {
+              "displayName": "callback_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "callback_response": {
+              "displayName": "callback_response",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "api_endpoint": {
+              "displayName": "api_endpoint",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "requested_at": {
+              "displayName": "requested_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "candidate_attribute_types": {
+          "displayName": "Candidate Attribute Types",
+          "path": "/candidate_attribute_types",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "sort_order": {
+              "displayName": "sort_order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_draft": {
+              "displayName": "is_draft",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "candidate_educations": {
+          "displayName": "Candidate Educations",
+          "path": "/candidate_educations",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "candidate_id": {
+              "displayName": "candidate_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "school_name_custom_field_option_id": {
+              "displayName": "school_name_custom_field_option_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "degree_custom_field_option_id": {
+              "displayName": "degree_custom_field_option_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "discipline_custom_field_option_id": {
+              "displayName": "discipline_custom_field_option_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "start_at": {
+              "displayName": "start_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "end_at": {
+              "displayName": "end_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "latest": {
+              "displayName": "latest",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "start_date_month": {
+              "displayName": "start_date_month",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "start_date_year": {
+              "displayName": "start_date_year",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "end_date_month": {
+              "displayName": "end_date_month",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "end_date_year": {
+              "displayName": "end_date_year",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "candidate_employments": {
+          "displayName": "Candidate Employments",
+          "path": "/candidate_employments",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "candidate_id": {
+              "displayName": "candidate_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "company_name": {
+              "displayName": "company_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_date": {
+              "displayName": "start_date",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "end_date": {
+              "displayName": "end_date",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "latest": {
+              "displayName": "latest",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "candidate_tags": {
+          "displayName": "Candidate Tags",
+          "path": "/candidate_tags",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "close_reasons": {
+          "displayName": "Close Reasons",
+          "path": "/close_reasons",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "custom_fields": {
+          "displayName": "Custom Fields",
+          "path": "/custom_fields",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "field_type": {
+              "displayName": "field_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "job", "displayValue": "job"},
+                {"value": "opening", "displayValue": "opening"},
+                {"value": "standard", "displayValue": "standard"},
+                {"value": "offer", "displayValue": "offer"},
+                {"value": "compensation_frequency", "displayValue": "compensation_frequency"},
+                {"value": "candidate", "displayValue": "candidate"},
+                {"value": "referral_question", "displayValue": "referral_question"},
+                {"value": "application", "displayValue": "application"},
+                {"value": "rejection_question", "displayValue": "rejection_question"},
+                {"value": "form", "displayValue": "form"},
+                {"value": "agency_question", "displayValue": "agency_question"},
+                {"value": "user_attribute", "displayValue": "user_attribute"}
+              ]
+            },
+            "sort_order": {
+              "displayName": "sort_order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "value_type": {
+              "displayName": "value_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "short_text", "displayValue": "short_text"},
+                {"value": "long_text", "displayValue": "long_text"},
+                {"value": "yes_no", "displayValue": "yes_no"},
+                {"value": "single_select", "displayValue": "single_select"},
+                {"value": "multi_select", "displayValue": "multi_select"},
+                {"value": "currency", "displayValue": "currency"},
+                {"value": "number", "displayValue": "number"},
+                {"value": "date", "displayValue": "date"},
+                {"value": "url", "displayValue": "url"},
+                {"value": "currency_range", "displayValue": "currency_range"},
+                {"value": "number_range", "displayValue": "number_range"},
+                {"value": "user", "displayValue": "user"},
+                {"value": "linked", "displayValue": "linked"},
+                {"value": "header", "displayValue": "header"},
+                {"value": "statement", "displayValue": "statement"},
+                {"value": "attachment", "displayValue": "attachment"},
+                {"value": "rich_text", "displayValue": "rich_text"}
+              ]
+            },
+            "private": {
+              "displayName": "private",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "required": {
+              "displayName": "required",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "require_approval": {
+              "displayName": "require_approval",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "trigger_new_version": {
+              "displayName": "trigger_new_version",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "updated_by_id": {
+              "displayName": "updated_by_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "internal_type": {
+              "displayName": "internal_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "employment_type", "displayValue": "employment_type"},
+                {"value": "offer_documents", "displayValue": "offer_documents"},
+                {"value": "start_date", "displayValue": "start_date"},
+                {"value": "school_name", "displayValue": "school_name"},
+                {"value": "degree", "displayValue": "degree"},
+                {"value": "discipline", "displayValue": "discipline"},
+                {"value": "offer_opening", "displayValue": "offer_opening"}
+              ]
+            },
+            "expose_in_job_board_api": {
+              "displayName": "expose_in_job_board_api",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "placeholder": {
+              "displayName": "placeholder",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name_key": {
+              "displayName": "name_key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "application_type": {
+              "displayName": "application_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "all_applications", "displayValue": "all_applications"},
+                {"value": "candidate_applications", "displayValue": "candidate_applications"},
+                {"value": "prospect_applications", "displayValue": "prospect_applications"}
+              ]
+            },
+            "api_only": {
+              "displayName": "api_only",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "use_for_job_approvals": {
+              "displayName": "use_for_job_approvals",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "use_for_offer_approvals": {
+              "displayName": "use_for_offer_approvals",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "template_token_string": {
+              "displayName": "template_token_string",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default_value": {
+              "displayName": "default_value",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "custom_field_departments": {
+          "displayName": "Custom Field Departments",
+          "path": "/custom_field_departments",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "custom_field_id": {
+              "displayName": "custom_field_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "department_id": {
+              "displayName": "department_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "custom_field_offices": {
+          "displayName": "Custom Field Offices",
+          "path": "/custom_field_offices",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "custom_field_id": {
+              "displayName": "custom_field_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "office_id": {
+              "displayName": "office_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "custom_field_options": {
+          "displayName": "Custom Field Options",
+          "path": "/custom_field_options",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "custom_field_id": {
+              "displayName": "custom_field_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "external_id": {
+              "displayName": "external_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sort_order": {
+              "displayName": "sort_order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "default_interviewers": {
+          "displayName": "Default Interviewers",
+          "path": "/default_interviewers",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "interview_kit_id": {
+              "displayName": "interview_kit_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "demographic_answer_options": {
+          "displayName": "Demographic Answer Options",
+          "path": "/demographic_answer_options",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "demographic_question_id": {
+              "displayName": "demographic_question_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "sort_order": {
+              "displayName": "sort_order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "free_form": {
+              "displayName": "free_form",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "decline_to_answer": {
+              "displayName": "decline_to_answer",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "demographic_answers": {
+          "displayName": "Demographic Answers",
+          "path": "/demographic_answers",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "application_id": {
+              "displayName": "application_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "demographic_question_id": {
+              "displayName": "demographic_question_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "demographic_answer_option_id": {
+              "displayName": "demographic_answer_option_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "free_form_text": {
+              "displayName": "free_form_text",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "demographic_question_sets": {
+          "displayName": "Demographic Question Sets",
+          "path": "/demographic_question_sets",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "enabled": {
+              "displayName": "enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "demographic_questions": {
+          "displayName": "Demographic Questions",
+          "path": "/demographic_questions",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "sort_order": {
+              "displayName": "sort_order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "demographic_question_set_id": {
+              "displayName": "demographic_question_set_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "required": {
+              "displayName": "required",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "answer_type": {
+              "displayName": "answer_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "multi_value_single_select", "displayValue": "multi_value_single_select"},
+                {"value": "multi_value_multi_select", "displayValue": "multi_value_multi_select"}
+              ]
+            }
+          }
+        },
+        "departments": {
+          "displayName": "Departments",
+          "path": "/departments",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parent_id": {
+              "displayName": "parent_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "external_id": {
+              "displayName": "external_id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "eeoc": {
+          "displayName": "EEOC",
+          "path": "/eeoc",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "application_id": {
+              "displayName": "application_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "candidate_id": {
+              "displayName": "candidate_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "submitted_at": {
+              "displayName": "submitted_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "race": {
+              "displayName": "race",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "gender": {
+              "displayName": "gender",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "veteran_status": {
+              "displayName": "veteran_status",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "disability_status": {
+              "displayName": "disability_status",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "email_templates": {
+          "displayName": "Email Templates",
+          "path": "/email_templates",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "body": {
+              "displayName": "body",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html_body": {
+              "displayName": "html_body",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "recipients": {
+              "displayName": "recipients",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default": {
+              "displayName": "default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "office_anywhere": {
+              "displayName": "office_anywhere",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "cc_recruiter": {
+              "displayName": "cc_recruiter",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "cc_coordinator": {
+              "displayName": "cc_coordinator",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "email_type": {
+              "displayName": "email_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "from_type": {
+              "displayName": "from_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "user_email", "displayValue": "user_email"},
+                {"value": "organization_email", "displayValue": "organization_email"},
+                {"value": "my_email_address", "displayValue": "my_email_address"},
+                {"value": "inviter", "displayValue": "inviter"},
+                {"value": "organizer", "displayValue": "organizer"},
+                {"value": "not_applicable", "displayValue": "not_applicable"}
+              ]
+            }
+          }
+        },
+        "focus_candidate_attributes": {
+          "displayName": "Focus Candidate Attributes",
+          "path": "/focus_candidate_attributes",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "interview_kit_id": {
+              "displayName": "interview_kit_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "job_candidate_attribute_id": {
+              "displayName": "job_candidate_attribute_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "future_job_permissions": {
+          "displayName": "Future Job Permissions",
+          "path": "/future_job_permissions",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "department_id": {
+              "displayName": "department_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "office_id": {
+              "displayName": "office_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "role_id": {
+              "displayName": "role_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "interview_kits": {
+          "displayName": "Interview Kits",
+          "path": "/interview_kits",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "job_interview_id": {
+              "displayName": "job_interview_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "exercises": {
+              "displayName": "exercises",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "anonymize_candidate": {
+              "displayName": "anonymize_candidate",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "anonymize_resumes": {
+              "displayName": "anonymize_resumes",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "interviewers": {
+          "displayName": "Interviewers",
+          "path": "/interviewers",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "interview_id": {
+              "displayName": "interview_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "scorecard_id": {
+              "displayName": "scorecard_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "response_status": {
+              "displayName": "response_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "needs_action", "displayValue": "needs_action"},
+                {"value": "declined", "displayValue": "declined"},
+                {"value": "tentative", "displayValue": "tentative"},
+                {"value": "accepted", "displayValue": "accepted"}
+              ]
+            }
+          }
+        },
+        "interviewer_tags": {
+          "displayName": "Interviewer Tags",
+          "path": "/interviewer_tags",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "interviews": {
+          "displayName": "Interviews",
+          "path": "/interviews",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "application_id": {
+              "displayName": "application_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "job_interview_id": {
+              "displayName": "job_interview_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "starts_at": {
+              "displayName": "starts_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "ends_at": {
+              "displayName": "ends_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "to_be_scheduled", "displayValue": "to_be_scheduled"},
+                {"value": "scheduled", "displayValue": "scheduled"},
+                {"value": "awaiting_feedback", "displayValue": "awaiting_feedback"},
+                {"value": "complete", "displayValue": "complete"},
+                {"value": "skipped", "displayValue": "skipped"},
+                {"value": "collect_feedback", "displayValue": "collect_feedback"},
+                {"value": "to_be_sent", "displayValue": "to_be_sent"},
+                {"value": "sent", "displayValue": "sent"},
+                {"value": "received", "displayValue": "received"}
+              ]
+            },
+            "organizer_id": {
+              "displayName": "organizer_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "scheduled_at": {
+              "displayName": "scheduled_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "all_day_start_on": {
+              "displayName": "all_day_start_on",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "all_day_end_on": {
+              "displayName": "all_day_end_on",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "external_event_id": {
+              "displayName": "external_event_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "video_conferencing_url": {
+              "displayName": "video_conferencing_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "availability_received_at": {
+              "displayName": "availability_received_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "job_candidate_attributes": {
+          "displayName": "Job Candidate Attributes",
+          "path": "/job_candidate_attributes",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "candidate_attribute_type_id": {
+              "displayName": "candidate_attribute_type_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "sort_order": {
+              "displayName": "sort_order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "job_hiring_managers": {
+          "displayName": "Job Hiring Managers",
+          "path": "/job_hiring_managers",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "job_interview_stages": {
+          "displayName": "Job Interview Stages",
+          "path": "/job_interview_stages",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "sort_order": {
+              "displayName": "sort_order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "job_notes": {
+          "displayName": "Job Notes",
+          "path": "/job_notes",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "body": {
+              "displayName": "body",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "admin_only_visible", "displayValue": "admin_only_visible"},
+                {"value": "privately_visible", "displayValue": "privately_visible"}
+              ]
+            }
+          }
+        },
+        "job_owners": {
+          "displayName": "Job Owners",
+          "path": "/job_owners",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "sourcer", "displayValue": "sourcer"},
+                {"value": "recruiter", "displayValue": "recruiter"},
+                {"value": "coordinator", "displayValue": "coordinator"}
+              ]
+            },
+            "responsible": {
+              "displayName": "responsible",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "job_post_locations": {
+          "displayName": "Job Post Locations",
+          "path": "/job_post_locations",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "plain_text_location": {
+              "displayName": "plain_text_location",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "office_id": {
+              "displayName": "office_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "free_text", "displayValue": "free_text"},
+                {"value": "office", "displayValue": "office"},
+                {"value": "custom_list", "displayValue": "custom_list"}
+              ]
+            },
+            "job_post_id": {
+              "displayName": "job_post_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "custom_location_id": {
+              "displayName": "custom_location_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "job_posts": {
+          "displayName": "Job Posts",
+          "path": "/job_posts",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "internal": {
+              "displayName": "internal",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "live": {
+              "displayName": "live",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "featured": {
+              "displayName": "featured",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "first_published_at": {
+              "displayName": "first_published_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "content": {
+              "displayName": "content",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "internal_content": {
+              "displayName": "internal_content",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "language": {
+              "displayName": "language",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "public_url": {
+              "displayName": "public_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "demographic_question_set_id": {
+              "displayName": "demographic_question_set_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "job_board_id": {
+              "displayName": "job_board_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "questions": {
+              "displayName": "questions",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "jobs": {
+          "displayName": "Jobs",
+          "path": "/jobs",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "requisition_id": {
+              "displayName": "requisition_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "confidential": {
+              "displayName": "confidential",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "open", "displayValue": "open"},
+                {"value": "draft", "displayValue": "draft"},
+                {"value": "closed", "displayValue": "closed"}
+              ]
+            },
+            "opened_at": {
+              "displayName": "opened_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "closed_at": {
+              "displayName": "closed_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "is_template": {
+              "displayName": "is_template",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "copied_from_id": {
+              "displayName": "copied_from_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "department_id": {
+              "displayName": "department_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "office_ids": {
+              "displayName": "office_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "notes": {
+          "displayName": "Notes",
+          "path": "/notes",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "candidate_id": {
+              "displayName": "candidate_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "application_id": {
+              "displayName": "application_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "body": {
+              "displayName": "body",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "NOTE", "displayValue": "NOTE"},
+                {"value": "ACTIVITY", "displayValue": "ACTIVITY"},
+                {"value": "INTERVIEW", "displayValue": "INTERVIEW"},
+                {"value": "EMAIL", "displayValue": "EMAIL"},
+                {"value": "FOLLOW_UP", "displayValue": "FOLLOW_UP"},
+                {"value": "TAKE_HOME_TEST", "displayValue": "TAKE_HOME_TEST"},
+                {"value": "LINKEDIN_NOTE", "displayValue": "LINKEDIN_NOTE"},
+                {"value": "LINKEDIN_INMAIL", "displayValue": "LINKEDIN_INMAIL"},
+                {"value": "AVAILABILITY_REQUEST", "displayValue": "AVAILABILITY_REQUEST"},
+                {"value": "MIGRATION_ERROR", "displayValue": "MIGRATION_ERROR"},
+                {"value": "TOUCHPOINT", "displayValue": "TOUCHPOINT"},
+                {"value": "FORM", "displayValue": "FORM"},
+                {"value": "FEEDBACK", "displayValue": "FEEDBACK"}
+              ]
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "email_from": {
+              "displayName": "email_from",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email_to": {
+              "displayName": "email_to",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email_cc": {
+              "displayName": "email_cc",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "import_hash": {
+              "displayName": "import_hash",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "body_with_tags": {
+              "displayName": "body_with_tags",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "admin_only_visible", "displayValue": "admin_only_visible"},
+                {"value": "privately_visible", "displayValue": "privately_visible"},
+                {"value": "publicly_visible", "displayValue": "publicly_visible"}
+              ]
+            },
+            "email_attachment_file_names": {
+              "displayName": "email_attachment_file_names",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "offers": {
+          "displayName": "Offers",
+          "path": "/offers",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "application_id": {
+              "displayName": "application_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "candidate_id": {
+              "displayName": "candidate_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "opening_id": {
+              "displayName": "opening_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "Created", "displayValue": "Created"},
+                {"value": "Accepted", "displayValue": "Accepted"},
+                {"value": "Rejected", "displayValue": "Rejected"},
+                {"value": "Deprecated", "displayValue": "Deprecated"}
+              ]
+            },
+            "starts_on": {
+              "displayName": "starts_on",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "sent_on": {
+              "displayName": "sent_on",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "resolved_on": {
+              "displayName": "resolved_on",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "offices": {
+          "displayName": "Offices",
+          "path": "/offices",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parent_id": {
+              "displayName": "parent_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "external_id": {
+              "displayName": "external_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primary_in_house_contact_user_id": {
+              "displayName": "primary_in_house_contact_user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "openings": {
+          "displayName": "Openings",
+          "path": "/openings",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "opened_at": {
+              "displayName": "opened_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "closed_at": {
+              "displayName": "closed_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "sort_order": {
+              "displayName": "sort_order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "opening_id": {
+              "displayName": "opening_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "application_id": {
+              "displayName": "application_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "close_reason_id": {
+              "displayName": "close_reason_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "target_start_on": {
+              "displayName": "target_start_on",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "open": {
+              "displayName": "open",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "pay_inputs": {
+          "displayName": "Pay Inputs",
+          "path": "/pay_inputs",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "blurb": {
+              "displayName": "blurb",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "priority": {
+              "displayName": "priority",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "linked_custom_field_id": {
+              "displayName": "linked_custom_field_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "locked": {
+              "displayName": "locked",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "pay_input_ranges": {
+          "displayName": "Pay Input Ranges",
+          "path": "/pay_input_ranges",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "pay_input_id": {
+              "displayName": "pay_input_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "currency_type": {
+              "displayName": "currency_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "min_cents": {
+              "displayName": "min_cents",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "max_cents": {
+              "displayName": "max_cents",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "job_post_id": {
+              "displayName": "job_post_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "prospect_details": {
+          "displayName": "Prospect Details",
+          "path": "/prospect_details",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "application_id": {
+              "displayName": "application_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "pool_id": {
+              "displayName": "pool_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "pool_stage_id": {
+              "displayName": "pool_stage_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "prospect_owner_id": {
+              "displayName": "prospect_owner_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "department_id": {
+              "displayName": "department_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "office_id": {
+              "displayName": "office_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "prospect_pools": {
+          "displayName": "Prospect Pools",
+          "path": "/prospect_pools",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "department_ids": {
+              "displayName": "department_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "office_ids": {
+              "displayName": "office_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "job_ids": {
+              "displayName": "job_ids",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "prospect_pool_stages": {
+          "displayName": "Prospect Pool Stages",
+          "path": "/prospect_pool_stages",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "prospect_pool_id": {
+              "displayName": "prospect_pool_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sort_order": {
+              "displayName": "sort_order",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "referrers": {
+          "displayName": "Referrers",
+          "path": "/referrers",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "rejection_details": {
+          "displayName": "Rejection Details",
+          "path": "/rejection_details",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "application_id": {
+              "displayName": "application_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "rejected_by_id": {
+              "displayName": "rejected_by_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "rejection_note_id": {
+              "displayName": "rejection_note_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "rejection_reason_id": {
+              "displayName": "rejection_reason_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "rejected_at": {
+              "displayName": "rejected_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "question_custom_fields": {
+              "displayName": "question_custom_fields",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "rejection_reasons": {
+          "displayName": "Rejection Reasons",
+          "path": "/rejection_reasons",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "scorecard_candidate_attributes": {
+          "displayName": "Scorecard Candidate Attributes",
+          "path": "/scorecard_candidate_attributes",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "scorecard_id": {
+              "displayName": "scorecard_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "candidate_attribute_rating": {
+              "displayName": "candidate_attribute_rating",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "definitely_not", "displayValue": "definitely_not"},
+                {"value": "no", "displayValue": "no"},
+                {"value": "no_decision", "displayValue": "no_decision"},
+                {"value": "mixed", "displayValue": "mixed"},
+                {"value": "yes", "displayValue": "yes"},
+                {"value": "strong_yes", "displayValue": "strong_yes"}
+              ]
+            },
+            "job_candidate_attribute_id": {
+              "displayName": "job_candidate_attribute_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "note": {
+              "displayName": "note",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "scorecard_question_answers": {
+          "displayName": "Scorecard Question Answers",
+          "path": "/scorecard_question_answers",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "scorecard_id": {
+              "displayName": "scorecard_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "scorecard_question_id": {
+              "displayName": "scorecard_question_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "answer": {
+              "displayName": "answer",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "boolean_value": {
+              "displayName": "boolean_value",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "scorecard_questions": {
+          "displayName": "Scorecard Questions",
+          "path": "/scorecard_questions",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "interview_kit_id": {
+              "displayName": "interview_kit_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "question": {
+              "displayName": "question",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sort_order": {
+              "displayName": "sort_order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "answer_type": {
+              "displayName": "answer_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "required": {
+              "displayName": "required",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "scorecards": {
+          "displayName": "Scorecards",
+          "path": "/scorecards",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "interview_kit_id": {
+              "displayName": "interview_kit_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "interviewer_id": {
+              "displayName": "interviewer_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "interviewed_at": {
+              "displayName": "interviewed_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notes_with_tags": {
+              "displayName": "notes_with_tags",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "submitter_id": {
+              "displayName": "submitter_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "candidate_rating": {
+              "displayName": "candidate_rating",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "private_notes": {
+              "displayName": "private_notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "private_notes_with_tags": {
+              "displayName": "private_notes_with_tags",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "draft", "displayValue": "draft"},
+                {"value": "complete", "displayValue": "complete"}
+              ]
+            },
+            "public_notes": {
+              "displayName": "public_notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "public_notes_with_tags": {
+              "displayName": "public_notes_with_tags",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "application_id": {
+              "displayName": "application_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "submitted_at": {
+              "displayName": "submitted_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "sources": {
+          "displayName": "Sources",
+          "path": "/sources",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "tracking_links": {
+          "displayName": "Tracking Links",
+          "path": "/tracking_links",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "token": {
+              "displayName": "token",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "source_id": {
+              "displayName": "source_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "related_post_id": {
+              "displayName": "related_post_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "related_post_type": {
+              "displayName": "related_post_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "referrer_id": {
+              "displayName": "referrer_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "job_board_id": {
+              "displayName": "job_board_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "job_post_id": {
+              "displayName": "job_post_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "user_emails": {
+          "displayName": "User Emails",
+          "path": "/user_emails",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "verified": {
+              "displayName": "verified",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "verification_token_sent_at": {
+              "displayName": "verification_token_sent_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "user_job_permissions": {
+          "displayName": "User Job Permissions",
+          "path": "/user_job_permissions",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "role_id": {
+              "displayName": "role_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "automated": {
+              "displayName": "automated",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "user_roles": {
+          "displayName": "User Roles",
+          "path": "/user_roles",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "role_type": {
+              "displayName": "role_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {"value": "deprecated_interviewer", "displayValue": "deprecated_interviewer"},
+                {"value": "job_admin", "displayValue": "job_admin"},
+                {"value": "site_admin", "displayValue": "site_admin"}
+              ]
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "datetime"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primary_email": {
+              "displayName": "primary_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "job_title": {
+              "displayName": "job_title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "agency_id": {
+              "displayName": "agency_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "deactivated": {
+              "displayName": "deactivated",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "site_admin": {
+              "displayName": "site_admin",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "employee_id": {
+              "displayName": "employee_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "linked_candidate_ids": {
+              "displayName": "linked_candidate_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "office_ids": {
+              "displayName": "office_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "department_ids": {
+              "displayName": "department_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "interviewer_tags": {
+              "displayName": "interviewer_tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "emails": {
+              "displayName": "emails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}
