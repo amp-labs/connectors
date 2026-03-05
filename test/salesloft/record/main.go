@@ -57,11 +57,11 @@ func TestGetRecordsByIdsPeople(ctx context.Context, conn *salesloft.Connector) {
 	// Step 2: Fetch the created records using GetRecordsByIds
 	fmt.Println("\nFetching people by IDs...")
 
-	res, err := conn.GetRecordsByIds(ctx,
-		"people",
-		recordIDs,
-		[]string{"id", "firstName", "email_address"},
-		nil)
+	res, err := conn.GetRecordsByIds(ctx, common.ReadByIdsParams{
+		ObjectName: "people",
+		RecordIds:  recordIDs,
+		Fields:     []string{"id", "firstName", "email_address"},
+	})
 	if err != nil {
 		utils.Fail("error getting records by ids", "error", err)
 	}
@@ -121,11 +121,11 @@ func TestGetRecordsByCalls(ctx context.Context, conn *salesloft.Connector) {
 	// Step 2: Fetch the created records using GetRecordsByIds
 	fmt.Println("\nFetching accounts by IDs...")
 
-	res, err := conn.GetRecordsByIds(ctx,
-		"accounts",
-		recordIDs,
-		[]string{"id", "name", "domain"},
-		nil)
+	res, err := conn.GetRecordsByIds(ctx, common.ReadByIdsParams{
+		ObjectName: "accounts",
+		RecordIds:  recordIDs,
+		Fields:     []string{"id", "name", "domain"},
+	})
 	if err != nil {
 		utils.Fail("error getting records by ids", "error", err)
 	}

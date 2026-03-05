@@ -709,7 +709,11 @@ func TestGetRecordsByIds_WithAssociations(t *testing.T) {
 	}
 
 	// Get records by IDs with association expansion
-	records, err := conn.GetRecordsByIds(ctx, "contact", contactIDs, []string{}, []string{"account_id"})
+	records, err := conn.GetRecordsByIds(ctx, common.ReadByIdsParams{
+		ObjectName:        "contact",
+		RecordIds:         contactIDs,
+		AssociatedObjects: []string{"account_id"},
+	})
 	require.NoError(t, err)
 	require.Len(t, records, 2)
 
