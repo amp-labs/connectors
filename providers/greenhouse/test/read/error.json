@@ -1,0 +1,9 @@
+{
+  "message": "Your request included invalid JSON.",
+  "errors": [
+    {
+      "message": "Invalid attribute: unknown_field",
+      "field": "unknown_field"
+    }
+  ]
+}
