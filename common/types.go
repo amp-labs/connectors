@@ -93,6 +93,9 @@ var (
 	// ErrEmptyJSONHTTPResponse is returned when the JSONHTTPResponse is nil.
 	ErrEmptyJSONHTTPResponse = errors.New("empty json http response")
 
+	// ErrFailedUnmarshalling is returned when the HTTP response cannot be unmarshalled.
+	ErrFailedUnmarshalling = errors.New("json.Unmarshal failed")
+
 	// ErrEmptyRecordIdResponse is returned when the response body doesn't have record id.
 	ErrEmptyRecordIdResponse = errors.New("empty record id in response body")
 
@@ -190,6 +193,29 @@ type ReadParams struct {
 
 	// PageSize specifies the # of records to request when making a read request.
 	PageSize int // optional
+}
+
+// ReadByIdsParams defines how we are fetching a specific set of records by their IDs.
+//
+// Unlike ReadParams (which paginates through a full collection), ReadByIdsParams
+// targets an explicit set of known record identifiers.
+type ReadByIdsParams struct {
+	// The name of the object to fetch records from, e.g. "Account" or "contacts".
+	ObjectName string // required
+
+	// RecordIds is the explicit list of record IDs to fetch.
+	// At least one ID must be provided.
+	RecordIds []string // required
+
+	// Fields specifies which fields to include in the response.
+	// If empty, the connector may return a default set of fields or all fields,
+	// depending on the provider.
+	Fields []string // optional
+
+	// AssociatedObjects specifies related objects to fetch alongside each record.
+	// Support and behavior vary by provider — refer to individual connector documentation.
+	// This mirrors the AssociatedObjects field in ReadParams.
+	AssociatedObjects []string // optional
 }
 
 type WriteHeader struct {
