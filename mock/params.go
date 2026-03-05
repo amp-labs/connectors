@@ -197,9 +197,7 @@ type parameters struct {
 	getURL             func(resource string, args map[string]any) (string, error)
 	delete             func(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error)
 	getPostAuthInfo    func(ctx context.Context) (*common.PostAuthInfo, error)
-
-	//nolint:revive
-	getRecordsByIds func(ctx context.Context,
+	getRecordsByIds    func(ctx context.Context, //nolint:revive
 		params common.ReadByIdsParams) ([]common.ReadResultRow, error)
 
 	verifyWebhookMessage func(
