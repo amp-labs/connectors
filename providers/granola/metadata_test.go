@@ -16,7 +16,7 @@ import (
 func TestListObjectMetadata(t *testing.T) {
 	t.Parallel()
 	notesResponse := testutils.DataFromFile(t, "notes.json")
-	noteResponse := testutils.DataFromFile(t, "note.json")
+	noteResponse := testutils.DataFromFile(t, "note_not_1d3tmYTlCICgjy.json")
 	tests := []testroutines.Metadata{
 		{
 			Name:         "At least one object name must be queried",
