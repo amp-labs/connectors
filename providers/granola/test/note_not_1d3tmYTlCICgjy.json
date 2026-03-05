@@ -1,0 +1,60 @@
+{
+    "id": "not_1d3tmYTlCICgjy",
+    "object": "note",
+    "title": "Quarterly yoghurt budget review",
+    "owner": {
+        "name": "Oat Benson",
+        "email": "oat@granola.ai"
+    },
+    "created_at": "2026-01-27T15:30:00Z",
+    "updated_at": "2026-01-27T16:45:00Z",
+    "calendar_event": {
+        "event_title": "Quarterly yoghurt budget review",
+        "invitees": [
+            {
+                "email": "raisin@granola.ai"
+            }
+        ],
+        "organiser": "oat@granola.ai",
+        "calendar_event_id": "2su99n6iiik37iiknmb5t4fkfh_20260127T153000Z",
+        "scheduled_start_time": "2026-01-27T15:30:00Z",
+        "scheduled_end_time": "2026-01-27T16:30:00Z"
+    },
+    "attendees": [
+        {
+            "name": "Oat Benson",
+            "email": "oat@granola.ai"
+        },
+        {
+            "name": "Raisin Patel",
+            "email": "raisin@granola.ai"
+        }
+    ],
+    "folder_membership": [
+        {
+            "id": "fol_4y6LduVdwSKC27",
+            "object": "folder",
+            "name": "Top secret recipes"
+        }
+    ],
+    "summary_text": "The quarterly yoghurt budget review was a success. We spent $100,000 on yoghurt and made $150,000 in profit.",
+    "summary_markdown": "## Quarterly Yoghurt Budget Review\n\nThe quarterly yoghurt budget review was a success.\n\n- Spent **$100,000** on yoghurt\n- Made **$150,000** in profit",
+    "transcript": [
+        {
+            "speaker": {
+                "source": "microphone"
+            },
+            "text": "I'm done pretending. Greek is the only yoghurt that deserves us.",
+            "start_time": "2026-01-27T15:30:00Z",
+            "end_time": "2026-01-27T16:30:00Z"
+        },
+        {
+            "speaker": {
+                "source": "speaker"
+            },
+            "text": "Finally. Regular yoghurt is just milk that gave up halfway.",
+            "start_time": "2026-01-27T15:30:00Z",
+            "end_time": "2026-01-27T16:30:00Z"
+        }
+    ]
+}

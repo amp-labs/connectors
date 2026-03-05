@@ -24,6 +24,6 @@ func main() {
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "notes",
 		Fields:     connectors.Fields("id", "title"),
-		PageSize:   10,
+		PageSize:   3,
 	})
 }
