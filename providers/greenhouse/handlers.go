@@ -1,7 +1,10 @@
 package greenhouse
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -9,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/httpkit"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/greenhouse/metadata"
 	"github.com/spyzhov/ajson"
 )
@@ -82,4 +86,106 @@ func makeNextRecordsURL(resp *common.JSONHTTPResponse) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		return httpkit.HeaderLink(resp, "next"), nil
 	}
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	path, err := metadata.Schemas.FindURLPath(c.Module(), params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	method := http.MethodPost
+
+	var writeURL *urlbuilder.URL
+
+	if len(params.RecordId) != 0 {
+		method = http.MethodPatch
+		writeURL, err = urlbuilder.New(c.ProviderInfo().BaseURL, "v3", path, params.RecordId)
+	} else {
+		writeURL, err = urlbuilder.New(c.ProviderInfo().BaseURL, "v3", path)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal record data: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, writeURL.String(), bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, err
+	}
+
+	common.Headers(
+		common.TransformWriteHeaders(params.Headers, common.HeaderModeOverwrite),
+	).ApplyToRequest(req)
+
+	return req, nil
+}
+
+func (c *Connector) parseWriteResponse(ctx context.Context, params common.WriteParams,
+	request *http.Request, response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		// it is unlikely to have no payload
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	recordID, err := jsonquery.New(body).TextWithDefault("id", params.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Data:     data,
+	}, nil
+}
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	path, err := metadata.Schemas.FindURLPath(c.Module(), params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	deleteURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, "v3", path, params.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, deleteURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	common.Headers(
+		common.TransformWriteHeaders(params.Headers, common.HeaderModeOverwrite),
+	).ApplyToRequest(req)
+
+	return req, nil
+}
+
+func (c *Connector) parseDeleteResponse(ctx context.Context, params common.DeleteParams,
+	request *http.Request, response *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	if response.Code != http.StatusOK && response.Code != http.StatusNoContent {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, response.Code)
+	}
+
+	// Response body is not used.
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
 }
