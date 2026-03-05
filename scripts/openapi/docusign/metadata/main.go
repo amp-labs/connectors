@@ -16,6 +16,7 @@ import (
 )
 
 var (
+	//nolint:gochecknoglobals
 	allowEndpoints = []string{
 		"/v2.1/accounts/{accountId}/envelopes",
 		"/v2.1/accounts/{accountId}/folders",
@@ -28,6 +29,7 @@ var (
 		"/v2.1/accounts/{accountId}/tab_definitions",
 	}
 
+	//nolint:gochecknoglobals
 	overrideDisplayName = map[string]string{
 		"bulk_send_batch": "Bulk Send Batch",
 		"bulk_send_lists": "Bulk Send Lists",
@@ -35,6 +37,7 @@ var (
 		"tab_definitions": "Custom Tabs",
 	}
 
+	//nolint:gochecknoglobals
 	objectNametoResponseField = datautils.NewDefaultMap(map[string]string{
 		"templates": "envelopeTemplates",
 	},

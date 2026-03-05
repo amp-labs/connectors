@@ -13,7 +13,10 @@ var (
 	//go:embed esignature-api.json
 	openapiAPI []byte
 
-	InputDocusignESignature  = api2.NewOpenapiFileManager[any](openapiAPI)
+	//nolint:gochecknoglobals
+	InputDocusignESignature = api2.NewOpenapiFileManager[any](openapiAPI)
+
+	//nolint:gochecknoglobals
 	OutputDocusignESignature = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
 		fileconv.NewPath("providers/docusign/metadata"))
 )
