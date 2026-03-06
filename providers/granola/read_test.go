@@ -353,7 +353,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read notes with transcript field sends include=transcript on get note only",
+			Name: "Read notes with transcript field sends include=transcript query param",
 			Input: common.ReadParams{
 				ObjectName: "notes",
 				Fields:     connectors.Fields("id", "title", "transcript"),
