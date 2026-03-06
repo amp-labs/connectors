@@ -400,42 +400,60 @@ func TestRead(t *testing.T) {
 						Fields: map[string]any{
 							"id":         "not_1d3tmYTlCICgjy",
 							"title":      "Quarterly yoghurt budget review",
-							"transcript": []any{map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "I'm done pretending. Greek is the only yoghurt that deserves us.", "start_time": "2026-01-27T15:30:00Z", "end_time": "2026-01-27T16:30:00Z"}},
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "I'm done pretending. Greek is the only yoghurt that deserves us.", "start_time": "2026-01-27T15:30:00Z", "end_time": "2026-01-27T16:30:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "Finally. Regular yoghurt is just milk that gave up halfway.", "start_time": "2026-01-27T15:30:00Z", "end_time": "2026-01-27T16:30:00Z"},
+							},
 						},
 						Raw: map[string]any{
 							"id":         "not_1d3tmYTlCICgjy",
 							"object":     "note",
 							"title":      "Quarterly yoghurt budget review",
 							"owner":      map[string]any{"name": "Oat Benson", "email": "oat@granola.ai"},
-							"transcript": []any{map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "I'm done pretending. Greek is the only yoghurt that deserves us.", "start_time": "2026-01-27T15:30:00Z", "end_time": "2026-01-27T16:30:00Z"}},
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "I'm done pretending. Greek is the only yoghurt that deserves us.", "start_time": "2026-01-27T15:30:00Z", "end_time": "2026-01-27T16:30:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "Finally. Regular yoghurt is just milk that gave up halfway.", "start_time": "2026-01-27T15:30:00Z", "end_time": "2026-01-27T16:30:00Z"},
+							},
 						},
 					},
 					{
 						Fields: map[string]any{
 							"id":         "not_4f7kQhLpMNBvxy",
 							"title":      "Monthly almond purchase analysis",
-							"transcript": []any{map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "We need to track almond costs more closely next month.", "start_time": "2026-02-10T09:15:00Z", "end_time": "2026-02-10T10:15:00Z"}},
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "We need to track almond costs more closely next month.", "start_time": "2026-02-10T09:15:00Z", "end_time": "2026-02-10T10:15:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "Agreed. Let's finalize new supplier agreements by next week.", "start_time": "2026-02-10T09:15:00Z", "end_time": "2026-02-10T10:15:00Z"},
+							},
 						},
 						Raw: map[string]any{
 							"id":         "not_4f7kQhLpMNBvxy",
 							"object":     "note",
 							"title":      "Monthly almond purchase analysis",
 							"owner":      map[string]any{"name": "Hazel Kern", "email": "hazel@granola.ai"},
-							"transcript": []any{map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "We need to track almond costs more closely next month.", "start_time": "2026-02-10T09:15:00Z", "end_time": "2026-02-10T10:15:00Z"}},
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "We need to track almond costs more closely next month.", "start_time": "2026-02-10T09:15:00Z", "end_time": "2026-02-10T10:15:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "Agreed. Let's finalize new supplier agreements by next week.", "start_time": "2026-02-10T09:15:00Z", "end_time": "2026-02-10T10:15:00Z"},
+							},
 						},
 					},
 					{
 						Fields: map[string]any{
 							"id":         "not_9b2xRwNsTLCfop",
 							"title":      "Weekly granola sales forecast",
-							"transcript": []any{map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "Expect a surge in granola sales with the upcoming festival.", "start_time": "2026-03-02T11:45:00Z", "end_time": "2026-03-02T12:30:00Z"}},
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "Expect a surge in granola sales with the upcoming festival.", "start_time": "2026-03-02T11:45:00Z", "end_time": "2026-03-02T12:30:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "We should prepare extra inventory and optimize delivery routes.", "start_time": "2026-03-02T11:45:00Z", "end_time": "2026-03-02T12:30:00Z"},
+							},
 						},
 						Raw: map[string]any{
 							"id":         "not_9b2xRwNsTLCfop",
 							"object":     "note",
 							"title":      "Weekly granola sales forecast",
 							"owner":      map[string]any{"name": "Maple Finch", "email": "maple@granola.ai"},
-							"transcript": []any{map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "Expect a surge in granola sales with the upcoming festival.", "start_time": "2026-03-02T11:45:00Z", "end_time": "2026-03-02T12:30:00Z"}},
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "Expect a surge in granola sales with the upcoming festival.", "start_time": "2026-03-02T11:45:00Z", "end_time": "2026-03-02T12:30:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "We should prepare extra inventory and optimize delivery routes.", "start_time": "2026-03-02T11:45:00Z", "end_time": "2026-03-02T12:30:00Z"},
+							},
 						},
 					},
 				},
