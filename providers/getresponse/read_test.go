@@ -71,7 +71,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			"description": "Test Campaign Description",
 			"languageCode": "EN",
 			"isDefault": "false",
-			"createdOn": "2024-01-10T08:00:00+0000"
+			"createdOn": "2024-01-10T08:00:00Z"
 		}
 	]`
 
@@ -189,7 +189,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					{
 						Fields: map[string]any{
 							"name":      "Test Campaign",
-							"createdon": "2024-01-10T08:00:00+0000",
+							"createdon": "2024-01-10T08:00:00Z",
 						},
 						Raw: map[string]any{
 							"campaignId":   "f4PSi",
@@ -199,7 +199,49 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"description":  "Test Campaign Description",
 							"languageCode": "EN",
 							"isDefault":    "false",
-							"createdOn":    "2024-01-10T08:00:00+0000",
+							"createdOn":    "2024-01-10T08:00:00Z",
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read campaigns with time filters uses connector-side filtering only (no provider-side support)",
+			Input: common.ReadParams{
+				ObjectName: "campaigns",
+				Fields:     connectors.Fields("name", "createdOn"),
+				Since:      time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2024, time.January, 31, 23, 59, 59, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v3/campaigns"),
+					// Should NOT send query[createdOn] params - campaigns rejects them with 400
+					mockcond.QueryParamsMissing("query[createdOn][from]", "query[createdOn][to]"),
+				},
+				Then: mockserver.Response(http.StatusOK, []byte(campaignsResponse)),
+			}.Server(),
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"name":      "Test Campaign",
+							"createdon": "2024-01-10T08:00:00Z",
+						},
+						Raw: map[string]any{
+							"campaignId":   "f4PSi",
+							"href":         "https://api.getresponse.com/v3/campaigns/f4PSi",
+							"name":         "Test Campaign",
+							"techName":     "e5fe416f5a5cddc226e876e76257822b",
+							"description":  "Test Campaign Description",
+							"languageCode": "EN",
+							"isDefault":    "false",
+							"createdOn":    "2024-01-10T08:00:00Z",
 						},
 					},
 				},
