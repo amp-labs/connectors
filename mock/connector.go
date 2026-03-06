@@ -53,7 +53,13 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) { //nolint:fun
 		WithGetPostAuthInfo(func(ctx context.Context) (*common.PostAuthInfo, error) {
 			return nil, fmt.Errorf("%w: %s", ErrNotImplemented, "getPostAuthInfo")
 		}),
-		WithGetRecordsByIds(func(ctx context.Context, params common.ReadByIdsParams) ([]common.ReadResultRow, error) {
+		WithGetRecordsByIds(func(
+			ctx context.Context,
+			objectName string,
+			recordIds []string,
+			fields []string,
+			associations []string,
+		) ([]common.ReadResultRow, error) {
 			return nil, fmt.Errorf("%w: %s", ErrNotImplemented, "getRecordsByIds")
 		}),
 		WithVerifyWebhookMessage(
@@ -176,11 +182,14 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 	return c.params.getPostAuthInfo(ctx)
 }
 
-//nolint:revive
-func (c *Connector) GetRecordsByIds(ctx context.Context,
-	params common.ReadByIdsParams,
+func (c *Connector) GetRecordsByIds( //nolint:revive
+	ctx context.Context,
+	objectName string,
+	recordIds []string, //nolint:revive
+	fields []string,
+	associations []string,
 ) ([]common.ReadResultRow, error) {
-	return c.params.getRecordsByIds(ctx, params)
+	return c.params.getRecordsByIds(ctx, objectName, recordIds, fields, associations)
 }
 
 func (c *Connector) VerifyWebhookMessage(

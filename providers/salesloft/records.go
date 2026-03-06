@@ -9,14 +9,14 @@ import (
 
 // Reference: https://developers.salesloft.com/docs/api/account-stages-index/
 //
-//nolint:godoclint,revive
-func (c *Connector) GetRecordsByIds(ctx context.Context,
-	params common.ReadByIdsParams,
+//nolint:revive, godoclint
+func (c *Connector) GetRecordsByIds(ctx context.Context, objectName string,
+	recordIds []string, fields []string, _ []string,
 ) ([]common.ReadResultRow, error) {
 	// Sanitize method arguments.
 	config := common.ReadParams{
-		ObjectName: params.ObjectName,
-		Fields:     datautils.NewSetFromList(params.Fields),
+		ObjectName: objectName,
+		Fields:     datautils.NewSetFromList(fields),
 	}
 
 	if err := config.ValidateParams(true); err != nil {
@@ -28,7 +28,7 @@ func (c *Connector) GetRecordsByIds(ctx context.Context,
 		return nil, err
 	}
 
-	url.WithQueryParamList("ids[]", params.RecordIds)
+	url.WithQueryParamList("ids[]", recordIds)
 
 	rsp, err := c.Client.Get(ctx, url.String())
 	if err != nil {

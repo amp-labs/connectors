@@ -7,7 +7,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -22,15 +21,15 @@ func main() {
 
 	conn := connTest.GetSalesforceConnector(ctx)
 
-	res, err := conn.GetRecordsByIds(ctx, common.ReadByIdsParams{
-		ObjectName: "Account",
-		RecordIds: []string{
+	res, err := conn.GetRecordsByIds(ctx,
+		"Account",
+		[]string{
 			"001ak00000OQ4RxAAL",
 			"001ak00000OQ4RyAAL",
 			"001ak00000OQ4TZAA1",
 		},
-		Fields: []string{"id", "name", "shippingstreet"},
-	})
+		[]string{"id", "name", "shippingstreet"},
+		nil)
 	if err != nil {
 		utils.Fail("error reading from connector", "error", err)
 	}
