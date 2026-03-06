@@ -2,12 +2,15 @@ package docusign
 
 import (
 	"context"
+	"fmt"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/docusign/metadata"
 	"github.com/spyzhov/ajson"
@@ -18,6 +21,22 @@ var (
 	defaultPageSize  = 1000
 
 	nextURIKey = "nextUri"
+)
+
+var (
+	incrementalObjects = datautils.NewSet(
+		"envelopes",
+		"bulk_send_batch",
+		"templates",
+		"users",
+	)
+
+	requiredQueryParamsObjects = datautils.NewSet(
+		"envelopes",
+		// Requires either from_date or batch_ids but doesn't return an error if neither is provided.
+		// https://developers.docusign.com/docs/esign-rest-api/reference/bulkenvelopes/bulksend/getbulksendbatches/
+		"bulk_send_batch",
+	)
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -59,8 +78,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	if err != nil {
 		return nil, err
 	}
-
-	resolveEnvelopesQueryParams(url, config)
+	addQueryParams(url, config)
 
 	return url, nil
 }
@@ -88,30 +106,40 @@ func getNextRecordURL(baseURL string) common.NextPageFunc {
 		// Preserve the query parameters from nextUri
 
 		// /restapi/v2.1 is stripped from the nextUri value so we need to add them back for the full path.
-		nextURL, err := urlbuilder.New(baseURL, restapiPrefix, versionPrefix, nextUri)
+		fullURL := fmt.Sprintf("%s/%s/%s%s", baseURL, restapiPrefix, versionPrefix, nextUri)
+		fullURLParsed, err := url.Parse(fullURL)
 		if err != nil {
 			return "", err
 		}
 
+		nextURL, err := urlbuilder.FromRawURL(fullURLParsed)
+		if err != nil {
+			return "", err
+		}
 		return nextURL.String(), nil
 	}
 }
 
-func resolveEnvelopesQueryParams(url *urlbuilder.URL, config common.ReadParams) {
-	startTime := defaultTimeRange
-	if !config.Since.IsZero() {
-		startTime = config.Since
-	}
-	url.WithQueryParam("from_date", startTime.UTC().Format(time.RFC3339))
+func addQueryParams(url *urlbuilder.URL, config common.ReadParams) {
+	if incrementalObjects.Has(config.ObjectName) {
+		startTime := config.Since
+		endTime := config.Until
+		count := config.PageSize
 
-	// doc says required with `to_date` but we'll see...
-	if !config.Until.IsZero() {
-		url.WithQueryParam("to_date", config.Until.Format(time.RFC3339))
-	}
+		if requiredQueryParamsObjects.Has(config.ObjectName) && startTime.IsZero() {
+			startTime = defaultTimeRange
+		}
 
-	count := defaultPageSize
-	if config.PageSize > 0 {
-		count = config.PageSize
+		if !startTime.IsZero() {
+			url.WithQueryParam("from_date", startTime.UTC().Format(time.RFC3339))
+		}
+		if !endTime.IsZero() {
+			url.WithQueryParam("to_date", config.Until.Format(time.RFC3339))
+		}
+
+		if count < 0 {
+			count = defaultPageSize
+		}
+		url.WithQueryParam("count", strconv.Itoa(count))
 	}
-	url.WithQueryParam("count", strconv.Itoa(count))
 }

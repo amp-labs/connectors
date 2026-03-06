@@ -1,0 +1,46 @@
+{
+  "resultSetSize": "1",
+  "startPosition": "0",
+  "endPosition": "0",
+  "totalSetSize": "1",
+  "nextUri": "",
+  "previousUri": "",
+  "envelopes": [
+    {
+      "status": "sent",
+      "documentsUri": "/envelopes/49a523cb-d283-8f6f-8060-2a04b73f01b7/documents",
+      "recipientsUri": "/envelopes/49a523cb-d283-8f6f-8060-2a04b73f01b7/recipients",
+      "attachmentsUri": "/envelopes/49a523cb-d283-8f6f-8060-2a04b73f01b7/attachments",
+      "envelopeUri": "/envelopes/49a523cb-d283-8f6f-8060-2a04b73f01b7",
+      "emailSubject": "Test Envelope Send 1",
+      "envelopeId": "49a523cb-d283-8f6f-8060-2a04b73f01b7",
+      "signingLocation": "online",
+      "customFieldsUri": "/envelopes/49a523cb-d283-8f6f-8060-2a04b73f01b7/custom_fields",
+      "notificationUri": "/envelopes/49a523cb-d283-8f6f-8060-2a04b73f01b7/notification",
+      "allowMarkup": "false",
+      "createdDateTime": "2026-03-01T19:37:38.6800000Z",
+      "lastModifiedDateTime": "2026-03-04T15:18:12.6530000Z",
+      "sentDateTime": "2026-03-04T15:18:13.7170000Z",
+      "statusChangedDateTime": "2026-03-04T15:18:13.7170000Z",
+      "documentsCombinedUri": "/envelopes/49a523cb-d283-8f6f-8060-2a04b73f01b7/documents/combined",
+      "certificateUri": "/envelopes/49a523cb-d283-8f6f-8060-2a04b73f01b7/documents/certificate",
+      "templatesUri": "/envelopes/49a523cb-d283-8f6f-8060-2a04b73f01b7/templates",
+      "expireEnabled": "true",
+      "expireAfter": "120",
+      "sender": {
+        "userName": "Dev Test 1",
+        "userId": "dev-test-user-1",
+        "accountId": "devTest-123",
+        "email": "dev.test@test.com",
+        "ipAddress": "0.0.0.0"
+      },
+      "purgeState": "unpurged",
+      "envelopeIdStamping": "true",
+      "autoNavigation": "true",
+      "isSignatureProviderEnvelope": "false",
+      "anySigner": null,
+      "envelopeLocation": "not_specified",
+      "isTicketRelatedEnvelope": "false"
+    }
+  ]
+}
