@@ -55,7 +55,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 			return nil, common.ErrMissingExpectedValues
 		}
 
-		note, err := c.getNote(ctx, noteID)
+		note, err := c.getNote(ctx, noteID, true) // include transcripts for metadata discovery
 		if err != nil {
 			return nil, err
 		}

@@ -60,6 +60,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		url.WithUnencodedQueryParam("cursor", params.NextPage.String())
 	}
 
+	if params.ObjectName == objectNotes && params.Fields.Has("transcript") {
+		url.WithQueryParam("include", "transcripts")
+	}
+
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
@@ -74,7 +78,7 @@ func (c *Connector) parseReadResponse(ctx context.Context, params common.ReadPar
 	//   - https://docs.granola.ai/api-reference/list-notes
 	//   - https://docs.granola.ai/api-reference/get-note
 	if needsFullNotesFetch(params) {
-		notes, err := c.fetchNotes(ctx, resp)
+		notes, err := c.fetchNotes(ctx, resp, params)
 		if err != nil {
 			return nil, err
 		}
