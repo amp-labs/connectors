@@ -18,17 +18,22 @@ const (
 	defaultPageSize = "30" // https://docs.granola.ai/api-reference/list-notes#parameter-page-size
 )
 
+// Set of available fields in ListNotes API response.
+// See https://docs.granola.ai/api-reference/list-notes
 var notesSummaryFields = datautils.NewStringSet( //nolint:gochecknoglobals
 	"id",
 	"object",
 	"title",
 	"owner",
 	"created_at",
+	"updated_at",
 )
 
 const maxNotesPageSizeWithGetNote = 4
 
 func needsFullNotesFetch(params common.ReadParams) bool {
+	// For anything beyond what's returned in ListNotes API, 
+	// we need to actually fetch the full note by calling GetNote API.
 	return params.ObjectName == objectNotes && params.Fields.HasExtra(notesSummaryFields)
 }
 
@@ -74,7 +79,7 @@ func (c *Connector) parseReadResponse(ctx context.Context, params common.ReadPar
 	//   - https://docs.granola.ai/api-reference/list-notes
 	//   - https://docs.granola.ai/api-reference/get-note
 	if needsFullNotesFetch(params) {
-		notes, err := c.fetchNotes(ctx, resp)
+		notes, err := c.fetchNotes(ctx, resp, params)
 		if err != nil {
 			return nil, err
 		}

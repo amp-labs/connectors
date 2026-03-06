@@ -36,19 +36,20 @@ type NoteRecords map[string]NoteRecord
 // fetchNotes retrieves the full note payloads for all note IDs found in the
 // provided list response.
 func (c *Connector) fetchNotes(
-	ctx context.Context, collectionResp *common.JSONHTTPResponse,
+	ctx context.Context, collectionResp *common.JSONHTTPResponse, params common.ReadParams,
 ) (NoteRecords, error) {
 	collection, err := common.UnmarshalJSON[NotesCollection](collectionResp)
 	if err != nil {
 		return nil, err
 	}
 
+	includeTranscript := params.Fields.Has("transcript")
 	notesChannel := make(chan NoteRecord, len(collection.Notes))
 	callbacks := make([]simultaneously.Job, 0, len(collection.Notes))
 
 	// create one job per note ID.
 	for _, note := range collection.Notes {
-		callbacks = append(callbacks, c.fetchNote(notesChannel, note.ID))
+		callbacks = append(callbacks, c.fetchNote(notesChannel, note.ID, includeTranscript))
 	}
 
 	// Run all jobs concurrently. If any job fails, context is expected to cancel.
@@ -74,10 +75,10 @@ func (c *Connector) fetchNotes(
 
 // fetchNote returns a concurrently executable job that fetches a single note
 // by ID and sends the fully decoded NoteRecord to notesChannel.
-func (c *Connector) fetchNote(notesChannel chan NoteRecord, noteID string,
+func (c *Connector) fetchNote(notesChannel chan NoteRecord, noteID string, includeTranscript bool,
 ) func(ctx context.Context) error {
 	return func(ctx context.Context) error {
-		note, err := c.getNote(ctx, noteID)
+		note, err := c.getNote(ctx, noteID, includeTranscript)
 		if err != nil {
 			return err
 		}
@@ -91,10 +92,15 @@ func (c *Connector) fetchNote(notesChannel chan NoteRecord, noteID string,
 	}
 }
 
-func (c *Connector) getNote(ctx context.Context, noteID string) (*NoteRecord, error) {
+func (c *Connector) getNote(ctx context.Context, noteID string, includeTranscript bool) (*NoteRecord, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectNotes, noteID)
 	if err != nil {
 		return nil, err
+	}
+
+	// https://docs.granola.ai/api-reference/get-note#parameter-include
+	if includeTranscript {
+		url.WithQueryParam("include", "transcript")
 	}
 
 	resp, err := c.JSONHTTPClient().Get(ctx, url.String())

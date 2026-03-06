@@ -38,7 +38,10 @@ func TestListObjectMetadata(t *testing.T) {
 						Then: mockserver.Response(http.StatusOK, notesResponse),
 					},
 					{
-						If:   mockcond.Path("/v1/notes/not_1d3tmYTlCICgjy"),
+						If: mockcond.And{
+							mockcond.Path("/v1/notes/not_1d3tmYTlCICgjy"),
+							mockcond.QueryParam("include", "transcript"),
+						},
 						Then: mockserver.Response(http.StatusOK, noteResponse),
 					},
 				},

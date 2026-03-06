@@ -352,6 +352,116 @@ func TestRead(t *testing.T) {
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Read notes with transcript field sends include=transcript query param",
+			Input: common.ReadParams{
+				ObjectName: "notes",
+				Fields:     connectors.Fields("id", "title", "transcript"),
+				PageSize:   30,
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/notes"),
+							mockcond.QueryParam("page_size", "4"),
+						},
+						Then: mockserver.Response(http.StatusOK, responseNotes),
+					},
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/notes/not_1d3tmYTlCICgjy"),
+							mockcond.QueryParam("include", "transcript"),
+						},
+						Then: mockserver.Response(http.StatusOK, noteFull["not_1d3tmYTlCICgjy"]),
+					},
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/notes/not_4f7kQhLpMNBvxy"),
+							mockcond.QueryParam("include", "transcript"),
+						},
+						Then: mockserver.Response(http.StatusOK, noteFull["not_4f7kQhLpMNBvxy"]),
+					},
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/notes/not_9b2xRwNsTLCfop"),
+							mockcond.QueryParam("include", "transcript"),
+						},
+						Then: mockserver.Response(http.StatusOK, noteFull["not_9b2xRwNsTLCfop"]),
+					},
+				},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 3,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":         "not_1d3tmYTlCICgjy",
+							"title":      "Quarterly yoghurt budget review",
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "I'm done pretending. Greek is the only yoghurt that deserves us.", "start_time": "2026-01-27T15:30:00Z", "end_time": "2026-01-27T16:30:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "Finally. Regular yoghurt is just milk that gave up halfway.", "start_time": "2026-01-27T15:30:00Z", "end_time": "2026-01-27T16:30:00Z"},
+							},
+						},
+						Raw: map[string]any{
+							"id":         "not_1d3tmYTlCICgjy",
+							"object":     "note",
+							"title":      "Quarterly yoghurt budget review",
+							"owner":      map[string]any{"name": "Oat Benson", "email": "oat@granola.ai"},
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "I'm done pretending. Greek is the only yoghurt that deserves us.", "start_time": "2026-01-27T15:30:00Z", "end_time": "2026-01-27T16:30:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "Finally. Regular yoghurt is just milk that gave up halfway.", "start_time": "2026-01-27T15:30:00Z", "end_time": "2026-01-27T16:30:00Z"},
+							},
+						},
+					},
+					{
+						Fields: map[string]any{
+							"id":         "not_4f7kQhLpMNBvxy",
+							"title":      "Monthly almond purchase analysis",
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "We need to track almond costs more closely next month.", "start_time": "2026-02-10T09:15:00Z", "end_time": "2026-02-10T10:15:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "Agreed. Let's finalize new supplier agreements by next week.", "start_time": "2026-02-10T09:15:00Z", "end_time": "2026-02-10T10:15:00Z"},
+							},
+						},
+						Raw: map[string]any{
+							"id":         "not_4f7kQhLpMNBvxy",
+							"object":     "note",
+							"title":      "Monthly almond purchase analysis",
+							"owner":      map[string]any{"name": "Hazel Kern", "email": "hazel@granola.ai"},
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "We need to track almond costs more closely next month.", "start_time": "2026-02-10T09:15:00Z", "end_time": "2026-02-10T10:15:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "Agreed. Let's finalize new supplier agreements by next week.", "start_time": "2026-02-10T09:15:00Z", "end_time": "2026-02-10T10:15:00Z"},
+							},
+						},
+					},
+					{
+						Fields: map[string]any{
+							"id":         "not_9b2xRwNsTLCfop",
+							"title":      "Weekly granola sales forecast",
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "Expect a surge in granola sales with the upcoming festival.", "start_time": "2026-03-02T11:45:00Z", "end_time": "2026-03-02T12:30:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "We should prepare extra inventory and optimize delivery routes.", "start_time": "2026-03-02T11:45:00Z", "end_time": "2026-03-02T12:30:00Z"},
+							},
+						},
+						Raw: map[string]any{
+							"id":         "not_9b2xRwNsTLCfop",
+							"object":     "note",
+							"title":      "Weekly granola sales forecast",
+							"owner":      map[string]any{"name": "Maple Finch", "email": "maple@granola.ai"},
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "Expect a surge in granola sales with the upcoming festival.", "start_time": "2026-03-02T11:45:00Z", "end_time": "2026-03-02T12:30:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "We should prepare extra inventory and optimize delivery routes.", "start_time": "2026-03-02T11:45:00Z", "end_time": "2026-03-02T12:30:00Z"},
+							},
+						},
+					},
+				},
+				NextPage: "eyJjcmVkZW50aWFsfQ==",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {
