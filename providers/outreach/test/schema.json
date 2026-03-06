@@ -1,0 +1,71 @@
+{
+  "definitions": {
+    "opportunity": {
+      "definitions": {
+        "amount": {
+          "type": "number"
+        },
+        "closeDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "currencyType": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "mapNumberOfOverdueTasks": {
+          "type": "integer"
+        },
+        "mapStatus": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "nextStep": {
+          "type": "string"
+        },
+        "opportunityType": {
+          "type": "string"
+        },
+        "probability": {
+          "type": "number"
+        },
+        "prospectingRepId": {
+          "type": "integer"
+        },
+        "sharingTeamId": {
+          "type": "integer"
+        },
+        "tags": {
+          "type": "array"
+        },
+        "territoryId": {
+          "type": "integer"
+        },
+        "touchedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trashedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      },
+      "links": [],
+      "properties": {}
+    }
+  }
+}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -16,7 +17,7 @@ import (
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	opportunityResponse := testutils.DataFromFile(t, "opportunities.json")
+	schemaResponse := testutils.DataFromFile(t, "schema.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -31,8 +32,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/api/v2/opportunities"),
-					Then: mockserver.Response(http.StatusOK, opportunityResponse),
+					If:   mockcond.Path("/api/v2/schema.json"),
+					Then: mockserver.Response(http.StatusOK, schemaResponse),
 				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -40,6 +41,100 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Result: map[string]common.ObjectMetadata{
 					"opportunities": {
 						DisplayName: "opportunities",
+						Fields: map[string]common.FieldMetadata{
+							"amount": {
+								DisplayName:  "amount",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "number",
+							},
+							"closeDate": {
+								DisplayName:  "closeDate",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"createdAt": {
+								DisplayName:  "createdAt",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+								ReadOnly:     goutils.Pointer(true),
+							},
+							"currencyType": {
+								DisplayName:  "currencyType",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"description": {
+								DisplayName:  "description",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"mapNumberOfOverdueTasks": {
+								DisplayName:  "mapNumberOfOverdueTasks",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "integer",
+							},
+							"mapStatus": {
+								DisplayName:  "mapStatus",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "name",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"nextStep": {
+								DisplayName:  "nextStep",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"opportunityType": {
+								DisplayName:  "opportunityType",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"probability": {
+								DisplayName:  "probability",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "number",
+							},
+							"prospectingRepId": {
+								DisplayName:  "prospectingRepId",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "integer",
+							},
+							"sharingTeamId": {
+								DisplayName:  "sharingTeamId",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "integer",
+							},
+							"tags": {
+								DisplayName:  "tags",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "array",
+							},
+							"territoryId": {
+								DisplayName:  "territoryId",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "integer",
+							},
+							"touchedAt": {
+								DisplayName:  "touchedAt",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"trashedAt": {
+								DisplayName:  "trashedAt",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"updatedAt": {
+								DisplayName:  "updatedAt",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+								ReadOnly:     goutils.Pointer(true),
+							},
+						},
 						FieldsMap: map[string]string{
 							"mapNumberOfOverdueTasks": "mapNumberOfOverdueTasks",
 							"mapStatus":               "mapStatus",

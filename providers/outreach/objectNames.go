@@ -1,0 +1,56 @@
+package outreach
+
+import "github.com/amp-labs/connectors/internal/datautils"
+
+// standardObjects is the set of known Outreach standard objects (in plural form, as used by customers).
+// The Outreach schema API returns object definitions keyed by singular names, so we singularize
+// these before lookup. Custom objects are NOT in this set and are looked up as-is, since their
+// names in the schema already match the plural form customers use.
+var standardObjects = datautils.NewStringSet( //nolint:gochecknoglobals
+	"accounts",
+	"auditLogs",
+	"calls",
+	"callDispositions",
+	"callPurposes",
+	"complianceRequests",
+	"contentCategories",
+	"contentCategoryMemberships",
+	"contentCategoryOwnerships",
+	"currencyTypes",
+	"customDuties",
+	"datedConversionRates",
+	"duties",
+	"emailAddresses",
+	"events",
+	"favorites",
+	"import",
+	"mailAliases",
+	"mailboxes",
+	"mailings",
+	"opportunities",
+	"opportunityProspectRoles",
+	"opportunityStages",
+	"personas",
+	"phoneNumbers",
+	"products",
+	"profiles",
+	"prospects",
+	"purchases",
+	"recipients",
+	"roles",
+	"rulesets",
+	"sequences",
+	"sequenceStates",
+	"sequenceSteps",
+	"sequenceTemplates",
+	"snippets",
+	"stages",
+	"tasks",
+	"taskDispositions",
+	"taskPriorities",
+	"taskPurposes",
+	"teams",
+	"templates",
+	"users",
+	"webhooks",
+)
