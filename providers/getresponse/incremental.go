@@ -67,51 +67,52 @@ func makeFilterFunc(params common.ReadParams, requestURL *url.URL) common.Record
 //	GetResponse API v3 documentation: https://apireference.getresponse.com/
 var objectsFilterParam = datautils.NewDefaultMap(map[string]timeFieldSpec{ // nolint:gochecknoglobals
 	// -----------------------------------------------------------------------------
-	// Objects with provider-side filtering support (query[createdOn][from] and query[createdOn][to])
-	// Based on GetResponse API v3 OpenAPI specification analysis
+	// Objects with confirmed provider-side filtering support (query[createdOn][from] and query[createdOn][to])
+	// Verified against live GetResponse API v3 - do NOT add objects here without live testing.
 	// -----------------------------------------------------------------------------
-	// addresses: https://apireference.getresponse.com/#operation/getAddressList
-	"addresses": {filterType: providerSideFilter, ResponseAt: nil},
-	// autoresponders: https://apireference.getresponse.com/#operation/getAutoresponderList
-	"autoresponders": {filterType: providerSideFilter, ResponseAt: nil},
-	// campaigns: https://apireference.getresponse.com/#operation/getCampaignList
-	"campaigns": {filterType: providerSideFilter, ResponseAt: nil},
-	// click-tracks: https://apireference.getresponse.com/#operation/getClickTrackList
-	"click-tracks": {filterType: providerSideFilter, ResponseAt: nil},
 	// contacts: https://apireference.getresponse.com/#operation/getContactList
 	"contacts": {filterType: providerSideFilter, ResponseAt: nil},
-	// forms: https://apireference.getresponse.com/#operation/getLegacyFormList
-	"forms": {filterType: providerSideFilter, ResponseAt: nil},
-	// imports: https://apireference.getresponse.com/#operation/getImportList
-	"imports": {filterType: providerSideFilter, ResponseAt: nil},
-	// landing-pages: https://apireference.getresponse.com/#operation/getLpsList
-	"landing-pages": {filterType: providerSideFilter, ResponseAt: nil},
-	// newsletters: https://apireference.getresponse.com/#operation/getNewsletterList
-	"newsletters": {filterType: providerSideFilter, ResponseAt: nil},
-	// rss-newsletters: https://apireference.getresponse.com/#operation/getRssNewslettersList
-	"rss-newsletters": {filterType: providerSideFilter, ResponseAt: nil},
-	// search-contacts: https://apireference.getresponse.com/#operation/newSearchContacts
-	"search-contacts": {filterType: providerSideFilter, ResponseAt: nil},
-	// splittests: https://apireference.getresponse.com/#operation/getSplittestList
-	"splittests": {filterType: providerSideFilter, ResponseAt: nil},
-	// suppressions: https://apireference.getresponse.com/#operation/getSuppressionsList
-	"suppressions": {filterType: providerSideFilter, ResponseAt: nil},
 	// -----------------------------------------------------------------------------
-	// Objects without provider-side filtering but with timestamp fields for connector-side filtering
+	// Objects without provider-side filtering but with createdOn field for connector-side filtering
 	// -----------------------------------------------------------------------------
-	// custom-events: Has createdOn field but doesn't support query[createdOn] filters
+	// addresses: https://apireference.getresponse.com/#operation/getAddressList
+	"addresses": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
+	// autoresponders: https://apireference.getresponse.com/#operation/getAutoresponderList
+	"autoresponders": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
+	// campaigns: https://apireference.getresponse.com/#operation/getCampaignList
+	// Note: API rejects query[createdOn][from] with "Not allowed search field" (confirmed via live testing)
+	"campaigns": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
+	// click-tracks: https://apireference.getresponse.com/#operation/getClickTrackList
+	"click-tracks": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
+	// custom-events: https://apireference.getresponse.com/#operation/getCustomEventsList
 	"custom-events": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
-	// files: Has createdOn field but doesn't support query[createdOn] filters
+	// files: https://apireference.getresponse.com/#operation/getFileList
 	"files": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
-	// folders: Has createdOn field but doesn't support query[createdOn] filters
+	// folders: https://apireference.getresponse.com/#operation/getFolderList
 	"folders": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
-	// from-fields: Has createdOn field but doesn't support query[createdOn] filters
+	// forms: https://apireference.getresponse.com/#operation/getLegacyFormList
+	"forms": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
+	// from-fields: https://apireference.getresponse.com/#operation/getFromFieldList
 	"from-fields": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
-	// gdpr-fields: Has createdOn field but doesn't support query[createdOn] filters
+	// gdpr-fields: https://apireference.getresponse.com/#operation/getGdprFieldList
 	"gdpr-fields": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
-	// templates: Has createdOn field but doesn't support query[createdOn] filters
+	// imports: https://apireference.getresponse.com/#operation/getImportList
+	"imports": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
+	// landing-pages: https://apireference.getresponse.com/#operation/getLpsList
+	"landing-pages": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
+	// newsletters: https://apireference.getresponse.com/#operation/getNewsletterList
+	"newsletters": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
+	// rss-newsletters: https://apireference.getresponse.com/#operation/getRssNewslettersList
+	"rss-newsletters": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
+	// search-contacts: https://apireference.getresponse.com/#operation/newSearchContacts
+	"search-contacts": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
+	// splittests: https://apireference.getresponse.com/#operation/getSplittestList
+	"splittests": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
+	// suppressions: https://apireference.getresponse.com/#operation/getSuppressionsList
+	"suppressions": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
+	// templates: https://apireference.getresponse.com/#operation/getTemplateList
 	"templates": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
-	// webinars: Has createdOn field but doesn't support query[createdOn] filters
+	// webinars: https://apireference.getresponse.com/#operation/getWebinarsList
 	"webinars": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
 }, func(objectName string) timeFieldSpec {
 	// Default case: no time-based filter or response field available.
