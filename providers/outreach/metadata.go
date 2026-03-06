@@ -22,9 +22,11 @@ type objectDefinition struct {
 }
 
 type fieldDefinition struct {
-	Type     string `json:"type"`
-	Format   string `json:"format"`
-	ReadOnly *bool  `json:"readOnly,omitempty"`
+	Type string `json:"type"`
+	// Format is a pointer because not all fields have a format in the schema.
+	// nil means the field has no format, which lets us fall back to type-based inference.
+	Format   *string `json:"format"`
+	ReadOnly *bool   `json:"readOnly,omitempty"`
 }
 
 type link struct {
@@ -107,7 +109,6 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 		metadataMapper(objectDefinition, &objectMetadata)
 
-		objectMetadata.DisplayName = obj
 		metadataResult.Result[obj] = objectMetadata
 	}
 
@@ -119,7 +120,7 @@ func metadataMapper(objDefinition objectDefinition, metadata *common.ObjectMetad
 	for field, properties := range attributes {
 		metadata.AddFieldMetadata(field, common.FieldMetadata{
 			DisplayName:  field,
-			ValueType:    inferValueTypeFromData(field),
+			ValueType:    inferValueTypeFromProviderType(properties.Type, properties.Format),
 			ProviderType: properties.Type,
 			ReadOnly:     properties.ReadOnly,
 			Values:       nil,
@@ -127,17 +128,24 @@ func metadataMapper(objDefinition objectDefinition, metadata *common.ObjectMetad
 	}
 }
 
-func inferValueTypeFromData(value any) common.ValueType {
-	if value == nil {
-		return common.ValueTypeOther
+func inferValueTypeFromProviderType(value string, format *string) common.ValueType {
+	if format != nil {
+		switch *format {
+		case "date-time":
+			return common.ValueTypeDateTime
+		case "date":
+			return common.ValueTypeDate
+		default:
+			// Unknown format; fall back to type-based inference below.
+		}
 	}
 
-	switch value.(type) {
-	case string:
+	switch value {
+	case "string":
 		return common.ValueTypeString
-	case float64, int, int64:
+	case "number":
 		return common.ValueTypeFloat
-	case bool:
+	case "boolean":
 		return common.ValueTypeBoolean
 
 	default:
