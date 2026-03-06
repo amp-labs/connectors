@@ -54,10 +54,7 @@ func main() {
 		utils.Fail("error writing to hubspot", "error", err)
 	}
 
-	records, err := conn.GetRecordsByIds(ctx, common.ReadByIdsParams{
-		ObjectName: "contact",
-		RecordIds:  []string{writeResult.RecordId},
-	})
+	records, err := conn.GetRecordsByIds(ctx, "contact", []string{writeResult.RecordId}, nil, nil)
 	if err != nil {
 		utils.Fail("error getting records by ids", "error", err)
 	}

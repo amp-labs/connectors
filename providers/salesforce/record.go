@@ -10,19 +10,21 @@ import (
 )
 
 // GetRecordsByIds returns records matching identifiers.
-//
-//nolint:revive
-func (c *Connector) GetRecordsByIds(ctx context.Context,
-	params common.ReadByIdsParams,
+func (c *Connector) GetRecordsByIds( // nolint:revive
+	ctx context.Context,
+	objectName string,
+	ids []string,
+	fields []string,
+	associations []string,
 ) ([]common.ReadResultRow, error) {
 	// Sanitize method arguments.
 	config := recordsByIDsParams{
 		ReadParams: common.ReadParams{
-			ObjectName:        params.ObjectName,
-			Fields:            datautils.NewSetFromList(params.Fields),
-			AssociatedObjects: params.AssociatedObjects,
+			ObjectName:        objectName,
+			Fields:            datautils.NewSetFromList(fields),
+			AssociatedObjects: associations,
 		},
-		RecordIdentifiers: datautils.NewSetFromList(params.RecordIds),
+		RecordIdentifiers: datautils.NewSetFromList(ids),
 	}
 
 	if err := config.ValidateParams(true); err != nil {

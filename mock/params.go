@@ -81,10 +81,13 @@ func WithGetPostAuthInfo(
 }
 
 // WithGetRecordsByIds sets the getRecordsByIds function for the connector.
-//
-//nolint:revive
-func WithGetRecordsByIds(
-	getRecordsByIds func(ctx context.Context, params common.ReadByIdsParams) ([]common.ReadResultRow, error),
+func WithGetRecordsByIds(getRecordsByIds func( //nolint:revive
+	ctx context.Context,
+	objectName string,
+	recordIds []string,
+	fields []string,
+	associations []string,
+) ([]common.ReadResultRow, error),
 ) Option {
 	return func(params *parameters) {
 		params.getRecordsByIds = getRecordsByIds
@@ -197,8 +200,14 @@ type parameters struct {
 	getURL             func(resource string, args map[string]any) (string, error)
 	delete             func(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error)
 	getPostAuthInfo    func(ctx context.Context) (*common.PostAuthInfo, error)
-	getRecordsByIds    func(ctx context.Context, //nolint:revive
-		params common.ReadByIdsParams) ([]common.ReadResultRow, error)
+
+	getRecordsByIds func( //nolint:revive
+		ctx context.Context,
+		objectName string,
+		recordIds []string,
+		fields []string,
+		associations []string,
+	) ([]common.ReadResultRow, error)
 
 	verifyWebhookMessage func(
 		ctx context.Context,

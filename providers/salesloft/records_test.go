@@ -11,6 +11,14 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
+// GetRecordsByIdsInput represents the input parameters for GetRecordsByIds method.
+type GetRecordsByIdsInput struct {
+	ObjectName   string
+	Ids          []string
+	Fields       []string
+	Associations []string
+}
+
 func TestGetRecordByIds(t *testing.T) {
 	t.Parallel()
 
@@ -18,7 +26,7 @@ func TestGetRecordByIds(t *testing.T) {
 	responseGetAccounts := testutils.DataFromFile(t, "get-records-accounts.json")
 	responseGetUsers := testutils.DataFromFile(t, "read-list-users.json")
 
-	tests := []testroutines.TestCase[common.ReadByIdsParams, []common.ReadResultRow]{
+	tests := []testroutines.TestCase[GetRecordsByIdsInput, []common.ReadResultRow]{
 		{
 			Name:         "Missing object name returns error",
 			Server:       mockserver.Dummy(),
@@ -26,10 +34,10 @@ func TestGetRecordByIds(t *testing.T) {
 		},
 		{
 			Name: "Successfully fetch people by IDs",
-			Input: common.ReadByIdsParams{
+			Input: GetRecordsByIdsInput{
 				ObjectName: "people",
 				Fields:     []string{"email_address"},
-				RecordIds:  []string{"164510523", "164510464"},
+				Ids:        []string{"164510523", "164510464"},
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -75,10 +83,10 @@ func TestGetRecordByIds(t *testing.T) {
 		},
 		{
 			Name: "Successfully fetch accounts by IDs",
-			Input: common.ReadByIdsParams{
+			Input: GetRecordsByIdsInput{
 				ObjectName: "accounts",
 				Fields:     []string{"name"},
-				RecordIds:  []string{"48371814", "48371806"},
+				Ids:        []string{"48371814", "48371806"},
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -120,10 +128,10 @@ func TestGetRecordByIds(t *testing.T) {
 		},
 		{
 			Name: "Successfully fetch users by IDs",
-			Input: common.ReadByIdsParams{
+			Input: GetRecordsByIdsInput{
 				ObjectName: "users",
 				Fields:     []string{"email"},
-				RecordIds:  []string{"49067"},
+				Ids:        []string{"49067"},
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -211,7 +219,7 @@ func TestGetRecordByIds(t *testing.T) {
 				t.Fatalf("failed to construct test connector: %v", err)
 			}
 
-			result, err := conn.GetRecordsByIds(t.Context(), tt.Input)
+			result, err := conn.GetRecordsByIds(t.Context(), tt.Input.ObjectName, tt.Input.Ids, tt.Input.Fields, nil)
 
 			tt.Validate(t, err, result)
 		})

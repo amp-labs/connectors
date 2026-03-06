@@ -30,33 +30,37 @@ var (
 */
 
 //nolint:revive,funlen
-func (c *Connector) GetRecordsByIds(ctx context.Context,
-	params common.ReadByIdsParams,
+func (c *Connector) GetRecordsByIds(
+	ctx context.Context,
+	objectName string,
+	ids []string,
+	fields []string,
+	associations []string,
 ) ([]common.ReadResultRow, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
-	singularObjName := naming.NewSingularString(params.ObjectName).String()
+	singularObjName := naming.NewSingularString(objectName).String()
 	if !getRecordSupportedObjectsSet.Has(singularObjName) {
-		return nil, fmt.Errorf("%w %s", common.ErrGetRecordNotSupportedForObject, params.ObjectName)
+		return nil, fmt.Errorf("%w %s", common.ErrGetRecordNotSupportedForObject, objectName)
 	}
 
-	inputs := make([]map[string]any, len(params.RecordIds))
-	for i, id := range params.RecordIds {
+	inputs := make([]map[string]any, len(ids))
+	for i, id := range ids {
 		inputs[i] = map[string]any{
 			"id": id,
 		}
 	}
 
-	pluralObjectName := naming.NewPluralString(params.ObjectName).String()
+	pluralObjectName := naming.NewPluralString(objectName).String()
 
-	u, err := c.getBatchRecordsURL(pluralObjectName, params.AssociatedObjects)
+	u, err := c.getBatchRecordsURL(pluralObjectName, associations)
 	if err != nil {
 		return nil, err
 	}
 
 	body := map[string]any{
 		"inputs":     inputs,
-		"properties": params.Fields,
+		"properties": fields,
 	}
 
 	resp, err := c.Client.Post(ctx, u, body)
@@ -74,7 +78,7 @@ func (c *Connector) GetRecordsByIds(ctx context.Context,
 		return nil, err
 	}
 
-	return c.getDataMarshaller(ctx, params.ObjectName, params.AssociatedObjects)(records, params.Fields)
+	return c.getDataMarshaller(ctx, objectName, associations)(records, fields)
 }
 
 func (c *Connector) getBatchRecordsURL(objectName string, associations []string) (string, error) {
