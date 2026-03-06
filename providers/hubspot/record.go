@@ -39,7 +39,7 @@ func (c *Connector) GetRecordsByIds(
 ) ([]common.ReadResultRow, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
-	singularObjName := naming.NewSingularString(objectName).String()
+	singularObjName := strings.ToLower(naming.NewSingularString(objectName).String())
 	if !getRecordSupportedObjectsSet.Has(singularObjName) {
 		return nil, fmt.Errorf("%w %s", common.ErrGetRecordNotSupportedForObject, objectName)
 	}
