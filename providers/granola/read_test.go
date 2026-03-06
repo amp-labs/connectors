@@ -353,7 +353,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read notes with transcript field sends include=transcripts on list and include=transcript on get note",
+			Name: "Read notes with transcript field sends include=transcript on get note only",
 			Input: common.ReadParams{
 				ObjectName: "notes",
 				Fields:     connectors.Fields("id", "title", "transcript"),
@@ -366,7 +366,6 @@ func TestRead(t *testing.T) {
 						If: mockcond.And{
 							mockcond.Path("/v1/notes"),
 							mockcond.QueryParam("page_size", "4"),
-							mockcond.QueryParam("include", "transcripts"),
 						},
 						Then: mockserver.Response(http.StatusOK, responseNotes),
 					},
