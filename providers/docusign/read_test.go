@@ -12,8 +12,6 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-// TODO: check diff in records with sorting -> incremental?
-
 func TestRead(t *testing.T) {
 	t.Parallel()
 
@@ -52,7 +50,7 @@ func TestRead(t *testing.T) {
 						"emailSubject":  "Test Envelope Send 1",
 					},
 				}},
-				NextPage: "/accounts/devTest-123/envelopes?start_position=1&count=1&from_date=2024-03-04T07:22:33-08:00",
+				NextPage: testroutines.URLTestServer + "/restapi/v2.1/accounts/devTest-123/envelopes?start_position=1&count=1&from_date=2024-03-04T07:22:33-08:00",
 				Done:     false,
 			},
 		},
@@ -61,12 +59,17 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "envelopes",
 				Fields:     connectors.Fields("envelopeId", "documentsUri", "recipientsUri"),
-				NextPage:   common.NextPageToken(accountIdPathPrefix + "/envelopes?start_position=1&count=1&from_date=2024-03-04T07:22:33-08:00"),
+				NextPage:   common.NextPageToken(testroutines.URLTestServer + accountIdPathPrefix + "/envelopes?start_position=1&count=1&from_date=2024-03-04T07:22:33-08:00"),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path(accountIdPathPrefix + "/envelopes?start_position=1&count=1&from_date=2024-03-04T07:22:33-08:00"),
-				Then:  mockserver.Response(http.StatusOK, responseEnvelopesSecondPage),
+				If: mockcond.And{
+					mockcond.Path(accountIdPathPrefix + "/envelopes"),
+					mockcond.QueryParam("start_position", "1"),
+					mockcond.QueryParam("count", "1"),
+					mockcond.QueryParam("from_date", "2024-03-04T07:22:33-08:00"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseEnvelopesSecondPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -78,9 +81,9 @@ func TestRead(t *testing.T) {
 						"recipientsuri": "/envelopes/02da2475-70f8-868f-819f-9fe0dd3f0160/recipients",
 					},
 					Raw: map[string]any{
-						"envelopeid":    "02da2475-70f8-868f-819f-9fe0dd3f0160",
-						"documentsuri":  "/envelopes/02da2475-70f8-868f-819f-9fe0dd3f0160/documents",
-						"recipientsuri": "/envelopes/02da2475-70f8-868f-819f-9fe0dd3f0160/recipients",
+						"envelopeId":    "02da2475-70f8-868f-819f-9fe0dd3f0160",
+						"documentsUri":  "/envelopes/02da2475-70f8-868f-819f-9fe0dd3f0160/documents",
+						"recipientsUri": "/envelopes/02da2475-70f8-868f-819f-9fe0dd3f0160/recipients",
 						"status":        "sent",
 						"emailSubject":  "Test Signing Group 1",
 					},

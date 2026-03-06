@@ -4,8 +4,10 @@ import (
 	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 )
 
-const serverKey = "server"
-const accountIdKey = "account_id"
+const (
+	serverKey    = "server"
+	accountIdKey = "account_id"
+)
 
 // Metadata fields that must be specified to initialize connector.
 var requiredMetadataFields = []string{ // nolint:gochecknoglobals
