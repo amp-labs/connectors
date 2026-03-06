@@ -43,7 +43,7 @@ func (c *Connector) fetchNotes(
 		return nil, err
 	}
 
-	includeTranscript := params.ObjectName == objectNotes && params.Fields.Has("transcript")
+	includeTranscript := params.Fields.Has("transcript")
 	notesChannel := make(chan NoteRecord, len(collection.Notes))
 	callbacks := make([]simultaneously.Job, 0, len(collection.Notes))
 
