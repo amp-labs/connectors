@@ -2,7 +2,7 @@ package docusign
 
 import (
 	"context"
-	"fmt"
+	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
@@ -40,27 +40,35 @@ var (
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	if err := config.ValidateParams(true); err != nil {
-		return nil, err
-	}
-
-	reqURL, err := c.buildReadURL(config)
+	req, err := c.buildReadRequest(ctx, config)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := c.Client.Get(ctx, reqURL.String())
+	resp, err := c.Client.Get(ctx, req.URL.String())
 	if err != nil {
 		return nil, err
 	}
 
-	return common.ParseResult(
-		res,
-		common.ExtractRecordsFromPath(config.ObjectName),
-		getNextRecordURL(c.BaseURL),
-		common.GetMarshaledData,
-		config.Fields,
-	)
+	return c.parseReadResponse(ctx, config, req, resp)
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	if err := params.ValidateParams(true); err != nil {
+		return nil, err
+	}
+
+	reqURL, err := c.buildReadURL(params)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
 }
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
@@ -83,38 +91,42 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	return url, nil
 }
 
-func makeGetRecords(objectName string) common.NodeRecordsFunc {
-	return func(node *ajson.Node) ([]*ajson.Node, error) {
-		// templates needs workaround?
-		responseFieldName := metadata.Schemas.LookupArrayFieldName(common.ModuleRoot, objectName)
-
-		return jsonquery.New(node).ArrayOptional(responseFieldName)
-	}
+func (c *Connector) parseReadResponse(_ context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		resp,
+		common.ExtractRecordsFromPath(params.ObjectName),
+		getNextRecordURL(request.URL),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
 
-// cleanup reconstructing the url...not sure I like the manual reconstruction.
-// try to implement new pattern buildReadRequest which returns a req and wrap it in
-// the old read.
-// todo: set up tests for pagination with envelopes -> other objects -> refactor/cleanup
-func getNextRecordURL(baseURL string) common.NextPageFunc {
+func getNextRecordURL(req *url.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		nextUri, err := jsonquery.New(node).StrWithDefault(nextURIKey, "")
 		if err != nil || nextUri == "" {
 			return "", err
 		}
 
-		// Preserve the query parameters from nextUri
-
-		// /restapi/v2.1 is stripped from the nextUri value so we need to add them back for the full path.
-		fullURL := fmt.Sprintf("%s/%s/%s%s", baseURL, restapiPrefix, versionPrefix, nextUri)
-		fullURLParsed, err := url.Parse(fullURL)
+		// /restapi/v2.1 is stripped from nextUri but is needed to construct the full URL.
+		// So replace the query params of the original request with the ones in nextUri.
+		req.RawQuery = ""
+		nextURL, err := urlbuilder.FromRawURL(req)
 		if err != nil {
 			return "", err
 		}
 
-		nextURL, err := urlbuilder.FromRawURL(fullURLParsed)
+		// Extract the query params
+		parsedNextUri, err := url.Parse(nextUri)
 		if err != nil {
 			return "", err
+		}
+		for key, param := range parsedNextUri.Query() {
+			nextURL.WithQueryParamList(key, param)
 		}
 		return nextURL.String(), nil
 	}
