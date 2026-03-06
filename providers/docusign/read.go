@@ -98,11 +98,19 @@ func (c *Connector) parseReadResponse(_ context.Context,
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		resp,
-		common.ExtractRecordsFromPath(params.ObjectName),
+		makeRecords(params),
 		getNextRecordURL(request.URL),
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func makeRecords(params common.ReadParams) common.RecordsFunc {
+	objName := params.ObjectName
+	if objName == "templates" {
+		objName = "envelopeTemplates"
+	}
+	return common.ExtractRecordsFromPath(objName)
 }
 
 func getNextRecordURL(req *url.URL) common.NextPageFunc {
