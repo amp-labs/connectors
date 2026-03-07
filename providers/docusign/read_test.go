@@ -26,8 +26,36 @@ func TestRead(t *testing.T) {
 	responseEnvelopesSecondPage := testutils.DataFromFile(t, "read-envelopes-second-page.json")
 	responseEnvelopesDateRange := testutils.DataFromFile(t, "read-envelopes-date-range.json")
 	responseTemplates := testutils.DataFromFile(t, "read-templates.json")
+	responseTabDefinitions := testutils.DataFromFile(t, "read-tab-definitions.json")
+	errorBadRequest := testutils.DataFromFile(t, "error-bad-request.json")
 
 	tests := []testroutines.Read{
+		{
+			Name:         "Read object must be included",
+			Input:        common.ReadParams{},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:         "At least one field is requested",
+			Input:        common.ReadParams{ObjectName: "envelopes"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFields},
+		},
+		{
+			Name:  "Error invalid params",
+			Input: common.ReadParams{ObjectName: "envelopes", Fields: connectors.Fields("documentsUri")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/envelopes"),
+				Then:  mockserver.Response(http.StatusOK, nil),
+				Else:  mockserver.Response(http.StatusBadRequest, errorBadRequest),
+			}.Server(),
+			ExpectedErrs: []error{
+				common.ErrBadRequest,
+				testutils.StringError("The request contained at least one invalid parameter. Query parameter 'from_date' must be set to a valid DateTime or 'envelope_ids', 'folder_ids' or 'transaction_ids' must be specified."), // nolint:lll
+			},
+		},
 		{
 			Name: "Read Envelopes first page with default time range",
 			Input: common.ReadParams{
@@ -143,7 +171,7 @@ func TestRead(t *testing.T) {
 			},
 		},
 		{
-			Name: "Read Templates",
+			Name: "Read Templates - has response key override",
 			Input: common.ReadParams{
 				ObjectName: "templates",
 				Fields:     connectors.Fields("templateId"),
@@ -168,6 +196,32 @@ func TestRead(t *testing.T) {
 				}},
 				NextPage: testroutines.URLTestServer + "/restapi/v2.1/accounts/devTest-123/templates?from_date=2000-01-01T08%3a00%3a00.0000000Z&to_date=2026-03-06T03%3a28%3a16.5352444Z&user_filter=all&count=1&start_position=1",
 				Done:     false,
+			},
+		},
+		{
+			Name: "Read Custom Tabs - no pagination",
+			Input: common.ReadParams{
+				ObjectName: "tab_definitions",
+				Fields:     connectors.Fields("customTabId"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path(accountIdPathPrefix + "/tab_definitions"),
+				Then:  mockserver.Response(http.StatusOK, responseTabDefinitions),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"customtabid": "6fc42da3-2cb8-42bb-ad01-2193dacadbf2",
+					},
+					Raw: map[string]any{
+						"customTabId":               "6fc42da3-2cb8-42bb-ad01-2193dacadbf2",
+						"lastModifiedByDisplayName": "Dev Test 1",
+					},
+				}},
+				Done: true,
 			},
 		},
 	}

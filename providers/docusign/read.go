@@ -18,7 +18,8 @@ import (
 
 var (
 	defaultTimeRange = time.Now().AddDate(-2, 0, 0) // 2 years
-	defaultPageSize  = 1000
+	maxPageSize      = 1000
+	maxUsersPageSize = 100
 
 	nextURIKey = "nextUri"
 )
@@ -37,6 +38,14 @@ var (
 		// https://developers.docusign.com/docs/esign-rest-api/reference/bulkenvelopes/bulksend/getbulksendbatches/
 		"bulk_send_batch",
 	)
+
+	responseKeyOverrides = map[string]string{
+		"templates":       "envelopeTemplates",
+		"tab_definitions": "tabs",
+		"bulk_send_batch": "bulkBatchSummaries",
+		"bulk_send_lists": "bulkListSummaries",
+		"signing_groups":  "groups",
+	}
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -107,8 +116,8 @@ func (c *Connector) parseReadResponse(_ context.Context,
 
 func makeRecords(params common.ReadParams) common.RecordsFunc {
 	objName := params.ObjectName
-	if objName == "templates" {
-		objName = "envelopeTemplates"
+	if respKey, ok := responseKeyOverrides[objName]; ok {
+		objName = respKey
 	}
 	return common.ExtractRecordsFromPath(objName)
 }
@@ -157,8 +166,12 @@ func addQueryParams(url *urlbuilder.URL, config common.ReadParams) {
 			url.WithQueryParam("to_date", config.Until.Format(time.RFC3339))
 		}
 
-		if count < 0 {
-			count = defaultPageSize
+		if count <= 0 {
+			if config.ObjectName == "users" {
+				count = maxUsersPageSize
+			} else {
+				count = maxPageSize
+			}
 		}
 		url.WithQueryParam("count", strconv.Itoa(count))
 	}
