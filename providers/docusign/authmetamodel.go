@@ -4,7 +4,10 @@ import (
 	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 )
 
-const serverKey = "server"
+const (
+	serverKey    = "server"
+	accountIdKey = "account_id"
+)
 
 // Metadata fields that must be specified to initialize connector.
 var requiredMetadataFields = []string{ // nolint:gochecknoglobals
@@ -14,20 +17,23 @@ var requiredMetadataFields = []string{ // nolint:gochecknoglobals
 // AuthMetadataVars is a complete list of authentication metadata associated with connector.
 // This model serves as a documentation of map[string]string contents.
 type AuthMetadataVars struct {
-	Server string
+	Server    string
+	AccountId string
 }
 
 // NewAuthMetadataVars parses map into the model.
 func NewAuthMetadataVars(dictionary map[string]string) *AuthMetadataVars {
 	return &AuthMetadataVars{
-		Server: dictionary[serverKey],
+		Server:    dictionary[serverKey],
+		AccountId: dictionary[accountIdKey],
 	}
 }
 
 // AsMap converts model back to the map.
 func (v AuthMetadataVars) AsMap() *map[string]string {
 	return &map[string]string{
-		serverKey: v.Server,
+		serverKey:    v.Server,
+		accountIdKey: v.AccountId,
 	}
 }
 
