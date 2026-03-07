@@ -8,6 +8,9 @@ const (
 
 	// ModuleNetsuiteRESTAPI is a read-write module that uses the REST API to read and write data.
 	ModuleNetsuiteRESTAPI = "restapi"
+
+	// ModuleNetsuiteRESTlet is a read-write module that uses a custom RESTlet script for CRUD and search.
+	ModuleNetsuiteRESTlet = "restlet"
 )
 
 // nolint:lll,funlen
@@ -55,6 +58,15 @@ func init() {
 					Write: true,
 				},
 			},
+			ModuleNetsuiteRESTlet: {
+				DisplayName: "Netsuite (RESTlet)",
+				BaseURL:     "https://{{.workspace}}.restlets.api.netsuite.com",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -74,6 +86,21 @@ func init() {
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTAPI: ModuleDependency{},
 						ModuleNetsuiteSuiteQL: ModuleDependency{},
+						ModuleNetsuiteRESTlet: ModuleDependency{},
+					},
+				},
+				{
+					Name:        "scriptId",
+					DisplayName: "RESTlet Script ID",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleNetsuiteRESTlet: ModuleDependency{},
+					},
+				},
+				{
+					Name:        "deployId",
+					DisplayName: "RESTlet Deploy ID",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleNetsuiteRESTlet: ModuleDependency{},
 					},
 				},
 			},
@@ -83,6 +110,7 @@ func init() {
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTAPI: ModuleDependency{},
 						ModuleNetsuiteSuiteQL: ModuleDependency{},
+						ModuleNetsuiteRESTlet: ModuleDependency{},
 					},
 				},
 				{
@@ -90,6 +118,7 @@ func init() {
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTAPI: ModuleDependency{},
 						ModuleNetsuiteSuiteQL: ModuleDependency{},
+						ModuleNetsuiteRESTlet: ModuleDependency{},
 					},
 				},
 			},
