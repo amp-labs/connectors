@@ -14,6 +14,7 @@ import (
 // can be present inside *creds.json file.
 var Fields = struct { // nolint:gochecknoglobals
 	Provider Field
+	Module   Field
 	// Tokens
 	AccessToken  Field
 	RefreshToken Field
@@ -40,6 +41,11 @@ var Fields = struct { // nolint:gochecknoglobals
 		Name:      "provider",
 		PathJSON:  "provider",
 		SuffixENV: "PROVIDER",
+	},
+	Module: Field{
+		Name:      "module",
+		PathJSON:  "module",
+		SuffixENV: "MODULE",
 	},
 	AccessToken: Field{
 		Name:      "accessToken",
