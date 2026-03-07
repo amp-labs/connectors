@@ -53,33 +53,23 @@ func (a *Adapter) parseObjectMetadataResponse(
 
 	result := common.NewObjectMetadata(objectName, common.FieldsMetadata{})
 
-	// Add body fields.
+	// Add body fields. Sublists are intentionally skipped — they represent
+	// sub-objects (e.g. line items) rather than fields on the record itself.
 	for fieldName, fieldInfo := range schemaBody.Fields {
 		isRequired := fieldInfo.IsMandatory
 		readOnly := fieldInfo.IsReadOnly
 
+		displayName := fieldInfo.Label
+		if displayName == "" {
+			displayName = fieldName
+		}
+
 		result.AddFieldMetadata(fieldName, common.FieldMetadata{
-			DisplayName:  fieldInfo.Label,
+			DisplayName:  displayName,
 			ProviderType: fieldInfo.Type,
 			IsRequired:   &isRequired,
 			ReadOnly:     &readOnly,
 		})
-	}
-
-	// Add sublist fields as "{sublistId}.{fieldId}".
-	for sublistId, sublist := range schemaBody.Sublists {
-		for fieldName, fieldInfo := range sublist.Fields {
-			compositeKey := fmt.Sprintf("%s.%s", sublistId, fieldName)
-			isRequired := fieldInfo.IsMandatory
-			readOnly := fieldInfo.IsReadOnly
-
-			result.AddFieldMetadata(compositeKey, common.FieldMetadata{
-				DisplayName:  fmt.Sprintf("%s > %s", sublistId, fieldInfo.Label),
-				ProviderType: fieldInfo.Type,
-				IsRequired:   &isRequired,
-				ReadOnly:     &readOnly,
-			})
-		}
 	}
 
 	return result, nil
