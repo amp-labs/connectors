@@ -28,6 +28,7 @@ func TestRead(t *testing.T) {
 	responseTemplates := testutils.DataFromFile(t, "read-templates.json")
 	responseTabDefinitions := testutils.DataFromFile(t, "read-tab-definitions.json")
 	errorBadRequest := testutils.DataFromFile(t, "error-bad-request.json")
+	emptyResponse := testutils.DataFromFile(t, "empty-response.json")
 
 	tests := []testroutines.Read{
 		{
@@ -55,6 +56,23 @@ func TestRead(t *testing.T) {
 				common.ErrBadRequest,
 				testutils.StringError("The request contained at least one invalid parameter. Query parameter 'from_date' must be set to a valid DateTime or 'envelope_ids', 'folder_ids' or 'transaction_ids' must be specified."), // nolint:lll
 			},
+		},
+		{
+			Name:  "Empty results",
+			Input: common.ReadParams{ObjectName: "envelopes", Fields: connectors.Fields("documentsUri")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path(accountIdPathPrefix + "/envelopes"),
+				Then:  mockserver.Response(http.StatusOK, emptyResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     0,
+				Data:     []common.ReadResultRow{},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
 		},
 		{
 			Name: "Read Envelopes first page with default time range",

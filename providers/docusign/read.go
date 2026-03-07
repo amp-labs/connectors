@@ -119,7 +119,7 @@ func makeRecords(params common.ReadParams) common.RecordsFunc {
 	if respKey, ok := responseKeyOverrides[objName]; ok {
 		objName = respKey
 	}
-	return common.ExtractRecordsFromPath(objName)
+	return common.ExtractOptionalRecordsFromPath(objName)
 }
 
 func getNextRecordURL(req *url.URL) common.NextPageFunc {
