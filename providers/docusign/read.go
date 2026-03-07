@@ -17,14 +17,19 @@ import (
 )
 
 var (
+	//nolint:gochecknoglobals
 	defaultTimeRange = time.Now().AddDate(-2, 0, 0) // 2 years
-	maxPageSize      = 1000
+	//nolint:gochecknoglobals
+	maxPageSize = 1000
+	//nolint:gochecknoglobals
 	maxUsersPageSize = 100
 
+	//nolint:gochecknoglobals
 	nextURIKey = "nextUri"
 )
 
 var (
+	//nolint:gochecknoglobals
 	incrementalObjects = datautils.NewSet(
 		"envelopes",
 		"bulk_send_batch",
@@ -32,6 +37,7 @@ var (
 		"users",
 	)
 
+	//nolint:gochecknoglobals
 	requiredQueryParamsObjects = datautils.NewSet(
 		"envelopes",
 		// Requires either from_date or batch_ids but doesn't return an error if neither is provided.
@@ -39,6 +45,7 @@ var (
 		"bulk_send_batch",
 	)
 
+	//nolint:gochecknoglobals
 	responseKeyOverrides = map[string]string{
 		"templates":       "envelopeTemplates",
 		"tab_definitions": "tabs",
@@ -89,6 +96,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	if err != nil {
 		return nil, err
 	}
+
 	path = strings.ReplaceAll(path, "{accountId}", c.accountId)
 
 	url, err := urlbuilder.New(c.BaseURL, restapiPrefix, path)
@@ -119,37 +127,42 @@ func makeRecords(params common.ReadParams) common.RecordsFunc {
 	if respKey, ok := responseKeyOverrides[objName]; ok {
 		objName = respKey
 	}
+
 	return common.ExtractOptionalRecordsFromPath(objName)
 }
 
 func getNextRecordURL(req *url.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		nextUri, err := jsonquery.New(node).StrWithDefault(nextURIKey, "")
-		if err != nil || nextUri == "" {
+		nextURI, err := jsonquery.New(node).StrWithDefault(nextURIKey, "")
+		if err != nil || nextURI == "" {
 			return "", err
 		}
 
 		// /restapi/v2.1 is stripped from nextUri but is needed to construct the full URL.
 		// So replace the query params of the original request with the ones in nextUri.
 		req.RawQuery = ""
+
 		nextURL, err := urlbuilder.FromRawURL(req)
 		if err != nil {
 			return "", err
 		}
 
 		// Extract the query params
-		parsedNextUri, err := url.Parse(nextUri)
+		parsedNextURI, err := url.Parse(nextURI)
 		if err != nil {
 			return "", err
 		}
-		for key, param := range parsedNextUri.Query() {
+
+		for key, param := range parsedNextURI.Query() {
 			nextURL.WithQueryParamList(key, param)
 		}
+
 		return nextURL.String(), nil
 	}
 }
 
 func addQueryParams(url *urlbuilder.URL, config common.ReadParams) {
+	//nolint:nestif
 	if incrementalObjects.Has(config.ObjectName) {
 		startTime := config.Since
 		endTime := config.Until
@@ -162,6 +175,7 @@ func addQueryParams(url *urlbuilder.URL, config common.ReadParams) {
 		if !startTime.IsZero() {
 			url.WithQueryParam("from_date", startTime.UTC().Format(time.RFC3339))
 		}
+
 		if !endTime.IsZero() {
 			url.WithQueryParam("to_date", config.Until.Format(time.RFC3339))
 		}
