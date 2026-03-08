@@ -65,7 +65,7 @@ func init() {
 			},
 			ModuleNetsuiteRESTlet: {
 				DisplayName: "Netsuite (RESTlet)",
-				BaseURL:     "https://{{.workspace}}.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script={{.scriptId}}&deploy={{.deployId}}",
+				BaseURL:     "https://{{.workspace}}.restlets.api.netsuite.com",
 				Support: Support{
 					Proxy: true,
 					Read:  true,

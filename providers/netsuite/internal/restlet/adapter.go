@@ -1,6 +1,10 @@
 package restlet
 
 import (
+	"errors"
+	"fmt"
+	"net/url"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/deleter"
@@ -10,6 +14,8 @@ import (
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 )
+
+var ErrMissingMetadata = errors.New("missing required metadata")
 
 // Adapter implements Read, Write, Delete, and ListObjectMetadata by
 // talking to a NetSuite RESTlet script over a single POST endpoint.
@@ -25,15 +31,30 @@ type Adapter struct {
 	restletURL string
 }
 
-// NewAdapter creates a RESTlet adapter. The RESTlet URL comes from the module's
-// BaseURL, which includes script and deploy query params resolved via catalog substitution.
+// NewAdapter creates a RESTlet adapter. It reads scriptId and deployId
+// from params.Metadata to construct the RESTlet URL.
 func NewAdapter(params common.ConnectorParams) (*Adapter, error) {
 	return components.Initialize(providers.Netsuite, params, func(base *components.Connector) (*Adapter, error) {
-		// The module BaseURL already contains the full RESTlet path with script and deploy query params,
-		// resolved from metadata via catalog variable substitution.
+		scriptId, ok := params.Metadata["scriptId"]
+		if !ok || scriptId == "" {
+			return nil, fmt.Errorf("%w: scriptId", ErrMissingMetadata)
+		}
+
+		deployId, ok := params.Metadata["deployId"]
+		if !ok || deployId == "" {
+			return nil, fmt.Errorf("%w: deployId", ErrMissingMetadata)
+		}
+
+		baseURL := base.ModuleInfo().BaseURL
+
+		restletURL, err := buildRestletURL(baseURL, scriptId, deployId)
+		if err != nil {
+			return nil, fmt.Errorf("failed to build restlet URL: %w", err)
+		}
+
 		adapter := &Adapter{
 			Connector:  base,
-			restletURL: base.ModuleInfo().BaseURL,
+			restletURL: restletURL,
 		}
 
 		registry := components.NewEmptyEndpointRegistry()
@@ -84,4 +105,20 @@ func NewAdapter(params common.ConnectorParams) (*Adapter, error) {
 
 		return adapter, nil
 	})
+}
+
+func buildRestletURL(baseURL, scriptId, deployId string) (string, error) {
+	u, err := url.Parse(baseURL)
+	if err != nil {
+		return "", err
+	}
+
+	u.Path = "/app/site/hosting/restlet.nl"
+
+	q := u.Query()
+	q.Set("script", scriptId)
+	q.Set("deploy", deployId)
+	u.RawQuery = q.Encode()
+
+	return u.String(), nil
 }
