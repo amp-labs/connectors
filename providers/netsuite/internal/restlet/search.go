@@ -39,9 +39,14 @@ func buildSearchPayload(params *common.SearchParams) (searchRequest, error) {
 	columns := params.Fields.List()
 
 	// Map FieldFilters to NetSuite search filters.
+	// NetSuite requires explicit "AND" between multiple filter expressions.
 	var filters []any
 
-	for _, ff := range params.Filter.FieldFilters {
+	for i, ff := range params.Filter.FieldFilters {
+		if i > 0 {
+			filters = append(filters, "AND")
+		}
+
 		nsOp, ok := filterOperatorMap[ff.Operator]
 		if !ok {
 			return searchRequest{}, fmt.Errorf("unsupported filter operator: %s", ff.Operator)

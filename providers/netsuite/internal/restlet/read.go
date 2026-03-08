@@ -32,6 +32,7 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 	columns := params.Fields.List()
 
 	// Build NS search filters for Since/Until.
+	// NetSuite requires explicit "AND" between multiple filter expressions.
 	var filters []any
 
 	if !params.Since.IsZero() {
@@ -41,6 +42,10 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 	}
 
 	if !params.Until.IsZero() {
+		if len(filters) > 0 {
+			filters = append(filters, "AND")
+		}
+
 		filters = append(filters, []string{
 			"lastmodifieddate", "onorbefore", params.Until.Format(dateLayout),
 		})
