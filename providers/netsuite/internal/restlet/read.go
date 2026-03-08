@@ -8,13 +8,13 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 )
 
 const (
 	defaultPageSize = 1000
-	dateLayout      = "1/2/2006 3:04 PM"
 )
 
 func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -67,7 +67,7 @@ func buildDateFilters(params common.ReadParams) []any {
 
 	if !params.Since.IsZero() {
 		filters = append(filters, []string{
-			"lastmodifieddate", "onorafter", params.Since.Format(dateLayout),
+			"lastmodifieddate", "onorafter", params.Since.UTC().Format(time.RFC3339),
 		})
 	}
 
@@ -77,7 +77,7 @@ func buildDateFilters(params common.ReadParams) []any {
 		}
 
 		filters = append(filters, []string{
-			"lastmodifieddate", "onorbefore", params.Until.Format(dateLayout),
+			"lastmodifieddate", "onorbefore", params.Until.UTC().Format(time.RFC3339),
 		})
 	}
 
