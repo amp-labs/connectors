@@ -38,6 +38,11 @@ func init() {
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+			Search: SearchSupport{
+				Operators: SearchOperators{
+					Equals: true,
+				},
+			},
 		},
 		DefaultModule: ModuleNetsuiteRESTAPI,
 		Modules: &Modules{
