@@ -135,6 +135,14 @@ func (c *Connector) Write(ctx context.Context, params connectors.WriteParams) (*
 	return nil, common.ErrNotImplemented
 }
 
+func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error) {
+	if c.RESTlet != nil {
+		return c.RESTlet.Search(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
 func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
 	if c.RESTAPI != nil {
 		return c.RESTAPI.Delete(ctx, params)

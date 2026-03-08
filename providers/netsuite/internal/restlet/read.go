@@ -85,7 +85,12 @@ func (a *Adapter) parseReadResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	// Unmarshal the full response envelope.
+	return parseSearchResults(resp)
+}
+
+// parseSearchResults parses a RESTlet search response envelope into a ReadResult.
+// Shared by both Read and Search since they use the same RESTlet search action and response format.
+func parseSearchResults(resp *common.JSONHTTPResponse) (*common.ReadResult, error) {
 	fullResp, err := common.UnmarshalJSON[restletResponse](resp)
 	if err != nil {
 		return nil, err

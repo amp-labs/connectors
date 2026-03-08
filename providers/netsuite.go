@@ -65,6 +65,11 @@ func init() {
 					Proxy: true,
 					Read:  true,
 					Write: true,
+					Search: SearchSupport{
+						Operators: SearchOperators{
+							Equals: true,
+						},
+					},
 				},
 			},
 		},

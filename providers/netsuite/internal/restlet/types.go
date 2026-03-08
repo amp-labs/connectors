@@ -1,6 +1,15 @@
 package restlet
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"github.com/amp-labs/connectors/common"
+)
+
+// filterOperatorMap maps Ampersand filter operators to NetSuite search operators.
+var filterOperatorMap = map[common.FilterOperator]string{
+	common.FilterOperatorEQ: "is",
+}
 
 // restletResponse is the envelope returned by every RESTlet action.
 type restletResponse struct {
