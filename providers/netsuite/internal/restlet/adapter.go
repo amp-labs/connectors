@@ -33,7 +33,7 @@ type Adapter struct {
 
 // NewAdapter creates a RESTlet adapter. It reads scriptId and deployId
 // from params.Metadata to construct the RESTlet URL.
-func NewAdapter(params common.ConnectorParams) (*Adapter, error) {
+func NewAdapter(params common.ConnectorParams) (*Adapter, error) { //nolint:funlen
 	return components.Initialize(providers.Netsuite, params, func(base *components.Connector) (*Adapter, error) {
 		scriptId, ok := params.Metadata["scriptId"]
 		if !ok || scriptId == "" {
@@ -108,17 +108,17 @@ func NewAdapter(params common.ConnectorParams) (*Adapter, error) {
 }
 
 func buildRestletURL(baseURL, scriptId, deployId string) (string, error) {
-	u, err := url.Parse(baseURL)
+	rurl, err := url.Parse(baseURL)
 	if err != nil {
 		return "", err
 	}
 
-	u.Path = "/app/site/hosting/restlet.nl"
+	rurl.Path = "/app/site/hosting/restlet.nl"
 
-	q := u.Query()
+	q := rurl.Query()
 	q.Set("script", scriptId)
 	q.Set("deploy", deployId)
-	u.RawQuery = q.Encode()
+	rurl.RawQuery = q.Encode()
 
-	return u.String(), nil
+	return rurl.String(), nil
 }
