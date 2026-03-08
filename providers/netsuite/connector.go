@@ -54,33 +54,41 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		}
 	}
 
+	if err := initModuleAdapters(connector, params); err != nil {
+		return nil, err
+	}
+
+	return connector, nil
+}
+
+func initModuleAdapters(connector *Connector, params common.ConnectorParams) error {
 	switch connector.Module() { //nolint:exhaustive
 	case providers.ModuleNetsuiteRESTAPI:
 		adapter, err := restapi.NewAdapter(params)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		connector.RESTAPI = adapter
 	case providers.ModuleNetsuiteSuiteQL:
 		adapter, err := suiteql.NewAdapter(params)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		connector.SuiteQL = adapter
 	case providers.ModuleNetsuiteRESTlet:
 		adapter, err := restlet.NewAdapter(params)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		connector.RESTlet = adapter
 	default:
-		return nil, common.ErrUnsupportedModule
+		return common.ErrUnsupportedModule
 	}
 
-	return connector, nil
+	return nil
 }
 
 func (c *Connector) ListObjectMetadata(

@@ -29,10 +29,40 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 		pageIndex = idx
 	}
 
-	columns := params.Fields.List()
+	pageSize := defaultPageSize
+	if params.PageSize > 0 {
+		pageSize = params.PageSize
+	}
 
-	// Build NS search filters for Since/Until.
-	// NetSuite requires explicit "AND" between multiple filter expressions.
+	payload := searchRequest{
+		Action:    "search",
+		Type:      params.ObjectName,
+		Columns:   params.Fields.List(),
+		Filters:   buildDateFilters(params),
+		PageSize:  pageSize,
+		PageIndex: pageIndex,
+		Limit:     pageSize,
+		Sort:      []sortSpec{{Column: "internalid", Direction: "ASC"}},
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal search request: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, a.restletURL, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
+}
+
+// buildDateFilters constructs NetSuite Since/Until filter expressions.
+// NetSuite requires explicit "AND" between multiple filter expressions.
+func buildDateFilters(params common.ReadParams) []any {
 	var filters []any
 
 	if !params.Since.IsZero() {
@@ -51,37 +81,7 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 		})
 	}
 
-	pageSize := defaultPageSize
-	if params.PageSize > 0 {
-		pageSize = params.PageSize
-	}
-
-	payload := searchRequest{
-		Action:    "search",
-		Type:      params.ObjectName,
-		Columns:   columns,
-		Filters:   filters,
-		PageSize:  pageSize,
-		PageIndex: pageIndex,
-		Limit:     pageSize,
-		Sort: []sortSpec{
-			{Column: "internalid", Direction: "ASC"},
-		},
-	}
-
-	body, err := json.Marshal(payload)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal search request: %w", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, a.restletURL, bytes.NewReader(body))
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-
-	return req, nil
+	return filters
 }
 
 func (a *Adapter) parseReadResponse(
@@ -101,58 +101,20 @@ func parseSearchResults(resp *common.JSONHTTPResponse) (*common.ReadResult, erro
 		return nil, err
 	}
 
-	if fullResp.Header.Status != "SUCCESS" {
+	if fullResp.Header.Status != statusSuccess {
 		return nil, parseRestletError(fullResp)
 	}
 
-	// Parse the body as an array of records.
 	var records []map[string]json.RawMessage
 	if err := json.Unmarshal(fullResp.Body, &records); err != nil {
 		return nil, fmt.Errorf("failed to parse search results: %w", err)
 	}
 
 	rows := make([]common.ReadResultRow, 0, len(records))
-
 	for _, rec := range records {
-		row := common.ReadResultRow{
-			Fields: make(map[string]any),
-			Raw:    make(map[string]any),
-		}
-
-		// Extract _id
-		if idRaw, ok := rec["_id"]; ok {
-			var id any
-			if err := json.Unmarshal(idRaw, &id); err == nil {
-				row.Id = fmt.Sprintf("%v", id)
-			}
-		}
-
-		// Extract fields. Each column is {value, text} except _id and _type.
-		for colName, colRaw := range rec {
-			if colName == "_id" || colName == "_type" {
-				continue
-			}
-
-			var fieldVal searchFieldValue
-			if err := json.Unmarshal(colRaw, &fieldVal); err != nil {
-				// Not a {value,text} pair — store raw.
-				var raw any
-				if err := json.Unmarshal(colRaw, &raw); err == nil {
-					row.Fields[strings.ToLower(colName)] = raw
-					row.Raw[colName] = raw
-				}
-
-				continue
-			}
-
-			row.Fields[strings.ToLower(colName)] = fieldVal.Value
-			row.Raw[colName] = map[string]any{"value": fieldVal.Value, "text": fieldVal.Text}
-		}
-
-		rows = append(rows, row)
+		rows = append(rows, parseSearchRecord(rec))
 	}
 
-	// Build result with pagination.
 	result := &common.ReadResult{
 		Rows: fullResp.Header.TotalResults,
 		Data: rows,
@@ -166,11 +128,40 @@ func parseSearchResults(resp *common.JSONHTTPResponse) (*common.ReadResult, erro
 	return result, nil
 }
 
-func parseRestletError(resp *restletResponse) error {
-	var errBody restletErrorBody
-	if err := json.Unmarshal(resp.Body, &errBody); err != nil {
-		return fmt.Errorf("%w: status=%s", ErrRestletError, resp.Header.Status)
+// parseSearchRecord converts a single raw RESTlet record into a ReadResultRow.
+func parseSearchRecord(rec map[string]json.RawMessage) common.ReadResultRow {
+	row := common.ReadResultRow{
+		Fields: make(map[string]any),
+		Raw:    make(map[string]any),
 	}
 
-	return fmt.Errorf("%w: [%s] %s", ErrRestletError, errBody.ErrorCode, errBody.ErrorMessage)
+	if idRaw, ok := rec["_id"]; ok {
+		var id any
+		if err := json.Unmarshal(idRaw, &id); err == nil {
+			row.Id = fmt.Sprintf("%v", id)
+		}
+	}
+
+	for colName, colRaw := range rec {
+		if colName == "_id" || colName == "_type" {
+			continue
+		}
+
+		var fieldVal searchFieldValue
+		if err := json.Unmarshal(colRaw, &fieldVal); err != nil {
+			// Not a {value,text} pair — store raw.
+			var raw any
+			if err := json.Unmarshal(colRaw, &raw); err == nil {
+				row.Fields[strings.ToLower(colName)] = raw
+				row.Raw[colName] = raw
+			}
+
+			continue
+		}
+
+		row.Fields[strings.ToLower(colName)] = fieldVal.Value
+		row.Raw[colName] = map[string]any{"value": fieldVal.Value, "text": fieldVal.Text}
+	}
+
+	return row
 }

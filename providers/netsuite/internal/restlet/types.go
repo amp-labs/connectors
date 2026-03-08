@@ -6,9 +6,16 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-// filterOperatorMap maps Ampersand filter operators to NetSuite search operators.
-var filterOperatorMap = map[common.FilterOperator]string{
-	common.FilterOperatorEQ: "is",
+const statusSuccess = "SUCCESS"
+
+// lookupFilterOperator maps an Ampersand filter operator to a NetSuite search operator.
+func lookupFilterOperator(op common.FilterOperator) (string, bool) {
+	switch op {
+	case common.FilterOperatorEQ:
+		return "is", true
+	default:
+		return "", false
+	}
 }
 
 // restletResponse is the envelope returned by every RESTlet action.

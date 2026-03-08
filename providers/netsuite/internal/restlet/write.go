@@ -72,7 +72,7 @@ func (a *Adapter) parseWriteResponse(
 		return nil, err
 	}
 
-	if fullResp.Header.Status != "SUCCESS" {
+	if fullResp.Header.Status != statusSuccess {
 		return nil, parseRestletError(fullResp)
 	}
 

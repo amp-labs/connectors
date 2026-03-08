@@ -85,4 +85,3 @@ func NewAdapter(params common.ConnectorParams) (*Adapter, error) {
 		return adapter, nil
 	})
 }
-

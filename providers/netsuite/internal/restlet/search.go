@@ -40,16 +40,24 @@ func buildSearchPayload(params *common.SearchParams) (searchRequest, error) {
 
 	// Map FieldFilters to NetSuite search filters.
 	// NetSuite requires explicit "AND" between multiple filter expressions.
-	var filters []any
+	filterCount := len(params.Filter.FieldFilters)
+	capacity := 0
+
+	if filterCount > 0 {
+		// Each filter needs a slot, and between every two filters there's an "AND".
+		capacity = filterCount + (filterCount - 1)
+	}
+
+	filters := make([]any, 0, capacity)
 
 	for i, ff := range params.Filter.FieldFilters {
 		if i > 0 {
 			filters = append(filters, "AND")
 		}
 
-		nsOp, ok := filterOperatorMap[ff.Operator]
+		nsOp, ok := lookupFilterOperator(ff.Operator)
 		if !ok {
-			return searchRequest{}, fmt.Errorf("unsupported filter operator: %s", ff.Operator)
+			return searchRequest{}, fmt.Errorf("%w: %s", ErrUnsupportedFilterOperator, ff.Operator)
 		}
 
 		filters = append(filters, []any{ff.FieldName, nsOp, ff.Value})
