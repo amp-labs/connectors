@@ -97,6 +97,7 @@ func init() {
 				{
 					Name:        "scriptId",
 					DisplayName: "RESTlet Script ID",
+					DocsURL:     "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_4618456517.html",
 					Prompt:      "This is an integer value for 'script' in your RESTlet's script deployment URL. If the URL is `/app/site/hosting/restlet.nl?script=3046&deploy=4`, then your script ID is `3046`.",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTlet: ModuleDependency{},
@@ -105,7 +106,8 @@ func init() {
 				{
 					Name:        "deployId",
 					DisplayName: "RESTlet Deploy ID",
-					Prompt:      "This is an integer value for 'deploy' in your RESTlet's script deployment URL. If the URL is `/app/site/hosting/restlet.nl?script=3046&deploy=4`, then your script ID is `3046`.",
+					DocsURL:     "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_4618456517.html",
+					Prompt:      "This is an integer value for 'deploy' in your RESTlet's script deployment URL. If the URL is `/app/site/hosting/restlet.nl?script=3046&deploy=4`, then your deploy ID is `4`.",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTlet: ModuleDependency{},
 					},
