@@ -13,6 +13,10 @@ import (
 )
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	if !writeAndDeleteSupportedObjects.Has(params.ObjectName) {
+		return nil, common.ErrOperationNotSupportedForObject
+	}
+
 	objectPath, err := metadata.Schemas.FindURLPath(common.ModuleRoot, params.ObjectName)
 	if err != nil {
 		return nil, err
@@ -33,7 +37,12 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
+	method := http.MethodPost
+	if params.IsUpdate() {
+		method = http.MethodPatch
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }
 
 func (c *Connector) parseWriteResponse(
@@ -65,6 +74,10 @@ func (c *Connector) parseWriteResponse(
 }
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	if !writeAndDeleteSupportedObjects.Has(params.ObjectName) {
+		return nil, common.ErrOperationNotSupportedForObject
+	}
+
 	objectPath, err := metadata.Schemas.FindURLPath(common.ModuleRoot, params.ObjectName)
 	if err != nil {
 		return nil, err
