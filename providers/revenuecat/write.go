@@ -18,13 +18,14 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "projects", c.ProjectID, objectPath)
-	if err != nil {
-		return nil, err
+	recordID := ""
+	if params.IsUpdate() {
+		recordID = params.RecordId
 	}
 
-	if params.IsUpdate() {
-		url.AddPath(params.RecordId)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "projects", c.ProjectID, objectPath, recordID)
+	if err != nil {
+		return nil, err
 	}
 
 	jsonData, err := json.Marshal(params.RecordData)
@@ -37,7 +38,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 func (c *Connector) parseWriteResponse(
 	_ context.Context,
-	_ common.WriteParams,
+	params common.WriteParams,
 	_ *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.WriteResult, error) {
@@ -46,7 +47,7 @@ func (c *Connector) parseWriteResponse(
 		return &common.WriteResult{Success: true}, nil
 	}
 
-	recordID, err := jsonquery.New(body).StrWithDefault("id", "")
+	recordID, err := jsonquery.New(body).StrWithDefault("id", params.RecordId)
 	if err != nil {
 		return nil, err
 	}
@@ -69,12 +70,10 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 		return nil, err
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "projects", c.ProjectID, objectPath)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "projects", c.ProjectID, objectPath, params.RecordId)
 	if err != nil {
 		return nil, err
 	}
-
-	url.AddPath(params.RecordId)
 
 	return http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
 }
