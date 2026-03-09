@@ -2,7 +2,6 @@ package getresponse
 
 import (
 	"net/url"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
@@ -10,6 +9,11 @@ import (
 )
 
 var ResponseAtKey = "createdOn" // nolint:gochecknoglobals
+
+// GetResponse returns timestamps in the format "2006-01-02T15:04:05+0000" (no colon in timezone offset),
+// which does not comply with time.RFC3339 ("2006-01-02T15:04:05Z07:00").
+// The "Z0700" layout accepts both "+0000" and "Z" suffixes.
+const responseTimestampFormat = "2006-01-02T15:04:05Z0700"
 
 // makeFilterFunc returns a filtering function that respects the Since and Until parameters specified in ReadParams.
 //
@@ -44,7 +48,7 @@ func makeFilterFunc(params common.ReadParams, requestURL *url.URL) common.Record
 	return readhelper.MakeTimeFilterFunc(
 		readhelper.ChronologicalOrder,
 		readhelper.NewTimeBoundary(),
-		*timeSpec.ResponseAt, time.RFC3339,
+		*timeSpec.ResponseAt, responseTimestampFormat,
 		makeNextRecordsURL(requestURL))
 }
 
@@ -90,7 +94,7 @@ var objectsFilterParam = datautils.NewDefaultMap(map[string]timeFieldSpec{ // no
 	"files": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
 	// folders: https://apireference.getresponse.com/#operation/getFolderList
 	"folders": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
-	// forms: https://apireference.getresponse.com/#operation/getLegacyFormList
+	// See https://apireference.getresponse.com/#operation/getFormList.
 	"forms": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},
 	// from-fields: https://apireference.getresponse.com/#operation/getFromFieldList
 	"from-fields": {filterType: connectorSideFilter, ResponseAt: &ResponseAtKey},

@@ -71,7 +71,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			"description": "Test Campaign Description",
 			"languageCode": "EN",
 			"isDefault": "false",
-			"createdOn": "2024-01-10T08:00:00Z"
+			"createdOn": "2024-01-10T08:00:00+0000"
 		}
 	]`
 
@@ -108,11 +108,11 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/v3/contacts"),
-					mockcond.QueryParam("query[createdOn][from]", "2024-01-01T00:00:00Z"),
-					mockcond.QueryParam("query[createdOn][to]", "2024-01-31T23:59:59Z"),
-				},
+			If: mockcond.And{
+				mockcond.Path("/v3/contacts"),
+				mockcond.QueryParam("query[createdOn][from]", "2024-01-01T00:00:00+0000"),
+				mockcond.QueryParam("query[createdOn][to]", "2024-01-31T23:59:59+0000"),
+			},
 				Then: mockserver.Response(http.StatusOK, []byte(contactsResponse)),
 			}.Server(),
 			Expected: &common.ReadResult{
@@ -189,7 +189,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					{
 						Fields: map[string]any{
 							"name":      "Test Campaign",
-							"createdon": "2024-01-10T08:00:00Z",
+							"createdon": "2024-01-10T08:00:00+0000",
 						},
 						Raw: map[string]any{
 							"campaignId":   "f4PSi",
@@ -199,7 +199,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"description":  "Test Campaign Description",
 							"languageCode": "EN",
 							"isDefault":    "false",
-							"createdOn":    "2024-01-10T08:00:00Z",
+							"createdOn":    "2024-01-10T08:00:00+0000",
 						},
 					},
 				},
@@ -231,7 +231,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					{
 						Fields: map[string]any{
 							"name":      "Test Campaign",
-							"createdon": "2024-01-10T08:00:00Z",
+							"createdon": "2024-01-10T08:00:00+0000",
 						},
 						Raw: map[string]any{
 							"campaignId":   "f4PSi",
@@ -241,7 +241,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"description":  "Test Campaign Description",
 							"languageCode": "EN",
 							"isDefault":    "false",
-							"createdOn":    "2024-01-10T08:00:00Z",
+							"createdOn":    "2024-01-10T08:00:00+0000",
 						},
 					},
 				},
