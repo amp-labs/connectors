@@ -23,7 +23,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	if !params.IsCreate() {
+	if params.IsUpdate() {
 		url.AddPath(params.RecordId)
 	}
 
