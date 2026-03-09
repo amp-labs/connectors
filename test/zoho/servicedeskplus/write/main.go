@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"os"
 	"os/signal"
 	"syscall"
 
@@ -69,12 +70,7 @@ func createTasks(ctx context.Context, conn *zoho.Connector) error {
 		return err
 	}
 
-	jsonStr, err := json.MarshalIndent(result, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(string(jsonStr))
+	utils.DumpJSON(result, os.Stdout)
 
 	return nil
 }
@@ -107,7 +103,7 @@ func createChanges(ctx context.Context, conn *zoho.Connector) error {
 func updateChanges(ctx context.Context, conn *zoho.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "changes",
-		RecordId:   "239248000000370134",
+		RecordId:   "271036000000384003",
 		RecordData: map[string]any{
 			"description": "tests",
 		},

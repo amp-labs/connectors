@@ -80,8 +80,6 @@ func constructInput(objectName string, data any) ([]byte, error) {
 	formData := fmt.Sprintf("input_data=%s", jsonData)
 	body := bytes.NewBufferString(formData)
 
-	fmt.Println(body.String())
-
 	return body.Bytes(), nil
 }
 
