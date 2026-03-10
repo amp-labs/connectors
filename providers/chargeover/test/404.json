@@ -1,0 +1,7 @@
+{
+  "code": 400,
+  "status": "Error",
+  "message": "The object type requested is not supported: list(customers, )",
+  "details": {},
+  "response": false
+}

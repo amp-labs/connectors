@@ -1,0 +1,35 @@
+{
+  "code": 200,
+  "status": "OK",
+  "message": "",
+  "details": {},
+  "response": [
+    {
+      "superuser_id": null,
+      "external_key": null,
+      "token": "03jul9ranork",
+      "company": "amplabs",
+      "terms_id": 3,
+      "class_id": null,
+      "custom_1": null,
+      "admin_id": null,
+      "campaign_id": null,
+      "currency_id": 1,
+      "language_id": 1,
+      "brand_id": 1,
+      "default_paymethod": null,
+      "default_creditcard_id": null,
+      "default_ach_id": null,
+      "tax_ident": "",
+      "no_taxes": false,
+      "no_dunning": false,
+      "no_latefees": false,
+      "no_procfees": 0,
+      "write_datetime": "2026-03-10T01:01:49-05:00",
+      "write_ipaddr": "104.28.154.134",
+      "mod_datetime": "2026-03-10T01:01:49-05:00",
+      "mod_ipaddr": "104.28.154.134",
+      "customer_status_state": "a"
+    }
+  ]
+}
