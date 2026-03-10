@@ -246,7 +246,7 @@
         },
         "integrations_webhooks": {
           "displayName": "Webhook Integrations",
-          "path": "/integrations/webhooks",
+          "path": "/integrations_webhooks",
           "responseKey": "items",
           "fields": {
             "app_id": {

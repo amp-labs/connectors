@@ -1,0 +1,9 @@
+{
+  "object": "webhook_integration",
+  "id": "whi_xyz789",
+  "name": "My Webhook",
+  "url": "https://example.com/webhook",
+  "environment": "production",
+  "created_at": 1700000000000,
+  "project_id": "proj_123"
+}
