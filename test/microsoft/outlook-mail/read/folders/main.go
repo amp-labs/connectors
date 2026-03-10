@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/microsoft"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -20,12 +23,15 @@ func main() {
 
 	conn := connTest.GetMicrosoftGraphConnector(ctx)
 
-	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		"users",
+	// https://learn.microsoft.com/en-us/graph/api/resources/mailfolder?view=graph-rest-1.0
+	res, err := conn.Read(ctx, common.ReadParams{
+		ObjectName: "mailFolders",
+		Fields:     connectors.Fields("displayName"),
 	})
 	if err != nil {
-		utils.Fail("error listing metadata for microsoft CRM", "error", err)
+		utils.Fail("error reading from connector", "error", err)
 	}
 
-	utils.DumpJSON(metadata, os.Stdout)
+	fmt.Println("Reading...")
+	utils.DumpJSON(res, os.Stdout)
 }

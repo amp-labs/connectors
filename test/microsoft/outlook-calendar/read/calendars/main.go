@@ -23,9 +23,10 @@ func main() {
 
 	conn := connTest.GetMicrosoftGraphConnector(ctx)
 
+	// https://learn.microsoft.com/en-us/graph/api/resources/calendar?view=graph-rest-1.0
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "users",
-		Fields:     connectors.Fields("displayName", "surname"),
+		ObjectName: "calendars",
+		Fields:     connectors.Fields("name", "color"),
 	})
 	if err != nil {
 		utils.Fail("error reading from connector", "error", err)
