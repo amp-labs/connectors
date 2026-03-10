@@ -51,6 +51,7 @@ func main() {
 
 	conn := connTest.GetMicrosoftGraphConnector(ctx)
 
+	// https://learn.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0
 	testscenario.ValidateCreateUpdateDelete(ctx, conn,
 		"users",
 		Payload{
