@@ -59,15 +59,6 @@ type sortSpec struct {
 	Direction string `json:"direction"`
 }
 
-// writeRequest is the JSON body for create/update actions.
-type writeRequest struct {
-	Action   string         `json:"action"`
-	Type     string         `json:"type"`
-	RecordId string         `json:"recordId,omitempty"`
-	Values   map[string]any `json:"values,omitempty"`
-	Sublists map[string]any `json:"sublists,omitempty"`
-}
-
 // deleteRequest is the JSON body for the delete action.
 type deleteRequest struct {
 	Action   string `json:"action"`
