@@ -21,32 +21,17 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 		action = "update"
 	}
 
-	payload := writeRequest{
-		Action: action,
-		Type:   params.ObjectName,
-	}
+	// Pass the record data through to the RESTlet as-is, just inject action/type/recordId.
+	// This allows callers to send any RESTlet-supported keys (values, textValues, sublists,
+	// subrecords, defaultValues, options, etc.) without the connector needing to know about each one.
+	recordData["action"] = action
+	recordData["type"] = params.ObjectName
 
 	if params.IsUpdate() {
-		payload.RecordId = params.RecordId
+		recordData["recordId"] = params.RecordId
 	}
 
-	// Extract values and sublists from RecordData.
-	// If RecordData contains "values" key, use it; otherwise treat the entire map as values.
-	if values, ok := recordData["values"]; ok {
-		if valuesMap, ok := values.(map[string]any); ok {
-			payload.Values = valuesMap
-		}
-	} else {
-		payload.Values = recordData
-	}
-
-	if sublists, ok := recordData["sublists"]; ok {
-		if sublistsMap, ok := sublists.(map[string]any); ok {
-			payload.Sublists = sublistsMap
-		}
-	}
-
-	body, err := json.Marshal(payload)
+	body, err := json.Marshal(recordData)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal write request: %w", err)
 	}
