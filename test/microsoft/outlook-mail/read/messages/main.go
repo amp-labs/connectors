@@ -1,0 +1,37 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/common"
+	connTest "github.com/amp-labs/connectors/test/microsoft"
+	"github.com/amp-labs/connectors/test/utils"
+)
+
+func main() {
+	// Handle Ctrl-C gracefully.
+	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer done()
+
+	// Set up slog logging.
+	utils.SetupLogging()
+
+	conn := connTest.GetMicrosoftGraphConnector(ctx)
+
+	// https://learn.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
+	res, err := conn.Read(ctx, common.ReadParams{
+		ObjectName: "me/messages",
+		Fields:     connectors.Fields("subject", "from", "toRecipients", "body"),
+	})
+	if err != nil {
+		utils.Fail("error reading from connector", "error", err)
+	}
+
+	fmt.Println("Reading...")
+	utils.DumpJSON(res, os.Stdout)
+}
