@@ -88,8 +88,9 @@ func applyFieldsAndOrdering(url *urlbuilder.URL, params common.ReadParams) {
 		list.AddOne(timeField)
 		fields = list.List()
 
-		// Enforce chronological order for stable filtering
-		url.WithQueryParam("orderBy", timeField+" ASC")
+		// Enforce newest-first order so connector-side filtering
+		// reaches recent records on the first page.
+		url.WithQueryParam("orderBy", timeField+" DESC")
 	}
 
 	url.WithQueryParam("fields", strings.Join(fields, ","))

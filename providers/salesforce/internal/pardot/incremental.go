@@ -18,7 +18,7 @@ func makeFilterFunc(params common.ReadParams) common.RecordsFilterFunc {
 
 	// Connector side filtering.
 	return readhelper.MakeTimeFilterFunc(
-		readhelper.ChronologicalOrder,
+		readhelper.ReverseOrder,
 		readhelper.NewTimeBoundary(),
 		responseAt, time.RFC3339,
 		nextPageFunc,
