@@ -408,20 +408,20 @@ func TestGetLastResultId(t *testing.T) {
 type testFiller struct{}
 
 func (testFiller) FillAssociations(
-	ctx context.Context, fromObjName string,
-	data *[]common.ReadResultRow, toAssociatedObjects []string,
+	ctx context.Context, fromObjName string, toAssociatedObjects []string,
+	data []common.ReadResultRow,
 ) error {
 	if len(toAssociatedObjects) == 0 {
 		return nil // nothing to do
 	}
 
-	for index, row := range *data {
-		if (*data)[index].Associations == nil {
-			(*data)[index].Associations = make(map[string][]common.Association)
+	for index, row := range data {
+		if data[index].Associations == nil {
+			data[index].Associations = make(map[string][]common.Association)
 		}
 
 		for _, toObj := range toAssociatedObjects {
-			(*data)[index].Associations[toObj] = []common.Association{{
+			data[index].Associations[toObj] = []common.Association{{
 				ObjectId:        "assoc-" + row.Id,
 				AssociationType: "test-type",
 			}}
