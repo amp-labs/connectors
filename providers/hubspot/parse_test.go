@@ -2,25 +2,32 @@ package hubspot
 
 import (
 	"context"
+	"errors"
 	"reflect"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
 func TestGetDataMarshaller(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
-	connector := &Connector{}
-	marshaller := connector.getDataMarshaller(context.Background(), "contacts", nil)
+	// Connector configured with a stubbed AssociationsFiller.
+	connector := &Connector{
+		crmAdapter: &crm.Adapter{
+			AssociationsFiller: testFiller{},
+		},
+	}
 
 	tests := []struct {
-		name        string
-		records     []map[string]any
-		fields      []string
-		expected    []common.ReadResultRow
-		expectedErr error
+		name              string
+		records           []map[string]any
+		fields            []string
+		associatedObjects []string
+		expected          []common.ReadResultRow
+		expectedErr       error
 	}{
 		{
 			name: "Fields from properties only",
@@ -222,20 +229,73 @@ func TestGetDataMarshaller(t *testing.T) { //nolint:funlen
 			fields:      []string{"email"},
 			expectedErr: core.ErrNotObject,
 		},
+		{
+			name: "Several records with associations",
+			records: []map[string]any{{
+				"id": "356",
+				"properties": map[string]any{
+					"email": "one@example.com",
+				},
+			}, {
+				"id": "772",
+				"properties": map[string]any{
+					"email": "two@example.com",
+				},
+			}},
+			fields:            []string{"email"},
+			associatedObjects: []string{"deals"},
+			expected: []common.ReadResultRow{{
+				Id: "356",
+				Fields: map[string]any{
+					"email": "one@example.com",
+				},
+				Raw: map[string]any{
+					"id": "356",
+					"properties": map[string]any{
+						"email": "one@example.com",
+					},
+				},
+				Associations: map[string][]common.Association{
+					"deals": {{
+						ObjectId:        "assoc-356",
+						AssociationType: "test-type",
+					}},
+				},
+			}, {
+				Id: "772",
+				Fields: map[string]any{
+					"email": "two@example.com",
+				},
+				Raw: map[string]any{
+					"id": "772",
+					"properties": map[string]any{
+						"email": "two@example.com",
+					},
+				},
+				Associations: map[string][]common.Association{
+					"deals": {{
+						ObjectId:        "assoc-772",
+						AssociationType: "test-type",
+					}},
+				},
+			}},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			result, err := marshaller(tt.records, tt.fields)
+			result, err := connector.getDataMarshaller(
+				context.Background(), "contacts", tt.associatedObjects,
+			)(tt.records, tt.fields)
 
 			if tt.expectedErr != nil {
 				if err == nil {
 					t.Fatalf("expected error %v, got nil", tt.expectedErr)
 				}
 
-				if err != tt.expectedErr {
+				if !errors.Is(err, tt.expectedErr) {
 					t.Fatalf("expected error %v, got %v", tt.expectedErr, err)
 				}
 
@@ -337,4 +397,32 @@ func TestGetLastResultId(t *testing.T) {
 			}
 		})
 	}
+}
+
+// associationsFiller is a test stub that overrides the default
+// association-filling behavior of the AssociationsFiller.
+type testFiller struct{}
+
+func (testFiller) FillAssociations(
+	ctx context.Context, fromObjName string,
+	data *[]common.ReadResultRow, toAssociatedObjects []string,
+) error {
+	if len(toAssociatedObjects) == 0 {
+		return nil // nothing to do
+	}
+
+	for index, row := range *data {
+		if (*data)[index].Associations == nil {
+			(*data)[index].Associations = make(map[string][]common.Association)
+		}
+
+		for _, toObj := range toAssociatedObjects {
+			(*data)[index].Associations[toObj] = []common.Association{{
+				ObjectId:        "assoc-" + row.Id,
+				AssociationType: "test-type",
+			}}
+		}
+	}
+
+	return nil
 }

@@ -68,8 +68,17 @@ func getUniqueIDs(data *[]common.ReadResultRow) []string {
 	return ids
 }
 
-// FillAssociations fills the associations for the given object names and data.
-// Note that the data is modified in place.
+// Filler populates association data for a collection of result rows.
+//
+// Implementations fetch and attach associations between a source object type and one or more target object types.
+// The provided data slice is modified in place, enriching each row with its corresponding associations.
+type Filler interface {
+	FillAssociations(
+		ctx context.Context, fromObjName string,
+		data *[]common.ReadResultRow, toAssociatedObjects []string,
+	) error
+}
+
 func (s Strategy) FillAssociations(
 	ctx context.Context,
 	fromObjName string,

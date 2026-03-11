@@ -30,9 +30,9 @@ type Adapter struct {
 
 	// CRM module sub-adapters
 	// These delegate specialized subsets of CRM functionality to keep Connector modular and prevent code bloat.
-	customAdapter        *custom.Adapter // used for connectors.UpsertMetadataConnector capabilities.
-	batchAdapter         *batch.Adapter  // used for connectors.BatchWriteConnector capabilities.
-	AssociationsStrategy *associations.Strategy
+	customAdapter      *custom.Adapter // used for connectors.UpsertMetadataConnector capabilities.
+	batchAdapter       *batch.Adapter  // used for connectors.BatchWriteConnector capabilities.
+	AssociationsFiller associations.Filler
 }
 
 // NewAdapter creates a new crm Adapter configured to work with Hubspot's APIs.
@@ -57,7 +57,7 @@ func constructor(base *components.Connector) (*Adapter, error) {
 	adapter.SetErrorHandler(core.InterpretJSONError)
 	adapter.customAdapter = custom.NewAdapter(adapter.JSONHTTPClient(), adapter.ModuleInfo())
 	adapter.batchAdapter = batch.NewAdapter(adapter.HTTPClient(), adapter.ModuleInfo())
-	adapter.AssociationsStrategy = associations.NewStrategy(adapter.JSONHTTPClient(), adapter.ModuleInfo())
+	adapter.AssociationsFiller = associations.NewStrategy(adapter.JSONHTTPClient(), adapter.ModuleInfo())
 
 	return adapter, nil
 }
