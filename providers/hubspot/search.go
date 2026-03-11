@@ -116,6 +116,30 @@ func (c *Connector) searchCRM(
 	)
 }
 
+// BuildBuilderFilters converts a common.SearchFilter into a slice of HubSpot Filters.
+// Only the eq operator is supported.
+func BuildBuilderFilters(filter *common.SearchFilter) []Filter {
+	if filter == nil {
+		return nil
+	}
+
+	out := make([]Filter, 0, len(filter.FieldFilters))
+
+	for _, ff := range filter.FieldFilters {
+		if ff.Operator != common.FilterOperatorEQ {
+			continue
+		}
+
+		out = append(out, Filter{
+			FieldName: ff.FieldName,
+			Operator:  FilterOperatorTypeEQ,
+			Value:     fmt.Sprintf("%v", ff.Value),
+		})
+	}
+
+	return out
+}
+
 // BuildLastModifiedFilterGroup filters records modified since the given time.
 // If the time is zero, it returns an empty filter. For contacts, it uses the
 // lastmodifieddate field. For other objects, it uses the hs_lastmodifieddate.

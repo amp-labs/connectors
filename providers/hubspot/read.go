@@ -47,6 +47,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		filters = append(filters, BuildUntilTimestampFilterGroup(&config))
 	}
 
+	filters = append(filters, BuildBuilderFilters(config.BuilderFilter)...)
+
 	if len(filters) != 0 {
 		searchParams := SearchParams{
 			ObjectName: config.ObjectName,
