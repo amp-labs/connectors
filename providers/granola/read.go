@@ -32,7 +32,7 @@ var notesSummaryFields = datautils.NewStringSet( //nolint:gochecknoglobals
 const maxNotesPageSizeWithGetNote = 4
 
 func needsFullNotesFetch(params common.ReadParams) bool {
-	// For anything beyond what's returned in ListNotes API, 
+	// For anything beyond what's returned in ListNotes API,
 	// we need to actually fetch the full note by calling GetNote API.
 	return params.ObjectName == objectNotes && params.Fields.HasExtra(notesSummaryFields)
 }

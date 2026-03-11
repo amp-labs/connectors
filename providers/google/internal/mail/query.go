@@ -3,13 +3,13 @@ package mail
 import (
 	"fmt"
 	"time"
+
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-// Gmail uses YYYY/MM/DD format for querying.
-const dateFormat = "2006/01/02"
-
 // TimeQuery represents a Gmail-compatible time filter for search queries.
-// It constructs a `q` parameter using `after:` and `before:` with YYYY/MM/DD format.
+// It constructs a `q` parameter using `after:` and `before:` with YYYY/MM/DD format or Unix time.
+//
 // This is intended for incremental reads of Gmail collection endpoints (messages, drafts, threads).
 type TimeQuery struct {
 	since string
@@ -22,7 +22,7 @@ func newTimeQuery() *TimeQuery {
 
 func (q *TimeQuery) WithSince(timestamp time.Time) *TimeQuery {
 	if !timestamp.IsZero() {
-		q.since = timestamp.UTC().Format(dateFormat)
+		q.since = datautils.Time.Unix(timestamp)
 	}
 
 	return q
@@ -30,7 +30,7 @@ func (q *TimeQuery) WithSince(timestamp time.Time) *TimeQuery {
 
 func (q *TimeQuery) WithUntil(timestamp time.Time) *TimeQuery {
 	if !timestamp.IsZero() {
-		q.until = timestamp.UTC().Format(dateFormat)
+		q.until = datautils.Time.Unix(timestamp)
 	}
 
 	return q
