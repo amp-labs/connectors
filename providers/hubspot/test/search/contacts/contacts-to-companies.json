@@ -1,0 +1,49 @@
+{
+  "completedAt": "2026-02-13T04:24:38.444Z",
+  "status": "COMPLETE",
+  "startedAt": "2026-02-13T04:24:38.433Z",
+  "results": [
+    {
+      "from": {
+        "id": "501"
+      },
+      "to": [
+        {
+          "toObjectId": 29022297485,
+          "associationTypes": [
+            {
+              "category": "HUBSPOT_DEFINED",
+              "typeId": 1,
+              "label": "Primary"
+            },
+            {
+              "category": "HUBSPOT_DEFINED",
+              "typeId": 279,
+              "label": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "status": "error",
+      "category": "OBJECT_NOT_FOUND",
+      "subCategory": "crm.associations.NO_ASSOCIATIONS_FOUND",
+      "message": "No company is associated with contact 103107104018.",
+      "context": {
+        "fromObjectId": [
+          "103107104018"
+        ],
+        "fromObjectType": [
+          "contact"
+        ],
+        "toObjectType": [
+          "company"
+        ]
+      }
+    }
+  ],
+  "numErrors": 36
+}
