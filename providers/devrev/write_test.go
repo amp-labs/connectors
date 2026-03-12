@@ -18,6 +18,7 @@ func TestWrite(t *testing.T) {
 	responseArticlesCreate := testutils.DataFromFile(t, "write-articles-create-response.json")
 	responseArticlesUpdate := testutils.DataFromFile(t, "write-articles-update-response.json")
 	responseRevUserCreate := testutils.DataFromFile(t, "write-rev-user-response.json")
+	responseAuthTokensCreate := testutils.DataFromFile(t, "write-auth-tokens-create-response.json")
 
 	tests := []testroutines.Write{
 		{
@@ -105,6 +106,42 @@ func TestWrite(t *testing.T) {
 					"email":        "alex.customer@example.com",
 					"full_name":    "Alex Johnson",
 					"state":        "active",
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Create auth-token successfully (flat response, no wrapper)",
+			Input: common.WriteParams{
+				ObjectName: "auth-tokens",
+				RecordData: map[string]any{
+					"grant_type":           "urn:devrev:params:oauth:grant-type:token-issue",
+					"requested_token_type": "urn:devrev:params:oauth:token-type:aat",
+					"client_id":            "crawler-service",
+					"aud":                  []any{"https://api.devrev.ai"},
+					"scope":                "webcrawler.read webcrawler.write",
+					"expires_in":           30,
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Method(http.MethodPost),
+					mockcond.Path("/auth-tokens.create"),
+				},
+				Then: mockserver.Response(http.StatusCreated, responseAuthTokensCreate),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "",
+				Data: map[string]any{
+					"access_token":  "dvt_aat_abc123xyz",
+					"client_id":     "crawler-service",
+					"expires_in":    float64(3600),
+					"refresh_token": "dvt_rt_xyz789",
+					"scope":         "webcrawler.read webcrawler.write",
+					"token_type":    "bearer",
 				},
 			},
 			ExpectedErrs: nil,

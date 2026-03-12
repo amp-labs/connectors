@@ -11,7 +11,17 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
+)
+
+// objectsWithFlatWriteResponse lists object names whose create/update API returns
+// the record at the root (no wrapper key). Most DevRev write responses use a
+// singular key, e.g. {"article": {...}}; auth-tokens.create returns a flat
+// object {"access_token": "...", "expires_in": 3600, ...}.
+var objectsWithFlatWriteResponse = datautils.NewSet( //nolint:gochecknoglobals
+	"auth-tokens",
 )
 
 // DevRev uses POST for both create and update, with object.create and object.update endpoints.
@@ -73,10 +83,19 @@ func (c *Connector) parseWriteResponse(
 		return &common.WriteResult{Success: true}, nil
 	}
 
-	// DevRev wraps the created/updated record under a singular key, e.g. {"article": {...}}
-	responseKey := writeResponseKey(params.ObjectName)
+	var (
+		recordNode *ajson.Node
+		err        error
+	)
+	if objectsWithFlatWriteResponse.Has(params.ObjectName) {
+		// Response is the record at root, e.g. auth-tokens: {"access_token": "...", "expires_in": 3600, ...}
+		recordNode, err = jsonquery.New(body).ObjectRequired("")
+	} else {
+		// DevRev wraps the created/updated record under a singular key, e.g. {"article": {...}}
+		responseKey := writeResponseKey(params.ObjectName)
+		recordNode, err = jsonquery.New(body).ObjectRequired(responseKey)
+	}
 
-	recordNode, err := jsonquery.New(body).ObjectRequired(responseKey)
 	if err != nil {
 		return nil, err
 	}
