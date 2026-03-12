@@ -17,6 +17,7 @@ func TestWrite(t *testing.T) {
 
 	responseArticlesCreate := testutils.DataFromFile(t, "write-articles-create-response.json")
 	responseArticlesUpdate := testutils.DataFromFile(t, "write-articles-update-response.json")
+	responseRevUserCreate := testutils.DataFromFile(t, "write-rev-user-response.json")
 
 	tests := []testroutines.Write{
 		{
@@ -71,6 +72,39 @@ func TestWrite(t *testing.T) {
 				Data: map[string]any{
 					"id":    "don:core:devrev:article/1",
 					"title": "updated title",
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Create rev-user successfully (hyphenated object)",
+			Input: common.WriteParams{
+				ObjectName: "rev-users",
+				RecordData: map[string]any{
+					"display_name": "alex.customer",
+					"email":        "alex.customer@example.com",
+					"full_name":    "Alex Johnson",
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Method(http.MethodPost),
+					mockcond.Path("/rev-users.create"),
+				},
+				Then: mockserver.Response(http.StatusCreated, responseRevUserCreate),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "1b5d9e8e-6e12-4a0a-bf67-2a8e34c8e2aa",
+				Data: map[string]any{
+					"id":           "1b5d9e8e-6e12-4a0a-bf67-2a8e34c8e2aa",
+					"display_id":   "REVU-4481",
+					"display_name": "alex.customer",
+					"email":        "alex.customer@example.com",
+					"full_name":    "Alex Johnson",
+					"state":        "active",
 				},
 			},
 			ExpectedErrs: nil,

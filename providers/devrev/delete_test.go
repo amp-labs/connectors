@@ -39,6 +39,26 @@ func TestDelete(t *testing.T) {
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Delete rev-user successfully (hyphenated object)",
+			Input: common.DeleteParams{
+				ObjectName: "rev-users",
+				RecordId:   "1b5d9e8e-6e12-4a0a-bf67-2a8e34c8e2aa",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Method(http.MethodPost),
+					mockcond.Path("/rev-users.delete"),
+					mockcond.Body(`{"id":"1b5d9e8e-6e12-4a0a-bf67-2a8e34c8e2aa"}`),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccountsDelete),
+			}.Server(),
+			Expected: &common.DeleteResult{
+				Success: true,
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {
