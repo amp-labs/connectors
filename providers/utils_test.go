@@ -250,6 +250,11 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 					Read:      true,
 					Subscribe: true,
 					Write:     true,
+					Search: SearchSupport{
+						Operators: SearchOperators{
+							Equals: true,
+						},
+					},
 				},
 			},
 		},
@@ -364,6 +369,11 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 					Read:      true,
 					Subscribe: true,
 					Write:     true,
+					Search: SearchSupport{
+						Operators: SearchOperators{
+							Equals: true,
+						},
+					},
 				},
 			},
 		},
@@ -393,6 +403,11 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 					Read:      true,
 					Subscribe: true,
 					Write:     true,
+					Search: SearchSupport{
+						Operators: SearchOperators{
+							Equals: true,
+						},
+					},
 				},
 			},
 		},
