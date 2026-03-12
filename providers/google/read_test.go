@@ -574,15 +574,14 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "messages",
 				Fields:     connectors.Fields("id"),
 				PageSize:   33,
-				Since: time.Date(2024, 9, 19, 23, 0, 0, 0,
-					time.FixedZone("UTC-8", -8*60*60)),
+				Since:      time.Unix(1726815600, 0),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/gmail/v1/users/me/messages"),
-					mockcond.QueryParam("maxResults", "33"),      // from params
-					mockcond.QueryParam("q", "after:2024/09/20"), // it is 20 due to time zone
+					mockcond.QueryParam("maxResults", "33"), // from params
+					mockcond.QueryParam("q", "after:1726815600"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseMessagesFirstPage),
 			}.Server(),
@@ -615,8 +614,8 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "messages",
 				Fields:     connectors.Fields("id", "$['payload']['body']", "threadId"),
 				NextPage:   "08277485409175924556",
-				Since:      time.Date(2024, 9, 31, 0, 0, 0, 0, time.UTC),
-				Until:      time.Date(2026, 1, 8, 0, 0, 0, 0, time.UTC),
+				Since:      time.Unix(1727740800, 0),
+				Until:      time.Unix(1767830400, 0),
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -626,7 +625,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						mockcond.Path("/gmail/v1/users/me/messages"),
 						mockcond.QueryParam("maxResults", "500"), // default page size
 						mockcond.QueryParam("pageToken", "08277485409175924556"),
-						mockcond.QueryParam("q", "after:2024/10/01 before:2026/01/08"),
+						mockcond.QueryParam("q", "after:1727740800 before:1767830400"),
 					},
 					Then: mockserver.Response(http.StatusOK, responseMessagesLastPage),
 				}, {

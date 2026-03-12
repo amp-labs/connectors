@@ -8,6 +8,9 @@ const (
 
 	// ModuleNetsuiteRESTAPI is a read-write module that uses the REST API to read and write data.
 	ModuleNetsuiteRESTAPI = "restapi"
+
+	// ModuleNetsuiteRESTlet is a read-write module that uses a custom RESTlet script for CRUD and search.
+	ModuleNetsuiteRESTlet = "restlet"
 )
 
 // nolint:lll,funlen
@@ -35,6 +38,11 @@ func init() {
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+			Search: SearchSupport{
+				Operators: SearchOperators{
+					Equals: true,
+				},
+			},
 		},
 		DefaultModule: ModuleNetsuiteRESTAPI,
 		Modules: &Modules{
@@ -53,6 +61,20 @@ func init() {
 					Proxy: true,
 					Read:  true,
 					Write: true,
+				},
+			},
+			ModuleNetsuiteRESTlet: {
+				DisplayName: "Netsuite (RESTlet)",
+				BaseURL:     "https://{{.workspace}}.restlets.api.netsuite.com",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+					Search: SearchSupport{
+						Operators: SearchOperators{
+							Equals: true,
+						},
+					},
 				},
 			},
 		},
@@ -74,6 +96,25 @@ func init() {
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTAPI: ModuleDependency{},
 						ModuleNetsuiteSuiteQL: ModuleDependency{},
+						ModuleNetsuiteRESTlet: ModuleDependency{},
+					},
+				},
+				{
+					Name:        "scriptId",
+					DisplayName: "RESTlet Script ID",
+					DocsURL:     "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_4618456517.html",
+					Prompt:      "This is an integer value for 'script' in your RESTlet's script deployment URL. If the URL is `/app/site/hosting/restlet.nl?script=3046&deploy=4`, then your script ID is `3046`.",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleNetsuiteRESTlet: ModuleDependency{},
+					},
+				},
+				{
+					Name:        "deployId",
+					DisplayName: "RESTlet Deploy ID",
+					DocsURL:     "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_4618456517.html",
+					Prompt:      "This is an integer value for 'deploy' in your RESTlet's script deployment URL. If the URL is `/app/site/hosting/restlet.nl?script=3046&deploy=4`, then your deploy ID is `4`.",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleNetsuiteRESTlet: ModuleDependency{},
 					},
 				},
 			},
@@ -83,6 +124,7 @@ func init() {
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTAPI: ModuleDependency{},
 						ModuleNetsuiteSuiteQL: ModuleDependency{},
+						ModuleNetsuiteRESTlet: ModuleDependency{},
 					},
 				},
 				{
@@ -90,6 +132,7 @@ func init() {
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTAPI: ModuleDependency{},
 						ModuleNetsuiteSuiteQL: ModuleDependency{},
+						ModuleNetsuiteRESTlet: ModuleDependency{},
 					},
 				},
 			},

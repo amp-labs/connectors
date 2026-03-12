@@ -313,3 +313,77 @@ func TestRead(t *testing.T) {
 		})
 	}
 }
+
+// TestReadAccountsSequentialPagination verifies that the connector can
+// iterate through all pages sequentially using the NextPage token returned
+// by the previous response, starting from the first page.
+func TestReadAccountsSequentialPagination(t *testing.T) {
+	t.Parallel()
+
+	responseAccountsFirstPage := testutils.DataFromFile(t, "read-accounts-first-page.json")
+	responseAccountsLastPage := testutils.DataFromFile(t, "read-accounts-last-page.json")
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: mockserver.Cases{
+			{
+				If: mockcond.And{
+					mockcond.Path("/accounts.list"),
+					mockcond.QueryParamsMissing("cursor"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccountsFirstPage),
+			},
+			{
+				If: mockcond.And{
+					mockcond.Path("/accounts.list"),
+					mockcond.QueryParam("cursor", "cursor_page_2"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccountsLastPage),
+			},
+		},
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("constructTestConnector: %v", err)
+	}
+
+	params := common.ReadParams{
+		ObjectName: "accounts",
+		Fields:     connectors.Fields("id"),
+	}
+
+	var all []common.ReadResultRow
+
+	for {
+		res, err := conn.Read(t.Context(), params)
+		if err != nil {
+			t.Fatalf("Read: %v", err)
+		}
+
+		all = append(all, res.Data...)
+
+		if res.Done {
+			if res.NextPage != "" {
+				t.Fatalf("expected empty NextPage on last page, got %q", res.NextPage)
+			}
+
+			break
+		}
+
+		params.NextPage = res.NextPage
+	}
+
+	if len(all) != 2 {
+		t.Fatalf("expected 2 rows across all pages, got %d", len(all))
+	}
+
+	if all[0].Fields["id"] != "don:identity:devrev:ACCT-1" {
+		t.Fatalf("unexpected first record id: %v", all[0].Fields["id"])
+	}
+
+	if all[1].Fields["id"] != "don:identity:devrev:ACCT-2" {
+		t.Fatalf("unexpected second record id: %v", all[1].Fields["id"])
+	}
+}

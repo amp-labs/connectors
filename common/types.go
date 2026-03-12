@@ -93,6 +93,9 @@ var (
 	// ErrEmptyJSONHTTPResponse is returned when the JSONHTTPResponse is nil.
 	ErrEmptyJSONHTTPResponse = errors.New("empty json http response")
 
+	// ErrFailedUnmarshalling is returned when the HTTP response cannot be unmarshalled.
+	ErrFailedUnmarshalling = errors.New("json.Unmarshal failed")
+
 	// ErrEmptyRecordIdResponse is returned when the response body doesn't have record id.
 	ErrEmptyRecordIdResponse = errors.New("empty record id in response body")
 
@@ -177,6 +180,10 @@ type ReadParams struct {
 	//          - "query[name]=test&sort[createdOn]=DESC"
 	//      Reference: https://apireference.getresponse.com/#operation/getCampaignList
 	Filter string // optional
+
+	// BuilderFilter is an optional Ampersand-style structured filter for read actions.
+	// Multiple field filters are joined by AND. Only the "eq" operator is supported.
+	BuilderFilter *SearchFilter // optional
 
 	// AssociatedObjects specifies a list of related objects to fetch along with the main object.
 	// It is optional and supported by the following connectors:

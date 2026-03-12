@@ -1,0 +1,8 @@
+{
+  "object": "app",
+  "id": "app_xyz123",
+  "name": "My iOS App",
+  "type": "app_store",
+  "created_at": 1700000000000,
+  "project_id": "proj_123"
+}

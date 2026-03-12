@@ -170,7 +170,7 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 	}
 
 	// Print the token which will also print raw metadata
-	fmt.Printf("%+v", tok)
+	fmt.Printf("%+v\n", tok)
 
 	if a.WriteCreds {
 		// Update the creds.json file with the new token values.

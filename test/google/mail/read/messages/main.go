@@ -30,8 +30,7 @@ func main() {
 			"$['payload']['body']",
 			"$['payload']['mimeType']",
 		),
-		Since:    timestamp("2026-01-25T00:00:00"),
-		Until:    timestamp("2026-01-28T00:00:00"),
+		// Since:    time.Now().Add(-1 * time.Minute * 60 * 48),
 		PageSize: 10,
 	})
 }

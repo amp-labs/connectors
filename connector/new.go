@@ -57,6 +57,7 @@ import (
 	"github.com/amp-labs/connectors/providers/gong"
 	"github.com/amp-labs/connectors/providers/google"
 	"github.com/amp-labs/connectors/providers/gorgias"
+	"github.com/amp-labs/connectors/providers/granola"
 	"github.com/amp-labs/connectors/providers/groove"
 	"github.com/amp-labs/connectors/providers/happyfox"
 	"github.com/amp-labs/connectors/providers/helpscoutmailbox"
@@ -254,6 +255,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Zoom:                    wrapper(newZoomConnector),
 	providers.Salesfinity:             wrapper(newSalesfinityConnector),
 	providers.DevRev:                  wrapper(newDevRevConnector),
+	providers.Granola:                 wrapper(newGranolaConnector),
 }
 
 type outputConstructorFunc func(p common.ConnectorParams) (connectors.Connector, error)
@@ -1017,4 +1019,8 @@ func newDevRevConnector(params common.ConnectorParams) (*devrev.Connector, error
 
 func newTalkdeskConnector(params common.ConnectorParams) (*talkdesk.Connector, error) {
 	return talkdesk.NewConnector(params)
+}
+
+func newGranolaConnector(params common.ConnectorParams) (*granola.Connector, error) {
+	return granola.NewConnector(params)
 }

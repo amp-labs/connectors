@@ -1,6 +1,7 @@
 package testroutines
 
 import (
+	"reflect"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -22,11 +23,10 @@ type Comparator[Output any] func(serverURL string, actual, expected Output) bool
 func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult) bool {
 	a := mockutils.ReadResultComparator.SubsetFields(actual, expected)
 	b := mockutils.ReadResultComparator.SubsetRaw(actual, expected)
-	c := ComparatorPagination(serverURL, actual, expected)
+	c := mockutils.ReadResultComparator.SubsetAssociationsRaw(actual, expected)
+	d := ComparatorPagination(serverURL, actual, expected)
 
-	return a &&
-		b &&
-		c
+	return a && b && c && d
 }
 
 // ComparatorPagination will check pagination related fields.
@@ -142,4 +142,73 @@ func ComparatorSubsetMetadata(_ string, actual, expected *common.ListObjectMetad
 
 func resolveTestServerURL(urlTemplate string, serverURL string) string {
 	return strings.ReplaceAll(urlTemplate, URLTestServer, serverURL)
+}
+
+// ComparatorSubsetUpsertMetadata compares two UpsertMetadataResult objects,
+// ensuring structural equality for core result properties while allowing
+// subset matching for metadata contents.
+//
+// Comparison rules:
+//
+//   - Success must match exactly between actual and expected.
+//   - The number of top-level field groups must match.
+//   - For every expected property and field:
+//   - The property and field must exist in the actual result.
+//   - FieldName and Action must match exactly.
+//   - Warnings must match exactly (DeepEqual comparison).
+//   - Metadata is compared using subset semantics — all key/value
+//     pairs defined in expected.Metadata must be present in
+//     actual.Metadata, but actual may contain additional entries.
+func ComparatorSubsetUpsertMetadata(_ string, actual, expected *common.UpsertMetadataResult) bool {
+	if actual.Success != expected.Success || len(actual.Fields) != len(expected.Fields) {
+		return false
+	}
+
+	// Compare field results.
+	// When first difference is found, return with failure.
+	for propertyName, property := range expected.Fields {
+		for fieldName, expectedField := range property {
+			actualProperty, ok := actual.Fields[propertyName]
+			if !ok {
+				return false
+			}
+
+			actualField, ok := actualProperty[fieldName]
+			if !ok {
+				return false
+			}
+
+			// Field properties should be the same. This is a hard comparison.
+			generalPropertiesIdentical := actualField.FieldName == expectedField.FieldName &&
+				actualField.Action == expectedField.Action &&
+				reflect.DeepEqual(actualField.Warnings, expectedField.Warnings)
+
+			if !generalPropertiesIdentical {
+				return false
+			}
+
+			// A set of expected fields must be present
+			if !mapIsSubsetMap(expectedField.Metadata, actualField.Metadata) {
+				return false
+			}
+		}
+	}
+
+	// Everything is the same.
+	return true
+}
+
+func mapIsSubsetMap(subset, superset map[string]any) bool {
+	for key, expected := range subset {
+		actual, ok := superset[key]
+		if !ok {
+			return false // missing key
+		}
+
+		if !reflect.DeepEqual(expected, actual) {
+			return false // values not the same
+		}
+	}
+
+	return true
 }

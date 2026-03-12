@@ -10,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/netsuite/internal/restapi"
+	"github.com/amp-labs/connectors/providers/netsuite/internal/restlet"
 	"github.com/amp-labs/connectors/providers/netsuite/internal/suiteql"
 )
 
@@ -26,6 +27,7 @@ type Connector struct {
 	// https://github.com/amp-labs/connectors/pull/1920#discussion_r2248615641
 	RESTAPI *restapi.Adapter
 	SuiteQL *suiteql.Adapter
+	RESTlet *restlet.Adapter
 
 	// instanceTimezone is the timezone of the NetSuite instance, retrieved via GetPostAuthInfo.
 	// This is used to convert UTC timestamps to the instance's local time when querying.
@@ -52,26 +54,41 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		}
 	}
 
+	if err := initModuleAdapters(connector, params); err != nil {
+		return nil, err
+	}
+
+	return connector, nil
+}
+
+func initModuleAdapters(connector *Connector, params common.ConnectorParams) error {
 	switch connector.Module() { //nolint:exhaustive
 	case providers.ModuleNetsuiteRESTAPI:
 		adapter, err := restapi.NewAdapter(params)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		connector.RESTAPI = adapter
 	case providers.ModuleNetsuiteSuiteQL:
 		adapter, err := suiteql.NewAdapter(params)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		connector.SuiteQL = adapter
+	case providers.ModuleNetsuiteRESTlet:
+		adapter, err := restlet.NewAdapter(params)
+		if err != nil {
+			return err
+		}
+
+		connector.RESTlet = adapter
 	default:
-		return nil, common.ErrUnsupportedModule
+		return common.ErrUnsupportedModule
 	}
 
-	return connector, nil
+	return nil
 }
 
 func (c *Connector) ListObjectMetadata(
@@ -83,6 +100,10 @@ func (c *Connector) ListObjectMetadata(
 
 	if c.SuiteQL != nil {
 		return c.SuiteQL.ListObjectMetadata(ctx, objectNames)
+	}
+
+	if c.RESTlet != nil {
+		return c.RESTlet.ListObjectMetadata(ctx, objectNames)
 	}
 
 	return nil, common.ErrNotImplemented
@@ -102,6 +123,10 @@ func (c *Connector) Read(ctx context.Context, params connectors.ReadParams) (*co
 		return c.SuiteQL.Read(ctx, params)
 	}
 
+	if c.RESTlet != nil {
+		return c.RESTlet.Read(ctx, params)
+	}
+
 	return nil, common.ErrNotImplemented
 }
 
@@ -110,13 +135,29 @@ func (c *Connector) Write(ctx context.Context, params connectors.WriteParams) (*
 		return c.RESTAPI.Write(ctx, params)
 	}
 
+	if c.RESTlet != nil {
+		return c.RESTlet.Write(ctx, params)
+	}
+
 	// SuiteQL is read-only, so it doesn't support write operations
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error) {
+	if c.RESTlet != nil {
+		return c.RESTlet.Search(ctx, params)
+	}
+
 	return nil, common.ErrNotImplemented
 }
 
 func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
 	if c.RESTAPI != nil {
 		return c.RESTAPI.Delete(ctx, params)
+	}
+
+	if c.RESTlet != nil {
+		return c.RESTlet.Delete(ctx, params)
 	}
 
 	// SuiteQL is read-only, so it doesn't support delete operations
