@@ -27,11 +27,11 @@ func init() {
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "",
-				LogoURL: "",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1773317338/media/fastspring.com_1773316963.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1773317338/media/fastspring.com_1773316969.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1773317338/media/fastspring.com_1773316963.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1773317338/media/fastspring.com_1773317335.png",
 			},
 		},
