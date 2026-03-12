@@ -44,13 +44,13 @@ func main() {
 			Name: updatedName,
 		},
 		testscenario.CRUDTestSuite{
-			ReadFields:      datautils.NewSet("campaignId", "name"),
+			ReadFields:      datautils.NewSet("campaignId", "name", "createdOn"),
 			WaitBeforeSearch: 3 * time.Second,
 			SearchBy: testscenario.Property{
 				Key:   "name",
 				Value: name,
 			},
-			RecordIdentifierKey: "campaignId",
+			RecordIdentifierKey: "campaignid",
 			UpdatedFields: map[string]string{
 				"name": updatedName,
 			},

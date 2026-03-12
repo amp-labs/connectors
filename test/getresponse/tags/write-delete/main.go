@@ -51,7 +51,7 @@ func main() {
 				Key:   "name",
 				Value: name,
 			},
-			RecordIdentifierKey: "tagId",
+			RecordIdentifierKey: "tagid",
 			UpdatedFields: map[string]string{
 				"name": updatedName,
 			},

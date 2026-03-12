@@ -65,7 +65,7 @@ func main() {
 				Value: email,
 				Since: since,
 			},
-			RecordIdentifierKey: "contactId",
+			RecordIdentifierKey: "contactid",
 			UpdatedFields: map[string]string{
 				"name": updatedName,
 			},
