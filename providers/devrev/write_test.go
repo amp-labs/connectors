@@ -12,6 +12,29 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
+func TestWriteResponseKey(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		objectName string
+		want       string
+	}{
+		{"accounts", "account"},
+		{"rev-users", "rev_user"},
+		{"dev-orgs.auth-connections", "auth_connection"},
+		{"groups.members", "member"},
+		{"schemas.subtypes", "subtype"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.objectName, func(t *testing.T) {
+			got := writeResponseKey(tt.objectName)
+			if got != tt.want {
+				t.Errorf("writeResponseKey(%q) = %q, want %q", tt.objectName, got, tt.want)
+			}
+		})
+	}
+}
+
 func TestWrite(t *testing.T) {
 	t.Parallel()
 

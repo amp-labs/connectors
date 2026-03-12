@@ -65,9 +65,12 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 // writeResponseKey derives the response object key from objectName.
 // DevRev responses use singular snake_case: accounts->account, code-changes->code_change.
+// The dot is a namespace separator (e.g. dev-orgs.auth-connections); only the last segment is used.
 func writeResponseKey(objectName string) string {
+	if idx := strings.LastIndex(objectName, "."); idx != -1 {
+		objectName = objectName[idx+1:]
+	}
 	normalized := strings.ReplaceAll(objectName, "-", "_")
-	normalized = strings.ReplaceAll(normalized, ".", "_")
 
 	return naming.NewSingularString(normalized).String()
 }
