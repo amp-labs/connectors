@@ -36,6 +36,11 @@
       "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/engagement-studio-program-v5.html"
     },
     {
+      "name": "external-activities",
+      "displayName": "External Activities",
+      "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/external-activities-v5.html"
+    },
+    {
       "name": "files",
       "displayName": "Files",
       "url": "https://developer.salesforce.com/docs/marketing/pardot/guide/file-v5.html"
