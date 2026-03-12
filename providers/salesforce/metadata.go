@@ -154,6 +154,7 @@ type fieldResult struct {
 	Type string `json:"type"`
 
 	PicklistValues []picklistValue `json:"picklistValues"`
+	ReferenceTo    []string        `json:"referenceTo"`
 
 	Autonumber        *bool `json:"autonumber,omitempty"`
 	Calculated        *bool `json:"calculated,omitempty"`
@@ -223,6 +224,11 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
 		valueType = common.ValueTypeOther
 	}
 
+	var referenceTo []string
+	if f.Type == "reference" && len(f.ReferenceTo) > 0 {
+		referenceTo = f.ReferenceTo
+	}
+
 	return common.FieldMetadata{
 		DisplayName:  f.DisplayName,
 		ValueType:    valueType,
@@ -231,6 +237,7 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
 		IsCustom:     f.Custom,
 		IsRequired:   f.isRequired(),
 		Values:       values,
+		ReferenceTo:  referenceTo,
 	}
 }
 
