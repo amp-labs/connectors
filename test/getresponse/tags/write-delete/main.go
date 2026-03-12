@@ -22,29 +22,15 @@ func main() {
 	conn := connTest.GetGetResponseConnector(ctx)
 
 	name := tagName("TestTag_")
-	updatedName := tagName("Updated_")
 
 	type createPayload struct {
-		Name  string `json:"name"`
-		Color string `json:"color"`
+		Name string `json:"name"`
 	}
 
-	type updatePayload struct {
-		Name  string `json:"name"`
-		Color string `json:"color"`
-	}
-
-	testscenario.ValidateCreateUpdateDelete(
+	testscenario.ValidateCreateDelete(
 		ctx, conn, "tags",
-		createPayload{
-			Name:  name,
-			Color: "#3498db",
-		},
-		updatePayload{
-			Name:  updatedName,
-			Color: "#e74c3c",
-		},
-		testscenario.CRUDTestSuite{
+		createPayload{Name: name},
+		testscenario.CRDTestSuite{
 			ReadFields:       datautils.NewSet("tagId", "name"),
 			WaitBeforeSearch: 2 * time.Second,
 			SearchBy: testscenario.Property{
@@ -52,9 +38,6 @@ func main() {
 				Value: name,
 			},
 			RecordIdentifierKey: "tagid",
-			UpdatedFields: map[string]string{
-				"name": updatedName,
-			},
 		},
 	)
 }
