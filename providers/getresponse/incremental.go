@@ -28,23 +28,24 @@ const responseTimestampFormat = "2006-01-02T15:04:05Z0700"
 //	Even if the HTTP request does not support provider-side time filtering,
 //	the connector still applies local filtering to exclude records outside the specified time window.
 func makeFilterFunc(params common.ReadParams, requestURL *url.URL) common.RecordsFilterFunc {
+	// No time bounds requested — skip all filtering.
+	if params.Since.IsZero() && params.Until.IsZero() {
+		return readhelper.MakeIdentityFilterFunc(makeNextRecordsURL(requestURL))
+	}
+
 	timeSpec := objectsFilterParam.Get(params.ObjectName)
 
-	// If provider-side filtering is supported and was used, skip connector-side filtering
-	// (the provider already filtered the results, so no need to filter again)
-	if timeSpec.filterType == providerSideFilter && (!params.Since.IsZero() || !params.Until.IsZero()) {
-		// Provider already filtered, just handle pagination
+	// Provider already filtered the results — no need to re-filter connector-side.
+	if timeSpec.filterType == providerSideFilter {
 		return readhelper.MakeIdentityFilterFunc(makeNextRecordsURL(requestURL))
 	}
 
-	// No timestamp field available for connector-side filtering
+	// No timestamp field available for connector-side filtering.
 	if timeSpec.ResponseAt == nil {
-		// No timestamp field available; return all records unfiltered.
 		return readhelper.MakeIdentityFilterFunc(makeNextRecordsURL(requestURL))
 	}
 
-	// Apply connector-side filtering for objects that don't support provider-side filtering
-	// or when provider-side filtering wasn't requested (no Since/Until params)
+	// Apply connector-side filtering using the object's timestamp field.
 	return readhelper.MakeTimeFilterFunc(
 		readhelper.ChronologicalOrder,
 		readhelper.NewTimeBoundary(),

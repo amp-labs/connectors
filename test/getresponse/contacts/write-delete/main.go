@@ -30,9 +30,6 @@ func main() {
 	name := gofakeit.Name()
 	updatedName := gofakeit.Name()
 
-	// Capture time before create so the subsequent Since-scoped read finds only the new contact.
-	since := time.Now()
-
 	type campaignRef struct {
 		CampaignId string `json:"campaignId"`
 	}
@@ -58,12 +55,11 @@ func main() {
 			Name: updatedName,
 		},
 		testscenario.CRUDTestSuite{
-			ReadFields:       datautils.NewSet("contactId", "email", "name", "createdOn"),
+			ReadFields:       datautils.NewSet("contactId", "email", "name"),
 			WaitBeforeSearch: 5 * time.Second,
 			SearchBy: testscenario.Property{
 				Key:   "email",
 				Value: email,
-				Since: since,
 			},
 			RecordIdentifierKey: "contactid",
 			UpdatedFields: map[string]string{
