@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -83,7 +82,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	requestURL := url.String()
-	log.Printf("[GetResponse] GET %s", requestURL)
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, requestURL, nil)
 }
