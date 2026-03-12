@@ -29,7 +29,14 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 		return nil, fmt.Errorf("failed to marshal delete request: %w", err)
 	}
 
-	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
 }
 
 func (c *Connector) parseDeleteResponse(
