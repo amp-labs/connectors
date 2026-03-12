@@ -224,11 +224,6 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
 		valueType = common.ValueTypeOther
 	}
 
-	var referenceTo []string
-	if f.Type == "reference" && len(f.ReferenceTo) > 0 {
-		referenceTo = f.ReferenceTo
-	}
-
 	return common.FieldMetadata{
 		DisplayName:  f.DisplayName,
 		ValueType:    valueType,
@@ -237,8 +232,16 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
 		IsCustom:     f.Custom,
 		IsRequired:   f.isRequired(),
 		Values:       values,
-		ReferenceTo:  referenceTo,
+		ReferenceTo:  f.getReferenceTo(),
 	}
+}
+
+func (f fieldResult) getReferenceTo() []string {
+	if f.Type == "reference" && len(f.ReferenceTo) > 0 {
+		return f.ReferenceTo
+	}
+
+	return nil
 }
 
 func (f fieldResult) getFieldValues() []common.FieldValue {
