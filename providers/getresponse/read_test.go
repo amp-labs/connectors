@@ -108,11 +108,11 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-			If: mockcond.And{
-				mockcond.Path("/v3/contacts"),
-				mockcond.QueryParam("query[createdOn][from]", "2024-01-01T00:00:00+0000"),
-				mockcond.QueryParam("query[createdOn][to]", "2024-01-31T23:59:59+0000"),
-			},
+				If: mockcond.And{
+					mockcond.Path("/v3/contacts"),
+					mockcond.QueryParam("query[createdOn][from]", "2024-01-01T00:00:00+0000"),
+					mockcond.QueryParam("query[createdOn][to]", "2024-01-31T23:59:59+0000"),
+				},
 				Then: mockserver.Response(http.StatusOK, []byte(contactsResponse)),
 			}.Server(),
 			Expected: &common.ReadResult{

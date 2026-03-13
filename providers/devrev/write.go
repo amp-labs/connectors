@@ -70,6 +70,7 @@ func writeResponseKey(objectName string) string {
 	if idx := strings.LastIndex(objectName, "."); idx != -1 {
 		objectName = objectName[idx+1:]
 	}
+
 	normalized := strings.ReplaceAll(objectName, "-", "_")
 
 	return naming.NewSingularString(normalized).String()
