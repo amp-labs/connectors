@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -93,24 +94,31 @@ func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL,
 		return urlbuilder.New(params.NextPage.String())
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
+	urlbuild, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
 	if err != nil {
 		return nil, err
 	}
 
 	// currently they allow filtering in days only, not timestamp.
 	if !params.Since.IsZero() && !doNotFilter.Has(params.ObjectName) {
-		if !params.Until.IsZero() {
-			url.WithQueryParam("where", "date:GTE:"+params.Since.Format(time.DateOnly)+",date:LTE:"+params.Until.Format(time.DateOnly)) //nolint:lll
-		} else {
-			url.WithQueryParam("where", "date:GTE:"+params.Since.Format(time.DateOnly))
+		if filteringFields.Has(params.ObjectName) {
+			fld := filteringFields.Get(params.ObjectName)
+			// ChargeOver requires URL-encoded timestamps in query parameters
+			escapedSince := url.QueryEscape(params.Since.Format(time.RFC3339))
+
+			if !params.Until.IsZero() {
+				escapedUntil := url.QueryEscape(params.Until.Format(time.RFC3339))
+				urlbuild.WithQueryParam("where", fld+":GTE:"+escapedSince+","+fld+":LTE:"+escapedUntil)
+			} else {
+				urlbuild.WithQueryParam("where", fld+":GTE:"+escapedSince)
+			}
 		}
 	}
 
 	// standard page size.
-	url.WithQueryParam(limitQuery, strconv.Itoa(pageSize))
+	urlbuild.WithQueryParam(limitQuery, strconv.Itoa(pageSize))
 
-	return url, nil
+	return urlbuild, nil
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -142,7 +150,7 @@ func (c *Connector) parseReadResponse(
 
 	return common.ParseResult(response,
 		common.ExtractRecordsFromPath(responseField),
-		nextRecordsURL(url, numRecords, pageSize),
+		nextRecordsURL(url, params.ObjectName, numRecords),
 		common.GetMarshaledData,
 		params.Fields,
 	)
