@@ -1,0 +1,54 @@
+{
+  "results": [
+    {
+      "spaceId": "131189",
+      "createdAt": "2025-06-26T20:39:16.596Z",
+      "authorId": "712020:dcef0c39-e30a-405a-afe5-9d34bf00b73f",
+      "version": {
+        "number": 1,
+        "message": "initial ideas",
+        "minorEdit": false,
+        "authorId": "712020:dcef0c39-e30a-405a-afe5-9d34bf00b73f",
+        "createdAt": "2025-06-26T20:39:16.607Z",
+        "ncsStepVersion": "4"
+      },
+      "body": {},
+      "status": "current",
+      "title": "First blog post ever!",
+      "id": "688129",
+      "_links": {
+        "editui": "/pages/resumedraft.action?draftId=688129",
+        "webui": "/spaces/SD/blog/2025/06/26/688129/First+blog+post+ever",
+        "edituiv2": "/spaces/SD/blog/edit-v2/688129",
+        "tinyui": "/x/AYAK"
+      }
+    },
+    {
+      "spaceId": "131189",
+      "createdAt": "2025-06-26T20:39:37.501Z",
+      "authorId": "712020:dcef0c39-e30a-405a-afe5-9d34bf00b73f",
+      "version": {
+        "number": 1,
+        "message": "",
+        "minorEdit": false,
+        "authorId": "712020:dcef0c39-e30a-405a-afe5-9d34bf00b73f",
+        "createdAt": "2025-06-26T20:39:37.501Z",
+        "ncsStepVersion": "1"
+      },
+      "body": {},
+      "status": "current",
+      "title": "Second blog post!",
+      "id": "753669",
+      "_links": {
+        "editui": "/pages/resumedraft.action?draftId=753669",
+        "webui": "/spaces/SD/blog/2025/06/26/753669/Second+blog+post",
+        "edituiv2": "/spaces/SD/blog/edit-v2/753669",
+        "tinyui": "/x/BYAL"
+      }
+    }
+  ],
+  "_links": {
+    "next": "/wiki/api/v2/blogposts?limit=2&cursor=eyJpZCI6Ijc1MzY2OSIsImNvbnRlbnRPcmRlciI6ImlkIiwiY29udGVudE9yZGVyVmFsdWUiOjc1MzY2OX0=",
+    "base": "https://withampersand-team-oqo0hkaj.atlassian.net/wiki"
+  }
+}
