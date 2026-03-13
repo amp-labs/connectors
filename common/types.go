@@ -73,6 +73,9 @@ var (
 	// ErrBadRequest is returned when we get a 400 response from the provider.
 	ErrBadRequest = errors.New("bad request")
 
+	// ErrConflict is returned when we get a 409 response from the provider.
+	ErrConflict = errors.New("conflict")
+
 	// ErrNotFound is returned when we get a 404 response from the provider.
 	ErrNotFound = errors.New("not found")
 

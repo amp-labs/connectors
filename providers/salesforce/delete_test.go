@@ -165,7 +165,7 @@ func TestDeletePardot(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				testutils.StringError("The requested record was not found."), // nolint:goerr113
+				testutils.StringError("The requested record was not found."),
 			},
 		},
 	}

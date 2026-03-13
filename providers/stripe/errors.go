@@ -1,6 +1,7 @@
 package stripe
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -19,7 +20,7 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 
 var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
 	http.StatusPaymentRequired: common.ErrBadRequest,
-	http.StatusConflict:        common.ErrBadRequest,
+	http.StatusConflict:        errors.Join(common.ErrConflict, common.ErrBadRequest),
 }
 
 type ResponseError struct {
