@@ -414,17 +414,30 @@ func TestMakeTimeFilterFuncWithZoom(t *testing.T) {
 			expectedRecordIDs: []string{},
 		},
 		{
-			name:  "Payload without next page",
+			name:  "Payload without next page, reverse order",
 			order: ReverseOrder,
 			payload: createPayload(false, // next page doesn't exist
 				record{"C", "4:00PM"},
 				record{"B", "3:00PM"},
 				record{"A", "2:00PM"},
 			),
-			since:             "1:00PM",
+			since:             "1:00PM", // time applies from page (num X) till page (num 1)
 			expectedErr:       nil,
-			expectedNextPage:  false, // no page
+			expectedNextPage:  false, // no page to surface, but we would if we could
 			expectedRecordIDs: []string{"C", "B", "A"},
+		},
+		{
+			name:  "Payload without next page, chronological order",
+			order: ChronologicalOrder,
+			payload: createPayload(false, // next page doesn't exist
+				record{"A", "2:00PM"},
+				record{"B", "3:00PM"},
+				record{"C", "4:00PM"},
+			),
+			until:             "5:00PM", // time applies from page (num X) till page (num 1)
+			expectedErr:       nil,
+			expectedNextPage:  false, // no page to surface, but we would if we could
+			expectedRecordIDs: []string{"A", "B", "C"},
 		},
 		// Unordered records.
 		{
@@ -449,7 +462,7 @@ func TestMakeTimeFilterFuncWithZoom(t *testing.T) {
 				record{"B", "3:00PM"},
 				record{"C", "4:00PM"},
 			),
-			since:             "1:00PM",
+			since:             "1:00PM", // time applies from page (num -1) till page (infinity)
 			expectedErr:       nil,
 			expectedNextPage:  true,
 			expectedRecordIDs: []string{"A", "B", "C"},
@@ -462,7 +475,7 @@ func TestMakeTimeFilterFuncWithZoom(t *testing.T) {
 				record{"B", "3:00PM"},
 				record{"A", "2:00PM"},
 			),
-			since:             "1:00PM",
+			since:             "1:00PM", // time applies from page (num X) till page (num 1)
 			expectedErr:       nil,
 			expectedNextPage:  true,
 			expectedRecordIDs: []string{"C", "B", "A"},
@@ -476,7 +489,7 @@ func TestMakeTimeFilterFuncWithZoom(t *testing.T) {
 				record{"C", "4:00PM"},
 				record{"D", "5:00PM"},
 			),
-			until:             "6:30PM",
+			until:             "6:30PM", // time applies until page (num X) till page (num 1)
 			expectedErr:       nil,
 			expectedNextPage:  true,
 			expectedRecordIDs: []string{"A", "B", "C", "D"},
@@ -490,7 +503,7 @@ func TestMakeTimeFilterFuncWithZoom(t *testing.T) {
 				record{"B", "3:00PM"},
 				record{"A", "2:00PM"},
 			),
-			until:             "6:30PM",
+			until:             "6:30PM", // time applies from page (num -1) till page (infinity)
 			expectedErr:       nil,
 			expectedNextPage:  true,
 			expectedRecordIDs: []string{"D", "C", "B", "A"},
@@ -504,7 +517,7 @@ func TestMakeTimeFilterFuncWithZoom(t *testing.T) {
 				record{"B", "3:00PM"},
 				record{"C", "4:00PM"},
 			),
-			since:             "2:45PM",
+			since:             "2:45PM", // time applies from page (current) till page (infinity)
 			expectedErr:       nil,
 			expectedNextPage:  true, // must surface the page token
 			expectedRecordIDs: []string{"B", "C"},
@@ -517,9 +530,9 @@ func TestMakeTimeFilterFuncWithZoom(t *testing.T) {
 				record{"B", "3:00PM"},
 				record{"A", "2:00PM"}, // pruned, and last in the list
 			),
-			since:             "2:45PM",
+			since:             "2:45PM", // time applies from page (current) till page (current)
 			expectedErr:       nil,
-			expectedNextPage:  false, // ignore next page token, current page is empty
+			expectedNextPage:  false, // ignore next page token, current page is the time edge
 			expectedRecordIDs: []string{"C", "B"},
 		},
 		{
@@ -534,7 +547,7 @@ func TestMakeTimeFilterFuncWithZoom(t *testing.T) {
 			since:             "2:45PM",
 			until:             "4:10PM",
 			expectedErr:       nil,
-			expectedNextPage:  false, // last record excluded, hence no next page
+			expectedNextPage:  false, // last record excluded, hence no next page, we are on the time edge
 			expectedRecordIDs: []string{"B", "C"},
 		},
 		{
@@ -549,8 +562,52 @@ func TestMakeTimeFilterFuncWithZoom(t *testing.T) {
 			since:             "2:45PM",
 			until:             "4:10PM",
 			expectedErr:       nil,
-			expectedNextPage:  false, // last record excluded, hence no next page
+			expectedNextPage:  false, // last record excluded, hence no next page, we are on the time edge
 			expectedRecordIDs: []string{"C", "B"},
+		},
+		// All records on current page are pruned. Next page may hold relevant records.
+		{
+			name:  "Since filters all latest records on current page",
+			order: ReverseOrder,
+			payload: createPayload(true,
+				record{"D", "5:00PM"}, // pruned
+				record{"C", "4:00PM"}, // pruned
+				record{"B", "3:00PM"}, // pruned
+				record{"A", "2:00PM"}, // pruned
+			),
+			since:             "6:00PM", // time applies from page (num -1) till page (negative X)
+			expectedErr:       nil,
+			expectedNextPage:  false, // this page was already too old, next page would be even older for `Since`
+			expectedRecordIDs: []string{},
+		},
+		{
+			name:  "Until filters all oldest records on current page",
+			order: ChronologicalOrder,
+			payload: createPayload(true,
+				record{"A", "2:00PM"}, // pruned
+				record{"B", "3:00PM"}, // pruned
+				record{"C", "4:00PM"}, // pruned
+				record{"D", "5:00PM"}, // pruned
+			),
+			until:             "1:00PM", // time applies from page (infinity) till page (num -1)
+			expectedErr:       nil,
+			expectedNextPage:  false, // this page was already too new, next page would be even newer for `Until`
+			expectedRecordIDs: []string{},
+		},
+		{
+			name:  "Since filters all records on unordered page",
+			order: Unordered,
+			payload: createPayload(true,
+				record{"B", "3:00PM"}, // pruned
+				record{"D", "5:00PM"}, // pruned
+				record{"A", "2:00PM"}, // pruned
+				record{"C", "4:00PM"}, // pruned
+			),
+			since:       "6:00PM",
+			expectedErr: nil,
+			// no page implications, must continue paginating even though all records where filtered out
+			expectedNextPage:  true,
+			expectedRecordIDs: []string{},
 		},
 	}
 
