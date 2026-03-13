@@ -555,7 +555,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrForbidden,
-				testutils.StringError("CSE is not enabled."), // nolint:goerr113
+				testutils.StringError("CSE is not enabled."),
 			},
 		},
 		{
@@ -568,7 +568,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				common.ErrNotFound,
-				testutils.StringError("The requested URL /gmail/v1/users/me/butterfly was not found on this server. That’s all we know"), // nolint:goerr113,lll
+				testutils.StringError("The requested URL /gmail/v1/users/me/butterfly was not found on this server. That’s all we know"), // nolint:lll
 			},
 		},
 		{

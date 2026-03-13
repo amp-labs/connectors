@@ -431,7 +431,7 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				testutils.StringError("A required header is missing: Pardot-Business-Unit-Id header not found on request."), // nolint:goerr113
+				testutils.StringError("A required header is missing: Pardot-Business-Unit-Id header not found on request."),
 			},
 		},
 		{
@@ -443,7 +443,7 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				testutils.StringError("One or more required parameters are missing: fields"), // nolint:goerr113
+				testutils.StringError("One or more required parameters are missing: fields"),
 			},
 		},
 		{

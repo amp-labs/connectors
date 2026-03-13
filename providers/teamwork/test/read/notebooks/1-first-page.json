@@ -1,0 +1,77 @@
+{
+  "notebooks": [
+    {
+      "id": 305625,
+      "name": "Second notebook",
+      "description": "",
+      "contents": "<p>Text and content goes here.</p>",
+      "type": "HTML",
+      "isPrivate": false,
+      "locked": false,
+      "lockedBy": null,
+      "lockedAt": null,
+      "lockdownId": 0,
+      "lockdown": null,
+      "secureContent": false,
+      "isFullWidth": false,
+      "projectId": 1441806,
+      "project": {
+        "id": 1441806,
+        "type": "projects"
+      },
+      "createdByUserID": 583610,
+      "createdBy": 583610,
+      "updatedByUserID": 583610,
+      "updatedBy": 583610,
+      "dateUpdated": "2025-09-30T21:14:15Z",
+      "updatedAt": "2025-09-30T21:14:15Z",
+      "dateCreated": "2025-09-30T21:14:15Z",
+      "createdAt": "2025-09-30T21:14:15Z",
+      "deleted": false,
+      "categoryId": null,
+      "category": null,
+      "notebookVersionID": 1009492,
+      "notebookVersion": {
+        "id": 1009492,
+        "type": "notebookVersions"
+      },
+      "notebookVersionCreatedDateTime": "2025-09-30T21:14:14Z",
+      "notebookVersionUpdatedDateTime": "2025-09-30T21:14:14Z",
+      "latestVersionNo": 1,
+      "versionCount": 1,
+      "commentsCount": 0,
+      "readCommentsCount": 0,
+      "contentHTML": null,
+      "privacy": null,
+      "commentFollowers": {
+        "userIds": null,
+        "users": null,
+        "companyIds": null,
+        "companies": null,
+        "teamIds": null,
+        "teams": null
+      },
+      "changeFollowers": {
+        "userIds": null,
+        "users": null,
+        "companyIds": null,
+        "companies": null,
+        "teamIds": null,
+        "teams": null
+      },
+      "userFollowingChanges": false,
+      "userFollowingComments": false,
+      "tagIds": null,
+      "tags": null
+    }
+  ],
+  "meta": {
+    "page": {
+      "pageOffset": 0,
+      "pageSize": 1,
+      "count": 2,
+      "hasMore": true
+    }
+  },
+  "included": {}
+}
