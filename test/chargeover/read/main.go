@@ -47,6 +47,7 @@ func testReadCustomers(ctx context.Context, conn *co.Connector) error {
 		Fields:     connectors.Fields("superuser_id", "company", "language_id"),
 		Since:      time.Now().Add(-10 * time.Hour),
 		Until:      time.Now(),
+		// NextPage: "https://amplabs.chargeover.com/api/v3/customer?limit=1\u0026offset=1\u0026where=mod_datetime%3AGTE%3A2026-03-13T01%253A03%253A56%252B03%253A00",
 	}
 
 	res, err := conn.Read(ctx, params)
