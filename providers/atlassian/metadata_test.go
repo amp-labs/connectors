@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/atlassian/internal/jira"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -34,8 +35,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Always: mockserver.ResponseString(http.StatusOK, `[]`),
 			}.Server(),
 			ExpectedErrs: []error{
-				ErrMissingMetadata,
-				ErrParsingMetadata,
+				jira.ErrMissingMetadata,
+				jira.ErrParsingMetadata,
 			},
 		},
 		{
@@ -45,7 +46,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.ResponseString(http.StatusOK, `[{}]`),
 			}.Server(),
-			ExpectedErrs: []error{ErrParsingMetadata},
+			ExpectedErrs: []error{jira.ErrParsingMetadata},
 		},
 		{
 			Name:  "Field response must have display name",
@@ -54,7 +55,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.ResponseString(http.StatusOK, `[{"id": "issuerestriction"}]`),
 			}.Server(),
-			ExpectedErrs: []error{ErrParsingMetadata},
+			ExpectedErrs: []error{jira.ErrParsingMetadata},
 		},
 		{
 			Name:  "Successfully describe Issue metadata",
