@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -13,6 +16,9 @@ import (
 const (
 	apiVersion    = "api/v3"
 	responseField = "response"
+	limitQuery    = "limit"
+	offsetQuery   = "offset"
+	pageSize      = 500
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -75,4 +81,77 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+type records struct {
+	Response []map[string]any `json:"response"`
+}
+
+func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
+	path := params.ObjectName
+
+	if params.NextPage != "" {
+		return urlbuilder.New(params.NextPage.String())
+	}
+
+	urlbuild, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
+	if err != nil {
+		return nil, err
+	}
+
+	// currently they allow filtering in days only, not timestamp.
+	if !params.Since.IsZero() && !doNotFilter.Has(params.ObjectName) {
+		if filteringFields.Has(params.ObjectName) {
+			fld := filteringFields.Get(params.ObjectName)
+			// ChargeOver requires URL-encoded timestamps in query parameters
+			escapedSince := url.QueryEscape(params.Since.Format(time.RFC3339))
+
+			if !params.Until.IsZero() {
+				escapedUntil := url.QueryEscape(params.Until.Format(time.RFC3339))
+				urlbuild.WithQueryParam("where", fld+":GTE:"+escapedSince+","+fld+":LTE:"+escapedUntil)
+			} else {
+				urlbuild.WithQueryParam("where", fld+":GTE:"+escapedSince)
+			}
+		}
+	}
+
+	// standard page size.
+	urlbuild.WithQueryParam(limitQuery, strconv.Itoa(pageSize))
+
+	return urlbuild, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	url, err := c.constructReadURL(params)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	rec, err := common.UnmarshalJSON[records](response)
+	if err != nil {
+		return nil, err
+	}
+
+	numRecords := len(rec.Response)
+
+	url, err := urlbuilder.New(request.URL.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResult(response,
+		common.ExtractRecordsFromPath(responseField),
+		nextRecordsURL(url, params.ObjectName, numRecords),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
