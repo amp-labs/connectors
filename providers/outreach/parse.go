@@ -1,6 +1,7 @@
 package outreach
 
 import (
+	"encoding/json"
 	"fmt"
 	"slices"
 	"strconv"
@@ -41,10 +42,22 @@ func getOutreachDataMarshaller(config common.ReadParams, included []dataItem,
 				return nil, err
 			}
 
+			var id string
+
+			switch v := record["id"].(type) {
+			case string:
+				id = v
+			case float64:
+				id = strconv.FormatFloat(v, 'f', -1, 64)
+			case json.Number:
+				id = v.String()
+			}
+
 			// Populate the result row with fields, raw data, and ID.
 			result[idx] = common.ReadResultRow{
 				Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
 				Raw:    raw,
+				Id:     id,
 			}
 
 			relationship, err := assertMapStringAny(record[relationshipsKey])
