@@ -46,7 +46,7 @@ func init() {
 					DisplayName: "Project ID",
 					DocsURL:     "https://www.revenuecat.com/docs/api-v2#tag/Project",
 					Prompt: "Copy the Project ID from RevenueCat dashboard" +
-					" (Project settings → General). It typically starts with `proj`.",
+						" (Project settings → General). It typically starts with `proj`.",
 				},
 			},
 		},
