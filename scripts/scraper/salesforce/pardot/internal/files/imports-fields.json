@@ -1,0 +1,140 @@
+{
+  "operation": {
+    "displayName": "operation",
+    "valueType": "string",
+    "providerType": "String"
+  },
+  "object": {
+    "displayName": "object",
+    "valueType": "string",
+    "providerType": "String"
+  },
+  "status": {
+    "displayName": "status",
+    "valueType": "singleSelect",
+    "providerType": "String",
+    "values": [
+      {
+        "value": "Open",
+        "displayName": "Open"
+      },
+      {
+        "value": "Waiting",
+        "displayName": "Waiting"
+      },
+      {
+        "value": "Processing",
+        "displayName": "Processing"
+      },
+      {
+        "value": "Complete",
+        "displayName": "Complete"
+      },
+      {
+        "value": "Failed",
+        "displayName": "Failed"
+      },
+      {
+        "value": "Canceling",
+        "displayName": "Canceling"
+      },
+      {
+        "value": "Canceled",
+        "displayName": "Canceled"
+      }
+    ]
+  },
+  "createOnNoMatch": {
+    "displayName": "createOnNoMatch",
+    "valueType": "boolean",
+    "providerType": "Boolean"
+  },
+  "restoreDeleted": {
+    "displayName": "restoreDeleted",
+    "valueType": "boolean",
+    "providerType": "Boolean"
+  },
+  "fields": {
+    "displayName": "fields",
+    "valueType": "other",
+    "providerType": "Fields{}"
+  },
+  "id": {
+    "displayName": "id",
+    "valueType": "int",
+    "providerType": "Integer",
+    "readOnly": true
+  },
+  "isExpired": {
+    "displayName": "isExpired",
+    "valueType": "boolean",
+    "providerType": "Boolean",
+    "readOnly": true
+  },
+  "batchesRef": {
+    "displayName": "batchesRef",
+    "valueType": "string",
+    "providerType": "String",
+    "readOnly": true
+  },
+  "createdAt": {
+    "displayName": "createdAt",
+    "valueType": "datetime",
+    "providerType": "DateTime",
+    "readOnly": true
+  },
+  "updatedAt": {
+    "displayName": "updatedAt",
+    "valueType": "datetime",
+    "providerType": "DateTime",
+    "readOnly": true
+  },
+  "createdById": {
+    "displayName": "createdById",
+    "valueType": "int",
+    "providerType": "Integer",
+    "readOnly": true
+  },
+  "updatedById": {
+    "displayName": "updatedById",
+    "valueType": "int",
+    "providerType": "Integer",
+    "readOnly": true
+  },
+  "createdBy": {
+    "displayName": "createdBy",
+    "valueType": "other",
+    "providerType": "User",
+    "readOnly": true
+  },
+  "updatedBy": {
+    "displayName": "updatedBy",
+    "valueType": "other",
+    "providerType": "User",
+    "readOnly": true
+  },
+  "createdCount": {
+    "displayName": "createdCount",
+    "valueType": "int",
+    "providerType": "Integer",
+    "readOnly": true
+  },
+  "updatedCount": {
+    "displayName": "updatedCount",
+    "valueType": "int",
+    "providerType": "Integer",
+    "readOnly": true
+  },
+  "errorCount": {
+    "displayName": "errorCount",
+    "valueType": "int",
+    "providerType": "Integer",
+    "readOnly": true
+  },
+  "errorRef": {
+    "displayName": "errorRef",
+    "valueType": "string",
+    "providerType": "String",
+    "readOnly": true
+  }
+}
