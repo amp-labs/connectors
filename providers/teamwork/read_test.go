@@ -31,8 +31,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Always: mockserver.Response(http.StatusNotFound, responseNotFoundError),
 			}.Server(),
 			ExpectedErrs: []error{
-				testutils.StringError("Not Found"),
 				common.ErrBadRequest,
+				testutils.StringError("Not Found"),
 			},
 		},
 		{
