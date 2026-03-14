@@ -18,7 +18,6 @@ const defaultPageSize = "100" // doc default 50; max 100 (from testing)
 // objectsWithoutLimitParam lists object names whose list endpoints do not accept
 // the limit query parameter (API returns 400 invalid_field for limit).
 var objectsWithoutLimitParam = datautils.NewSet( //nolint:gochecknoglobals
-	"artifacts",
 	"auth-tokens",
 	"dev-orgs.auth-connections",
 	"schemas.subtypes",
@@ -29,17 +28,16 @@ var objectsWithoutLimitParam = datautils.NewSet( //nolint:gochecknoglobals
 // modified_date.after and modified_date.before query parameter.
 var objectsWithModifiedDateFilter = datautils.NewSet( //nolint:gochecknoglobals
 	"accounts",
-	"code-changes",
 	"conversations",
-	"engagements",
-	"groups",
-	"incidents",
-	"jobs",
-	"meetings",
-	"parts",
 	"rev-orgs",
 	"rev-users",
-	"works",
+	"sla-trackers",
+)
+
+// objectsWithoutModifiedDate lists object names whose list response records do not
+// include modified_date.
+var objectsWithoutModifiedDate = datautils.NewSet( //nolint:gochecknoglobals
+	"vistas.groups",
 )
 
 // buildReadRequest builds the HTTP request for listing objects.
@@ -115,12 +113,13 @@ func (c *Connector) parseReadResponse(
 	)
 }
 
-// if object supports modified date filter, return identity filter
-// otherwise return time filter.
+// makeFilterFunc returns the identity filter when the API does time filtering
+// (objectsWithModifiedDateFilter) or when the object has no modified_date field
+// to filter on (objectsWithoutModifiedDate). Otherwise return time filter.
 func makeFilterFunc(params common.ReadParams, reqURL *urlbuilder.URL) common.RecordsFilterFunc {
 	nextPageFunc := makeNextRecordsURL(reqURL)
 
-	if objectsWithModifiedDateFilter.Has(params.ObjectName) {
+	if objectsWithModifiedDateFilter.Has(params.ObjectName) || objectsWithoutModifiedDate.Has(params.ObjectName) {
 		return readhelper.MakeIdentityFilterFunc(nextPageFunc)
 	}
 
