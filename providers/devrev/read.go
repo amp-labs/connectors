@@ -113,8 +113,9 @@ func (c *Connector) parseReadResponse(
 	)
 }
 
-// if object supports modified date filter, return identity filter
-// otherwise return time filter.
+// makeFilterFunc returns the identity filter when the API does time filtering
+// (objectsWithModifiedDateFilter) or when the object has no modified_date field
+// to filter on (objectsWithoutModifiedDate). Otherwise return time filter.
 func makeFilterFunc(params common.ReadParams, reqURL *urlbuilder.URL) common.RecordsFilterFunc {
 	nextPageFunc := makeNextRecordsURL(reqURL)
 

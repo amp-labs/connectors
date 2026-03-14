@@ -9,7 +9,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/devrev"
 	devrevtest "github.com/amp-labs/connectors/test/devrev"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/testscenario"
@@ -39,8 +38,8 @@ func main() {
 	readObjectsTest(ctx, conn)
 }
 
-// readObjectsTest smoke-tests every list object (one page, 1 record) to verify endpoints.
-func readObjectsTest(ctx context.Context, conn *devrev.Connector) {
+// readObjectsTest smoke-tests every list object (1 record for those that support limit) to verify endpoints.
+func readObjectsTest(ctx context.Context, conn connectors.ReadConnector) {
 	since := time.Date(2026, 2, 25, 0, 0, 0, 0, time.UTC)
 
 	for _, objectName := range readObjects {
