@@ -246,6 +246,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ReadOnly:     goutils.Pointer(true),
 								IsCustom:     goutils.Pointer(false),
 								IsRequired:   goutils.Pointer(false),
+								ReferenceTo:  []string{"User"},
 							},
 							"photourl": {
 								DisplayName:  "Photo URL",
