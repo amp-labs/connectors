@@ -1,0 +1,15 @@
+{
+    "data": [
+        {
+            "hash": "29435d869636b1ae9e38480f4aca7f74",
+            "id": "1214321106978726:29435d869636b1ae9e38480f4aca7f74"
+        }
+    ],
+    "paging": {
+        "cursors": {
+            "before": "QVFIUkdfVFFscVJoNC04b3JYdnFWUkdpTUUzeHhYc2ZABRi1IX05PRkxhWkVqNVJfUG5tb3p1aEVMS2JEQktfR0FhMHpvaFZAubEpNTlFKUkZAsZAWdqeHZAvQUxR",
+            "after": "QVFIUkdfVFFscVJoNC04b3JYdnFWUkdpTUUzeHhYc2ZABRi1IX05PRkxhWkVqNVJfUG5tb3p1aEVMS2JEQktfR0FhMHpvaFZAubEpNTlFKUkZAsZAWdqeHZAvQUxR"
+        },
+        "next": "https://graph.facebook.com/v19.0/act_1214321106978726/adimages?limit=25&after=QVFIUkdfVFFscVJoNC04b3JYdnFWUkdpTUUzeHhYc2ZABRi1IX05PRkxhWkVqNVJfUG5tb3p1aEVMS2JEQktfR0FhMHpvaFZAubEpNTlFKUkZAsZAWdqeHZAvQUxR"
+    }
+}
