@@ -29,7 +29,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseContactsSecondPage := testutils.DataFromFile(t, "read-contacts-2-second-page.json")
 	responseContactsThirdPage := testutils.DataFromFile(t, "read-contacts-3-last-page.json")
 	responseReadConversations := testutils.DataFromFile(t, "read-conversations.json")
-	requestSearchConversations := testutils.DataFromFile(t, "read-search-conversations-request.json")
+	requestSearchConversations := testutils.DataFromFile(t, "read-search-conversations-request-since.json")
+	requestSearchConversationsUntil := testutils.DataFromFile(t, "read-search-conversations-request-since-until.json")
 	responseSearchConversations := testutils.DataFromFile(t, "read-search-conversations.json")
 	responseNotesFirstPage := testutils.DataFromFile(t, "read-notes-1-first-page.json")
 	responseNotesSecondPage := testutils.DataFromFile(t, "read-notes-2-last-page.json")
@@ -265,6 +266,29 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"updated_at":            float64(1726752145),
 					},
 				}},
+				NextPage: testroutines.URLTestServer + "/conversations/search?starting_after=WzE3MjY3NTIxNDUwMDAsNSwyXQ==",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+
+		{
+			Name: "Incremental read of conversations using Until and Since",
+			Input: common.ReadParams{
+				ObjectName: "conversations",
+				Fields:     connectors.Fields("id", "state", "title"),
+				Since:      time.Unix(1726674883, 0),
+				Until:      time.Unix(1726674885, 0),
+			},
+			// notes is not supported for now, but its payload is good for testing
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.BodyBytes(requestSearchConversationsUntil),
+				Then:  mockserver.Response(http.StatusOK, responseSearchConversations),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
 				NextPage: testroutines.URLTestServer + "/conversations/search?starting_after=WzE3MjY3NTIxNDUwMDAsNSwyXQ==",
 				Done:     false,
 			},
