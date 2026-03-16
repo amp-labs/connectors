@@ -75,16 +75,21 @@ func makeSuiteQLBody(params common.ReadParams) suiteQLQueryBody {
 		Query: "SELECT * FROM " + params.ObjectName,
 	}
 
+	dateColumn := "lastModifiedDate"
+	if strings.EqualFold(params.ObjectName, "transactionline") {
+		dateColumn = "lineLastModifiedDate"
+	}
+
 	var queries []string
 
 	if !params.Since.IsZero() {
 		sinceStr := params.Since.Format(suiteQLTimestampFormat)
-		queries = append(queries, fmt.Sprintf("lastModifiedDate >= TO_TIMESTAMP('%s', 'YYYY-MM-DD HH24:MI:SSxFF')", sinceStr))
+		queries = append(queries, fmt.Sprintf("%s >= TO_TIMESTAMP('%s', 'YYYY-MM-DD HH24:MI:SSxFF')", dateColumn, sinceStr))
 	}
 
 	if !params.Until.IsZero() {
 		untilStr := params.Until.Format(suiteQLTimestampFormat)
-		queries = append(queries, fmt.Sprintf("lastModifiedDate <= TO_TIMESTAMP('%s', 'YYYY-MM-DD HH24:MI:SSxFF')", untilStr))
+		queries = append(queries, fmt.Sprintf("%s <= TO_TIMESTAMP('%s', 'YYYY-MM-DD HH24:MI:SSxFF')", dateColumn, untilStr))
 	}
 
 	if len(queries) > 0 {
