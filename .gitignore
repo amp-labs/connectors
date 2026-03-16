@@ -143,3 +143,7 @@ custom-gcl
 deploy.zip
 destructive.zip
 output/
+
+# Salesforce test binaries
+apex
+test/salesforce/apex/apex
