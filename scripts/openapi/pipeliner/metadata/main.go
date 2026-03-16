@@ -33,7 +33,7 @@ var (
 )
 
 func main() {
-	explorer, err := files.InputPipedrive.GetExplorer(
+	explorer, err := files.InputPipeliner.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
 			api3.CamelCaseToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,
@@ -67,8 +67,8 @@ func main() {
 		}
 	}
 
-	goutils.MustBeNil(files.OutputPipedrive.FlushSchemas(schemas))
-	goutils.MustBeNil(files.OutputPipedrive.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	goutils.MustBeNil(files.OutputPipeliner.FlushSchemas(schemas))
+	goutils.MustBeNil(files.OutputPipeliner.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	log.Println("Completed.")
 }
