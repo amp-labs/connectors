@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
+	"flag"
 	"fmt"
 	"io"
 	"log/slog"
@@ -24,7 +25,12 @@ const (
 	pollTimeout  = 120 * time.Second
 )
 
+// go run test/salesforce/apex/main.go -checkbox agentIdentifierChanged__c
+// checkbox field name is a custom field and it must be configured in the Lead object in Salesforce.
 func main() {
+	checkboxField := flag.String("checkbox", "agentIdentifierChanged__c", "checkbox field name for the apex trigger")
+	flag.Parse()
+
 	// Handle Ctrl-C gracefully.
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
@@ -48,7 +54,7 @@ func main() {
 	zipData, err := salesforce.ConstructApexTriggerZip(salesforce.ApexTriggerParams{
 		ObjectName:        objectName,
 		TriggerName:       triggerName,
-		CheckboxFieldName: "agentIdentifierChanged__c",
+		CheckboxFieldName: *checkboxField,
 		WatchFields:       []string{"Email", "Phone"},
 	})
 	if err != nil {
