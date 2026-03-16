@@ -4,7 +4,7 @@ const FourFour Provider = "fourFour"
 
 func init() {
 	SetInfo(FourFour, ProviderInfo{
-		DisplayName: "FourFour",
+		DisplayName: "Four/Four",
 		AuthType:    Oauth2,
 		BaseURL:     "https://fourfour.ai",
 		Oauth2Opts: &Oauth2Opts{
