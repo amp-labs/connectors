@@ -3,6 +3,7 @@ package salesforce
 import (
 	"context"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/metadata"
 )
 
@@ -53,11 +54,19 @@ func ConstructDestructiveApexTriggerZip(triggerName string) ([]byte, error) {
 // via the Metadata API. Returns the async deployment ID for status polling.
 // Use CheckDeployStatus to poll for completion.
 func (c *Connector) DeployMetadataZip(ctx context.Context, zipData []byte) (string, error) {
-	return c.crmAdapter.DeployMetadataZip(ctx, zipData)
+	if c.crmAdapter != nil {
+		return c.crmAdapter.DeployMetadataZip(ctx, zipData)
+	}
+
+	return "", common.ErrNotImplemented
 }
 
 // CheckDeployStatus checks the status of an async deployment once and returns the result.
 // The caller is responsible for polling in a loop until DeployResult.Done is true.
 func (c *Connector) CheckDeployStatus(ctx context.Context, deployID string) (*DeployResult, error) {
-	return c.crmAdapter.CheckDeployStatus(ctx, deployID)
+	if c.crmAdapter != nil {
+		return c.crmAdapter.CheckDeployStatus(ctx, deployID)
+	}
+
+	return nil, common.ErrNotImplemented
 }
