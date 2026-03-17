@@ -71,7 +71,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.MethodPATCH(),
+					mockcond.MethodPOST(),
 					mockcond.Path("/v2/projects/proj_123/apps/app_xyz123"),
 				},
 				Then: mockserver.Response(http.StatusOK, respApp),
@@ -94,7 +94,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.MethodPATCH(),
+					mockcond.MethodPOST(),
 					mockcond.Path("/v2/projects/proj_123/customers/cust_abc456"),
 				},
 				Then: mockserver.Response(http.StatusOK, respCustomer),
@@ -137,7 +137,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.MethodPATCH(),
+					mockcond.MethodPOST(),
 					mockcond.Path("/v2/projects/proj_123/entitlements/entl_abc123"),
 				},
 				Then: mockserver.Response(http.StatusOK, respEntitlement),
@@ -180,7 +180,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.MethodPATCH(),
+					mockcond.MethodPOST(),
 					mockcond.Path("/v2/projects/proj_123/integrations_webhooks/whi_xyz789"),
 				},
 				Then: mockserver.Response(http.StatusOK, respWebhook),
@@ -223,7 +223,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.MethodPATCH(),
+					mockcond.MethodPOST(),
 					mockcond.Path("/v2/projects/proj_123/offerings/ofng_abc789"),
 				},
 				Then: mockserver.Response(http.StatusOK, respOffering),
