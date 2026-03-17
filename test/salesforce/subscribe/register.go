@@ -36,6 +36,7 @@ func main() {
 	}
 
 	conn := connTest.GetSalesforceConnector(ctx)
+	ctx = common.WithAuthToken(ctx, connTest.GetSalesforceAccessToken())
 
 	arn := namedCredArn
 
@@ -60,11 +61,18 @@ func main() {
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 			"Account": {},
 		},
+		Request: &salesforce.SubscriptionRequest{
+			QuotaOptimizations: map[common.ObjectName]string{
+				"Account": "amp_cdc_optimized",
+			},
+		},
 	}
 
 	subscribeResult, err := conn.Subscribe(ctx, subscribeParams)
 	if err != nil {
 		logging.Logger(ctx).Error("Error subscribing", "error", err, "subscribeResult", prettyPrint(subscribeResult))
+
+		return
 	}
 
 	fmt.Println("Subscribe result:", prettyPrint(subscribeResult))
@@ -73,6 +81,11 @@ func main() {
 		RegistrationResult: result,
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 			"Contact": {},
+		},
+		Request: &salesforce.SubscriptionRequest{
+			QuotaOptimizations: map[common.ObjectName]string{
+				"Contact": "amp_cdc_optimized",
+			},
 		},
 	}
 
