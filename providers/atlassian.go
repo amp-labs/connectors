@@ -7,6 +7,8 @@ const Atlassian Provider = "atlassian"
 const (
 	// ModuleAtlassianJira is the module used for listing Jira issues.
 	ModuleAtlassianJira common.ModuleID = "jira"
+	// ModuleAtlassianConfluence is the module used for Atlassian Confluence.
+	ModuleAtlassianConfluence common.ModuleID = "confluence"
 )
 
 // nolint:funlen
@@ -33,6 +35,15 @@ func init() {
 					Read:      true,
 					Subscribe: false,
 					Write:     true,
+				},
+			},
+			ModuleAtlassianConfluence: {
+				BaseURL:     "https://api.atlassian.com/ex/confluence/{{.cloudId}}/wiki/api",
+				DisplayName: "Atlassian Confluence",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
 				},
 			},
 		},
@@ -62,7 +73,13 @@ func init() {
 		Metadata: &ProviderMetadata{
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
+					// Jira and Confluence modules require it for their BaseURLs.
+					// This is acquired using workspace.
 					Name: "cloudId",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleAtlassianJira:       ModuleDependency{},
+						ModuleAtlassianConfluence: ModuleDependency{},
+					},
 				},
 			},
 			Input: []MetadataItemInput{
@@ -71,7 +88,8 @@ func init() {
 					DisplayName: "App name",
 					DocsURL:     "https://support.atlassian.com/organization-administration/docs/update-your-product-and-site-url/",
 					ModuleDependencies: &ModuleDependencies{
-						ModuleAtlassianJira: ModuleDependency{},
+						ModuleAtlassianJira:       ModuleDependency{},
+						ModuleAtlassianConfluence: ModuleDependency{},
 					},
 				},
 			},
