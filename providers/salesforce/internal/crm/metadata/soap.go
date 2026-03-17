@@ -40,19 +40,19 @@ func performMetadataAPICall[R any](ctx context.Context, adapter *Adapter, payloa
 	return performSOAPCall[R](ctx, adapter, template, payload, getSOAPHeaders())
 }
 
-func performDeploySOAPRequest[R any](ctx context.Context, adapter *Adapter, payload any) (*R, error) {
+func performDeploySOAPRequest[R any](ctx context.Context, adapter *Adapter, payload string) (*R, error) {
 	template := `<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                   xmlns:md="http://soap.sforce.com/2006/04/metadata">
     <soapenv:Header>
-        <md:SessionHeader>
-            <md:sessionId>TODO----accessToken</md:sessionId>
-        </md:SessionHeader>
+        <SessionHeader xmlns="http://soap.sforce.com/2006/04/metadata">
+            <sessionId>TODO----accessToken</sessionId>
+        </SessionHeader>
     </soapenv:Header>
     <soapenv:Body/>
 </soapenv:Envelope>`
 
-	return performSOAPCall[R](ctx, adapter, template, payload, getDeploySOAPHeaders())
+	return performRawSOAPCall[R](ctx, adapter, template, []byte(payload), getDeploySOAPHeaders())
 }
 
 func performSOAPCall[R any](ctx context.Context, adapter *Adapter,
@@ -63,6 +63,14 @@ func performSOAPCall[R any](ctx context.Context, adapter *Adapter,
 		return nil, fmt.Errorf("%w: %w", ErrMetadataMarshal, err)
 	}
 
+	return performRawSOAPCall[R](ctx, adapter, template, data, headers)
+}
+
+// performRawSOAPCall is like performSOAPCall but accepts pre-built XML bytes,
+// skipping xml.MarshalIndent. Use this when the payload is already raw XML (e.g., deploy requests).
+func performRawSOAPCall[R any](ctx context.Context, adapter *Adapter,
+	template string, data []byte, headers []common.Header,
+) (*R, error) {
 	accessToken, present := common.GetAuthToken(ctx)
 	if !present {
 		return nil, common.ErrMissingAccessToken

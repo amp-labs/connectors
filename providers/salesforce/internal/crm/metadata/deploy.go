@@ -3,7 +3,6 @@ package metadata
 import (
 	"context"
 	"encoding/base64"
-	"encoding/xml"
 	"errors"
 	"fmt"
 
@@ -55,7 +54,7 @@ func (a *Adapter) CheckDeployStatus(ctx context.Context, deployID string) (*Depl
 		return nil, fmt.Errorf("failed to parse deploy status response: %w", err)
 	}
 
-	result := &resp.Body.CheckDeployStatusResponse.Result
+	result := &resp.CheckDeployStatusResponse.Result
 
 	failures := make([]ComponentFailure, len(result.Details.ComponentFailures))
 	for i, cf := range result.Details.ComponentFailures {
@@ -102,7 +101,7 @@ func (a *Adapter) deploy(ctx context.Context, zipData []byte) (string, error) {
 		return "", fmt.Errorf("failed to parse deploy response: %w", err)
 	}
 
-	return resp.Body.DeployResponse.Result.ID, nil
+	return resp.DeployResponse.Result.ID, nil
 }
 
 func getDeploySOAPHeaders() []common.Header {
@@ -112,38 +111,32 @@ func getDeploySOAPHeaders() []common.Header {
 	}
 }
 
-// XML types for deploy SOAP responses.
+// XML types for deploy SOAP responses (body content only, wrapped by Envelope[R]).
 type deployResponse struct {
-	XMLName xml.Name `xml:"Envelope"`
-	Body    struct {
-		DeployResponse struct {
-			Result struct {
-				ID   string `xml:"id"`
-				Done bool   `xml:"done"`
-			} `xml:"result"`
-		} `xml:"deployResponse"`
-	} `xml:"Body"`
+	DeployResponse struct {
+		Result struct {
+			ID   string `xml:"id"`
+			Done bool   `xml:"done"`
+		} `xml:"result"`
+	} `xml:"deployResponse"`
 }
 
 type checkDeployStatusResponse struct {
-	XMLName xml.Name `xml:"Envelope"`
-	Body    struct {
-		CheckDeployStatusResponse struct {
-			Result struct {
-				Done         bool   `xml:"done"`
-				Status       string `xml:"status"`
-				Success      bool   `xml:"success"`
-				ID           string `xml:"id"`
-				ErrorMessage string `xml:"errorMessage"`
-				Details      struct {
-					ComponentFailures []struct {
-						ComponentType string `xml:"componentType"`
-						FullName      string `xml:"fullName"`
-						Problem       string `xml:"problem"`
-						ProblemType   string `xml:"problemType"`
-					} `xml:"componentFailures"`
-				} `xml:"details"`
-			} `xml:"result"`
-		} `xml:"checkDeployStatusResponse"`
-	} `xml:"Body"`
+	CheckDeployStatusResponse struct {
+		Result struct {
+			Done         bool   `xml:"done"`
+			Status       string `xml:"status"`
+			Success      bool   `xml:"success"`
+			ID           string `xml:"id"`
+			ErrorMessage string `xml:"errorMessage"`
+			Details      struct {
+				ComponentFailures []struct {
+					ComponentType string `xml:"componentType"`
+					FullName      string `xml:"fullName"`
+					Problem       string `xml:"problem"`
+					ProblemType   string `xml:"problemType"`
+				} `xml:"componentFailures"`
+			} `xml:"details"`
+		} `xml:"result"`
+	} `xml:"checkDeployStatusResponse"`
 }
