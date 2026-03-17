@@ -76,6 +76,21 @@ func main() {
 	slog.Info("Step 4: Listing metadata to verify field is deleted")
 	printFieldMetadata(ctx, conn, objectName, fieldName)
 
+	// Step 5: Try deleting the same field again to see what error Salesforce returns.
+	slog.Info("Step 5: Deleting the same field again (should fail)")
+
+	deleteRes2, err := conn.DeleteMetadata(ctx, &common.DeleteMetadataParams{
+		Fields: map[string][]string{
+			objectName: {fieldName},
+		},
+	})
+	if err != nil {
+		slog.Info("Second delete returned error (expected)", "error", err)
+	} else {
+		slog.Info("Second delete result (unexpected success):")
+		utils.DumpJSON(deleteRes2, os.Stdout)
+	}
+
 	slog.Info("Done!")
 }
 

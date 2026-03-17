@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -120,8 +121,19 @@ func (a *Adapter) DeleteMetadata(
 				errorMessages[i] = e.Message
 			}
 
+			joined := strings.Join(errorMessages, "; ")
+
+			// If the field doesn't exist, log and continue rather than failing.
+			if strings.Contains(joined, "no CustomField named") ||
+				strings.Contains(joined, "does not exist or is not accessible") {
+				slog.Warn("Field already deleted or does not exist, skipping",
+					"fullName", result.FullName, "errors", joined)
+
+				continue
+			}
+
 			return nil, fmt.Errorf("%w: failed to delete %s: %s",
-				common.ErrBadRequest, result.FullName, strings.Join(errorMessages, "; "))
+				common.ErrBadRequest, result.FullName, joined)
 		}
 	}
 

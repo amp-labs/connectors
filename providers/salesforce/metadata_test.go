@@ -656,7 +656,7 @@ func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrMissingFieldsMetadata},
 		},
 		{
-			Name: "Delete non-existent field returns error",
+			Name: "Delete non-existent field logs warning and succeeds",
 			Input: &common.DeleteMetadataParams{
 				Fields: map[string][]string{
 					"TestObject15__c": {"NonExistent__c"},
@@ -670,10 +670,8 @@ func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseFieldNotFound),
 			}.Server(),
-			Expected: nil,
-			ExpectedErrs: []error{
-				common.ErrBadRequest,
-				testutils.StringError("This custom field does not exist or is not accessible"), // nolint:err113
+			Expected: &common.DeleteMetadataResult{
+				Success: true,
 			},
 		},
 		{

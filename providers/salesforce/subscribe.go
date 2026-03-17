@@ -13,6 +13,7 @@ import (
 
 type SubscribeResult struct {
 	EventChannelMembers map[common.ObjectName]*EventChannelMember
+	QuotaOptimizations  map[common.ObjectName]string // field name for the quota optimization
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
