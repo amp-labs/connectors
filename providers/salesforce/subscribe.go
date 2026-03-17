@@ -160,6 +160,7 @@ func (c *Connector) Subscribe(
 	var rollbackError error
 
 	if failError != nil {
+		// Rollback event channel members.
 		for objName, member := range sfRes.EventChannelMembers {
 			if _, err := c.DeleteEventChannelMember(ctx, member.Id); err != nil {
 				rollbackError = errors.Join(
@@ -174,6 +175,9 @@ func (c *Connector) Subscribe(
 				delete(sfRes.EventChannelMembers, objName)
 			}
 		}
+
+		// Rollback quota optimization fields.
+		c.rollbackQuotaOptimizationFields(ctx, req)
 
 		if rollbackError != nil {
 			res.Status = common.SubscriptionStatusFailedToRollback
@@ -193,6 +197,10 @@ func (c *Connector) Subscribe(
 		res.Result = sfRes
 
 		return res, failError
+	}
+
+	if req != nil && req.QuotaOptimizations != nil {
+		sfRes.QuotaOptimizations = req.QuotaOptimizations
 	}
 
 	res.Status = common.SubscriptionStatusSuccess
@@ -225,6 +233,22 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 	for objectName, member := range sfRes.EventChannelMembers {
 		if _, err := c.DeleteEventChannelMember(ctx, member.Id); err != nil {
 			return fmt.Errorf("failed to delete event channel member '%s': %w", objectName, err)
+		}
+	}
+
+	if sfRes.QuotaOptimizations != nil {
+		deleteFields := make(map[string][]string)
+
+		for objectName, fieldName := range sfRes.QuotaOptimizations {
+			deleteFields[string(objectName)] = append(
+				deleteFields[string(objectName)], fieldName,
+			)
+		}
+
+		if _, err := c.DeleteMetadata(ctx, &common.DeleteMetadataParams{
+			Fields: deleteFields,
+		}); err != nil {
+			return fmt.Errorf("failed to delete quota optimization fields: %w", err)
 		}
 	}
 
@@ -341,12 +365,16 @@ func (c *Connector) UpdateSubscription(
 	// in objectsToDelete array, so we are still preserving some objects
 	// that needs to remain in the subscription
 	if err := c.DeleteSubscription(ctx, deleteParams); err != nil {
+		c.rollbackQuotaOptimizationFields(ctx, req)
+
 		return nil, fmt.Errorf("failed to delete previous subscription: %w", err)
 	}
 
 	// create new subscription
 	createRes, err := c.Subscribe(ctx, params)
 	if err != nil {
+		c.rollbackQuotaOptimizationFields(ctx, req)
+
 		return nil, fmt.Errorf("failed to subscribe to new objects: %w", err)
 	}
 
@@ -362,6 +390,10 @@ func (c *Connector) UpdateSubscription(
 	// remove delete objects from the previous result to return
 	for _, objName := range objectsToDelete {
 		delete(newState.EventChannelMembers, objName)
+	}
+
+	if req != nil && req.QuotaOptimizations != nil {
+		newState.QuotaOptimizations = req.QuotaOptimizations
 	}
 
 	objectsSubscribed := []common.ObjectName{}
@@ -381,4 +413,23 @@ func (c *Connector) UpdateSubscription(
 	}
 
 	return res, nil
+}
+
+func (c *Connector) rollbackQuotaOptimizationFields(ctx context.Context, req *SubscriptionRequest) {
+	if req == nil || req.QuotaOptimizations == nil {
+		return
+	}
+
+	deleteFields := make(map[string][]string)
+
+	for objectName, fieldName := range req.QuotaOptimizations {
+		deleteFields[string(objectName)] = append(
+			deleteFields[string(objectName)], fieldName,
+		)
+	}
+
+	//nolint:errcheck
+	c.DeleteMetadata(ctx, &common.DeleteMetadataParams{
+		Fields: deleteFields,
+	})
 }
