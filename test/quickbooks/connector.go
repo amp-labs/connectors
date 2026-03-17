@@ -28,7 +28,7 @@ func GetQuickBooksConnector(ctx context.Context) *quickbooks.Connector {
 	conn, err := quickbooks.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 		Metadata: map[string]string{
-			"realmID": "9341455309256114", // QuickBooks Company ID, should be set dynamically
+			"realmId": "9341456546759717", // QuickBooks Company ID, should be set dynamically
 		},
 	})
 	if err != nil {
