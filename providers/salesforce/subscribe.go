@@ -5,9 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/go-playground/validator"
 )
 
@@ -89,12 +91,14 @@ func (c *Connector) Subscribe(
 		for objectName, fieldName := range req.QuotaOptimizations {
 			fields[string(objectName)] = []common.FieldDefinition{
 				{
-					FieldName:   fieldName,
-					DisplayName: fieldName + "__c",
+					FieldName:   customFieldAPIName(fieldName),
+					DisplayName: customFieldDisplayName(fieldName),
 					ValueType:   common.FieldTypeBoolean,
-					Unique:      true,
 					Description: "THIS IS AUTOMATED FIELD. DO NOT EDIT THIS FIELD. " + //nolint:lll
 						"This field is used to track if the quota optimization is used for the object",
+					StringOptions: &common.StringFieldOptions{
+						DefaultValue: goutils.Pointer("false"),
+					},
 				},
 			}
 		}
@@ -301,12 +305,14 @@ func (c *Connector) UpdateSubscription(
 		for objectName, fieldName := range req.QuotaOptimizations {
 			fields[string(objectName)] = []common.FieldDefinition{
 				{
-					FieldName:   fieldName,
-					DisplayName: fieldName + "__c",
+					FieldName:   customFieldAPIName(fieldName),
+					DisplayName: customFieldDisplayName(fieldName),
 					ValueType:   common.FieldTypeBoolean,
-					Unique:      true,
 					Description: "THIS IS AUTOMATED FIELD. DO NOT EDIT THIS FIELD. " + //nolint:lll
 						"This field is used to track if the quota optimization is used for the object",
+					StringOptions: &common.StringFieldOptions{
+						DefaultValue: goutils.Pointer("false"),
+					},
 				},
 			}
 		}
@@ -413,6 +419,18 @@ func (c *Connector) UpdateSubscription(
 	}
 
 	return res, nil
+}
+
+func customFieldAPIName(fieldName string) string {
+	if strings.HasSuffix(fieldName, "__c") {
+		return fieldName
+	}
+
+	return fieldName + "__c"
+}
+
+func customFieldDisplayName(fieldName string) string {
+	return strings.TrimSuffix(fieldName, "__c")
 }
 
 func (c *Connector) rollbackQuotaOptimizationFields(ctx context.Context, req *SubscriptionRequest) {
