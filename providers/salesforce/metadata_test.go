@@ -632,3 +632,107 @@ func TestUpsertMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocogni
 		})
 	}
 }
+
+func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
+	t.Parallel()
+
+	payloadDeleteFields := testutils.DataFromFile(t, "metadata/delete/delete-fields-payload.xml")
+	responseDeleteFields := testutils.DataFromFile(t, "metadata/delete/delete-fields-response.xml")
+	responseFieldNotFound := testutils.DataFromFile(t, "metadata/delete/delete-field-not-found.xml")
+
+	tests := []testroutines.DeleteMetadata{
+		{
+			Name:         "At least one field must be provided",
+			Input:        nil,
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFieldsMetadata},
+		},
+		{
+			Name: "Empty fields map",
+			Input: &common.DeleteMetadataParams{
+				Fields: map[string][]string{},
+			},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFieldsMetadata},
+		},
+		{
+			Name: "Delete non-existent field logs warning and succeeds",
+			Input: &common.DeleteMetadataParams{
+				Fields: map[string][]string{
+					"TestObject15__c": {"NonExistent__c"},
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentXML(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/services/Soap/m/60.0"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseFieldNotFound),
+			}.Server(),
+			Expected: &common.DeleteMetadataResult{
+				Success: true,
+			},
+		},
+		{
+			Name: "Successfully delete a custom field",
+			Input: &common.DeleteMetadataParams{
+				Fields: map[string][]string{
+					"TestObject15__c": {"Birthday__c"},
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentXML(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/services/Soap/m/60.0"),
+					mockcond.BodyBytes(payloadDeleteFields),
+				},
+				Then: mockserver.Response(http.StatusOK, responseDeleteFields),
+			}.Server(),
+			Expected: &common.DeleteMetadataResult{
+				Success: true,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx := common.WithAuthToken(t.Context(), "TEST_ACCESS_TOKEN")
+
+			tt.RunWithContext(t, ctx, func() (connectors.DeleteMetadataConnector, error) {
+				return constructTestConnector(tt.Server.URL)
+			})
+		})
+	}
+}
+
+func TestDeleteMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
+	t.Parallel()
+
+	tests := []testroutines.DeleteMetadata{
+		{
+			Name: "Access token must be injected into the context",
+			Input: &common.DeleteMetadataParams{
+				Fields: map[string][]string{
+					"TestObject15__c": {"Birthday__c"},
+				},
+			},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingAccessToken},
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.DeleteMetadataConnector, error) {
+				return constructTestConnector(tt.Server.URL)
+			})
+		})
+	}
+}
