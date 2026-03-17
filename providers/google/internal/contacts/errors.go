@@ -2,6 +2,7 @@ package contacts
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -21,7 +22,7 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 )
 
 var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
-	http.StatusConflict: common.ErrBadRequest,
+	http.StatusConflict: errors.Join(common.ErrConflict, common.ErrBadRequest),
 }
 
 // ErrorDetails

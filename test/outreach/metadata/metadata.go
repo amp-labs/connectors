@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"os"
 	"os/signal"
 	"syscall"
 
@@ -20,12 +20,10 @@ func main() {
 
 	conn := connTest.GetOutreachConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"snippets", "duties", "phoneNumbers"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"snippets", "duties", "phoneNumbers", "devices", "emailAddresses"})
 	if err != nil {
 		utils.Fail("error listing metadata for Outreach", "error", err)
 	}
 
-	// Print the results
-	fmt.Println("Results: ", m.Result)
-	fmt.Println("Errors: ", m.Errors)
+	utils.DumpJSON(m, os.Stdout)
 }

@@ -1,6 +1,7 @@
 package readhelper
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -8,6 +9,15 @@ import (
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
+
+// ErrTimestampKeyNotFound is returned when a unix-ms timestamp field is absent from a record.
+var ErrTimestampKeyNotFound = errors.New("bad since timestamp key: field not found")
+
+// TimestampFormatUnixMs is a special format string that signals the timestamp field
+// holds a Unix epoch value in milliseconds (int64), rather than a formatted string.
+// Internally this maps to time.UnixMilli, allowing reuse of MakeTimeFilterFunc
+// for providers that store timestamps as integer milliseconds.
+const TimestampFormatUnixMs = "unix_ms"
 
 // FilterSortedRecords filters and returns only the records that have changed since the last sync,
 // based on a provided timestamp key and reference value.
@@ -129,7 +139,8 @@ func MakeIdentityFilterFunc(nextPageFunc common.NextPageFunc) common.RecordsFilt
 //   - order: defines the chronological order of the input records.
 //   - boundary: defines whether Since/Until are inclusive or exclusive.
 //   - timestampKey: JSON key used to extract the timestamp value from each record.
-//   - timestampFormat: time format layout for parsing timestamps.
+//   - timestampFormat: time format layout for parsing timestamps. Use [TimestampFormatUnixMs]
+//     for fields that store millisecond epoch integers instead of formatted strings.
 //   - nextPageFunc: function used to determine the next page token from the response body.
 func MakeTimeFilterFunc(
 	order TimeOrder, boundary *TimeBoundary,
@@ -153,7 +164,7 @@ func MakeTimeFilterFunc(
 //	    {"meta": {"info": {"created_at": "..."} }}
 //	Then zoom should be: []string{"meta", "info"}
 //	And timestampKey: "created_at"
-func MakeTimeFilterFuncWithZoom(
+func MakeTimeFilterFuncWithZoom( // nolint:cyclop
 	order TimeOrder, boundary *TimeBoundary,
 	zoom []string, timestampKey string, timestampFormat string,
 	nextPageFunc common.NextPageFunc,
@@ -165,11 +176,11 @@ func MakeTimeFilterFuncWithZoom(
 		}
 
 		var (
-			filtered []*ajson.Node
-			hasMore  bool
+			filtered   []*ajson.Node
+			stopPaging bool
 		)
 
-		for idx, nodeRecord := range records {
+		for _, nodeRecord := range records {
 			recordTimestamp, err := extractTimestamp(nodeRecord, timestampKey, timestampFormat, zoom...)
 			if err != nil {
 				return nil, "", err
@@ -177,56 +188,81 @@ func MakeTimeFilterFuncWithZoom(
 
 			if boundary.Contains(params, *recordTimestamp) {
 				filtered = append(filtered, nodeRecord)
-				hasMore = hasMore || hasNextPage(order, idx, len(records))
+
+				continue
+			}
+
+			switch order {
+			case ChronologicalOrder:
+				// [Time] oldest --> newest
+				// -------------[.......]---------- * --------------->
+				//           (since   UNTIL)     (record)
+				// If record is after the until, then anything further is too new.
+				if boundary.After(params, *recordTimestamp) {
+					stopPaging = true
+				}
+			case ReverseOrder:
+				// [Time] newest <-- oldest
+				// <-------------[.......]---------- * ---------------
+				//           (until   SINCE)     (record)
+				// If record is before the since, then anything further is even older.
+				if boundary.Before(params, *recordTimestamp) {
+					stopPaging = true
+				}
+			case Unordered:
+				// cannot infer anything
+			}
+
+			if stopPaging {
+				break
 			}
 		}
 
-		// When we can infer that no further pages will satisfy the time range,
-		// skip pagination entirely.
-		if !hasMore {
+		// Proven exhaustion.
+		if stopPaging {
 			return filtered, "", nil
 		}
 
+		// Continue normally.
 		next, err := nextPageFunc(body)
-		if err != nil {
-			return nil, next, fmt.Errorf("error: constructing next page value: %w", err)
-		}
 
-		return filtered, next, nil
-	}
-}
-
-// hasNextPage determines whether pagination should continue based on
-// record ordering and position within the current page.
-func hasNextPage(order TimeOrder, idx int, recordsLen int) bool {
-	switch order {
-	case Unordered:
-		// Pagination cannot be inferred; assume more pages exist.
-		return true
-	case ChronologicalOrder:
-		// If last record on this page is still inside range, there might be more.
-		return idx == recordsLen-1
-	case ReverseOrder:
-		// If first record in reverse-ordered page is still inside range, there might be more.
-		return idx == 0
-	default:
-		return false
+		return filtered, next, err
 	}
 }
 
 func extractTimestamp(nodeRecord *ajson.Node, timestampKey string, timestampFormat string, zoom ...string,
 ) (*time.Time, error) {
-	// Extract the timestamp value from the record
+	if timestampFormat == TimestampFormatUnixMs {
+		return extractUnixMsTimestamp(nodeRecord, timestampKey, zoom...)
+	}
+
+	// Extract the timestamp value from the record as a formatted string.
 	timestamp, err := jsonquery.New(nodeRecord, zoom...).StringRequired(timestampKey)
 	if err != nil {
 		return nil, fmt.Errorf("error: bad since timestamp key: %w", err)
 	}
 
-	// Parse the timestamp using the provider's specific format
 	recordTimestamp, err := time.Parse(timestampFormat, timestamp)
 	if err != nil {
 		return nil, fmt.Errorf("error: cannot parse timestamp for key %q: %w", timestampKey, err)
 	}
 
 	return &recordTimestamp, nil
+}
+
+// extractUnixMsTimestamp reads an integer millisecond epoch field and converts it
+// to a time.Time using time.UnixMilli.
+func extractUnixMsTimestamp(nodeRecord *ajson.Node, timestampKey string, zoom ...string) (*time.Time, error) {
+	val, err := jsonquery.New(nodeRecord, zoom...).IntegerOptional(timestampKey)
+	if err != nil {
+		return nil, fmt.Errorf("error: bad since timestamp key: %w", err)
+	}
+
+	if val == nil {
+		return nil, fmt.Errorf("%w: %q", ErrTimestampKeyNotFound, timestampKey)
+	}
+
+	t := time.UnixMilli(*val)
+
+	return &t, nil
 }

@@ -6,11 +6,12 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
 // Read reads data from Hubspot. If Since is set, it will use the
-// Search endpoint instead to filter records, but it will be
+// ReadUsingSearchAPI endpoint instead to filter records, but it will be
 // limited to a maximum of 10,000 records. This is a limit of the
 // search endpoint. If Since is not set, it will use the read endpoint.
 // In case Deleted objects won’t appear in any search results.
@@ -47,6 +48,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		filters = append(filters, BuildUntilTimestampFilterGroup(&config))
 	}
 
+	filters = append(filters, BuildBuilderFilters(config.BuilderFilter)...)
+
 	if len(filters) != 0 {
 		searchParams := SearchParams{
 			ObjectName: config.ObjectName,
@@ -62,7 +65,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			AssociatedObjects: config.AssociatedObjects,
 		}
 
-		return c.Search(ctx, searchParams)
+		return c.ReadUsingSearchAPI(ctx, searchParams)
 	}
 
 	url, err := c.buildReadURL(config)
@@ -79,7 +82,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		rsp,
 		core.GetRecords,
 		core.GetNextRecordsURL,
-		c.getDataMarshaller(ctx, config.ObjectName, config.AssociatedObjects),
+		associations.CreateDataMarshallerWithAssociations(
+			ctx, c.crmAdapter.AssociationsFiller, config.ObjectName, config.AssociatedObjects),
 		config.Fields,
 	)
 }

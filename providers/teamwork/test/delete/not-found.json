@@ -1,0 +1,12 @@
+{
+  "errors": [
+    {
+      "id": "1-68e45d75-1bc6fe931aa9e5256e257d00",
+      "title": "invalid payload",
+      "detail": "company not found",
+      "meta": {
+        "companyId": 1412779
+      }
+    }
+  ]
+}

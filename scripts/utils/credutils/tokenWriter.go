@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"log/slog"
 	"os"
 	"time"
 
@@ -28,7 +29,15 @@ func WriteToken(defaultCredsFilePath string, token *oauth2.Token) error {
 		return errors.New("cannot infer provider in credentials file") // nolint:err113
 	}
 
-	providerCredsFilePath := credscanning.LoadPath(providerName)
+	// There can be a dedicated file for each provider module.
+	module := credentials.Get(credscanning.Fields.Module.PathJSON)
+
+	moduleName, ok := module.(string)
+	if !ok {
+		slog.Info("module is not specified in credentials file")
+	}
+
+	providerCredsFilePath := credscanning.LoadPath(providerName, moduleName)
 	_, err = internalCredsFileWrite(providerCredsFilePath, token)
 
 	return err
@@ -70,6 +79,8 @@ func internalCredsFileWrite(filePath string, token *oauth2.Token) (*ordered.Orde
 	if err != nil {
 		return nil, err
 	}
+
+	slog.Info("updating TOKENs in file", "path", filePath)
 
 	return orderedMap, os.WriteFile(filePath, outputData, os.ModePerm) // nolint:gosec
 }

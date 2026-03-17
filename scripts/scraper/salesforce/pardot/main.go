@@ -2,6 +2,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"log/slog"
@@ -69,6 +70,7 @@ func createSchemas() {
 		fields := slices.Concat(
 			extractFieldsFromTable(doc, objectName, "#required-fields", false),
 			extractFieldsFromTable(doc, objectName, "#optional-fields", false),
+			extractFieldsFromTable(doc, objectName, "#required-editable-fields", false),
 			extractFieldsFromTable(doc, objectName, "#read-only-fields", true),
 		)
 
@@ -85,6 +87,9 @@ func createSchemas() {
 		log.Printf("Schemas completed %.2f%% [%v]\n",
 			getPercentage(identifier, len(index.ModelDocs)), objectName)
 	}
+
+	// Objects that cannot be extracted that easily due to different HTML structure.
+	addHardcodedObjects(schemas)
 
 	goutils.MustBeNil(files.OutputSalesforcePardot.FlushSchemas(schemas))
 }
@@ -252,4 +257,28 @@ func makeList(options ...string) staticschema.FieldValues {
 			DisplayValue: option,
 		}
 	})
+}
+
+func addHardcodedObjects(schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any]) {
+	schemas.Add(providers.ModuleSalesforceAccountEngagement,
+		"imports", "Imports", "imports", "values",
+		loadFieldsFromFile(files.ImportsFields),
+		goutils.Pointer("https://developer.salesforce.com/docs/marketing/pardot/guide/import-v5.html"),
+		nil,
+	)
+	schemas.Add(providers.ModuleSalesforceAccountEngagement,
+		"exports", "Exports", "exports", "values",
+		loadFieldsFromFile(files.ExportsFields),
+		goutils.Pointer("https://developer.salesforce.com/docs/marketing/pardot/guide/export-v5.html"),
+		nil,
+	)
+}
+
+func loadFieldsFromFile(jsonData []byte) staticschema.FieldMetadataMapV2 {
+	fields := make(staticschema.FieldMetadataMapV2)
+
+	err := json.Unmarshal(jsonData, &fields)
+	goutils.MustBeNil(err)
+
+	return fields
 }

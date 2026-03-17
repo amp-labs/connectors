@@ -1,0 +1,89 @@
+{
+  "companies": [
+    {
+      "id": 1387405,
+      "name": "Ampersand",
+      "logoUrl": "",
+      "createdAt": "2024-05-20T23:21:06Z",
+      "updatedAt": null,
+      "addressOne": "",
+      "addressTwo": "",
+      "city": "San Francisco",
+      "state": "",
+      "zip": "",
+      "countryCode": "",
+      "emailOne": "",
+      "emailTwo": "",
+      "emailThree": "",
+      "website": "",
+      "cid": "",
+      "phone": "",
+      "fax": "",
+      "canSeePrivate": true,
+      "isOwner": true,
+      "industryId": null,
+      "industry": null,
+      "companyNameUrl": "1387405-ampersand",
+      "accounts": 1,
+      "collaborators": 0,
+      "contacts": 0,
+      "clients": 0,
+      "clientManagedBy": null,
+      "companyUpdate": null,
+      "companyDomains": [],
+      "tags": [],
+      "status": "active",
+      "currency": {
+        "id": 1,
+        "type": "currencies"
+      }
+    },
+    {
+      "id": 1412778,
+      "name": "Nike",
+      "logoUrl": "",
+      "createdAt": "2025-09-30T21:28:22Z",
+      "updatedAt": "2025-09-30T21:28:30Z",
+      "addressOne": "",
+      "addressTwo": "",
+      "city": "Chicago",
+      "state": "",
+      "zip": "",
+      "countryCode": "",
+      "emailOne": "",
+      "emailTwo": "",
+      "emailThree": "",
+      "website": "",
+      "cid": "",
+      "phone": "",
+      "fax": "",
+      "canSeePrivate": false,
+      "isOwner": false,
+      "industryId": null,
+      "industry": null,
+      "companyNameUrl": "1412778-nike",
+      "accounts": 0,
+      "collaborators": 0,
+      "contacts": 0,
+      "clients": 0,
+      "clientManagedBy": null,
+      "companyUpdate": null,
+      "companyDomains": [],
+      "tags": [],
+      "status": "active",
+      "currency": {
+        "id": 1,
+        "type": "currencies"
+      }
+    }
+  ],
+  "meta": {
+    "page": {
+      "pageOffset": 0,
+      "pageSize": 2,
+      "count": 2,
+      "hasMore": true
+    }
+  },
+  "included": {}
+}

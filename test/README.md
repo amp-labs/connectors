@@ -3,7 +3,8 @@
 This folder contains **scripts that run against provider APIs**.
 
 These files provide examples of how to instantiate and use a connector.
-Here, you can find scripts for `Read`, `Write`, `ListObjectMetadata`, `Delete`, and other unique operations used by connectors.
+Here, you can find scripts for `Read`, `Write`, `ListObjectMetadata`, `Delete`, and other unique operations used by
+connectors.
 
 Every operation that exists on a connector has a corresponding script to support that functionality.
 
@@ -21,31 +22,45 @@ Then, execute the following command in the project root directory:
 ```
 go run ./test/salesforce/read-write/
 ```
+
 This will work assuming you have `salesforce-creds.json` under `connectors` root.
 
 ## File location
 
 By default, JSON file is expected to be at the root of the project `connectors`.
-The file should be named `"<PROVIDER_NAME | to_kebab_case>" + "-creds.json"`.
+For a provider <PROVIDER_NAME> and optional module <MODULE_NAME>, it first tries
+`"<PROVIDER_NAME>-<MODULE_NAME | to_kebab_case>-creds.json"`, then falls back
+to `"<PROVIDER_NAME | to_kebab_case>-creds.json"`.
 Alternatively, you can specify a different file path and name the file as you wish.
-To apply this, set the environment variable `"<PROVIDER_NAME | to_upper_snake>" + "_CRED_FILE"` to the desired file location.
+To apply this, set the environment variable `"<PROVIDER_NAME | to_upper_snake>" + "_CRED_FILE"`
+(or `"<PROVIDER_NAME | to_upper_snake>_<MODULE_NAME | to_upper_snake>" + "_CRED_FILE"`) to the desired file location.
 
 **Examples:**
 
-| Provider       | File Name                  | Env holding file path     |
-|----------------|----------------------------|---------------------------|
-| dynamicsCRM    | dynamics-crm-creds.json    | DYNAMICS_CRM_CRED_FILE    |
-| zendeskSupport | zendesk-support-creds.json | ZENDESK_SUPPORT_CRED_FILE |
-| anthropic      | anthropic-creds.json       | ANTHROPIC_CRED_FILE       |
+| Provider       | Module   | File Name                  | Env holding file path     |
+|----------------|----------|----------------------------|---------------------------|
+| dynamicsCRM    |          | dynamics-crm-creds.json    | DYNAMICS_CRM_CRED_FILE    |
+| zendeskSupport |          | zendesk-support-creds.json | ZENDESK_SUPPORT_CRED_FILE |
+| anthropic      |          | anthropic-creds.json       | ANTHROPIC_CRED_FILE       |
+| google         |          | google-creds.json          | GOOGLE_CRED_FILE          |
+| google         | calendar | google-calendar-creds.json | GOOGLE_CALENDAR_CRED_FILE |
+| google         | gmail    | google-gmail-creds.json    | GOOGLE_GMAIL_CRED_FILE    |
+| google         | people   | google-people-creds.json   | GOOGLE_PEOPLE_CRED_FILE   |
 
+> Note: In the above examples, if `google-calendar-creds.json` and other such files are **missing**, it will fall back
+> to `google-creds.json`.
 
 ## File Content
-The file must have a `provider` field. Other required fields can be inferred by checking the constructor in `test/<PROVIDER_NAME>/connector.go`.
+
+The file must have a `provider` field. Other required fields can be inferred by checking the constructor in
+`test/<PROVIDER_NAME>/connector.go`.
 If any required fields are missing, an error message will indicate the missing fields.
 
-File formats can be categorized into common authentication types. Below, you will find examples for each authentication category.
+File formats can be categorized into common authentication types. Below, you will find examples for each authentication
+category.
 
 **API Key**
+
 ```json
 {
   "provider": "anthropic",
@@ -54,6 +69,7 @@ File formats can be categorized into common authentication types. Below, you wil
 ```
 
 **Basic auth with Password**
+
 ```json
 {
   "provider": "braintree",
@@ -63,6 +79,7 @@ File formats can be categorized into common authentication types. Below, you wil
 ```
 
 **Oauth2**
+
 ```json
 {
   "provider": "dynamicsCRM",

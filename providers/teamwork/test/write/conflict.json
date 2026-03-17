@@ -1,0 +1,9 @@
+{
+  "errors": [
+    {
+      "id": "1-68e45d08-35543dce7a74a7d12df0833c",
+      "title": "conflict",
+      "detail": "Company name already in use"
+    }
+  ]
+}
