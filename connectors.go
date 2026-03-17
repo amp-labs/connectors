@@ -102,6 +102,14 @@ type UpsertMetadataConnector interface {
 	UpsertMetadata(ctx context.Context, params *common.UpsertMetadataParams) (*common.UpsertMetadataResult, error)
 }
 
+// DeleteMetadataConnector is an interface that extends the Connector interface with
+// the ability to delete custom fields in the SaaS instance.
+type DeleteMetadataConnector interface {
+	Connector
+
+	DeleteMetadata(ctx context.Context, params *common.DeleteMetadataParams) (*common.DeleteMetadataResult, error)
+}
+
 // AuthMetadataConnector is an interface that extends the Connector interface with
 // the ability to retrieve metadata information about authentication.
 type AuthMetadataConnector interface {

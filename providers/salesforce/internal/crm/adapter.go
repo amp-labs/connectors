@@ -72,6 +72,13 @@ func (a Adapter) UpsertMetadata(
 	return a.customAdapter.UpsertMetadata(ctx, params)
 }
 
+func (a Adapter) DeleteMetadata(
+	ctx context.Context, params *common.DeleteMetadataParams,
+) (*common.DeleteMetadataResult, error) {
+	// Delegated.
+	return a.customAdapter.DeleteMetadata(ctx, params)
+}
+
 func (a Adapter) BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error) {
 	// Delegated.
 	return a.batchAdapter.BatchWrite(ctx, params)

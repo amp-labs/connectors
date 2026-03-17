@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -91,6 +92,42 @@ func (a *Adapter) UpsertMetadata(
 
 	// [Current state]: Fields upserted, permission set updated, and current user is assigned to the permission set.
 	return result, nil
+}
+
+// DeleteMetadata deletes custom field definitions in Salesforce.
+//
+// Reference:
+//
+//	https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deleteMetadata.htm
+func (a *Adapter) DeleteMetadata(
+	ctx context.Context, params *common.DeleteMetadataParams,
+) (*common.DeleteMetadataResult, error) {
+	if err := params.ValidateParams(); err != nil {
+		return nil, err
+	}
+
+	payload := NewDeleteCustomFieldsPayload(params)
+
+	response, err := performMetadataAPICall[DeleteMetadataResponse](ctx, a, payload)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, result := range response.Response.Results {
+		if !result.Success {
+			errorMessages := make([]string, len(result.Errors))
+			for i, e := range result.Errors {
+				errorMessages[i] = e.Message
+			}
+
+			return nil, fmt.Errorf("%w: failed to delete %s: %s",
+				common.ErrBadRequest, result.FullName, strings.Join(errorMessages, "; "))
+		}
+	}
+
+	return &common.DeleteMetadataResult{
+		Success: true,
+	}, nil
 }
 
 func (a *Adapter) upsertCustomFields(
