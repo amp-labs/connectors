@@ -13,6 +13,7 @@ import (
 
 type SubscribeResult struct {
 	EventChannelMembers map[common.ObjectName]*EventChannelMember
+	QuotaOptimizations  map[common.ObjectName]string // field name for the quota optimization
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
@@ -31,7 +32,8 @@ type Filter struct {
 }
 
 type SubscriptionRequest struct {
-	Filters map[common.ObjectName]*Filter
+	Filters            map[common.ObjectName]*Filter
+	QuotaOptimizations map[common.ObjectName]string // field name for the quota optimization
 }
 
 // Subscribe subscribes to the events for the given objects.
@@ -78,6 +80,29 @@ func (c *Connector) Subscribe(
 				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'", errInvalidRequestType,
 				req, params.Request,
 			)
+		}
+	}
+
+	if req != nil && req.QuotaOptimizations != nil {
+		fields := make(map[string][]common.FieldDefinition)
+
+		for objectName, fieldName := range req.QuotaOptimizations {
+			fields[string(objectName)] = []common.FieldDefinition{
+				{
+					FieldName:   fieldName,
+					DisplayName: fieldName + "__c",
+					ValueType:   common.FieldTypeBoolean,
+					Unique:      true,
+					Description: "THIS IS AUTOMATED FIELD. DO NOT EDIT THIS FIELD. " + //nolint:lll
+						"This field is used to track if the quota optimization is used for the object",
+				},
+			}
+		}
+
+		if _, err := c.UpsertMetadata(ctx, &common.UpsertMetadataParams{
+			Fields: fields,
+		}); err != nil {
+			return nil, fmt.Errorf("failed to upsert quota optimization fields: %w", err)
 		}
 	}
 
@@ -230,6 +255,43 @@ func (c *Connector) UpdateSubscription(
 			prevState,
 			previousResult.Result,
 		)
+	}
+
+	var req *SubscriptionRequest
+
+	if params.Request != nil {
+		var ok bool
+
+		req, ok = params.Request.(*SubscriptionRequest)
+		if !ok {
+			return nil, fmt.Errorf(
+				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'", errInvalidRequestType,
+				req, params.Request,
+			)
+		}
+	}
+
+	if req != nil && req.QuotaOptimizations != nil {
+		fields := make(map[string][]common.FieldDefinition)
+
+		for objectName, fieldName := range req.QuotaOptimizations {
+			fields[string(objectName)] = []common.FieldDefinition{
+				{
+					FieldName:   fieldName,
+					DisplayName: fieldName + "__c",
+					ValueType:   common.FieldTypeBoolean,
+					Unique:      true,
+					Description: "THIS IS AUTOMATED FIELD. DO NOT EDIT THIS FIELD. " + //nolint:lll
+						"This field is used to track if the quota optimization is used for the object",
+				},
+			}
+		}
+
+		if _, err := c.UpsertMetadata(ctx, &common.UpsertMetadataParams{
+			Fields: fields,
+		}); err != nil {
+			return nil, fmt.Errorf("failed to upsert quota optimization fields: %w", err)
+		}
 	}
 
 	objectsToExcludeFromSubscription := []common.ObjectName{}
