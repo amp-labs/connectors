@@ -650,7 +650,7 @@ func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name: "Empty fields map",
 			Input: &common.DeleteMetadataParams{
-				Fields: map[string][]string{},
+				Fields: map[common.ObjectName][]string{},
 			},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingFieldsMetadata},
@@ -658,7 +658,7 @@ func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name: "Delete non-existent field logs warning and succeeds",
 			Input: &common.DeleteMetadataParams{
-				Fields: map[string][]string{
+				Fields: map[common.ObjectName][]string{
 					"TestObject15__c": {"NonExistent__c"},
 				},
 			},
@@ -677,7 +677,7 @@ func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name: "Successfully delete a custom field",
 			Input: &common.DeleteMetadataParams{
-				Fields: map[string][]string{
+				Fields: map[common.ObjectName][]string{
 					"TestObject15__c": {"Birthday__c"},
 				},
 			},
@@ -716,7 +716,7 @@ func TestDeleteMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocogni
 		{
 			Name: "Access token must be injected into the context",
 			Input: &common.DeleteMetadataParams{
-				Fields: map[string][]string{
+				Fields: map[common.ObjectName][]string{
 					"TestObject15__c": {"Birthday__c"},
 				},
 			},
