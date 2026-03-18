@@ -33,7 +33,7 @@ func init() {
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{{
 				Name:         "region",
-				DisplayName:  "URL Region",
+				DisplayName:  "Region",
 				DefaultValue: "na",
 				DocsURL:      "", // TODO link to real docs
 			}},
