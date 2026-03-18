@@ -35,6 +35,7 @@ import (
 	"github.com/amp-labs/connectors/providers/clickup"
 	"github.com/amp-labs/connectors/providers/closecrm"
 	"github.com/amp-labs/connectors/providers/cloudtalk"
+	"github.com/amp-labs/connectors/providers/connectWise"
 	"github.com/amp-labs/connectors/providers/constantcontact"
 	"github.com/amp-labs/connectors/providers/copper"
 	"github.com/amp-labs/connectors/providers/customerapp"
@@ -168,6 +169,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.ClickUp:                 wrapper(newClickUpConnector),
 	providers.Close:                   wrapper(newCloseConnector),
 	providers.CloudTalk:               wrapper(newCloudTalkConnector),
+	providers.ConnectWise:             wrapper(newConnectWiseConnector),
 	providers.ConstantContact:         wrapper(newConstantContactConnector),
 	providers.Copper:                  wrapper(newCopperConnector),
 	providers.CustomerJourneysApp:     wrapper(newCustomerJourneysAppConnector),
@@ -473,6 +475,12 @@ func newCloudTalkConnector(
 	params common.ConnectorParams,
 ) (*cloudtalk.Connector, error) {
 	return cloudtalk.NewConnector(params)
+}
+
+func newConnectWiseConnector(
+	params common.ConnectorParams,
+) (*connectWise.Connector, error) {
+	return connectWise.NewConnector(params)
 }
 
 func newKlaviyoConnector(
