@@ -437,20 +437,20 @@ func prepareQuotaOptimizationObjectFieldsForUpdate(
 ) map[common.ObjectName]string {
 	var newQuotaFields map[common.ObjectName]string
 
-	if req != nil && req.QuotaOptimizationObjectFields != nil {
-		newQuotaFields = make(map[common.ObjectName]string)
+	if req == nil || len(req.QuotaOptimizationObjectFields) == 0 {
+		return newQuotaFields
+	}
 
-		for objectName, fieldName := range req.QuotaOptimizationObjectFields {
-			if _, existed := prevState.QuotaOptimizationObjectFields[objectName]; !existed {
-				newQuotaFields[objectName] = fieldName
-			}
+	newQuotaFields = make(map[common.ObjectName]string)
+
+	for objectName, fieldName := range req.QuotaOptimizationObjectFields {
+		if _, existed := prevState.QuotaOptimizationObjectFields[objectName]; !existed {
+			newQuotaFields[objectName] = fieldName
 		}
 	}
 
-	if prevState.QuotaOptimizationObjectFields != nil && req != nil && req.QuotaOptimizationObjectFields != nil {
-		for objectName := range req.QuotaOptimizationObjectFields {
-			delete(prevState.QuotaOptimizationObjectFields, objectName)
-		}
+	for objectName := range req.QuotaOptimizationObjectFields {
+		delete(prevState.QuotaOptimizationObjectFields, objectName)
 	}
 
 	return newQuotaFields
