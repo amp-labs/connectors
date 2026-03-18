@@ -195,7 +195,10 @@ func (c *Connector) UpdateEventChannelMember(
 	ctx context.Context,
 	member *EventChannelMember,
 ) (*EventChannelMember, error) {
-	_, err := c.patchToSFAPI(ctx, member.Metadata,
+	// Salesforce Tooling API expects the Metadata wrapper and FullName in the PATCH body.
+	body := &EventChannelMember{FullName: member.FullName, Metadata: member.Metadata}
+
+	_, err := c.patchToSFAPI(ctx, body,
 		"tooling/sobjects/PlatformEventChannelMember/"+member.Id, "EventChannelMember")
 	if err != nil {
 		return nil, err

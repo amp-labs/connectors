@@ -221,7 +221,7 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 		}
 	}
 
-	if sfRes.QuotaOptimizationObjectFields != nil {
+	if len(sfRes.QuotaOptimizationObjectFields) > 0 {
 		deleteFields := make(map[common.ObjectName][]string)
 
 		for objectName, fieldName := range sfRes.QuotaOptimizationObjectFields {
@@ -451,7 +451,7 @@ func prepareQuotaOptimizationObjectFieldsForUpdate(
 func (c *Connector) upsertQuotaOptimizationFields(
 	ctx context.Context, req *SubscriptionRequest,
 ) error {
-	if req == nil || req.QuotaOptimizationObjectFields == nil {
+	if req == nil || len(req.QuotaOptimizationObjectFields) == 0 {
 		return nil
 	}
 
@@ -510,7 +510,7 @@ func (c *Connector) updateChannelMemberFilters(
 }
 
 func (c *Connector) rollbackQuotaOptimizationFields(ctx context.Context, req *SubscriptionRequest) error {
-	if req == nil || req.QuotaOptimizationObjectFields == nil {
+	if req == nil || len(req.QuotaOptimizationObjectFields) == 0 {
 		return nil
 	}
 
