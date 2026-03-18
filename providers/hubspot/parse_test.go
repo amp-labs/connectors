@@ -403,8 +403,8 @@ func TestGetLastResultId(t *testing.T) {
 	}
 }
 
-// associationsFiller is a test stub that overrides the default
-// association-filling behavior of the AssociationsFiller.
+// testFiller is a test stub implementing associations.Filler.
+// It replaces the real association population logic when testing associations.CreateDataMarshallerWithAssociations.
 type testFiller struct{}
 
 func (testFiller) FillAssociations(
