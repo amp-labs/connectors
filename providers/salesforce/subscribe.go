@@ -86,7 +86,7 @@ func (c *Connector) Subscribe(
 	}
 
 	if err := c.upsertQuotaOptimizationFields(ctx, req); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to upsert quota optimization fields: %w", err)
 	}
 
 	sfRes := &SubscribeResult{
@@ -335,9 +335,9 @@ func (c *Connector) UpdateSubscription(
 	// in objectsToDelete array, so we are still preserving some objects
 	// that needs to remain in the subscription
 	if err := c.DeleteSubscription(ctx, deleteParams); err != nil {
-		rbReq := &SubscriptionRequest{QuotaOptimizations: newQuotaFields}
-		if rbErr := c.rollbackQuotaOptimizationFields(ctx, rbReq); rbErr != nil {
-			return nil, errors.Join(err, fmt.Errorf("failed to rollback quota optimization fields: %w", rbErr))
+		resetReq := &SubscriptionRequest{QuotaOptimizations: newQuotaFields}
+		if resetErr := c.rollbackQuotaOptimizationFields(ctx, resetReq); resetErr != nil {
+			return nil, errors.Join(err, fmt.Errorf("failed to rollback quota optimization fields: %w", resetErr))
 		}
 
 		return nil, fmt.Errorf("failed to delete previous subscription: %w", err)
@@ -359,8 +359,10 @@ func (c *Connector) UpdateSubscription(
 	// create new subscription
 	createRes, err := c.Subscribe(ctx, params)
 	if err != nil {
-		rbReq := &SubscriptionRequest{QuotaOptimizations: newQuotaFields}
-		c.rollbackQuotaOptimizationFields(ctx, rbReq) //nolint:errcheck
+		rollbackReq := &SubscriptionRequest{QuotaOptimizations: newQuotaFields}
+		if rbErr := c.rollbackQuotaOptimizationFields(ctx, rollbackReq); rbErr != nil {
+			return nil, errors.Join(err, fmt.Errorf("failed to rollback quota optimization fields: %w", rbErr))
+		}
 
 		return nil, fmt.Errorf("failed to subscribe to new objects: %w", err)
 	}
