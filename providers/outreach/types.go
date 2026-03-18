@@ -56,3 +56,19 @@ type SuccessfulSubscription struct {
 type SubscriptionResult struct {
 	Subscriptions map[common.ObjectName]map[ModuleEvent]createSubscriptionsResponse `json:"Subscriptions"`
 }
+
+type Data struct {
+	Data []dataItem `json:"data"`
+}
+
+type includedObjects struct {
+	Included []dataItem `json:"included,omitempty"`
+}
+
+type dataItem struct {
+	Type          string         `json:"type"`
+	ID            int            `json:"id"`
+	Relationships map[string]any `json:"relationships"`
+	Attributes    map[string]any `json:"attributes"`
+	Links         map[string]any `json:"links"`
+}

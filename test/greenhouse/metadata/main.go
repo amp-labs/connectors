@@ -22,7 +22,7 @@ func main() {
 	conn := connTest.GetGreenhouseConnector(ctx)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		"candidates", "applications", "jobs", "departments",
+		"applications", "users", "scorecards",
 	})
 	if err != nil {
 		utils.Fail("error listing metadata", "error", err)

@@ -1,0 +1,8 @@
+{
+  "access_token": "dvt_aat_abc123xyz",
+  "client_id": "crawler-service",
+  "expires_in": 3600,
+  "refresh_token": "dvt_rt_xyz789",
+  "scope": "webcrawler.read webcrawler.write",
+  "token_type": "bearer"
+}

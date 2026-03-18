@@ -8,13 +8,12 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/greenhouse"
 	"github.com/amp-labs/connectors/test/utils"
-	testUtils "github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )
 
 func GetGreenhouseConnector(ctx context.Context) *greenhouse.Connector {
 	filePath := credscanning.LoadPath(providers.Greenhouse)
-	reader := testUtils.MustCreateProvCredJSON(filePath, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := greenhouse.NewConnector(
 		common.ConnectorParams{
@@ -22,7 +21,7 @@ func GetGreenhouseConnector(ctx context.Context) *greenhouse.Connector {
 		},
 	)
 	if err != nil {
-		testUtils.Fail("error creating connector", "error", err)
+		utils.Fail("error creating connector", "error", err)
 	}
 
 	return conn

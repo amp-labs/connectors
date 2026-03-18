@@ -52,10 +52,10 @@ func (t *assocType) String() string {
 }
 
 // getUniqueIDs returns a slice of unsorted unique IDs from the given data.
-func getUniqueIDs(data *[]common.ReadResultRow) []string {
+func getUniqueIDs(data []common.ReadResultRow) []string {
 	uniqueIDs := make(map[string]struct{})
 
-	for _, row := range *data {
+	for _, row := range data {
 		uniqueIDs[row.Id] = struct{}{}
 	}
 
@@ -68,13 +68,20 @@ func getUniqueIDs(data *[]common.ReadResultRow) []string {
 	return ids
 }
 
-// FillAssociations fills the associations for the given object names and data.
-// Note that the data is modified in place.
+// Filler populates association data for a collection of result rows.
+//
+// Implementations fetch and attach associations between a source object type and one or more target object types.
+// The provided data slice is modified in place, enriching each row with its corresponding associations.
+type Filler interface {
+	FillAssociations(
+		ctx context.Context, fromObjName string, toAssociatedObjects []string,
+		data []common.ReadResultRow,
+	) error
+}
+
 func (s Strategy) FillAssociations(
-	ctx context.Context,
-	fromObjName string,
-	data *[]common.ReadResultRow,
-	toAssociatedObjects []string,
+	ctx context.Context, fromObjName string, toAssociatedObjects []string,
+	data []common.ReadResultRow,
 ) error {
 	ids := getUniqueIDs(data)
 
@@ -88,13 +95,13 @@ func (s Strategy) FillAssociations(
 			continue
 		}
 
-		for i, row := range *data {
+		for i, row := range data {
 			if assocs, ok := associations[row.Id]; ok {
-				if (*data)[i].Associations == nil {
-					(*data)[i].Associations = make(map[string][]common.Association)
+				if data[i].Associations == nil {
+					data[i].Associations = make(map[string][]common.Association)
 				}
 
-				(*data)[i].Associations[associatedObject] = assocs
+				data[i].Associations[associatedObject] = assocs
 			}
 		}
 	}

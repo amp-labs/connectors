@@ -19,19 +19,25 @@ func TestRead(t *testing.T) {
 	responseNotes := testutils.DataFromFile(t, "notes.json")
 	responseNotesLastPage := testutils.DataFromFile(t, "notes-last-page.json")
 
+	// Full note payloads for GET /v1/notes/:id (key = path segment id).
+	noteFull := map[string]testutils.FileData{
+		"not_1d3tmYTlCICgjy": testutils.DataFromFile(t, "note_not_1d3tmYTlCICgjy.json"),
+		"not_4f7kQhLpMNBvxy": testutils.DataFromFile(t, "note_not_4f7kQhLpMNBvxy.json"),
+		"not_9b2xRwNsTLCfop": testutils.DataFromFile(t, "note_not_9b2xRwNsTLCfop.json"),
+	}
 	tests := []testroutines.Read{
 		{
 			Name: "Read empty items",
 			Input: common.ReadParams{
 				ObjectName: "notes",
 				Fields:     connectors.Fields("id", "title", "created_at"),
-				PageSize:   10,
+				PageSize:   4,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v0/notes"),
-					mockcond.QueryParam("page_size", "10"),
+					mockcond.Path("/v1/notes"),
+					mockcond.QueryParam("page_size", "4"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseReadEmpty),
 			}.Server(),
@@ -43,17 +49,18 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read notes",
+			Name: "Read notes with summary fields",
 			Input: common.ReadParams{
 				ObjectName: "notes",
 				Fields:     connectors.Fields("id", "title", "created_at"),
-				PageSize:   10,
+				PageSize:   30,
 			},
+			// Only list endpoint is called; no GET /v1/notes/:id when fields are subset of summary.
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v0/notes"),
-					mockcond.QueryParam("page_size", "10"),
+					mockcond.Path("/v1/notes"),
+					mockcond.QueryParam("page_size", "30"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseNotes),
 			}.Server(),
@@ -77,31 +84,162 @@ func TestRead(t *testing.T) {
 					},
 					{
 						Fields: map[string]any{
-							"id":         "not_7hKpQ2LmZx91ab",
-							"title":      "Customer onboarding flow improvements",
-							"created_at": "2026-01-29T10:15:00Z",
+							"id":         "not_4f7kQhLpMNBvxy",
+							"title":      "Monthly almond purchase analysis",
+							"created_at": "2026-02-10T09:15:00Z",
 						},
 						Raw: map[string]any{
-							"id":         "not_7hKpQ2LmZx91ab",
+							"id":         "not_4f7kQhLpMNBvxy",
 							"object":     "note",
-							"title":      "Customer onboarding flow improvements",
-							"owner":      map[string]any{"name": "Maya Tesfaye", "email": "maya.tesfaye@granola.ai"},
-							"created_at": "2026-01-29T10:15:00Z",
+							"title":      "Monthly almond purchase analysis",
+							"owner":      map[string]any{"name": "Hazel Kern", "email": "hazel@granola.ai"},
+							"created_at": "2026-02-10T09:15:00Z",
 						},
 					},
 					{
 						Fields: map[string]any{
-							"id":         "not_4Js8PdLwQe72rt",
-							"title":      "transaction latency analysis",
-							"created_at": "2026-02-02T08:45:00Z",
+							"id":         "not_9b2xRwNsTLCfop",
+							"title":      "Weekly granola sales forecast",
+							"created_at": "2026-03-02T11:45:00Z",
 						},
 						Raw: map[string]any{
-							"id":         "not_4Js8PdLwQe72rt",
+							"id":         "not_9b2xRwNsTLCfop",
 							"object":     "note",
-							"title":      "transaction latency analysis",
-							"owner":      map[string]any{"name": "Eren Yeager", "email": "eren.yeager@granola.ai"},
-							"created_at": "2026-02-02T08:45:00Z",
+							"title":      "Weekly granola sales forecast",
+							"owner":      map[string]any{"name": "Maple Finch", "email": "maple@granola.ai"},
+							"created_at": "2026-03-02T11:45:00Z",
 						},
+					},
+				},
+				NextPage: "eyJjcmVkZW50aWFsfQ==",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// Exercises GetNote path: extra field (summary_text) triggers fetchNotes; list returns
+			// 3 note IDs, then GET /v1/notes/:id for each (concurrent). Page size is capped to 4.
+			Name: "Read notes with full fields",
+			Input: common.ReadParams{
+				ObjectName: "notes",
+				Fields:     connectors.Fields("id", "title", "summary_text"),
+				PageSize:   30,
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/notes"),
+							mockcond.QueryParam("page_size", "4"),
+						},
+						Then: mockserver.Response(http.StatusOK, responseNotes),
+					},
+					{
+						If:   mockcond.Path("/v1/notes/not_1d3tmYTlCICgjy"),
+						Then: mockserver.Response(http.StatusOK, noteFull["not_1d3tmYTlCICgjy"]),
+					},
+					{
+						If:   mockcond.Path("/v1/notes/not_4f7kQhLpMNBvxy"),
+						Then: mockserver.Response(http.StatusOK, noteFull["not_4f7kQhLpMNBvxy"]),
+					},
+					{
+						If:   mockcond.Path("/v1/notes/not_9b2xRwNsTLCfop"),
+						Then: mockserver.Response(http.StatusOK, noteFull["not_9b2xRwNsTLCfop"]),
+					},
+				},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 3,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":           "not_1d3tmYTlCICgjy",
+							"title":        "Quarterly yoghurt budget review",
+							"summary_text": "The quarterly yoghurt budget review was a success. We spent $100,000 on yoghurt and made $150,000 in profit.",
+						},
+						Raw: map[string]any{
+							"id":           "not_1d3tmYTlCICgjy",
+							"object":       "note",
+							"title":        "Quarterly yoghurt budget review",
+							"owner":        map[string]any{"name": "Oat Benson", "email": "oat@granola.ai"},
+							"summary_text": "The quarterly yoghurt budget review was a success. We spent $100,000 on yoghurt and made $150,000 in profit.",
+						},
+					},
+					{
+						Fields: map[string]any{
+							"id":           "not_4f7kQhLpMNBvxy",
+							"title":        "Monthly almond purchase analysis",
+							"summary_text": "The monthly almond purchase analysis showed that we overspent by $5,000 but managed to negotiate better deals for next month.",
+						},
+						Raw: map[string]any{
+							"id":           "not_4f7kQhLpMNBvxy",
+							"object":       "note",
+							"title":        "Monthly almond purchase analysis",
+							"owner":        map[string]any{"name": "Hazel Kern", "email": "hazel@granola.ai"},
+							"summary_text": "The monthly almond purchase analysis showed that we overspent by $5,000 but managed to negotiate better deals for next month.",
+						},
+					},
+					{
+						Fields: map[string]any{
+							"id":           "not_9b2xRwNsTLCfop",
+							"title":        "Weekly granola sales forecast",
+							"summary_text": "This week\u2019s granola sales forecast predicts a 10% increase in sales due to seasonal demand and new marketing campaigns.",
+						},
+						Raw: map[string]any{
+							"id":           "not_9b2xRwNsTLCfop",
+							"object":       "note",
+							"title":        "Weekly granola sales forecast",
+							"owner":        map[string]any{"name": "Maple Finch", "email": "maple@granola.ai"},
+							"summary_text": "This week\u2019s granola sales forecast predicts a 10% increase in sales due to seasonal demand and new marketing campaigns.",
+						},
+					},
+				},
+				NextPage: "eyJjcmVkZW50aWFsfQ==",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+
+			Name: "Read notes with extra field caps page size to 4",
+			Input: common.ReadParams{
+				ObjectName: "notes",
+				Fields:     connectors.Fields("id", "title", "summary_text"),
+				PageSize:   10,
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/notes"),
+							mockcond.QueryParam("page_size", "4"),
+						},
+						Then: mockserver.Response(http.StatusOK, responseNotes),
+					},
+					{
+						If:   mockcond.Path("/v1/notes/not_1d3tmYTlCICgjy"),
+						Then: mockserver.Response(http.StatusOK, noteFull["not_1d3tmYTlCICgjy"]),
+					},
+					{
+						If:   mockcond.Path("/v1/notes/not_4f7kQhLpMNBvxy"),
+						Then: mockserver.Response(http.StatusOK, noteFull["not_4f7kQhLpMNBvxy"]),
+					},
+					{
+						If:   mockcond.Path("/v1/notes/not_9b2xRwNsTLCfop"),
+						Then: mockserver.Response(http.StatusOK, noteFull["not_9b2xRwNsTLCfop"]),
+					},
+				},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 3,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"id": "not_1d3tmYTlCICgjy", "title": "Quarterly yoghurt budget review", "summary_text": "The quarterly yoghurt budget review was a success. We spent $100,000 on yoghurt and made $150,000 in profit."},
+						Raw:    map[string]any{"id": "not_1d3tmYTlCICgjy", "object": "note", "title": "Quarterly yoghurt budget review", "summary_text": "The quarterly yoghurt budget review was a success. We spent $100,000 on yoghurt and made $150,000 in profit."},
 					},
 				},
 				NextPage: "eyJjcmVkZW50aWFsfQ==",
@@ -113,16 +251,20 @@ func TestRead(t *testing.T) {
 			Name: "Read notes second page using NextPage token",
 			Input: common.ReadParams{
 				ObjectName: "notes",
-				Fields:     connectors.Fields("id", "title", "created_at"),
+				Fields:     connectors.Fields("id", "title"),
 				NextPage:   "eyJjcmVkZW50aWFsfQ==",
 			},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/v0/notes"),
-					mockcond.QueryParam("cursor", "eyJjcmVkZW50aWFsfQ=="),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/notes"),
+							mockcond.QueryParam("cursor", "eyJjcmVkZW50aWFsfQ=="),
+						},
+						Then: mockserver.Response(http.StatusOK, responseNotesLastPage),
+					},
 				},
-				Then: mockserver.Response(http.StatusOK, responseNotesLastPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -130,16 +272,12 @@ func TestRead(t *testing.T) {
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{
-							"id":         "not_8xYzAbcDef",
-							"title":      "Final note",
-							"created_at": "2026-02-10T12:00:00Z",
+							"id":    "not_1d3tmYTlCICgjy",
+							"title": "Quarterly yoghurt budget review",
 						},
 						Raw: map[string]any{
-							"id":         "not_8xYzAbcDef",
-							"object":     "note",
-							"title":      "Final note",
-							"owner":      map[string]any{"name": "Test User", "email": "test@granola.ai"},
-							"created_at": "2026-02-10T12:00:00Z",
+							"id":    "not_1d3tmYTlCICgjy",
+							"title": "Quarterly yoghurt budget review",
 						},
 					},
 				},
@@ -153,13 +291,13 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "notes",
 				Fields:     connectors.Fields("id", "title"),
-				PageSize:   50,
+				PageSize:   4,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v0/notes"),
-					mockcond.QueryParam("page_size", "50"),
+					mockcond.Path("/v1/notes"),
+					mockcond.QueryParam("page_size", "4"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseNotes),
 			}.Server(),
@@ -170,14 +308,6 @@ func TestRead(t *testing.T) {
 					{
 						Fields: map[string]any{"id": "not_1d3tmYTlCICgjy", "title": "Quarterly yoghurt budget review"},
 						Raw:    map[string]any{"id": "not_1d3tmYTlCICgjy", "object": "note", "title": "Quarterly yoghurt budget review", "owner": map[string]any{"name": "Oat Benson", "email": "oat@granola.ai"}, "created_at": "2026-01-27T15:30:00Z"},
-					},
-					{
-						Fields: map[string]any{"id": "not_7hKpQ2LmZx91ab", "title": "Customer onboarding flow improvements"},
-						Raw:    map[string]any{"id": "not_7hKpQ2LmZx91ab", "object": "note", "title": "Customer onboarding flow improvements", "owner": map[string]any{"name": "Maya Tesfaye", "email": "maya.tesfaye@granola.ai"}, "created_at": "2026-01-29T10:15:00Z"},
-					},
-					{
-						Fields: map[string]any{"id": "not_4Js8PdLwQe72rt", "title": "transaction latency analysis"},
-						Raw:    map[string]any{"id": "not_4Js8PdLwQe72rt", "object": "note", "title": "transaction latency analysis", "owner": map[string]any{"name": "Eren Yeager", "email": "eren.yeager@granola.ai"}, "created_at": "2026-02-02T08:45:00Z"},
 					},
 				},
 				NextPage: "eyJjcmVkZW50aWFsfQ==",
@@ -186,23 +316,27 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read notes with Since and Until adds created_after and created_before query params",
+			Name: "Read notes with Since and Until adds updated_after and updated_before query params",
 			Input: common.ReadParams{
 				ObjectName: "notes",
 				Fields:     connectors.Fields("id", "title"),
-				PageSize:   10,
+				PageSize:   4,
 				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
 				Until:      time.Date(2026, 1, 31, 23, 59, 59, 0, time.UTC),
 			},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/v0/notes"),
-					mockcond.QueryParam("page_size", "10"),
-					mockcond.QueryParam("created_after", "2026-01-01T00:00:00Z"),
-					mockcond.QueryParam("created_before", "2026-01-31T23:59:59Z"),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/notes"),
+							mockcond.QueryParam("page_size", "4"),
+							mockcond.QueryParam("updated_after", "2026-01-01T00:00:00Z"),
+							mockcond.QueryParam("updated_before", "2026-01-31T23:59:59Z"),
+						},
+						Then: mockserver.Response(http.StatusOK, responseNotes),
+					},
 				},
-				Then: mockserver.Response(http.StatusOK, responseNotes),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -212,13 +346,115 @@ func TestRead(t *testing.T) {
 						Fields: map[string]any{"id": "not_1d3tmYTlCICgjy", "title": "Quarterly yoghurt budget review"},
 						Raw:    map[string]any{"id": "not_1d3tmYTlCICgjy", "object": "note", "title": "Quarterly yoghurt budget review", "owner": map[string]any{"name": "Oat Benson", "email": "oat@granola.ai"}, "created_at": "2026-01-27T15:30:00Z"},
 					},
+				},
+				NextPage: "eyJjcmVkZW50aWFsfQ==",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read notes with transcript field sends include=transcript query param",
+			Input: common.ReadParams{
+				ObjectName: "notes",
+				Fields:     connectors.Fields("id", "title", "transcript"),
+				PageSize:   30,
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
 					{
-						Fields: map[string]any{"id": "not_7hKpQ2LmZx91ab", "title": "Customer onboarding flow improvements"},
-						Raw:    map[string]any{"id": "not_7hKpQ2LmZx91ab", "object": "note", "title": "Customer onboarding flow improvements", "owner": map[string]any{"name": "Maya Tesfaye", "email": "maya.tesfaye@granola.ai"}, "created_at": "2026-01-29T10:15:00Z"},
+						If: mockcond.And{
+							mockcond.Path("/v1/notes"),
+							mockcond.QueryParam("page_size", "4"),
+						},
+						Then: mockserver.Response(http.StatusOK, responseNotes),
 					},
 					{
-						Fields: map[string]any{"id": "not_4Js8PdLwQe72rt", "title": "transaction latency analysis"},
-						Raw:    map[string]any{"id": "not_4Js8PdLwQe72rt", "object": "note", "title": "transaction latency analysis", "owner": map[string]any{"name": "Eren Yeager", "email": "eren.yeager@granola.ai"}, "created_at": "2026-02-02T08:45:00Z"},
+						If: mockcond.And{
+							mockcond.Path("/v1/notes/not_1d3tmYTlCICgjy"),
+							mockcond.QueryParam("include", "transcript"),
+						},
+						Then: mockserver.Response(http.StatusOK, noteFull["not_1d3tmYTlCICgjy"]),
+					},
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/notes/not_4f7kQhLpMNBvxy"),
+							mockcond.QueryParam("include", "transcript"),
+						},
+						Then: mockserver.Response(http.StatusOK, noteFull["not_4f7kQhLpMNBvxy"]),
+					},
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/notes/not_9b2xRwNsTLCfop"),
+							mockcond.QueryParam("include", "transcript"),
+						},
+						Then: mockserver.Response(http.StatusOK, noteFull["not_9b2xRwNsTLCfop"]),
+					},
+				},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 3,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":    "not_1d3tmYTlCICgjy",
+							"title": "Quarterly yoghurt budget review",
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "I'm done pretending. Greek is the only yoghurt that deserves us.", "start_time": "2026-01-27T15:30:00Z", "end_time": "2026-01-27T16:30:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "Finally. Regular yoghurt is just milk that gave up halfway.", "start_time": "2026-01-27T15:30:00Z", "end_time": "2026-01-27T16:30:00Z"},
+							},
+						},
+						Raw: map[string]any{
+							"id":     "not_1d3tmYTlCICgjy",
+							"object": "note",
+							"title":  "Quarterly yoghurt budget review",
+							"owner":  map[string]any{"name": "Oat Benson", "email": "oat@granola.ai"},
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "I'm done pretending. Greek is the only yoghurt that deserves us.", "start_time": "2026-01-27T15:30:00Z", "end_time": "2026-01-27T16:30:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "Finally. Regular yoghurt is just milk that gave up halfway.", "start_time": "2026-01-27T15:30:00Z", "end_time": "2026-01-27T16:30:00Z"},
+							},
+						},
+					},
+					{
+						Fields: map[string]any{
+							"id":    "not_4f7kQhLpMNBvxy",
+							"title": "Monthly almond purchase analysis",
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "We need to track almond costs more closely next month.", "start_time": "2026-02-10T09:15:00Z", "end_time": "2026-02-10T10:15:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "Agreed. Let's finalize new supplier agreements by next week.", "start_time": "2026-02-10T09:15:00Z", "end_time": "2026-02-10T10:15:00Z"},
+							},
+						},
+						Raw: map[string]any{
+							"id":     "not_4f7kQhLpMNBvxy",
+							"object": "note",
+							"title":  "Monthly almond purchase analysis",
+							"owner":  map[string]any{"name": "Hazel Kern", "email": "hazel@granola.ai"},
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "We need to track almond costs more closely next month.", "start_time": "2026-02-10T09:15:00Z", "end_time": "2026-02-10T10:15:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "Agreed. Let's finalize new supplier agreements by next week.", "start_time": "2026-02-10T09:15:00Z", "end_time": "2026-02-10T10:15:00Z"},
+							},
+						},
+					},
+					{
+						Fields: map[string]any{
+							"id":    "not_9b2xRwNsTLCfop",
+							"title": "Weekly granola sales forecast",
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "Expect a surge in granola sales with the upcoming festival.", "start_time": "2026-03-02T11:45:00Z", "end_time": "2026-03-02T12:30:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "We should prepare extra inventory and optimize delivery routes.", "start_time": "2026-03-02T11:45:00Z", "end_time": "2026-03-02T12:30:00Z"},
+							},
+						},
+						Raw: map[string]any{
+							"id":     "not_9b2xRwNsTLCfop",
+							"object": "note",
+							"title":  "Weekly granola sales forecast",
+							"owner":  map[string]any{"name": "Maple Finch", "email": "maple@granola.ai"},
+							"transcript": []any{
+								map[string]any{"speaker": map[string]any{"source": "microphone"}, "text": "Expect a surge in granola sales with the upcoming festival.", "start_time": "2026-03-02T11:45:00Z", "end_time": "2026-03-02T12:30:00Z"},
+								map[string]any{"speaker": map[string]any{"source": "speaker"}, "text": "We should prepare extra inventory and optimize delivery routes.", "start_time": "2026-03-02T11:45:00Z", "end_time": "2026-03-02T12:30:00Z"},
+							},
+						},
 					},
 				},
 				NextPage: "eyJjcmVkZW50aWFsfQ==",

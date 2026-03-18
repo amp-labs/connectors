@@ -24,7 +24,7 @@ func GetGoogleMailConnector(ctx context.Context) *google.Connector {
 }
 
 func getGoogleConnector(ctx context.Context, moduleID common.ModuleID) *google.Connector {
-	filePath := credscanning.LoadPath(providers.Google)
+	filePath := credscanning.LoadPath(providers.Google, moduleID)
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := google.NewConnector(

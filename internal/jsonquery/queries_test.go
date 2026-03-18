@@ -21,7 +21,8 @@ var testJSONData = `{
 				"body": {
 					"text": "Some notes",
 					"amount": 359,
-					"purchased": true
+					"purchased": true,
+					"void": null
 				},
 				"nested_arr": [1,2,3,4,5]
 			},
@@ -98,12 +99,37 @@ func TestQueryIntegerOptional(t *testing.T) { // nolint:funlen
 			expected: goutils.Pointer[int64](359),
 		},
 		{
+			name: "Reaching for nested null using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "void"},
+			},
+			expected:    nil,
+			expectedErr: nil,
+		},
+		{
+			name: "Reaching for value with mismatching type using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "text"},
+			},
+			expectedErr: ErrNotNumeric,
+		},
+		{
 			name: "Non existent zoom path is ok for optional integer",
 			input: inType{
 				key:  "street",
 				zoom: []string{"payload", "location", "address"},
 			},
 			expected: nil,
+		},
+		{
+			name: "Last element in zoom must be an object to get its key",
+			input: inType{
+				key:  "minute",
+				zoom: []string{"payload", "display_time"}, // display_time is a string not an object
+			},
+			expectedErr: ErrNotObject,
 		},
 	}
 
@@ -186,12 +212,36 @@ func TestQueryIntegerRequired(t *testing.T) { // nolint:funlen
 			expected: 359,
 		},
 		{
+			name: "Reaching for nested null using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "void"},
+			},
+			expectedErr: ErrNullJSON,
+		},
+		{
+			name: "Reaching for value with mismatching type using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "text"},
+			},
+			expectedErr: ErrNotNumeric,
+		},
+		{
 			name: "Non existent zoom path throws key not found",
 			input: inType{
 				key:  "street",
 				zoom: []string{"payload", "location", "address"},
 			},
 			expectedErr: ErrKeyNotFound,
+		},
+		{
+			name: "Last element in zoom must be an object to get its key",
+			input: inType{
+				key:  "minute",
+				zoom: []string{"payload", "display_time"}, // display_time is a string not an object
+			},
+			expectedErr: ErrNotObject,
 		},
 	}
 
@@ -269,12 +319,37 @@ func TestQueryStringOptional(t *testing.T) { // nolint:funlen
 			expected: goutils.Pointer("Some notes"),
 		},
 		{
+			name: "Reaching for nested null using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "void"},
+			},
+			expected:    nil,
+			expectedErr: nil,
+		},
+		{
+			name: "Reaching for value with mismatching type using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "amount"},
+			},
+			expectedErr: ErrNotString,
+		},
+		{
 			name: "Non existent zoom path is ok for optional string",
 			input: inType{
 				key:  "street",
 				zoom: []string{"payload", "location", "address"},
 			},
 			expected: nil,
+		},
+		{
+			name: "Last element in zoom must be an object to get its key",
+			input: inType{
+				key:  "minute",
+				zoom: []string{"payload", "display_time"}, // display_time is a string not an object
+			},
+			expectedErr: ErrNotObject,
 		},
 	}
 
@@ -350,12 +425,36 @@ func TestQueryStringRequired(t *testing.T) { // nolint:funlen
 			expected: "Some notes",
 		},
 		{
+			name: "Reaching for nested null using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "void"},
+			},
+			expectedErr: ErrNullJSON,
+		},
+		{
+			name: "Reaching for value with mismatching type using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "amount"},
+			},
+			expectedErr: ErrNotString,
+		},
+		{
 			name: "Non existent zoom path throws key not found",
 			input: inType{
 				key:  "street",
 				zoom: []string{"payload", "location", "address"},
 			},
 			expectedErr: ErrKeyNotFound,
+		},
+		{
+			name: "Last element in zoom must be an object to get its key",
+			input: inType{
+				key:  "minute",
+				zoom: []string{"payload", "display_time"}, // display_time is a string not an object
+			},
+			expectedErr: ErrNotObject,
 		},
 	}
 
@@ -433,12 +532,37 @@ func TestQueryBoolOptional(t *testing.T) { // nolint:funlen
 			expected: goutils.Pointer(true),
 		},
 		{
+			name: "Reaching for nested null using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "void"},
+			},
+			expected:    nil,
+			expectedErr: nil,
+		},
+		{
+			name: "Reaching for value with mismatching type using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "text"},
+			},
+			expectedErr: ErrNotBool,
+		},
+		{
 			name: "Non existent zoom path is ok for optional bool",
 			input: inType{
 				key:  "applicable",
 				zoom: []string{"payload", "location", "address"},
 			},
 			expected: nil,
+		},
+		{
+			name: "Last element in zoom must be an object to get its key",
+			input: inType{
+				key:  "minute",
+				zoom: []string{"payload", "display_time"}, // display_time is a string not an object
+			},
+			expectedErr: ErrNotObject,
 		},
 	}
 
@@ -514,12 +638,36 @@ func TestQueryBoolRequired(t *testing.T) { // nolint:funlen
 			expected: true,
 		},
 		{
+			name: "Reaching for nested null using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "void"},
+			},
+			expectedErr: ErrNullJSON,
+		},
+		{
+			name: "Reaching for value with mismatching type using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "text"},
+			},
+			expectedErr: ErrNotBool,
+		},
+		{
 			name: "Non existent zoom path throws key not found",
 			input: inType{
 				key:  "applicable",
 				zoom: []string{"payload", "location", "address"},
 			},
 			expectedErr: ErrKeyNotFound,
+		},
+		{
+			name: "Last element in zoom must be an object to get its key",
+			input: inType{
+				key:  "minute",
+				zoom: []string{"payload", "display_time"}, // display_time is a string not an object
+			},
+			expectedErr: ErrNotObject,
 		},
 	}
 
@@ -604,6 +752,23 @@ func TestQueryArrayOptional(t *testing.T) { // nolint:funlen
 			expectedSize: 5,
 		},
 		{
+			name: "Reaching for nested null using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "void"},
+			},
+			expectedSize: 0, // empty array, there is nothing
+			expectedErr:  nil,
+		},
+		{
+			name: "Reaching for value with mismatching type using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "text"},
+			},
+			expectedErr: ErrNotArray,
+		},
+		{
 			name: "Non existent zoom path is ok for optional arr",
 			input: inType{
 				key:  "street",
@@ -611,6 +776,14 @@ func TestQueryArrayOptional(t *testing.T) { // nolint:funlen
 			},
 			expectedSize: 0,
 			expectedErr:  nil,
+		},
+		{
+			name: "Last element in zoom must be an object to get its key",
+			input: inType{
+				key:  "minute",
+				zoom: []string{"payload", "display_time"}, // display_time is a string not an object
+			},
+			expectedErr: ErrNotObject,
 		},
 	}
 
@@ -711,6 +884,22 @@ func TestQueryArrayRequired(t *testing.T) { // nolint:funlen
 			expectedSize: 5,
 		},
 		{
+			name: "Reaching for nested null using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "void"},
+			},
+			expectedErr: ErrNullJSON,
+		},
+		{
+			name: "Reaching for value with mismatching type using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "text"},
+			},
+			expectedErr: ErrNotArray,
+		},
+		{
 			name: "Non existent zoom throws key not found",
 			input: inType{
 				key:  "street",
@@ -718,6 +907,14 @@ func TestQueryArrayRequired(t *testing.T) { // nolint:funlen
 			},
 			expectedSize: 0,
 			expectedErr:  ErrKeyNotFound,
+		},
+		{
+			name: "Last element in zoom must be an object to get its key",
+			input: inType{
+				key:  "minute",
+				zoom: []string{"payload", "display_time"}, // display_time is a string not an object
+			},
+			expectedErr: ErrNotObject,
 		},
 	}
 
@@ -796,12 +993,36 @@ func TestQueryObjectOptional(t *testing.T) { // nolint:funlen
 			expectedErr: nil, // success
 		},
 		{
+			name: "Reaching for nested null using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "void"},
+			},
+			expectedErr: nil, // success
+		},
+		{
+			name: "Reaching for value with mismatching type using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "text"},
+			},
+			expectedErr: ErrNotObject,
+		},
+		{
 			name: "Non existent zoom path is ok for optional object",
 			input: inType{
 				key:  "street",
 				zoom: []string{"payload", "location", "address"},
 			},
 			expectedErr: nil, // success
+		},
+		{
+			name: "Last element in zoom must be an object to get its key",
+			input: inType{
+				key:  "minute",
+				zoom: []string{"payload", "display_time"}, // display_time is a string not an object
+			},
+			expectedErr: ErrNotObject,
 		},
 	}
 
@@ -875,12 +1096,36 @@ func TestQueryObjectRequired(t *testing.T) { // nolint:funlen
 			expectedErr: nil, // success
 		},
 		{
+			name: "Reaching for nested null using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "void"},
+			},
+			expectedErr: ErrNullJSON,
+		},
+		{
+			name: "Reaching for value with mismatching type using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body", "text"},
+			},
+			expectedErr: ErrNotObject,
+		},
+		{
 			name: "Non existent zoom path throws key not found",
 			input: inType{
 				key:  "street",
 				zoom: []string{"payload", "location", "address"},
 			},
 			expectedErr: ErrKeyNotFound,
+		},
+		{
+			name: "Last element in zoom must be an object to get its key",
+			input: inType{
+				key:  "minute",
+				zoom: []string{"payload", "display_time"}, // display_time is a string not an object
+			},
+			expectedErr: ErrNotObject,
 		},
 	}
 

@@ -113,3 +113,14 @@ pr-template:
 .PHONY: connector-gen
 connector-gen:
 	go build -o ./bin/cgen ./scripts/connectorgen/main.go && echo "now run command: ./bin/cgen"
+
+
+# Update OAuth token credentials
+.PHONY: update-creds
+update-creds:
+	go run scripts/oauth/token.go --writeCreds
+
+# Run proxy server for testing
+.PHONY: test-proxy
+test-proxy:
+	go run scripts/proxy/proxy.go
