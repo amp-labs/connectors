@@ -8,6 +8,8 @@ import (
 	"github.com/amp-labs/connectors/providers/greenhouse/metadata"
 )
 
+// Connector implements the Greenhouse Harvest API v3.
+// API reference: https://harvestdocs.greenhouse.io/docs/overview-and-philosophy
 type Connector struct {
 	*components.Connector
 	components.SchemaProvider

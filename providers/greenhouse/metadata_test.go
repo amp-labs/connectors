@@ -26,14 +26,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 		},
 		{
-			Name:       "Successfully describe candidates object with metadata",
-			Input:      []string{"candidates"},
+			Name:       "Successfully describe users object with metadata",
+			Input:      []string{"users"},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"candidates": {
-						DisplayName: "Candidates",
+					"users": {
+						DisplayName: "Users",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
 								DisplayName:  "id",
@@ -45,13 +45,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "string",
 								ProviderType: "string",
 							},
-							"can_email": {
-								DisplayName:  "can_email",
+							"site_admin": {
+								DisplayName:  "site_admin",
 								ValueType:    "boolean",
 								ProviderType: "boolean",
 							},
-							"phone_numbers": {
-								DisplayName:  "phone_numbers",
+							"emails": {
+								DisplayName:  "emails",
 								ValueType:    "other",
 								ProviderType: "array",
 							},
@@ -62,7 +62,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:       "Successfully describe multiple objects with metadata",
-			Input:      []string{"applications", "departments"},
+			Input:      []string{"applications", "scorecards"},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -93,16 +93,11 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 						},
 					},
-					"departments": {
-						DisplayName: "Departments",
+					"scorecards": {
+						DisplayName: "Scorecards",
 						Fields: map[string]common.FieldMetadata{
-							"name": {
-								DisplayName:  "name",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-							"parent_id": {
-								DisplayName:  "parent_id",
+							"id": {
+								DisplayName:  "id",
 								ValueType:    "int",
 								ProviderType: "integer",
 							},
