@@ -14,8 +14,8 @@ import (
 )
 
 type SubscribeResult struct {
-	EventChannelMembers map[common.ObjectName]*EventChannelMember
-	QuotaOptimizations  map[common.ObjectName]string // field name for the quota optimization
+	EventChannelMembers           map[common.ObjectName]*EventChannelMember
+	QuotaOptimizationObjectFields map[common.ObjectName]string // field name for the quota optimization
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
@@ -34,8 +34,8 @@ type Filter struct {
 }
 
 type SubscriptionRequest struct {
-	Filters            map[common.ObjectName]*Filter
-	QuotaOptimizations map[common.ObjectName]string // field name for the quota optimization
+	Filters                       map[common.ObjectName]*Filter
+	QuotaOptimizationObjectFields map[common.ObjectName]string // field name for the quota optimization
 }
 
 // Subscribe subscribes to the events for the given objects.
@@ -184,8 +184,8 @@ func (c *Connector) Subscribe(
 		return res, failError
 	}
 
-	if req != nil && req.QuotaOptimizations != nil {
-		sfRes.QuotaOptimizations = req.QuotaOptimizations
+	if req != nil && req.QuotaOptimizationObjectFields != nil {
+		sfRes.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
 	}
 
 	res.Status = common.SubscriptionStatusSuccess
@@ -221,10 +221,10 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 		}
 	}
 
-	if sfRes.QuotaOptimizations != nil {
+	if sfRes.QuotaOptimizationObjectFields != nil {
 		deleteFields := make(map[common.ObjectName][]string)
 
-		for objectName, fieldName := range sfRes.QuotaOptimizations {
+		for objectName, fieldName := range sfRes.QuotaOptimizationObjectFields {
 			deleteFields[objectName] = append(
 				deleteFields[objectName], customFieldAPIName(fieldName),
 			)
@@ -286,7 +286,7 @@ func (c *Connector) UpdateSubscription(
 
 	// Identify truly new quota fields and filter prevState so DeleteSubscription
 	// only removes fields for objects being removed.
-	newQuotaFields := prepareQuotaOptimizationsForUpdate(req, prevState)
+	newQuotaFields := prepareQuotaOptimizationObjectFieldsForUpdate(req, prevState)
 
 	objectsToExcludeFromSubscription := []common.ObjectName{}
 	objectsExcludeFromDelete := []common.ObjectName{}
@@ -335,7 +335,7 @@ func (c *Connector) UpdateSubscription(
 	// in objectsToDelete array, so we are still preserving some objects
 	// that needs to remain in the subscription
 	if err := c.DeleteSubscription(ctx, deleteParams); err != nil {
-		resetReq := &SubscriptionRequest{QuotaOptimizations: newQuotaFields}
+		resetReq := &SubscriptionRequest{QuotaOptimizationObjectFields: newQuotaFields}
 		if resetErr := c.rollbackQuotaOptimizationFields(ctx, resetReq); resetErr != nil {
 			return nil, errors.Join(err, fmt.Errorf("failed to rollback quota optimization fields: %w", resetErr))
 		}
@@ -348,18 +348,18 @@ func (c *Connector) UpdateSubscription(
 		return nil, err
 	}
 
-	// Temporarily clear QuotaOptimizations from the request before calling Subscribe,
+	// Temporarily clear QuotaOptimizationObjectFields from the request before calling Subscribe,
 	// since we already upserted them above. This avoids a duplicate UpsertMetadata call.
-	var savedQuotaOptimizations map[common.ObjectName]string
+	var savedQuotaOptimizationObjectFields map[common.ObjectName]string
 	if req != nil {
-		savedQuotaOptimizations = req.QuotaOptimizations
-		req.QuotaOptimizations = nil
+		savedQuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
+		req.QuotaOptimizationObjectFields = nil
 	}
 
 	// create new subscription
 	createRes, err := c.Subscribe(ctx, params)
 	if err != nil {
-		rollbackReq := &SubscriptionRequest{QuotaOptimizations: newQuotaFields}
+		rollbackReq := &SubscriptionRequest{QuotaOptimizationObjectFields: newQuotaFields}
 		if rbErr := c.rollbackQuotaOptimizationFields(ctx, rollbackReq); rbErr != nil {
 			return nil, errors.Join(err, fmt.Errorf("failed to rollback quota optimization fields: %w", rbErr))
 		}
@@ -367,9 +367,9 @@ func (c *Connector) UpdateSubscription(
 		return nil, fmt.Errorf("failed to subscribe to new objects: %w", err)
 	}
 
-	// Restore QuotaOptimizations so it can be saved in the new state.
+	// Restore QuotaOptimizationObjectFields so it can be saved in the new state.
 	if req != nil {
-		req.QuotaOptimizations = savedQuotaOptimizations
+		req.QuotaOptimizationObjectFields = savedQuotaOptimizationObjectFields
 	}
 
 	// for clarity, rename the state since we will return the object as the result of update
@@ -386,8 +386,8 @@ func (c *Connector) UpdateSubscription(
 		delete(newState.EventChannelMembers, objName)
 	}
 
-	if req != nil && req.QuotaOptimizations != nil {
-		newState.QuotaOptimizations = req.QuotaOptimizations
+	if req != nil && req.QuotaOptimizationObjectFields != nil {
+		newState.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
 	}
 
 	objectsSubscribed := []common.ObjectName{}
@@ -421,27 +421,27 @@ func customFieldDisplayName(fieldName string) string {
 	return strings.TrimSuffix(fieldName, "__c")
 }
 
-// prepareQuotaOptimizationsForUpdate identifies truly new quota fields (in req but not
-// in prevState) and filters prevState.QuotaOptimizations so DeleteSubscription only
+// prepareQuotaOptimizationObjectFieldsForUpdate identifies truly new quota fields (in req but not
+// in prevState) and filters prevState.QuotaOptimizationObjectFields so DeleteSubscription only
 // removes fields for objects being removed. Returns the new-only quota fields for rollback use.
-func prepareQuotaOptimizationsForUpdate(
+func prepareQuotaOptimizationObjectFieldsForUpdate(
 	req *SubscriptionRequest, prevState *SubscribeResult,
 ) map[common.ObjectName]string {
 	var newQuotaFields map[common.ObjectName]string
 
-	if req != nil && req.QuotaOptimizations != nil {
+	if req != nil && req.QuotaOptimizationObjectFields != nil {
 		newQuotaFields = make(map[common.ObjectName]string)
 
-		for objectName, fieldName := range req.QuotaOptimizations {
-			if _, existed := prevState.QuotaOptimizations[objectName]; !existed {
+		for objectName, fieldName := range req.QuotaOptimizationObjectFields {
+			if _, existed := prevState.QuotaOptimizationObjectFields[objectName]; !existed {
 				newQuotaFields[objectName] = fieldName
 			}
 		}
 	}
 
-	if prevState.QuotaOptimizations != nil && req != nil && req.QuotaOptimizations != nil {
-		for objectName := range req.QuotaOptimizations {
-			delete(prevState.QuotaOptimizations, objectName)
+	if prevState.QuotaOptimizationObjectFields != nil && req != nil && req.QuotaOptimizationObjectFields != nil {
+		for objectName := range req.QuotaOptimizationObjectFields {
+			delete(prevState.QuotaOptimizationObjectFields, objectName)
 		}
 	}
 
@@ -451,13 +451,13 @@ func prepareQuotaOptimizationsForUpdate(
 func (c *Connector) upsertQuotaOptimizationFields(
 	ctx context.Context, req *SubscriptionRequest,
 ) error {
-	if req == nil || req.QuotaOptimizations == nil {
+	if req == nil || req.QuotaOptimizationObjectFields == nil {
 		return nil
 	}
 
 	fields := make(map[string][]common.FieldDefinition)
 
-	for objectName, fieldName := range req.QuotaOptimizations {
+	for objectName, fieldName := range req.QuotaOptimizationObjectFields {
 		fields[string(objectName)] = []common.FieldDefinition{
 			{
 				FieldName:   customFieldAPIName(fieldName),
@@ -510,13 +510,13 @@ func (c *Connector) updateChannelMemberFilters(
 }
 
 func (c *Connector) rollbackQuotaOptimizationFields(ctx context.Context, req *SubscriptionRequest) error {
-	if req == nil || req.QuotaOptimizations == nil {
+	if req == nil || req.QuotaOptimizationObjectFields == nil {
 		return nil
 	}
 
 	deleteFields := make(map[common.ObjectName][]string)
 
-	for objectName, fieldName := range req.QuotaOptimizations {
+	for objectName, fieldName := range req.QuotaOptimizationObjectFields {
 		deleteFields[objectName] = append(
 			deleteFields[objectName], customFieldAPIName(fieldName),
 		)

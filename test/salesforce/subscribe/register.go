@@ -62,7 +62,7 @@ func main() {
 			"Account": {},
 		},
 		Request: &salesforce.SubscriptionRequest{
-			QuotaOptimizations: map[common.ObjectName]string{
+			QuotaOptimizationObjectFields: map[common.ObjectName]string{
 				"Account": "amp_cdc_optimized",
 			},
 		},
@@ -83,7 +83,7 @@ func main() {
 			"Contact": {},
 		},
 		Request: &salesforce.SubscriptionRequest{
-			QuotaOptimizations: map[common.ObjectName]string{
+			QuotaOptimizationObjectFields: map[common.ObjectName]string{
 				"Contact": "amp_cdc_optimized",
 			},
 		},
