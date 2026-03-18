@@ -14,8 +14,14 @@ import (
 )
 
 type SubscribeResult struct {
-	EventChannelMembers           map[common.ObjectName]*EventChannelMember
-	QuotaOptimizationObjectFields map[common.ObjectName]string // field name for the quota optimization
+	EventChannelMembers map[common.ObjectName]*EventChannelMember
+	// QuotaOptimizationObjectFields maps object names to custom checkbox field names that we create
+	// on the object in Salesforce. These fields are not native to Salesforce — they are custom fields
+	// managed by Ampersand to flag whether a record should trigger webhook messages via CDC (Change Data Capture).
+	// By checking this field, we can selectively control which records produce CDC events,
+	// reducing unnecessary webhook traffic and optimizing API quota usage.
+	// We need to return this field and will be read by the DeleteSubscription method to delete the custom fields.
+	QuotaOptimizationObjectFields map[common.ObjectName]string
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
@@ -34,8 +40,10 @@ type Filter struct {
 }
 
 type SubscriptionRequest struct {
-	Filters                       map[common.ObjectName]*Filter
-	QuotaOptimizationObjectFields map[common.ObjectName]string // field name for the quota optimization
+	Filters map[common.ObjectName]*Filter
+	// QuotaOptimizationObjectFields maps object names to custom checkbox field names to create
+	// on the object in Salesforce. See SubscribeResult.QuotaOptimizationObjectFields for details.
+	QuotaOptimizationObjectFields map[common.ObjectName]string
 }
 
 // Subscribe subscribes to the events for the given objects.
