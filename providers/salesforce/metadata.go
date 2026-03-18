@@ -23,6 +23,16 @@ func (c *Connector) UpsertMetadata(
 	return nil, common.ErrNotImplemented
 }
 
+func (c *Connector) DeleteMetadata(
+	ctx context.Context, params *common.DeleteMetadataParams,
+) (*common.DeleteMetadataResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.DeleteMetadata(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
 // ListObjectMetadata returns object metadata for each object name provided.
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context,

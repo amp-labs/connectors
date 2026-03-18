@@ -349,6 +349,33 @@ func valueOrDefault(value *int, defaultValue int) int {
 	return *value
 }
 
+// DeleteMetadataPayload represents the request body for the Salesforce Metadata API
+// `deleteMetadata` operation.
+// https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deleteMetadata.htm
+type DeleteMetadataPayload struct {
+	XMLName xml.Name `xml:"deleteMetadata"`
+
+	// Type is the metadata component type. Ex: CustomField.
+	Type string `xml:"type"`
+	// FullNames is the list of component full names to delete.
+	FullNames []string `xml:"fullNames"`
+}
+
+func NewDeleteCustomFieldsPayload(params *common.DeleteMetadataParams) *DeleteMetadataPayload {
+	fullNames := make([]string, 0)
+
+	for objectName, fieldNames := range params.Fields {
+		for _, fieldName := range fieldNames {
+			fullNames = append(fullNames, fmt.Sprintf("%v.%v", objectName, fieldName))
+		}
+	}
+
+	return &DeleteMetadataPayload{
+		Type:      metadataTypeCustomField,
+		FullNames: fullNames,
+	}
+}
+
 // ReadMetadataPayload used to read metadata objects.
 type ReadMetadataPayload struct {
 	XMLName xml.Name `xml:"readMetadata"`

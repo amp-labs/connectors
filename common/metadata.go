@@ -92,6 +92,19 @@ type UpsertMetadataParams struct {
 	Fields map[string][]FieldDefinition `json:"fields"`
 }
 
+// DeleteMetadataParams represents parameters for deleting custom field metadata.
+type DeleteMetadataParams struct {
+	// Maps object names to field names to delete.
+	// For example: {"Account": ["My_Custom_Field__c", "Another_Field__c"]}
+	Fields map[string][]string `json:"fields"`
+}
+
+// DeleteMetadataResult contains results for all deleted fields.
+type DeleteMetadataResult struct {
+	// Indicates if the delete operation was successful.
+	Success bool `json:"success"`
+}
+
 var ErrFieldTypeUnknown = errors.New("unrecognized field type")
 
 // FieldType represents the data type of a field.
