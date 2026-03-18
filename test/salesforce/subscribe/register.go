@@ -36,6 +36,7 @@ func main() {
 	}
 
 	conn := connTest.GetSalesforceConnector(ctx)
+	ctx = common.WithAuthToken(ctx, connTest.GetSalesforceAccessToken())
 
 	arn := namedCredArn
 
@@ -60,31 +61,81 @@ func main() {
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 			"Account": {},
 		},
+		Request: &salesforce.SubscriptionRequest{
+			QuotaOptimizationObjectFields: map[common.ObjectName]string{
+				"Account": "amp_cdc_optimized",
+			},
+		},
 	}
 
 	subscribeResult, err := conn.Subscribe(ctx, subscribeParams)
 	if err != nil {
 		logging.Logger(ctx).Error("Error subscribing", "error", err, "subscribeResult", prettyPrint(subscribeResult))
+
+		return
 	}
 
 	fmt.Println("Subscribe result:", prettyPrint(subscribeResult))
 
+	// Update subscription: keep Account (with filter update), add Contact, remove nothing.
+	// This exercises:
+	// - Kept objects with filter updates via PATCH (Account stays, gets a filter)
+	// - New objects being subscribed (Contact)
+	// - Quota optimization fields: Account is kept (no delete+recreate), Contact is new
 	updateParams := common.SubscribeParams{
 		RegistrationResult: result,
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
+			"Account": {},
 			"Contact": {},
+		},
+		Request: &salesforce.SubscriptionRequest{
+			QuotaOptimizationObjectFields: map[common.ObjectName]string{
+				"Account": "amp_cdc_optimized",
+				"Contact": "amp_cdc_optimized",
+			},
+			Filters: map[common.ObjectName]*salesforce.Filter{
+				"Account": {
+					FilterExpression: "Name != null",
+				},
+			},
 		},
 	}
 
 	updateResult, err := conn.UpdateSubscription(ctx, updateParams, subscribeResult)
 	if err != nil {
 		logging.Logger(ctx).Error("Error updating subscription", "error", err)
+
+		return
 	}
 
-	fmt.Println("Update subscription result:", prettyPrint(updateResult))
+	fmt.Println("Update subscription result (keep Account + add Contact):", prettyPrint(updateResult))
 
-	if updateResult != nil && updateResult.Status == common.SubscriptionStatusSuccess {
-		if err := conn.DeleteSubscription(ctx, *updateResult); err != nil {
+	// Second update: remove Account, keep Contact. This exercises:
+	// - Removed objects having their quota fields deleted
+	// - Kept objects not being touched
+	update2Params := common.SubscribeParams{
+		RegistrationResult: result,
+		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
+			"Contact": {},
+		},
+		Request: &salesforce.SubscriptionRequest{
+			QuotaOptimizationObjectFields: map[common.ObjectName]string{
+				"Contact": "amp_cdc_optimized",
+			},
+		},
+	}
+
+	update2Result, err := conn.UpdateSubscription(ctx, update2Params, updateResult)
+	if err != nil {
+		logging.Logger(ctx).Error("Error updating subscription (remove Account)", "error", err)
+
+		return
+	}
+
+	fmt.Println("Update subscription result (remove Account):", prettyPrint(update2Result))
+
+	if update2Result != nil && update2Result.Status == common.SubscriptionStatusSuccess {
+		if err := conn.DeleteSubscription(ctx, *update2Result); err != nil {
 			logging.Logger(ctx).Error("Error unsubscribing", "error", err)
 
 			return

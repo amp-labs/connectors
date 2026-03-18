@@ -61,7 +61,7 @@ func main() {
 	slog.Info("Step 3: Deleting field via DeleteMetadata", "object", objectName, "field", fieldName)
 
 	deleteRes, err := conn.DeleteMetadata(ctx, &common.DeleteMetadataParams{
-		Fields: map[string][]string{
+		Fields: map[common.ObjectName][]string{
 			objectName: {fieldName},
 		},
 	})
@@ -80,7 +80,7 @@ func main() {
 	slog.Info("Step 5: Deleting the same field again (should fail)")
 
 	deleteRes2, err := conn.DeleteMetadata(ctx, &common.DeleteMetadataParams{
-		Fields: map[string][]string{
+		Fields: map[common.ObjectName][]string{
 			objectName: {fieldName},
 		},
 	})

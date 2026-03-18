@@ -5,14 +5,23 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/go-playground/validator"
 )
 
 type SubscribeResult struct {
 	EventChannelMembers map[common.ObjectName]*EventChannelMember
+	// QuotaOptimizationObjectFields maps object names to custom checkbox field names that we create
+	// on the object in Salesforce. These fields are not native to Salesforce — they are custom fields
+	// managed by Ampersand to flag whether a record should trigger webhook messages via CDC (Change Data Capture).
+	// By checking this field, we can selectively control which records produce CDC events,
+	// reducing unnecessary webhook traffic and optimizing API quota usage.
+	// We need to return this field and will be read by the DeleteSubscription method to delete the custom fields.
+	QuotaOptimizationObjectFields map[common.ObjectName]string
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
@@ -32,6 +41,9 @@ type Filter struct {
 
 type SubscriptionRequest struct {
 	Filters map[common.ObjectName]*Filter
+	// QuotaOptimizationObjectFields maps object names to custom checkbox field names to create
+	// on the object in Salesforce. See SubscribeResult.QuotaOptimizationObjectFields for details.
+	QuotaOptimizationObjectFields map[common.ObjectName]string
 }
 
 // Subscribe subscribes to the events for the given objects.
@@ -79,6 +91,10 @@ func (c *Connector) Subscribe(
 				req, params.Request,
 			)
 		}
+	}
+
+	if err := c.upsertQuotaOptimizationFields(ctx, req); err != nil {
+		return nil, fmt.Errorf("failed to upsert quota optimization fields: %w", err)
 	}
 
 	sfRes := &SubscribeResult{
@@ -135,6 +151,7 @@ func (c *Connector) Subscribe(
 	var rollbackError error
 
 	if failError != nil {
+		// Rollback event channel members.
 		for objName, member := range sfRes.EventChannelMembers {
 			if _, err := c.DeleteEventChannelMember(ctx, member.Id); err != nil {
 				rollbackError = errors.Join(
@@ -148,6 +165,11 @@ func (c *Connector) Subscribe(
 				// remove the object from the map
 				delete(sfRes.EventChannelMembers, objName)
 			}
+		}
+
+		// Rollback quota optimization fields.
+		if err := c.rollbackQuotaOptimizationFields(ctx, req); err != nil {
+			rollbackError = errors.Join(rollbackError, err)
 		}
 
 		if rollbackError != nil {
@@ -168,6 +190,10 @@ func (c *Connector) Subscribe(
 		res.Result = sfRes
 
 		return res, failError
+	}
+
+	if req != nil && req.QuotaOptimizationObjectFields != nil {
+		sfRes.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
 	}
 
 	res.Status = common.SubscriptionStatusSuccess
@@ -203,6 +229,22 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 		}
 	}
 
+	if len(sfRes.QuotaOptimizationObjectFields) > 0 {
+		deleteFields := make(map[common.ObjectName][]string)
+
+		for objectName, fieldName := range sfRes.QuotaOptimizationObjectFields {
+			deleteFields[objectName] = append(
+				deleteFields[objectName], customFieldAPIName(fieldName),
+			)
+		}
+
+		if _, err := c.DeleteMetadata(ctx, &common.DeleteMetadataParams{
+			Fields: deleteFields,
+		}); err != nil {
+			return fmt.Errorf("failed to delete quota optimization fields: %w", err)
+		}
+	}
+
 	return nil
 }
 
@@ -231,6 +273,28 @@ func (c *Connector) UpdateSubscription(
 			previousResult.Result,
 		)
 	}
+
+	var req *SubscriptionRequest
+
+	if params.Request != nil {
+		var ok bool
+
+		req, ok = params.Request.(*SubscriptionRequest)
+		if !ok {
+			return nil, fmt.Errorf(
+				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'", errInvalidRequestType,
+				req, params.Request,
+			)
+		}
+	}
+
+	if err := c.upsertQuotaOptimizationFields(ctx, req); err != nil {
+		return nil, err
+	}
+
+	// Identify truly new quota fields and filter prevState so DeleteSubscription
+	// only removes fields for objects being removed.
+	newQuotaFields := prepareQuotaOptimizationObjectFieldsForUpdate(req, prevState)
 
 	objectsToExcludeFromSubscription := []common.ObjectName{}
 	objectsExcludeFromDelete := []common.ObjectName{}
@@ -279,13 +343,41 @@ func (c *Connector) UpdateSubscription(
 	// in objectsToDelete array, so we are still preserving some objects
 	// that needs to remain in the subscription
 	if err := c.DeleteSubscription(ctx, deleteParams); err != nil {
+		resetReq := &SubscriptionRequest{QuotaOptimizationObjectFields: newQuotaFields}
+		if resetErr := c.rollbackQuotaOptimizationFields(ctx, resetReq); resetErr != nil {
+			return nil, errors.Join(err, fmt.Errorf("failed to rollback quota optimization fields: %w", resetErr))
+		}
+
 		return nil, fmt.Errorf("failed to delete previous subscription: %w", err)
+	}
+
+	// Update filters on kept channel members if the request includes new filters.
+	if err := c.updateChannelMemberFilters(ctx, req, channelMembersToKeep); err != nil {
+		return nil, err
+	}
+
+	// Temporarily clear QuotaOptimizationObjectFields from the request before calling Subscribe,
+	// since we already upserted them above. This avoids a duplicate UpsertMetadata call.
+	var savedQuotaOptimizationObjectFields map[common.ObjectName]string
+	if req != nil {
+		savedQuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
+		req.QuotaOptimizationObjectFields = nil
 	}
 
 	// create new subscription
 	createRes, err := c.Subscribe(ctx, params)
 	if err != nil {
+		rollbackReq := &SubscriptionRequest{QuotaOptimizationObjectFields: newQuotaFields}
+		if rbErr := c.rollbackQuotaOptimizationFields(ctx, rollbackReq); rbErr != nil {
+			return nil, errors.Join(err, fmt.Errorf("failed to rollback quota optimization fields: %w", rbErr))
+		}
+
 		return nil, fmt.Errorf("failed to subscribe to new objects: %w", err)
+	}
+
+	// Restore QuotaOptimizationObjectFields so it can be saved in the new state.
+	if req != nil {
+		req.QuotaOptimizationObjectFields = savedQuotaOptimizationObjectFields
 	}
 
 	// for clarity, rename the state since we will return the object as the result of update
@@ -300,6 +392,10 @@ func (c *Connector) UpdateSubscription(
 	// remove delete objects from the previous result to return
 	for _, objName := range objectsToDelete {
 		delete(newState.EventChannelMembers, objName)
+	}
+
+	if req != nil && req.QuotaOptimizationObjectFields != nil {
+		newState.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
 	}
 
 	objectsSubscribed := []common.ObjectName{}
@@ -319,4 +415,128 @@ func (c *Connector) UpdateSubscription(
 	}
 
 	return res, nil
+}
+
+func customFieldAPIName(fieldName string) string {
+	if strings.HasSuffix(fieldName, "__c") {
+		return fieldName
+	}
+
+	return fieldName + "__c"
+}
+
+func customFieldDisplayName(fieldName string) string {
+	return strings.TrimSuffix(fieldName, "__c")
+}
+
+// prepareQuotaOptimizationObjectFieldsForUpdate identifies truly new quota fields (in req but not
+// in prevState) and filters prevState.QuotaOptimizationObjectFields so DeleteSubscription only
+// removes fields for objects being removed. Returns the new-only quota fields for rollback use.
+func prepareQuotaOptimizationObjectFieldsForUpdate(
+	req *SubscriptionRequest, prevState *SubscribeResult,
+) map[common.ObjectName]string {
+	var newQuotaFields map[common.ObjectName]string
+
+	if req == nil || len(req.QuotaOptimizationObjectFields) == 0 {
+		return newQuotaFields
+	}
+
+	newQuotaFields = make(map[common.ObjectName]string)
+
+	for objectName, fieldName := range req.QuotaOptimizationObjectFields {
+		if _, existed := prevState.QuotaOptimizationObjectFields[objectName]; !existed {
+			newQuotaFields[objectName] = fieldName
+		}
+	}
+
+	for objectName := range req.QuotaOptimizationObjectFields {
+		delete(prevState.QuotaOptimizationObjectFields, objectName)
+	}
+
+	return newQuotaFields
+}
+
+func (c *Connector) upsertQuotaOptimizationFields(
+	ctx context.Context, req *SubscriptionRequest,
+) error {
+	if req == nil || len(req.QuotaOptimizationObjectFields) == 0 {
+		return nil
+	}
+
+	fields := make(map[string][]common.FieldDefinition)
+
+	for objectName, fieldName := range req.QuotaOptimizationObjectFields {
+		fields[string(objectName)] = []common.FieldDefinition{
+			{
+				FieldName:   customFieldAPIName(fieldName),
+				DisplayName: customFieldDisplayName(fieldName),
+				ValueType:   common.FieldTypeBoolean,
+				Description: "THIS IS AUTOMATED FIELD. DO NOT EDIT THIS FIELD. " + //nolint:lll
+					"This field is used to track if the quota optimization is used for the object",
+				StringOptions: &common.StringFieldOptions{
+					DefaultValue: goutils.Pointer("false"),
+				},
+			},
+		}
+	}
+
+	if _, err := c.UpsertMetadata(ctx, &common.UpsertMetadataParams{
+		Fields: fields,
+	}); err != nil {
+		return fmt.Errorf("failed to upsert quota optimization fields: %w", err)
+	}
+
+	return nil
+}
+
+func (c *Connector) updateChannelMemberFilters(
+	ctx context.Context, req *SubscriptionRequest, members map[common.ObjectName]*EventChannelMember,
+) error {
+	if req == nil || req.Filters == nil {
+		return nil
+	}
+
+	for objName, member := range members {
+		for objKey, filter := range req.Filters {
+			if naming.PluralityAndCaseIgnoreEqual(string(objKey), string(objName)) {
+				member.Metadata.EnrichedFields = filter.EnrichedFields
+				member.Metadata.FilterExpression = filter.FilterExpression
+
+				updatedMember, err := c.UpdateEventChannelMember(ctx, member)
+				if err != nil {
+					return fmt.Errorf("failed to update event channel member filters for object %s: %w", objName, err)
+				}
+
+				members[objName] = updatedMember
+
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
+func (c *Connector) rollbackQuotaOptimizationFields(ctx context.Context, req *SubscriptionRequest) error {
+	if req == nil || len(req.QuotaOptimizationObjectFields) == 0 {
+		return nil
+	}
+
+	deleteFields := make(map[common.ObjectName][]string)
+
+	for objectName, fieldName := range req.QuotaOptimizationObjectFields {
+		deleteFields[objectName] = append(
+			deleteFields[objectName], customFieldAPIName(fieldName),
+		)
+	}
+
+	res, err := c.DeleteMetadata(ctx, &common.DeleteMetadataParams{
+		Fields: deleteFields,
+	})
+
+	if err != nil || res != nil && !res.Success {
+		return fmt.Errorf("failed to rollback quota optimization fields: %w", err)
+	}
+
+	return nil
 }

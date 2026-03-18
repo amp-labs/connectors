@@ -188,6 +188,25 @@ func (c *Connector) CreateEventChannelMember(
 	return member, nil
 }
 
+// UpdateEventChannelMember updates an existing PlatformEventChannelMember via PATCH.
+// nolint: lll
+// https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_platformeventchannelmember.htm
+func (c *Connector) UpdateEventChannelMember(
+	ctx context.Context,
+	member *EventChannelMember,
+) (*EventChannelMember, error) {
+	// Salesforce Tooling API expects the Metadata wrapper and FullName in the PATCH body.
+	body := &EventChannelMember{FullName: member.FullName, Metadata: member.Metadata}
+
+	_, err := c.patchToSFAPI(ctx, body,
+		"tooling/sobjects/PlatformEventChannelMember/"+member.Id, "EventChannelMember")
+	if err != nil {
+		return nil, err
+	}
+
+	return member, nil
+}
+
 func (c *Connector) DeleteEventChannelMember(ctx context.Context, memberId string) (*common.JSONHTTPResponse, error) {
 	return c.deleteToSFAPI(ctx, "tooling/sobjects/PlatformEventChannelMember/"+memberId, "EventChannelMember")
 }
@@ -321,6 +340,22 @@ func (c *Connector) postToSFAPI(ctx context.Context, body any, path string, enti
 	}
 
 	return res, nil
+}
+
+func (c *Connector) patchToSFAPI(
+	ctx context.Context, body any, path string, entity string,
+) (*common.JSONHTTPResponse, error) {
+	location, err := c.getRestApiURL(path)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.Client.Patch(ctx, location.String(), body)
+	if err != nil {
+		return nil, fmt.Errorf("error updating %s: %w", entity, err)
+	}
+
+	return resp, nil
 }
 
 func (c *Connector) deleteToSFAPI(ctx context.Context, path string, entity string) (*common.JSONHTTPResponse, error) {

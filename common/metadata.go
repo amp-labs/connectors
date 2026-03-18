@@ -1,7 +1,9 @@
 // nolint:revive,godoclint
 package common
 
-import "errors"
+import (
+	"errors"
+)
 
 // UpsertMetadataAction represents the action taken during an upsert operation.
 type UpsertMetadataAction string
@@ -96,7 +98,7 @@ type UpsertMetadataParams struct {
 type DeleteMetadataParams struct {
 	// Maps object names to field names to delete.
 	// For example: {"Account": ["My_Custom_Field__c", "Another_Field__c"]}
-	Fields map[string][]string `json:"fields"`
+	Fields map[ObjectName][]string `json:"fields"`
 }
 
 // DeleteMetadataResult contains results for all deleted fields.
