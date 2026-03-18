@@ -147,3 +147,5 @@ output/
 # Salesforce test binaries
 apex
 test/salesforce/apex/apex
+subscribe
+test/salesforce/subscribe/subscribe
