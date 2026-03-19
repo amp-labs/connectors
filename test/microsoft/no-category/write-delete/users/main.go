@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os/signal"
 	"syscall"
 
@@ -38,6 +39,8 @@ type PasswordProfile struct {
 	ForceChangePasswordNextSignIn bool   `json:"forceChangePasswordNextSignIn"`
 }
 
+var domain = "Ampersand280.onmicrosoft.com"
+
 func main() {
 	// Handle Ctrl-C gracefully.
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -72,7 +75,7 @@ func main() {
 			Surname:           "Darrow",
 			MobilePhone:       "+1 206 555 0110",
 			UsageLocation:     "US",
-			UserPrincipalName: "MelissaD@integrationuserwithampersan.onmicrosoft.com",
+			UserPrincipalName: fmt.Sprintf("MelissaD@%v", domain),
 		},
 		Payload{
 			DisplayName: "Peppermint",
@@ -81,7 +84,7 @@ func main() {
 			ReadFields: datautils.NewSet("id", "userPrincipalName", "displayName"),
 			SearchBy: testscenario.Property{
 				Key:   "userprincipalname",
-				Value: "MelissaD@integrationuserwithampersan.onmicrosoft.com",
+				Value: fmt.Sprintf("MelissaD@%v", domain),
 			},
 			RecordIdentifierKey: "id",
 			UpdatedFields: map[string]string{
