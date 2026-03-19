@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -58,11 +57,9 @@ func NewNestedIdField(zoom []string, field string) IdFieldQuery {
 // This function gracefully handles missing ID fields by leaving ReadResultRow.Id empty,
 // allowing backwards compatibility with existing connectors.
 func MakeGetMarshaledDataWithId(
-	objectName string,
-	idFieldMapping datautils.DefaultMap[string, IdFieldQuery],
+	idQuery IdFieldQuery,
 ) common.MarshalFunc {
 	return func(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
-		idQuery := idFieldMapping.Get(objectName)
 		data := make([]common.ReadResultRow, len(records))
 
 		for i, record := range records {
@@ -94,12 +91,9 @@ func MakeGetMarshaledDataWithId(
 // allowing backwards compatibility with existing connectors.
 func MakeMarshaledDataFuncWithId(
 	nodeRecordFunc common.RecordTransformer,
-	objectName string,
-	idFieldMapping datautils.DefaultMap[string, IdFieldQuery],
+	idQuery IdFieldQuery,
 ) common.MarshalFromNodeFunc {
 	return func(records []*ajson.Node, fields []string) ([]common.ReadResultRow, error) {
-		idQuery := idFieldMapping.Get(objectName)
-
 		if nodeRecordFunc == nil {
 			// Default method converts ajson.Node to map[string]any.
 			// If conversion is not enough and data should be altered

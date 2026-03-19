@@ -180,7 +180,7 @@ func TestMakeGetMarshaledDataWithId(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			marshalFunc := MakeGetMarshaledDataWithId(tt.objectName, idMapping)
+			marshalFunc := MakeGetMarshaledDataWithId(idMapping.Get(tt.objectName))
 			result, err := marshalFunc(tt.records, tt.fields)
 
 			require.NoError(t, err)
@@ -252,7 +252,7 @@ func TestMakeMarshaledDataFuncWithId(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			marshalFunc := MakeMarshaledDataFuncWithId(nil, tt.objectName, idMapping)
+			marshalFunc := MakeMarshaledDataFuncWithId(nil, idMapping.Get(tt.objectName))
 			result, err := marshalFunc(tt.records, tt.fields)
 
 			require.NoError(t, err)
@@ -269,13 +269,6 @@ func TestMakeMarshaledDataFuncWithId(t *testing.T) {
 
 func TestMakeMarshaledDataFuncWithId_WithTransformer(t *testing.T) {
 	t.Parallel()
-
-	idMapping := datautils.NewDefaultMap(
-		datautils.Map[string, IdFieldQuery]{},
-		func(_ string) IdFieldQuery {
-			return NewIdField("id")
-		},
-	)
 
 	// Custom transformer that flattens "attributes" into root
 	transformer := func(node *ajson.Node) (map[string]any, error) {
@@ -298,7 +291,7 @@ func TestMakeMarshaledDataFuncWithId_WithTransformer(t *testing.T) {
 	node, err := ajson.Unmarshal([]byte(jsonStr))
 	require.NoError(t, err)
 
-	marshalFunc := MakeMarshaledDataFuncWithId(transformer, "contacts", idMapping)
+	marshalFunc := MakeMarshaledDataFuncWithId(transformer, NewIdField("id"))
 	result, err := marshalFunc([]*ajson.Node{node}, []string{"name"})
 
 	require.NoError(t, err)
