@@ -196,7 +196,11 @@ func ExtractLowercaseFieldsFromRaw(fields []string, record map[string]any) map[s
 	return out
 }
 
-// GetMarshaledData extracts the "id" field from the raw record and returns a list of ReadResultRow.
+// GetMarshaledData converts records into ReadResultRow slices without populating the Id field.
+//
+// Deprecated:
+// For new connectors, prefer readhelper.MakeGetMarshaledDataWithId to ensure
+// the ReadResultRow.Id field is properly populated.
 func GetMarshaledData(records []map[string]any, fields []string) ([]ReadResultRow, error) {
 	data := make([]ReadResultRow, len(records))
 
@@ -229,6 +233,10 @@ func GetMarshaledData(records []map[string]any, fields []string) ([]ReadResultRo
 // MakeMarshaledDataFunc constructs a MarshalFromNodeFunc that converts records into ReadResultRow slices.
 // It applies an optional RecordTransformer to each record; if nil, it defaults to ajson-to-map conversion.
 // Typically used to flatten, normalize records or enhance them with custom fields.
+//
+// Deprecated:
+// For new connectors, prefer readhelper.MakeMarshaledDataFuncWithId to ensure
+// the ReadResultRow.Id field is properly populated.
 func MakeMarshaledDataFunc(nodeRecordFunc RecordTransformer) MarshalFromNodeFunc {
 	return func(records []*ajson.Node, fields []string) ([]ReadResultRow, error) {
 		if nodeRecordFunc == nil {
