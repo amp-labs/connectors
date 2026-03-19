@@ -24,7 +24,7 @@
   "info": {
     "per_page": 200,
     "next_page_token": null,
-    "count": 1,
+    "count": 2,
     "sort_by": "id",
     "page": 1,
     "previous_page_token": null,

@@ -43,22 +43,22 @@ func getOutreachDataMarshaller(config common.ReadParams, included []dataItem,
 				return nil, err
 			}
 
-			var RecordId string
+			var recordId string
 
 			switch v := record["id"].(type) {
 			case string:
-				RecordId = v
+				recordId = v
 			case float64:
-				RecordId = strconv.FormatFloat(v, 'f', -1, 64)
+				recordId = strconv.FormatFloat(v, 'f', -1, 64)
 			case json.Number:
-				RecordId = v.String()
+				recordId = v.String()
 			}
 
 			// Populate the result row with fields, raw data, and ID.
 			result[idx] = common.ReadResultRow{
 				Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
 				Raw:    raw,
-				Id:     RecordId,
+				Id:     recordId,
 			}
 
 			relationship, err := assertMapStringAny(record[relationshipsKey])
