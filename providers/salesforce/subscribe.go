@@ -9,6 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/go-playground/validator"
 )
@@ -22,6 +23,7 @@ type SubscribeResult struct {
 	// reducing unnecessary webhook traffic and optimizing API quota usage.
 	// We need to return this field and will be read by the DeleteSubscription method to delete the custom fields.
 	QuotaOptimizationObjectFields map[common.ObjectName]string
+	ApexTriggers                  map[common.ObjectName]*ApexTrigger
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
@@ -34,15 +36,11 @@ func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	}
 }
 
-type Filter struct {
-	EnrichedFields   []*EnrichedField
-	FilterExpression string
-}
-
 type SubscriptionRequest struct {
-	Filters map[common.ObjectName]*Filter
 	// QuotaOptimizationObjectFields maps object names to custom checkbox field names to create
 	// on the object in Salesforce. See SubscribeResult.QuotaOptimizationObjectFields for details.
+	// The checkbox field is also used to build a CDC filter expression that allows all non-UPDATE
+	// events through and only passes UPDATE events where the checkbox is true.
 	QuotaOptimizationObjectFields map[common.ObjectName]string
 }
 
@@ -52,6 +50,7 @@ type subscribeProgress struct {
 	quotaFieldsUpserted bool
 	req                 *SubscriptionRequest
 	createdMembers      map[common.ObjectName]*EventChannelMember
+	deployedTriggers    map[common.ObjectName]*ApexTriggerResult
 }
 
 // Subscribe subscribes to the events for the given objects.
@@ -115,7 +114,7 @@ func (c *Connector) Subscribe(
 			common.SubscriptionEventTypeUpdate,
 			common.SubscriptionEventTypeDelete,
 		},
-		Objects: objectNames(sfRes.EventChannelMembers),
+		Objects: datautils.FromMap(sfRes.EventChannelMembers).Keys(),
 	}, nil
 }
 
@@ -142,6 +141,42 @@ func (c *Connector) executeSubscribe(
 
 	progress.quotaFieldsUpserted = true
 
+	if err := c.createEventChannelMembers(ctx, params, registrationParams, req, sfRes); err != nil {
+		return sfRes, progress, err
+	}
+
+	if req != nil && req.QuotaOptimizationObjectFields != nil {
+		sfRes.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
+	}
+
+	triggerParams := buildApexTriggerParams(params, req)
+
+	if len(triggerParams) > 0 {
+		deployOut, err := c.deployApexTriggers(ctx, triggerParams)
+
+		// Track successfully deployed triggers for rollback regardless of error.
+		progress.deployedTriggers = filterSuccessfulTriggers(deployOut)
+
+		// Always populate ApexTriggers so the caller can see per-object status.
+		sfRes.ApexTriggers = toApexTriggers(deployOut)
+
+		if err != nil {
+			return sfRes, progress, err
+		}
+	}
+
+	return sfRes, progress, nil
+}
+
+// createEventChannelMembers creates CDC event channel members for each subscribed object,
+// setting filter expressions and enriched fields from quota optimization configuration.
+func (c *Connector) createEventChannelMembers(
+	ctx context.Context,
+	params common.SubscribeParams,
+	registrationParams *ResultData,
+	req *SubscriptionRequest,
+	sfRes *SubscribeResult,
+) error {
 	for objName := range params.SubscriptionEvents {
 		eventName := GetChangeDataCaptureEventName(string(objName))
 		rawChannelName := GetRawChannelNameFromChannel(registrationParams.EventChannel.FullName)
@@ -151,15 +186,9 @@ func (c *Connector) executeSubscribe(
 			SelectedEntity: eventName,
 		}
 
-		if req != nil && req.Filters != nil {
-			for objKey, filter := range req.Filters {
-				if naming.PluralityAndCaseIgnoreEqual(string(objKey), string(objName)) {
-					channelMetadata.EnrichedFields = filter.EnrichedFields
-					channelMetadata.FilterExpression = filter.FilterExpression
-
-					break
-				}
-			}
+		if req != nil {
+			channelMetadata.FilterExpression = buildQuotaFilterExpression(req.QuotaOptimizationObjectFields, objName)
+			channelMetadata.EnrichedFields = buildQuotaEnrichedFields(req.QuotaOptimizationObjectFields, objName)
 		}
 
 		channelMember := &EventChannelMember{
@@ -169,68 +198,13 @@ func (c *Connector) executeSubscribe(
 
 		newChannelMember, err := c.CreateEventChannelMember(ctx, channelMember)
 		if err != nil {
-			return sfRes, progress, fmt.Errorf("failed to create event channel member for object %s, %w", objName, err)
+			return fmt.Errorf("failed to create event channel member for object %s, %w", objName, err)
 		}
 
 		sfRes.EventChannelMembers[objName] = newChannelMember
 	}
 
-	if req != nil && req.QuotaOptimizationObjectFields != nil {
-		sfRes.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
-	}
-
-	return sfRes, progress, nil
-}
-
-// rollbackSubscribe reverses completed operations in reverse order based on progress.
-// It removes successfully rolled-back members from the shared createdMembers map
-// and returns a SubscriptionResult reflecting the post-rollback state.
-func (c *Connector) rollbackSubscribe(
-	ctx context.Context,
-	sfRes *SubscribeResult,
-	progress *subscribeProgress,
-) (*common.SubscriptionResult, error) {
-	var rollbackErr error
-
-	// Reverse created event channel members.
-	for objName, member := range progress.createdMembers {
-		if _, err := c.DeleteEventChannelMember(ctx, member.Id); err != nil {
-			rollbackErr = errors.Join(
-				rollbackErr,
-				fmt.Errorf("failed to delete event channel member for object %s: %w", objName, err),
-			)
-		} else {
-			delete(progress.createdMembers, objName)
-		}
-	}
-
-	// Reverse quota optimization fields.
-	if progress.quotaFieldsUpserted {
-		if err := c.rollbackQuotaOptimizationFields(ctx, progress.req); err != nil {
-			rollbackErr = errors.Join(rollbackErr, err)
-		}
-	}
-
-	res := &common.SubscriptionResult{
-		Result: sfRes,
-	}
-
-	if rollbackErr != nil {
-		res.Status = common.SubscriptionStatusFailedToRollback
-		res.Events = []common.SubscriptionEventType{
-			common.SubscriptionEventTypeCreate,
-			common.SubscriptionEventTypeUpdate,
-			common.SubscriptionEventTypeDelete,
-		}
-
-		for objName := range sfRes.EventChannelMembers {
-			res.Objects = append(res.Objects, objName)
-		}
-	} else {
-		res.Status = common.SubscriptionStatusFailed
-	}
-
-	return res, rollbackErr
+	return nil
 }
 
 // DeleteSubscription deletes the subscription by deleting all the event channel members.
@@ -248,6 +222,14 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 			sfRes,
 			params.Result,
 		)
+	}
+
+	// Delete apex triggers first — they reference the quota optimization fields,
+	// so they must be removed before the custom fields can be deleted.
+	for objName, trigger := range sfRes.ApexTriggers {
+		if err := c.rollbackApexTrigger(ctx, trigger.TriggerName); err != nil {
+			return fmt.Errorf("failed to delete apex trigger for object '%s': %w", objName, err)
+		}
 	}
 
 	for objectName, member := range sfRes.EventChannelMembers {
@@ -365,8 +347,8 @@ func (c *Connector) executeUpdateSubscription(
 		return nil, progress, fmt.Errorf("failed to delete previous subscription: %w", err)
 	}
 
-	// Update filters on kept channel members if the request includes new filters.
-	if err := c.updateChannelMemberFilters(ctx, req, diff.channelMembersToKeep); err != nil {
+	// Update channel members and redeploy apex triggers for kept objects.
+	if err := c.updateKeptSubscriptions(ctx, req, diff); err != nil {
 		return nil, progress, err
 	}
 
@@ -399,27 +381,15 @@ func (c *Connector) executeUpdateSubscription(
 			common.SubscriptionEventTypeUpdate,
 			common.SubscriptionEventTypeDelete,
 		},
-		Objects: objectNames(newState.EventChannelMembers),
+		Objects: datautils.FromMap(newState.EventChannelMembers).Keys(),
 	}, progress, nil
-}
-
-// rollbackUpdateSubscription reverses completed operations based on progress.
-func (c *Connector) rollbackUpdateSubscription(
-	ctx context.Context,
-	progress *updateSubscriptionProgress,
-) error {
-	if !progress.quotaFieldsUpserted || len(progress.newQuotaFields) == 0 {
-		return nil
-	}
-
-	req := &SubscriptionRequest{QuotaOptimizationObjectFields: progress.newQuotaFields}
-
-	return c.rollbackQuotaOptimizationFields(ctx, req)
 }
 
 // subscriptionDiff holds the result of diffing current subscription events against previous state.
 type subscriptionDiff struct {
 	channelMembersToKeep map[common.ObjectName]*EventChannelMember
+	apexTriggersToKeep   map[common.ObjectName]*ApexTrigger
+	keptObjectEvents     map[common.ObjectName]common.ObjectEvents
 	objectsToDelete      []common.ObjectName
 }
 
@@ -430,6 +400,10 @@ func computeSubscriptionDiff(
 	params common.SubscribeParams,
 	prevState *SubscribeResult,
 ) subscriptionDiff {
+	// Save all subscription events upfront before mutation removes kept objects.
+	allObjectEvents := make(map[common.ObjectName]common.ObjectEvents, len(params.SubscriptionEvents))
+	maps.Copy(allObjectEvents, params.SubscriptionEvents)
+
 	objectsToExcludeFromSubscription := []common.ObjectName{}
 	objectsExcludeFromDelete := []common.ObjectName{}
 
@@ -450,10 +424,16 @@ func computeSubscriptionDiff(
 	}
 
 	channelMembersToKeep := make(map[common.ObjectName]*EventChannelMember)
+	apexTriggersToKeep := make(map[common.ObjectName]*ApexTrigger)
 
 	for _, objName := range objectsExcludeFromDelete {
 		channelMembersToKeep[objName] = prevState.EventChannelMembers[objName]
 		delete(prevState.EventChannelMembers, objName)
+
+		if trigger, ok := prevState.ApexTriggers[objName]; ok {
+			apexTriggersToKeep[objName] = trigger
+			delete(prevState.ApexTriggers, objName)
+		}
 	}
 
 	objectsToDelete := make([]common.ObjectName, 0, len(prevState.EventChannelMembers))
@@ -463,6 +443,8 @@ func computeSubscriptionDiff(
 
 	return subscriptionDiff{
 		channelMembersToKeep: channelMembersToKeep,
+		apexTriggersToKeep:   apexTriggersToKeep,
+		keptObjectEvents:     allObjectEvents,
 		objectsToDelete:      objectsToDelete,
 	}
 }
@@ -475,14 +457,23 @@ func buildUpdatedSubscribeResult(
 	diff subscriptionDiff,
 	req *SubscriptionRequest,
 ) *SubscribeResult {
+	//nolint:forcetypeassert
+	newCreateRes := createRes.Result.(*SubscribeResult)
+
 	newState := prevState
 	newState.EventChannelMembers = diff.channelMembersToKeep
+	maps.Copy(newState.EventChannelMembers, newCreateRes.EventChannelMembers)
 
-	//nolint:forcetypeassert
-	maps.Copy(newState.EventChannelMembers, createRes.Result.(*SubscribeResult).EventChannelMembers)
+	newState.ApexTriggers = make(map[common.ObjectName]*ApexTrigger)
+	maps.Copy(newState.ApexTriggers, diff.apexTriggersToKeep)
+
+	if len(newCreateRes.ApexTriggers) > 0 {
+		maps.Copy(newState.ApexTriggers, newCreateRes.ApexTriggers)
+	}
 
 	for _, objName := range diff.objectsToDelete {
 		delete(newState.EventChannelMembers, objName)
+		delete(newState.ApexTriggers, objName)
 	}
 
 	if req != nil && req.QuotaOptimizationObjectFields != nil {
@@ -492,13 +483,52 @@ func buildUpdatedSubscribeResult(
 	return newState
 }
 
-func objectNames(members map[common.ObjectName]*EventChannelMember) []common.ObjectName {
-	names := make([]common.ObjectName, 0, len(members))
-	for objName := range members {
-		names = append(names, objName)
+// lookupQuotaField finds the checkbox field name for an object using case and plurality
+// insensitive matching. Returns the field name and true if found.
+func lookupQuotaField(
+	quotaFields map[common.ObjectName]string, objName common.ObjectName,
+) (string, bool) {
+	for key, value := range quotaFields {
+		if naming.PluralityAndCaseIgnoreEqual(string(key), string(objName)) {
+			return value, true
+		}
 	}
 
-	return names
+	return "", false
+}
+
+// buildQuotaFilterExpression builds a CDC filter expression for an object based on its
+// quota optimization checkbox field. The expression allows all non-UPDATE events through
+// and only passes UPDATE events where the checkbox field is true (set by the Apex trigger
+// when watched fields change).
+// Returns empty string if the object has no quota optimization field configured.
+func buildQuotaFilterExpression(
+	quotaFields map[common.ObjectName]string, objName common.ObjectName,
+) string {
+	checkboxField, ok := lookupQuotaField(quotaFields, objName)
+	if !ok {
+		return ""
+	}
+
+	return fmt.Sprintf("ChangeEventHeader.changeType != 'UPDATE' OR %s = true",
+		customFieldAPIName(checkboxField))
+}
+
+// buildQuotaEnrichedFields returns the enriched fields needed for the quota optimization
+// filter expression. The checkbox field must be included as an enriched field so that
+// CDC events contain its value for filter evaluation.
+// Returns nil if the object has no quota optimization field configured.
+func buildQuotaEnrichedFields(
+	quotaFields map[common.ObjectName]string, objName common.ObjectName,
+) []*EnrichedField {
+	checkboxField, ok := lookupQuotaField(quotaFields, objName)
+	if !ok {
+		return nil
+	}
+
+	return []*EnrichedField{
+		{Name: customFieldAPIName(checkboxField)},
+	}
 }
 
 func customFieldAPIName(fieldName string) string {
@@ -573,53 +603,52 @@ func (c *Connector) upsertQuotaOptimizationFields(
 	return nil
 }
 
-func (c *Connector) updateChannelMemberFilters(
-	ctx context.Context, req *SubscriptionRequest, members map[common.ObjectName]*EventChannelMember,
+// updateKeptSubscriptions updates channel members and redeploys apex triggers for
+// objects that are kept across an UpdateSubscription call.
+func (c *Connector) updateKeptSubscriptions(
+	ctx context.Context,
+	req *SubscriptionRequest,
+	diff subscriptionDiff,
 ) error {
-	if req == nil || req.Filters == nil {
+	if req == nil {
 		return nil
 	}
 
-	for objName, member := range members {
-		for objKey, filter := range req.Filters {
-			if naming.PluralityAndCaseIgnoreEqual(string(objKey), string(objName)) {
-				member.Metadata.EnrichedFields = filter.EnrichedFields
-				member.Metadata.FilterExpression = filter.FilterExpression
-
-				updatedMember, err := c.UpdateEventChannelMember(ctx, member)
-				if err != nil {
-					return fmt.Errorf("failed to update event channel member filters for object %s: %w", objName, err)
-				}
-
-				members[objName] = updatedMember
-
-				break
-			}
-		}
+	if err := c.recreateKeptChannelMembers(ctx, req, diff); err != nil {
+		return err
 	}
 
-	return nil
+	return c.redeployKeptApexTriggers(ctx, req, diff)
 }
 
-func (c *Connector) rollbackQuotaOptimizationFields(ctx context.Context, req *SubscriptionRequest) error {
-	if req == nil || len(req.QuotaOptimizationObjectFields) == 0 {
-		return nil
-	}
+// recreateKeptChannelMembers deletes and recreates channel members for kept objects
+// with updated filter expressions and enriched fields. Salesforce doesn't support
+// PATCH on selectedEntity, so delete+recreate is required.
+func (c *Connector) recreateKeptChannelMembers(
+	ctx context.Context,
+	req *SubscriptionRequest,
+	diff subscriptionDiff,
+) error {
+	for objName, member := range diff.channelMembersToKeep {
+		filterExpr := buildQuotaFilterExpression(req.QuotaOptimizationObjectFields, objName)
+		if filterExpr == "" {
+			continue
+		}
 
-	deleteFields := make(map[common.ObjectName][]string)
+		if _, err := c.DeleteEventChannelMember(ctx, member.Id); err != nil {
+			return fmt.Errorf("failed to delete event channel member for object %s: %w", objName, err)
+		}
 
-	for objectName, fieldName := range req.QuotaOptimizationObjectFields {
-		deleteFields[objectName] = append(
-			deleteFields[objectName], customFieldAPIName(fieldName),
-		)
-	}
+		member.Id = ""
+		member.Metadata.FilterExpression = filterExpr
+		member.Metadata.EnrichedFields = buildQuotaEnrichedFields(req.QuotaOptimizationObjectFields, objName)
 
-	res, err := c.DeleteMetadata(ctx, &common.DeleteMetadataParams{
-		Fields: deleteFields,
-	})
+		newMember, err := c.CreateEventChannelMember(ctx, member)
+		if err != nil {
+			return fmt.Errorf("failed to recreate event channel member for object %s: %w", objName, err)
+		}
 
-	if err != nil || res != nil && !res.Success {
-		return fmt.Errorf("failed to rollback quota optimization fields: %w", err)
+		diff.channelMembersToKeep[objName] = newMember
 	}
 
 	return nil
