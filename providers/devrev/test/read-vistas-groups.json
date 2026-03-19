@@ -1,0 +1,22 @@
+{
+  "vista_group": [
+    {
+      "object_type": "works",
+      "end_date": "2026-03-16T17:21:24.769Z",
+      "id": "don:core:devrev:test:vista_group/1",
+      "name": "Test Sprint",
+      "parent": {
+        "display_id": "vista-1",
+        "flavor": "sprint_board",
+        "id": "don:core:devrev:test:vista/1",
+        "name": "Test Board",
+        "type": "grouped"
+      },
+      "start_date": "2026-03-02T17:21:24.769Z",
+      "state": "active",
+      "type": "curated"
+    }
+  ],
+  "next_cursor": "",
+  "total": 1
+}

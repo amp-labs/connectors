@@ -21,6 +21,7 @@ func TestRead(t *testing.T) {
 	responseAccountsLastPage := testutils.DataFromFile(t, "read-accounts-last-page.json")
 	responseArticlesEmpty := testutils.DataFromFile(t, "read-articles-empty.json")
 	responseArticles := testutils.DataFromFile(t, "read-articles.json")
+	responseVistasGroups := testutils.DataFromFile(t, "read-vistas-groups.json")
 
 	tests := []testroutines.Read{
 		{
@@ -296,6 +297,30 @@ func TestRead(t *testing.T) {
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 0,
+				Data: []common.ReadResultRow{},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read vistas.groups with Since skips time filter (no modified_date)",
+			Input: common.ReadParams{
+				ObjectName: "vistas.groups",
+				Fields:     connectors.Fields("id", "object_type"),
+				Since:      time.Date(2026, 2, 20, 17, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/vistas.groups.list"),
+					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParamsMissing("modified_date.after"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseVistasGroups),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 1,
 				Data: []common.ReadResultRow{},
 				Done: true,
 			},
