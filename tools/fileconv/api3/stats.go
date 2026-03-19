@@ -11,11 +11,11 @@ import (
 
 // nolint:gochecknoglobals
 var (
-	// url path to list of objects
+	// url path to list of objects.
 	statsObjectsWithMultipleArrays = datautils.Map[string, []string]{}
-	// set of objects
+	// set of objects.
 	statsObjectsWithNoArrays = datautils.Set[string]{}
-	// array field name to list of objects
+	// array field name to list of objects.
 	statsObjectsWithAutoSelectedArrays = datautils.UniqueLists[string, string]{}
 )
 
