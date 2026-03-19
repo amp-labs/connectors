@@ -59,7 +59,7 @@ func (c *Connector) parseReadResponse(
 		resp,
 		common.ExtractOptionalRecordsFromPath("value"),
 		getNextRecordsURL,
-		common.GetMarshaledData,
+		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
 		params.Fields,
 	)
 }

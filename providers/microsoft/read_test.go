@@ -160,6 +160,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					Raw: map[string]any{
 						"id": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAAAAAEKAAB8hj1Rtd60SKTngNs3if9RAAEMs4IlAAA=",
 					},
+					Id: "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAAAAAEKAAB8hj1Rtd60SKTngNs3if9RAAEMs4IlAAA=",
 				}, {
 					Fields: map[string]any{
 						"subject":     "Gail Waelchi",
@@ -169,6 +170,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					Raw: map[string]any{
 						"id": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAAAAAEKAAB8hj1Rtd60SKTngNs3if9RAAEMs4ImAAA=",
 					},
+					Id: "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAAAAAEKAAB8hj1Rtd60SKTngNs3if9RAAEMs4ImAAA=",
 				}},
 				NextPage: "https://graph.microsoft.com/v1.0/me/messages?%24top=10&%24skip=10",
 				Done:     false,
