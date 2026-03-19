@@ -90,6 +90,8 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		url.WithQueryParam("top", strconv.Itoa(params.PageSize))
 	}
 
+	// Apply since/until filters if supported for the object
+	// some objects support "created_at" field for filtering, others support "updated" field for filtering.
 	if filterField := objectSinceField.Get(params.ObjectName); filterField != "" {
 		var filters []string
 
