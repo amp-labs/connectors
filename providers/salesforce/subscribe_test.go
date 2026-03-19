@@ -103,3 +103,40 @@ func TestUpdateSubscriptionValidation(t *testing.T) {
 
 	// Wrong Request type — no longer applicable since SubscriptionRequest was removed
 }
+
+func TestBuildWatchFieldsFilterExpression(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name        string
+		watchFields []string
+		expected    string
+	}{
+		{
+			name:        "Empty watch fields returns empty string",
+			watchFields: nil,
+			expected:    "",
+		},
+		{
+			name:        "Single watch field",
+			watchFields: []string{"Phone"},
+			expected:    "(ChangeEventHeader.changeType != 'UPDATE') OR (ChangeEventHeader.changeType = 'UPDATE' AND ('Phone' IN ChangeEventHeader.changedFields))",
+		},
+		{
+			name:        "Multiple watch fields",
+			watchFields: []string{"Phone", "Email"},
+			expected:    "(ChangeEventHeader.changeType != 'UPDATE') OR (ChangeEventHeader.changeType = 'UPDATE' AND ('Phone' IN ChangeEventHeader.changedFields OR 'Email' IN ChangeEventHeader.changedFields))",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			result := buildWatchFieldsFilterExpression(tt.watchFields)
+			if result != tt.expected {
+				t.Errorf("buildWatchFieldsFilterExpression(%v) =\n  %q\nwant\n  %q", tt.watchFields, result, tt.expected)
+			}
+		})
+	}
+}

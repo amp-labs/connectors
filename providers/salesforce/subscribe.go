@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -97,13 +98,14 @@ func (c *Connector) executeSubscribe(
 		createdMembers: sfRes.EventChannelMembers,
 	}
 
-	for objName := range params.SubscriptionEvents {
+	for objName, objEvents := range params.SubscriptionEvents {
 		eventName := GetChangeDataCaptureEventName(string(objName))
 		rawChannelName := GetRawChannelNameFromChannel(registrationParams.EventChannel.FullName)
 
 		channelMetadata := &EventChannelMemberMetadata{
-			EventChannel:   GetChannelName(rawChannelName),
-			SelectedEntity: eventName,
+			EventChannel:     GetChannelName(rawChannelName),
+			SelectedEntity:   eventName,
+			FilterExpression: buildWatchFieldsFilterExpression(objEvents.WatchFields),
 		}
 
 		channelMember := &EventChannelMember{
@@ -333,6 +335,26 @@ func buildUpdatedSubscribeResult(
 	return newState
 }
 
+// buildWatchFieldsFilterExpression builds a CDC filter expression that allows all non-UPDATE
+// events through and only passes UPDATE events where at least one watched field changed.
+// The returned expression uses ChangeEventHeader.changedFields so no enriched fields are needed.
+func buildWatchFieldsFilterExpression(watchFields []string) string {
+	if len(watchFields) == 0 {
+		return ""
+	}
+
+	changedFieldConditions := make([]string, 0, len(watchFields))
+	for _, field := range watchFields {
+		changedFieldConditions = append(changedFieldConditions,
+			fmt.Sprintf("'%s' IN ChangeEventHeader.changedFields", field))
+	}
+
+	return fmt.Sprintf(
+		"(ChangeEventHeader.changeType != 'UPDATE') OR (ChangeEventHeader.changeType = 'UPDATE' AND (%s))",
+		strings.Join(changedFieldConditions, " OR "),
+	)
+}
+
 func objectNames(members map[common.ObjectName]*EventChannelMember) []common.ObjectName {
 	names := make([]common.ObjectName, 0, len(members))
 	for objName := range members {
@@ -348,8 +370,10 @@ func (c *Connector) updateChannelMemberFilters(
 	members map[common.ObjectName]*EventChannelMember,
 ) error {
 	for objName, member := range members {
-		for eventObjName := range params.SubscriptionEvents {
+		for eventObjName, objEvents := range params.SubscriptionEvents {
 			if naming.PluralityAndCaseIgnoreEqual(string(eventObjName), string(objName)) {
+				member.Metadata.FilterExpression = buildWatchFieldsFilterExpression(objEvents.WatchFields)
+
 				updatedMember, err := c.UpdateEventChannelMember(ctx, member)
 				if err != nil {
 					return fmt.Errorf("failed to update event channel member filters for object %s: %w", objName, err)
