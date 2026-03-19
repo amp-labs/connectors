@@ -46,14 +46,20 @@ type SubscriptionRequest struct {
 	QuotaOptimizationObjectFields map[common.ObjectName]string
 }
 
+// subscribeProgress tracks which reversible operations completed during executeSubscribe,
+// so that rollbackSubscribe knows what to undo.
+type subscribeProgress struct {
+	quotaFieldsUpserted bool
+	req                 *SubscriptionRequest
+	createdMembers      map[common.ObjectName]*EventChannelMember
+}
+
 // Subscribe subscribes to the events for the given objects.
 // It creates event channel members for each object in the subscription.
 // If any of the event channel members fail to be created, it will rollback the operation.
 // If the rollback fails, it will return the partial result along with the error.
 // If the rollback is successful, it will return the original error on object.
 // Registration is required prior to subscribing.
-//
-//nolint:funlen,cyclop,varnamelen,gocognit
 func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -71,8 +77,8 @@ func (c *Connector) Subscribe(
 		return nil, fmt.Errorf("invalid registration result: %w", err)
 	}
 
-	registrationParams, ok := params.RegistrationResult.Result.(*ResultData)
-	if !ok {
+	registrationParams, registrationOk := params.RegistrationResult.Result.(*ResultData)
+	if !registrationOk {
 		return nil, fmt.Errorf(
 			"%w: expected SubscribeParams.RegistrationResult.Result to be type '%T', but got '%T'", errInvalidRequestType,
 			registrationParams,
@@ -83,9 +89,10 @@ func (c *Connector) Subscribe(
 	var req *SubscriptionRequest
 
 	if params.Request != nil {
-		//nolint:varnamelen
-		req, ok = params.Request.(*SubscriptionRequest)
-		if !ok {
+		var requestOk bool
+
+		req, requestOk = params.Request.(*SubscriptionRequest)
+		if !requestOk {
 			return nil, fmt.Errorf(
 				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'", errInvalidRequestType,
 				req, params.Request,
@@ -93,15 +100,47 @@ func (c *Connector) Subscribe(
 		}
 	}
 
-	if err := c.upsertQuotaOptimizationFields(ctx, req); err != nil {
-		return nil, fmt.Errorf("failed to upsert quota optimization fields: %w", err)
+	sfRes, progress, execErr := c.executeSubscribe(ctx, params, registrationParams, req)
+	if execErr != nil {
+		rollbackRes, rollbackErr := c.rollbackSubscribe(ctx, sfRes, progress)
+
+		return rollbackRes, errors.Join(execErr, rollbackErr)
 	}
 
+	return &common.SubscriptionResult{
+		Status: common.SubscriptionStatusSuccess,
+		Result: sfRes,
+		Events: []common.SubscriptionEventType{
+			common.SubscriptionEventTypeCreate,
+			common.SubscriptionEventTypeUpdate,
+			common.SubscriptionEventTypeDelete,
+		},
+		Objects: objectNames(sfRes.EventChannelMembers),
+	}, nil
+}
+
+// executeSubscribe performs the forward-path logic of Subscribe.
+// It returns partial results and progress on error, without performing any rollback.
+func (c *Connector) executeSubscribe(
+	ctx context.Context,
+	params common.SubscribeParams,
+	registrationParams *ResultData,
+	req *SubscriptionRequest,
+) (*SubscribeResult, *subscribeProgress, error) {
 	sfRes := &SubscribeResult{
 		EventChannelMembers: make(map[common.ObjectName]*EventChannelMember),
 	}
 
-	var failError error
+	progress := &subscribeProgress{
+		req:            req,
+		createdMembers: sfRes.EventChannelMembers,
+	}
+
+	if err := c.upsertQuotaOptimizationFields(ctx, req); err != nil {
+		return sfRes, progress, fmt.Errorf("failed to upsert quota optimization fields: %w", err)
+	}
+
+	progress.quotaFieldsUpserted = true
 
 	for objName := range params.SubscriptionEvents {
 		eventName := GetChangeDataCaptureEventName(string(objName))
@@ -130,80 +169,68 @@ func (c *Connector) Subscribe(
 
 		newChannelMember, err := c.CreateEventChannelMember(ctx, channelMember)
 		if err != nil {
-			failError = fmt.Errorf("failed to create event channel member for object %s, %w", objName, err)
-
-			break
+			return sfRes, progress, fmt.Errorf("failed to create event channel member for object %s, %w", objName, err)
 		}
 
 		sfRes.EventChannelMembers[objName] = newChannelMember
-	}
-
-	res := &common.SubscriptionResult{
-		// Salesforce is all or nothing for an object,
-		// so if successful, we will subscribe to all events.
-		Events: []common.SubscriptionEventType{
-			common.SubscriptionEventTypeCreate,
-			common.SubscriptionEventTypeUpdate,
-			common.SubscriptionEventTypeDelete,
-		},
-	}
-
-	var rollbackError error
-
-	if failError != nil {
-		// Rollback event channel members.
-		for objName, member := range sfRes.EventChannelMembers {
-			if _, err := c.DeleteEventChannelMember(ctx, member.Id); err != nil {
-				rollbackError = errors.Join(
-					rollbackError,
-					fmt.Errorf("failed to delete event channel member for object %s: %w",
-						objName,
-						err,
-					),
-				)
-			} else {
-				// remove the object from the map
-				delete(sfRes.EventChannelMembers, objName)
-			}
-		}
-
-		// Rollback quota optimization fields.
-		if err := c.rollbackQuotaOptimizationFields(ctx, req); err != nil {
-			rollbackError = errors.Join(rollbackError, err)
-		}
-
-		if rollbackError != nil {
-			res.Status = common.SubscriptionStatusFailedToRollback
-
-			for objName := range sfRes.EventChannelMembers {
-				res.Objects = append(res.Objects, objName)
-			}
-
-			res.Result = sfRes
-
-			// we still return the partial result along with the error
-			return res, errors.Join(failError, rollbackError)
-		}
-
-		res.Events = nil
-		res.Status = common.SubscriptionStatusFailed
-		res.Result = sfRes
-
-		return res, failError
 	}
 
 	if req != nil && req.QuotaOptimizationObjectFields != nil {
 		sfRes.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
 	}
 
-	res.Status = common.SubscriptionStatusSuccess
-	res.Result = sfRes
+	return sfRes, progress, nil
+}
 
-	for objName := range sfRes.EventChannelMembers {
-		res.Objects = append(res.Objects, objName)
+// rollbackSubscribe reverses completed operations in reverse order based on progress.
+// It removes successfully rolled-back members from the shared createdMembers map
+// and returns a SubscriptionResult reflecting the post-rollback state.
+func (c *Connector) rollbackSubscribe(
+	ctx context.Context,
+	sfRes *SubscribeResult,
+	progress *subscribeProgress,
+) (*common.SubscriptionResult, error) {
+	var rollbackErr error
+
+	// Reverse created event channel members.
+	for objName, member := range progress.createdMembers {
+		if _, err := c.DeleteEventChannelMember(ctx, member.Id); err != nil {
+			rollbackErr = errors.Join(
+				rollbackErr,
+				fmt.Errorf("failed to delete event channel member for object %s: %w", objName, err),
+			)
+		} else {
+			delete(progress.createdMembers, objName)
+		}
 	}
 
-	return res, nil
+	// Reverse quota optimization fields.
+	if progress.quotaFieldsUpserted {
+		if err := c.rollbackQuotaOptimizationFields(ctx, progress.req); err != nil {
+			rollbackErr = errors.Join(rollbackErr, err)
+		}
+	}
+
+	res := &common.SubscriptionResult{
+		Result: sfRes,
+	}
+
+	if rollbackErr != nil {
+		res.Status = common.SubscriptionStatusFailedToRollback
+		res.Events = []common.SubscriptionEventType{
+			common.SubscriptionEventTypeCreate,
+			common.SubscriptionEventTypeUpdate,
+			common.SubscriptionEventTypeDelete,
+		}
+
+		for objName := range sfRes.EventChannelMembers {
+			res.Objects = append(res.Objects, objName)
+		}
+	} else {
+		res.Status = common.SubscriptionStatusFailed
+	}
+
+	return res, rollbackErr
 }
 
 // DeleteSubscription deletes the subscription by deleting all the event channel members.
@@ -248,12 +275,17 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 	return nil
 }
 
+// updateSubscriptionProgress tracks which reversible operations completed during
+// executeUpdateSubscription, so that rollbackUpdateSubscription knows what to undo.
+type updateSubscriptionProgress struct {
+	quotaFieldsUpserted bool
+	newQuotaFields      map[common.ObjectName]string
+}
+
 // UpdateSubscription will update the subscription by:
 // 1. Removing objects from the previous subscription that are not in the new subscription.
 // 2. Adding new objects to the subscription that are in the new subscription but not in the previous subscription.
 // 3. Returning the updated subscription result.
-//
-//nolint:funlen,cyclop
 func (c *Connector) UpdateSubscription(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -288,72 +320,54 @@ func (c *Connector) UpdateSubscription(
 		}
 	}
 
-	if err := c.upsertQuotaOptimizationFields(ctx, req); err != nil {
-		return nil, err
+	result, progress, execErr := c.executeUpdateSubscription(ctx, params, previousResult, prevState, req)
+	if execErr != nil {
+		rollbackErr := c.rollbackUpdateSubscription(ctx, progress)
+
+		return nil, errors.Join(execErr, rollbackErr)
 	}
+
+	return result, nil
+}
+
+// executeUpdateSubscription performs the forward-path logic of UpdateSubscription.
+// It returns partial progress on error, without performing any rollback.
+//
+//nolint:cyclop
+func (c *Connector) executeUpdateSubscription(
+	ctx context.Context,
+	params common.SubscribeParams,
+	previousResult *common.SubscriptionResult,
+	prevState *SubscribeResult,
+	req *SubscriptionRequest,
+) (*common.SubscriptionResult, *updateSubscriptionProgress, error) {
+	progress := &updateSubscriptionProgress{}
+
+	if err := c.upsertQuotaOptimizationFields(ctx, req); err != nil {
+		return nil, progress, err
+	}
+
+	progress.quotaFieldsUpserted = true
 
 	// Identify truly new quota fields and filter prevState so DeleteSubscription
 	// only removes fields for objects being removed.
-	newQuotaFields := prepareQuotaOptimizationObjectFieldsForUpdate(req, prevState)
+	progress.newQuotaFields = prepareQuotaOptimizationObjectFieldsForUpdate(req, prevState)
 
-	objectsToExcludeFromSubscription := []common.ObjectName{}
-	objectsExcludeFromDelete := []common.ObjectName{}
+	diff := computeSubscriptionDiff(params, prevState)
 
-	// collect objects to exclude from subscription
-	for objName := range params.SubscriptionEvents {
-		if _, ok := prevState.EventChannelMembers[objName]; ok {
-			objectsToExcludeFromSubscription = append(objectsToExcludeFromSubscription, objName)
-		}
-	}
-
-	// collect objects to exclude from delete
-	for objName := range prevState.EventChannelMembers {
-		if _, ok := params.SubscriptionEvents[objName]; ok {
-			objectsExcludeFromDelete = append(objectsExcludeFromDelete, objName)
-		}
-	}
-
-	// remove objects to exclude from subscription and delete
-	for _, objName := range objectsToExcludeFromSubscription {
-		delete(params.SubscriptionEvents, objName)
-	}
-
-	channelMembersToKeep := make(map[common.ObjectName]*EventChannelMember)
-
-	// remove objects to exclude from delete
-	for _, objName := range objectsExcludeFromDelete {
-		channelMembersToKeep[objName] = prevState.EventChannelMembers[objName]
-		delete(prevState.EventChannelMembers, objName)
-	}
-
-	objectsToDelete := []common.ObjectName{}
-
-	// get list of objects to delete to remove from result of update after delete
-	for objName := range prevState.EventChannelMembers {
-		objectsToDelete = append(objectsToDelete, objName)
-	}
-
-	// rename the previous result to deleteParam for clarity
-	// we will use this to delete the previous subscription
 	deleteParams := *previousResult
 	deleteParams.Result = prevState
-	deleteParams.Objects = objectsToDelete
+	deleteParams.Objects = diff.objectsToDelete
 
-	// this is the delete step, but it looks for only object that were selected to delete
-	// in objectsToDelete array, so we are still preserving some objects
-	// that needs to remain in the subscription
+	// Delete only objects that were selected for removal, preserving objects
+	// that need to remain in the subscription.
 	if err := c.DeleteSubscription(ctx, deleteParams); err != nil {
-		resetReq := &SubscriptionRequest{QuotaOptimizationObjectFields: newQuotaFields}
-		if resetErr := c.rollbackQuotaOptimizationFields(ctx, resetReq); resetErr != nil {
-			return nil, errors.Join(err, fmt.Errorf("failed to rollback quota optimization fields: %w", resetErr))
-		}
-
-		return nil, fmt.Errorf("failed to delete previous subscription: %w", err)
+		return nil, progress, fmt.Errorf("failed to delete previous subscription: %w", err)
 	}
 
 	// Update filters on kept channel members if the request includes new filters.
-	if err := c.updateChannelMemberFilters(ctx, req, channelMembersToKeep); err != nil {
-		return nil, err
+	if err := c.updateChannelMemberFilters(ctx, req, diff.channelMembersToKeep); err != nil {
+		return nil, progress, err
 	}
 
 	// Temporarily clear QuotaOptimizationObjectFields from the request before calling Subscribe,
@@ -367,12 +381,7 @@ func (c *Connector) UpdateSubscription(
 	// create new subscription
 	createRes, err := c.Subscribe(ctx, params)
 	if err != nil {
-		rollbackReq := &SubscriptionRequest{QuotaOptimizationObjectFields: newQuotaFields}
-		if rbErr := c.rollbackQuotaOptimizationFields(ctx, rollbackReq); rbErr != nil {
-			return nil, errors.Join(err, fmt.Errorf("failed to rollback quota optimization fields: %w", rbErr))
-		}
-
-		return nil, fmt.Errorf("failed to subscribe to new objects: %w", err)
+		return nil, progress, fmt.Errorf("failed to subscribe to new objects: %w", err)
 	}
 
 	// Restore QuotaOptimizationObjectFields so it can be saved in the new state.
@@ -380,30 +389,9 @@ func (c *Connector) UpdateSubscription(
 		req.QuotaOptimizationObjectFields = savedQuotaOptimizationObjectFields
 	}
 
-	// for clarity, rename the state since we will return the object as the result of update
-	newState := prevState
-	// reset the ChannelMembers that was not deleted
-	newState.EventChannelMembers = channelMembersToKeep
+	newState := buildUpdatedSubscribeResult(prevState, createRes, diff, req)
 
-	//nolint:forcetypeassert
-	// update the previous result with the new subscription result
-	maps.Copy(newState.EventChannelMembers, createRes.Result.(*SubscribeResult).EventChannelMembers)
-
-	// remove delete objects from the previous result to return
-	for _, objName := range objectsToDelete {
-		delete(newState.EventChannelMembers, objName)
-	}
-
-	if req != nil && req.QuotaOptimizationObjectFields != nil {
-		newState.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
-	}
-
-	objectsSubscribed := []common.ObjectName{}
-	for objName := range newState.EventChannelMembers {
-		objectsSubscribed = append(objectsSubscribed, objName)
-	}
-
-	res := &common.SubscriptionResult{
+	return &common.SubscriptionResult{
 		Status: common.SubscriptionStatusSuccess,
 		Result: newState,
 		Events: []common.SubscriptionEventType{
@@ -411,10 +399,106 @@ func (c *Connector) UpdateSubscription(
 			common.SubscriptionEventTypeUpdate,
 			common.SubscriptionEventTypeDelete,
 		},
-		Objects: objectsSubscribed,
+		Objects: objectNames(newState.EventChannelMembers),
+	}, progress, nil
+}
+
+// rollbackUpdateSubscription reverses completed operations based on progress.
+func (c *Connector) rollbackUpdateSubscription(
+	ctx context.Context,
+	progress *updateSubscriptionProgress,
+) error {
+	if !progress.quotaFieldsUpserted || len(progress.newQuotaFields) == 0 {
+		return nil
 	}
 
-	return res, nil
+	req := &SubscriptionRequest{QuotaOptimizationObjectFields: progress.newQuotaFields}
+
+	return c.rollbackQuotaOptimizationFields(ctx, req)
+}
+
+// subscriptionDiff holds the result of diffing current subscription events against previous state.
+type subscriptionDiff struct {
+	channelMembersToKeep map[common.ObjectName]*EventChannelMember
+	objectsToDelete      []common.ObjectName
+}
+
+// computeSubscriptionDiff determines which objects to add, keep, and delete.
+// It mutates params.SubscriptionEvents (removes already-subscribed objects) and
+// prevState.EventChannelMembers (removes objects being kept) as side effects.
+func computeSubscriptionDiff(
+	params common.SubscribeParams,
+	prevState *SubscribeResult,
+) subscriptionDiff {
+	objectsToExcludeFromSubscription := []common.ObjectName{}
+	objectsExcludeFromDelete := []common.ObjectName{}
+
+	for objName := range params.SubscriptionEvents {
+		if _, ok := prevState.EventChannelMembers[objName]; ok {
+			objectsToExcludeFromSubscription = append(objectsToExcludeFromSubscription, objName)
+		}
+	}
+
+	for objName := range prevState.EventChannelMembers {
+		if _, ok := params.SubscriptionEvents[objName]; ok {
+			objectsExcludeFromDelete = append(objectsExcludeFromDelete, objName)
+		}
+	}
+
+	for _, objName := range objectsToExcludeFromSubscription {
+		delete(params.SubscriptionEvents, objName)
+	}
+
+	channelMembersToKeep := make(map[common.ObjectName]*EventChannelMember)
+
+	for _, objName := range objectsExcludeFromDelete {
+		channelMembersToKeep[objName] = prevState.EventChannelMembers[objName]
+		delete(prevState.EventChannelMembers, objName)
+	}
+
+	objectsToDelete := make([]common.ObjectName, 0, len(prevState.EventChannelMembers))
+	for objName := range prevState.EventChannelMembers {
+		objectsToDelete = append(objectsToDelete, objName)
+	}
+
+	return subscriptionDiff{
+		channelMembersToKeep: channelMembersToKeep,
+		objectsToDelete:      objectsToDelete,
+	}
+}
+
+// buildUpdatedSubscribeResult merges the kept members with newly created members
+// and applies quota optimization fields from the request.
+func buildUpdatedSubscribeResult(
+	prevState *SubscribeResult,
+	createRes *common.SubscriptionResult,
+	diff subscriptionDiff,
+	req *SubscriptionRequest,
+) *SubscribeResult {
+	newState := prevState
+	newState.EventChannelMembers = diff.channelMembersToKeep
+
+	//nolint:forcetypeassert
+	maps.Copy(newState.EventChannelMembers, createRes.Result.(*SubscribeResult).EventChannelMembers)
+
+	for _, objName := range diff.objectsToDelete {
+		delete(newState.EventChannelMembers, objName)
+	}
+
+	if req != nil && req.QuotaOptimizationObjectFields != nil {
+		newState.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
+	}
+
+	return newState
+}
+
+func objectNames(members map[common.ObjectName]*EventChannelMember) []common.ObjectName {
+	names := make([]common.ObjectName, 0, len(members))
+	for objName := range members {
+		names = append(names, objName)
+	}
+
+	return names
 }
 
 func customFieldAPIName(fieldName string) string {
