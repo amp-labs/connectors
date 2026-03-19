@@ -1,0 +1,28 @@
+package main
+
+import (
+	"context"
+	"os/signal"
+	"syscall"
+
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/test/connectWise"
+	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/testscenario"
+)
+
+func main() {
+	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer done()
+
+	utils.SetupLogging()
+
+	conn := connectWise.GetConnectWiseConnector(ctx)
+
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "contacts",
+		Fields:     datautils.NewSet("firstName", "lastName"),
+		PageSize:   2,
+	})
+}
