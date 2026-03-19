@@ -6,10 +6,13 @@ import (
 	"fmt"
 	"maps"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/go-playground/validator"
 )
 
@@ -22,6 +25,17 @@ type SubscribeResult struct {
 	// reducing unnecessary webhook traffic and optimizing API quota usage.
 	// We need to return this field and will be read by the DeleteSubscription method to delete the custom fields.
 	QuotaOptimizationObjectFields map[common.ObjectName]string
+	ApexTriggers                  map[common.ObjectName]*ApexTrigger
+}
+
+type ApexTrigger struct {
+	ObjectName    common.ObjectName
+	TriggerName   string
+	CheckboxField string
+	WatchFields   []string
+	Success       bool
+	Warnings      []string
+	Errors        []string
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
@@ -539,4 +553,113 @@ func (c *Connector) rollbackQuotaOptimizationFields(ctx context.Context, req *Su
 	}
 
 	return nil
+}
+
+type ApexTriggerResult struct {
+	ApexTriggerParams
+
+	DeployID string
+	ZipData  []byte
+}
+
+//nolint:unused
+const (
+	deployPollInterval = 10 * time.Second
+	deployPollTimeout  = 5 * time.Minute
+)
+
+//nolint:unused
+func (c *Connector) deployApexTriggers(
+	ctx context.Context, triggerParams map[common.ObjectName]*ApexTriggerParams,
+) (map[common.ObjectName]*ApexTriggerResult, error) {
+	var (
+		mutex       sync.Mutex
+		deployErrs  []error
+		deployFuncs = make([]simultaneously.Job, 0, len(triggerParams))
+	)
+
+	result := make(map[common.ObjectName]*ApexTriggerResult)
+
+	for objName, params := range triggerParams {
+		deployFuncs = append(deployFuncs, func(ctx context.Context) error {
+			triggerResult, err := c.deployApexTrigger(ctx, params)
+
+			mutex.Lock()
+			defer mutex.Unlock()
+
+			if err != nil {
+				deployErrs = append(deployErrs, err)
+
+				result[objName] = &ApexTriggerResult{
+					ApexTriggerParams: *params,
+				}
+			} else {
+				result[objName] = triggerResult
+			}
+
+			return nil
+		})
+	}
+
+	simultaneously.DoCtx(ctx, len(deployFuncs), deployFuncs...) //nolint:errcheck
+
+	err := errors.Join(deployErrs...)
+	if err != nil {
+		return result, fmt.Errorf("failed to deploy apex triggers: %w", err)
+	}
+
+	return result, nil
+}
+
+//nolint:unused
+func (c *Connector) deployApexTrigger(ctx context.Context, params *ApexTriggerParams) (*ApexTriggerResult, error) {
+	zipData, err := ConstructApexTriggerZip(*params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to construct apex trigger zip for %s: %w", params.ObjectName, err)
+	}
+
+	deployID, err := c.DeployMetadataZip(ctx, zipData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to deploy apex trigger for %s: %w", params.ObjectName, err)
+	}
+
+	deployResult, err := c.pollDeployStatus(ctx, deployID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to poll deploy status for %s: %w", params.ObjectName, err)
+	}
+
+	if !deployResult.Success {
+		return nil, fmt.Errorf("%w for object %s: status=%s", errDeployFailed, params.ObjectName, deployResult.Status)
+	}
+
+	return &ApexTriggerResult{
+		ApexTriggerParams: *params,
+		DeployID:          deployID,
+		ZipData:           zipData,
+	}, nil
+}
+
+//nolint:unused
+func (c *Connector) pollDeployStatus(ctx context.Context, deployID string) (*DeployResult, error) {
+	timeout := time.After(deployPollTimeout)
+
+	for {
+		deployResult, err := c.CheckDeployStatus(ctx, deployID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to check deploy status: %w", err)
+		}
+
+		if deployResult.Done {
+			return deployResult, nil
+		}
+
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-timeout:
+			return nil, fmt.Errorf("%w after %s for deployId %s", errDeployPollTimeout, deployPollTimeout, deployID)
+		case <-time.After(deployPollInterval):
+			// continue polling
+		}
+	}
 }

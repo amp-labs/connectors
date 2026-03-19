@@ -14,6 +14,8 @@ import (
 var (
 	errInvalidRequestType = errors.New("invalid request type")
 	errMissingParams      = errors.New("missing required parameters")
+	errDeployFailed       = errors.New("apex trigger deployment failed") //nolint:unused
+	errDeployPollTimeout  = errors.New("deploy poll timeout")            //nolint:unused
 )
 
 type RegistrationParams struct {
