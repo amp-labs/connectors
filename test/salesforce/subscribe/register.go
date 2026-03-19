@@ -61,11 +61,6 @@ func main() {
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 			"Account": {},
 		},
-		Request: &salesforce.SubscriptionRequest{
-			QuotaOptimizationObjectFields: map[common.ObjectName]string{
-				"Account": "amp_cdc_optimized",
-			},
-		},
 	}
 
 	subscribeResult, err := conn.Subscribe(ctx, subscribeParams)
@@ -77,27 +72,17 @@ func main() {
 
 	fmt.Println("Subscribe result:", prettyPrint(subscribeResult))
 
-	// Update subscription: keep Account (with filter update), add Contact, remove nothing.
+	// Update subscription: keep Account (with watch fields), add Contact, remove nothing.
 	// This exercises:
-	// - Kept objects with filter updates via PATCH (Account stays, gets a filter)
+	// - Kept objects with filter updates via PATCH (Account stays, gets watch fields)
 	// - New objects being subscribed (Contact)
-	// - Quota optimization fields: Account is kept (no delete+recreate), Contact is new
 	updateParams := common.SubscribeParams{
 		RegistrationResult: result,
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-			"Account": {},
+			"Account": {
+				WatchFields: []string{"Name"},
+			},
 			"Contact": {},
-		},
-		Request: &salesforce.SubscriptionRequest{
-			QuotaOptimizationObjectFields: map[common.ObjectName]string{
-				"Account": "amp_cdc_optimized",
-				"Contact": "amp_cdc_optimized",
-			},
-			Filters: map[common.ObjectName]*salesforce.Filter{
-				"Account": {
-					FilterExpression: "Name != null",
-				},
-			},
 		},
 	}
 
@@ -111,17 +96,12 @@ func main() {
 	fmt.Println("Update subscription result (keep Account + add Contact):", prettyPrint(updateResult))
 
 	// Second update: remove Account, keep Contact. This exercises:
-	// - Removed objects having their quota fields deleted
+	// - Removed objects being unsubscribed
 	// - Kept objects not being touched
 	update2Params := common.SubscribeParams{
 		RegistrationResult: result,
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 			"Contact": {},
-		},
-		Request: &salesforce.SubscriptionRequest{
-			QuotaOptimizationObjectFields: map[common.ObjectName]string{
-				"Contact": "amp_cdc_optimized",
-			},
 		},
 	}
 
