@@ -24,10 +24,10 @@ type WatchRequest struct {
 	// LabelIDs is a list of labelIds to restrict notifications about.
 	// By default, if unspecified, all changes are pushed out.
 	// If specified then dictates which labels are required for a push notification to be generated.
-	LabelIDs []string `json:"labelIds"  validate:"required"`
+	LabelIDs []string `json:"labelIds" validate:"required"`
 
 	// LabelFilterBehavior represents filtering behavior of labelIds list specified.
-	LabelFilterBehavior string `json:"labelFilterBehavior"  validate:"required"`
+	LabelFilterBehavior string `json:"labelFilterBehavior" validate:"required"`
 
 	// TopicName represents a fully qualified Google Cloud Pub/Sub API topic name to publish the events to
 	TopicName string `json:"topicName" validate:"required"`
