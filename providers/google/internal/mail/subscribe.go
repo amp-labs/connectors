@@ -103,7 +103,7 @@ func (a *Adapter) RunScheduledMaintenance(
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-	response, ok := previousResult.Result.(watchResponse)
+	response, ok := previousResult.Result.(*watchResponse)
 	if !ok {
 		return nil, fmt.Errorf("%w: expected watchResponse, got %T", errInvalidRequestType, previousResult.Result)
 	}
@@ -122,7 +122,7 @@ func (a *Adapter) RunScheduledMaintenance(
 
 	inTwoDays := now.Add(twoDaysHr * time.Hour)
 
-	// Renew if already expired, or expiring within the next 2 days
+	// Renew if already expired, or expiring within the next 2 days.
 	if exp.Before(inTwoDays) {
 		return a.Subscribe(ctx, params)
 	}

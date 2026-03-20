@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -30,6 +31,16 @@ func main() {
 	}
 
 	subscribeResult, err := conn.Mail.Subscribe(ctx, subscribeParams)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	utils.DumpJSON(subscribeResult, os.Stdout)
+
+	slog.Info("created a susbcriber")
+
+	subscribeResult, err = conn.Mail.RunScheduledMaintenance(ctx, subscribeParams, subscribeResult)
 	if err != nil {
 		log.Fatal(err)
 		return
