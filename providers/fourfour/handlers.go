@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -67,6 +69,61 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	if params.NextPage != "" {
+		return http.NewRequestWithContext(ctx, http.MethodGet, params.NextPage.String(), nil)
+	}
+
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiPath, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.PageSize != 0 {
+		url.WithQueryParam("top", strconv.Itoa(params.PageSize))
+	}
+
+	// Apply since/until filters if supported for the object
+	// some objects support "created_at" field for filtering, others support "updated" field for filtering.
+	if filterField := objectSinceField.Get(params.ObjectName); filterField != "" {
+		var filters []string
+
+		if !params.Since.IsZero() {
+			filters = append(filters, fmt.Sprintf("%s ge %s", filterField, params.Since.Format("2006-01-02T15:04:05Z")))
+		}
+
+		if !params.Until.IsZero() {
+			filters = append(filters, fmt.Sprintf("%s le %s", filterField, params.Until.Format("2006-01-02T15:04:05Z")))
+		}
+
+		if len(filters) > 0 {
+			url.WithQueryParam("$filter", strings.Join(filters, " and "))
+		}
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		records(),
+		nextRecordsURL(),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
 
 func inferValueTypeFromData(value any) common.ValueType {
