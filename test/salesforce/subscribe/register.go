@@ -59,7 +59,9 @@ func main() {
 	subscribeParams := common.SubscribeParams{
 		RegistrationResult: result,
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-			"Account": {},
+			"Account": {
+				WatchFields: []string{"Name", "Phone"},
+			},
 		},
 		Request: &salesforce.SubscriptionRequest{
 			QuotaOptimizationObjectFields: map[common.ObjectName]string{
@@ -77,26 +79,25 @@ func main() {
 
 	fmt.Println("Subscribe result:", prettyPrint(subscribeResult))
 
-	// Update subscription: keep Account (with filter update), add Contact, remove nothing.
+	// Update subscription: keep Account, add Contact, remove nothing.
 	// This exercises:
-	// - Kept objects with filter updates via PATCH (Account stays, gets a filter)
+	// - Kept objects with filter updates via PATCH (Account stays, gets auto-built filter)
 	// - New objects being subscribed (Contact)
 	// - Quota optimization fields: Account is kept (no delete+recreate), Contact is new
 	updateParams := common.SubscribeParams{
 		RegistrationResult: result,
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-			"Account": {},
-			"Contact": {},
+			"Account": {
+				WatchFields: []string{"Name", "Phone"},
+			},
+			"Contact": {
+				WatchFields: []string{"Email"},
+			},
 		},
 		Request: &salesforce.SubscriptionRequest{
 			QuotaOptimizationObjectFields: map[common.ObjectName]string{
 				"Account": "amp_cdc_optimized",
 				"Contact": "amp_cdc_optimized",
-			},
-			Filters: map[common.ObjectName]*salesforce.Filter{
-				"Account": {
-					FilterExpression: "Name != null",
-				},
 			},
 		},
 	}
@@ -116,7 +117,9 @@ func main() {
 	update2Params := common.SubscribeParams{
 		RegistrationResult: result,
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-			"Contact": {},
+			"Contact": {
+				WatchFields: []string{"Email"},
+			},
 		},
 		Request: &salesforce.SubscriptionRequest{
 			QuotaOptimizationObjectFields: map[common.ObjectName]string{

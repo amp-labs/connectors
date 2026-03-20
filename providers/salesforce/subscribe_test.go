@@ -271,7 +271,7 @@ func TestUpsertQuotaOptimizationFieldsNilRequest(t *testing.T) {
 	}
 }
 
-func TestUpdateChannelMemberFiltersNilRequest(t *testing.T) {
+func TestUpdateKeptSubscriptionsNilRequest(t *testing.T) {
 	t.Parallel()
 
 	conn, err := constructTestConnector("http://example.com")
@@ -279,26 +279,29 @@ func TestUpdateChannelMemberFiltersNilRequest(t *testing.T) {
 		t.Fatalf("failed to construct test connector: %v", err)
 	}
 
-	members := map[common.ObjectName]*EventChannelMember{
-		"Account": {
-			Id:       "member-1",
-			FullName: "test",
-			Metadata: &EventChannelMemberMetadata{
-				EventChannel: "test-channel",
+	diff := subscriptionDiff{
+		channelMembersToKeep: map[common.ObjectName]*EventChannelMember{
+			"Account": {
+				Id:       "member-1",
+				FullName: "test",
+				Metadata: &EventChannelMemberMetadata{
+					EventChannel: "test-channel",
+				},
 			},
 		},
+		apexTriggersToKeep: map[common.ObjectName]*ApexTrigger{},
 	}
 
 	// Nil request should be a no-op
-	err = conn.updateChannelMemberFilters(t.Context(), nil, members)
+	err = conn.updateKeptSubscriptions(t.Context(), nil, diff)
 	if err != nil {
 		t.Errorf("expected nil error for nil request, got %v", err)
 	}
 
-	// Request with nil Filters should be a no-op
-	err = conn.updateChannelMemberFilters(t.Context(), &SubscriptionRequest{}, members)
+	// Request with no quota fields should be a no-op
+	err = conn.updateKeptSubscriptions(t.Context(), &SubscriptionRequest{}, diff)
 	if err != nil {
-		t.Errorf("expected nil error for request with nil filters, got %v", err)
+		t.Errorf("expected nil error for empty request, got %v", err)
 	}
 }
 
