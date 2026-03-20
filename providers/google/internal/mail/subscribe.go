@@ -3,6 +3,8 @@ package mail
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"net/url"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -35,23 +37,23 @@ func (a *Adapter) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
-	var (
-		watchURL = a.ModuleInfo().BaseURL + "/" + apiVersion + "/" + "users/me/watch"
-		payload  watchRequest
-	)
-
-	req, err := json.Marshal(params.Request)
+	watchURL, err := url.JoinPath(a.ModuleInfo().BaseURL, apiVersion, "users/me/watch")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("building watch URL: %w", err)
 	}
 
-	if err := json.Unmarshal(req, &payload); err != nil {
-		return nil, err
+	raw, err := json.Marshal(params.Request)
+	if err != nil {
+		return nil, fmt.Errorf("subscribe: marshaling request: %w", err)
 	}
 
-	response, err := a.JSONHTTPClient().Post(ctx, watchURL, payload)
+	var watchReq watchRequest
+	if err := json.Unmarshal(raw, &watchReq); err != nil {
+		return nil, fmt.Errorf("subscribe: unmarshaling into watchRequest: %w", err)
+	}
+	response, err := a.JSONHTTPClient().Post(ctx, watchURL, watchReq)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("subscribe: posting to gmail watch: %w", err)
 	}
 
 	result, err := common.UnmarshalJSON[watchResponse](response)
