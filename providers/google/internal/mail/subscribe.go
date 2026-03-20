@@ -2,6 +2,7 @@ package mail
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
@@ -9,7 +10,6 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/go-playground/validator"
 )
 
 var (
@@ -19,18 +19,18 @@ var (
 
 const twoDaysHr = 48
 
-// WatchRequest represents the Subscription.Request data expected from the builder.
-type WatchRequest struct {
+// watchRequest represents the Subscription.Request data expected from the builder.
+type watchRequest struct {
 	// LabelIDs is a list of labelIds to restrict notifications about.
 	// By default, if unspecified, all changes are pushed out.
 	// If specified then dictates which labels are required for a push notification to be generated.
-	LabelIDs []string `json:"labelIds" validate:"required"`
+	LabelIDs []string `json:"labelIds"`
 
 	// LabelFilterBehavior represents filtering behavior of labelIds list specified.
-	LabelFilterBehavior string `json:"labelFilterBehavior" validate:"required"`
+	LabelFilterBehavior string `json:"labelFilterBehavior"`
 
 	// TopicName represents a fully qualified Google Cloud Pub/Sub API topic name to publish the events to
-	TopicName string `json:"topicName" validate:"required"`
+	TopicName string `json:"topicName"`
 }
 
 type watchResponse struct {
@@ -42,23 +42,22 @@ type watchResponse struct {
 	Expiration string `json:"expiration"`
 }
 
-func validateRequest(params common.SubscribeParams) (*WatchRequest, error) {
+func validateRequest(params common.SubscribeParams) ([]byte, error) {
 	if params.Request == nil {
 		return nil, fmt.Errorf("%w: request is nil", errMissingParams)
 	}
 
-	req, ok := params.Request.(*WatchRequest)
+	req, ok := params.Request.(map[string]any)
 	if !ok {
 		return nil, fmt.Errorf("%w: expected '%T', got '%T'", errInvalidRequestType, req, params.Request)
 	}
 
-	validate := validator.New()
-
-	if validate.Struct(req) != nil {
-		return nil, fmt.Errorf("%w: request is invalid", errInvalidRequestType)
+	raw, err := json.Marshal(req)
+	if err != nil {
+		return nil, fmt.Errorf("subscribe: marshaling request: %w", err)
 	}
 
-	return req, nil
+	return raw, nil
 }
 
 // Subscribe subscribes to the mailboxes events for the given params.
@@ -72,9 +71,14 @@ func (a *Adapter) Subscribe(
 		return nil, fmt.Errorf("subscribe: building watch URL: %w", err)
 	}
 
-	watchReq, err := validateRequest(params)
+	req, err := validateRequest(params)
 	if err != nil {
 		return nil, err
+	}
+
+	var watchReq watchRequest
+	if err := json.Unmarshal(req, &watchReq); err != nil {
+		return nil, fmt.Errorf("subscribe: unmarshaling into watchRequest: %w", err)
 	}
 
 	response, err := a.JSONHTTPClient().Post(ctx, watchURL, watchReq)
