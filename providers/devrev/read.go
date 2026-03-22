@@ -124,7 +124,7 @@ func makeFilterFunc(params common.ReadParams, reqURL *urlbuilder.URL) common.Rec
 	}
 
 	return readhelper.MakeTimeFilterFunc(
-		readhelper.ChronologicalOrder,
+		readhelper.ReverseOrder,
 		readhelper.NewTimeBoundary(),
 		"modified_date",
 		time.RFC3339,
