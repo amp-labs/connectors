@@ -35,6 +35,11 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 		if params.IsUpdate() {
 			recordData["recordId"] = params.RecordId
 		}
+	} else {
+		// Action already set (e.g., transform, void) — inject type from URL if not in record
+		if _, hasType := recordData["type"]; !hasType {
+			recordData["type"] = params.ObjectName
+		}
 	}
 
 	body, err := json.Marshal(recordData)
