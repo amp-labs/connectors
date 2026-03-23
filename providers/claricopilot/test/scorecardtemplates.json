@@ -1,0 +1,22 @@
+{
+    "scorecardTemplates": [
+        {
+            "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "customer_id": "cust-001",
+            "name": "Sales Discovery Call",
+            "type": "CALL",
+            "questions": [
+                {
+                    "skill": "Discovery",
+                    "label": "Did the rep uncover the prospect's pain points?",
+                    "order": "1"
+                },
+                {
+                    "skill": "Rapport",
+                    "label": "Did the rep establish rapport early in the call?",
+                    "order": "2"
+                }
+            ]
+        }
+    ]
+}
