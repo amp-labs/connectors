@@ -16,11 +16,16 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 		return nil, err
 	}
 
-	// [ENG-3740] If the server already set an action (e.g. "transform"), use it as-is.
-	// This supports NetSuite-specific operations like record transformation.
-	// Otherwise infer create/update and inject action/type/recordId.
+	// Always inject type from the URL's object name if not already in the record.
+	if _, hasType := recordData["type"]; !hasType {
+		recordData["type"] = params.ObjectName
+	}
+
+	// [ENG-3740] If the server already set an action (e.g. "transform", "void"), use it as-is.
+	// This supports NetSuite-specific operations like record transformation and voiding.
+	// Otherwise infer create/update and inject action/recordId.
 	//
-	// Pass the record data through to the RESTlet as-is, just inject action/type/recordId.
+	// Pass the record data through to the RESTlet as-is, just inject action/recordId.
 	// This allows callers to send any RESTlet-supported keys (values, textValues, sublists,
 	// subrecords, defaultValues, options, etc.) without the connector needing to know about each one.
 	if _, hasAction := recordData["action"]; !hasAction {
@@ -30,15 +35,9 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 		}
 
 		recordData["action"] = action
-		recordData["type"] = params.ObjectName
 
 		if params.IsUpdate() {
 			recordData["recordId"] = params.RecordId
-		}
-	} else {
-		// Action already set (e.g., transform, void) — inject type from URL if not in record
-		if _, hasType := recordData["type"]; !hasType {
-			recordData["type"] = params.ObjectName
 		}
 	}
 
