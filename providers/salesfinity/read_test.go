@@ -34,6 +34,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
 					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseReadEmpty),
 			}.Server(),
@@ -55,6 +56,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
 					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLog),
 			}.Server(),
@@ -92,6 +94,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
 					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLogFirstPage),
 			}.Server(),
@@ -110,7 +113,7 @@ func TestRead(t *testing.T) {
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/v1/call-log?limit=100&page=2",
+				NextPage: testroutines.URLTestServer + "/v1/call-log?limit=100&sort=-updatedAt&page=2",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -120,7 +123,7 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "call-log",
 				Fields:     connectors.Fields("_id", "updatedAt", "from"),
-				NextPage:   testroutines.URLTestServer + "/v1/call-log?limit=100&page=2",
+				NextPage:   testroutines.URLTestServer + "/v1/call-log?limit=100&sort=-updatedAt&page=2",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -164,6 +167,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
 					mockcond.QueryParam("limit", "50"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLog),
 			}.Server(),
@@ -197,6 +201,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/contact-lists/csv"),
 					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContactListsCsv),
 			}.Server(),
@@ -245,6 +250,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
 					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLog),
 			}.Server(),
@@ -279,6 +285,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
 					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLogFirstPage),
 			}.Server(),
@@ -286,10 +293,10 @@ func TestRead(t *testing.T) {
 			Expected: &common.ReadResult{
 				Rows: 0,
 				Data: []common.ReadResultRow{}, // records filtered out
-				// Connector-side filtering pruned the records on this page, since the order is chronological,
-				// some pages ahead may hold the records of interest.
-				NextPage: testroutines.URLTestServer + "/v1/call-log?limit=100&page=2", // token surfaced
-				Done:     false,
+				// With reverse order (newest -> oldest), once a record is older than Since
+				// there cannot be any matching records on later pages.
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},
@@ -305,6 +312,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/contact-lists/csv"),
 					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContactListsCsv),
 			}.Server(),
