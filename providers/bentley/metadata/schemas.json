@@ -1,0 +1,363 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "itwins",
+      "objects": {
+        "itwins/": {
+          "displayName": "Itwins ",
+          "path": "/",
+          "responseKey": "iTwins",
+          "fields": {
+            "class": {
+              "displayName": "class",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Account",
+                  "displayValue": "Account"
+                },
+                {
+                  "value": "Thing",
+                  "displayValue": "Thing"
+                },
+                {
+                  "value": "Endeavor",
+                  "displayValue": "Endeavor"
+                }
+              ]
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number": {
+              "displayName": "number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Active",
+                  "displayValue": "Active"
+                },
+                {
+                  "value": "Inactive",
+                  "displayValue": "Inactive"
+                },
+                {
+                  "value": "Trial",
+                  "displayValue": "Trial"
+                }
+              ]
+            },
+            "subClass": {
+              "displayName": "subClass",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Account",
+                  "displayValue": "Account"
+                },
+                {
+                  "value": "Portfolio",
+                  "displayValue": "Portfolio"
+                },
+                {
+                  "value": "Asset",
+                  "displayValue": "Asset"
+                },
+                {
+                  "value": "Program",
+                  "displayValue": "Program"
+                },
+                {
+                  "value": "Project",
+                  "displayValue": "Project"
+                },
+                {
+                  "value": "WorkPackage",
+                  "displayValue": "WorkPackage"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "itwins/exports": {
+          "displayName": "Itwins Exports",
+          "path": "/exports",
+          "responseKey": "exports",
+          "fields": {
+            "completedDateTime": {
+              "displayName": "completedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "createdBy",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdDateTime": {
+              "displayName": "createdDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "outputUrl": {
+              "displayName": "outputUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "request": {
+              "displayName": "request",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "startedDateTime": {
+              "displayName": "startedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Queued",
+                  "displayValue": "Queued"
+                },
+                {
+                  "value": "InProgress",
+                  "displayValue": "InProgress"
+                },
+                {
+                  "value": "Completed",
+                  "displayValue": "Completed"
+                },
+                {
+                  "value": "Failed",
+                  "displayValue": "Failed"
+                }
+              ]
+            }
+          }
+        },
+        "itwins/favorites": {
+          "displayName": "Itwins Favorites",
+          "path": "/favorites",
+          "responseKey": "iTwins",
+          "fields": {
+            "class": {
+              "displayName": "class",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Account",
+                  "displayValue": "Account"
+                },
+                {
+                  "value": "Thing",
+                  "displayValue": "Thing"
+                },
+                {
+                  "value": "Endeavor",
+                  "displayValue": "Endeavor"
+                }
+              ]
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number": {
+              "displayName": "number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Active",
+                  "displayValue": "Active"
+                },
+                {
+                  "value": "Inactive",
+                  "displayValue": "Inactive"
+                },
+                {
+                  "value": "Trial",
+                  "displayValue": "Trial"
+                }
+              ]
+            },
+            "subClass": {
+              "displayName": "subClass",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Account",
+                  "displayValue": "Account"
+                },
+                {
+                  "value": "Portfolio",
+                  "displayValue": "Portfolio"
+                },
+                {
+                  "value": "Asset",
+                  "displayValue": "Asset"
+                },
+                {
+                  "value": "Program",
+                  "displayValue": "Program"
+                },
+                {
+                  "value": "Project",
+                  "displayValue": "Project"
+                },
+                {
+                  "value": "WorkPackage",
+                  "displayValue": "WorkPackage"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "itwins/recents": {
+          "displayName": "Itwins Recents",
+          "path": "/recents",
+          "responseKey": "iTwins",
+          "fields": {
+            "class": {
+              "displayName": "class",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Account",
+                  "displayValue": "Account"
+                },
+                {
+                  "value": "Thing",
+                  "displayValue": "Thing"
+                },
+                {
+                  "value": "Endeavor",
+                  "displayValue": "Endeavor"
+                }
+              ]
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number": {
+              "displayName": "number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Active",
+                  "displayValue": "Active"
+                },
+                {
+                  "value": "Inactive",
+                  "displayValue": "Inactive"
+                },
+                {
+                  "value": "Trial",
+                  "displayValue": "Trial"
+                }
+              ]
+            },
+            "subClass": {
+              "displayName": "subClass",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Account",
+                  "displayValue": "Account"
+                },
+                {
+                  "value": "Portfolio",
+                  "displayValue": "Portfolio"
+                },
+                {
+                  "value": "Asset",
+                  "displayValue": "Asset"
+                },
+                {
+                  "value": "Program",
+                  "displayValue": "Program"
+                },
+                {
+                  "value": "Project",
+                  "displayValue": "Project"
+                },
+                {
+                  "value": "WorkPackage",
+                  "displayValue": "WorkPackage"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
