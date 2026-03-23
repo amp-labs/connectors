@@ -211,26 +211,26 @@ func TestRead(t *testing.T) {
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{
-							"_id":  "test_list_id_001",
-							"name": "Test Contact List 1",
-							"user": "test_user_id_001",
+							"_id":  "test_list_id_002",
+							"name": "Test Contact List 2",
+							"user": "test_user_id_002",
 						},
 						Raw: map[string]any{
-							"_id":  "test_list_id_001",
-							"name": "Test Contact List 1",
-							"user": "test_user_id_001",
+							"_id":  "test_list_id_002",
+							"name": "Test Contact List 2",
+							"user": "test_user_id_002",
 						},
 					},
 					{
 						Fields: map[string]any{
-							"_id":  "test_list_id_002",
-							"name": "Test Contact List 2",
-							"user": "test_user_id_002",
+							"_id":  "test_list_id_001",
+							"name": "Test Contact List 1",
+							"user": "test_user_id_001",
 						},
 						Raw: map[string]any{
-							"_id":  "test_list_id_002",
-							"name": "Test Contact List 2",
-							"user": "test_user_id_002",
+							"_id":  "test_list_id_001",
+							"name": "Test Contact List 1",
+							"user": "test_user_id_001",
 						},
 					},
 				},
@@ -301,11 +301,11 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read contact-lists/csv with Since does not filter (no time-based filtering)",
+			Name: "Read contact-lists/csv with Since",
 			Input: common.ReadParams{
 				ObjectName: "contact-lists/csv",
 				Fields:     connectors.Fields("_id", "name"),
-				Since:      time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+				Since:      time.Date(2024, 1, 10, 10, 30, 0, 0, time.UTC),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -318,15 +318,17 @@ func TestRead(t *testing.T) {
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 2,
+				Rows: 1,
 				Data: []common.ReadResultRow{
-					{
-						Fields: map[string]any{"_id": "test_list_id_001", "name": "Test Contact List 1"},
-						Raw:    map[string]any{"_id": "test_list_id_001", "name": "Test Contact List 1"},
-					},
+
 					{
 						Fields: map[string]any{"_id": "test_list_id_002", "name": "Test Contact List 2"},
-						Raw:    map[string]any{"_id": "test_list_id_002", "name": "Test Contact List 2"},
+						Raw: map[string]any{
+							"_id":       "test_list_id_002",
+							"name":      "Test Contact List 2",
+							"updatedAt": "2024-01-11T10:00:00.000Z",
+							"user":      "test_user_id_002",
+						},
 					},
 				},
 				Done: true,
