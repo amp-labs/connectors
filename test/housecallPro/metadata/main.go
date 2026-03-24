@@ -14,7 +14,6 @@ func main() {
 	connector := housecallpro.GetConnector(ctx)
 
 	objectNames := []string{
-		"checklists",
 		"job_types",
 		"price_book/material_categories",
 		"price_book/materials",
