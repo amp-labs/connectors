@@ -31,7 +31,7 @@ type Connector struct {
 
 	// realmID is the Company ID in QuickBooks.
 	// http://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0
-	realmID string
+	realmId string
 	// graphQLBaseURL is a variable on the struct so it can be mocked in unit tests.
 	graphQLBaseURL string
 }
@@ -42,7 +42,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		return nil, err
 	}
 
-	conn.realmID = params.Metadata["realmID"]
+	conn.realmId = params.Metadata["realmId"]
 
 	return conn, nil
 }
