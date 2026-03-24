@@ -112,19 +112,27 @@ func (s *tokenSource) Token() (*oauth2.Token, error) {
 	}
 
 	var tokenResp struct {
-		AccessToken string `json:"access_token"`
-		ExpiresIn   int    `json:"expires_in"`
-		TokenType   string `json:"token_type"`
+		AccessToken string          `json:"access_token"`
+		ExpiresIn   json.Number     `json:"expires_in"`
+		TokenType   string          `json:"token_type"`
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&tokenResp); err != nil {
+	decoder := json.NewDecoder(resp.Body)
+	decoder.UseNumber()
+
+	if err := decoder.Decode(&tokenResp); err != nil {
 		return nil, fmt.Errorf("decoding M2M token response: %w", err)
+	}
+
+	expiresIn, err := tokenResp.ExpiresIn.Int64()
+	if err != nil {
+		return nil, fmt.Errorf("parsing expires_in %q: %w", tokenResp.ExpiresIn, err)
 	}
 
 	return &oauth2.Token{
 		AccessToken: tokenResp.AccessToken,
 		TokenType:   tokenResp.TokenType,
-		Expiry:      now.Add(time.Duration(tokenResp.ExpiresIn) * time.Second),
+		Expiry:      now.Add(time.Duration(expiresIn) * time.Second),
 	}, nil
 }
 
