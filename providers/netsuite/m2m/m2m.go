@@ -3,6 +3,7 @@ package m2m
 import (
 	"crypto/ecdsa"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
@@ -19,9 +20,17 @@ import (
 // DefaultScopes are the OAuth 2.0 scopes requested for NetSuite M2M connections.
 var DefaultScopes = []string{"restlets", "rest_webservices"}
 
-// ParseECPrivateKey parses a PEM-encoded EC private key.
+// ParseECPrivateKey parses an EC private key from either raw PEM or base64-encoded PEM.
 // Supports both SEC 1 (BEGIN EC PRIVATE KEY) and PKCS#8 (BEGIN PRIVATE KEY) formats.
 func ParseECPrivateKey(pemBytes []byte) (*ecdsa.PrivateKey, error) {
+	// If the input doesn't look like PEM, try base64-decoding it first.
+	if !strings.Contains(string(pemBytes), "-----BEGIN") {
+		decoded, err := base64.StdEncoding.DecodeString(strings.TrimSpace(string(pemBytes)))
+		if err == nil {
+			pemBytes = decoded
+		}
+	}
+
 	block, _ := pem.Decode(pemBytes)
 	if block == nil {
 		return nil, fmt.Errorf("no PEM block found in private key")
