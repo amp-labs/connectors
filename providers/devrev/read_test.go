@@ -252,7 +252,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read articles with Since does not filter connector-side without sort_by",
+			Name: "Read articles with Since keeps in-window rows (Unordered client filter)",
 			Input: common.ReadParams{
 				ObjectName: "articles",
 				Fields:     connectors.Fields("id", "modified_date"),
@@ -287,7 +287,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read articles with Since after all records does not client-filter without sort_by",
+			Name: "Read articles with Since after modified_date returns empty (client filter, Unordered)",
 			Input: common.ReadParams{
 				ObjectName: "articles",
 				Fields:     connectors.Fields("id", "modified_date"),
@@ -302,21 +302,10 @@ func TestRead(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, responseArticles),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows: 1,
-				Data: []common.ReadResultRow{
-					{
-						Fields: map[string]any{
-							"id":            "don:core:devrev:article/1",
-							"modified_date": "2026-02-20T17:51:38.642Z",
-						},
-						Raw: map[string]any{
-							"id":            "don:core:devrev:article/1",
-							"modified_date": "2026-02-20T17:51:38.642Z",
-						},
-					},
-				},
+				Rows: 0,
+				Data: []common.ReadResultRow{},
 				Done: true,
 			},
 			ExpectedErrs: nil,

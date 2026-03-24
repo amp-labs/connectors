@@ -40,8 +40,8 @@ var objectsWithoutModifiedDate = datautils.NewSet( //nolint:gochecknoglobals
 	"vistas.groups",
 )
 
-// objectsWithoutSortBy lists object names whose list response records do not
-// include sort_by query  parameter.
+// objectsWithoutSortBy lists object names whose list endpoints do not accept
+// or support the sort_by query parameter.
 // doc doesn't describe the default sorting behavior.
 var objectsWithoutSortBy = datautils.NewSet( //nolint:gochecknoglobals
 	"articles",
@@ -135,8 +135,10 @@ func (c *Connector) parseReadResponse(
 }
 
 // makeFilterFunc returns the identity filter when the API does time filtering
-// (objectsWithModifiedDateFilter) or when the object has no modified_date field
-// to filter on (objectsWithoutModifiedDate). Otherwise return time filter.
+// (objectsWithModifiedDateFilter) or when rows have no modified_date
+// (objectsWithoutModifiedDate). Otherwise it uses a time filter on modified_date;
+// objectsWithoutSortBy use Unordered order so Since/Until still apply without
+// assuming list sort order or early-stopping pagination.
 func makeFilterFunc(params common.ReadParams, reqURL *urlbuilder.URL) common.RecordsFilterFunc {
 	nextPageFunc := makeNextRecordsURL(reqURL)
 
@@ -144,12 +146,13 @@ func makeFilterFunc(params common.ReadParams, reqURL *urlbuilder.URL) common.Rec
 		return readhelper.MakeIdentityFilterFunc(nextPageFunc)
 	}
 
+	order := readhelper.ReverseOrder
 	if objectsWithoutSortBy.Has(params.ObjectName) {
-		return readhelper.MakeIdentityFilterFunc(nextPageFunc)
+		order = readhelper.Unordered
 	}
 
 	return readhelper.MakeTimeFilterFunc(
-		readhelper.ReverseOrder,
+		order,
 		readhelper.NewTimeBoundary(),
 		"modified_date",
 		time.RFC3339,
