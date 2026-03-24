@@ -15,6 +15,7 @@ import (
 
 // nolint:gochecknoglobals
 var (
+	// "" is the root endpoint — see itwins.go for why this happens.
 	edfsObjectNameToResponseField = datautils.NewDefaultMap(map[string]string{
 		"": "edfs",
 	},

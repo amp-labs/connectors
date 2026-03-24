@@ -15,6 +15,9 @@ import (
 
 // nolint:gochecknoglobals
 var (
+	// The cesium spec only has one path "/" because the server URL already includes
+	// "/curated-content/cesium". That means the explorer would produce "" as the
+	// object name. We map "/" → "cesium" so the final name is "curated-content/cesium".
 	cesiumObjectEndpoints = map[string]string{
 		"/": "cesium",
 	}

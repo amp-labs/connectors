@@ -19,6 +19,10 @@ var (
 		"/myprimaryaccount",
 	}
 
+	// The explorer derives object names from the URL path after the server base.
+	// The server base is already "https://api.bentley.com/itwins", so the root
+	// endpoint "/" has no path segment left — the object name comes out as "".
+	// We map "" to "iTwins" so the schema builder knows which response key to use.
 	iTwinsObjectNameToResponseField = datautils.NewDefaultMap(map[string]string{
 		"favorites": "iTwins",
 		"recents":   "iTwins",
@@ -49,6 +53,9 @@ func populateITwins(
 	)
 	goutils.MustBeNil(err)
 
+	// Bentley has many APIs all sharing one schemas.json. We use a prefix so
+	// objects from different files don't clash, e.g. "itwins/favorites" vs
+	// "library/manufacturers".
 	prefix := "itwins"
 
 	for _, object := range objects {
