@@ -17,13 +17,13 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	responseError := testutils.DataFromFile(t, "read/error.json")
-	responseCandidatesFirstPage := testutils.DataFromFile(t, "read/candidates/first-page.json")
-	responseCandidatesLastPage := testutils.DataFromFile(t, "read/candidates/last-page.json")
+	responseApplicationsFirstPage := testutils.DataFromFile(t, "read/applications/first-page.json")
+	responseApplicationsLastPage := testutils.DataFromFile(t, "read/applications/last-page.json")
 
 	tests := []testroutines.Read{
 		{
 			Name:  "Error response is parsed",
-			Input: common.ReadParams{ObjectName: "candidates", Fields: connectors.Fields("id")},
+			Input: common.ReadParams{ObjectName: "applications", Fields: connectors.Fields("id")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusUnprocessableEntity, responseError),
@@ -34,21 +34,21 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 		},
 		{
-			Name: "Read candidates first page with pagination",
+			Name: "Read applications first page with pagination",
 			Input: common.ReadParams{
-				ObjectName: "candidates",
-				Fields:     connectors.Fields("id", "first_name"),
+				ObjectName: "applications",
+				Fields:     connectors.Fields("id", "candidate_id"),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v3/candidates"),
+					mockcond.Path("/v3/applications"),
 					mockcond.QueryParam("per_page", "500"),
 				},
 				Then: mockserver.ResponseChainedFuncs(
 					mockserver.Header("Link",
-						`<https://harvest.greenhouse.io/v3/candidates?cursor=abc123>; rel="next"`),
-					mockserver.Response(http.StatusOK, responseCandidatesFirstPage),
+						`<https://harvest.greenhouse.io/v3/applications?cursor=abc123>; rel="next"`),
+					mockserver.Response(http.StatusOK, responseApplicationsFirstPage),
 				),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
@@ -56,47 +56,47 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"id":         float64(12345),
-						"first_name": "John",
+						"id":           float64(12345),
+						"candidate_id": float64(101),
 					},
 					Raw: map[string]any{
-						"last_name": "Doe",
+						"status": "in_process",
 					},
 				}, {
 					Fields: map[string]any{
-						"id":         float64(67890),
-						"first_name": "Jane",
+						"id":           float64(67890),
+						"candidate_id": float64(102),
 					},
 					Raw: map[string]any{
-						"last_name": "Smith",
+						"status": "hired",
 					},
 				}},
-				NextPage: "https://harvest.greenhouse.io/v3/candidates?cursor=abc123",
+				NextPage: "https://harvest.greenhouse.io/v3/applications?cursor=abc123",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read candidates last page without next link",
+			Name: "Read applications last page without next link",
 			Input: common.ReadParams{
-				ObjectName: "candidates",
-				Fields:     connectors.Fields("id", "first_name"),
+				ObjectName: "applications",
+				Fields:     connectors.Fields("id", "candidate_id"),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v3/candidates"),
-				Then:  mockserver.Response(http.StatusOK, responseCandidatesLastPage),
+				If:    mockcond.Path("/v3/applications"),
+				Then:  mockserver.Response(http.StatusOK, responseApplicationsLastPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"id":         float64(11111),
-						"first_name": "Alice",
+						"id":           float64(11111),
+						"candidate_id": float64(103),
 					},
 					Raw: map[string]any{
-						"last_name": "Johnson",
+						"status": "rejected",
 					},
 				}},
 				NextPage: "",
@@ -105,32 +105,32 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read candidates incrementally with updated_after",
+			Name: "Read applications incrementally with updated_after",
 			Input: common.ReadParams{
-				ObjectName: "candidates",
-				Fields:     connectors.Fields("id", "first_name"),
+				ObjectName: "applications",
+				Fields:     connectors.Fields("id", "candidate_id"),
 				Since: time.Date(2024, 9, 1, 10, 0, 0, 0,
 					time.FixedZone("UTC-5", -5*60*60)),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v3/candidates"),
+					mockcond.Path("/v3/applications"),
 					mockcond.QueryParam("per_page", "500"),
 					mockcond.QueryParam("updated_after", "2024-09-01T15:00:00Z"),
 				},
-				Then: mockserver.Response(http.StatusOK, responseCandidatesLastPage),
+				Then: mockserver.Response(http.StatusOK, responseApplicationsLastPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"id":         float64(11111),
-						"first_name": "Alice",
+						"id":           float64(11111),
+						"candidate_id": float64(103),
 					},
 					Raw: map[string]any{
-						"last_name": "Johnson",
+						"status": "rejected",
 					},
 				}},
 				NextPage: "",
