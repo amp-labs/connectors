@@ -40,6 +40,22 @@ var objectsWithoutModifiedDate = datautils.NewSet( //nolint:gochecknoglobals
 	"vistas.groups",
 )
 
+// objectsWithoutSortBy lists object names whose list response records do not
+// include sort_by query  parameter.
+// doc doesn't describe the default sorting behavior.
+var objectsWithoutSortBy = datautils.NewSet( //nolint:gochecknoglobals
+	"articles",
+	"auth-tokens",
+	"code-changes",
+	"conversations",
+	"directories",
+	"org-schedules",
+	"question-answers",
+	"schemas.subtypes",
+	"webhooks",
+	"vistas.groups",
+)
+
 // buildReadRequest builds the HTTP request for listing objects.
 // Pagination is cursor-based (next_cursor). For objects in objectsWithModifiedDateFilter, Since/Until
 // are sent as modified_date.after and modified_date.before; other objects
@@ -64,6 +80,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	pageSize := readhelper.PageSizeWithDefaultStr(params, defaultPageSize)
 	if !objectsWithoutLimitParam.Has(params.ObjectName) {
 		url.WithQueryParam("limit", pageSize)
+	}
+
+	if !objectsWithoutSortBy.Has(params.ObjectName) {
+		// sort_by is string[];
+		url.WithQueryParamList("sort_by", []string{"modified_date:desc"})
 	}
 	// if object supports modified date filter, add the since and until query params
 	if objectsWithModifiedDateFilter.Has(params.ObjectName) {
@@ -123,8 +144,12 @@ func makeFilterFunc(params common.ReadParams, reqURL *urlbuilder.URL) common.Rec
 		return readhelper.MakeIdentityFilterFunc(nextPageFunc)
 	}
 
+	if objectsWithoutSortBy.Has(params.ObjectName) {
+		return readhelper.MakeIdentityFilterFunc(nextPageFunc)
+	}
+
 	return readhelper.MakeTimeFilterFunc(
-		readhelper.ChronologicalOrder,
+		readhelper.ReverseOrder,
 		readhelper.NewTimeBoundary(),
 		"modified_date",
 		time.RFC3339,
