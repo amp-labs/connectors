@@ -212,8 +212,10 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
 	// Based on type property map value to Ampersand value type.
 	// See https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/field_types.htm
 	switch f.Type {
-	case "string", "textarea", "url", "email", "reference", "id", "phone":
+	case "string", "textarea", "url", "email", "id", "phone":
 		valueType = common.ValueTypeString
+	case "reference":
+		valueType = common.ValueTypeReference
 	case "boolean":
 		valueType = common.ValueTypeBoolean
 	case "int":

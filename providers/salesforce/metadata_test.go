@@ -241,7 +241,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 							"createdbyid": {
 								DisplayName:  "Created By ID",
-								ValueType:    "string",
+								ValueType:    "reference",
 								ProviderType: "reference",
 								ReadOnly:     goutils.Pointer(true),
 								IsCustom:     goutils.Pointer(false),
