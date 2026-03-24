@@ -21,11 +21,6 @@ type Connector struct {
 	components.SchemaProvider
 }
 
-const (
-	limitQuery       = "limit"
-	metadataPageSize = "1"
-)
-
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
 	return components.Initialize(providers.Bentley, params, constructor)
