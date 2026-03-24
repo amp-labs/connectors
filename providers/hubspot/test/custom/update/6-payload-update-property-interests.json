@@ -1,0 +1,29 @@
+{
+  "name": "interests__c",
+  "label": "Interests",
+  "groupName": "integrationcreatedproperties",
+  "type": "enumeration",
+  "fieldType": "select",
+  "description": "Topics that are of interest.",
+  "formField": true,
+  "dataSensitivity": "non_sensitive",
+  "options": [
+    {
+      "label": "art",
+      "value": "art",
+      "description": "art"
+    },
+    {
+      "label": "travel",
+      "value": "travel",
+      "description": "travel",
+      "displayOrder": 1
+    },
+    {
+      "label": "swimming",
+      "value": "swimming",
+      "description": "swimming",
+      "displayOrder": 2
+    }
+  ]
+}

@@ -34,10 +34,21 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "project_id",
+					DisplayName: "Project ID",
+					DocsURL:     "https://www.revenuecat.com/docs/api-v2#tag/Project",
+					Prompt: "Copy the Project ID from RevenueCat dashboard" +
+						" (Project settings → General). It typically starts with `proj`.",
+				},
+			},
 		},
 	})
 }

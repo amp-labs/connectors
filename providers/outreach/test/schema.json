@@ -1,0 +1,194 @@
+{
+  "definitions": {
+    "opportunity": {
+      "definitions": {
+        "account": {
+          "data": true,
+          "links": true,
+          "$ref": "#/definitions/account"
+        },
+        "amount": {
+          "filterable": false,
+          "format": "integer",
+          "sortable": true,
+          "type": "number"
+        },
+        "amountPrecise": {
+          "filterable": false,
+          "sortable": true,
+          "type": "string"
+        },
+        "closeDate": {
+          "filterable": false,
+          "format": "date-time",
+          "sortable": true,
+          "type": "string"
+        },
+        "createdAt": {
+          "filterable": true,
+          "format": "date-time",
+          "readOnly": true,
+          "sortable": true,
+          "type": "string"
+        },
+        "creator": {
+          "data": true,
+          "links": true,
+          "readOnly": true,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/user"
+            }
+          ]
+        },
+        "customId": {
+          "filterable": true,
+          "sortable": true,
+          "type": "string"
+        },
+        "description": {
+          "filterable": false,
+          "sortable": false,
+          "type": "string"
+        },
+        "externalCreatedAt": {
+          "filterable": true,
+          "format": "date-time",
+          "sortable": false,
+          "type": "string"
+        },
+        "forecastCategory": {
+          "filterable": true,
+          "sortable": true,
+          "type": "string"
+        },
+        "leadSource": {
+          "filterable": true,
+          "sortable": true,
+          "type": "string"
+        },
+        "lostReason": {
+          "filterable": true,
+          "sortable": true,
+          "type": "string"
+        },
+        "mapLink": {
+          "filterable": true,
+          "sortable": false,
+          "type": "string"
+        },
+        "mapNextSteps": {
+          "filterable": false,
+          "sortable": false,
+          "type": "string"
+        },
+        "mapStatus": {
+          "filterable": true,
+          "sortable": true,
+          "type": "string"
+        },
+        "name": {
+          "filterable": true,
+          "sortable": true,
+          "type": "string"
+        },
+        "nextStep": {
+          "filterable": false,
+          "sortable": false,
+          "type": "string"
+        },
+        "opportunityStage": {
+          "data": true,
+          "links": true,
+          "$ref": "#/definitions/opportunityStage"
+        },
+        "opportunityType": {
+          "filterable": false,
+          "sortable": false,
+          "type": "string"
+        },
+        "owner": {
+          "data": true,
+          "links": true,
+          "$ref": "#/definitions/user"
+        },
+        "probability": {
+          "filterable": true,
+          "format": "integer",
+          "sortable": true,
+          "type": "number"
+        },
+        "prospectingRepId": {
+          "filterable": false,
+          "sortable": false,
+          "type": "string"
+        },
+        "prospects": {
+          "data": false,
+          "links": true,
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/prospect"
+          }
+        },
+        "recordType": {
+          "filterable": true,
+          "sortable": true,
+          "type": "string"
+        },
+        "sharingTeamId": {
+          "filterable": true,
+          "sortable": false,
+          "type": "string"
+        },
+        "stage": {
+          "data": true,
+          "links": true,
+          "readOnly": true,
+          "$ref": "#/definitions/opportunityStage"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "filterable": false,
+            "sortable": false,
+            "type": "string"
+          }
+        },
+        "touchedAt": {
+          "filterable": true,
+          "format": "date-time",
+          "readOnly": true,
+          "sortable": true,
+          "type": "string"
+        },
+        "trashedAt": {
+          "filterable": false,
+          "format": "date-time",
+          "sortable": false,
+          "type": "string"
+        },
+        "updatedAt": {
+          "filterable": true,
+          "format": "date-time",
+          "readOnly": true,
+          "sortable": true,
+          "type": "string"
+        },
+        "updater": {
+          "data": true,
+          "links": true,
+          "readOnly": true,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/user"
+            }
+          ]
+        }
+      },
+      "links": [],
+      "properties": {}
+    }
+  }
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "id": 11111,
+    "candidate_id": 103,
+    "status": "rejected",
+    "stage_name": "Interview",
+    "created_at": "2024-08-10T12:00:00Z",
+    "updated_at": "2024-09-03T09:45:00Z"
+  }
+]

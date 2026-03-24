@@ -1,0 +1,91 @@
+{
+  "notebooks": [
+    {
+      "id": 305624,
+      "name": "First notebook",
+      "description": "",
+      "contents": "<p>Content</p>",
+      "type": "HTML",
+      "isPrivate": false,
+      "locked": false,
+      "lockedBy": null,
+      "lockedAt": null,
+      "lockdownId": 0,
+      "lockdown": null,
+      "secureContent": false,
+      "isFullWidth": false,
+      "projectId": 1441806,
+      "project": {
+        "id": 1441806,
+        "type": "projects"
+      },
+      "createdByUserID": 583610,
+      "createdBy": 583610,
+      "updatedByUserID": 583610,
+      "updatedBy": 583610,
+      "dateUpdated": "2025-09-30T21:04:12Z",
+      "updatedAt": "2025-09-30T21:04:12Z",
+      "dateCreated": "2025-09-30T21:04:12Z",
+      "createdAt": "2025-09-30T21:04:12Z",
+      "deleted": false,
+      "categoryId": null,
+      "category": null,
+      "notebookVersionID": 1009491,
+      "notebookVersion": {
+        "id": 1009491,
+        "type": "notebookVersions"
+      },
+      "notebookVersionCreatedDateTime": "2025-09-30T21:04:11Z",
+      "notebookVersionUpdatedDateTime": "2025-09-30T21:04:11Z",
+      "latestVersionNo": 1,
+      "versionCount": 1,
+      "commentsCount": 0,
+      "readCommentsCount": 0,
+      "contentHTML": null,
+      "privacy": null,
+      "commentFollowers": {
+        "userIds": [
+          583610
+        ],
+        "users": [
+          {
+            "id": 583610,
+            "type": "users"
+          }
+        ],
+        "companyIds": null,
+        "companies": null,
+        "teamIds": null,
+        "teams": null
+      },
+      "changeFollowers": {
+        "userIds": [
+          583610
+        ],
+        "users": [
+          {
+            "id": 583610,
+            "type": "users"
+          }
+        ],
+        "companyIds": null,
+        "companies": null,
+        "teamIds": null,
+        "teams": null
+      },
+      "userFollowingChanges": true,
+      "userFollowingComments": true,
+      "tagIds": null,
+      "tags": null
+    }
+  ],
+  "meta": {
+    "page": {
+      "pageOffset": 1,
+      "pageSize": 1,
+      "count": 2,
+      "hasMore": false
+    }
+  },
+  "included": {}
+}

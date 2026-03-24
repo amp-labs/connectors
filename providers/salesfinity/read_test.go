@@ -285,8 +285,11 @@ func TestRead(t *testing.T) {
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 0,
-				Data: []common.ReadResultRow{},
-				Done: true,
+				Data: []common.ReadResultRow{}, // records filtered out
+				// Connector-side filtering pruned the records on this page, since the order is chronological,
+				// some pages ahead may hold the records of interest.
+				NextPage: testroutines.URLTestServer + "/v1/call-log?limit=100&page=2", // token surfaced
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},

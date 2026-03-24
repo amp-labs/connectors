@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -16,7 +17,7 @@ import (
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	opportunityResponse := testutils.DataFromFile(t, "opportunities.json")
+	schemaResponse := testutils.DataFromFile(t, "schema.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -31,29 +32,107 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/api/v2/opportunities"),
-					Then: mockserver.Response(http.StatusOK, opportunityResponse),
+					If:   mockcond.Path("/api/v2/schema.json"),
+					Then: mockserver.Response(http.StatusOK, schemaResponse),
 				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"opportunities": {
-						DisplayName: "opportunities",
+						DisplayName: "Opportunities",
+						Fields: map[string]common.FieldMetadata{
+							"amount": {
+								DisplayName:  "amount",
+								ValueType:    common.ValueTypeFloat,
+								ProviderType: "number",
+							},
+							"closeDate": {
+								DisplayName:  "closeDate",
+								ValueType:    common.ValueTypeDateTime,
+								ProviderType: "string",
+							},
+							"createdAt": {
+								DisplayName:  "createdAt",
+								ValueType:    common.ValueTypeDateTime,
+								ProviderType: "string",
+								ReadOnly:     goutils.Pointer(true),
+							},
+							"description": {
+								DisplayName:  "description",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"mapStatus": {
+								DisplayName:  "mapStatus",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "name",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"nextStep": {
+								DisplayName:  "nextStep",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"opportunityType": {
+								DisplayName:  "opportunityType",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"probability": {
+								DisplayName:  "probability",
+								ValueType:    common.ValueTypeFloat,
+								ProviderType: "number",
+							},
+							"prospectingRepId": {
+								DisplayName:  "prospectingRepId",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"sharingTeamId": {
+								DisplayName:  "sharingTeamId",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"tags": {
+								DisplayName:  "tags",
+								ValueType:    common.ValueTypeOther,
+								ProviderType: "array",
+							},
+							"touchedAt": {
+								DisplayName:  "touchedAt",
+								ValueType:    common.ValueTypeDateTime,
+								ProviderType: "string",
+								ReadOnly:     goutils.Pointer(true),
+							},
+							"trashedAt": {
+								DisplayName:  "trashedAt",
+								ValueType:    common.ValueTypeDateTime,
+								ProviderType: "string",
+							},
+							"updatedAt": {
+								DisplayName:  "updatedAt",
+								ValueType:    common.ValueTypeDateTime,
+								ProviderType: "string",
+								ReadOnly:     goutils.Pointer(true),
+							},
+						},
 						FieldsMap: map[string]string{
-							"mapNumberOfOverdueTasks": "mapNumberOfOverdueTasks",
-							"mapStatus":               "mapStatus",
-							"name":                    "name",
-							"nextStep":                "nextStep",
-							"opportunityType":         "opportunityType",
-							"probability":             "probability",
-							"prospectingRepId":        "prospectingRepId",
-							"sharingTeamId":           "sharingTeamId",
-							"tags":                    "tags",
-							"territoryId":             "territoryId",
-							"touchedAt":               "touchedAt",
-							"trashedAt":               "trashedAt",
-							"updatedAt":               "updatedAt",
+							"mapStatus":        "mapStatus",
+							"name":             "name",
+							"nextStep":         "nextStep",
+							"opportunityType":  "opportunityType",
+							"probability":      "probability",
+							"prospectingRepId": "prospectingRepId",
+							"sharingTeamId":    "sharingTeamId",
+							"tags":             "tags",
+							"touchedAt":        "touchedAt",
+							"trashedAt":        "trashedAt",
+							"updatedAt":        "updatedAt",
 						},
 					},
 				},

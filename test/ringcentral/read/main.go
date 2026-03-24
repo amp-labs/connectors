@@ -39,6 +39,10 @@ func main() {
 	if err := readLeads(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
+
+	if err := readCallRecordings(ctx, conn); err != nil {
+		slog.Error(err.Error())
+	}
 }
 
 func readContacts(ctx context.Context, conn *rc.Connector) error {
@@ -94,6 +98,30 @@ func readLeads(ctx context.Context, conn *rc.Connector) error {
 		ObjectName: "comm-handling/states",
 		// Since:      time.Now().Add(-720 * time.Hour),
 		Fields: connectors.Fields("enabled", "displayName", "conditions"),
+	}
+
+	result, err := conn.Read(ctx, config)
+	if err != nil {
+		return err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func readCallRecordings(ctx context.Context, conn *rc.Connector) error {
+	config := connectors.ReadParams{
+		ObjectName: "call-log",
+		Since:      time.Now().Add(-720 * time.Hour),
+		Fields:     connectors.Fields("uri", "sessionId", "type"),
 	}
 
 	result, err := conn.Read(ctx, config)

@@ -12,8 +12,6 @@ import (
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	// The current version is v0 (alpha).
-	// See: https://docs.granola.ai/help-center/sharing/integrations/enterprise-api#what’s-the-api-versioning-strategy
 	u, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName)
 	if err != nil {
 		return nil, err
@@ -44,6 +42,27 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	data, err := extractDataFromResponse(body, objectName)
 	if err != nil {
 		return nil, err
+	}
+	// If objectName is "notes", enrich metadata with fields from the full note.
+	if objectName == objectNotes {
+		rawID, ok := data["id"]
+		if !ok {
+			return nil, common.ErrMissingExpectedValues
+		}
+
+		noteID, ok := rawID.(string)
+		if !ok || noteID == "" {
+			return nil, common.ErrMissingExpectedValues
+		}
+
+		note, err := c.getNote(ctx, noteID, true) // include transcripts for metadata discovery
+		if err != nil {
+			return nil, err
+		}
+
+		populateFieldsFromMap(*note, &objectMetadata)
+
+		return &objectMetadata, nil
 	}
 
 	populateFieldsFromMap(data, &objectMetadata)

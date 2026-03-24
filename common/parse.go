@@ -148,11 +148,11 @@ func ParseResultFiltered(
 		return nil, err
 	}
 
-	// Next page doesn't exist if:
-	// * either there is no next page token,
-	// * or current page was empty.
-	// This will guarantee that Read is finite.
-	done := nextPage == "" || len(marshaledData) == 0
+	// Next page doesn't exist because there is no next page token.
+	// List of `records` could be empty due to filtered items.
+	// However, we may not be done and next page may have items that won't be filtered.
+	// Must continue pagination.
+	done := nextPage == ""
 	if done {
 		// It is possible that the provider doesn't reset the next page token when there are no more records.
 		// In this case, we should set the next page token to an empty string to indicate that we are done.

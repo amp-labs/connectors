@@ -119,6 +119,7 @@ import (
 	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/talkdesk"
 	"github.com/amp-labs/connectors/providers/teamleader"
+	"github.com/amp-labs/connectors/providers/teamwork"
 	"github.com/amp-labs/connectors/providers/webex"
 	"github.com/amp-labs/connectors/providers/xero"
 	"github.com/amp-labs/connectors/providers/zendeskchat"
@@ -171,6 +172,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.ConstantContact:         wrapper(newConstantContactConnector),
 	providers.Copper:                  wrapper(newCopperConnector),
 	providers.CustomerJourneysApp:     wrapper(newCustomerJourneysAppConnector),
+	providers.DevRev:                  wrapper(newDevRevConnector),
 	providers.Dixa:                    wrapper(newDixaConnector),
 	providers.Docusign:                wrapper(newDocusignConnector),
 	providers.Drift:                   wrapper(newDriftConnector),
@@ -189,6 +191,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Gong:                    wrapper(newGongConnector),
 	providers.Google:                  wrapper(newGoogleConnector),
 	providers.Gorgias:                 wrapper(newGorgiasConnector),
+	providers.Granola:                 wrapper(newGranolaConnector),
 	providers.Greenhouse:              wrapper(newGreenhouseConnector),
 	providers.Groove:                  wrapper(newGrooveConnector),
 	providers.HappyFox:                wrapper(newHappyFoxConnector),
@@ -223,10 +226,10 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Outplay:                 wrapper(newOutplayConnector),
 	providers.Outreach:                wrapper(newOutreachConnector),
 	providers.Paddle:                  wrapper(newPaddleConnector),
+	providers.PhoneBurner:             wrapper(newPhoneBurnerConnector),
 	providers.Pinterest:               wrapper(newPinterestConnector),
 	providers.Pipedrive:               wrapper(newPipedriveConnector),
 	providers.Pipeliner:               wrapper(newPipelinerConnector),
-	providers.PhoneBurner:             wrapper(newPhoneBurnerConnector),
 	providers.Podium:                  wrapper(newPodiumConnector),
 	providers.Pylon:                   wrapper(newPylonConnector),
 	providers.QuickBooks:              wrapper(newQuickbooksConnector),
@@ -234,6 +237,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.RevenueCat:              wrapper(newRevenueCatConnector),
 	providers.RingCentral:             wrapper(newRingCentral),
 	providers.SageIntacct:             wrapper(newSageIntacctConnector),
+	providers.Salesfinity:             wrapper(newSalesfinityConnector),
 	providers.Salesflare:              wrapper(newSalesflareConnector),
 	providers.Salesforce:              wrapper(newSalesforceConnector),
 	providers.Salesloft:               wrapper(newSalesloftConnector),
@@ -249,15 +253,13 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Stripe:                  wrapper(newStripeConnector),
 	providers.Talkdesk:                wrapper(newTalkdeskConnector),
 	providers.Teamleader:              wrapper(newTeamleaderConnector),
+	providers.Teamwork:                wrapper(newTeamworkConnector),
 	providers.Webex:                   wrapper(newWebexConnector),
 	providers.Xero:                    wrapper(newXeroConnector),
 	providers.ZendeskChat:             wrapper(newZendeskChatConnector),
 	providers.ZendeskSupport:          wrapper(newZendeskSupportConnector),
 	providers.Zoho:                    wrapper(newZohoConnector),
 	providers.Zoom:                    wrapper(newZoomConnector),
-	providers.Salesfinity:             wrapper(newSalesfinityConnector),
-	providers.DevRev:                  wrapper(newDevRevConnector),
-	providers.Granola:                 wrapper(newGranolaConnector),
 }
 
 type outputConstructorFunc func(p common.ConnectorParams) (connectors.Connector, error)
@@ -810,6 +812,12 @@ func newTeamleaderConnector(
 	params common.ConnectorParams,
 ) (*teamleader.Connector, error) {
 	return teamleader.NewConnector(params)
+}
+
+func newTeamworkConnector(
+	params common.ConnectorParams,
+) (*teamwork.Connector, error) {
+	return teamwork.NewConnector(params)
 }
 
 func newCampaignMonitorConnector(

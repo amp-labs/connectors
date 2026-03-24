@@ -1,0 +1,89 @@
+{
+  "completedAt": "2026-02-26T21:37:03.906Z",
+  "status": "COMPLETE",
+  "startedAt": "2026-02-26T21:37:03.550Z",
+  "results": [
+    {
+      "name": "hobby__c",
+      "label": "Hobby",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Your hobby description",
+      "groupName": "integrationcreatedproperties",
+      "options": [],
+      "displayOrder": -1,
+      "calculated": false,
+      "externalOptions": false,
+      "hasUniqueValue": true,
+      "hidden": false,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": false,
+        "readOnlyValue": false
+      },
+      "formField": true,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "name": "isready__c",
+      "label": "IsReady",
+      "type": "bool",
+      "fieldType": "booleancheckbox",
+      "description": "Indicates the readiness for next steps.",
+      "groupName": "integrationcreatedproperties",
+      "options": [
+        {
+          "label": "True",
+          "value": "true",
+          "description": "True",
+          "displayOrder": 2,
+          "hidden": false
+        },
+        {
+          "label": "False",
+          "value": "false",
+          "description": "False",
+          "displayOrder": 1,
+          "hidden": false
+        }
+      ],
+      "displayOrder": -1,
+      "calculated": false,
+      "externalOptions": false,
+      "hasUniqueValue": false,
+      "hidden": false,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": false,
+        "readOnlyValue": false
+      },
+      "formField": true,
+      "dataSensitivity": "non_sensitive"
+    }
+  ],
+  "errors": [
+    {
+      "status": "error",
+      "category": "OBJECT_ALREADY_EXISTS",
+      "subCategory": "Properties.PROPERTY_WITH_NAME_EXISTS",
+      "message": "A property named 'age__c' already exists.",
+      "context": {
+        "name": [
+          "age__c"
+        ]
+      }
+    },
+    {
+      "status": "error",
+      "category": "OBJECT_ALREADY_EXISTS",
+      "subCategory": "Properties.PROPERTY_WITH_NAME_EXISTS",
+      "message": "A property named 'interests__c' already exists.",
+      "context": {
+        "name": [
+          "interests__c"
+        ]
+      }
+    }
+  ],
+  "numErrors": 2
+}

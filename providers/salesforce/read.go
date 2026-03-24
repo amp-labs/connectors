@@ -2,6 +2,8 @@ package salesforce
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -86,10 +88,18 @@ func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams) {
 		soql.Where("IsDeleted = true")
 	}
 
-	// TODO: When we support builder facing filters, we should escape the
-	// filter string to avoid SOQL injection.
 	if config.Filter != "" {
 		soql.Where(config.Filter)
+	}
+
+	if config.BuilderFilter != nil {
+		for _, ff := range config.BuilderFilter.FieldFilters {
+			if ff.Operator != common.FilterOperatorEQ {
+				continue
+			}
+
+			soql.Where(buildSOQLEqCondition(ff.FieldName, ff.Value))
+		}
 	}
 
 	if config.PageSize > 0 {
@@ -99,4 +109,20 @@ func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams) {
 
 func (c *Connector) DefaultPageSize() int {
 	return defaultSOQLPageSize
+}
+
+// buildSOQLEqCondition builds a SOQL equality condition for a field and value.
+// String values are single-quoted and escaped to prevent SOQL injection.
+func buildSOQLEqCondition(fieldName string, value any) string {
+	switch v := value.(type) {
+	case string:
+		escaped := strings.ReplaceAll(v, `\`, `\\`)
+		escaped = strings.ReplaceAll(escaped, "'", `\'`)
+
+		return fmt.Sprintf("%s = '%s'", fieldName, escaped)
+	case bool:
+		return fmt.Sprintf("%s = %t", fieldName, v)
+	default:
+		return fmt.Sprintf("%s = %v", fieldName, v)
+	}
 }
