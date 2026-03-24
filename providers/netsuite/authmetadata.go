@@ -55,20 +55,22 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 // retrieveInstanceTimezone queries the NetSuite instance to get its timezone
 // using the SESSIONTIMEZONE function via SuiteQL.
 func (c *Connector) retrieveInstanceTimezone(ctx context.Context) (*time.Location, error) {
-	// Build the SuiteQL URL - we always use the SuiteQL endpoint for this query
-	// regardless of which module is configured, since SuiteQL is the only way to
-	// query SESSIONTIMEZONE.
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "/services/rest/query/v1/suiteql")
+	return RetrieveInstanceTimezone(ctx, c.ProviderInfo().BaseURL, c.JSONHTTPClient())
+}
+
+// RetrieveInstanceTimezone queries a NetSuite instance for its timezone using SuiteQL.
+// Exported so the M2M connector can reuse this without duplicating the logic.
+func RetrieveInstanceTimezone(ctx context.Context, baseURL string, client *common.JSONHTTPClient) (*time.Location, error) {
+	url, err := urlbuilder.New(baseURL, "/services/rest/query/v1/suiteql")
 	if err != nil {
 		return nil, fmt.Errorf("failed to build SuiteQL URL: %w", err)
 	}
 
-	// Query to get the session timezone
 	query := suiteQLQuery{
 		Query: "SELECT SESSIONTIMEZONE AS timezone FROM DUAL",
 	}
 
-	resp, err := c.JSONHTTPClient().Post(ctx, url.String(), query, common.Header{
+	resp, err := client.Post(ctx, url.String(), query, common.Header{
 		Key:   "Prefer",
 		Value: "transient",
 	})
