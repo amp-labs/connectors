@@ -203,7 +203,7 @@ func (f fieldResult) isReadOnly() bool {
 		(f.Createable != nil && !*f.Createable && f.Updateable != nil && !*f.Updateable)
 }
 
-func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
+func (f fieldResult) transformToFieldMetadata() common.FieldMetadata { //nolint:cyclop
 	var (
 		valueType common.ValueType
 		values    []common.FieldValue
