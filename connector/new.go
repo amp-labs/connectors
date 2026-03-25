@@ -87,6 +87,7 @@ import (
 	"github.com/amp-labs/connectors/providers/mixmax"
 	"github.com/amp-labs/connectors/providers/monday"
 	"github.com/amp-labs/connectors/providers/netsuite"
+	netsuitem2m "github.com/amp-labs/connectors/providers/netsuite/m2m"
 	"github.com/amp-labs/connectors/providers/nutshell"
 	"github.com/amp-labs/connectors/providers/outplay"
 	"github.com/amp-labs/connectors/providers/outreach"
@@ -220,6 +221,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Mixmax:                  wrapper(newMixmaxConnector),
 	providers.Monday:                  wrapper(newMondayConnector),
 	providers.Netsuite:                wrapper(newNetsuiteConnector),
+	providers.NetsuiteM2M:             wrapper(newNetsuiteM2MConnector),
 	providers.Nutshell:                wrapper(newNutshellConnector),
 	providers.Outplay:                 wrapper(newOutplayConnector),
 	providers.Outreach:                wrapper(newOutreachConnector),
@@ -824,6 +826,12 @@ func newNetsuiteConnector(
 	params common.ConnectorParams,
 ) (*netsuite.Connector, error) {
 	return netsuite.NewConnector(params)
+}
+
+func newNetsuiteM2MConnector(
+	params common.ConnectorParams,
+) (*netsuitem2m.Connector, error) {
+	return netsuitem2m.NewConnector(params)
 }
 
 func newSeismicConnector(
