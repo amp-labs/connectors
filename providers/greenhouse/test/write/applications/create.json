@@ -1,8 +1,8 @@
 {
   "id": 12345,
-  "first_name": "John",
-  "last_name": "Doe",
-  "company": "Acme Corp",
+  "candidate_id": 101,
+  "status": "in_process",
+  "stage_name": "Application Review",
   "created_at": "2024-06-15T10:30:00Z",
   "updated_at": "2024-06-15T10:30:00Z"
 }

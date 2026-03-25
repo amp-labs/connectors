@@ -25,13 +25,13 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:         "Delete record ID must be included",
-			Input:        common.DeleteParams{ObjectName: "candidates"},
+			Input:        common.DeleteParams{ObjectName: "applications"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordID},
 		},
 		{
 			Name:  "Error on not found",
-			Input: common.DeleteParams{ObjectName: "candidates", RecordId: "99999"},
+			Input: common.DeleteParams{ObjectName: "applications", RecordId: "99999"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusUnprocessableEntity, responseError),
@@ -43,12 +43,12 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Successful delete",
-			Input: common.DeleteParams{ObjectName: "candidates", RecordId: "12345"},
+			Input: common.DeleteParams{ObjectName: "applications", RecordId: "12345"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodDELETE(),
-					mockcond.Path("/v3/candidates/12345"),
+					mockcond.Path("/v3/applications/12345"),
 				},
 				Then: mockserver.Response(http.StatusNoContent),
 			}.Server(),

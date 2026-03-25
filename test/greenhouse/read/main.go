@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"os"
@@ -55,18 +54,7 @@ func testRead(
 
 	slog.Info(fmt.Sprintf("%s: rows=%d, done=%t, nextPage=%q", objectName, res.Rows, res.Done, res.NextPage))
 
-	jsonStr, err := json.MarshalIndent(res, "", "  ")
-	if err != nil {
-		return fmt.Errorf("error marshalling JSON: %w", err)
-	}
-
-	if _, err := os.Stdout.Write(jsonStr); err != nil {
-		return fmt.Errorf("error writing JSON: %w", err)
-	}
-
-	if _, err := os.Stdout.WriteString("\n"); err != nil {
-		return fmt.Errorf("error writing newline: %w", err)
-	}
+	utils.DumpJSON(res, os.Stdout)
 
 	return nil
 }

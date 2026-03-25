@@ -16,8 +16,8 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	responseError := testutils.DataFromFile(t, "error.json")
-	responseCreate := testutils.DataFromFile(t, "write/candidates/create.json")
-	responseUpdate := testutils.DataFromFile(t, "write/candidates/update.json")
+	responseCreate := testutils.DataFromFile(t, "write/applications/create.json")
+	responseUpdate := testutils.DataFromFile(t, "write/applications/update.json")
 
 	tests := []testroutines.Write{
 		{
@@ -27,7 +27,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Error response on bad request",
-			Input: common.WriteParams{ObjectName: "candidates", RecordData: map[string]any{}},
+			Input: common.WriteParams{ObjectName: "applications", RecordData: map[string]any{}},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusUnprocessableEntity, responseError),
@@ -38,13 +38,13 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 		},
 		{
-			Name:  "Create candidate via POST",
-			Input: common.WriteParams{ObjectName: "candidates", RecordData: "dummy"},
+			Name:  "Create application via POST",
+			Input: common.WriteParams{ObjectName: "applications", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/v3/candidates"),
+					mockcond.Path("/v3/applications"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreate),
 			}.Server(),
@@ -53,21 +53,20 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Success:  true,
 				RecordId: "12345",
 				Data: map[string]any{
-					"first_name": "John",
-					"last_name":  "Doe",
-					"company":    "Acme Corp",
+					"candidate_id": float64(101),
+					"status":       "in_process",
 				},
 			},
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Update candidate via PATCH",
-			Input: common.WriteParams{ObjectName: "candidates", RecordData: "dummy", RecordId: "12345"},
+			Name:  "Update application via PATCH",
+			Input: common.WriteParams{ObjectName: "applications", RecordData: "dummy", RecordId: "12345"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPATCH(),
-					mockcond.Path("/v3/candidates/12345"),
+					mockcond.Path("/v3/applications/12345"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseUpdate),
 			}.Server(),
@@ -76,9 +75,8 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Success:  true,
 				RecordId: "12345",
 				Data: map[string]any{
-					"first_name": "John",
-					"last_name":  "Smith",
-					"company":    "Acme Corp",
+					"candidate_id": float64(101),
+					"status":       "hired",
 				},
 			},
 			ExpectedErrs: nil,
