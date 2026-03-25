@@ -93,6 +93,18 @@ type Error struct {
 	StatusCode string `xml:"statusCode"`
 }
 
+type DeleteMetadataResponse struct {
+	Response struct {
+		Results []DeleteMetadataResult `xml:"result"`
+	} `xml:"deleteMetadataResponse"`
+}
+
+type DeleteMetadataResult struct {
+	Errors   []Error `xml:"errors"`
+	FullName string  `xml:"fullName"`
+	Success  bool    `xml:"success"`
+}
+
 type ReadMetadataBody[R any] struct {
 	Response ReadMetadataResponse[R] `xml:"readMetadataResponse"`
 }

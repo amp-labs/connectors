@@ -15,7 +15,7 @@ var (
 	//go:embed api.json
 	apiFile []byte
 
-	InputPipedrive  = api3.NewOpenapiFileManager[any](apiFile)
-	OutputPipedrive = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
+	InputPipeliner  = api3.NewOpenapiFileManager[any](apiFile)
+	OutputPipeliner = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
 		fileconv.NewPath("providers/pipeliner/internal/metadata"))
 )

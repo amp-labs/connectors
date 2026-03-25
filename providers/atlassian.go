@@ -63,6 +63,9 @@ func init() {
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
 					Name: "cloudId",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleAtlassianJira: ModuleDependency{},
+					},
 				},
 			},
 			Input: []MetadataItemInput{

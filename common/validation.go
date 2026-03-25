@@ -115,6 +115,18 @@ func (p *UpsertMetadataParams) ValidateParams() error {
 	return nil
 }
 
+func (p *DeleteMetadataParams) ValidateParams() error {
+	if p == nil {
+		return ErrMissingFieldsMetadata
+	}
+
+	if len(p.Fields) == 0 {
+		return ErrMissingFieldsMetadata
+	}
+
+	return nil
+}
+
 func (p SearchParams) ValidateParams(withRequiredFields bool) error {
 	if len(p.ObjectName) == 0 {
 		return ErrMissingObjects

@@ -667,6 +667,10 @@ type FieldMetadata struct {
 	// Values is a list of possible values for this field.
 	// It is applicable only if the type is either singleSelect or multiSelect, otherwise slice is nil.
 	Values []FieldValue
+
+	// ReferenceTo is the list of object types this field references.
+	// It is applicable only if the ProviderType is "reference" (i.e. a lookup field), otherwise nil.
+	ReferenceTo []string
 }
 
 type FieldsMetadata map[string]FieldMetadata

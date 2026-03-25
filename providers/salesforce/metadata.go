@@ -23,6 +23,16 @@ func (c *Connector) UpsertMetadata(
 	return nil, common.ErrNotImplemented
 }
 
+func (c *Connector) DeleteMetadata(
+	ctx context.Context, params *common.DeleteMetadataParams,
+) (*common.DeleteMetadataResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.DeleteMetadata(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
 // ListObjectMetadata returns object metadata for each object name provided.
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context,
@@ -154,6 +164,7 @@ type fieldResult struct {
 	Type string `json:"type"`
 
 	PicklistValues []picklistValue `json:"picklistValues"`
+	ReferenceTo    []string        `json:"referenceTo"`
 
 	Autonumber        *bool `json:"autonumber,omitempty"`
 	Calculated        *bool `json:"calculated,omitempty"`
@@ -192,7 +203,7 @@ func (f fieldResult) isReadOnly() bool {
 		(f.Createable != nil && !*f.Createable && f.Updateable != nil && !*f.Updateable)
 }
 
-func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
+func (f fieldResult) transformToFieldMetadata() common.FieldMetadata { //nolint:cyclop
 	var (
 		valueType common.ValueType
 		values    []common.FieldValue
@@ -201,8 +212,10 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
 	// Based on type property map value to Ampersand value type.
 	// See https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/field_types.htm
 	switch f.Type {
-	case "string", "textarea", "url", "email", "reference", "id", "phone":
+	case "string", "textarea", "url", "email", "id", "phone":
 		valueType = common.ValueTypeString
+	case "reference":
+		valueType = common.ValueTypeReference
 	case "boolean":
 		valueType = common.ValueTypeBoolean
 	case "int":
@@ -231,7 +244,16 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
 		IsCustom:     f.Custom,
 		IsRequired:   f.isRequired(),
 		Values:       values,
+		ReferenceTo:  f.getReferenceTo(),
 	}
+}
+
+func (f fieldResult) getReferenceTo() []string {
+	if f.Type == "reference" && len(f.ReferenceTo) > 0 {
+		return f.ReferenceTo
+	}
+
+	return nil
 }
 
 func (f fieldResult) getFieldValues() []common.FieldValue {

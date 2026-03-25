@@ -1,7 +1,9 @@
 // nolint:revive,godoclint
 package common
 
-import "errors"
+import (
+	"errors"
+)
 
 // UpsertMetadataAction represents the action taken during an upsert operation.
 type UpsertMetadataAction string
@@ -90,6 +92,19 @@ func (a AssociationOnDeleteAction) IsValid() bool {
 type UpsertMetadataParams struct {
 	// Maps object names to field definitions.
 	Fields map[string][]FieldDefinition `json:"fields"`
+}
+
+// DeleteMetadataParams represents parameters for deleting custom field metadata.
+type DeleteMetadataParams struct {
+	// Maps object names to field names to delete.
+	// For example: {"Account": ["My_Custom_Field__c", "Another_Field__c"]}
+	Fields map[ObjectName][]string `json:"fields"`
+}
+
+// DeleteMetadataResult contains results for all deleted fields.
+type DeleteMetadataResult struct {
+	// Indicates if the delete operation was successful.
+	Success bool `json:"success"`
 }
 
 var ErrFieldTypeUnknown = errors.New("unrecognized field type")

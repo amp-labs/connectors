@@ -1,6 +1,7 @@
 package outreach
 
 import (
+	"encoding/json"
 	"fmt"
 	"slices"
 	"strconv"
@@ -18,6 +19,7 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 	return jsonquery.New(node, "links").StrWithDefault("next", "")
 }
 
+// nolint: cyclop
 func getOutreachDataMarshaller(config common.ReadParams, included []dataItem,
 	transformer common.RecordTransformer,
 ) common.MarshalFromNodeFunc {
@@ -41,10 +43,22 @@ func getOutreachDataMarshaller(config common.ReadParams, included []dataItem,
 				return nil, err
 			}
 
+			var recordId string
+
+			switch v := record["id"].(type) {
+			case string:
+				recordId = v
+			case float64:
+				recordId = strconv.FormatFloat(v, 'f', -1, 64)
+			case json.Number:
+				recordId = v.String()
+			}
+
 			// Populate the result row with fields, raw data, and ID.
 			result[idx] = common.ReadResultRow{
 				Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
 				Raw:    raw,
+				Id:     recordId,
 			}
 
 			relationship, err := assertMapStringAny(record[relationshipsKey])
