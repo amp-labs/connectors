@@ -26,6 +26,45 @@ type Connector interface {
 	Provider() providers.Provider
 }
 
+// ProxyConnector defines an interface for connectors that can describe
+// how requests should be proxied to an upstream provider.
+//
+// A connector instance may optionally be associated with a module.
+// Regardless, two proxy modes are exposed:
+//   - general proxy
+//   - module-specific proxy
+//
+// If the instance does not have a module, the module-specific proxy
+// behaves the same as the general proxy.
+type ProxyConnector interface {
+	Connector
+
+	// ProxyConfig returns the general proxy configuration for the provider.
+	//
+	// This represents the base proxy used for the provider.
+	//
+	// Returns common.ErrProxyNotApplicable if proxying is not supported.
+	ProxyConfig() (*ProxyConfig, error)
+
+	// ProxyModuleConfig returns the module-specific proxy configuration.
+	//
+	// If the connector instance is associated with a module, the returned
+	// configuration may include module-specific pathing, host, or routing.
+	//
+	// If the instance is not associated with a module, this MUST return the same
+	// configuration as ProxyConfig().
+	//
+	// Returns common.ErrProxyNotApplicable if proxying is not supported.
+	ProxyModuleConfig() (*ProxyConfig, error)
+}
+
+// ProxyConfig describes all information required to construct a proxy
+// request to an upstream provider.
+type ProxyConfig struct {
+	// URL is used for proxying requests.
+	URL string
+}
+
 // URLConnector is an interface that extends the Connector interface with the ability to
 // retrieve URLs for resources.
 type URLConnector interface {
