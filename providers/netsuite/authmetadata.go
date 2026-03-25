@@ -60,7 +60,11 @@ func (c *Connector) retrieveInstanceTimezone(ctx context.Context) (*time.Locatio
 
 // RetrieveInstanceTimezone queries a NetSuite instance for its timezone using SuiteQL.
 // Exported so the M2M connector can reuse this without duplicating the logic.
-func RetrieveInstanceTimezone(ctx context.Context, baseURL string, client *common.JSONHTTPClient) (*time.Location, error) {
+func RetrieveInstanceTimezone(
+	ctx context.Context,
+	baseURL string,
+	client *common.JSONHTTPClient,
+) (*time.Location, error) {
 	url, err := urlbuilder.New(baseURL, "/services/rest/query/v1/suiteql")
 	if err != nil {
 		return nil, fmt.Errorf("failed to build SuiteQL URL: %w", err)

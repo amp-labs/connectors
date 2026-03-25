@@ -1,11 +1,13 @@
 package m2m
 
 import (
+	"context"
 	"crypto/ecdsa"
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -17,8 +19,17 @@ import (
 	"golang.org/x/oauth2"
 )
 
+var (
+	ErrNoPEMBlock    = errors.New("no PEM block found in private key")
+	ErrNotECDSAKey   = errors.New("PKCS8 key is not an ECDSA key")
+	ErrTokenEndpoint = errors.New("M2M token endpoint error")
+)
+
+// jwtExpiryMinutes is the lifetime of the signed JWT assertion.
+const jwtExpiryMinutes = 30
+
 // DefaultScopes are the OAuth 2.0 scopes requested for NetSuite M2M connections.
-var DefaultScopes = []string{"restlets", "rest_webservices"}
+var DefaultScopes = []string{"restlets", "rest_webservices"} //nolint:gochecknoglobals
 
 // ParseECPrivateKey parses an EC private key from either raw PEM or base64-encoded PEM.
 // Supports both SEC 1 (BEGIN EC PRIVATE KEY) and PKCS#8 (BEGIN PRIVATE KEY) formats.
@@ -33,7 +44,7 @@ func ParseECPrivateKey(pemBytes []byte) (*ecdsa.PrivateKey, error) {
 
 	block, _ := pem.Decode(pemBytes)
 	if block == nil {
-		return nil, fmt.Errorf("no PEM block found in private key")
+		return nil, ErrNoPEMBlock
 	}
 
 	// Try SEC 1 format (BEGIN EC PRIVATE KEY)
@@ -49,7 +60,7 @@ func ParseECPrivateKey(pemBytes []byte) (*ecdsa.PrivateKey, error) {
 
 	ecKey, ok := pkcs8Key.(*ecdsa.PrivateKey)
 	if !ok {
-		return nil, fmt.Errorf("PKCS8 key is not an ECDSA key")
+		return nil, ErrNotECDSAKey
 	}
 
 	return ecKey, nil
@@ -71,20 +82,9 @@ type tokenSource struct {
 func (s *tokenSource) Token() (*oauth2.Token, error) {
 	now := time.Now()
 
-	claims := jwt.MapClaims{
-		"iss":   s.clientID,
-		"scope": strings.Join(s.scopes, " "),
-		"aud":   s.tokenURL,
-		"iat":   now.Unix(),
-		"exp":   now.Add(30 * time.Minute).Unix(), // Well under NetSuite's 60-min limit
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
-	token.Header["kid"] = s.certificateID
-
-	signed, err := token.SignedString(s.privateKey)
+	signed, err := s.signAssertion(now)
 	if err != nil {
-		return nil, fmt.Errorf("signing M2M JWT: %w", err)
+		return nil, err
 	}
 
 	data := url.Values{
@@ -98,23 +98,55 @@ func (s *tokenSource) Token() (*oauth2.Token, error) {
 		client = http.DefaultClient
 	}
 
-	resp, err := client.PostForm(s.tokenURL, data)
+	req, err := http.NewRequestWithContext(context.Background(),
+		http.MethodPost, s.tokenURL, strings.NewReader(data.Encode()))
+	if err != nil {
+		return nil, fmt.Errorf("M2M token request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("M2M token request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		var errBody map[string]interface{}
+		var errBody map[string]any
 		json.NewDecoder(resp.Body).Decode(&errBody) //nolint:errcheck
 
-		return nil, fmt.Errorf("M2M token endpoint returned %d: %v", resp.StatusCode, errBody)
+		return nil, fmt.Errorf("%w: status %d: %v", ErrTokenEndpoint, resp.StatusCode, errBody)
 	}
 
+	return parseTokenResponse(resp, now)
+}
+
+func (s *tokenSource) signAssertion(now time.Time) (string, error) {
+	claims := jwt.MapClaims{
+		"iss":   s.clientID,
+		"scope": strings.Join(s.scopes, " "),
+		"aud":   s.tokenURL,
+		"iat":   now.Unix(),
+		"exp":   now.Add(jwtExpiryMinutes * time.Minute).Unix(), // Well under NetSuite's 60-min limit
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	token.Header["kid"] = s.certificateID
+
+	signed, err := token.SignedString(s.privateKey)
+	if err != nil {
+		return "", fmt.Errorf("signing M2M JWT: %w", err)
+	}
+
+	return signed, nil
+}
+
+func parseTokenResponse(resp *http.Response, now time.Time) (*oauth2.Token, error) {
 	var tokenResp struct {
-		AccessToken string          `json:"access_token"`
-		ExpiresIn   json.Number     `json:"expires_in"`
-		TokenType   string          `json:"token_type"`
+		AccessToken string      `json:"access_token"`
+		ExpiresIn   json.Number `json:"expires_in"`
+		TokenType   string      `json:"token_type"`
 	}
 
 	decoder := json.NewDecoder(resp.Body)
