@@ -321,9 +321,9 @@
             }
           }
         },
-        "itwins/": {
-          "displayName": "Itwins ",
-          "path": "itwins/",
+        "itwins": {
+          "displayName": "Itwins",
+          "path": "itwins",
           "responseKey": "iTwins",
           "fields": {
             "class": {
@@ -1040,7 +1040,7 @@
           }
         },
         "reality-management/reality-data": {
-          "displayName": "Reality-Management/Reality-Data ",
+          "displayName": "Reality-Management/Reality-Data",
           "path": "reality-management/reality-data",
           "responseKey": "realityData",
           "fields": {

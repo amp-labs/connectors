@@ -70,6 +70,14 @@ func populateITwins(
 		displayName := api3.CapitalizeFirstLetterEveryWord(prefix) + " " +
 			api3.CapitalizeFirstLetterEveryWord(object.ObjectName)
 
+		// If the object name is "", it means the endpoint is the server base. In that case, we want
+		// the final object name to just be the prefix, without a slash. Otherwise we'd get "itwins/".
+		// The display name should also just be the capitalized prefix, without a space.
+		if object.ObjectName == "" {
+			objectName = prefix
+			displayName = api3.CapitalizeFirstLetterEveryWord(prefix)
+		}
+
 		for _, field := range object.Fields {
 			schemas.Add(common.ModuleRoot,
 				objectName, displayName, objectName, object.ResponseKey,

@@ -24,6 +24,7 @@ var (
 		})
 )
 
+//nolint:dupl
 func populateRealityManagement(
 	schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any],
 	registry datautils.NamedLists[string],
@@ -57,8 +58,10 @@ func populateRealityManagement(
 
 		displayName := api3.CapitalizeFirstLetterEveryWord(prefix) + " " +
 			api3.CapitalizeFirstLetterEveryWord(object.ObjectName)
+
 		if object.ObjectName == "" {
 			objectName = prefix
+			displayName = api3.CapitalizeFirstLetterEveryWord(prefix)
 		}
 
 		for _, field := range object.Fields {

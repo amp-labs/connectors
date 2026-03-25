@@ -64,6 +64,11 @@ func populateCesium(
 		displayName := api3.CapitalizeFirstLetterEveryWord(prefix) + " " +
 			api3.CapitalizeFirstLetterEveryWord(object.ObjectName)
 
+		if object.ObjectName == "" {
+			objectName = prefix
+			displayName = api3.CapitalizeFirstLetterEveryWord(prefix)
+		}
+
 		for _, field := range object.Fields {
 			schemas.Add(common.ModuleRoot,
 				objectName, displayName, objectName, object.ResponseKey,
