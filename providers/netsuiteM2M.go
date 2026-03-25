@@ -18,18 +18,19 @@ func init() {
 					Name:        "clientId",
 					DisplayName: "Client ID",
 					Prompt:      "From the NetSuite Integration Record (Setup > Integration > Manage Integrations).",
-					DocsURL:     "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_162686838198.html",
+					DocsURL:     "https://docs.withampersand.com/customer-guides/netsuite-m2m#2-create-an-integration-record",
 				},
 				{
 					Name:        "certificateId",
 					DisplayName: "Certificate ID",
 					Prompt:      "From the M2M Setup page (Setup > Integration > OAuth 2.0 Client Credentials (M2M) Setup).",
-					DocsURL:     "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_162686838198.html",
+					DocsURL:     "https://docs.withampersand.com/customer-guides/netsuite-m2m#4-create-a-machine-to-machine-certificate-mapping",
 				},
 				{
 					Name:        "privateKey",
-					DisplayName: "EC Private Key (PEM)",
-					Prompt:      "The private key in PEM format (-----BEGIN EC PRIVATE KEY-----). Generate with: openssl ecparam -name prime256v1 -genkey -noout -out private.pem",
+					DisplayName: "Base64 encoded Private Key (PEM)",
+					Prompt:      "The base64 encoded private key",
+					DocsURL:     "https://docs.withampersand.com/customer-guides/netsuite-m2m#3-generate-a-certificate-key-pair",
 				},
 			},
 		},
@@ -99,7 +100,7 @@ func init() {
 				{
 					Name:        "workspace",
 					DisplayName: "Account ID",
-					Prompt:      "Your NetSuite Account ID (e.g. 1234567 for production, 1234567_SB1 for sandbox).",
+					Prompt:      "Your NetSuite Account ID (e.g. TD1234567 for production, TD1234567_SB1 for sandbox).",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTAPI: ModuleDependency{},
 						ModuleNetsuiteSuiteQL: ModuleDependency{},
@@ -109,7 +110,7 @@ func init() {
 				{
 					Name:        "scriptId",
 					DisplayName: "RESTlet Script ID",
-					DocsURL:     "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_4618456517.html",
+					DocsURL:     "https://docs.withampersand.com/customer-guides/netsuite-m2m#6-verify-the-deployment",
 					Prompt:      "This is an integer value for 'script' in your RESTlet's script deployment URL. If the URL is `/app/site/hosting/restlet.nl?script=3046&deploy=4`, then your script ID is `3046`.",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTlet: ModuleDependency{},
@@ -118,7 +119,7 @@ func init() {
 				{
 					Name:        "deployId",
 					DisplayName: "RESTlet Deploy ID",
-					DocsURL:     "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_4618456517.html",
+					DocsURL:     "https://docs.withampersand.com/customer-guides/netsuite-m2m#6-verify-the-deployment",
 					Prompt:      "This is an integer value for 'deploy' in your RESTlet's script deployment URL. If the URL is `/app/site/hosting/restlet.nl?script=3046&deploy=4`, then your deploy ID is `4`.",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTlet: ModuleDependency{},
