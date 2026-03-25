@@ -33,7 +33,7 @@ func run() error {
 
 	utils.DumpJSON(res, os.Stdout)
 
-	slog.Info("Reading library manufacturers")
+	slog.Info("Reading curated-content/cesium")
 
 	res, err = connector.Read(ctx, common.ReadParams{
 		ObjectName: "curated-content/cesium",

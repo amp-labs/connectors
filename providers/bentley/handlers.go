@@ -27,7 +27,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		}
 
 		if len(filters) > 0 {
-			url.WithQueryParam("$filter", strings.Join(filters, "and"))
+			url.WithQueryParam("$filter", strings.Join(filters, " and "))
 		}
 	}
 
