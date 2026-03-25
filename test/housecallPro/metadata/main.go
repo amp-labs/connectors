@@ -23,9 +23,6 @@ func main() {
 
 	m, err := connector.ListObjectMetadata(ctx, objectNames)
 	if err != nil {
-		utils.Fail(err.Error())
-	}
-	if err != nil {
 		log.Fatal(err)
 	}
 

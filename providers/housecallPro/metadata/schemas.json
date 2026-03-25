@@ -781,7 +781,7 @@
           }
         },
         "price_book/material_categories": {
-          "displayName": "Price Book/Material Categories",
+          "displayName": "Material Categories",
           "path": "/api/price_book/material_categories",
           "responseKey": "data",
           "fields": {
@@ -813,7 +813,7 @@
           }
         },
         "price_book/materials": {
-          "displayName": "Price Book/Materials",
+          "displayName": "Materials",
           "path": "/api/price_book/materials",
           "responseKey": "data",
           "fields": {
@@ -885,7 +885,7 @@
           }
         },
         "price_book/price_forms": {
-          "displayName": "Price Book/Price Forms",
+          "displayName": "Price Forms",
           "path": "/api/price_book/price_forms",
           "responseKey": "data",
           "fields": {
