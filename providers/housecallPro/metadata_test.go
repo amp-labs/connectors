@@ -16,7 +16,7 @@ func TestListObjectMetadata(t *testing.T) {
 	tests := []testroutines.Metadata{
 		{
 			Name:       "Successfully describe material categories, job types, and invoices",
-			Input:      []string{"price_book/material_categories", "job_types", "invoices"},
+			Input:      []string{"price_book/material_categories", "job_fields/job_types", "invoices"},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -56,7 +56,7 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 						},
 					},
-					"job_types": {
+					"job_fields/job_types": {
 						DisplayName: "Job Types",
 						Fields: map[string]common.FieldMetadata{
 							"id": {

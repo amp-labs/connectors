@@ -33,6 +33,7 @@ var objectEndpoints = map[string]string{
 	"/api/price_book/materials":           "price_book/materials",
 	"/api/price_book/price_forms":         "price_book/price_forms",
 	"/api/price_book/services":            "price_book/services",
+	"/job_fields/job_types":               "job_fields/job_types",
 }
 
 //nolint:gochecknoglobals
@@ -41,6 +42,7 @@ var displayNameOverrides = map[string]string{
 	"price_book/materials":           "Materials",
 	"price_book/services":            "Price Book Services",
 	"price_book/price_forms":         "Price Forms",
+	"job_fields/job_types":           "Job Types",
 }
 
 func main() {

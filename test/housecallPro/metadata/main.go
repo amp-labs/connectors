@@ -14,11 +14,21 @@ func main() {
 	connector := housecallpro.GetConnector(ctx)
 
 	objectNames := []string{
-		"job_types",
+		"customers",
+		"employees",
+		"estimates",
+		"jobs",
+		"job_fields/job_types",
+		"leads",
+		"lead_sources",
 		"price_book/material_categories",
 		"price_book/materials",
 		"price_book/price_forms",
 		"service_zones",
+		"routes",
+		"events",
+		"tags",
+		"invoices",
 	}
 
 	m, err := connector.ListObjectMetadata(ctx, objectNames)
