@@ -62,6 +62,7 @@ import (
 	"github.com/amp-labs/connectors/providers/happyfox"
 	"github.com/amp-labs/connectors/providers/helpscoutmailbox"
 	"github.com/amp-labs/connectors/providers/heyreach"
+	housecallpro "github.com/amp-labs/connectors/providers/housecallPro"
 	"github.com/amp-labs/connectors/providers/highlevelstandard"
 	"github.com/amp-labs/connectors/providers/highlevelwhitelabel"
 	"github.com/amp-labs/connectors/providers/hubspot"
@@ -196,6 +197,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.HappyFox:                wrapper(newHappyFoxConnector),
 	providers.HelpScoutMailbox:        wrapper(newHelpScoutMailboxConnector),
 	providers.HeyReach:                wrapper(newHeyReachConnector),
+	providers.HousecallPro:            wrapper(newHousecallProConnector),
 	providers.HighLevelStandard:       wrapper(newHighLevelStandardConnector),
 	providers.HighLevelWhiteLabel:     wrapper(newHighLevelWhiteLabelConnector),
 	providers.Hubspot:                 wrapper(newHubspotConnector),
@@ -1039,4 +1041,8 @@ func newTalkdeskConnector(params common.ConnectorParams) (*talkdesk.Connector, e
 
 func newGranolaConnector(params common.ConnectorParams) (*granola.Connector, error) {
 	return granola.NewConnector(params)
+}
+
+func newHousecallProConnector(params common.ConnectorParams) (*housecallpro.Connector, error) {
+	return housecallpro.NewConnector(params)
 }
