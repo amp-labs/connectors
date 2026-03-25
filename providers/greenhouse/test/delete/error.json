@@ -1,0 +1,9 @@
+{
+  "message": "Resource not found",
+  "errors": [
+    {
+      "message": "Could not find application with id 99999",
+      "field": "id"
+    }
+  ]
+}

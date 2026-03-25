@@ -16,7 +16,7 @@ import (
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	responseError := testutils.DataFromFile(t, "read/error.json")
+	responseError := testutils.DataFromFile(t, "error.json")
 	responseApplicationsFirstPage := testutils.DataFromFile(t, "read/applications/first-page.json")
 	responseApplicationsLastPage := testutils.DataFromFile(t, "read/applications/last-page.json")
 
