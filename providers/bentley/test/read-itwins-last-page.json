@@ -1,0 +1,17 @@
+{
+  "iTwins": [
+    {
+      "id": "def-456",
+      "class": "Endeavor",
+      "subClass": "Asset",
+      "type": "Road",
+      "displayName": "Another Project",
+      "status": "Inactive"
+    }
+  ],
+  "_links": {
+    "self": {
+      "href": "https://api.bentley.com/itwins?$skip=1"
+    }
+  }
+}
