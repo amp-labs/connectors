@@ -3,6 +3,7 @@ package bentley
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -18,6 +19,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	responseITwinsFirst := testutils.DataFromFile(t, "read-itwins-first-page.json")
 	responseITwinsLast := testutils.DataFromFile(t, "read-itwins-last-page.json")
 	responseWebhooks := testutils.DataFromFile(t, "read-webhooks.json")
+	responseContextCaptureJobs := testutils.DataFromFile(t, "read-contextcapture-jobs.json")
 
 	tests := []testroutines.Read{
 		{
@@ -126,6 +128,106 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"secret":      "s3cr3t",
 					},
 					Id: "wh-789",
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name: "Incremental read with Since and Until filters",
+			Input: common.ReadParams{
+				ObjectName: "contextcapture/jobs",
+				Fields:     connectors.Fields("id", "name"),
+				Since:      time.Date(2024, time.June, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2024, time.June, 30, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/contextcapture/jobs"),
+					mockcond.QueryParam("$filter", "createdDateTime ge 2024-06-01T00:00:00Z and createdDateTime le 2024-06-30T00:00:00Z"), //nolint:lll
+				},
+				Then: mockserver.Response(http.StatusOK, responseContextCaptureJobs),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":   "job-001",
+						"name": "Scan Bridge",
+					},
+					Raw: map[string]any{
+						"id":              "job-001",
+						"name":            "Scan Bridge",
+						"iTwinId":         "itwin-abc",
+						"email":           "user@example.com",
+						"state":           "Completed",
+						"createdDateTime": "2024-06-15T10:30:00Z",
+					},
+					Id: "job-001",
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name: "Incremental read with only Since filter",
+			Input: common.ReadParams{
+				ObjectName: "contextcapture/jobs",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2024, time.June, 1, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/contextcapture/jobs"),
+					mockcond.QueryParam("$filter", "createdDateTime ge 2024-06-01T00:00:00Z"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContextCaptureJobs),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id": "job-001",
+					},
+					Raw: map[string]any{
+						"id":    "job-001",
+						"name":  "Scan Bridge",
+						"state": "Completed",
+					},
+					Id: "job-001",
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name: "Non-incremental object ignores Since filter",
+			Input: common.ReadParams{
+				ObjectName: "itwins",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2024, time.June, 1, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/itwins"),
+				Then:  mockserver.Response(http.StatusOK, responseITwinsLast),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id": "def-456",
+					},
+					Raw: map[string]any{
+						"id":     "def-456",
+						"status": "Inactive",
+					},
+					Id: "def-456",
 				}},
 				NextPage: "",
 				Done:     true,
