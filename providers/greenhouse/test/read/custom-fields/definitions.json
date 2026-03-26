@@ -1,0 +1,41 @@
+[
+  {
+    "id": 100001,
+    "name": "Interview Score",
+    "name_key": "interview_score",
+    "field_type": "application",
+    "value_type": "number",
+    "active": true,
+    "private": false,
+    "required": false,
+    "sort_order": 0,
+    "created_at": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-01-01T00:00:00Z"
+  },
+  {
+    "id": 100002,
+    "name": "Referral Source",
+    "name_key": "referral_source",
+    "field_type": "application",
+    "value_type": "single_select",
+    "active": true,
+    "private": false,
+    "required": false,
+    "sort_order": 1,
+    "created_at": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-01-01T00:00:00Z"
+  },
+  {
+    "id": 100003,
+    "name": "Inactive Field",
+    "name_key": "inactive_field",
+    "field_type": "application",
+    "value_type": "short_text",
+    "active": false,
+    "private": false,
+    "required": false,
+    "sort_order": 2,
+    "created_at": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-01-01T00:00:00Z"
+  }
+]

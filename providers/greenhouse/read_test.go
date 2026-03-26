@@ -19,6 +19,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseError := testutils.DataFromFile(t, "error.json")
 	responseApplicationsFirstPage := testutils.DataFromFile(t, "read/applications/first-page.json")
 	responseApplicationsLastPage := testutils.DataFromFile(t, "read/applications/last-page.json")
+	responseWithCustomFields := testutils.DataFromFile(t, "read/custom-fields/applications-with-custom-fields.json")
 
 	tests := []testroutines.Read{
 		{
@@ -131,6 +132,49 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 					Raw: map[string]any{
 						"status": "rejected",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read applications with custom fields flattened",
+			Input: common.ReadParams{
+				ObjectName: "applications",
+				Fields:     connectors.Fields("id", "interview_score", "referral_source"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v3/applications"),
+				Then:  mockserver.Response(http.StatusOK, responseWithCustomFields),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id": float64(12345),
+						// Custom fields flattened from custom_fields map to root level.
+						"interview_score": "85.0",
+						"referral_source": "Employee Referral",
+					},
+					Raw: map[string]any{
+						"status": "in_process",
+						// Verify custom_fields is preserved in Raw (not altered).
+						"custom_fields": map[string]any{
+							"interview_score": map[string]any{
+								"name":  "Interview Score",
+								"type":  "number",
+								"value": "85.0",
+							},
+							"referral_source": map[string]any{
+								"name":  "Referral Source",
+								"type":  "single_select",
+								"value": "Employee Referral",
+							},
+						},
 					},
 				}},
 				NextPage: "",

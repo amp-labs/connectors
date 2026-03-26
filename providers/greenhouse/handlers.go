@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/greenhouse/metadata"
@@ -22,6 +23,85 @@ const (
 	// https://developers.greenhouse.io/harvest.html#pagination
 	maxPageSize = 500
 )
+
+// ListObjectMetadata returns metadata for the requested objects, including custom fields.
+// Base metadata comes from the static OpenAPI schema. Custom field definitions are fetched
+// from the Greenhouse API and added as top-level fields.
+// https://harvestdocs.greenhouse.io/reference/get_v3-custom-fields
+func (c *Connector) ListObjectMetadata(
+	ctx context.Context, objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
+	metadataResult, err := metadata.Schemas.Select(c.Module(), objectNames)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, objectName := range objectNames {
+		fields, err := c.requestCustomFields(ctx, objectName)
+		if err != nil {
+			metadataResult.Errors[objectName] = err
+
+			continue
+		}
+
+		objectMetadata := metadataResult.GetObjectMetadata(objectName)
+		if objectMetadata == nil {
+			continue
+		}
+
+		// Collect IDs for select-type fields to fetch options.
+		var selectFieldIDs []int
+
+		for _, field := range fields {
+			if field.ValueType == "single_select" || field.ValueType == "multi_select" {
+				selectFieldIDs = append(selectFieldIDs, field.ID)
+			}
+		}
+
+		// Fetch options for select-type custom fields.
+		options, err := c.requestCustomFieldOptions(ctx, selectFieldIDs)
+		if err != nil {
+			metadataResult.Errors[objectName] = err
+
+			continue
+		}
+
+		// Add each custom field to the object metadata.
+		for nameKey, field := range fields {
+			fieldValues := getFieldValues(options, field.ID)
+
+			objectMetadata.AddFieldMetadata(nameKey, common.FieldMetadata{
+				DisplayName:  field.Name,
+				ValueType:    field.getValueType(),
+				ProviderType: field.ValueType,
+				IsCustom:     goutils.Pointer(true),
+				Values:       fieldValues,
+			})
+		}
+
+		metadataResult.Result[objectName] = *objectMetadata
+	}
+
+	return metadataResult, nil
+}
+
+// getFieldValues returns the list of possible values for select-type custom fields.
+func getFieldValues(options map[int][]customFieldOption, fieldID int) common.FieldValues {
+	opts, ok := options[fieldID]
+	if !ok || len(opts) == 0 {
+		return nil
+	}
+
+	values := make(common.FieldValues, len(opts))
+	for i, opt := range opts {
+		values[i] = common.FieldValue{
+			Value:        opt.Name,
+			DisplayValue: opt.Name,
+		}
+	}
+
+	return values
+}
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	url, err := c.buildReadURL(params)
@@ -72,12 +152,25 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		resp,
-		// Empty path means records are at the root level (response is a JSON array, not nested).
-		common.ExtractOptionalRecordsFromPath(""),
+		// Greenhouse v3 list endpoints return bare JSON arrays at root level.
+		getRecords,
 		makeNextRecordsURL(resp),
-		common.GetMarshaledData,
+		common.MakeMarshaledDataFunc(flattenCustomFields),
 		params.Fields,
 	)
+}
+
+// getRecords extracts records from the root-level JSON array.
+func getRecords(node *ajson.Node) ([]*ajson.Node, error) {
+	if node == nil {
+		return nil, nil //nolint:nilnil
+	}
+
+	if node.IsArray() {
+		return node.GetArray()
+	}
+
+	return nil, nil //nolint:nilnil
 }
 
 // Next page is communicated via `Link` header under the `next` rel.
@@ -131,7 +224,6 @@ func (c *Connector) parseWriteResponse(ctx context.Context, params common.WriteP
 ) (*common.WriteResult, error) {
 	body, ok := response.Body()
 	if !ok {
-		// it is unlikely to have no payload
 		return &common.WriteResult{
 			Success: true,
 		}, nil
@@ -184,7 +276,6 @@ func (c *Connector) parseDeleteResponse(ctx context.Context, params common.Delet
 		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, response.Code)
 	}
 
-	// Response body is not used.
 	return &common.DeleteResult{
 		Success: true,
 	}, nil
