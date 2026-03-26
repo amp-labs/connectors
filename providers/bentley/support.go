@@ -28,22 +28,60 @@ var objectUpdateWithPUT = datautils.NewSet(
 	"library/manufacturers",
 )
 
+//nolint:gochecknoglobals
+var writeResponseKey = datautils.NewDefaultMap(map[string]string{
+	"contextcapture/jobs":       "job",
+	"contextcapture/workspaces": "workspace",
+	"itwins":                    "iTwin",
+	"itwins/exports":            "export",
+	"grouping-and-mapping/datasources/imodel-mappings": "mapping",
+	"imodels":                         "iModel",
+	"library/applications":            "application",
+	"library/catalogs":                "catalog",
+	"library/categories":              "category",
+	"library/components":              "component",
+	"library/manufacturers":           "manufacturer",
+	"named-groups":                    "group",
+	"savedviews/groups":               "group",
+	"savedviews":                      "savedView",
+	"savedviews/tags":                 "tag",
+	"schedules":                       "schedule",
+	"reality-management/reality-data": "realityData",
+	"reality-analysis/detectors":      "detector",
+	"reality-analysis/jobs":           "job",
+	"realityconversion/jobs":          "job",
+	"insights/reporting/reports":      "report",
+	"insights/carbon-calculation/ec3/configurations": "configuration",
+	"insights/carbon-calculation/ec3/jobs":           "job",
+	"insights/carbon-calculation/oneclicklca/jobs":   "job",
+	"changedelements/comparisonjob":                  "comparisonJob",
+	"forms":                                          "form",
+	"export/connections":                             "connection",
+	"synchronization/imodels/manifestconnections":    "connection",
+	"synchronization/imodels/storageconnections":     "connection",
+	"synchronization/pnidtoitwin/inferences":         "inference",
+	"transformations":                                "transformation",
+	"transformations/configurations/createfork":      "configuration",
+	"mesh-export":                                    "export",
+}, func(objectName string) (fieldName string) {
+	return ""
+},
+)
+
 // nolint:gochecknoglobals
 var writeSupport = []string{
 	"contextcapture/jobs",
 	"contextcapture/workspaces",
 	"itwins",
 	"itwins/exports",
-	"itwins/favorites",
 	"itwins/recents",
 	"grouping-and-mapping/datasources/imodel-mappings",
 	"imodels",
-	"library/applications",  //PUT
-	"library/catalogs",      //PUT
-	"library/categories",    //PUT
-	"library/components",    //PUT
-	"library/manufacturers", //PUT
-
+	"library/applications",
+	"library/catalogs",
+	"library/categories",
+	"library/components",
+	"library/manufacturers",
 	"named-groups",
 	"savedviews/groups",
 	"savedviews",
@@ -60,7 +98,9 @@ var writeSupport = []string{
 	"changedelements/comparisonjob",
 	"forms",
 	"export/connections",
+	"synchronization/imodels/manifestconnections",
 	"synchronization/pnidtoitwin/inferences",
+	"synchronization/imodels/storageconnections",
 	"transformations",
 	"transformations/configurations/createfork",
 	"mesh-export",

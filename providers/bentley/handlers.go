@@ -103,12 +103,27 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	recordID, err := jsonquery.New(body).StrWithDefault("id", "")
+	// Some Bentley APIs wrap the response in a key (e.g. {"iTwin": {...}}),
+	// others return the object directly. Unwrap if needed.
+	node := body
+
+	responseKey := writeResponseKey.Get(params.ObjectName)
+
+	if responseKey != "" {
+		nested, err := jsonquery.New(body).ObjectRequired(responseKey)
+		if err != nil {
+			return nil, err
+		}
+
+		node = nested
+	}
+
+	recordID, err := jsonquery.New(node).StrWithDefault("id", "")
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := jsonquery.Convertor.ObjectToMap(body)
+	resp, err := jsonquery.Convertor.ObjectToMap(node)
 	if err != nil {
 		return nil, err
 	}
