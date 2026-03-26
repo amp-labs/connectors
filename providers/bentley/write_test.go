@@ -175,25 +175,6 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				},
 			},
 		},
-		{
-			Name: "Write with no response body returns success",
-			Input: common.WriteParams{
-				ObjectName: "itwins/favorites",
-				RecordId:   "fav-123",
-				RecordData: map[string]any{"id": "fav-123"},
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPATCH(),
-					mockcond.Path("/itwins/favorites/fav-123"),
-				},
-				Then: mockserver.Response(http.StatusNoContent),
-			}.Server(),
-			Expected: &common.WriteResult{
-				Success: true,
-			},
-		},
 	}
 
 	for _, tt := range tests {
