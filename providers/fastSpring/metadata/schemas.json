@@ -1,0 +1,165 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "accounts": {
+          "displayName": "Accounts",
+          "path": "/accounts",
+          "responseKey": "accounts",
+          "docs": "https://developer.fastspring.com/reference/list-all-accounts",
+          "fields": {
+            "id": {
+              "displayName": "Account Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "account": {
+              "displayName": "Account",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "language": {
+              "displayName": "Language",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "country": {
+              "displayName": "Country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscribed": {
+              "displayName": "Subscribed",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "url": {
+              "displayName": "Account Url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "orders": {
+          "displayName": "Orders",
+          "path": "/orders",
+          "responseKey": "orders",
+          "docs": "https://developer.fastspring.com/reference/list-all-orders",
+          "fields": {
+            "order": {
+              "displayName": "Order Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reference": {
+              "displayName": "Reference",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed": {
+              "displayName": "Completed",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "ipAddress": {
+              "displayName": "Ip Address",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "products": {
+          "displayName": "Products",
+          "path": "/products",
+          "responseKey": "products",
+          "docs": "https://developer.fastspring.com/reference/list-all-product-paths",
+          "fields": {
+            "path": {
+              "displayName": "Product Path",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "subscriptions": {
+          "displayName": "Subscriptions",
+          "path": "/subscriptions",
+          "responseKey": "subscriptions",
+          "docs": "https://developer.fastspring.com/reference/list-all-subscriptions",
+          "fields": {
+            "subscription": {
+              "displayName": "Subscription Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product": {
+              "displayName": "Product",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "State",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "currency": {
+              "displayName": "Currency",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "events-processed": {
+          "displayName": "Processed Events",
+          "path": "/events/processed",
+          "responseKey": "events",
+          "docs": "https://developer.fastspring.com/reference/list-all-processed-events",
+          "fields": {
+            "id": {
+              "displayName": "Event Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "event": {
+              "displayName": "Event",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "processed": {
+              "displayName": "Processed",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "live": {
+              "displayName": "Live",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created": {
+              "displayName": "Created",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        }
+      }
+    }
+  }
+}
