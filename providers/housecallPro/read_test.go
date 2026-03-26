@@ -35,7 +35,7 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/customers"),
-					mockcond.QueryParam("per_page", defaultPageSize),
+					mockcond.QueryParam("page_size", defaultPageSize),
 					mockcond.QueryParam("sort_by", "updated_at"),
 					mockcond.QueryParam("sort_direction", "desc"),
 				},
@@ -59,7 +59,7 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/customers"),
-					mockcond.QueryParam("per_page", "1"),
+					mockcond.QueryParam("page_size", "1"),
 					mockcond.QueryParam("sort_by", "updated_at"),
 					mockcond.QueryParam("sort_direction", "desc"),
 				},
@@ -84,7 +84,7 @@ func TestRead(t *testing.T) {
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/customers?page=2&per_page=1&sort_by=updated_at&sort_direction=desc",
+				NextPage: testroutines.URLTestServer + "/customers?page=2&page_size=1&sort_by=updated_at&sort_direction=desc",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -94,14 +94,14 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "customers",
 				Fields:     connectors.Fields("id", "first_name", "email", "updated_at"),
-				NextPage:   testroutines.URLTestServer + "/customers?page=2&per_page=1&sort_by=updated_at&sort_direction=desc",
+				NextPage:   testroutines.URLTestServer + "/customers?page=2&page_size=1&sort_by=updated_at&sort_direction=desc",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/customers"),
 					mockcond.QueryParam("page", "2"),
-					mockcond.QueryParam("per_page", "1"),
+					mockcond.QueryParam("page_size", "1"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCustomersLast),
 			}.Server(),
@@ -142,7 +142,7 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/customers"),
-					mockcond.QueryParam("per_page", "1"),
+					mockcond.QueryParam("page_size", "1"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCustomersFirst),
 			}.Server(),
@@ -165,7 +165,7 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/employees"),
-					mockcond.QueryParam("per_page", "10"),
+					mockcond.QueryParam("page_size", "10"),
 					mockcond.QueryParamsMissing("sort_by", "sort_direction"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseEmployees),
@@ -205,7 +205,7 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/api/price_book/material_categories"),
-					mockcond.QueryParam("per_page", "1"),
+					mockcond.QueryParam("page_size", "1"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseMaterialCategoryFirst),
 			}.Server(),
@@ -238,7 +238,7 @@ func TestRead(t *testing.T) {
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/api/price_book/material_categories?page=2&per_page=1&sort_by=updated_at&sort_direction=desc",
+				NextPage: testroutines.URLTestServer + "/api/price_book/material_categories?page=2&page_size=1&sort_by=updated_at&sort_direction=desc",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -249,14 +249,14 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "price_book/material_categories",
 				Fields:     connectors.Fields("uuid", "name", "updated_at"),
-				NextPage:   testroutines.URLTestServer + "/api/price_book/material_categories?page=2&per_page=1&sort_by=updated_at&sort_direction=desc",
+				NextPage:   testroutines.URLTestServer + "/api/price_book/material_categories?page=2&page_size=1&sort_by=updated_at&sort_direction=desc",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/api/price_book/material_categories"),
 					mockcond.QueryParam("page", "2"),
-					mockcond.QueryParam("per_page", "1"),
+					mockcond.QueryParam("page_size", "1"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseMaterialCategoryLast),
 			}.Server(),
@@ -304,7 +304,7 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/invoices"),
-					mockcond.QueryParam("per_page", defaultPageSize),
+					mockcond.QueryParam("page_size", defaultPageSize),
 					mockcond.QueryParamsMissing("sort_by", "sort_direction"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseInvoices),
