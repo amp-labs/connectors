@@ -1,0 +1,41 @@
+{
+    "page": 1,
+    "page_size": 10,
+    "total_pages": 1,
+    "total_items": 1,
+    "employees": [
+        {
+            "id": "pro_aabbccdd11223344556677889900aabb",
+            "first_name": "Jamie",
+            "last_name": "Example",
+            "email": "jamie.example@example.com",
+            "mobile_number": "5550100199",
+            "color_hex": "A1B2C3",
+            "avatar_url": "https://example.com/avatars/placeholder.png",
+            "role": "field tech",
+            "tags": [],
+            "permissions": {
+                "can_add_and_edit_job": true,
+                "can_be_booked_online": true,
+                "can_call_and_text_with_customers": true,
+                "can_chat_with_customers": true,
+                "can_delete_and_cancel_job": true,
+                "can_edit_message_on_invoice": true,
+                "can_see_street_view_data": true,
+                "can_share_job": false,
+                "can_take_payment_see_prices": true,
+                "can_see_customers": true,
+                "can_see_full_schedule": true,
+                "can_see_future_jobs": true,
+                "can_see_marketing_campaigns": true,
+                "can_see_reporting": true,
+                "can_edit_settings": true,
+                "is_point_of_contact": false,
+                "is_admin": true
+            },
+            "created_at": "2026-01-15T12:00:00Z",
+            "company_name": "ExampleCo",
+            "company_id": "00000000-1111-2222-3333-444444444444"
+        }
+    ]
+}
