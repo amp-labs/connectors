@@ -15,21 +15,20 @@ type objectReadSpec struct {
 	timeKey string
 }
 
-// incr is a list object that supports connector-side incremental read on timeKey.
-func incr(timeKey string) objectReadSpec {
+func incrementalUpdatedAt() objectReadSpec {
 	return objectReadSpec{
 		supportsIncremental: true,
-		timeKey:             timeKey,
+		timeKey:             "updated_at",
 	}
 }
 
 //nolint:gochecknoglobals
 var objectReadSpecs = datautils.NewDefaultMap(map[string]objectReadSpec{
-	"customers":                      incr("updated_at"),
-	"estimates":                      incr("updated_at"),
-	"jobs":                           incr("updated_at"),
-	"price_book/material_categories": incr("updated_at"),
-	"events":                         incr("updated_at"),
+	"customers":                      incrementalUpdatedAt(),
+	"estimates":                      incrementalUpdatedAt(),
+	"jobs":                           incrementalUpdatedAt(),
+	"price_book/material_categories": incrementalUpdatedAt(),
+	"events":                         incrementalUpdatedAt(),
 }, func(string) objectReadSpec {
 	// Objects not listed here omit sort_by / sort_direction and do not apply connector-side Since/Until.
 	return objectReadSpec{}

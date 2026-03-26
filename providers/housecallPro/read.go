@@ -14,8 +14,10 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-const defaultPageSize = "200"
-const readSortDirection = "desc"
+const (
+	defaultPageSize   = "200"
+	readSortDirection = "desc"
+)
 
 // Price book list payloads use "uuid"; other objects use "id".
 var readIDFieldByObject = datautils.NewDefaultMap( //nolint:gochecknoglobals
@@ -33,21 +35,26 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	if params.NextPage != "" {
 		return http.NewRequestWithContext(ctx, http.MethodGet, params.NextPage.String(), nil)
 	}
+
 	path, err := metadata.Schemas.FindURLPath(c.Module(), params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
+
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
 	if err != nil {
 		return nil, err
 	}
+
 	pageSize := readhelper.PageSizeWithDefaultStr(params, defaultPageSize)
 	url.WithQueryParam("per_page", pageSize)
+
 	spec := objectReadSpecs.Get(params.ObjectName)
 	if spec.timeKey != "" {
 		url.WithQueryParam("sort_by", spec.timeKey)
 		url.WithQueryParam("sort_direction", readSortDirection)
 	}
+
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
@@ -87,20 +94,20 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 		//   "total_items": 0,
 		//   .....
 		// }
-		q := jsonquery.New(node)
+		rootQuery := jsonquery.New(node)
 
-		page, err := q.IntegerWithDefault("page", 1)
+		page, err := rootQuery.IntegerWithDefault("page", 1)
 		if err != nil {
 			return "", err
 		}
 
-		totalPages, err := q.IntegerWithDefault("total_pages", 0)
+		totalPages, err := rootQuery.IntegerWithDefault("total_pages", 0)
 		if err != nil {
 			return "", err
 		}
 
 		if totalPages == 0 {
-			totalPages, err = q.IntegerWithDefault("total_pages_count", 0)
+			totalPages, err = rootQuery.IntegerWithDefault("total_pages_count", 0)
 			if err != nil {
 				return "", err
 			}
