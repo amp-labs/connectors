@@ -47,7 +47,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	pageSize := readhelper.PageSizeWithDefaultStr(params, defaultPageSize)
-	url.WithQueryParam("per_page", pageSize)
+	url.WithQueryParam("page_size", pageSize)
 
 	spec := objectReadSpecs.Get(params.ObjectName)
 	if spec.timeKey != "" {
