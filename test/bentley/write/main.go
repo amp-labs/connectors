@@ -25,13 +25,13 @@ func main() {
 
 	bentleyConn := conn.GetBentleyConnector(ctx)
 
-	recordId, err := createITwinsl(ctx, bentleyConn)
+	recordId, err := createITwins(ctx, bentleyConn)
 
 	if err != nil {
 		slog.Error(err.Error())
 	}
 
-	err = updateITwinsl(ctx, bentleyConn, recordId)
+	err = updateITwins(ctx, bentleyConn, recordId)
 	if err != nil {
 		slog.Error(err.Error())
 	}
@@ -45,7 +45,7 @@ func main() {
 
 }
 
-func createITwinsl(ctx context.Context, conn *bentley.Connector) (string, error) {
+func createITwins(ctx context.Context, conn *bentley.Connector) (string, error) {
 	config := common.WriteParams{
 		ObjectName: "itwins",
 		RecordData: map[string]any{
@@ -78,7 +78,7 @@ func createITwinsl(ctx context.Context, conn *bentley.Connector) (string, error)
 	return result.RecordId, nil
 }
 
-func updateITwinsl(ctx context.Context, conn *bentley.Connector, recordId string) error {
+func updateITwins(ctx context.Context, conn *bentley.Connector, recordId string) error {
 	config := common.WriteParams{
 		ObjectName: "itwins",
 		RecordId:   recordId,
