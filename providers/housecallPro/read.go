@@ -19,11 +19,10 @@ const (
 	readSortDirection = "desc"
 )
 
-// Price book list payloads use "uuid"; other objects use "id".
+// Price book list payloads generally use "uuid"; other objects use "id".
 var readIDFieldByObject = datautils.NewDefaultMap( //nolint:gochecknoglobals
 	datautils.Map[string, readhelper.IdFieldQuery]{
 		"price_book/material_categories": readhelper.NewIdField("uuid"),
-		"price_book/price_forms":         readhelper.NewIdField("uuid"),
 		"price_book/services":            readhelper.NewIdField("uuid"),
 	},
 	func(_ string) readhelper.IdFieldQuery {
