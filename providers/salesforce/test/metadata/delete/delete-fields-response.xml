@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns="http://soap.sforce.com/2006/04/metadata">
+    <soapenv:Body>
+        <deleteMetadataResponse>
+            <result>
+                <fullName>TestObject15__c.Birthday__c</fullName>
+                <success>true</success>
+            </result>
+        </deleteMetadataResponse>
+    </soapenv:Body>
+</soapenv:Envelope>

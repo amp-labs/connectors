@@ -56,7 +56,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				testutils.StringError("Invalid search criteria provided"), // nolint:goerr113
+				testutils.StringError("Invalid search criteria provided"),
 			},
 		},
 		{

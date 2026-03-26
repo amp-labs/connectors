@@ -1,0 +1,97 @@
+{
+  "fields": {
+    "displayName": "fields",
+    "valueType": "other",
+    "providerType": "Array"
+  },
+  "procedure": {
+    "displayName": "procedure",
+    "valueType": "other",
+    "providerType": "Object"
+  },
+  "name": {
+    "displayName": "name",
+    "valueType": "string",
+    "providerType": "String"
+  },
+  "arguments": {
+    "displayName": "arguments",
+    "valueType": "other",
+    "providerType": "Object"
+  },
+  "includeByteOrderMark": {
+    "displayName": "includeByteOrderMark",
+    "valueType": "boolean",
+    "providerType": "Boolean"
+  },
+  "maxFileSizeBytes": {
+    "displayName": "maxFileSizeBytes",
+    "valueType": "int",
+    "providerType": "Integer"
+  },
+  "legacyDateFormat": {
+    "displayName": "legacyDateFormat",
+    "valueType": "boolean",
+    "providerType": "Boolean"
+  },
+  "id": {
+    "displayName": "id",
+    "valueType": "int",
+    "providerType": "Integer",
+    "readOnly": true
+  },
+  "status": {
+    "displayName": "status",
+    "valueType": "string",
+    "providerType": "String",
+    "readOnly": true
+  },
+  "isExpired": {
+    "displayName": "isExpired",
+    "valueType": "boolean",
+    "providerType": "Boolean",
+    "readOnly": true
+  },
+  "createdAt": {
+    "displayName": "createdAt",
+    "valueType": "datetime",
+    "providerType": "DateTime",
+    "readOnly": true
+  },
+  "updatedAt": {
+    "displayName": "updatedAt",
+    "valueType": "datetime",
+    "providerType": "DateTime",
+    "readOnly": true
+  },
+  "createdById": {
+    "displayName": "createdById",
+    "valueType": "int",
+    "providerType": "Integer",
+    "readOnly": true
+  },
+  "updatedById": {
+    "displayName": "updatedById",
+    "valueType": "int",
+    "providerType": "Integer",
+    "readOnly": true
+  },
+  "createdBy": {
+    "displayName": "createdBy",
+    "valueType": "other",
+    "providerType": "User",
+    "readOnly": true
+  },
+  "updatedBy": {
+    "displayName": "updatedBy",
+    "valueType": "other",
+    "providerType": "User",
+    "readOnly": true
+  },
+  "resultRefs": {
+    "displayName": "resultRefs",
+    "valueType": "other",
+    "providerType": "Array",
+    "readOnly": true
+  }
+}

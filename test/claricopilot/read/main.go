@@ -46,4 +46,16 @@ func main() {
 
 	slog.Info("Reading calls..")
 	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "scorecard-template",
+		Fields:     connectors.Fields("id", "name"),
+	})
+	if err != nil {
+		utils.Fail("error reading from Clari Copilot", "error", err)
+	}
+
+	slog.Info("Reading scorecard templates..")
+	utils.DumpJSON(res, os.Stdout)
+
 }

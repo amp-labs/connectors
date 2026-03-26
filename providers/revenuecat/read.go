@@ -33,7 +33,6 @@ type incrementalConfig struct {
 // Objects with no documented sort order use Unordered (safe fallback).
 var objectIncrementalConfig = map[string]incrementalConfig{ //nolint:gochecknoglobals
 	"customers":             {timestampKey: "last_seen_at", order: readhelper.Unordered},
-	"purchases":             {timestampKey: "purchased_at", order: readhelper.ReverseOrder},
 	"apps":                  {timestampKey: "created_at", order: readhelper.ReverseOrder},
 	"entitlements":          {timestampKey: "created_at", order: readhelper.ReverseOrder},
 	"offerings":             {timestampKey: "created_at", order: readhelper.ReverseOrder},

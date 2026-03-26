@@ -157,8 +157,11 @@ func TestRead(t *testing.T) {
 					Fields: map[string]any{"id": "prod_new"},
 					Raw:    map[string]any{"id": "prod_new"},
 				}},
-				NextPage: testroutines.URLTestServer + "/v2/projects/proj_123/products?starting_after=prod_old",
-				Done:     false,
+				// Connector does not surface next page.
+				// The order is reverse and current page is already on the time edge.
+				// Next pages are guaranteed to be older than `Since`.
+				NextPage: "",
+				Done:     true,
 			},
 		},
 		{

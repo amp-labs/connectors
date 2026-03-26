@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
@@ -36,7 +37,14 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	url.WithQueryParam("$top", DefaultPageSize)
+	filter := filterQuery{}.
+		Since(params.ObjectName, params.Since).
+		Until(params.ObjectName, params.Until).String()
+	if filter != "" {
+		url.WithQueryParam("$filter", filter)
+	}
+
+	url.WithQueryParam("$top", readhelper.PageSizeWithDefaultStr(params, DefaultPageSize))
 
 	return url, nil
 }
@@ -51,7 +59,7 @@ func (c *Connector) parseReadResponse(
 		resp,
 		common.ExtractOptionalRecordsFromPath("value"),
 		getNextRecordsURL,
-		common.GetMarshaledData,
+		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
 		params.Fields,
 	)
 }
@@ -67,7 +75,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	method := http.MethodPost
-	if len(params.RecordId) != 0 {
+	if params.IsUpdate() {
 		method = http.MethodPatch
 
 		url.AddPath(params.RecordId)
@@ -116,10 +124,12 @@ func (c *Connector) parseWriteResponse(ctx context.Context, params common.WriteP
 }
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	url, err := c.getURL(params.ObjectName, params.RecordId)
+	url, err := c.getURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
+
+	url.AddPath(params.RecordId)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
 	if err != nil {

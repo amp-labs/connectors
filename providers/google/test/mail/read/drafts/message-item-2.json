@@ -1,0 +1,26 @@
+{
+  "id": "19c5a576fbc9a5ec",
+  "threadId": "19c5a5623749ebbb",
+  "labelIds": [
+    "DRAFT"
+  ],
+  "snippet": "(DRAFT) You have had Linux installed for about a month now",
+  "payload": {
+    "partId": "",
+    "mimeType": "multipart/alternative",
+    "filename": "",
+    "headers": [
+      {
+        "name": "Subject",
+        "value": "(DRAFT) Linux installed"
+      }
+    ],
+    "body": {
+      "size": 0
+    },
+    "parts": []
+  },
+  "sizeEstimate": 1677,
+  "historyId": "39887",
+  "internalDate": "1771042205000"
+}

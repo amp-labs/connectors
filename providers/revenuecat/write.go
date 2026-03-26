@@ -38,9 +38,6 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	method := http.MethodPost
-	if params.IsUpdate() {
-		method = http.MethodPatch
-	}
 
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }

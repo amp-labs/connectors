@@ -1,0 +1,98 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('ae87552f-48fc-4dec-9322-65040bf9fdfd')/messages",
+  "value": [
+    {
+      "@odata.etag": "W/\"CQAAABYAAAB8hj1Rtd60SKTngNs3if9RAAEMtZut\"",
+      "id": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAAAAAEKAAB8hj1Rtd60SKTngNs3if9RAAEMs4IlAAA=",
+      "createdDateTime": "2026-03-10T00:37:06Z",
+      "lastModifiedDateTime": "2026-03-10T00:38:39Z",
+      "changeKey": "CQAAABYAAAB8hj1Rtd60SKTngNs3if9RAAEMtZut",
+      "categories": [],
+      "receivedDateTime": "2026-03-10T00:37:06Z",
+      "sentDateTime": "2026-03-10T00:37:06Z",
+      "hasAttachments": false,
+      "subject": "Timmy Wehner",
+      "bodyPreview": "Forrest Von",
+      "importance": "normal",
+      "parentFolderId": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQAuAAAAAABeMJSlO8qLToz2i2IQ1wsqAQB8hj1Rtd60SKTngNs3if9RAAAAAAEKAAA=",
+      "conversationId": "AAQkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQAQAHmqWm-JuGhPlL9C6K1hjeU=",
+      "conversationIndex": "AQHcsCYFeapab8m4aE+Uv0LorWGN5Q==",
+      "isDeliveryReceiptRequested": false,
+      "isReadReceiptRequested": false,
+      "isRead": true,
+      "isDraft": true,
+      "inferenceClassification": "focused",
+      "body": {
+        "contentType": "text",
+        "content": "Forrest Von"
+      },
+      "toRecipients": [
+        {
+          "emailAddress": {
+            "name": "Jacobson3223",
+            "address": "Jacobson3223@test.com"
+          }
+        }
+      ],
+      "ccRecipients": [],
+      "bccRecipients": [],
+      "replyTo": [],
+      "flag": {
+        "flagStatus": "notFlagged"
+      }
+    },
+    {
+      "@odata.etag": "W/\"CQAAABYAAAB8hj1Rtd60SKTngNs3if9RAAEMtZvW\"",
+      "id": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAAAAAEKAAB8hj1Rtd60SKTngNs3if9RAAEMs4ImAAA=",
+      "createdDateTime": "2026-03-10T00:35:57Z",
+      "lastModifiedDateTime": "2026-03-10T00:40:05Z",
+      "changeKey": "CQAAABYAAAB8hj1Rtd60SKTngNs3if9RAAEMtZvW",
+      "categories": [],
+      "receivedDateTime": "2026-03-10T00:35:57Z",
+      "sentDateTime": "2026-03-10T00:35:57Z",
+      "hasAttachments": false,
+      "subject": "Gail Waelchi",
+      "bodyPreview": "Eleonore Kutch",
+      "importance": "normal",
+      "parentFolderId": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQAuAAAAAABeMJSlO8qLToz2i2IQ1wsqAQB8hj1Rtd60SKTngNs3if9RAAAAAAEKAAA=",
+      "conversationId": "AAQkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQAQAM2J4URWxWdEm2NwHFG6MR8=",
+      "conversationIndex": "AQHcsCXczYnhRFbFZ0SbY3AcUboxHw==",
+      "isDeliveryReceiptRequested": false,
+      "isReadReceiptRequested": false,
+      "isRead": true,
+      "isDraft": true,
+      "inferenceClassification": "focused",
+      "body": {
+        "contentType": "text",
+        "content": "Eleonore Kutch"
+      },
+      "sender": {
+        "emailAddress": {
+          "name": "Leffler1327",
+          "address": "Leffler1327@test.com"
+        }
+      },
+      "from": {
+        "emailAddress": {
+          "name": "Leffler1327",
+          "address": "Leffler1327@test.com"
+        }
+      },
+      "toRecipients": [
+        {
+          "emailAddress": {
+            "name": "Graham5694",
+            "address": "Graham5694@test.com"
+          }
+        }
+      ],
+      "ccRecipients": [],
+      "bccRecipients": [],
+      "replyTo": [],
+      "flag": {
+        "flagStatus": "notFlagged"
+      }
+    }
+  ],
+  "@odata.nextLink": "https://graph.microsoft.com/v1.0/me/messages?%24top=10&%24skip=10"
+}

@@ -44,6 +44,11 @@ func init() { //nolint:funlen
 			Read:      true,
 			Subscribe: true,
 			Write:     true,
+			Search: SearchSupport{
+				Operators: SearchOperators{
+					Equals: true,
+				},
+			},
 		},
 		DefaultModule: ModuleHubspotCRM,
 		Modules: &Modules{
@@ -67,6 +72,11 @@ func init() { //nolint:funlen
 					Read:      true,
 					Subscribe: true,
 					Write:     true,
+					Search: SearchSupport{
+						Operators: SearchOperators{
+							Equals: true,
+						},
+					},
 				},
 			},
 		},
@@ -91,6 +101,9 @@ func init() { //nolint:funlen
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
 					Name: "ownerId",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleHubspotCRM: ModuleDependency{},
+					},
 				},
 			},
 		},

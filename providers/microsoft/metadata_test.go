@@ -16,7 +16,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	tests := []testroutines.Metadata{
 		{
 			Name:       "Successful metadata for multiple objects",
-			Input:      []string{"users", "groups"},
+			Input:      []string{"users", "groups", "me/events", "me/messages"},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -27,17 +27,17 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"city": {
 								DisplayName:  "city",
 								ValueType:    "string",
-								ProviderType: "Edm.String",
+								ProviderType: "string",
 							},
 							"skills": {
 								DisplayName:  "skills",
 								ValueType:    "other",
-								ProviderType: "Collection(Edm.String)",
+								ProviderType: "array",
 							},
 							"surname": {
 								DisplayName:  "surname",
 								ValueType:    "string",
-								ProviderType: "Edm.String",
+								ProviderType: "string",
 							},
 						},
 					},
@@ -47,17 +47,40 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"isSubscribedByMail": {
 								DisplayName:  "isSubscribedByMail",
 								ValueType:    "boolean",
-								ProviderType: "Edm.Boolean",
+								ProviderType: "boolean",
 							},
 							"mail": {
 								DisplayName:  "mail",
 								ValueType:    "string",
-								ProviderType: "Edm.String",
+								ProviderType: "string",
 							},
 							"createdDateTime": {
 								DisplayName:  "createdDateTime",
-								ValueType:    "datetime",
-								ProviderType: "Edm.DateTimeOffset",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"me/events": {
+						DisplayName: "Events",
+						Fields: map[string]common.FieldMetadata{
+							"attendees": {
+								DisplayName:  "attendees",
+								ValueType:    "other",
+								ProviderType: "array",
+							},
+						},
+					},
+					"me/messages": {
+						DisplayName: "Messages",
+						Fields: map[string]common.FieldMetadata{
+							"from": {
+								DisplayName: "from",
+								ValueType:   "other",
+							},
+							"body": {
+								DisplayName: "body",
+								ValueType:   "other",
 							},
 						},
 					},

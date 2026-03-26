@@ -96,6 +96,20 @@ func (readResultComparator) SubsetAssociationsRaw(actual, expected *common.ReadR
 	return true
 }
 
+// Identifiers checks that actual rows have identifiers matching with expected.
+// Empty strings signify nothing should be compared.
+func (c readResultComparator) Identifiers(actual *common.ReadResult, expected *common.ReadResult) bool {
+	for key, datum := range expected.Data {
+		if datum.Id != "" {
+			if actual.Data[key].Id != datum.Id {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
 func invalidTest(message string) {
 	panic("invalid test, there is no point to check if empty set belongs to any set; " + message)
 }
