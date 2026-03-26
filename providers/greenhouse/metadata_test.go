@@ -1,17 +1,24 @@
 package greenhouse
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
+func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
+
+	responseCustomFieldDefs := testutils.DataFromFile(t, "read/custom-fields/definitions.json")
+	responseCustomFieldOpts := testutils.DataFromFile(t, "read/custom-fields/options.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -100,6 +107,58 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "id",
 								ValueType:    "int",
 								ProviderType: "integer",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			Name:  "Metadata includes custom fields from API",
+			Input: []string{"applications"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{
+					{
+						If:   mockcond.Path("/v3/custom_fields"),
+						Then: mockserver.Response(http.StatusOK, responseCustomFieldDefs),
+					},
+					{
+						If:   mockcond.Path("/v3/custom_field_options"),
+						Then: mockserver.Response(http.StatusOK, responseCustomFieldOpts),
+					},
+				},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"applications": {
+						DisplayName: "Applications",
+						Fields: map[string]common.FieldMetadata{
+							// Base schema field
+							"candidate_id": {
+								DisplayName:  "candidate_id",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+							// Custom field: number type
+							"interview_score": {
+								DisplayName:  "Interview Score",
+								ValueType:    "int",
+								ProviderType: "number",
+								IsCustom:     goutils.Pointer(true),
+							},
+							// Custom field: single_select with options
+							"referral_source": {
+								DisplayName:  "Referral Source",
+								ValueType:    "singleSelect",
+								ProviderType: "single_select",
+								IsCustom:     goutils.Pointer(true),
+								Values: common.FieldValues{
+									{Value: "Employee Referral", DisplayValue: "Employee Referral"},
+									{Value: "LinkedIn", DisplayValue: "LinkedIn"},
+									{Value: "Job Board", DisplayValue: "Job Board"},
+								},
 							},
 						},
 					},

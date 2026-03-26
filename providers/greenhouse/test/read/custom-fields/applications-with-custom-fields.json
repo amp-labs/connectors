@@ -1,0 +1,22 @@
+[
+  {
+    "id": 12345,
+    "candidate_id": 101,
+    "status": "in_process",
+    "stage_name": "Phone Screen",
+    "created_at": "2024-06-15T10:30:00Z",
+    "updated_at": "2024-09-01T14:00:00Z",
+    "custom_fields": {
+      "interview_score": {
+        "name": "Interview Score",
+        "type": "number",
+        "value": "85.0"
+      },
+      "referral_source": {
+        "name": "Referral Source",
+        "type": "single_select",
+        "value": "Employee Referral"
+      }
+    }
+  }
+]
