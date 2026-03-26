@@ -24,6 +24,7 @@ func TestRead(t *testing.T) {
 	responseMaterialCategoryLast := testutils.DataFromFile(t, "read-material-category-last.json")
 	responseInvoices := testutils.DataFromFile(t, "invoice.json")
 	responseEmployees := testutils.DataFromFile(t, "read-employees.json")
+	responseRoutes := testutils.DataFromFile(t, "read-routes.json")
 
 	tests := []testroutines.Read{
 		{
@@ -157,6 +158,31 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
+			Name: "Read customers with Until",
+			Input: common.ReadParams{
+				ObjectName: "customers",
+				Fields:     connectors.Fields("id", "updated_at"),
+				PageSize:   1,
+				Until:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/customers"),
+					mockcond.QueryParam("page_size", "1"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCustomersFirst),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     0,
+				Data:     []common.ReadResultRow{},
+				NextPage: testroutines.URLTestServer + "/customers?page=2&page_size=1&sort_by=updated_at&sort_direction=desc",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			Name: "Read employees",
 			Input: common.ReadParams{
 				ObjectName: "employees",
@@ -188,6 +214,42 @@ func TestRead(t *testing.T) {
 							"first_name": "Jamie",
 							"email":      "jamie.example@example.com",
 							"created_at": "2026-01-15T12:00:00Z",
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read routes uses per_page",
+			Input: common.ReadParams{
+				ObjectName: "routes",
+				Fields:     connectors.Fields("id", "name"),
+				PageSize:   10,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/routes"),
+					mockcond.QueryParam("per_page", "10"),
+					mockcond.QueryParamsMissing("page_size", "sort_by", "sort_direction"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseRoutes),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":   "route_123",
+							"name": "North Zone - Tuesday",
+						},
+						Raw: map[string]any{
+							"id":   "route_123",
+							"name": "North Zone - Tuesday",
 						},
 					},
 				},

@@ -34,8 +34,7 @@ var readIDFieldByObject = datautils.NewDefaultMap( //nolint:gochecknoglobals
 // Most list endpoints take page size as page_size; checklists and routes use per_page.
 var readListPageSize = datautils.NewDefaultMap( //nolint:gochecknoglobals
 	map[string]listPageSize{
-		"checklists": {param: "per_page", defaultStr: strconv.Itoa(readPerPageCap), max: readPerPageCap},
-		"routes":     {param: "per_page", defaultStr: strconv.Itoa(readPerPageCap), max: readPerPageCap},
+		"routes": {param: "per_page", defaultStr: strconv.Itoa(readPerPageCap), max: readPerPageCap},
 	},
 	func(string) listPageSize {
 		return listPageSize{param: "page_size", defaultStr: strconv.Itoa(readPageSizeCap), max: readPageSizeCap}
