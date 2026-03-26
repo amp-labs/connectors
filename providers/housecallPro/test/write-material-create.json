@@ -1,0 +1,15 @@
+{
+    "object": "material",
+    "uuid": "mat_8c92ab4f1e",
+    "material_category_uuid": "pbmatcat_7f3a21",
+    "name": "Premium Wall Paint",
+    "description": "High-quality interior wall paint with long-lasting finish",
+    "image": "https://example.com/images/materials/premium-wall-paint.jpg",
+    "cost": 90,
+    "unit_of_measure": "gallon",
+    "part_number": "PWP-001",
+    "price": 120,
+    "flat_rate_enabled": false,
+    "material_category_name": "Paint Supplies",
+    "taxable": true
+}
