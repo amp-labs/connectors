@@ -15,8 +15,9 @@ import (
 )
 
 const (
-	defaultPageSize   = "200"
 	readSortDirection = "desc"
+	readPerPageCap    = 100
+	readPageSizeCap   = 200
 )
 
 // Price book list payloads generally use "uuid"; other objects use "id".
@@ -29,6 +30,35 @@ var readIDFieldByObject = datautils.NewDefaultMap( //nolint:gochecknoglobals
 		return readhelper.NewIdField("id")
 	},
 )
+
+// Most list endpoints take page size as page_size; checklists and routes use per_page.
+var readListPageSize = datautils.NewDefaultMap( //nolint:gochecknoglobals
+	map[string]listPageSize{
+		"checklists": {param: "per_page", defaultStr: strconv.Itoa(readPerPageCap), max: readPerPageCap},
+		"routes":     {param: "per_page", defaultStr: strconv.Itoa(readPerPageCap), max: readPerPageCap},
+	},
+	func(string) listPageSize {
+		return listPageSize{param: "page_size", defaultStr: strconv.Itoa(readPageSizeCap), max: readPageSizeCap}
+	},
+)
+
+type listPageSize struct {
+	param      string // "page_size" or "per_page"
+	defaultStr string
+	max        int // maximum allowed PageSize for this object (inclusive)
+}
+
+func (s listPageSize) queryValue(params common.ReadParams) string {
+	if params.PageSize <= 0 {
+		return s.defaultStr
+	}
+
+	if params.PageSize > s.max {
+		return s.defaultStr
+	}
+
+	return strconv.Itoa(params.PageSize)
+}
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if params.NextPage != "" {
@@ -45,8 +75,8 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	pageSize := readhelper.PageSizeWithDefaultStr(params, defaultPageSize)
-	url.WithQueryParam("page_size", pageSize)
+	ps := readListPageSize.Get(params.ObjectName)
+	url.WithQueryParam(ps.param, ps.queryValue(params))
 
 	spec := objectReadSpecs.Get(params.ObjectName)
 	if spec.timeKey != "" {

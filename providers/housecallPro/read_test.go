@@ -2,6 +2,7 @@ package housecallpro
 
 import (
 	"net/http"
+	"strconv"
 	"testing"
 	"time"
 
@@ -30,12 +31,13 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "customers",
 				Fields:     connectors.Fields("id", "first_name", "email"),
+				PageSize:   202,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/customers"),
-					mockcond.QueryParam("page_size", defaultPageSize),
+					mockcond.QueryParam("page_size", strconv.Itoa(readPageSizeCap)),
 					mockcond.QueryParam("sort_by", "updated_at"),
 					mockcond.QueryParam("sort_direction", "desc"),
 				},
@@ -304,7 +306,7 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/invoices"),
-					mockcond.QueryParam("page_size", defaultPageSize),
+					mockcond.QueryParam("page_size", strconv.Itoa(readPageSizeCap)),
 					mockcond.QueryParamsMissing("sort_by", "sort_direction"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseInvoices),
