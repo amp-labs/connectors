@@ -25,7 +25,6 @@ func main() {
 
 	const pageSize = 3
 
-	// Object names match providers/housecallPro/metadata/schemas.json.
 	for _, tc := range []struct {
 		object string
 		fields []string

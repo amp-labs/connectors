@@ -88,10 +88,10 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		// Paginated list responses include page metadata at the root
 		//  {
-		//   "page": 0,
-		//   "page_size": 0,
-		//   "total_pages": 0,
-		//   "total_items": 0,
+		//   "page": 1,
+		//   "page_size": 1,
+		//   "total_pages": 1,
+		//   "total_items": 1,
 		//   .....
 		// }
 		rootQuery := jsonquery.New(node)
