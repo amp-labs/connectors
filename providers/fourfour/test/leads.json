@@ -1,0 +1,30 @@
+{
+  "value": [
+    {
+      "id": "string",
+      "first_name": "string",
+      "last_name": "string",
+      "title": "string",
+      "company": "string",
+      "email": "string",
+      "phone": "string",
+      "website": "string",
+      "lead_source": "string",
+      "status": "string",
+      "industry": "string",
+      "annual_revenue": 0.1,
+      "number_of_employees": -9223372036854776000,
+      "owner_id": "string",
+      "is_converted": true,
+      "converted_date": "2019-08-24T14:15:22Z",
+      "converted_account_id": "string",
+      "converted_contact_id": "string",
+      "converted_opportunity_id": "string",
+      "account_id": "string",
+      "region": "string",
+      "created": "2019-08-24T14:15:22Z",
+      "updated": "2019-08-24T14:15:22Z"
+    }
+  ],
+  "@count": 1
+}
