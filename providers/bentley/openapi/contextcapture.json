@@ -1,0 +1,2232 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Reality Modeling",
+        "description": "Interact with your jobs and workspaces for Reality Modeling\r\n\r\nCreate, update, delete jobs and workspaces.",
+        "version": "v1"
+    },
+    "servers": [
+        {
+            "url": "https://api.bentley.com/contextcapture"
+        }
+    ],
+    "paths": {
+        "/jobs/{id}/progress": {
+            "get": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Get job progress",
+                "description": "Retrieve job progress.\r\n\r\n### Parameters\r\n\r\nThe job id\r\n\r\n### Remarks\r\n\r\nThe job progression is deemed valid when the job is active and won't be available after 30 days.\r\n\r\nClient should query with a backoff intervals [15,30,60,120] seconds. The interval between the first and second query is 15 sec and then 30 sec... If the percentage changes the sequence is restarted.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.",
+                "operationId": "jobs-progress",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Job id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/jobProgress-response"
+                                },
+                                "example": {
+                                    "jobProgress": {
+                                        "percentage": 56,
+                                        "state": "Active",
+                                        "step": "Reconstruction"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "JobNotFound",
+                                        "message": "Requested job is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/jobs/{id}": {
+            "delete": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Delete a job",
+                "description": "Delete an unsubmitted job\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.",
+                "operationId": "jobs-delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Job id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Job was successfully deleted."
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "JobNotFound",
+                                        "message": "Requested job is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Job cannot be deleted once it has been submitted.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidContextCaptureRequest",
+                                        "message": "Cannot delete job.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidChange",
+                                                "message": "Cannot delete an already submitted job."
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Patch a job",
+                "description": "Patch a job to modify it (type, settings, cost estimation parameters), submit or cancel it.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.",
+                "operationId": "jobs-patch",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Job Id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/jobPatch"
+                            },
+                            "examples": {
+                                "State": {
+                                    "value": {
+                                        "state": "Active"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Job was successfully updated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/job-response"
+                                },
+                                "example": {
+                                    "job": {
+                                        "id": "cc3d35cc-416a-4262-9714-b359da70b419",
+                                        "name": "My first Reality Modeling job",
+                                        "type": "Full",
+                                        "state": "active",
+                                        "createdDateTime": "2020-09-14T14:29:55.0000000+00:00",
+                                        "lastModifiedDateTime": "2020-09-14T14:29:55.0000000+00:00",
+                                        "iTwinId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                                        "location": "East US",
+                                        "email": "john.smith@example.com",
+                                        "workspaceId": "6881117d-9fd2-4900-870b-9b721dc90f25",
+                                        "executionInformation": {
+                                            "submittedDateTime": "2020-09-14T14:35:06.0000000+00:00"
+                                        },
+                                        "inputs": [
+                                            {
+                                                "id": "58e0c0ca-f730-4e5b-808d-1c8cacacb4d4",
+                                                "description": "Drone ImageCollection"
+                                            },
+                                            {
+                                                "id": "dc65ce7d-2598-422f-97a5-5ae8eb004b67",
+                                                "description": "Drone CCOrientations"
+                                            }
+                                        ],
+                                        "jobSettings": {
+                                            "quality": "Extra",
+                                            "outputs": [
+                                                {
+                                                    "format": "OBJ",
+                                                    "id": "3ddee08c-01e8-44a5-8e56-3879109f6728"
+                                                },
+                                                {
+                                                    "format": "3MX",
+                                                    "id": "f18fc6c3-2224-4d63-a04b-52bd18805d01"
+                                                }
+                                            ],
+                                            "processingEngines": 5,
+                                            "cacheSettings": {
+                                                "createCache": true,
+                                                "useCache": "799b11bd-71cf-481a-b284-bf48f672cd9a"
+                                            }
+                                        },
+                                        "costEstimationParameters": {
+                                            "gigaPixels": 2.1,
+                                            "megaPoints": 1.5,
+                                            "meshQuality": "Extra"
+                                        },
+                                        "estimatedCost": 3.5
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "JobNotFound",
+                                        "message": "Requested job is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "The 422 (Unprocessable Entity) status code indicates that the request cannot be processed by the server due to a client error (e.g. malformed request syntax).",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidContextCaptureRequest",
+                                        "message": "Cannot modify job.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidChange",
+                                                "message": "Cannot resubmit an already submitted job."
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Get a job",
+                "description": "Retrieve job details.\r\n\r\n### Parameters\r\n\r\nThe job id\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.",
+                "operationId": "jobs-get",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Job id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/job-response"
+                                },
+                                "example": {
+                                    "job": {
+                                        "id": "cc3d35cc-416a-4262-9714-b359da70b419",
+                                        "name": "My first Reality Modeling job",
+                                        "type": "Full",
+                                        "state": "success",
+                                        "createdDateTime": "2020-09-14T14:29:55.0000000+00:00",
+                                        "lastModifiedDateTime": "2020-09-14T14:29:55.0000000+00:00",
+                                        "iTwinId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                                        "location": "East US",
+                                        "email": "john.smith@example.com",
+                                        "workspaceId": "6881117d-9fd2-4900-870b-9b721dc90f25",
+                                        "executionInformation": {
+                                            "submittedDateTime": "2020-09-14T14:34:20.0000000+00:00",
+                                            "startedDateTime": "2020-09-14T14:34:28.0000000+00:00",
+                                            "endedDateTime": "2020-09-14T14:41:49.0000000+00:00",
+                                            "estimatedUnits": 0.05
+                                        },
+                                        "inputs": [
+                                            {
+                                                "id": "58e0c0ca-f730-4e5b-808d-1c8cacacb4d4",
+                                                "description": "Drone ImageCollection"
+                                            },
+                                            {
+                                                "id": "dc65ce7d-2598-422f-97a5-5ae8eb004b67",
+                                                "description": "Drone CCOrientations"
+                                            }
+                                        ],
+                                        "jobSettings": {
+                                            "quality": "Extra",
+                                            "outputs": [
+                                                {
+                                                    "format": "OBJ",
+                                                    "id": "3ddee08c-01e8-44a5-8e56-3879109f6728"
+                                                },
+                                                {
+                                                    "format": "3MX",
+                                                    "id": "f18fc6c3-2224-4d63-a04b-52bd18805d01"
+                                                }
+                                            ],
+                                            "processingEngines": 5,
+                                            "cacheSettings": {
+                                                "createCache": true,
+                                                "useCache": "799b11bd-71cf-481a-b284-bf48f672cd9a"
+                                            }
+                                        },
+                                        "costEstimationParameters": {
+                                            "gigaPixels": 2.1,
+                                            "megaPoints": 1.5,
+                                            "meshQuality": "Extra"
+                                        },
+                                        "estimatedCost": 3.5
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "JobNotFound",
+                                        "message": "Requested job is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/jobs": {
+            "post": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Create a job",
+                "description": "Create a new job\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.",
+                "operationId": "jobs-create",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/jobCreation"
+                            },
+                            "example": {
+                                "type": "Full",
+                                "name": "My first Reality Modeling job",
+                                "costEstimationParameters": {
+                                    "gigaPixels": 2.5,
+                                    "megaPoints": 1.5,
+                                    "meshQuality": "Extra"
+                                },
+                                "inputs": [
+                                    {
+                                        "id": "58e0c0ca-f730-4e5b-808d-1c8cacacb4d4",
+                                        "description": "Drone ImageCollection"
+                                    },
+                                    {
+                                        "id": "dc65ce7d-2598-422f-97a5-5ae8eb004b67",
+                                        "description": "Drone CCOrientations"
+                                    }
+                                ],
+                                "workspaceId": "6881117d-9fd2-4900-870b-9b721dc90f25",
+                                "settings": {
+                                    "quality": "Extra",
+                                    "processingEngines": 5,
+                                    "outputs": [
+                                        "OBJ",
+                                        "3MX"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/job-response"
+                                },
+                                "example": {
+                                    "job": {
+                                        "id": "cc3d35cc-416a-4262-9714-b359da70b419",
+                                        "name": "My first Reality Modeling job",
+                                        "type": "Full",
+                                        "state": "unsubmitted",
+                                        "createdDateTime": "2020-09-14T14:29:55.0000000+00:00",
+                                        "lastModifiedDateTime": "2020-09-14T14:29:55.0000000+00:00",
+                                        "iTwinId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                                        "location": "East US",
+                                        "email": "john.smith@example.com",
+                                        "workspaceId": "6881117d-9fd2-4900-870b-9b721dc90f25",
+                                        "inputs": [
+                                            {
+                                                "id": "58e0c0ca-f730-4e5b-808d-1c8cacacb4d4",
+                                                "description": "Drone ImageCollection"
+                                            },
+                                            {
+                                                "id": "dc65ce7d-2598-422f-97a5-5ae8eb004b67",
+                                                "description": "Drone CCOrientations"
+                                            }
+                                        ],
+                                        "jobSettings": {
+                                            "quality": "Extra",
+                                            "outputs": [
+                                                {
+                                                    "format": "OBJ",
+                                                    "id": "3ddee08c-01e8-44a5-8e56-3879109f6728"
+                                                },
+                                                {
+                                                    "format": "3MX",
+                                                    "id": "f18fc6c3-2224-4d63-a04b-52bd18805d01"
+                                                }
+                                            ],
+                                            "processingEngines": 5,
+                                            "cacheSettings": {
+                                                "createCache": true,
+                                                "useCache": "799b11bd-71cf-481a-b284-bf48f672cd9a"
+                                            }
+                                        },
+                                        "costEstimationParameters": {
+                                            "gigaPixels": 2.1,
+                                            "megaPoints": 1.5,
+                                            "meshQuality": "Extra"
+                                        },
+                                        "estimatedCost": 3.5
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "The 422 (Unprocessable Entity) status code indicates that the request cannot be processed by the server due to a client error (e.g. malformed request syntax).",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "examples": {
+                                    "InvalidContextCaptureRequest": {
+                                        "value": {
+                                            "error": {
+                                                "code": "InvalidContextCaptureRequest",
+                                                "message": "Cannot create job.",
+                                                "details": [
+                                                    {
+                                                        "code": "InvalidParameter",
+                                                        "message": "Invalid 'type' parameter."
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Get jobs",
+                "description": "---\r\n\r\nRetrieve list of jobs matching provided filter.\r\n\r\nThe `iTwinId` in filter is optional. If it is not provided, this will return jobs created by the same user. However, if the iTwinId is provided and the user has access to it, this will return jobs associated with that specific iTwin.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.\r\n\r\n---\r\n",
+                "operationId": "jobs-get-all",
+                "parameters": [
+                    {
+                        "name": "$filter",
+                        "in": "query",
+                        "description": "The $filter query option requests a specific set of jobs.\nThe given filter is evaluated for each job and only job where the filter evaluates to true are returned.\nProperties supported for filtering: `id`, `iTwinId`, `name`, `email`, `type`, `state`, `createdDateTime`, `inputId`, `outputId`.\nSupported operators: `eq`, `lt`, `le`, `gt`, `ge`, `ne`, `in`, `and`, `or`.\n Examples of $filter values:\n`$filter=iTwinId eq dc720f05-e5f7-448b-ae06-765de46f0af1`\n`$filter=inputId in ('482b2968-6a85-4e50-b05c-8acbf828c1bd', '14c03448-bea0-4d76-b53b-4b20bd3f4cbc')`\n`$filter=id eq 9e2d27cf-b695-47e9-b7f0-0d47dc3b88ad`\n`$filter=createdDateTime gt 2024-06-24T13:00:00Z`\n",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "continuationToken",
+                        "in": "query",
+                        "description": "Parameter that enables continuing to the next page of the previous paged query. This must be passed exactly as it is in the response body's _links.next property.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "$top",
+                        "in": "query",
+                        "description": "The number of reality modeling jobs to get in each page. Max 1000, but 100 is the default if this parameter is not included.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/jobs-response"
+                                },
+                                "example": {
+                                    "jobs": [
+                                        {
+                                            "id": "cc3d35cc-416a-4262-9714-b359da70b419",
+                                            "name": "My first Reality Modeling job",
+                                            "type": "Full",
+                                            "state": "success",
+                                            "createdDateTime": "2020-09-14T14:29:55.0000000+00:00",
+                                            "lastModifiedDateTime": "2020-09-14T14:29:55.0000000+00:00",
+                                            "iTwinId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                                            "location": "East US",
+                                            "email": "john.smith@example.com",
+                                            "workspaceId": "6881117d-9fd2-4900-870b-9b721dc90f25",
+                                            "executionInformation": {
+                                                "submittedDateTime": "2020-09-14T14:34:20.0000000+00:00",
+                                                "startedDateTime": "2020-09-14T14:34:28.0000000+00:00",
+                                                "endedDateTime": "2020-09-14T14:41:49.0000000+00:00",
+                                                "estimatedUnits": 0.05
+                                            },
+                                            "inputs": [
+                                                {
+                                                    "id": "58e0c0ca-f730-4e5b-808d-1c8cacacb4d4",
+                                                    "description": "Drone ImageCollection"
+                                                },
+                                                {
+                                                    "id": "dc65ce7d-2598-422f-97a5-5ae8eb004b67",
+                                                    "description": "Drone CCOrientations"
+                                                }
+                                            ],
+                                            "jobSettings": {
+                                                "quality": "Extra",
+                                                "outputs": [
+                                                    {
+                                                        "format": "OBJ",
+                                                        "id": "3ddee08c-01e8-44a5-8e56-3879109f6728"
+                                                    },
+                                                    {
+                                                        "format": "3MX",
+                                                        "id": "f18fc6c3-2224-4d63-a04b-52bd18805d01"
+                                                    }
+                                                ],
+                                                "processingEngines": 5,
+                                                "cacheSettings": {
+                                                    "createCache": true,
+                                                    "useCache": "799b11bd-71cf-481a-b284-bf48f672cd9a"
+                                                }
+                                            },
+                                            "costEstimationParameters": {
+                                                "gigaPixels": 2.1,
+                                                "megaPoints": 1.5,
+                                                "meshQuality": "Extra"
+                                            },
+                                            "estimatedCost": 3.5
+                                        }
+                                    ],
+                                    "_links": {
+                                        "next": {
+                                            "href": "https://api.bentley.com/contextcapture/jobs?$filter=iTwinId eq 510cd1a3-3703-4729-b08c-fecd9c87c3be&continuationToken=MzY3ZmY1ZDEtNDEzOS00ZGU1LTg0MjMtN2I5NmVkZDAyN2M0"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "iTwinNotFound",
+                                        "message": "Requested iTwin is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "The 422 (Unprocessable Entity) status code indicates that the request cannot be processed by the server due to a client error (e.g. malformed request syntax).",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidRealityModelingRequest",
+                                        "message": "Cannot find jobs.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidParameter",
+                                                "message": "The $top query parameter value must be a positive integer that does not exceed 1000.",
+                                                "target": "$Top"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/workspaces/{id}": {
+            "get": {
+                "tags": [
+                    "Workspaces"
+                ],
+                "summary": "Get a workspace",
+                "description": "Retrieve workspace information.\r\n\r\n### Parameters\r\n\r\nA workspace id.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.",
+                "operationId": "workspaces-get",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Workspace id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/workspace-response"
+                                },
+                                "example": {
+                                    "workspace": {
+                                        "id": "e47cf092-729a-4ce2-b20e-9b01ad820cdb",
+                                        "createdDateTime": "2021-05-18T09:39:23.4360000+00:00",
+                                        "name": "My workspace",
+                                        "iTwinId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                                        "contextCaptureVersion": "20.1"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "WorkspaceNotFound",
+                                        "message": "Requested workspace is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Workspaces"
+                ],
+                "summary": "Delete a workspace",
+                "description": "Delete a workspace.\r\n\r\n### Parameters\r\n\r\nA workspace id.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.",
+                "operationId": "workspaces-delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Workspace id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "WorkspaceNotFound",
+                                        "message": "Requested workspace is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/limits/engines": {
+            "get": {
+                "summary": "Get engines limit",
+                "description": "Retrieve the engines limit.\r\n\r\n### Parameters\r\n\r\nAn optional projectId.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.",
+                "operationId": "limits-engines",
+                "parameters": [
+                    {
+                        "name": "iTwinId",
+                        "in": "query",
+                        "description": "An optional iTwinId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/enginesLimit-response"
+                                },
+                                "example": {
+                                    "enginesLimit": {
+                                        "maxEngines": 25
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "iTwinNotFound",
+                                        "message": "Requested iTwin is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/workspaces": {
+            "post": {
+                "tags": [
+                    "Workspaces"
+                ],
+                "summary": "Create a workspace",
+                "description": "Create a new workspace\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.",
+                "operationId": "workspaces-create",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/workspaceCreation"
+                            },
+                            "example": {
+                                "name": "Workspace test",
+                                "iTwinId": "60805594-3e04-43b5-8fd8-5ccae0de23cc"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/workspace-response"
+                                },
+                                "example": {
+                                    "workspace": {
+                                        "id": "e47cf092-729a-4ce2-b20e-9b01ad820cdb",
+                                        "createdDateTime": "2021-05-18T09:39:23.4360000+00:00",
+                                        "name": "My workspace",
+                                        "iTwinId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                                        "contextCaptureVersion": "20.1"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidContextCaptureRequest",
+                                        "message": "Cannot create workspace.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidParameter",
+                                                "message": "No processing cluster in project location."
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "format": {
+                "title": "Output format",
+                "enum": [
+                    "CCOrientations",
+                    "3MX",
+                    "3SM",
+                    "WebReady ScalableMesh",
+                    "Cesium 3D Tiles",
+                    "POD",
+                    "Orthophoto/DSM",
+                    "LAS",
+                    "FBX",
+                    "OBJ",
+                    "ESRI i3s",
+                    "DGN",
+                    "LODTreeExport",
+                    "PLY",
+                    "OPC",
+                    "OMR",
+                    "ContextScene",
+                    "GaussianSplats"
+                ],
+                "description": "Supported output formats"
+            },
+            "quality": {
+                "title": "Job quality",
+                "enum": [
+                    "Draft",
+                    "Medium",
+                    "Extra"
+                ],
+                "description": "Job quality among 'Draft', 'Medium' and 'Extra'"
+            },
+            "costEstimationParameters": {
+                "title": "Cost Estimation Parameters",
+                "type": "object",
+                "properties": {
+                    "gigaPixels": {
+                        "type": "number",
+                        "description": "Gigapixels to be processed"
+                    },
+                    "megaPoints": {
+                        "type": "number",
+                        "description": "Megapoints to be processed"
+                    },
+                    "meshQuality": {
+                        "$ref": "#/components/schemas/quality"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Parameters to be used to estimate the cost of the job"
+            },
+            "enginesLimit": {
+                "title": "Engines limit",
+                "type": "object",
+                "properties": {
+                    "maxEngines": {
+                        "type": "integer",
+                        "description": "Maximum usable engines"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Limit for engines usage"
+            },
+            "enginesLimit-response": {
+                "title": "Engines limit response",
+                "type": "object",
+                "properties": {
+                    "enginesLimit": {
+                        "$ref": "#/components/schemas/enginesLimit"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "workspaceCreation": {
+                "title": "Workspace creation",
+                "required": [
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the workspace"
+                    },
+                    "iTwinId": {
+                        "type": "string",
+                        "description": "iTwin Id"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Model for creating a new workspace"
+            },
+            "workspace": {
+                "title": "Workspace",
+                "required": [
+                    "id",
+                    "createdDateTime",
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Unique id of the workspace"
+                    },
+                    "createdDateTime": {
+                        "type": "string",
+                        "description": "Creation time of the workspace",
+                        "format": "date-time"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the workspace"
+                    },
+                    "iTwinId": {
+                        "type": "string",
+                        "description": "iTwin Id"
+                    },
+                    "contextCaptureVersion": {
+                        "type": "string",
+                        "description": "Version of the worker to be used for this workspace"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Workspace information and details"
+            },
+            "workspace-response": {
+                "title": "Workspace response",
+                "required": [
+                    "workspace"
+                ],
+                "type": "object",
+                "properties": {
+                    "workspace": {
+                        "$ref": "#/components/schemas/workspace"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "jobInput": {
+                "title": "Job Input",
+                "required": [
+                    "id"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Context Share reality data id of the input"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Description of the input"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Description of an input for a job"
+            },
+            "cacheSettings": {
+                "title": "Cache settings",
+                "type": "object",
+                "properties": {
+                    "createCache": {
+                        "type": "boolean",
+                        "description": "Indicate if the job will produce a cache"
+                    },
+                    "useCache": {
+                        "type": "string",
+                        "description": "Id of the previous job cache to be reused"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Describe how a job will use and create cache"
+            },
+            "jobPatchSettings": {
+                "title": "Job Patch Settings",
+                "type": "object",
+                "properties": {
+                    "quality": {
+                        "$ref": "#/components/schemas/quality"
+                    },
+                    "processingEngines": {
+                        "type": "integer",
+                        "description": "Maximum usable engines for the job"
+                    },
+                    "outputs": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/format"
+                        },
+                        "description": "List of outputs of the job"
+                    },
+                    "cacheSettings": {
+                        "$ref": "#/components/schemas/cacheSettings"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Settings for job patch"
+            },
+            "jobCreateSettings": {
+                "title": "Job Create Settings",
+                "required": [
+                    "quality",
+                    "outputs"
+                ],
+                "type": "object",
+                "properties": {
+                    "quality": {
+                        "$ref": "#/components/schemas/quality"
+                    },
+                    "processingEngines": {
+                        "type": "integer",
+                        "description": "Number of engines to be used at most, between 0 and your engine limit. If set at 0, it will use your engine limit."
+                    },
+                    "outputs": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/format"
+                        },
+                        "description": "List of output formats to be produced"
+                    },
+                    "cacheSettings": {
+                        "$ref": "#/components/schemas/cacheSettings"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Settings for job creation"
+            },
+            "jobCreation": {
+                "title": "Job Creation",
+                "required": [
+                    "type",
+                    "name",
+                    "workspaceId",
+                    "inputs",
+                    "settings"
+                ],
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "enum": [
+                            "Full",
+                            "Calibration",
+                            "Reconstruction"
+                        ],
+                        "description": "Job type among 'Full', 'Calibration' and 'Reconstruction'"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Job name"
+                    },
+                    "costEstimationParameters": {
+                        "$ref": "#/components/schemas/costEstimationParameters"
+                    },
+                    "workspaceId": {
+                        "type": "string",
+                        "description": "Workspace id relative to the job created"
+                    },
+                    "inputs": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/jobInput"
+                        },
+                        "description": "List of inputs for the job"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/jobCreateSettings"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Model for creating a new job"
+            },
+            "ErrorWarningMessages": {
+                "title": "Error and Warning messages",
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "description": "Error or warning message code"
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "Error or warning message title"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "Error or warning message"
+                    },
+                    "params": {
+                        "type": "array",
+                        "description": "Error or warning message parameters"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Model for error and warning messages"
+            },
+            "execInfo": {
+                "title": "Execution Info",
+                "required": [
+                    "submittedDateTime"
+                ],
+                "type": "object",
+                "properties": {
+                    "submittedDateTime": {
+                        "type": "string",
+                        "description": "Submission time of the job",
+                        "format": "date-time"
+                    },
+                    "startedDateTime": {
+                        "type": "string",
+                        "description": "Start time of the job",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "endedDateTime": {
+                        "type": "string",
+                        "description": "End time of the job",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "estimatedUnits": {
+                        "type": "number",
+                        "description": "Estimated processing units cost",
+                        "nullable": true
+                    },
+                    "errors": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ErrorWarningMessages"
+                        },
+                        "description": "Errors, if any produced when processing the job",
+                        "nullable": true
+                    },
+                    "warnings": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ErrorWarningMessages"
+                        },
+                        "description": "Warnings, if any produced when processing the job",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Execution information relative to a job"
+            },
+            "jobOutput": {
+                "title": "Job Output",
+                "required": [
+                    "format"
+                ],
+                "type": "object",
+                "properties": {
+                    "format": {
+                        "$ref": "#/components/schemas/format"
+                    },
+                    "id": {
+                        "type": "string",
+                        "description": "Reality Data Id of the output",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Job output information"
+            },
+            "jobSettings": {
+                "title": "Job Settings",
+                "type": "object",
+                "properties": {
+                    "quality": {
+                        "$ref": "#/components/schemas/quality"
+                    },
+                    "processingEngines": {
+                        "type": "integer",
+                        "description": "Maximum usable engines for the job"
+                    },
+                    "outputs": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/jobOutput"
+                        },
+                        "description": "List of outputs of the job"
+                    },
+                    "cacheSettings": {
+                        "$ref": "#/components/schemas/cacheSettings"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "High-level job settings"
+            },
+            "job": {
+                "title": "Job",
+                "required": [
+                    "id",
+                    "name",
+                    "type",
+                    "state",
+                    "createdDateTime",
+                    "lastModifiedDateTime",
+                    "location",
+                    "workspaceId",
+                    "email",
+                    "inputs",
+                    "jobSettings"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Job unique id"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Job name"
+                    },
+                    "type": {
+                        "enum": [
+                            "Full",
+                            "Calibration",
+                            "Reconstruction"
+                        ],
+                        "description": "Job type among 'Full', 'Calibration' and 'Reconstruction'"
+                    },
+                    "state": {
+                        "enum": [
+                            "unsubmitted",
+                            "active",
+                            "success",
+                            "failed",
+                            "cancelled"
+                        ],
+                        "description": "Job current state"
+                    },
+                    "createdDateTime": {
+                        "type": "string",
+                        "description": "Creation time of the job",
+                        "format": "date-time"
+                    },
+                    "lastModifiedDateTime": {
+                        "type": "string",
+                        "description": "Last modification date of the job",
+                        "format": "date-time"
+                    },
+                    "location": {
+                        "enum": [
+                            "East US",
+                            "North Europe",
+                            "Southeast Asia",
+                            "Australia East",
+                            "UK South",
+                            "Japan East",
+                            "UAE North",
+                            "Canada Central",
+                            "West Europe"
+                        ],
+                        "description": "Datacenter location of the job"
+                    },
+                    "iTwinId": {
+                        "type": "string",
+                        "description": "Project Id"
+                    },
+                    "workspaceId": {
+                        "type": "string",
+                        "description": "Workspace id relative to the job"
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "User email address"
+                    },
+                    "executionInformation": {
+                        "$ref": "#/components/schemas/execInfo"
+                    },
+                    "inputs": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/jobInput"
+                        },
+                        "description": "List of inputs for the job"
+                    },
+                    "jobSettings": {
+                        "$ref": "#/components/schemas/jobSettings"
+                    },
+                    "costEstimationParameters": {
+                        "$ref": "#/components/schemas/costEstimationParameters"
+                    },
+                    "estimatedCost": {
+                        "type": "number",
+                        "description": "Estimated Cost of the job using the CostEstimationParameters"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Job information"
+            },
+            "job-response": {
+                "title": "Job response",
+                "required": [
+                    "job"
+                ],
+                "type": "object",
+                "properties": {
+                    "job": {
+                        "$ref": "#/components/schemas/job"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "jobProgress": {
+                "title": "Job progress",
+                "type": "object",
+                "properties": {
+                    "percentage": {
+                        "type": "number",
+                        "description": "Job progress percentage"
+                    },
+                    "state": {
+                        "enum": [
+                            "Unsubmitted",
+                            "Active",
+                            "Over"
+                        ],
+                        "description": "Job current state"
+                    },
+                    "step": {
+                        "type": "string",
+                        "description": "Step of the job"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Job progress, state and current step"
+            },
+            "jobProgress-response": {
+                "title": "jobProgress response",
+                "required": [
+                    "jobProgress"
+                ],
+                "type": "object",
+                "properties": {
+                    "jobProgress": {
+                        "$ref": "#/components/schemas/jobProgress"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "jobPatch": {
+                "title": "Job Patch",
+                "type": "object",
+                "properties": {
+                    "state": {
+                        "enum": [
+                            "Active",
+                            "Cancelled"
+                        ],
+                        "description": "Job state to be patched to"
+                    },
+                    "costEstimationParameters": {
+                        "$ref": "#/components/schemas/costEstimationParameters"
+                    },
+                    "type": {
+                        "enum": [
+                            "Full",
+                            "Calibration",
+                            "Reconstruction"
+                        ],
+                        "description": "Job type among 'Full', 'Calibration' and 'Reconstruction'"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/jobPatchSettings"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Patch object to patch, submit, cancel a job"
+            },
+            "jobs-response": {
+                "title": " Reality Modeling Jobs",
+                "type": "object",
+                "properties": {
+                    "jobs": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/job"
+                        },
+                        "description": "Array of jobs"
+                    },
+                    "_links": {
+                        "$ref": "#/components/schemas/next-page-link"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Jobs"
+            },
+            "next-page-link": {
+                "title": "Next Page Link",
+                "type": "object",
+                "properties": {
+                    "next": {
+                        "$ref": "#/components/schemas/link"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "URL for getting the next page of data, if applicable."
+            },
+            "link": {
+                "type": "object",
+                "properties": {
+                    "href": {
+                        "type": "string",
+                        "description": "Hyperlink container."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "DetailedError": {
+                "required": [
+                    "code",
+                    "message",
+                    "details"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "description": "One of a server-defined set of error codes."
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "A human-readable representation of the error."
+                    },
+                    "target": {
+                        "type": "string",
+                        "description": "The target of the error.",
+                        "nullable": true
+                    },
+                    "details": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Error"
+                        },
+                        "description": "Optional array of more specific errors."
+                    }
+                },
+                "description": "Contains error information and an array of more specific errors."
+            },
+            "DetailedErrorResponse": {
+                "title": "Detailed Error Response",
+                "required": [
+                    "error"
+                ],
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "$ref": "#/components/schemas/DetailedError"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Gives details for an error that occurred while handling the request. Note that clients MUST NOT assume that every failed request will produce an object of this schema, or that all of the properties in the response will be non-null, as the error may have prevented this response from being constructed."
+            },
+            "Error": {
+                "required": [
+                    "code",
+                    "message"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "description": "One of a server-defined set of error codes."
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "A human-readable representation of the error."
+                    },
+                    "target": {
+                        "type": "string",
+                        "description": "The target of the error.",
+                        "nullable": true
+                    }
+                },
+                "description": "Contains error information."
+            },
+            "ErrorResponse": {
+                "title": "Error Response",
+                "required": [
+                    "error"
+                ],
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "$ref": "#/components/schemas/Error"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Gives details for an error that occurred while handling the request. Note that clients MUST NOT assume that every failed request will produce an object of this schema, or that all of the properties in the response will be non-null, as the error may have prevented this response from being constructed."
+            },
+            "AcceptHeader": {
+                "type": "string",
+                "default": "application/vnd.bentley.itwin-platform.v1+json"
+            },
+            "AuthorizationHeader": {
+                "pattern": "^Bearer .*$",
+                "type": "string"
+            },
+            "PreferHeader": {
+                "enum": [
+                    "return=representation",
+                    "return=minimal"
+                ],
+                "type": "string"
+            }
+        },
+        "securitySchemes": {
+            "apiKeyHeader": {
+                "type": "apiKey",
+                "name": "X-Api-Subscription-Key",
+                "in": "header"
+            },
+            "apiKeyQuery": {
+                "type": "apiKey",
+                "name": "subscription-key",
+                "in": "query"
+            }
+        }
+    },
+    "security": [
+        {
+            "apiKeyHeader": []
+        },
+        {
+            "apiKeyQuery": []
+        }
+    ]
+}
