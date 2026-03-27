@@ -570,6 +570,10 @@ func constructTestConnectorAccountEngagement(serverURL string) (*Connector, erro
 	return constructTestConnectorGeneral(serverURL, providers.ModuleSalesforceAccountEngagement)
 }
 
+func constructTestConnectorAccountEngagementDemo(serverURL string) (*Connector, error) {
+	return constructTestConnectorGeneral(serverURL, providers.ModuleSalesforceAccountEngagementDemo)
+}
+
 func constructTestConnectorGeneral(serverURL string, module common.ModuleID) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),
@@ -585,6 +589,8 @@ func constructTestConnectorGeneral(serverURL string, module common.ModuleID) (*C
 	}
 
 	// for testing we want to redirect calls to our mock server
+	// Some methods still live directly on the connector struct
+	// and not under nested adapter so this should be preserved.
 	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, serverURL))
 
 	if connector.crmAdapter != nil {
