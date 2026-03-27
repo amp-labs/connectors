@@ -1,0 +1,28 @@
+{
+    "object": "list",
+    "page": 2,
+    "page_size": 2,
+    "total_pages_count": 2,
+    "total_count": 4,
+    "data": [
+        {
+            "object": "material_category",
+            "uuid": "pbmcat_2ea100604c474941bdc767de1e6aa9ec",
+            "parent_uuid": null,
+            "name": "New Category2",
+            "image": "https://static-assets.housecallpro.com/images/default_pricebook_material_image_high_res.png",
+            "created_at": "2026-03-22T20:24:16Z",
+            "updated_at": "2026-03-22T20:24:16Z"
+        },
+        {
+            "object": "material_category",
+            "uuid": "pbmcat_56ac8b15d9f5493bad94f72d6965ad98",
+            "parent_uuid": null,
+            "name": "New Category",
+            "image": "https://static-assets.housecallpro.com/images/default_pricebook_material_image_high_res.png",
+            "created_at": "2026-03-22T20:24:11Z",
+            "updated_at": "2026-03-22T20:24:11Z"
+        }
+    ],
+    "url": "/pricebook/material_categories"
+}

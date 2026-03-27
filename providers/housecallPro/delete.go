@@ -1,0 +1,47 @@
+package housecallpro
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/httpkit"
+	"github.com/amp-labs/connectors/providers/housecallPro/metadata"
+)
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	path, err := metadata.Schemas.FindURLPath(c.Module(), params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
+	if err != nil {
+		return nil, err
+	}
+	url.AddPath(params.RecordId)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create delete request: %w", err)
+	}
+
+	return req, nil
+}
+
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context,
+	params common.DeleteParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	if !httpkit.Status2xx(resp.Code) {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, resp.Code)
+	}
+
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
+}
