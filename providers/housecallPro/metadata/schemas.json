@@ -724,6 +724,11 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "conversions": {
+              "displayName": "conversions",
+              "valueType": "other",
+              "providerType": "array"
+            },
             "customer": {
               "displayName": "customer",
               "valueType": "other",
@@ -733,6 +738,11 @@
               "displayName": "id",
               "valueType": "string",
               "providerType": "string"
+            },
+            "job_fields": {
+              "displayName": "job_fields",
+              "valueType": "other",
+              "providerType": "object"
             },
             "lead_source": {
               "displayName": "lead_source",
@@ -777,6 +787,11 @@
               "displayName": "tags",
               "valueType": "other",
               "providerType": "array"
+            },
+            "total_amount": {
+              "displayName": "total_amount",
+              "valueType": "other",
+              "providerType": "number"
             }
           }
         },
@@ -785,6 +800,11 @@
           "path": "/api/price_book/material_categories",
           "responseKey": "data",
           "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "image": {
               "displayName": "image",
               "valueType": "string",
@@ -802,6 +822,11 @@
             },
             "parent_uuid": {
               "displayName": "parent_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
               "valueType": "string",
               "providerType": "string"
             },
@@ -889,6 +914,21 @@
           "path": "/api/price_book/price_forms",
           "responseKey": "data",
           "fields": {
+            "assigned_pros": {
+              "displayName": "assigned_pros",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "assigned_route_templates": {
+              "displayName": "assigned_route_templates",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "assigned_tags": {
+              "displayName": "assigned_tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
             "automatically_add_to_new_job": {
               "displayName": "automatically_add_to_new_job",
               "valueType": "boolean",
@@ -914,6 +954,11 @@
               "valueType": "boolean",
               "providerType": "boolean"
             },
+            "enable_advanced_calculation": {
+              "displayName": "enable_advanced_calculation",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
             "fields": {
               "displayName": "fields",
               "valueType": "other",
@@ -929,8 +974,18 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "kind": {
+              "displayName": "kind",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "name": {
               "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "object": {
+              "displayName": "object",
               "valueType": "string",
               "providerType": "string"
             },
@@ -954,6 +1009,11 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "route_mode_enabled": {
+              "displayName": "route_mode_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
             "service_area_pricing_enabled": {
               "displayName": "service_area_pricing_enabled",
               "valueType": "boolean",
@@ -974,7 +1034,7 @@
         "price_book/services": {
           "displayName": "Price Book Services",
           "path": "/api/price_book/services",
-          "responseKey": "services",
+          "responseKey": "data",
           "fields": {
             "assigned_pros": {
               "displayName": "assigned_pros",
