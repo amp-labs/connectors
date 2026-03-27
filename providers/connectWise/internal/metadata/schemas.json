@@ -1,0 +1,2042 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "addressFormats": {
+          "displayName": "Address Formats",
+          "path": "/company/addressFormats",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "addAllCountries": {
+              "displayName": "addAllCountries",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "countryIds": {
+              "displayName": "countryIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "defaultFlag": {
+              "displayName": "defaultFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "format": {
+              "displayName": "format",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "removeAllCountries": {
+              "displayName": "removeAllCountries",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "companies": {
+          "displayName": "Companies",
+          "path": "/company/companies",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "accountNumber": {
+              "displayName": "accountNumber",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "addressLine1": {
+              "displayName": "addressLine1",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "addressLine2": {
+              "displayName": "addressLine2",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "annualRevenue": {
+              "displayName": "annualRevenue",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "billToCompany": {
+              "displayName": "billToCompany",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "billingContact": {
+              "displayName": "billingContact",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "billingSite": {
+              "displayName": "billingSite",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "billingTerms": {
+              "displayName": "billingTerms",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "calendarId": {
+              "displayName": "calendarId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "city": {
+              "displayName": "city",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "companyEntityType": {
+              "displayName": "companyEntityType",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "country": {
+              "displayName": "country",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "currency": {
+              "displayName": "currency",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "customFields": {
+              "displayName": "customFields",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "dateAcquired": {
+              "displayName": "dateAcquired",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dateDeleted": {
+              "displayName": "dateDeleted",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "defaultContact": {
+              "displayName": "defaultContact",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "deletedBy": {
+              "displayName": "deletedBy",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedFlag": {
+              "displayName": "deletedFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "facebookUrl": {
+              "displayName": "facebookUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "faxNumber": {
+              "displayName": "faxNumber",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "identifier": {
+              "displayName": "identifier",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "invoiceCCEmailAddress": {
+              "displayName": "invoiceCCEmailAddress",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "invoiceDeliveryMethod": {
+              "displayName": "invoiceDeliveryMethod",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "invoiceTemplate": {
+              "displayName": "invoiceTemplate",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "invoiceToEmailAddress": {
+              "displayName": "invoiceToEmailAddress",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "leadFlag": {
+              "displayName": "leadFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "leadSource": {
+              "displayName": "leadSource",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "linkedInUrl": {
+              "displayName": "linkedInUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "marketId": {
+              "displayName": "marketId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "mobileGuid": {
+              "displayName": "mobileGuid",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "numberOfEmployees": {
+              "displayName": "numberOfEmployees",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ownershipType": {
+              "displayName": "ownershipType",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "parentCompany": {
+              "displayName": "parentCompany",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "phoneNumber": {
+              "displayName": "phoneNumber",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pricingSchedule": {
+              "displayName": "pricingSchedule",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sicCode": {
+              "displayName": "sicCode",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "taxCode": {
+              "displayName": "taxCode",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "taxIdentifier": {
+              "displayName": "taxIdentifier",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "territoryId": {
+              "displayName": "territoryId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "territoryManager": {
+              "displayName": "territoryManager",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "timeZone": {
+              "displayName": "timeZone",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "twitterUrl": {
+              "displayName": "twitterUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "unsubscribeFlag": {
+              "displayName": "unsubscribeFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "userDefinedField1": {
+              "displayName": "userDefinedField1",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userDefinedField10": {
+              "displayName": "userDefinedField10",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userDefinedField2": {
+              "displayName": "userDefinedField2",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userDefinedField3": {
+              "displayName": "userDefinedField3",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userDefinedField4": {
+              "displayName": "userDefinedField4",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userDefinedField5": {
+              "displayName": "userDefinedField5",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userDefinedField6": {
+              "displayName": "userDefinedField6",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userDefinedField7": {
+              "displayName": "userDefinedField7",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userDefinedField8": {
+              "displayName": "userDefinedField8",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userDefinedField9": {
+              "displayName": "userDefinedField9",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vendorIdentifier": {
+              "displayName": "vendorIdentifier",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "website": {
+              "displayName": "website",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "zip": {
+              "displayName": "zip",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "company/companies/statuses": {
+          "displayName": "Company Companies Statuses",
+          "path": "/company/companies/statuses",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "cancelOpenTracksFlag": {
+              "displayName": "cancelOpenTracksFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "customNoteFlag": {
+              "displayName": "customNoteFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "defaultFlag": {
+              "displayName": "defaultFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "disallowSavingFlag": {
+              "displayName": "disallowSavingFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "inactiveFlag": {
+              "displayName": "inactiveFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notificationMessage": {
+              "displayName": "notificationMessage",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notifyFlag": {
+              "displayName": "notifyFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "track": {
+              "displayName": "track",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "company/companies/types": {
+          "displayName": "Company Companies Types",
+          "path": "/company/companies/types",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "defaultFlag": {
+              "displayName": "defaultFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vendorFlag": {
+              "displayName": "vendorFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "company/configurations/statuses": {
+          "displayName": "Company Configurations Statuses",
+          "path": "/company/configurations/statuses",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "closedFlag": {
+              "displayName": "closedFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "defaultFlag": {
+              "displayName": "defaultFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "company/configurations/types": {
+          "displayName": "Company Configurations Types",
+          "path": "/company/configurations/types",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "inactiveFlag": {
+              "displayName": "inactiveFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "systemFlag": {
+              "displayName": "systemFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "company/contacts/types": {
+          "displayName": "Company Contacts Types",
+          "path": "/company/contacts/types",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "defaultFlag": {
+              "displayName": "defaultFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "companyPickerItems": {
+          "displayName": "Company Picker Items",
+          "path": "/company/companyPickerItems",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "company": {
+              "displayName": "company",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "companyCountry": {
+              "displayName": "companyCountry",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "companyLocation": {
+              "displayName": "companyLocation",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "companySite": {
+              "displayName": "companySite",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "companyStatus": {
+              "displayName": "companyStatus",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "companyType": {
+              "displayName": "companyType",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "member": {
+              "displayName": "member",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "vendorPickerFlag": {
+              "displayName": "vendorPickerFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "configurations": {
+          "displayName": "Configurations",
+          "path": "/company/configurations",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "activeFlag": {
+              "displayName": "activeFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "backupBillableSpaceGb": {
+              "displayName": "backupBillableSpaceGb",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "backupFailed": {
+              "displayName": "backupFailed",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "backupIncomplete": {
+              "displayName": "backupIncomplete",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "backupMonth": {
+              "displayName": "backupMonth",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "backupProtectedDeviceList": {
+              "displayName": "backupProtectedDeviceList",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "backupRestores": {
+              "displayName": "backupRestores",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "backupServerName": {
+              "displayName": "backupServerName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "backupSuccesses": {
+              "displayName": "backupSuccesses",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "backupYear": {
+              "displayName": "backupYear",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "billFlag": {
+              "displayName": "billFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "businessUnitId": {
+              "displayName": "businessUnitId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "company": {
+              "displayName": "company",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "contact": {
+              "displayName": "contact",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "cpuSpeed": {
+              "displayName": "cpuSpeed",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customFields": {
+              "displayName": "customFields",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "defaultGateway": {
+              "displayName": "defaultGateway",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deviceIdentifier": {
+              "displayName": "deviceIdentifier",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayVendorFlag": {
+              "displayName": "displayVendorFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "installationDate": {
+              "displayName": "installationDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "installedBy": {
+              "displayName": "installedBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "ipAddress": {
+              "displayName": "ipAddress",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastBackupDate": {
+              "displayName": "lastBackupDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastLoginName": {
+              "displayName": "lastLoginName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "localHardDrives": {
+              "displayName": "localHardDrives",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "locationId": {
+              "displayName": "locationId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "macAddress": {
+              "displayName": "macAddress",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "managementLink": {
+              "displayName": "managementLink",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "manufacturer": {
+              "displayName": "manufacturer",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "mobileGuid": {
+              "displayName": "mobileGuid",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "modelNumber": {
+              "displayName": "modelNumber",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "osInfo": {
+              "displayName": "osInfo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "osType": {
+              "displayName": "osType",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parentConfigurationId": {
+              "displayName": "parentConfigurationId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "purchaseDate": {
+              "displayName": "purchaseDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "questions": {
+              "displayName": "questions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "ram": {
+              "displayName": "ram",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "remoteLink": {
+              "displayName": "remoteLink",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "serialNumber": {
+              "displayName": "serialNumber",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "site": {
+              "displayName": "site",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sla": {
+              "displayName": "sla",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "tagNumber": {
+              "displayName": "tagNumber",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "vendor": {
+              "displayName": "vendor",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "vendorNotes": {
+              "displayName": "vendorNotes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "warrantyExpirationDate": {
+              "displayName": "warrantyExpirationDate",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/company/contacts",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "addressLine1": {
+              "displayName": "addressLine1",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "addressLine2": {
+              "displayName": "addressLine2",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "anniversary": {
+              "displayName": "anniversary",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "assistantContactId": {
+              "displayName": "assistantContactId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "birthDay": {
+              "displayName": "birthDay",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "childrenFlag": {
+              "displayName": "childrenFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "city": {
+              "displayName": "city",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "communicationItems": {
+              "displayName": "communicationItems",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "company": {
+              "displayName": "company",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "country": {
+              "displayName": "country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customFields": {
+              "displayName": "customFields",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "defaultBillingFlag": {
+              "displayName": "defaultBillingFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "defaultFlag": {
+              "displayName": "defaultFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "defaultMergeContactId": {
+              "displayName": "defaultMergeContactId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "department": {
+              "displayName": "department",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "disablePortalLoginFlag": {
+              "displayName": "disablePortalLoginFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "facebookUrl": {
+              "displayName": "facebookUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "firstName": {
+              "displayName": "firstName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "gender": {
+              "displayName": "gender",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Male",
+                  "displayValue": "Male"
+                },
+                {
+                  "value": "Female",
+                  "displayValue": "Female"
+                }
+              ]
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "inactiveFlag": {
+              "displayName": "inactiveFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "lastName": {
+              "displayName": "lastName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "linkedInUrl": {
+              "displayName": "linkedInUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "managerContactId": {
+              "displayName": "managerContactId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "marriedFlag": {
+              "displayName": "marriedFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "mobileGuid": {
+              "displayName": "mobileGuid",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "nickName": {
+              "displayName": "nickName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "portalPassword": {
+              "displayName": "portalPassword",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "portalSecurityLevel": {
+              "displayName": "portalSecurityLevel",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "presence": {
+              "displayName": "presence",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Online",
+                  "displayValue": "Online"
+                },
+                {
+                  "value": "DoNotDisturb",
+                  "displayValue": "DoNotDisturb"
+                },
+                {
+                  "value": "Away",
+                  "displayValue": "Away"
+                },
+                {
+                  "value": "Offline",
+                  "displayValue": "Offline"
+                },
+                {
+                  "value": "NoAgent",
+                  "displayValue": "NoAgent"
+                }
+              ]
+            },
+            "relationship": {
+              "displayName": "relationship",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "school": {
+              "displayName": "school",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "securityIdentifier": {
+              "displayName": "securityIdentifier",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "significantOther": {
+              "displayName": "significantOther",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "site": {
+              "displayName": "site",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "twitterUrl": {
+              "displayName": "twitterUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "unsubscribeFlag": {
+              "displayName": "unsubscribeFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "zip": {
+              "displayName": "zip",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "countries": {
+          "displayName": "Countries",
+          "path": "/company/countries",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "addressFormat": {
+              "displayName": "addressFormat",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "cityCaption": {
+              "displayName": "cityCaption",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "countryCode": {
+              "displayName": "countryCode",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "currency": {
+              "displayName": "currency",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "defaultFlag": {
+              "displayName": "defaultFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "dialingPrefix": {
+              "displayName": "dialingPrefix",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "localizationCaptionOne": {
+              "displayName": "localizationCaptionOne",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "localizationValueOne": {
+              "displayName": "localizationValueOne",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "stateCaption": {
+              "displayName": "stateCaption",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "zipCaption": {
+              "displayName": "zipCaption",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "zipMinimumLength": {
+              "displayName": "zipMinimumLength",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "departments": {
+          "displayName": "Departments",
+          "path": "/company/contacts/departments",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "entityTypes": {
+          "displayName": "Entity Types",
+          "path": "/company/entityTypes",
+          "responseKey": "",
+          "fields": {
+            "code": {
+              "displayName": "code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "managedDevicesIntegrations": {
+          "displayName": "Managed Devices Integrations",
+          "path": "/company/managedDevicesIntegrations",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "configBillCustomerFlag": {
+              "displayName": "configBillCustomerFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "defaultBillingLevel": {
+              "displayName": "defaultBillingLevel",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Summary",
+                  "displayValue": "Summary"
+                },
+                {
+                  "value": "Detail",
+                  "displayValue": "Detail"
+                }
+              ]
+            },
+            "defaultDepartment": {
+              "displayName": "defaultDepartment",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "defaultLocation": {
+              "displayName": "defaultLocation",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "disableNewCrossReferencesFlag": {
+              "displayName": "disableNewCrossReferencesFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "globalLoginPassword": {
+              "displayName": "globalLoginPassword",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "globalLoginUsername": {
+              "displayName": "globalLoginUsername",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "integratorLogin": {
+              "displayName": "integratorLogin",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "loginBy": {
+              "displayName": "loginBy",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Member",
+                  "displayValue": "Member"
+                },
+                {
+                  "value": "Global",
+                  "displayValue": "Global"
+                }
+              ]
+            },
+            "managementItSetupType": {
+              "displayName": "managementItSetupType",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "matchOnSerialNumberFlag": {
+              "displayName": "matchOnSerialNumberFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "portalUrl": {
+              "displayName": "portalUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "solution": {
+              "displayName": "solution",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "management": {
+          "displayName": "Management",
+          "path": "/company/management",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "addedConfigurationStatus": {
+              "displayName": "addedConfigurationStatus",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "deletedConfigurationStatus": {
+              "displayName": "deletedConfigurationStatus",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "executiveSummaryReportScheduleDay": {
+              "displayName": "executiveSummaryReportScheduleDay",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "executiveSummaryReportScheduleHour": {
+              "displayName": "executiveSummaryReportScheduleHour",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "executiveSummaryReportScheduleMinute": {
+              "displayName": "executiveSummaryReportScheduleMinute",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "integratorLogin": {
+              "displayName": "integratorLogin",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "runTime": {
+              "displayName": "runTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "scheduleExecutiveSummaryReportFlag": {
+              "displayName": "scheduleExecutiveSummaryReportFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "managementBackups": {
+          "displayName": "Management Backups",
+          "path": "/company/managementBackups",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "billingLevel": {
+              "displayName": "billingLevel",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Summary",
+                  "displayValue": "Summary"
+                },
+                {
+                  "value": "Detail",
+                  "displayValue": "Detail"
+                }
+              ]
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "item": {
+              "displayName": "item",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "managementItSolutions": {
+          "displayName": "Management It Solutions",
+          "path": "/company/managementItSolutions",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "continuumApiPassword": {
+              "displayName": "continuumApiPassword",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "continuumApiUsername": {
+              "displayName": "continuumApiUsername",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "globalLoginFlag": {
+              "displayName": "globalLoginFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "globalLoginPassword": {
+              "displayName": "globalLoginPassword",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "globalLoginUsername": {
+              "displayName": "globalLoginUsername",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "levelApiPassword": {
+              "displayName": "levelApiPassword",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "levelApiUsername": {
+              "displayName": "levelApiUsername",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "levelVarDomain": {
+              "displayName": "levelVarDomain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "managementItSolutionType": {
+              "displayName": "managementItSolutionType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "LevelPlatforms",
+                  "displayValue": "LevelPlatforms"
+                },
+                {
+                  "value": "Kaseya",
+                  "displayValue": "Kaseya"
+                },
+                {
+                  "value": "NAble",
+                  "displayValue": "NAble"
+                },
+                {
+                  "value": "Continuum",
+                  "displayValue": "Continuum"
+                },
+                {
+                  "value": "Custom",
+                  "displayValue": "Custom"
+                }
+              ]
+            },
+            "managementServerUrl": {
+              "displayName": "managementServerUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "managementSolutionName": {
+              "displayName": "managementSolutionName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "nAblePassword": {
+              "displayName": "nAblePassword",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "nAbleUsername": {
+              "displayName": "nAbleUsername",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "noDisplayFlag": {
+              "displayName": "noDisplayFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "overrideLoginLocationFlag": {
+              "displayName": "overrideLoginLocationFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "overrideWebServiceLocationFlag": {
+              "displayName": "overrideWebServiceLocationFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "portalOverrideLoginUrl": {
+              "displayName": "portalOverrideLoginUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "usingSslFlag": {
+              "displayName": "usingSslFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "webserviceOverrideUrl": {
+              "displayName": "webserviceOverrideUrl",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "marketDescriptions": {
+          "displayName": "Market Descriptions",
+          "path": "/company/marketDescriptions",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "noteTypes": {
+          "displayName": "Note Types",
+          "path": "/company/noteTypes",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "defaultFlag": {
+              "displayName": "defaultFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "identifier": {
+              "displayName": "identifier",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "importFlag": {
+              "displayName": "importFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "ownershipTypes": {
+          "displayName": "Ownership Types",
+          "path": "/company/ownershipTypes",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "paymentProcessors": {
+          "displayName": "Payment Processors",
+          "path": "/company/portalConfigurations/invoiceSetup/paymentProcessors",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "testURL": {
+              "displayName": "testURL",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "portalConfigurations": {
+          "displayName": "Portal Configurations",
+          "path": "/company/portalConfigurations",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "agreementTypeIds": {
+              "displayName": "agreementTypeIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "boardIds": {
+              "displayName": "boardIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "buttonColor": {
+              "displayName": "buttonColor",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company": {
+              "displayName": "company",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "configTypeIds": {
+              "displayName": "configTypeIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "defaultFlag": {
+              "displayName": "defaultFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "displayVendorFlag": {
+              "displayName": "displayVendorFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "headerColor": {
+              "displayName": "headerColor",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "language": {
+              "displayName": "language",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "English",
+                  "displayValue": "English"
+                },
+                {
+                  "value": "Spanish",
+                  "displayValue": "Spanish"
+                },
+                {
+                  "value": "French",
+                  "displayValue": "French"
+                },
+                {
+                  "value": "British",
+                  "displayValue": "British"
+                },
+                {
+                  "value": "Australian",
+                  "displayValue": "Australian"
+                },
+                {
+                  "value": "BrazilianPortuguese",
+                  "displayValue": "BrazilianPortuguese"
+                },
+                {
+                  "value": "CanadianFrench",
+                  "displayValue": "CanadianFrench"
+                },
+                {
+                  "value": "German",
+                  "displayValue": "German"
+                },
+                {
+                  "value": "NewZealand",
+                  "displayValue": "NewZealand"
+                },
+                {
+                  "value": "Dutch",
+                  "displayValue": "Dutch"
+                }
+              ]
+            },
+            "locationIds": {
+              "displayName": "locationIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "loginBackgroundColor": {
+              "displayName": "loginBackgroundColor",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "menuColor": {
+              "displayName": "menuColor",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "portalBackgroundColor": {
+              "displayName": "portalBackgroundColor",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "portalImageCopySuccessFlag": {
+              "displayName": "portalImageCopySuccessFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "welcomeText": {
+              "displayName": "welcomeText",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "portalSecurityLevels": {
+          "displayName": "Portal Security Levels",
+          "path": "/company/portalSecurityLevels",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "caption": {
+              "displayName": "caption",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "captionIdentifier": {
+              "displayName": "captionIdentifier",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isDefaultFlag": {
+              "displayName": "isDefaultFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "portalSecuritySettings": {
+          "displayName": "Portal Security Settings",
+          "path": "/company/portalSecuritySettings",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "functionDescription": {
+              "displayName": "functionDescription",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "functionIdentifier": {
+              "displayName": "functionIdentifier",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "levelFive": {
+              "displayName": "levelFive",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "levelFour": {
+              "displayName": "levelFour",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "levelOne": {
+              "displayName": "levelOne",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "levelSix": {
+              "displayName": "levelSix",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "levelThree": {
+              "displayName": "levelThree",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "levelTwo": {
+              "displayName": "levelTwo",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "relationships": {
+          "displayName": "Relationships",
+          "path": "/company/contacts/relationships",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "states": {
+          "displayName": "States",
+          "path": "/company/states",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "country": {
+              "displayName": "country",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "identifier": {
+              "displayName": "identifier",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "teamRoles": {
+          "displayName": "Team Roles",
+          "path": "/company/teamRoles",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "tracks": {
+          "displayName": "Tracks",
+          "path": "/company/tracks",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "inactiveFlag": {
+              "displayName": "inactiveFlag",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notifyActionIds": {
+              "displayName": "notifyActionIds",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        }
+      }
+    }
+  }
+}
