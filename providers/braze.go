@@ -2,11 +2,12 @@ package providers
 
 const Braze Provider = "braze"
 
+// nolint: funlen
 func init() {
 	SetInfo(Braze, ProviderInfo{
 		DisplayName: "Braze",
 		AuthType:    ApiKey,
-		BaseURL:     "https://rest.{{.workspace}}.braze.com",
+		BaseURL:     "https://{{.workspace}}",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
@@ -41,7 +42,8 @@ func init() {
 			Input: []MetadataItemInput{
 				{
 					Name:        "workspace",
-					DisplayName: "Instance ID",
+					DisplayName: "Rest Instance Endpoint",
+					Prompt:      "Rest Instance ID where your data is being hosted (ex: rest.iad-01.braze.com)",
 				},
 			},
 		},
