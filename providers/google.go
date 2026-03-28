@@ -50,9 +50,9 @@ func init() {
 				BaseURL:     "https://people.googleapis.com",
 				DisplayName: "Google Contacts",
 				Support: Support{
-					Read:      false,
+					Read:      true,
 					Subscribe: false,
-					Write:     false,
+					Write:     true,
 				},
 			},
 			ModuleGoogleGmail: {
