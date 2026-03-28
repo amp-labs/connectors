@@ -46,6 +46,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	pageSize := readhelper.PageSizeWithDefaultStr(params, defaultPageSize)
 	url.WithQueryParam("limit", pageSize)
+
+	if sortField := objectSortField.Get(params.ObjectName); sortField != "" {
+		url.WithQueryParam("sort", sortField)
+	}
+
 	if sortField := objectSortField.Get(params.ObjectName); sortField != "" {
 		url.WithQueryParam("sort", sortField)
 	}

@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
@@ -17,10 +18,17 @@ import (
 type Adapter struct {
 	Client     *common.JSONHTTPClient
 	moduleInfo *providers.ModuleInfo
+
+	// Batch updating objects does not support manipulating associations.
+	// associationsStrategy is used to create associations as a follow up.
+	associationsStrategy *associations.Strategy
 }
 
 // NewAdapter creates a new batch Adapter configured to work with Hubspot's APIs.
-func NewAdapter(hubspotCRMClient *common.HTTPClient, moduleInfo *providers.ModuleInfo) *Adapter {
+func NewAdapter(
+	hubspotCRMClient *common.HTTPClient, moduleInfo *providers.ModuleInfo,
+	associationsStrategy *associations.Strategy,
+) *Adapter {
 	shouldHandleError := func(response *http.Response) bool {
 		// 2xx responses are normal.
 		// 400 (Bad Request) and 409 (Conflict) are considered valid "soft failures"
@@ -41,8 +49,9 @@ func NewAdapter(hubspotCRMClient *common.HTTPClient, moduleInfo *providers.Modul
 	}
 
 	return &Adapter{
-		Client:     jsonHTTPClient,
-		moduleInfo: moduleInfo,
+		Client:               jsonHTTPClient,
+		moduleInfo:           moduleInfo,
+		associationsStrategy: associationsStrategy,
 	}
 }
 
