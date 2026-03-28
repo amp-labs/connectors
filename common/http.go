@@ -519,17 +519,35 @@ func makePostRequest(ctx context.Context, resourceURL string, headers Headers, d
 //
 // Returns: An io.Reader for the request body, the content length, and an optional error.
 func bodyReader(headers Headers, data []byte) (io.Reader, int64, error) {
-	if headers.Has(HeaderFormURLEncoded) {
-		var keyValuePairs map[string]string
-
-		err := json.Unmarshal(data, &keyValuePairs)
+	if headers.Has(HeaderFormURLEncoded) { //nolint: nestif
+		parsedForm, err := url.ParseQuery(string(data))
 		if err != nil {
 			return nil, 0, fmt.Errorf("%w: %w", ErrPayloadNotURLForm, err)
 		}
 
 		payloadValues := url.Values{}
-		for k, v := range keyValuePairs {
-			payloadValues.Set(k, v)
+
+		// Iterate through each form field
+		for key, values := range parsedForm {
+			if len(values) == 0 {
+				continue
+			}
+
+			// Handle multiple values for the same key
+			for _, value := range values {
+				// Check if it's JSON-like (starts with { or [)
+				// Providers like serviceDeskPlus will send an array/object json structured in the vaue field.
+				if strings.HasPrefix(value, "{") || strings.HasPrefix(value, "[") {
+					var jsonCheck any
+					if err := json.Unmarshal([]byte(value), &jsonCheck); err == nil {
+						payloadValues.Add(key, value)
+
+						continue
+					}
+				}
+
+				payloadValues.Add(key, value)
+			}
 		}
 
 		encodedPayload := payloadValues.Encode()
