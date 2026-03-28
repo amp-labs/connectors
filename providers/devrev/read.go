@@ -3,6 +3,7 @@ package devrev
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -14,7 +15,12 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-const defaultPageSize = "100" // doc default 50; max 100 (from testing)
+// Pagination (DevRev list.*):
+//   - Typical default page size in API docs: 50.
+//   - Many endpoints document a maximum of 100 records per page.
+//   - Newer list endpoints enforce a lower maximum: 100 is rejected; use at most 99 or the API returns 400.
+const maxPageSize = 99
+
 // objectsWithoutLimitParam lists object names whose list endpoints do not accept
 // the limit query parameter (API returns 400 invalid_field for limit).
 var objectsWithoutLimitParam = datautils.NewSet( //nolint:gochecknoglobals
@@ -56,6 +62,18 @@ var objectsWithoutSortBy = datautils.NewSet( //nolint:gochecknoglobals
 	"vistas.groups",
 )
 
+func pageSize(params common.ReadParams) string {
+	if params.PageSize <= 0 {
+		return strconv.Itoa(maxPageSize)
+	}
+
+	if params.PageSize > maxPageSize {
+		return strconv.Itoa(maxPageSize)
+	}
+
+	return strconv.Itoa(params.PageSize)
+}
+
 // buildReadRequest builds the HTTP request for listing objects.
 // Pagination is cursor-based (next_cursor). For objects in objectsWithModifiedDateFilter, Since/Until
 // are sent as modified_date.after and modified_date.before; other objects
@@ -77,7 +95,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	pageSize := readhelper.PageSizeWithDefaultStr(params, defaultPageSize)
+	pageSize := pageSize(params)
 	if !objectsWithoutLimitParam.Has(params.ObjectName) {
 		url.WithQueryParam("limit", pageSize)
 	}
