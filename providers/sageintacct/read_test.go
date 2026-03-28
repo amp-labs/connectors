@@ -32,7 +32,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Successful read with chosen fields",
-			Input: common.ReadParams{ObjectName: "general-ledger/budget", Fields: connectors.Fields("id", "key", "href")},
+			Input: common.ReadParams{ObjectName: "general-ledger/budget", Fields: connectors.Fields("$['id']", "$['key']", "$['href']")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
