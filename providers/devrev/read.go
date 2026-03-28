@@ -53,7 +53,6 @@ var objectsWithoutSortBy = datautils.NewSet( //nolint:gochecknoglobals
 	"articles",
 	"auth-tokens",
 	"code-changes",
-	"conversations",
 	"directories",
 	"org-schedules",
 	"question-answers",
