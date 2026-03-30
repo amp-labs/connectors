@@ -99,7 +99,8 @@ func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL,
 		return nil, err
 	}
 
-	// currently they allow filtering in days only, not timestamp.
+	// some objects allows filtering in timestamp. If it does and the user provided
+	// the required params, we use them.
 	if !params.Since.IsZero() && !doNotFilter.Has(params.ObjectName) {
 		if filteringFields.Has(params.ObjectName) {
 			fld := filteringFields.Get(params.ObjectName)
