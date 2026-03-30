@@ -41,8 +41,11 @@ func getConfig(workspace string) func(*credscanning.ProviderCredentials) *oauth2
 			},
 			Scopes: []string{
 				"okta.users.read",
+				"okta.users.manage",
 				"okta.groups.read",
+				"okta.groups.manage",
 				"okta.apps.read",
+				"okta.schemas.read",
 			},
 		}
 	}
