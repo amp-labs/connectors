@@ -62,6 +62,7 @@ import (
 	"github.com/amp-labs/connectors/providers/happyfox"
 	"github.com/amp-labs/connectors/providers/helpscoutmailbox"
 	"github.com/amp-labs/connectors/providers/heyreach"
+	housecallpro "github.com/amp-labs/connectors/providers/housecallPro"
 	"github.com/amp-labs/connectors/providers/highlevelstandard"
 	"github.com/amp-labs/connectors/providers/highlevelwhitelabel"
 	"github.com/amp-labs/connectors/providers/hubspot"
@@ -87,7 +88,9 @@ import (
 	"github.com/amp-labs/connectors/providers/mixmax"
 	"github.com/amp-labs/connectors/providers/monday"
 	"github.com/amp-labs/connectors/providers/netsuite"
+	netsuitem2m "github.com/amp-labs/connectors/providers/netsuite/m2m"
 	"github.com/amp-labs/connectors/providers/nutshell"
+	"github.com/amp-labs/connectors/providers/okta"
 	"github.com/amp-labs/connectors/providers/outplay"
 	"github.com/amp-labs/connectors/providers/outreach"
 	"github.com/amp-labs/connectors/providers/paddle"
@@ -195,6 +198,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.HappyFox:                wrapper(newHappyFoxConnector),
 	providers.HelpScoutMailbox:        wrapper(newHelpScoutMailboxConnector),
 	providers.HeyReach:                wrapper(newHeyReachConnector),
+	providers.HousecallPro:            wrapper(newHousecallProConnector),
 	providers.HighLevelStandard:       wrapper(newHighLevelStandardConnector),
 	providers.HighLevelWhiteLabel:     wrapper(newHighLevelWhiteLabelConnector),
 	providers.Hubspot:                 wrapper(newHubspotConnector),
@@ -220,7 +224,9 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Mixmax:                  wrapper(newMixmaxConnector),
 	providers.Monday:                  wrapper(newMondayConnector),
 	providers.Netsuite:                wrapper(newNetsuiteConnector),
+	providers.NetsuiteM2M:             wrapper(newNetsuiteM2MConnector),
 	providers.Nutshell:                wrapper(newNutshellConnector),
+	providers.Okta:                    wrapper(newOktaConnector),
 	providers.Outplay:                 wrapper(newOutplayConnector),
 	providers.Outreach:                wrapper(newOutreachConnector),
 	providers.Paddle:                  wrapper(newPaddleConnector),
@@ -601,6 +607,12 @@ func newNutshellConnector(
 	return nutshell.NewConnector(params)
 }
 
+func newOktaConnector(
+	params common.ConnectorParams,
+) (*okta.Connector, error) {
+	return okta.NewConnector(params)
+}
+
 func newHeyReachConnector(
 	params common.ConnectorParams,
 ) (*heyreach.Connector, error) {
@@ -826,6 +838,12 @@ func newNetsuiteConnector(
 	return netsuite.NewConnector(params)
 }
 
+func newNetsuiteM2MConnector(
+	params common.ConnectorParams,
+) (*netsuitem2m.Connector, error) {
+	return netsuitem2m.NewConnector(params)
+}
+
 func newSeismicConnector(
 	params common.ConnectorParams,
 ) (*seismic.Connector, error) {
@@ -1031,4 +1049,8 @@ func newTalkdeskConnector(params common.ConnectorParams) (*talkdesk.Connector, e
 
 func newGranolaConnector(params common.ConnectorParams) (*granola.Connector, error) {
 	return granola.NewConnector(params)
+}
+
+func newHousecallProConnector(params common.ConnectorParams) (*housecallpro.Connector, error) {
+	return housecallpro.NewConnector(params)
 }

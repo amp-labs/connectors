@@ -101,6 +101,9 @@ func init() { //nolint:funlen
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
 					Name: "ownerId",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleHubspotCRM: ModuleDependency{},
+					},
 				},
 			},
 		},

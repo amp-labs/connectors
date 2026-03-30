@@ -34,7 +34,16 @@ type Adapter struct {
 // NewAdapter creates a RESTlet adapter. It reads scriptId and deployId
 // from params.Metadata to construct the RESTlet URL.
 func NewAdapter(params common.ConnectorParams) (*Adapter, error) { //nolint:funlen
-	return components.Initialize(providers.Netsuite, params, func(base *components.Connector) (*Adapter, error) {
+	return newAdapter(providers.Netsuite, params)
+}
+
+// NewAdapterForProvider creates an adapter for a given provider (e.g. NetsuiteM2M).
+func NewAdapterForProvider(provider providers.Provider, params common.ConnectorParams) (*Adapter, error) {
+	return newAdapter(provider, params)
+}
+
+func newAdapter(provider providers.Provider, params common.ConnectorParams) (*Adapter, error) { //nolint:funlen
+	return components.Initialize(provider, params, func(base *components.Connector) (*Adapter, error) {
 		scriptId, ok := params.Metadata["scriptId"]
 		if !ok || scriptId == "" {
 			return nil, fmt.Errorf("%w: scriptId", ErrMissingMetadata)
