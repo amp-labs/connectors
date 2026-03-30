@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"time"
+	_ "time/tzdata"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
