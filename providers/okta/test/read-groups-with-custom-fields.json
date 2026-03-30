@@ -1,0 +1,26 @@
+[
+  {
+    "id": "00g1234567890abcdef",
+    "type": "OKTA_GROUP",
+    "created": "2023-01-10T09:00:00.000Z",
+    "lastUpdated": "2024-01-10T09:00:00.000Z",
+    "lastMembershipUpdated": "2024-01-10T09:00:00.000Z",
+    "profile": {
+      "name": "Engineering",
+      "description": "Engineering team members",
+      "test_custom_field_group": "engineering_custom"
+    }
+  },
+  {
+    "id": "00g9876543210zyxwvu",
+    "type": "OKTA_GROUP",
+    "created": "2023-02-15T10:00:00.000Z",
+    "lastUpdated": "2024-01-15T10:00:00.000Z",
+    "lastMembershipUpdated": "2024-01-15T10:00:00.000Z",
+    "profile": {
+      "name": "Marketing",
+      "description": "Marketing team members",
+      "test_custom_field_group": "marketing_custom"
+    }
+  }
+]

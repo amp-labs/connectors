@@ -23,6 +23,11 @@ func NewAdapter(params common.ConnectorParams) (*Adapter, error) {
 	return components.Initialize(providers.Netsuite, params, constructor)
 }
 
+// NewAdapterForProvider creates an adapter for a given provider (e.g. NetsuiteM2M).
+func NewAdapterForProvider(provider providers.Provider, params common.ConnectorParams) (*Adapter, error) {
+	return components.Initialize(provider, params, constructor)
+}
+
 func constructor(base *components.Connector) (*Adapter, error) {
 	adapter := &Adapter{
 		Connector: base,

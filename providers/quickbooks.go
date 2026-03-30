@@ -21,9 +21,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -33,6 +33,15 @@ func init() {
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1753941999/media/quickbooks.com_1753941998.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1753942143/media/quickbooks.com_1753942142.svg",
+			},
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "realmId",
+					DisplayName: "Company ID",
+					DocsURL:     "https://coda.io/@leandro-zubrezki/quickbooks-pack-start-here/find-your-qbo-company-id-15", // nolint:lll
+				},
 			},
 		},
 	})

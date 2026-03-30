@@ -1,0 +1,64 @@
+[
+  {
+    "id": "00u1234567890abcdef",
+    "status": "ACTIVE",
+    "created": "2023-01-15T10:00:00.000Z",
+    "activated": "2023-01-15T10:05:00.000Z",
+    "statusChanged": "2023-01-15T10:05:00.000Z",
+    "lastLogin": "2024-01-10T08:30:00.000Z",
+    "lastUpdated": "2024-01-10T08:30:00.000Z",
+    "passwordChanged": "2023-06-15T14:00:00.000Z",
+    "type": {
+      "id": "oty1234567890"
+    },
+    "profile": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@example.com",
+      "login": "john.doe@example.com",
+      "mobilePhone": "+14155551234"
+    },
+    "credentials": {
+      "password": {},
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://example.okta.com/api/v1/users/00u1234567890abcdef"
+      }
+    }
+  },
+  {
+    "id": "00u9876543210zyxwvu",
+    "status": "PROVISIONED",
+    "created": "2023-02-20T11:00:00.000Z",
+    "activated": null,
+    "statusChanged": "2023-02-20T11:00:00.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2023-02-20T11:00:00.000Z",
+    "passwordChanged": null,
+    "type": {
+      "id": "oty1234567890"
+    },
+    "profile": {
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "email": "jane.smith@example.com",
+      "login": "jane.smith@example.com"
+    },
+    "credentials": {
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://example.okta.com/api/v1/users/00u9876543210zyxwvu"
+      }
+    }
+  }
+]
