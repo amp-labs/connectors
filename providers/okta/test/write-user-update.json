@@ -1,0 +1,32 @@
+{
+  "id": "00u1234567890abcdef",
+  "status": "ACTIVE",
+  "created": "2023-01-15T10:00:00.000Z",
+  "activated": "2023-01-15T10:05:00.000Z",
+  "statusChanged": "2023-01-15T10:05:00.000Z",
+  "lastLogin": "2023-12-20T14:30:00.000Z",
+  "lastUpdated": "2023-12-26T15:00:00.000Z",
+  "passwordChanged": "2023-06-10T08:00:00.000Z",
+  "type": {
+    "id": "oty1234567890abcdef"
+  },
+  "profile": {
+    "firstName": "Updated",
+    "lastName": "Name",
+    "email": "john.doe@example.com",
+    "login": "john.doe@example.com",
+    "mobilePhone": "+14155551234"
+  },
+  "credentials": {
+    "password": {},
+    "provider": {
+      "type": "OKTA",
+      "name": "OKTA"
+    }
+  },
+  "_links": {
+    "self": {
+      "href": "https://trial-4378019.okta.com/api/v1/users/00u1234567890abcdef"
+    }
+  }
+}

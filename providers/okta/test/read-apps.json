@@ -1,0 +1,53 @@
+[
+  {
+    "id": "0oa1234567890abcdef",
+    "name": "okta_org2org",
+    "label": "Okta Org2Org",
+    "status": "ACTIVE",
+    "created": "2023-01-10T09:00:00.000Z",
+    "lastUpdated": "2023-12-15T10:00:00.000Z",
+    "activated": "2023-01-10T09:05:00.000Z",
+    "signOnMode": "SAML_2_0",
+    "features": [],
+    "visibility": {
+      "autoSubmitToolbar": false,
+      "hide": {
+        "iOS": false,
+        "web": false
+      },
+      "appLinks": {
+        "login": true
+      }
+    },
+    "credentials": {
+      "userNameTemplate": {
+        "template": "${source.login}",
+        "type": "BUILT_IN"
+      },
+      "signing": {}
+    },
+    "settings": {
+      "app": {},
+      "notifications": {
+        "vpn": {
+          "network": {
+            "connection": "DISABLED"
+          }
+        }
+      },
+      "signOn": {}
+    },
+    "_links": {
+      "logo": [
+        {
+          "name": "medium",
+          "href": "https://example.okta.com/assets/img/logos/okta-logo.png",
+          "type": "image/png"
+        }
+      ],
+      "self": {
+        "href": "https://example.okta.com/api/v1/apps/0oa1234567890abcdef"
+      }
+    }
+  }
+]

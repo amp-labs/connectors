@@ -1,0 +1,28 @@
+[
+  {
+    "id": "00u1234567890abcdef",
+    "status": "ACTIVE",
+    "created": "2023-01-15T10:00:00.000Z",
+    "lastUpdated": "2024-01-10T08:30:00.000Z",
+    "profile": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@example.com",
+      "login": "john.doe@example.com",
+      "test_custom_field": "custom_value_1"
+    }
+  },
+  {
+    "id": "00u9876543210zyxwvu",
+    "status": "PROVISIONED",
+    "created": "2023-02-20T11:00:00.000Z",
+    "lastUpdated": "2023-02-20T11:00:00.000Z",
+    "profile": {
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "email": "jane.smith@example.com",
+      "login": "jane.smith@example.com",
+      "test_custom_field": "custom_value_2"
+    }
+  }
+]
