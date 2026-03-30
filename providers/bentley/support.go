@@ -74,7 +74,6 @@ var writeSupport = []string{
 	"contextcapture/workspaces",
 	"itwins",
 	"itwins/exports",
-	"itwins/recents",
 	"grouping-and-mapping/datasources/imodel-mappings",
 	"imodels",
 	"library/applications",
