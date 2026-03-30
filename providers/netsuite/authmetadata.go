@@ -74,7 +74,15 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 // retrieveInstanceTimezone queries the NetSuite instance to get its timezone
 // using the SESSIONTIMEZONE function via SuiteQL.
 func (c *Connector) retrieveInstanceTimezone(ctx context.Context) (*time.Location, error) {
-	return RetrieveInstanceTimezone(ctx, c.ProviderInfo().BaseURL, c.JSONHTTPClient())
+	baseURL := c.ProviderInfo().BaseURL
+	log := logging.Logger(ctx)
+
+	log.Debug("retrieveInstanceTimezone called",
+		"baseURL", baseURL,
+		"module", c.Module(),
+	)
+
+	return RetrieveInstanceTimezone(ctx, baseURL, c.JSONHTTPClient())
 }
 
 // RetrieveInstanceTimezone queries a NetSuite instance for its timezone using SuiteQL.
@@ -108,7 +116,7 @@ func RetrieveInstanceTimezone(
 		return nil, fmt.Errorf("failed to execute timezone query: %w", err)
 	}
 
-	location, err := parseTimezoneResponse(resp)
+	location, err := parseTimezoneResponse(ctx, resp)
 	if err != nil {
 		log.Warn("failed to parse timezone response",
 			"error", err,
@@ -150,7 +158,9 @@ func (t timezoneItem) getTimezone() string {
 	return t.Expr1
 }
 
-func parseTimezoneResponse(resp *common.JSONHTTPResponse) (*time.Location, error) {
+func parseTimezoneResponse(ctx context.Context, resp *common.JSONHTTPResponse) (*time.Location, error) {
+	log := logging.Logger(ctx)
+
 	body, ok := resp.Body()
 	if !ok {
 		return nil, ErrEmptyResponseBody
@@ -167,6 +177,17 @@ func parseTimezoneResponse(resp *common.JSONHTTPResponse) (*time.Location, error
 
 	item := tzResp.Items[0]
 	timezone := item.getTimezone()
+
+	// Log all raw parsed values so we can diagnose any parsing issues
+	// (whitespace, unexpected keys, encoding problems, etc.)
+	log.Info("parseTimezoneResponse raw values",
+		"itemCount", len(tzResp.Items),
+		"item.Timezone", fmt.Sprintf("%q", item.Timezone),
+		"item.Expr1", fmt.Sprintf("%q", item.Expr1),
+		"resolved", fmt.Sprintf("%q", timezone),
+		"resolvedLen", len(timezone),
+		"resolvedBytes", fmt.Sprintf("%v", []byte(timezone)),
+	)
 
 	if timezone == "" {
 		return nil, fmt.Errorf("%w: timezone field=%q, expr1 field=%q",
