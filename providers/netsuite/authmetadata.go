@@ -27,15 +27,29 @@ const DefaultTimezone = "America/Los_Angeles"
 // GetPostAuthInfo retrieves the instance timezone using SuiteQL.
 // This is called after authentication to discover instance-specific configuration.
 func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error) {
+	ctx = logging.With(ctx, "provider", "netsuite", "step", "get_post_auth_info")
+	log := logging.Logger(ctx)
+
 	timezone, err := c.retrieveInstanceTimezone(ctx)
-	logging.With(ctx, "provider", "netsuite", "step", "get_post_auth_info")
 
 	isDefault := "false"
 
 	if err != nil {
-		// Fall back to Pacific time if we can't retrieve the timezone.
-		// This is a reasonable default since Netsuite server times are
-		// generally known to be in PT.
+		log.Warn("failed to retrieve instance timezone, falling back to default",
+			"error", err,
+			"default", DefaultTimezone,
+		)
+
+		timezone, _ = time.LoadLocation(DefaultTimezone)
+		isDefault = "true"
+	}
+
+	// Guard against nil timezone (which would .String() as "UTC" and silently break reads).
+	if timezone == nil {
+		log.Error("retrieveInstanceTimezone returned nil location without error — using default",
+			"default", DefaultTimezone,
+		)
+
 		timezone, _ = time.LoadLocation(DefaultTimezone)
 		isDefault = "true"
 	}
@@ -46,6 +60,11 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 		"sessionTimezone":          timezone.String(),
 		"sessionTimezoneIsDefault": isDefault,
 	}
+
+	log.Info("resolved instance timezone — this will be stored on the connection",
+		"sessionTimezone", timezone.String(),
+		"sessionTimezoneIsDefault", isDefault,
+	)
 
 	return &common.PostAuthInfo{
 		CatalogVars: &catalogVars,
@@ -65,10 +84,17 @@ func RetrieveInstanceTimezone(
 	baseURL string,
 	client *common.JSONHTTPClient,
 ) (*time.Location, error) {
+	log := logging.Logger(ctx)
+
 	url, err := urlbuilder.New(baseURL, "/services/rest/query/v1/suiteql")
 	if err != nil {
 		return nil, fmt.Errorf("failed to build SuiteQL URL: %w", err)
 	}
+
+	log.Debug("querying SESSIONTIMEZONE via SuiteQL",
+		"baseURL", baseURL,
+		"fullURL", url.String(),
+	)
 
 	query := suiteQLQuery{
 		Query: "SELECT SESSIONTIMEZONE AS timezone FROM DUAL",
@@ -82,7 +108,23 @@ func RetrieveInstanceTimezone(
 		return nil, fmt.Errorf("failed to execute timezone query: %w", err)
 	}
 
-	return parseTimezoneResponse(resp)
+	location, err := parseTimezoneResponse(resp)
+	if err != nil {
+		log.Warn("failed to parse timezone response",
+			"error", err,
+			"statusCode", resp.Code,
+		)
+
+		return nil, err
+	}
+
+	log.Info("parsed timezone from SuiteQL response",
+		"location", location.String(),
+		"locationIsNil", location == nil,
+		"statusCode", resp.Code,
+	)
+
+	return location, nil
 }
 
 type suiteQLQuery struct {
@@ -120,18 +162,25 @@ func parseTimezoneResponse(resp *common.JSONHTTPResponse) (*time.Location, error
 	}
 
 	if len(tzResp.Items) == 0 {
-		return nil, ErrNoTimezoneData
+		return nil, fmt.Errorf("%w: items array is empty", ErrNoTimezoneData)
 	}
 
-	timezone := tzResp.Items[0].getTimezone()
+	item := tzResp.Items[0]
+	timezone := item.getTimezone()
+
 	if timezone == "" {
-		return nil, ErrNoTimezoneData
+		return nil, fmt.Errorf("%w: timezone field=%q, expr1 field=%q",
+			ErrNoTimezoneData, item.Timezone, item.Expr1)
 	}
 
 	// Parse the timezone string (e.g., "America/Los_Angeles") into a time.Location
 	location, err := time.LoadLocation(timezone)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse timezone %q: %w", timezone, err)
+		return nil, fmt.Errorf("time.LoadLocation(%q) failed: %w", timezone, err)
+	}
+
+	if location == nil {
+		return nil, fmt.Errorf("time.LoadLocation(%q) returned nil without error", timezone)
 	}
 
 	return location, nil
