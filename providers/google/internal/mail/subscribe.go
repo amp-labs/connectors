@@ -6,9 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"strconv"
-	"time"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 )
 
@@ -17,7 +16,10 @@ var (
 	errInvalidRequestType = errors.New("invalid request type")
 )
 
-const twoDaysHr = 48
+var (
+	_ connectors.SubscribeConnector              = &Adapter{}
+	_ connectors.SubscriptionMaintainerConnector = &Adapter{}
+)
 
 // watchRequest represents the Subscription.Request data expected from the builder.
 type watchRequest struct {
@@ -58,6 +60,16 @@ func validateRequest(params common.SubscribeParams) ([]byte, error) {
 	}
 
 	return raw, nil
+}
+
+func (a *Adapter) EmptySubscriptionParams() *common.SubscribeParams {
+	return &common.SubscribeParams{}
+}
+
+func (a *Adapter) EmptySubscriptionResult() *common.SubscriptionResult {
+	return &common.SubscriptionResult{
+		Result: &watchResponse{},
+	}
 }
 
 // Subscribe subscribes to the mailboxes events for the given params.
@@ -103,29 +115,55 @@ func (a *Adapter) RunScheduledMaintenance(
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-	response, ok := previousResult.Result.(*watchResponse)
-	if !ok {
-		return nil, fmt.Errorf("%w: expected watchResponse, got %T", errInvalidRequestType, previousResult.Result)
-	}
+	return a.Subscribe(ctx, params)
+}
 
-	expiration := response.Expiration
-
-	// We don't to make this call necessarily,
-	// if the subscription is still active, and has more than 2 days to go, we skip.
-	ms, err := strconv.ParseInt(expiration, 10, 64)
+// Subscribe subscribes to the mailboxes events for the given params.
+// It returns subscriptions expiry timestamp with the history id.
+func (a *Adapter) DeleteSubscription(
+	ctx context.Context,
+	params common.SubscriptionResult,
+) error {
+	watchURL, err := url.JoinPath(a.ModuleInfo().BaseURL, apiVersion, "users/me/stop")
 	if err != nil {
-		return nil, fmt.Errorf("RunScheduledMaintenance: parsing expiration %q: %w", expiration, err)
+		return fmt.Errorf("delete subscribe: building watch URL: %w", err)
 	}
 
-	exp := time.UnixMilli(ms)
-	now := time.Now()
-
-	inTwoDays := now.Add(twoDaysHr * time.Hour)
-
-	// Renew if already expired, or expiring within the next 2 days.
-	if exp.Before(inTwoDays) {
-		return a.Subscribe(ctx, params)
+	// The request body. ust be empty.
+	// ref: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users/stop
+	response, err := a.JSONHTTPClient().Post(ctx, watchURL, nil)
+	if err != nil {
+		return fmt.Errorf("delete subscribe: posting to gmail watch: %w", err)
 	}
 
-	return previousResult, nil
+	_, err = common.UnmarshalJSON[watchResponse](response)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *Adapter) GetRecordsByIds(ctx context.Context,
+	objectName string,
+	recordIds []string, //nolint:revive
+	fields []string,
+	associations []string) ([]common.ReadResultRow, error) {
+	return nil, common.ErrGetRecordNotSupportedForObject
+}
+
+func (a *Adapter) UpdateSubscription(
+	ctx context.Context,
+	params common.SubscribeParams,
+	previousResult *common.SubscriptionResult,
+) (*common.SubscriptionResult, error) {
+	return a.Subscribe(ctx, params)
+}
+
+func (a *Adapter) VerifyWebhookMessage(
+	ctx context.Context,
+	request *common.WebhookRequest,
+	params *common.VerificationParams,
+) (bool, error) {
+	return true, nil
 }

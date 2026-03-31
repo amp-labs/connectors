@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -24,7 +23,7 @@ func main() {
 
 	subscribeParams := common.SubscribeParams{
 		Request: map[string]any{
-			"topicName":           "projects/ampersanddev/topics/gmail-notifications",
+			"topicName":           "projects/ampersanddev/topics/gmail-event-received",
 			"labelIds":            []string{"INBOX", "UNREAD", "Label_1"}, // system & custom labels.
 			"labelFilterBehavior": "include",
 		},
@@ -32,17 +31,32 @@ func main() {
 
 	subscribeResult, err := conn.Mail.Subscribe(ctx, subscribeParams)
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("subscription connector", "sunscribe action", err)
 		return
 	}
 
 	utils.DumpJSON(subscribeResult, os.Stdout)
 
-	slog.Info("created a susbcriber")
+	slog.Info("created a susbscriber")
 
 	subscribeResult, err = conn.Mail.RunScheduledMaintenance(ctx, subscribeParams, subscribeResult)
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("subscription connector", "schedule maintenance action", err)
+		return
+	}
+
+	utils.DumpJSON(subscribeResult, os.Stdout)
+
+	subscribeResult2, err := conn.Mail.UpdateSubscription(ctx, subscribeParams, subscribeResult)
+	if err != nil {
+		slog.Error("subscription connector", "update subscription action", err)
+		return
+	}
+
+	utils.DumpJSON(subscribeResult2, os.Stdout)
+
+	if err := conn.Mail.DeleteSubscription(ctx, *subscribeResult); err != nil {
+		slog.Error("subscription connector", "delete action", err)
 		return
 	}
 
