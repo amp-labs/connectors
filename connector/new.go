@@ -17,6 +17,7 @@ import (
 	"github.com/amp-labs/connectors/providers/attio"
 	"github.com/amp-labs/connectors/providers/avoma"
 	"github.com/amp-labs/connectors/providers/aws"
+	"github.com/amp-labs/connectors/providers/bentley"
 	"github.com/amp-labs/connectors/providers/bitbucket"
 	"github.com/amp-labs/connectors/providers/blackbaud"
 	"github.com/amp-labs/connectors/providers/blueshift"
@@ -62,9 +63,9 @@ import (
 	"github.com/amp-labs/connectors/providers/happyfox"
 	"github.com/amp-labs/connectors/providers/helpscoutmailbox"
 	"github.com/amp-labs/connectors/providers/heyreach"
-	housecallpro "github.com/amp-labs/connectors/providers/housecallPro"
 	"github.com/amp-labs/connectors/providers/highlevelstandard"
 	"github.com/amp-labs/connectors/providers/highlevelwhitelabel"
+	housecallpro "github.com/amp-labs/connectors/providers/housecallPro"
 	"github.com/amp-labs/connectors/providers/hubspot"
 	"github.com/amp-labs/connectors/providers/hunter"
 	"github.com/amp-labs/connectors/providers/insightly"
@@ -153,6 +154,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Atlassian:               wrapper(newAtlassianConnector),
 	providers.Attio:                   wrapper(newAttioConnector),
 	providers.Avoma:                   wrapper(newAvomaConnector),
+	providers.Bentley:                 wrapper(newBentleyConnector),
 	providers.Bitbucket:               wrapper(newBitBucketConnector),
 	providers.Blackbaud:               wrapper(newBlackbaudConnector),
 	providers.Blueshift:               wrapper(newBlueshiftConnector),
@@ -1053,4 +1055,8 @@ func newGranolaConnector(params common.ConnectorParams) (*granola.Connector, err
 
 func newHousecallProConnector(params common.ConnectorParams) (*housecallpro.Connector, error) {
 	return housecallpro.NewConnector(params)
+}
+
+func newBentleyConnector(params common.ConnectorParams) (*bentley.Connector, error) {
+	return bentley.NewConnector(params)
 }
