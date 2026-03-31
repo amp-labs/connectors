@@ -118,8 +118,6 @@ func (a *Adapter) RunScheduledMaintenance(
 	return a.Subscribe(ctx, params)
 }
 
-// Subscribe subscribes to the mailboxes events for the given params.
-// It returns subscriptions expiry timestamp with the history id.
 func (a *Adapter) DeleteSubscription(
 	ctx context.Context,
 	params common.SubscriptionResult,
@@ -144,7 +142,7 @@ func (a *Adapter) DeleteSubscription(
 	return nil
 }
 
-func (a *Adapter) GetRecordsByIds(ctx context.Context,
+func (a *Adapter) GetRecordsByIds(ctx context.Context, // nolint: revive
 	objectName string,
 	recordIds []string, //nolint:revive
 	fields []string,
