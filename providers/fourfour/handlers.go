@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -96,11 +97,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		var filters []string
 
 		if !params.Since.IsZero() {
-			filters = append(filters, fmt.Sprintf("%s ge %s", filterField, params.Since.Format("2006-01-02T15:04:05Z")))
+			filters = append(filters, fmt.Sprintf("%s ge %s", filterField, params.Since.UTC().Format(time.RFC3339)))
 		}
 
 		if !params.Until.IsZero() {
-			filters = append(filters, fmt.Sprintf("%s le %s", filterField, params.Until.Format("2006-01-02T15:04:05Z")))
+			filters = append(filters, fmt.Sprintf("%s le %s", filterField, params.Until.UTC().Format(time.RFC3339)))
 		}
 
 		if len(filters) > 0 {

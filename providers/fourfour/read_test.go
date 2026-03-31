@@ -18,6 +18,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 	contactsResponse := testutils.DataFromFile(t, "contacts.json")
 	leadsResponse := testutils.DataFromFile(t, "leads.json")
+	contactsFirstPageResponse := testutils.DataFromFile(t, "contacts-first-page.json")
 
 	tests := []testroutines.Read{
 		{
@@ -111,6 +112,42 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "First page response includes nextLink",
+			Input: common.ReadParams{ObjectName: "Contacts", Fields: connectors.Fields("id", "first_name")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/odata/Contacts"),
+				Then:  mockserver.Response(http.StatusOK, contactsFirstPageResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: "http://fourfour.example.com/odata/Contacts?$skip=1&$top=1",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Following nextLink returns last page",
+			Input: common.ReadParams{
+				ObjectName: "Contacts",
+				Fields:     connectors.Fields("id", "first_name"),
+				NextPage:   testroutines.URLTestServer + "/odata/Contacts?$skip=1&$top=1",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/odata/Contacts"),
+				Then:  mockserver.Response(http.StatusOK, contactsResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},
