@@ -1,5 +1,10 @@
 package providers
 
+// NetsuiteM2M has the exact same functionality as Netsuite provider
+// but the auth scheme is different, because Netsuite OAuth 2.0
+// refresh tokens expire after 30 days, whereas M2M allows for
+// longer-running integrations.
+// https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_162686838198.html
 const NetsuiteM2M Provider = "netsuiteM2M"
 
 // Module constants are shared with the netsuite provider — same modules, different auth.
@@ -7,7 +12,7 @@ const NetsuiteM2M Provider = "netsuiteM2M"
 // nolint:lll,funlen
 func init() {
 	SetInfo(NetsuiteM2M, ProviderInfo{
-		DisplayName: "Netsuite (M2M)",
+		DisplayName: "Netsuite",
 		AuthType:    Custom,
 		BaseURL:     "https://{{.workspace}}.suitetalk.api.netsuite.com",
 		CustomOpts: &CustomAuthOpts{
