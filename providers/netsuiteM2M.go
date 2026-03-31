@@ -113,19 +113,11 @@ func init() {
 					},
 				},
 				{
-					Name:        "scriptId",
-					DisplayName: "RESTlet Script ID",
-					DocsURL:     "https://docs.withampersand.com/customer-guides/netsuite-m2m#6-verify-the-deployment",
-					Prompt:      "This is an integer value for 'script' in your RESTlet's script deployment URL. If the URL is `/app/site/hosting/restlet.nl?script=3046&deploy=4`, then your script ID is `3046`.",
-					ModuleDependencies: &ModuleDependencies{
-						ModuleNetsuiteRESTlet: ModuleDependency{},
-					},
-				},
-				{
-					Name:        "deployId",
-					DisplayName: "RESTlet Deploy ID",
-					DocsURL:     "https://docs.withampersand.com/customer-guides/netsuite-m2m#6-verify-the-deployment",
-					Prompt:      "This is an integer value for 'deploy' in your RESTlet's script deployment URL. If the URL is `/app/site/hosting/restlet.nl?script=3046&deploy=4`, then your deploy ID is `4`.",
+					Name:         "scriptURL",
+					DisplayName:  "RESTlet Deployment URL",
+					DocsURL:      "https://docs.withampersand.com/customer-guides/netsuite-m2m#6-verify-the-deployment",
+					Prompt:       "After you install the Netsuite bundle, go to the Deployments tab and copy the URL.",
+					DefaultValue: "/app/site/hosting/restlet.nl?script=3277&deploy=1",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTlet: ModuleDependency{},
 					},
