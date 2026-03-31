@@ -58,8 +58,9 @@ func constructor(base *components.Connector) (*Adapter, error) {
 
 	adapter.SetErrorHandler(core.InterpretJSONError)
 	adapter.customAdapter = custom.NewAdapter(adapter.JSONHTTPClient(), adapter.ModuleInfo())
-	adapter.batchAdapter = batch.NewAdapter(adapter.HTTPClient(), adapter.ModuleInfo())
-	adapter.AssociationsFiller = associations.NewStrategy(adapter.JSONHTTPClient(), adapter.ModuleInfo())
+	associationsStrategy := associations.NewStrategy(adapter.JSONHTTPClient(), adapter.ModuleInfo())
+	adapter.AssociationsFiller = associationsStrategy
+	adapter.batchAdapter = batch.NewAdapter(adapter.HTTPClient(), adapter.ModuleInfo(), associationsStrategy)
 	adapter.searchStrategy = search.NewStrategy(
 		adapter.JSONHTTPClient(), adapter.ModuleInfo(), adapter.AssociationsFiller,
 	)
