@@ -1,0 +1,13 @@
+{
+  "iTwin": {
+    "id": "itwin-new-001",
+    "class": "Endeavor",
+    "subClass": "Project",
+    "type": "Bridge",
+    "displayName": "New Bridge Project",
+    "number": "PRJ-100",
+    "status": "Active",
+    "createdDateTime": "2024-06-15T10:30:00Z",
+    "createdBy": "user@example.com"
+  }
+}

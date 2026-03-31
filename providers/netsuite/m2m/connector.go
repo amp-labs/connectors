@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"time"
+	_ "time/tzdata"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"

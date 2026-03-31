@@ -1,0 +1,30 @@
+{
+  "id": "00u_newuser_12345",
+  "status": "STAGED",
+  "created": "2023-12-26T10:00:00.000Z",
+  "activated": null,
+  "statusChanged": null,
+  "lastLogin": null,
+  "lastUpdated": "2023-12-26T10:00:00.000Z",
+  "passwordChanged": null,
+  "type": {
+    "id": "oty1234567890abcdef"
+  },
+  "profile": {
+    "firstName": "Test",
+    "lastName": "User",
+    "email": "test.user@example.com",
+    "login": "test.user@example.com"
+  },
+  "credentials": {
+    "provider": {
+      "type": "OKTA",
+      "name": "OKTA"
+    }
+  },
+  "_links": {
+    "self": {
+      "href": "https://trial-4378019.okta.com/api/v1/users/00u_newuser_12345"
+    }
+  }
+}
