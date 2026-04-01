@@ -14,7 +14,9 @@ func init() {
 			TokenURL:                  "https://app.deel.com/oauth2/tokens",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			DocsURL:                   "https://developer.deel.com/api/oauth",
 		},
+
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
