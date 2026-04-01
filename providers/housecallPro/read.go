@@ -25,6 +25,7 @@ var readIDFieldByObject = datautils.NewDefaultMap( //nolint:gochecknoglobals
 	datautils.Map[string, readhelper.IdFieldQuery]{
 		"price_book/material_categories": readhelper.NewIdField("uuid"),
 		"price_book/services":            readhelper.NewIdField("uuid"),
+		"price_book/materials":           readhelper.NewIdField("uuid"),
 	},
 	func(_ string) readhelper.IdFieldQuery {
 		return readhelper.NewIdField("id")
