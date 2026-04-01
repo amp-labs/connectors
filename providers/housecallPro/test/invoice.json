@@ -1,0 +1,48 @@
+{
+    "page": 1,
+    "page_size": 10,
+    "total_pages": 1,
+    "total_items": 2,
+    "invoices": [
+        {
+            "id": "invoice_a760cd9ddcb3443aba683163845ede30",
+            "status": "paid",
+            "invoice_number": "2",
+            "amount": 0,
+            "subtotal": 0,
+            "due_amount": 0,
+            "due_at": "2026-03-25T22:52:41Z",
+            "display_due_concept": "upon receipt",
+            "due_concept": "upon",
+            "paid_at": null,
+            "sent_at": "2026-03-25T22:52:41Z",
+            "service_date": null,
+            "invoice_date": "2026-03-25T22:52:16Z",
+            "items": [],
+            "taxes": [],
+            "discounts": [],
+            "payments": [],
+            "job_id": "job_2fad85ca2c6c43b7bdbc01f0d12ff1c4"
+        },
+        {
+            "id": "invoice_718eafe396ba4913bd67289689d77f7d",
+            "status": "paid",
+            "invoice_number": "1",
+            "amount": 0,
+            "subtotal": 0,
+            "due_amount": 0,
+            "due_at": "2026-03-25T22:48:05Z",
+            "display_due_concept": "upon receipt",
+            "due_concept": "upon",
+            "paid_at": null,
+            "sent_at": "2026-03-25T22:49:34Z",
+            "service_date": "2026-03-26T09:00:00Z",
+            "invoice_date": "2026-03-26T09:00:00Z",
+            "items": [],
+            "taxes": [],
+            "discounts": [],
+            "payments": [],
+            "job_id": "job_070942c13e414e999fcef27c1beeb188"
+        }
+    ]
+}

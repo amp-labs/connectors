@@ -4202,10 +4202,27 @@ paths:
               schema:
                 type: object
                 properties:
-                  services:
+                  object:
+                    type: string
+                    description: list
+                  page:
+                    type: integer
+                    description: page number of the paginated list
+                  page_size:
+                    type: integer
+                    description: number of items per page
+                  total_pages_count:
+                    type: integer
+                    description: number of pages of the whole document
+                  total_count:
+                    type: integer
+                    description: total records count
+                  data:
                     type: array
                     items:
                       $ref: '#/components/schemas/PricebookService'
+                  url:
+                    type: string
       operationId: get-price-book-services
       description: Get a list of price book services.
       security:
@@ -4853,7 +4870,8 @@ components:
             is_point_of_contact: true
             is_admin: true
       allOf:
-        - properties:
+        - type: object
+          properties:
             id:
               type: string
             first_name:
@@ -4942,7 +4960,8 @@ components:
       x-examples: {}
     Customer:
       allOf:
-        - properties:
+        - type: object
+          properties:
             id:
               type: string
             first_name:
@@ -4993,7 +5012,8 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/Address'
-        - properties:
+        - type: object
+          properties:
             attachments:
               type: array
               description: Only present if expanded with attachments
@@ -6172,6 +6192,14 @@ components:
             - won
         pipeline_status:
           type: string
+        job_fields:
+          type: object
+        total_amount:
+          type: number
+        conversions:
+          type: array
+          items:
+            type: object
         company_name:
           type: string
         company_id:
@@ -6523,6 +6551,10 @@ components:
           type: string
           x-stoplight:
             id: 597qql0ewqw7o
+        created_at:
+          type: string
+        updated_at:
+          type: string
     PriceFormRequest:
       title: PriceForm
       type: object
@@ -6621,11 +6653,15 @@ components:
       title: PriceForm
       type: object
       properties:
+        object:
+          type: string
         id:
           type: string
           format: uuid
           pattern: '^pbpf_[a-f0-9]{32}$'
           example: pbpf_3fa85f6457174562b3fc2c963f66afa6
+        kind:
+          type: string
         name:
           type: string
         automatically_add_to_new_job:
@@ -6648,12 +6684,33 @@ components:
           type: string
         question_2:
           type: string
+        route_mode_enabled:
+          type: boolean
+        enable_advanced_calculation:
+          type: boolean
         bookable_as:
           type: string
         service_area_pricing_enabled:
           type: boolean
         image_url:
           type: string
+        assigned_pros:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              full_name:
+                type: string
+        assigned_tags:
+          type: array
+          items:
+            type: string
+        assigned_route_templates:
+          type: array
+          items:
+            type: object
         fields:
           type: object
           properties:
