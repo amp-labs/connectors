@@ -13,6 +13,9 @@ import (
 // ObjectEventsProcessed is the object name for GET /events/processed.
 const ObjectEventsProcessed = "events-processed"
 
+// ObjectEventsUnprocessed is the object name for GET /events/unprocessed.
+const ObjectEventsUnprocessed = "events-unprocessed"
+
 type Connector struct {
 	*components.Connector
 	common.RequireAuthenticatedClient

@@ -16,6 +16,11 @@ import (
 
 const (
 	defaultPageSize = "50"
+	// defaultEventDays is used for /events/processed and /events/unprocessed; both APIs
+	// require a "days" query parameter (max 30). See:
+	// https://developer.fastspring.com/reference/list-all-processed-events
+	// https://developer.fastspring.com/reference/list-all-unprocessed-events
+	defaultEventDays = "30"
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -57,6 +62,10 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
+	if fastSpringEventsRequiresDaysParam(params.ObjectName) {
+		url.WithQueryParam("days", defaultEventDays)
+	}
+
 	// FastSpring list endpoints support basic cursor-like pagination via limit + page.
 	url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, defaultPageSize))
 
@@ -64,6 +73,15 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 	url.WithQueryParam("page", "1")
 
 	return url, nil
+}
+
+func fastSpringEventsRequiresDaysParam(objectName string) bool {
+	switch objectName {
+	case ObjectEventsProcessed, ObjectEventsUnprocessed:
+		return true
+	default:
+		return false
+	}
 }
 
 func (c *Connector) parseReadResponse(
@@ -74,7 +92,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	recordsKey := metadata.Schemas.LookupArrayFieldName(c.ProviderContext.Module(), params.ObjectName)
 
-	records := common.ExtractRecordsFromPath(recordsKey)
+	records := recordsForRead(params.ObjectName, recordsKey)
 
 	return common.ParseResult(
 		resp,
@@ -83,6 +101,70 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+// recordsForRead extracts list rows: string IDs are wrapped to one-field maps by
+// object type; objects are left as-is. Uses ArrayOptional because FastSpring may
+// omit the array key when empty.
+func recordsForRead(objectName, recordsKey string) common.RecordsFunc {
+	return extractRecordsFromPathOrStringIDs(objectName, recordsKey)
+}
+
+func extractRecordsFromPathOrStringIDs(objectName, recordsKey string) common.RecordsFunc {
+	idField := stringIDFieldForListObject(objectName)
+
+	return func(node *ajson.Node) ([]map[string]any, error) {
+		// FastSpring often omits the array key when there are no rows (e.g. empty catalog);
+		// ArrayRequired would fail with ErrKeyNotFound.
+		arr, err := jsonquery.New(node).ArrayOptional(recordsKey)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(arr) == 0 {
+			return []map[string]any{}, nil
+		}
+
+		out := make([]map[string]any, 0, len(arr))
+
+		for _, v := range arr {
+			switch {
+			case v.IsObject():
+				m, convErr := jsonquery.Convertor.ObjectToMap(v)
+				if convErr != nil {
+					return nil, convErr
+				}
+
+				out = append(out, m)
+			case v.IsString():
+				s, strErr := v.GetString()
+				if strErr != nil {
+					return nil, strErr
+				}
+
+				out = append(out, map[string]any{idField: s})
+			default:
+				return nil, jsonquery.ErrNotObject
+			}
+		}
+
+		return out, nil
+	}
+}
+
+func stringIDFieldForListObject(objectName string) string {
+	switch objectName {
+	case "accounts":
+		return "id"
+	case "orders":
+		return "order"
+	case "products":
+		return "path"
+	case "subscriptions":
+		return "subscription"
+	default:
+		return "id"
+	}
 }
 
 // nextPageFromIntegerCounter builds a NextPageFunc that reads a numeric "nextPage"

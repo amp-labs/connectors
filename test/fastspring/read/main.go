@@ -51,6 +51,13 @@ func main() {
 		PageSize:   50,
 	})
 
+	slog.Info("=== Reading unprocessed events ===")
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "events-unprocessed",
+		Fields:     connectors.Fields("id", "event", "type", "processed", "live", "created"),
+		PageSize:   50,
+	})
+
 	slog.Info("=== Reading processed events ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "events-processed",
