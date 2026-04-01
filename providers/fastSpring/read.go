@@ -77,7 +77,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 
 func fastSpringEventsRequiresDaysParam(objectName string) bool {
 	switch objectName {
-	case ObjectEventsProcessed, ObjectEventsUnprocessed:
+	case "events-processed", "events-unprocessed":
 		return true
 	default:
 		return false
