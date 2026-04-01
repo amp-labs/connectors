@@ -106,4 +106,3 @@ func nextPageFromIntegerCounter(previousRequestURL *url.URL) common.NextPageFunc
 		return cloned.String(), nil
 	}
 }
-

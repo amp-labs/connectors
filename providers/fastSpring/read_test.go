@@ -25,7 +25,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 		"nextPage": 2
 			}`)
 
-				lastPage := []byte(`{
+	lastPage := []byte(`{
 			"accounts": [
 				{"id": "acc_3", "account": "Account Three"}
 			],
@@ -147,4 +147,3 @@ func constructTestReadConnector(baseURL string) (*Connector, error) {
 
 	return conn, nil
 }
-
