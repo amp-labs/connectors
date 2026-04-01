@@ -8,9 +8,6 @@ import (
 	"github.com/amp-labs/connectors/providers/fastspring/metadata"
 )
 
-// ObjectEventsProcessed is the object name for GET /events/processed.
-const ObjectEventsProcessed = "events-processed"
-
 type Connector struct {
 	*components.Connector
 	common.RequireAuthenticatedClient

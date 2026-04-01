@@ -6,7 +6,6 @@ import (
 	"os"
 
 	connTest "github.com/amp-labs/connectors/test/fastspring"
-	"github.com/amp-labs/connectors/providers/fastspring"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -20,7 +19,8 @@ func main() {
 		"orders",
 		"products",
 		"subscriptions",
-		fastspring.ObjectEventsProcessed,
+		"events-processed",
+		"events-unprocessed",
 	})
 	if err != nil {
 		log.Fatal(err)

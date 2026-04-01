@@ -158,6 +158,44 @@
               "providerType": "integer"
             }
           }
+        },
+        "events-unprocessed": {
+          "displayName": "Unprocessed Events",
+          "path": "/events/unprocessed",
+          "responseKey": "events",
+          "docs": "https://developer.fastspring.com/reference/list-all-unprocessed-events",
+          "fields": {
+            "id": {
+              "displayName": "Event Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "event": {
+              "displayName": "Event",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "processed": {
+              "displayName": "Processed",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "live": {
+              "displayName": "Live",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created": {
+              "displayName": "Created",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
         }
       }
     }
