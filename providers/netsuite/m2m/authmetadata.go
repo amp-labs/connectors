@@ -3,6 +3,7 @@ package m2m
 import (
 	"context"
 	"time"
+	_ "time/tzdata"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"

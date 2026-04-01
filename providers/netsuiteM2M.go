@@ -1,5 +1,10 @@
 package providers
 
+// NetsuiteM2M has the exact same functionality as Netsuite provider
+// but the auth scheme is different, because Netsuite OAuth 2.0
+// refresh tokens expire after 30 days, whereas M2M allows for
+// longer-running integrations.
+// https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_162686838198.html
 const NetsuiteM2M Provider = "netsuiteM2M"
 
 // Module constants are shared with the netsuite provider — same modules, different auth.
@@ -7,7 +12,7 @@ const NetsuiteM2M Provider = "netsuiteM2M"
 // nolint:lll,funlen
 func init() {
 	SetInfo(NetsuiteM2M, ProviderInfo{
-		DisplayName: "Netsuite (M2M)",
+		DisplayName: "Netsuite",
 		AuthType:    Custom,
 		BaseURL:     "https://{{.workspace}}.suitetalk.api.netsuite.com",
 		CustomOpts: &CustomAuthOpts{
@@ -108,19 +113,11 @@ func init() {
 					},
 				},
 				{
-					Name:        "scriptId",
-					DisplayName: "RESTlet Script ID",
-					DocsURL:     "https://docs.withampersand.com/customer-guides/netsuite-m2m#6-verify-the-deployment",
-					Prompt:      "This is an integer value for 'script' in your RESTlet's script deployment URL. If the URL is `/app/site/hosting/restlet.nl?script=3046&deploy=4`, then your script ID is `3046`.",
-					ModuleDependencies: &ModuleDependencies{
-						ModuleNetsuiteRESTlet: ModuleDependency{},
-					},
-				},
-				{
-					Name:        "deployId",
-					DisplayName: "RESTlet Deploy ID",
-					DocsURL:     "https://docs.withampersand.com/customer-guides/netsuite-m2m#6-verify-the-deployment",
-					Prompt:      "This is an integer value for 'deploy' in your RESTlet's script deployment URL. If the URL is `/app/site/hosting/restlet.nl?script=3046&deploy=4`, then your deploy ID is `4`.",
+					Name:         "scriptURL",
+					DisplayName:  "RESTlet Deployment URL",
+					DocsURL:      "https://docs.withampersand.com/customer-guides/netsuite-m2m#6-verify-the-deployment",
+					Prompt:       "After you install the Netsuite bundle, go to the Deployments tab and copy the URL.",
+					DefaultValue: "/app/site/hosting/restlet.nl?script=3277&deploy=1",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTlet: ModuleDependency{},
 					},

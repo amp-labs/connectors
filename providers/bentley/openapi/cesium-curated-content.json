@@ -1,0 +1,520 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Cesium Curated Content",
+        "description": "",
+        "version": "v1"
+    },
+    "servers": [
+        {
+            "url": "https://api.bentley.com/curated-content/cesium"
+        }
+    ],
+    "paths": {
+        "/": {
+            "get": {
+                "tags": [
+                    "Technology Preview",
+                    "Cesium Curated Content"
+                ],
+                "summary": "List content",
+                "description": "---\r\n\r\nRetrieves all available content.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.\r\n\r\n---\r\n",
+                "operationId": "list-content",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ContentResponse"
+                                },
+                                "example": {
+                                    "items": [
+                                        {
+                                            "id": 1,
+                                            "type": "TERRAIN",
+                                            "name": "Cesium World Terrain",
+                                            "description": "High-resolution global terrain tileset curated from several data sources. See the official [Cesium World Terrain](https://cesium.com/content/cesium-world-terrain/) page for details.",
+                                            "attribution": "Data available from the U.S. Geological Survey, © CGIAR-CSI, Produced using Copernicus data and information funded by the European Union - EU-DEM layers, Data available from Land Information New Zealand, Data available from data.gov.uk, Data courtesy Geoscience Australia",
+                                            "status": "COMPLETE"
+                                        },
+                                        {
+                                            "id": 2,
+                                            "type": "3DTILES",
+                                            "name": "Cesium OSM Buildings",
+                                            "description": "3D buildings from OpenStreetMap with attributes such as height, name, and type of building. See the official [Cesium OSM Buildings](https://cesium.com/content/cesium-osm-buildings/) page for details.",
+                                            "attribution": "Data available from OpenStreetMap contributors",
+                                            "status": "COMPLETE"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "The 422 (Unprocessable Entity) status code indicates that the request cannot be processed by the server due to a client error (e.g. malformed request syntax)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidCesiumCuratedContentRequest",
+                                        "message": "Cannot retrieve Cesium curated content.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidValue",
+                                                "message": "not-a-guid is not a valid iTwin id.",
+                                                "target": "itwinId"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/{contentId}/tiles": {
+            "get": {
+                "tags": [
+                    "Technology Preview",
+                    "Cesium Curated Content"
+                ],
+                "summary": "Access tiles",
+                "description": "---\r\n\r\nRetrieves information and credentials that allow you to access the tiled content data for visualization and analysis.\r\n\r\n### Entry Point URL Formatting\r\n\r\nThis operation returns a URL to the entry point of the tileset, depending on the asset type. Treat this URL as an opaque link, as its format may change at any time. Do not cache it. Perform any URL manipulation by parsing the URL, not through string manipulation. Do not cache this URL across application instances, as it can change over time.\r\n\r\nEach asset type returns the URL in a different format. Depending on the asset type, you will need to format the URL differently.\r\n\r\n#### 3DTILES\r\n\r\nThe complete path to the tileset.json is returned. No URL formatting is needed.\r\n\r\n#### TERRAIN\r\n\r\nThe base URL of the terrain tileset is returned. For quantized meshes, retrieve the layer.json file to get the configuration.\r\n\r\nTo do this for the Cesium World Terrain, the URL Template is: `[URL returned by the endpoint]/layer.json`.\r\n\r\nExample: `https://assets.ion.cesium.com/us-east-1/asset_depot/1/CesiumWorldTerrain/v1.2/layer.json`\r\n\r\n#### IMAGERY\r\n\r\nThe base URL for both a TMS and WMTS compatible tileset is returned. A capabilities file is required to render this tilesets.\r\n\r\nTo retrieve the capabilities file for the Sentinel-2 imagery, use the following URL Templates:\r\n\r\n  - WMTS: `[URL returned by endpoint]/WMTSCapabilities.xml`. **Example:** `https://assets.ion.cesium.com/us-east-1/asset_depot/3954/Sentinel-2/2021/WMTSCapabilities.xml`.\r\n\r\n  - TMS: `[URL returned by endpoint]/tilemapresource.xml`. **Example:** `https://assets.ion.cesium.com/us-east-1/asset_depot/3954/Sentinel-2/2021/tilemapresource.xml`.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.\r\n\r\n---\r\n",
+                "operationId": "access-tiles",
+                "parameters": [
+                    {
+                        "name": "contentId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessTileResponse"
+                                },
+                                "example": {
+                                    "type": "3DTILES",
+                                    "url": "https://assets.cesium.com/23912/tileset.json",
+                                    "accessToken": "eyJhbGci...bHupXyIjCPOfuSOpXwQoaQU_a94",
+                                    "attributions": [
+                                        {
+                                            "html": "<span><a href=\"https://cesium.com\" target=\"_blank\"><img alt=\"Cesium ion\" src=\"http://assets.cesium.com/ion-credit.png\"></a></span>",
+                                            "collapsible": false
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "This response indicates that the specified itwin was not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "ContentNotFound",
+                                        "message": "Requested content is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "The 422 (Unprocessable Entity) status code indicates that the request cannot be processed by the server due to a client error (e.g. malformed request syntax)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidCesiumCuratedContentRequest",
+                                        "message": "Cannot retrieve Cesium curated content.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidValue",
+                                                "message": "not-a-guid is not a valid iTwin id.",
+                                                "target": "itwinId"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AccessTileResponse": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "$ref": "#/components/schemas/ContentType"
+                    },
+                    "url": {
+                        "type": "string",
+                        "description": "The entry point url of the tileset, depending on the content type. This url should be treated as an opaque link as the actual format may change any time. Do not cache it. Any URL manipulation should be done by parsing the URL, rather than through string manipulation. For terrain and imagery, simply append the desired file or tile to the base url. This url should not be cached across application instances as it can change over time."
+                    },
+                    "accessToken": {
+                        "type": "string",
+                        "description": "The token to be included with each tile request, using Bearer format. This token is different than the access token used throughout the rest of the REST API. It provides access to the content for approximately one hour. To continue using the content after the allotted time, simple re-request the endpoint for a new token."
+                    },
+                    "attributions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ContentTileAttribution"
+                        },
+                        "description": "List of attributions."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ContentTileAttribution": {
+                "type": "object",
+                "properties": {
+                    "html": {
+                        "type": "string",
+                        "description": "An HTML string defining the content's required attribution. The rendered HTML must be accessible to the end users of your application."
+                    },
+                    "collapsible": {
+                        "type": "boolean",
+                        "description": "If true, the rendered HTML must be shown on screen as long as the associated content is also on screen. If false, the HTML can be shown on a separate panel or page."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Content": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "description": "The unique identifier for the content."
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the content."
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "A Markdown string describing the content."
+                    },
+                    "attribution": {
+                        "type": "string",
+                        "description": "A Markdown compatible string containing any required attribution for the content. Clients will be required to display the attribution to end users."
+                    },
+                    "type": {
+                        "$ref": "#/components/schemas/ContentType"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ContentStatus"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ContentType": {
+                "enum": [
+                    "3DTILES",
+                    "GLTF",
+                    "IMAGERY",
+                    "TERRAIN",
+                    "KML",
+                    "CZML",
+                    "GEOJSON"
+                ],
+                "type": "string",
+                "description": "The type of content."
+            },
+            "ContentStatus": {
+                "enum": [
+                    "AWAITING_FILES",
+                    "NOT_STARTED",
+                    "IN_PROGRESS",
+                    "COMPLETE",
+                    "ERROR",
+                    "DATA_ERROR"
+                ],
+                "type": "string",
+                "description": "Describes the state of the content during the upload and tiling processes."
+            },
+            "ContentResponse": {
+                "required": [
+                    "items"
+                ],
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Content"
+                        },
+                        "description": "List of content."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "DetailedError": {
+                "required": [
+                    "code",
+                    "message",
+                    "details"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "description": "One of a server-defined set of error codes."
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "A human-readable representation of the error."
+                    },
+                    "target": {
+                        "type": "string",
+                        "description": "The target of the error.",
+                        "nullable": true
+                    },
+                    "details": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Error"
+                        },
+                        "description": "Optional array of more specific errors."
+                    }
+                },
+                "description": "Contains error information and an array of more specific errors."
+            },
+            "DetailedErrorResponse": {
+                "title": "Detailed Error Response",
+                "required": [
+                    "error"
+                ],
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "$ref": "#/components/schemas/DetailedError"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Gives details for an error that occurred while handling the request. Note that clients MUST NOT assume that every failed request will produce an object of this schema, or that all of the properties in the response will be non-null, as the error may have prevented this response from being constructed."
+            },
+            "Error": {
+                "required": [
+                    "code",
+                    "message"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "description": "One of a server-defined set of error codes."
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "A human-readable representation of the error."
+                    },
+                    "target": {
+                        "type": "string",
+                        "description": "The target of the error.",
+                        "nullable": true
+                    }
+                },
+                "description": "Contains error information."
+            },
+            "ErrorResponse": {
+                "title": "Error Response",
+                "required": [
+                    "error"
+                ],
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "$ref": "#/components/schemas/Error"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Gives details for an error that occurred while handling the request. Note that clients MUST NOT assume that every failed request will produce an object of this schema, or that all of the properties in the response will be non-null, as the error may have prevented this response from being constructed."
+            },
+            "AcceptHeader": {
+                "type": "string",
+                "default": "application/vnd.bentley.itwin-platform.v1+json"
+            },
+            "AuthorizationHeader": {
+                "pattern": "^Bearer .*$",
+                "type": "string"
+            },
+            "PreferHeader": {
+                "enum": [
+                    "return=representation",
+                    "return=minimal"
+                ],
+                "type": "string"
+            }
+        },
+        "securitySchemes": {
+            "apiKeyHeader": {
+                "type": "apiKey",
+                "name": "X-Api-Subscription-Key",
+                "in": "header"
+            },
+            "apiKeyQuery": {
+                "type": "apiKey",
+                "name": "subscription-key",
+                "in": "query"
+            }
+        }
+    },
+    "security": [
+        {
+            "apiKeyHeader": []
+        },
+        {
+            "apiKeyQuery": []
+        }
+    ]
+}

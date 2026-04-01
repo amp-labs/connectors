@@ -1,0 +1,31 @@
+[
+  {
+    "id": "00g1234567890abcdef",
+    "created": "2023-01-10T09:00:00.000Z",
+    "lastUpdated": "2024-01-05T15:30:00.000Z",
+    "lastMembershipUpdated": "2024-01-05T15:30:00.000Z",
+    "objectClass": [
+      "okta:user_group"
+    ],
+    "type": "OKTA_GROUP",
+    "profile": {
+      "name": "Engineering",
+      "description": "Engineering team members"
+    },
+    "_links": {
+      "logo": [
+        {
+          "name": "medium",
+          "href": "https://example.okta.com/img/logos/groups/okta-medium.png",
+          "type": "image/png"
+        }
+      ],
+      "users": {
+        "href": "https://example.okta.com/api/v1/groups/00g1234567890abcdef/users"
+      },
+      "apps": {
+        "href": "https://example.okta.com/api/v1/groups/00g1234567890abcdef/apps"
+      }
+    }
+  }
+]
