@@ -74,7 +74,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	recordsKey := metadata.Schemas.LookupArrayFieldName(c.ProviderContext.Module(), params.ObjectName)
 
-	records := common.ExtractRecordsFromPath(recordsKey, recordsKey)
+	records := common.ExtractRecordsFromPath(recordsKey)
 
 	return common.ParseResult(
 		resp,
