@@ -46,7 +46,7 @@ func newAdapter(provider providers.Provider, params common.ConnectorParams) (*Ad
 	return components.Initialize(provider, params, func(base *components.Connector) (*Adapter, error) {
 
 		var scriptURL, scriptId, deployId string
-		var ok bool
+		var ok bool //nolint:varnamelen
 
 		// If scriptURL is provided, use it to build the restlet URL.
 		scriptURL, ok = params.Metadata["scriptURL"]
