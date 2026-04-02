@@ -111,7 +111,7 @@ func (c *Connector) parseReadResponse(
 		resp,
 		records,
 		nextPageFromIntegerCounter(request.URL),
-		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField(stringIDFieldForListObject(params.ObjectName))),
+		readhelper.MakeGetMarshaledDataWithId(stringIDFieldForListObject(params.ObjectName)),
 		params.Fields,
 	)
 }
@@ -122,11 +122,13 @@ func (c *Connector) parseReadResponse(
 //	{ "accounts": [ {"id":"x","account":"y"} ] }
 //	{ "accounts": [ "id1", "id2" ] }
 //
-// Objects are returned as-is in Raw; string elements become { "<idField>": "<id>" } (idField from stringIDFieldForListObject).
+// Objects are returned as-is in Raw; string elements become { "<idField>": "<id>" }
+// using the IdFieldQuery.Field from stringIDFieldForListObject (flat root keys only).
 // The response key may be absent when empty — jsonquery.ArrayOptional yields an empty slice without error.
 // If the value is a single string instead of an array, we treat it as one row (fallback after ErrNotArray).
 func recordsForRead(objectName, recordsKey string) common.RecordsFunc {
-	idField := stringIDFieldForListObject(objectName)
+	idQuery := stringIDFieldForListObject(objectName)
+	idField := idQuery.Field
 
 	return func(node *ajson.Node) ([]map[string]any, error) {
 		arr, err := jsonquery.New(node).ArrayOptional(recordsKey)
@@ -176,18 +178,18 @@ func recordsForRead(objectName, recordsKey string) common.RecordsFunc {
 	}
 }
 
-func stringIDFieldForListObject(objectName string) string {
+func stringIDFieldForListObject(objectName string) readhelper.IdFieldQuery {
 	switch objectName {
 	case "accounts":
-		return "id"
+		return readhelper.NewIdField("id")
 	case "orders":
-		return "order"
+		return readhelper.NewIdField("order")
 	case "products":
-		return "path"
+		return readhelper.NewIdField("path")
 	case "subscriptions":
-		return "subscription"
+		return readhelper.NewIdField("subscription")
 	default:
-		return "id"
+		return readhelper.NewIdField("id")
 	}
 }
 
