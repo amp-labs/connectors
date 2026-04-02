@@ -1,0 +1,23 @@
+{
+  "iTwins": [
+    {
+      "id": "abc-123",
+      "class": "Endeavor",
+      "subClass": "Project",
+      "type": "Bridge",
+      "displayName": "My Project",
+      "number": "PRJ-001",
+      "status": "Active",
+      "createdDateTime": "2024-01-15T10:30:00Z",
+      "createdBy": "user@example.com"
+    }
+  ],
+  "_links": {
+    "self": {
+      "href": "https://api.bentley.com/itwins"
+    },
+    "next": {
+      "href": "https://api.bentley.com/itwins?$skip=1"
+    }
+  }
+}

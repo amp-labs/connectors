@@ -1,0 +1,2754 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Reality Management",
+        "description": "Interact with your reality data.\r\n\r\nView, update, create, and delete reality data.\r\n",
+        "version": "v1"
+    },
+    "servers": [
+        {
+            "url": "https://api.bentley.com/reality-management/reality-data"
+        }
+    ],
+    "paths": {
+        "/": {
+            "get": {
+                "tags": [
+                    "Reality Data"
+                ],
+                "summary": "Get iTwin's reality data",
+                "description": "---\r\n\r\nRetrieves a list of [reality data](https://www.itwinjs.org/learning/glossary/#realitydata) instances belonging to the specified iTwin.\r\n\r\nThe retrieved instances are those for which you have the required access rights, relative to the specified iTwin.\r\n\r\nThe `iTwinId` is optional. If you don't provide it, the retrieved [reality data](https://www.itwinjs.org/learning/glossary/#realitydata) instances will be relative to general access rights provided by your organization. These rights are usually more restrictive, so we recommend using the `iTwinId` parameter for exhaustive results.\r\n\r\n### Notes\r\n\r\nThe `Prefer` header can be used to specify how much result metadata is desired by the client. The `Prefer` request header field is used to indicate that particular server behaviors are preferred by the client but are not required for successful completion of the request.\r\n\r\nThis operation supports `\"return=representation\"` and `\"return=minimal\"` preferences.\r\n\r\nThe `\"return=representation\"` preference indicates that the client prefers that the server include an entity representing the current state of the resource in the response to a successful request, i.e., all properties are included in the response.\r\nThe `\"return=minimal\"` preference indicates that the client wishes the server to return only a minimal response to a successful request. This is the default preference if `Prefer` header is not specified.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.\r\n\r\n### Authorization\r\n\r\nUser must be an Organization Administrator for the Organization that owns a given iTwin or must have access to context.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n\r\n### Rate limits\r\n\r\nAll iTwin Platform API operations have a rate limit. For more documentation on that visit [Rate limits and quotas](https://developer.bentley.com/apis/overview/rate-limits/) page.\r\n\r\n---",
+                "operationId": "get-all-reality-data",
+                "parameters": [
+                    {
+                        "name": "iTwinId",
+                        "in": "query",
+                        "description": "Id of iTwin. The operation gets all reality data in this iTwin.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "continuationToken",
+                        "in": "query",
+                        "description": "Parameter that enables continuing to the next page of the previous paged query. This must be passed exactly as it is in the response body's _links.next property. If this is specified and $top is omitted, the next page will be the same size as the previous page.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "$top",
+                        "in": "query",
+                        "description": "The number of reality data to get in each page. Max 1000, but 100 is the default if this parameter is not included.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "extent",
+                        "in": "query",
+                        "description": "Extent of the area to search, delimited by southwest and northeast coordinates. Extent values are specified in this format: SouthwestCorner_Longitude, SouthwestCorner_Latitude, NortheastCorner_Longitude, NortheastCorner_Latitude. E.g. to get all reality data in an area around Exton, PA, provide the following extent parameter: extent=-75.637679,40.032871,-75.633647,40.032771",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "$orderBy",
+                        "in": "query",
+                        "description": "Parameter that enable to order reality data in ascending or descending order. Default is ascending.Example : displayName desc",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "$search",
+                        "in": "query",
+                        "description": "Search reality data",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "types",
+                        "in": "query",
+                        "description": "Comma separated list of reality data types. Example: \"OPC,Terrain3DTiles, OMR, Cesium3DTiles\" ",
+                        "schema": {
+                            "type": "array"
+                        }
+                    },
+                    {
+                        "name": "acquisitionDateTime",
+                        "in": "query",
+                        "description": "Aquisition datetime range in ISO-8601 compliant time (UTC).\nFormat: startDateTime/endDateTime\nExample: 2021-05-12T20:03:12Z/2022-05-12T20:03:12Z",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "createdDateTime",
+                        "in": "query",
+                        "description": "Created datetime range in ISO-8601 compliant time (UTC).\nFormat: startDateTime/endDateTime\nExample: 2021-05-12T20:03:12Z/2022-05-12T20:03:12Z",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "modifiedDateTime",
+                        "in": "query",
+                        "description": "Modified datetime range in ISO-8601 compliant time (UTC).\nFormat: startDateTime/endDateTime\nExample: 2021-05-12T20:03:12Z/2022-05-12T20:03:12Z",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "lastAccessedDateTime",
+                        "in": "query",
+                        "description": "Last accessed datetime range in ISO-8601 compliant time (UTC).\nFormat: startDateTime/endDateTime\nExample: 2021-05-12T20:03:12Z/2022-05-12T20:03:12Z",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "ownerId",
+                        "in": "query",
+                        "description": "Guid identifier of the owner. Example: 123e4567-e89b-12d3-a456-426614174000",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "dataCenter",
+                        "in": "query",
+                        "description": "Data center location. Example: \"East US\"",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tag",
+                        "in": "query",
+                        "description": "Parameter to get reality data with exact matching tags.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Prefer",
+                        "in": "header",
+                        "description": "Optional. Selected preferred representation.",
+                        "schema": {
+                            "enum": [
+                                "return=minimal",
+                                "return=representation"
+                            ],
+                            "type": "string",
+                            "default": "return=minimal"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reality-data-metadata-return-minimal"
+                                },
+                                "examples": {
+                                    "minimal": {
+                                        "value": {
+                                            "realityData": [
+                                                {
+                                                    "id": "95d8dccd-d89e-4287-bb5f-3219acbc71ae",
+                                                    "displayName": "Name of reality data",
+                                                    "type": "3mx"
+                                                }
+                                            ],
+                                            "_links": {
+                                                "next": {
+                                                    "href": "https://api.bentley.com/reality-management/reality-data?iTwinId=0d4e1f7b-1a4c-0000-0000-1643d04e3954&continuationToken=eyJ0b3AiOjEwMCwic2tpcCI6MTAwfQ"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "This response indicates that user does not have required permissions to get  reality data's from iTwin.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InsufficientPermissions",
+                                        "message": "The user has insufficient permissions for the requested operation."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "This response indicates that the iTwin was not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "iTwinNotFound",
+                                        "message": "Requested iTwin is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request to get reality data. Please ensure that the request is valid.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidRealityDataRequest",
+                                        "message": "Invalid RealityData request.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidParameter",
+                                                "message": "The field Top must be between 1 and 1000.",
+                                                "target": "$Top"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Reality Data"
+                ],
+                "summary": "Create reality data",
+                "description": "---\r\nCreates a [reality data](https://www.itwinjs.org/learning/glossary/#realitydata).\r\n\r\nAs shown in the request section below, you must provide a request body.\r\n\r\nYou MUST provide the `iTwinId`, `displayName` and `type` properties.\r\n\r\nThe `rootDocument` property is not required but highly recommended. It is the entry point for consuming applications to read the content of the Reality Data. [See RootDocument property](https://developer.bentley.com/apis/reality-management/rm-rd-details/#rootdocument)\r\n\r\nFor more details on each property, see [Reality Data Properties](https://developer.bentley.com/apis/reality-management/rm-rd-details/) in documentation.\r\n\r\nAfter creation, the reality data will be associated to the specified iTwin.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.\r\n\r\n### Authorization\r\n\r\nUser must have the `realitydata_create` permission assigned at the iTwin level or be an Organization Administrator for the Organization that owns a given iTwin.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n\r\n### Rate limits\r\n\r\nAll iTwin Platform API operations have a rate limit. For more documentation on that visit [Rate limits and quotas](https://developer.bentley.com/apis/overview/rate-limits/) page.\r\n---\r\n",
+                "operationId": "create-reality-data",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/request-body-create"
+                            },
+                            "example": {
+                                "iTwinId": "8f70cca5-2122-4912-8713-49f6cd7f17b1",
+                                "displayName": "Name of the reality data to create",
+                                "classification": "Model",
+                                "type": "LAS",
+                                "description": "Description of the reality data",
+                                "dataset": "Dataset",
+                                "group": "GroupId",
+                                "attribution": "Attribution of reality data",
+                                "termsOfUse": "Terms of use of reality data",
+                                "rootDocument": "rootDocument.las",
+                                "tags": [
+                                    "tag1",
+                                    "tag2"
+                                ],
+                                "acquisition": {
+                                    "startDateTime": "2021-05-12T20:03:12.0000000+00:00",
+                                    "endDateTime": "2021-05-15T22:07:18.0000000+00:00",
+                                    "acquirer": "Data Acquisition Inc."
+                                },
+                                "extent": {
+                                    "southWest": {
+                                        "latitude": 40.0206,
+                                        "longitude": -75.6355
+                                    },
+                                    "northEast": {
+                                        "latitude": 40.0356,
+                                        "longitude": -75.6059
+                                    }
+                                },
+                                "crs": {
+                                    "id": "EPSG:4326",
+                                    "verticalId": "EPSG:5773"
+                                },
+                                "authoring": true
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Reality data successfully created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reality-data-metadata-create-response"
+                                },
+                                "example": {
+                                    "realityData": {
+                                        "id": "95d8dccd-d89e-4287-bb5f-3219acbc71ae",
+                                        "displayName": "Name of reality data",
+                                        "dataset": "Dataset",
+                                        "group": "73d09423-28c3-4fdb-ab4a-03a47a5b04f8",
+                                        "description": "Description of reality data",
+                                        "attribution": "Attribution of reality data",
+                                        "termsOfUse": "Terms of use of reality data",
+                                        "rootDocument": "rootDocument.las",
+                                        "size": 6521212,
+                                        "classification": "Model",
+                                        "type": "LAS",
+                                        "tags": [
+                                            "tag1",
+                                            "tag2"
+                                        ],
+                                        "acquisition": {
+                                            "startDateTime": "2021-05-12T20:03:12.0000000+00:00",
+                                            "endDateTime": "2021-05-15T22:07:18.0000000+00:00",
+                                            "acquirer": "Data Acquisition Inc."
+                                        },
+                                        "extent": {
+                                            "southWest": {
+                                                "latitude": 38.0206,
+                                                "longitude": -75.6355
+                                            },
+                                            "northEast": {
+                                                "latitude": 38.0356,
+                                                "longitude": -75.6059
+                                            }
+                                        },
+                                        "crs": {
+                                            "id": "EPSG:4326",
+                                            "verticalId": "EPSG:5773"
+                                        },
+                                        "authoring": true,
+                                        "dataCenterLocation": "North Europe",
+                                        "modifiedDateTime": "2021-04-09T19:03:12.0000000+00:00",
+                                        "lastAccessedDateTime": "2021-04-09T00:00:00.0000000+00:00",
+                                        "createdDateTime": "2021-02-22T20:03:40.0000000+00:00",
+                                        "ownerId": "f1d49cc7-f9b3-494f-9c67-563ea5597063"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "This response indicates that user does not have required permissions to create a reality data.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InsufficientPermissions",
+                                        "message": "The user has insufficient permissions for the requested operation."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request to create reality data. Please ensure that the request is valid.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "examples": {
+                                    "InvalidRealityDataRequest": {
+                                        "value": {
+                                            "error": {
+                                                "code": "InvalidRealityDataRequest",
+                                                "message": "Invalid request to create reality data. Can not create reality data.",
+                                                "details": [
+                                                    {
+                                                        "code": "InvalidValue",
+                                                        "message": "Invalid parameter.",
+                                                        "target": "type"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/{id}": {
+            "patch": {
+                "tags": [
+                    "Reality Data"
+                ],
+                "summary": "Update reality data",
+                "description": "---\r\n\r\nUpdates the metadata of a [reality data](https://www.itwinjs.org/learning/glossary/#realitydata).\r\n\r\nThe `iTwinId` parameter is optional, but it is preferable to provide it, because the permissions used to allow the modification of the reality data are determined from the iTwin.\r\n\r\nWith no iTwin specified, it may be possible to modify the reality data (e.g. the caller is the owner), but more permissions may be granted when the `iTwinId` is provided.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.\r\n\r\n### Authorization\r\n\r\nUser must have the `realitydata_manage` permission assigned at the iTwin level or be an Organization Administrator for the Organization that owns a given iTwin.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n\r\n### Rate limits\r\n\r\nAll iTwin Platform API operations have a rate limit. For more documentation on that visit [Rate limits and quotas](https://developer.bentley.com/apis/overview/rate-limits/) page.\r\n\r\n---",
+                "operationId": "update-reality-data",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of reality data",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/request-body-update"
+                            },
+                            "example": {
+                                "iTwinId": "8f70cca5-2122-4912-8713-49f6cd7f17b1",
+                                "displayName": "Name of the reality data to modify",
+                                "classification": "Model",
+                                "type": "LAS",
+                                "description": "Description of the reality data",
+                                "dataset": "Dataset",
+                                "group": "GroupId",
+                                "attribution": "Attribution of reality data",
+                                "termsOfUse": "Terms of use of reality data",
+                                "rootDocument": "Models/Scene/myModel.las",
+                                "tags": [
+                                    "tag1",
+                                    "tag2"
+                                ],
+                                "acquisition": {
+                                    "startDateTime": "2021-05-12T20:03:12.0000000+00:00",
+                                    "endDateTime": "2021-05-15T22:07:18.0000000+00:00",
+                                    "acquirer": "Data Acquisition Inc."
+                                },
+                                "extent": {
+                                    "southWest": {
+                                        "latitude": 40.0206,
+                                        "longitude": -75.6355
+                                    },
+                                    "northEast": {
+                                        "latitude": 40.0356,
+                                        "longitude": -75.6059
+                                    }
+                                },
+                                "crs": {
+                                    "id": "EPSG:4326",
+                                    "verticalId": "EPSG:5773"
+                                },
+                                "authoring": false
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reality-data-metadata-response"
+                                },
+                                "example": {
+                                    "realityData": {
+                                        "id": "95d8dccd-d89e-4287-bb5f-3219acbc71ae",
+                                        "displayName": "Name of reality data",
+                                        "dataset": "Dataset",
+                                        "group": "73d09423-28c3-4fdb-ab4a-03a47a5b04f8",
+                                        "description": "Description of reality data",
+                                        "attribution": "Attribution of reality data",
+                                        "termsOfUse": "Terms of use of reality data",
+                                        "rootDocument": "Directory/SubDirectory/realityData.las",
+                                        "size": 6521212,
+                                        "classification": "Model",
+                                        "type": "LAS",
+                                        "tags": [
+                                            "tag1",
+                                            "tag2"
+                                        ],
+                                        "acquisition": {
+                                            "startDateTime": "2021-05-12T20:03:12.0000000+00:00",
+                                            "endDateTime": "2021-05-15T22:07:18.0000000+00:00",
+                                            "acquirer": "Data Acquisition Inc."
+                                        },
+                                        "extent": {
+                                            "southWest": {
+                                                "latitude": 38.0206,
+                                                "longitude": -75.6355
+                                            },
+                                            "northEast": {
+                                                "latitude": 38.0356,
+                                                "longitude": -75.6059
+                                            }
+                                        },
+                                        "crs": {
+                                            "id": "EPSG:4326",
+                                            "verticalId": "EPSG:5773"
+                                        },
+                                        "authoring": false,
+                                        "dataCenterLocation": "North Europe",
+                                        "modifiedDateTime": "2021-04-09T19:03:12.0000000+00:00",
+                                        "lastAccessedDateTime": "2021-04-09T00:00:00.0000000+00:00",
+                                        "createdDateTime": "2021-02-22T20:03:40.0000000+00:00",
+                                        "ownerId": "f1d49cc7-f9b3-494f-9c67-563ea5597063"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "This response indicates that user does not have required permissions to update a reality data.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InsufficientPermissions",
+                                        "message": "The user has insufficient permissions for the requested operation."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "This response indicates that the specified reality data was not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RealityDataNotFound",
+                                        "message": "Requested reality data is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request to update reality data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "examples": {
+                                    "InvalidRealityDataRequest": {
+                                        "value": {
+                                            "error": {
+                                                "code": "InvalidRealityDataRequest",
+                                                "message": "Invalid RealityData request.",
+                                                "details": [
+                                                    {
+                                                        "code": "InvalidValue",
+                                                        "message": "The value 'fe9aac3a-2496-----' is not valid.",
+                                                        "target": "id"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Reality Data"
+                ],
+                "summary": "Get reality data metadata",
+                "description": "---\r\n\r\nRetrieves the metadata of a [reality data](https://www.itwinjs.org/learning/glossary/#realitydata).\r\n\r\nThe `iTwinId` parameter is optional, but it is preferable to provide it, because the permissions used to access the collection of reality data are determined from the iTwin. With no iTwin specified, the desired reality data can be retrieved (e.g. the caller is the owner), but it's more likely to get the expected result if you provide the `iTwinId`.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.\r\n\r\n### Authorization\r\n\r\nUser must have the `realitydata_use` permission assigned at the iTwin level or be an Organization Administrator for the Organization that owns a given iTwin.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n\r\n### Rate limits\r\n\r\nAll iTwin Platform API operations have a rate limit. For more documentation on that visit [Rate limits and quotas](https://developer.bentley.com/apis/overview/rate-limits/) page.\r\n\r\n---",
+                "operationId": "get-reality-data-details",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of reality data",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "iTwinId",
+                        "in": "query",
+                        "description": "Id of iTwin",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reality-data-metadata-response"
+                                },
+                                "example": {
+                                    "realityData": {
+                                        "id": "95d8dccd-d89e-4287-bb5f-3219acbc71ae",
+                                        "displayName": "Name of reality data",
+                                        "dataset": "Dataset",
+                                        "group": "73d09423-28c3-4fdb-ab4a-03a47a5b04f8",
+                                        "description": "Description of reality data",
+                                        "attribution": "Attribution of reality data",
+                                        "termsOfUse": "Terms of use of reality data",
+                                        "rootDocument": "Directory/SubDirectory/realityData.las",
+                                        "size": 6521212,
+                                        "classification": "Model",
+                                        "type": "LAS",
+                                        "tags": [
+                                            "tag1",
+                                            "tag2"
+                                        ],
+                                        "acquisition": {
+                                            "startDateTime": "2021-05-12T20:03:12.0000000+00:00",
+                                            "endDateTime": "2021-05-15T22:07:18.0000000+00:00",
+                                            "acquirer": "Data Acquisition Inc."
+                                        },
+                                        "extent": {
+                                            "southWest": {
+                                                "latitude": 38.0206,
+                                                "longitude": -75.6355
+                                            },
+                                            "northEast": {
+                                                "latitude": 38.0356,
+                                                "longitude": -75.6059
+                                            }
+                                        },
+                                        "crs": {
+                                            "id": "EPSG:4326",
+                                            "verticalId": "EPSG:5773"
+                                        },
+                                        "authoring": false,
+                                        "dataCenterLocation": "North Europe",
+                                        "modifiedDateTime": "2021-04-09T19:03:12.0000000+00:00",
+                                        "lastAccessedDateTime": "2021-04-09T00:00:00.0000000+00:00",
+                                        "createdDateTime": "2021-02-22T20:03:40.0000000+00:00",
+                                        "ownerId": "f1d49cc7-f9b3-494f-9c67-563ea5597063"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "This response indicates that user does not have required permissions.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InsufficientPermissions",
+                                        "message": "The user has insufficient permissions for the requested operation."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "This response indicates that the specified reality data was not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RealityDataNotFound",
+                                        "message": "Requested reality data is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request to get reality data details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidRealityDataRequest",
+                                        "message": "Invalid RealityData request.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidParameter",
+                                                "message": "The value 'fe9aac3a-2496-4bd2-82c6-7c0818f499' is not valid.",
+                                                "target": "iTwinId"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Reality Data"
+                ],
+                "summary": "Delete reality data",
+                "description": "---\r\n\r\nDeletes a [reality data](https://www.itwinjs.org/learning/glossary/#realitydata).\r\n\r\nTo delete a reality data, it must be associated to only one (or zero) iTwin. If it has more associated iTwins, first [dissociate](https://developer.bentley.com/apis/reality-management/operations/dissociate-from-itwin/) the iTwins.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.\r\n\r\n### Authorization\r\n\r\nUser must have the `realitydata_manage` permission assigned at the iTwin level or be an Organization Administrator for the Organization that owns a given iTwin.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n\r\n### Rate limits\r\n\r\nAll iTwin Platform API operations have a rate limit. For more documentation on that visit [Rate limits and quotas](https://developer.bentley.com/apis/overview/rate-limits/) page.\r\n\r\n---",
+                "operationId": "delete-reality-data",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of reality data",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "This response indicates that the specified reality data was not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RealityDataNotFound",
+                                        "message": "Requested reality data is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request to delete reality data. Please ensure that the request is valid.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidRealityDataRequest",
+                                        "message": "Invalid RealityData request.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidValue",
+                                                "message": "The value '028cb17d-01e5-4d92-bfee-89b201a922' is not valid.",
+                                                "target": "id"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/{id}/itwins/{iTwinId}": {
+            "post": {
+                "tags": [
+                    "Associations"
+                ],
+                "summary": "Associate a reality data to a iTwin",
+                "description": "---\r\n\r\nAssociates a [reality data](https://www.itwinjs.org/learning/glossary/#realitydata) to a iTwin.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.\r\n\r\n### Authorization\r\n\r\nUser must have the `realitydata_create , realitydata_assign` permission assigned at the iTwin level or be an Organization Administrator for the Organization that owns a given iTwin.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n\r\n### Rate limits\r\n\r\nAll iTwin Platform API operations have a rate limit. For more documentation on that visit [Rate limits and quotas](https://developer.bentley.com/apis/overview/rate-limits/) page.\r\n\r\n---",
+                "operationId": "associate-to-iTwin",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of reality data",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "iTwinId",
+                        "in": "path",
+                        "description": "Id of iTwin",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reality data successfully associated to the iTwin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/iTwin-association-response"
+                                },
+                                "example": {
+                                    "iTwinAssociation": {
+                                        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                                        "iTwinId": "40ddf4f1-50b9-4d68-a02e-cd711094a411"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user has insufficient permissions for the requested operation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InsufficientPermissions",
+                                        "message": "The user has insufficient permissions for the requested operation."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "This response indicates that the reality data id or the iTwin id was not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RealityDataNotFound",
+                                        "message": "Requested reality data is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "This response indicates that the Association with the same iTwin already exists.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "AssociationExists",
+                                        "message": "Association with the same iTwin already exists."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request to associate reality data to iTwin. Please ensure that the request is valid.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidRealityDataRequest",
+                                        "message": "Invalid RealityData request.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidValue",
+                                                "message": "The value '028cb17d-01e5-4d92-bfee-89b201a92' is not valid.",
+                                                "target": "iTwinId"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Associations"
+                ],
+                "summary": "Dissociate a reality data from a iTwin",
+                "description": "---\r\n\r\nDissociates a [reality data](https://www.itwinjs.org/learning/glossary/#realitydata) from a iTwin.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.\r\n\r\n### Authorization\r\n\r\nUser must have the `realitydata_create , realitydata_assign` permission assigned at the iTwin level or be an Organization Administrator for the Organization that owns a given iTwin.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n\r\n### Rate limits\r\n\r\nAll iTwin Platform API operations have a rate limit. For more documentation on that visit [Rate limits and quotas](https://developer.bentley.com/apis/overview/rate-limits/) page.\r\n\r\n---",
+                "operationId": "dissociate-from-iTwin",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of reality data",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "iTwinId",
+                        "in": "path",
+                        "description": "Id of iTwin",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "This response indicates that user does not have required permissions to dissociate a reality data from iTwin.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InsufficientPermissions",
+                                        "message": "The user has insufficient permissions for the requested operation."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "This response indicates that the association between the reality data and iTwin was not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "AssociationNotFound",
+                                        "message": "Requested association between reality data and iTwin is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request to dissociate reality data from iTwin. Please ensure that the request is valid.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidRealityDataRequest",
+                                        "message": "Invalid RealityData request.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidValue",
+                                                "message": "The value '028cb17d-01e5-4d92-bfee-89b201a92' is not valid.",
+                                                "target": "iTwinId"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/{id}/itwins": {
+            "get": {
+                "tags": [
+                    "Associations"
+                ],
+                "summary": "Get all iTwins to which a reality data is associated",
+                "description": "---\r\n\r\nRetrieves the list of iTwins associated to the specified [reality data](https://www.itwinjs.org/learning/glossary/#realitydata).\r\n\r\nWhen no iTwin is associated to the reality data, an empty list is returned.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.\r\n\r\n### Authorization\r\n\r\nUser must have the `realitydata_use` permission assigned at the iTwin level or be an Organization Administrator for the Organization that owns a given iTwin.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n\r\n### Rate limits\r\n\r\nAll iTwin Platform API operations have a rate limit. For more documentation on that visit [Rate limits and quotas](https://developer.bentley.com/apis/overview/rate-limits/) page.\r\n\r\n---",
+                "operationId": "get-reality-data-iTwins",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of reality data",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/reality-data-iTwins-response"
+                                },
+                                "example": {
+                                    "iTwins": [
+                                        "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "This response indicates that user does not have required permissions to get iTwins for a reality data.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InsufficientPermissions",
+                                        "message": "The user has insufficient permissions for the requested operation."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "This response indicates that the requested reality data was not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RealityDataNotFound",
+                                        "message": "Requested reality data is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request to get iTwins for reality data. Please ensure that the request is valid.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidRealityDataRequest",
+                                        "message": "Invalid RealityData request.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidValue",
+                                                "message": "The value 'fe9aac3a-2496-4bd2-82c6-' is not valid.",
+                                                "target": "id"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/{id}/move": {
+            "patch": {
+                "tags": [
+                    "Reality Data"
+                ],
+                "summary": "Move reality data",
+                "description": "\r\n---\r\n\r\nMove a [reality data](https://www.itwinjs.org/learning/glossary/#realitydata) to a specified iTwin. A request body with the `iTwinId` parameter is required.\r\n\r\nTo successfully move a reality data :\r\n\r\n- The destination iTwin must be in the same organization as the reality data.\r\n- The destination iTwin must be in the same data center location as the reality data.\r\n- The reality data must not already be associated to more than one iTwin.\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.\r\n\r\n### Authorization\r\nUser must have the `realitydata_manage` permission assigned at the iTwin level of both iTwins or be an Organization Administrator for the Organization that owns a given iTwin.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n\r\n### Rate limits\r\n\r\nAll iTwin Platform API operations have a rate limit. For more documentation on that visit [Rate limits and quotas](https://developer.bentley.com/apis/overview/rate-limits/) page.",
+                "operationId": "move-reality-data",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Identifier of the reality data. This identifier is assigned by the service at the creation of the reality data. It is also unique.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/request-body-move"
+                            },
+                            "example": {
+                                "iTwinId": "string"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "This response indicates that the reality data was successfully moved to the desired iTwin."
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user has insufficient permissions for the requested operation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InsufficientPermissions",
+                                        "message": "The user has insufficient permissions for the requested operation."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "This response indicates that the reality data id or the iTwin id was not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RealityDataNotFound",
+                                        "message": "Requested reality data is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "This response indicates that the reality data is already within the given iTwin.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "AlreadyExists",
+                                        "message": "Reality data is already within the given iTwin."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request to move reality data to iTwin. Please ensure that the request is valid.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "examples": {
+                                    "InvalidRealityDataRequest": {
+                                        "value": {
+                                            "error": {
+                                                "code": "InvalidRealityDataRequest",
+                                                "message": "Invalid RealityData request.",
+                                                "details": [
+                                                    {
+                                                        "code": "InvalidValue",
+                                                        "message": "The input was not valid.",
+                                                        "target": "iTwinId"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/{id}/writeaccess": {
+            "get": {
+                "tags": [
+                    "Containers"
+                ],
+                "summary": "Retrieve write access to reality data container",
+                "description": "\r\n---\r\nRetrieves the container's link with write access for an instance of [reality data](https://www.itwinjs.org/learning/glossary/#realitydata).\r\n\r\nA container is where the reality data itself (a point cloud, a mesh, a collection of images, ...) is stored.\r\n\r\nThe container's link will allow you to upload/download data directly to this container.\r\n\r\nA [reality data](https://www.itwinjs.org/learning/glossary/#realitydata) is always associated to exactly one container.\r\n\r\nThe `iTwinId` parameter is optional, but it is preferable to provide it, because the permissions used to access the container are determined from the iTwin. With no iTwin specified, the operation can succeed in some cases (e.g. the user is the reality data's owner), but we recommend to provide a `iTwinId`.\r\n\r\nIn future API versions, containers could be hosted in in different cloud providers, but for now, only Azure cloud is supported.\r\n\r\nTo store or retrieve data from a container, refer to the [Azure Blob Storage documentation](https://docs.microsoft.com/en-us/azure/storage/blobs/).\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.\r\n\r\n### Authorization\r\nUser must be an Organization Administrator for the Organization that owns a given iTwin or have realitydata_manage permission for write access assigned at the iTwin level.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n\r\n### Rate limits\r\n\r\nAll iTwin Platform API operations have a rate limit. For more documentation on that visit [Rate limits and quotas](https://developer.bentley.com/apis/overview/rate-limits/) page.\r\n\r\n---\r\n",
+                "operationId": "get-write-access-to-reality-data-container",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of reality data",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "iTwinId",
+                        "in": "query",
+                        "description": "Id of iTwin.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/get-access-to-container-response"
+                                },
+                                "example": {
+                                    "type": "AzureBlobSasUrl",
+                                    "access": "Write",
+                                    "_links": {
+                                        "containerUrl": {
+                                            "href": "https://realityprodneusa01.blob.core.windows.net/78e3a82d-076e-4d1d-b8ef-ab0625fbb856?sv=2020-08-04&se=2021-07-22T03%3A50%3A21Z&sr=c&sp=rl&sig=**removed**"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "This response indicates that user does not have required permissions.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InsufficientPermissions",
+                                        "message": "The user has insufficient permissions for the requested operation."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "This response indicates that the reality data not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RealityDataNotFound",
+                                        "message": "Requested reality data is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request to get access to reality data. Please ensure that the request is valid.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidRealityDataRequest",
+                                        "message": "Invalid RealityData request.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidValue",
+                                                "message": "The value '028cb17d-01e5-4d92-bfee-89b201a922' is not valid.",
+                                                "target": "id"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/{id}/readaccess": {
+            "get": {
+                "tags": [
+                    "Containers"
+                ],
+                "summary": "Retrieve read access to reality data container",
+                "description": "\r\n---\r\nRetrieves the container's link with read access for an instance of [reality data](https://www.itwinjs.org/learning/glossary/#realitydata).\r\n\r\nA container is where the reality data itself (a point cloud, a mesh, a collection of images, ...) is stored.\r\n\r\nThe container's link will allow you to upload/download data directly to this container.\r\n\r\nA [reality data](https://www.itwinjs.org/learning/glossary/#realitydata) is always associated to exactly one container.\r\n\r\nThe `iTwinId` parameter is optional, but it is preferable to provide it, because the permissions used to access the container are determined from the iTwin. With no iTwin specified, the operation can succeed in some cases (e.g. the user is the reality data's owner), but we recommend to provide a `iTwinId`.\r\n\r\nIn future API versions, containers could be hosted in in different cloud providers, but for now, only Azure cloud is supported.\r\n\r\nTo store or retrieve data from a container, refer to the [Azure Blob Storage documentation](https://docs.microsoft.com/en-us/azure/storage/blobs/).\r\n\r\n### Authentication\r\n\r\nRequires `Authorization` header with valid Bearer token for scope `itwin-platform`.\r\n\r\nFor more documentation on authorization and how to get access token visit [OAUTH2 Authorization](https://developer.bentley.com/apis/overview/authorization/) page.\r\n\r\n### Authorization\r\nUser must be an Organization Administrator for the Organization that owns a given iTwin or have realitydata_use permission for read access assigned at the iTwin level.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n\r\n### Rate limits\r\n\r\nAll iTwin Platform API operations have a rate limit. For more documentation on that visit [Rate limits and quotas](https://developer.bentley.com/apis/overview/rate-limits/) page.\r\n\r\n---\r\n",
+                "operationId": "get-read-access-to-reality-data-container",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of reality data",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "iTwinId",
+                        "in": "query",
+                        "description": "Id of iTwin.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v1+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/get-access-to-container-response"
+                                },
+                                "example": {
+                                    "type": "AzureBlobSasUrl",
+                                    "access": "Read",
+                                    "_links": {
+                                        "containerUrl": {
+                                            "href": "https://realityprodneusa01.blob.core.windows.net/78e3a82d-076e-4d1d-b8ef-ab0625fbb856?sv=2020-08-04&se=2021-07-22T03%3A50%3A21Z&sr=c&sp=rl&sig=**removed**"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "This response indicates that user does not have required permissions.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InsufficientPermissions",
+                                        "message": "The user has insufficient permissions for the requested operation."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "This response indicates that the reality data not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RealityDataNotFound",
+                                        "message": "Requested reality data is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request to get access to reality data.. Please ensure that the request is valid.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidRealityDataRequest",
+                                        "message": "Invalid RealityData request.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidValue",
+                                                "message": "The value '028cb17d-01e5-4d92-bfee-89b201a922' is not valid.",
+                                                "target": "id"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "reality-data-metadata-response": {
+                "title": "Reality Data Metadata Response",
+                "type": "object",
+                "properties": {
+                    "realityData": {
+                        "$ref": "#/components/schemas/reality-data-metadata"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Reality data metadata response."
+            },
+            "reality-data-metadata-create-response": {
+                "title": "Reality Data Details Response",
+                "type": "object",
+                "properties": {
+                    "realityData": {
+                        "$ref": "#/components/schemas/reality-data-metadata"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Reality data details response."
+            },
+            "acquisition": {
+                "title": "Acquisition",
+                "type": "object",
+                "properties": {
+                    "startDateTime": {
+                        "type": "string",
+                        "description": "ISO-8601 compliant time (UTC) that indicates when the data acquisition started. E.g. '2017-05-10T13:43:03Z'",
+                        "format": "date-time"
+                    },
+                    "endDateTime": {
+                        "type": "string",
+                        "description": "ISO-8601 compliant time (UTC) that indicates when the data acquisition ended. E.g. '2017-05-10T13:43:03Z'",
+                        "format": "date-time"
+                    },
+                    "acquirer": {
+                        "type": "string",
+                        "description": "Description of the acquirer."
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Details about data acquisition."
+            },
+            "extent": {
+                "title": "Extent",
+                "type": "object",
+                "properties": {
+                    "southWest": {
+                        "$ref": "#/components/schemas/coordinate"
+                    },
+                    "northEast": {
+                        "$ref": "#/components/schemas/coordinate"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Extent of a reality data, delimited by southwest and northeast coordinates."
+            },
+            "coordinate": {
+                "title": "Coordinate",
+                "type": "object",
+                "properties": {
+                    "latitude": {
+                        "maximum": 90,
+                        "minimum": -90,
+                        "type": "number",
+                        "description": "Latitude. Latitude ranges between -90 and 90 degrees, inclusive.",
+                        "format": "double"
+                    },
+                    "longitude": {
+                        "maximum": 180,
+                        "minimum": -180,
+                        "type": "number",
+                        "description": "Longitude. Longitude ranges between -180 and 180 degrees, inclusive.",
+                        "format": "double"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Coordinate used to define an extent."
+            },
+            "crs": {
+                "title": "Crs",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Identifier of the coordinate reference system."
+                    },
+                    "verticalId": {
+                        "type": "string",
+                        "description": "Optional identifier of the vertical coordinate reference system."
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Details about the reality data's coordinate reference system."
+            },
+            "iTwin-association-response": {
+                "title": "iTwin Association Response",
+                "type": "object",
+                "properties": {
+                    "iTwinAssociation": {
+                        "$ref": "#/components/schemas/iTwin-association"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Ids of associated iTwin and reality data."
+            },
+            "iTwin-association": {
+                "title": "iTwin Association",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "id of associated reality data."
+                    },
+                    "iTwinId": {
+                        "type": "string",
+                        "description": "Id of associated iTwin."
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Defines an association between a reality data and a iTwin"
+            },
+            "link": {
+                "type": "object",
+                "properties": {
+                    "href": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "get-access-to-container-response": {
+                "title": "Container Details Response",
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "description": "Type of container. Currently, only 'AzureBlobSasUrl' is supported."
+                    },
+                    "access": {
+                        "type": "string",
+                        "description": "Type of access user have to container."
+                    },
+                    "_links": {
+                        "$ref": "#/components/schemas/container-links"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Container for a reality data."
+            },
+            "container-details": {
+                "title": "Container Details",
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "description": "Type of container. Currently, only 'AzureBlobSasUrl' is supported."
+                    },
+                    "_links": {
+                        "$ref": "#/components/schemas/container-links"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Provides a link and other details for a reality data container"
+            },
+            "container-links": {
+                "title": "Container Links",
+                "type": "object",
+                "properties": {
+                    "containerUrl": {
+                        "$ref": "#/components/schemas/container-url"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "The link to the container"
+            },
+            "container-url": {
+                "title": "Container URL",
+                "type": "object",
+                "properties": {
+                    "href": {
+                        "type": "string",
+                        "description": "The URL"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "The URL of the container"
+            },
+            "reality-data-self-link": {
+                "title": "Reality Data Details Link",
+                "type": "object",
+                "properties": {
+                    "self": {
+                        "$ref": "#/components/schemas/link"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "reality-data-metadata-summary": {
+                "title": "Reality Data Details",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Identifier of the reality data. This identifier is assigned by the service at the creation of the reality data. It is also unique."
+                    },
+                    "displayName": {
+                        "type": "string",
+                        "description": "The name of the reality data. This property may not contain any control sequence such as a URL or code."
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "A key indicating the format of the data. The type property should be a specific indication of the format of the reality data. Given a type, the consuming software should be able to determine if it has the capacity to open the reality data. Although the type field is a free string some specific values are reserved and other values should be selected judiciously. Look at the documentation for an exhaustive list of reserved [reality data types](/apis/reality-management/rm-rd-details/#types)."
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Details for a reality data (summary)"
+            },
+            "reality-data-metadata-return-minimal": {
+                "title": "Reality Data Details",
+                "type": "object",
+                "properties": {
+                    "realityData": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/reality-data-metadata-summary"
+                        }
+                    },
+                    "_links": {
+                        "$ref": "#/components/schemas/next-page-link"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Array of reality data (summary)"
+            },
+            "reality-data-metadata-return-representation": {
+                "title": "Reality Data Details",
+                "type": "object",
+                "properties": {
+                    "realityData": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/reality-data-metadata"
+                        }
+                    },
+                    "_links": {
+                        "$ref": "#/components/schemas/next-page-link"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Array of reality data"
+            },
+            "next-page-link": {
+                "title": "Next Page Link",
+                "type": "object",
+                "properties": {
+                    "next": {
+                        "$ref": "#/components/schemas/link"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "URL for getting the next page of data, if applicable."
+            },
+            "request-body-create": {
+                "title": "Reality Data",
+                "required": [
+                    "iTwinId",
+                    "displayName",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "iTwinId": {
+                        "type": "string",
+                        "description": "Id of associated iTwin."
+                    },
+                    "displayName": {
+                        "type": "string",
+                        "description": "Name of the reality data."
+                    },
+                    "classification": {
+                        "type": "string",
+                        "description": "Specific value constrained field that indicates the nature of the reality data. Allowed values: 'Terrain', 'Imagery', 'Pinned', 'Model', 'Undefined'"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "A key indicating the format of the data. Valid values include '3MX', 'PointCloud', RealityMesh3DTiles', ... See documentation for an exhaustive list of registered [reality data types](/apis/reality-management/rm-rd-details/#types)."
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Description of the reality data."
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/tag"
+                        },
+                        "description": "A string of lower case characters. Upper case characters will be accepted as input but will be transferred to lower case. Limits: 60 characters. 15 tags per reality data. Prohibited characters: \\ / : * ? , \" < > |"
+                    },
+                    "dataset": {
+                        "type": "string",
+                        "description": "This field can be used to define a loose grouping of reality data. This property may not contain any control sequence such as a URL or code."
+                    },
+                    "group": {
+                        "type": "string",
+                        "description": "The group can be used to define a second level of grouping. This property may not contain any control sequence such as a URL or code."
+                    },
+                    "attribution": {
+                        "type": "string",
+                        "description": "The attribution of the reality data."
+                    },
+                    "termsOfUse": {
+                        "type": "string",
+                        "description": "Terms of use of the reality data."
+                    },
+                    "rootDocument": {
+                        "type": "string",
+                        "description": "Used to indicate the root document of the reality data."
+                    },
+                    "acquisition": {
+                        "$ref": "#/components/schemas/acquisition"
+                    },
+                    "extent": {
+                        "$ref": "#/components/schemas/extent"
+                    },
+                    "crs": {
+                        "$ref": "#/components/schemas/crs"
+                    },
+                    "authoring": {
+                        "type": "boolean",
+                        "description": "A boolean value that is true if the data is being created. It is false if the data has been completely uploaded."
+                    },
+                    "ownerId": {
+                        "type": "string",
+                        "description": "Identifier of the owner of the reality data."
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Request body for reality data creation."
+            },
+            "tag": {
+                "type": "string",
+                "description": "A string identifier."
+            },
+            "reality-data-metadata": {
+                "title": "Reality Data Details",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Identifier of the reality data. This identifier is assigned by the service at the creation of the reality data. It is also unique."
+                    },
+                    "displayName": {
+                        "type": "string",
+                        "description": "The name of the reality data. This property may not contain any control sequence such as a URL or code."
+                    },
+                    "dataset": {
+                        "type": "string",
+                        "description": "This field can be used to define a loose grouping of reality data. This property may not contain any control sequence such as a URL or code."
+                    },
+                    "group": {
+                        "type": "string",
+                        "description": "The group can be used to define a second level of grouping. This property may not contain any control sequence such as a URL or code."
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "A textual description of the reality data. This property may not contain any control sequence such as a URL or code."
+                    },
+                    "attribution": {
+                        "type": "string",
+                        "description": "The attribution of the reality data."
+                    },
+                    "termsOfUse": {
+                        "type": "string",
+                        "description": "Terms of use of the reality data."
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/tag"
+                        },
+                        "description": "A string of lower case characters. Upper case characters will be accepted as input but will be transferred to lower case. Limits: 60 characters. 15 tags per reality data. Prohibited characters: \\ / : * ? , \" < > |"
+                    },
+                    "rootDocument": {
+                        "type": "string",
+                        "description": "Used to indicate the root document of the reality data. The root document can be in a subfolder and is then specified as “Tile_Root.json” or “Folder1/SubFolder1/File.json” for example."
+                    },
+                    "size": {
+                        "type": "integer",
+                        "description": "The size of the reality data in Kilobytes.",
+                        "format": "int64"
+                    },
+                    "classification": {
+                        "type": "string",
+                        "description": "Specific value constrained field that indicates the nature of the reality data. The following values are currently supported: Terrain, Imagery, Pinned, Model, Undefined."
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "A key indicating the format of the data. The type property should be a specific indication of the format of the reality data. Given a type, the consuming software should be able to determine if it has the capacity to open the reality data. Although the type field is a free string some specific values are reserved and other values should be selected judiciously. Look at the documentation for an exhaustive list of reserved [reality data types](/apis/reality-management/rm-rd-details/#types)."
+                    },
+                    "acquisition": {
+                        "$ref": "#/components/schemas/acquisition"
+                    },
+                    "extent": {
+                        "$ref": "#/components/schemas/extent"
+                    },
+                    "crs": {
+                        "$ref": "#/components/schemas/crs"
+                    },
+                    "authoring": {
+                        "type": "boolean",
+                        "description": "A boolean value that is true if the data is being created. It is false if the data has been completely uploaded."
+                    },
+                    "dataCenterLocation": {
+                        "type": "string",
+                        "description": "Identifies the data center location used to store the reality data."
+                    },
+                    "modifiedDateTime": {
+                        "type": "string",
+                        "description": "ISO-8601 compliant time (UTC) of last modification of the reality data. E.g. '2017–05–10T13:43:03Z'",
+                        "format": "date-time"
+                    },
+                    "lastAccessedDateTime": {
+                        "type": "string",
+                        "description": "ISO-8601 compliant time (UTC) of last access of the reality data. E.g. '2017–05–10T13:43:03Z'",
+                        "format": "date-time"
+                    },
+                    "createdDateTime": {
+                        "type": "string",
+                        "description": "ISO-8601 compliant time (UTC) of the creation of the reality data. E.g. '2017–05–10T13:43:03Z'",
+                        "format": "date-time"
+                    },
+                    "ownerId": {
+                        "type": "string",
+                        "description": "Identifier of the owner of the reality data."
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Details for a reality data"
+            },
+            "request-body-update": {
+                "title": "Reality Data (Update)",
+                "type": "object",
+                "properties": {
+                    "iTwinId": {
+                        "type": "string",
+                        "description": "Id of associated iTwin."
+                    },
+                    "displayName": {
+                        "type": "string",
+                        "description": "Name of the reality data."
+                    },
+                    "classification": {
+                        "type": "string",
+                        "description": "Specific value constrained field that indicates the nature of the reality data. Allowed values: 'Terrain', 'Imagery', 'Pinned', 'Model', 'Undefined'"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "A key indicating the format of the data. Valid values include '3MX', 'PointCloud', RealityMesh3DTiles', ... See documentation for an exhaustive list of registered [reality data types](/apis/reality-management/rm-rd-details/#types)."
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Description of the reality data."
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/tag"
+                        },
+                        "description": "A string of lower case characters. Upper case characters will be accepted as input but will be transferred to lower case. Limits: 60 characters. 15 tags per reality data. Prohibited characters: \\ / : * ? , \" < > |"
+                    },
+                    "dataset": {
+                        "type": "string",
+                        "description": "This field can be used to define a loose grouping of reality data. This property may not contain any control sequence such as a URL or code."
+                    },
+                    "group": {
+                        "type": "string",
+                        "description": "The group can be used to define a second level of grouping. This property may not contain any control sequence such as a URL or code."
+                    },
+                    "attribution": {
+                        "type": "string",
+                        "description": "The attribution of the reality data."
+                    },
+                    "termsOfUse": {
+                        "type": "string",
+                        "description": "Terms of use of the reality data."
+                    },
+                    "rootDocument": {
+                        "type": "string",
+                        "description": "Used to indicate the root document of the reality data."
+                    },
+                    "acquisition": {
+                        "$ref": "#/components/schemas/acquisition"
+                    },
+                    "extent": {
+                        "$ref": "#/components/schemas/extent"
+                    },
+                    "crs": {
+                        "$ref": "#/components/schemas/crs"
+                    },
+                    "authoring": {
+                        "type": "boolean",
+                        "description": "A boolean value that is true if the data is being created. It is false if the data has been completely uploaded."
+                    },
+                    "ownerId": {
+                        "type": "string",
+                        "description": "Identifier of the owner of the reality data."
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Request body for updating a reality data."
+            },
+            "reality-data-iTwins-response": {
+                "title": "List of iTwins Associated to a Reality Data",
+                "type": "object",
+                "properties": {
+                    "iTwins": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/iTwinId"
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "description": "List of all iTwins associated to a reality data."
+            },
+            "iTwinId": {
+                "type": "string",
+                "description": "iTwin identifier."
+            },
+            "request-body-move": {
+                "required": [
+                    "iTwinId"
+                ],
+                "type": "object",
+                "properties": {
+                    "iTwinId": {
+                        "type": "string",
+                        "description": "Identifier of the destination iTwin to move the reality data to."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "DetailedError": {
+                "required": [
+                    "code",
+                    "message",
+                    "details"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "description": "One of a server-defined set of error codes."
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "A human-readable representation of the error."
+                    },
+                    "target": {
+                        "type": "string",
+                        "description": "The target of the error.",
+                        "nullable": true
+                    },
+                    "details": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Error"
+                        },
+                        "description": "Optional array of more specific errors."
+                    }
+                },
+                "description": "Contains error information and an array of more specific errors."
+            },
+            "DetailedErrorResponse": {
+                "title": "Detailed Error Response",
+                "required": [
+                    "error"
+                ],
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "$ref": "#/components/schemas/DetailedError"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Gives details for an error that occurred while handling the request. Note that clients MUST NOT assume that every failed request will produce an object of this schema, or that all of the properties in the response will be non-null, as the error may have prevented this response from being constructed."
+            },
+            "Error": {
+                "required": [
+                    "code",
+                    "message"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "description": "One of a server-defined set of error codes."
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "A human-readable representation of the error."
+                    },
+                    "target": {
+                        "type": "string",
+                        "description": "The target of the error.",
+                        "nullable": true
+                    }
+                },
+                "description": "Contains error information."
+            },
+            "ErrorResponse": {
+                "title": "Error Response",
+                "required": [
+                    "error"
+                ],
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "$ref": "#/components/schemas/Error"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Gives details for an error that occurred while handling the request. Note that clients MUST NOT assume that every failed request will produce an object of this schema, or that all of the properties in the response will be non-null, as the error may have prevented this response from being constructed."
+            },
+            "AcceptHeader": {
+                "type": "string",
+                "default": "application/vnd.bentley.itwin-platform.v1+json"
+            },
+            "AuthorizationHeader": {
+                "pattern": "^Bearer .*$",
+                "type": "string"
+            },
+            "PreferHeader": {
+                "enum": [
+                    "return=representation",
+                    "return=minimal"
+                ],
+                "type": "string"
+            }
+        },
+        "securitySchemes": {
+            "apiKeyHeader": {
+                "type": "apiKey",
+                "name": "X-Api-Subscription-Key",
+                "in": "header"
+            },
+            "apiKeyQuery": {
+                "type": "apiKey",
+                "name": "subscription-key",
+                "in": "query"
+            }
+        }
+    },
+    "security": [
+        {
+            "apiKeyHeader": []
+        },
+        {
+            "apiKeyQuery": []
+        }
+    ]
+}

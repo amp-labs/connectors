@@ -69,11 +69,14 @@ func ConstructDestructiveApexTrigger(triggerName string) ([]byte, error) {
 
 // generateTriggerCode dynamically generates APEX trigger code.
 func generateTriggerCode(params ApexTriggerParams) string {
-	// Build insert condition: field != null && field != ''
+	// Build insert condition: field != null
+	// We only check != null (not != '') because the empty-string check is invalid
+	// for non-String Apex types (Boolean, Datetime, Number, etc.) and would cause
+	// compilation errors. The null check is sufficient and type-safe for all field types.
 	insertConditions := make([]string, 0, len(params.WatchFields))
 	for _, field := range params.WatchFields {
 		insertConditions = append(insertConditions,
-			fmt.Sprintf("(rec.%s != null && rec.%s != '')", field, field))
+			fmt.Sprintf("(rec.%s != null)", field))
 	}
 
 	insertExpr := strings.Join(insertConditions, " || ")

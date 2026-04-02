@@ -1,0 +1,9 @@
+{
+  "id": "wh-new-001",
+  "scopeId": "scope-123",
+  "scope": "iTwin",
+  "secret": "s3cr3t",
+  "active": true,
+  "callbackUrl": "https://example.com/webhook",
+  "eventTypes": ["iModelCreatedEvent"]
+}

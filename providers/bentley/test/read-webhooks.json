@@ -1,0 +1,16 @@
+{
+  "webhooks": [
+    {
+      "id": "wh-789",
+      "callbackUrl": "https://example.com/webhook",
+      "active": true,
+      "eventTypes": ["iModelCreatedEvent"],
+      "secret": "s3cr3t"
+    }
+  ],
+  "_links": {
+    "self": {
+      "href": "https://api.bentley.com/webhooks"
+    }
+  }
+}

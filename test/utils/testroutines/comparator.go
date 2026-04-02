@@ -25,8 +25,9 @@ func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult)
 	b := mockutils.ReadResultComparator.SubsetRaw(actual, expected)
 	c := mockutils.ReadResultComparator.SubsetAssociationsRaw(actual, expected)
 	d := ComparatorPagination(serverURL, actual, expected)
+	e := mockutils.ReadResultComparator.Identifiers(actual, expected)
 
-	return a && b && c && d
+	return a && b && c && d && e
 }
 
 // ComparatorPagination will check pagination related fields.

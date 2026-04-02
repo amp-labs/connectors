@@ -34,20 +34,38 @@ type Adapter struct {
 // NewAdapter creates a RESTlet adapter. It reads scriptId and deployId
 // from params.Metadata to construct the RESTlet URL.
 func NewAdapter(params common.ConnectorParams) (*Adapter, error) { //nolint:funlen
-	return components.Initialize(providers.Netsuite, params, func(base *components.Connector) (*Adapter, error) {
-		scriptId, ok := params.Metadata["scriptId"]
-		if !ok || scriptId == "" {
-			return nil, fmt.Errorf("%w: scriptId", ErrMissingMetadata)
-		}
+	return newAdapter(providers.Netsuite, params)
+}
 
-		deployId, ok := params.Metadata["deployId"]
-		if !ok || deployId == "" {
-			return nil, fmt.Errorf("%w: deployId", ErrMissingMetadata)
+// NewAdapterForProvider creates an adapter for a given provider (e.g. NetsuiteM2M).
+func NewAdapterForProvider(provider providers.Provider, params common.ConnectorParams) (*Adapter, error) {
+	return newAdapter(provider, params)
+}
+
+func newAdapter(provider providers.Provider, params common.ConnectorParams) (*Adapter, error) { //nolint:funlen
+	return components.Initialize(provider, params, func(base *components.Connector) (*Adapter, error) {
+		var scriptURL, scriptId, deployId string
+
+		var ok bool //nolint:varnamelen
+
+		// If scriptURL is provided, use it to build the restlet URL.
+		scriptURL, ok = params.Metadata["scriptURL"]
+		if !ok {
+			// If scriptURL is not provided, use scriptId and deployId to build the restlet URL.
+			scriptId, ok = params.Metadata["scriptId"]
+			if !ok || scriptId == "" {
+				return nil, fmt.Errorf("%w: scriptId", ErrMissingMetadata)
+			}
+
+			deployId, ok = params.Metadata["deployId"]
+			if !ok || deployId == "" {
+				return nil, fmt.Errorf("%w: deployId", ErrMissingMetadata)
+			}
 		}
 
 		baseURL := base.ModuleInfo().BaseURL
 
-		restletURL, err := buildRestletURL(baseURL, scriptId, deployId)
+		restletURL, err := buildRestletURL(baseURL, scriptURL, scriptId, deployId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to build restlet URL: %w", err)
 		}
@@ -107,10 +125,19 @@ func NewAdapter(params common.ConnectorParams) (*Adapter, error) { //nolint:funl
 	})
 }
 
-func buildRestletURL(baseURL, scriptId, deployId string) (string, error) {
+func buildRestletURL(baseURL, scriptURL, scriptId, deployId string) (string, error) {
 	rurl, err := url.Parse(baseURL)
 	if err != nil {
 		return "", err
+	}
+
+	if scriptURL != "" {
+		ref, err := url.Parse(scriptURL)
+		if err != nil {
+			return "", err
+		}
+
+		return rurl.ResolveReference(ref).String(), nil
 	}
 
 	rurl.Path = "/app/site/hosting/restlet.nl"

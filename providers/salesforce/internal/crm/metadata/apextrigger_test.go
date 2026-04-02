@@ -183,7 +183,7 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
             Boolean fieldChanged = false;
 
             if (Trigger.isInsert) {
-                fieldChanged = (rec.Email != null && rec.Email != '') || (rec.Phone != null && rec.Phone != '');
+                fieldChanged = (rec.Email != null) || (rec.Phone != null);
             } else if (Trigger.isUpdate) {
                 Lead oldRec = Trigger.oldMap.get(rec.Id);
                 fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);

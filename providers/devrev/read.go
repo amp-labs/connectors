@@ -3,6 +3,7 @@ package devrev
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -14,11 +15,15 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-const defaultPageSize = "100" // doc default 50; max 100 (from testing)
+// Pagination (DevRev list.*):
+//   - Typical default page size in API docs: 50.
+//   - Many endpoints document a maximum of 100 records per page.
+//   - Newer list endpoints enforce a lower maximum: 100 is rejected; use at most 99 or the API returns 400.
+const maxPageSize = 99
+
 // objectsWithoutLimitParam lists object names whose list endpoints do not accept
 // the limit query parameter (API returns 400 invalid_field for limit).
 var objectsWithoutLimitParam = datautils.NewSet( //nolint:gochecknoglobals
-	"artifacts",
 	"auth-tokens",
 	"dev-orgs.auth-connections",
 	"schemas.subtypes",
@@ -29,18 +34,44 @@ var objectsWithoutLimitParam = datautils.NewSet( //nolint:gochecknoglobals
 // modified_date.after and modified_date.before query parameter.
 var objectsWithModifiedDateFilter = datautils.NewSet( //nolint:gochecknoglobals
 	"accounts",
-	"code-changes",
 	"conversations",
-	"engagements",
-	"groups",
-	"incidents",
-	"jobs",
-	"meetings",
-	"parts",
 	"rev-orgs",
 	"rev-users",
-	"works",
+	"sla-trackers",
 )
+
+// objectsWithoutModifiedDate lists object names whose list response records do not
+// include modified_date.
+var objectsWithoutModifiedDate = datautils.NewSet( //nolint:gochecknoglobals
+	"vistas.groups",
+)
+
+// objectsWithoutSortBy lists object names whose list endpoints do not accept
+// or support the sort_by query parameter.
+// doc doesn't describe the default sorting behavior.
+var objectsWithoutSortBy = datautils.NewSet( //nolint:gochecknoglobals
+	"articles",
+	"auth-tokens",
+	"code-changes",
+	"directories",
+	"org-schedules",
+	"question-answers",
+	"schemas.subtypes",
+	"webhooks",
+	"vistas.groups",
+)
+
+func pageSize(params common.ReadParams) string {
+	if params.PageSize <= 0 {
+		return strconv.Itoa(maxPageSize)
+	}
+
+	if params.PageSize > maxPageSize {
+		return strconv.Itoa(maxPageSize)
+	}
+
+	return strconv.Itoa(params.PageSize)
+}
 
 // buildReadRequest builds the HTTP request for listing objects.
 // Pagination is cursor-based (next_cursor). For objects in objectsWithModifiedDateFilter, Since/Until
@@ -63,9 +94,14 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	pageSize := readhelper.PageSizeWithDefaultStr(params, defaultPageSize)
+	pageSize := pageSize(params)
 	if !objectsWithoutLimitParam.Has(params.ObjectName) {
 		url.WithQueryParam("limit", pageSize)
+	}
+
+	if !objectsWithoutSortBy.Has(params.ObjectName) {
+		// sort_by is string[];
+		url.WithQueryParamList("sort_by", []string{"modified_date:desc"})
 	}
 	// if object supports modified date filter, add the since and until query params
 	if objectsWithModifiedDateFilter.Has(params.ObjectName) {
@@ -115,17 +151,25 @@ func (c *Connector) parseReadResponse(
 	)
 }
 
-// if object supports modified date filter, return identity filter
-// otherwise return time filter.
+// makeFilterFunc returns the identity filter when the API does time filtering
+// (objectsWithModifiedDateFilter) or when rows have no modified_date
+// (objectsWithoutModifiedDate). Otherwise it uses a time filter on modified_date;
+// objectsWithoutSortBy use Unordered order so Since/Until still apply without
+// assuming list sort order or early-stopping pagination.
 func makeFilterFunc(params common.ReadParams, reqURL *urlbuilder.URL) common.RecordsFilterFunc {
 	nextPageFunc := makeNextRecordsURL(reqURL)
 
-	if objectsWithModifiedDateFilter.Has(params.ObjectName) {
+	if objectsWithModifiedDateFilter.Has(params.ObjectName) || objectsWithoutModifiedDate.Has(params.ObjectName) {
 		return readhelper.MakeIdentityFilterFunc(nextPageFunc)
 	}
 
+	order := readhelper.ReverseOrder
+	if objectsWithoutSortBy.Has(params.ObjectName) {
+		order = readhelper.Unordered
+	}
+
 	return readhelper.MakeTimeFilterFunc(
-		readhelper.ChronologicalOrder,
+		order,
 		readhelper.NewTimeBoundary(),
 		"modified_date",
 		time.RFC3339,

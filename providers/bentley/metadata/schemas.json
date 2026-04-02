@@ -1,0 +1,1238 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "contextcapture/jobs": {
+          "displayName": "Contextcapture Jobs",
+          "path": "contextcapture/jobs",
+          "responseKey": "jobs",
+          "fields": {
+            "costEstimationParameters": {
+              "displayName": "costEstimationParameters",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdDateTime": {
+              "displayName": "createdDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "estimatedCost": {
+              "displayName": "estimatedCost",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "executionInformation": {
+              "displayName": "executionInformation",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "iTwinId": {
+              "displayName": "iTwinId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "inputs": {
+              "displayName": "inputs",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "jobSettings": {
+              "displayName": "jobSettings",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "lastModifiedDateTime": {
+              "displayName": "lastModifiedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "other",
+              "values": [
+                {
+                  "value": "East US",
+                  "displayValue": "East US"
+                },
+                {
+                  "value": "North Europe",
+                  "displayValue": "North Europe"
+                },
+                {
+                  "value": "Southeast Asia",
+                  "displayValue": "Southeast Asia"
+                },
+                {
+                  "value": "Australia East",
+                  "displayValue": "Australia East"
+                },
+                {
+                  "value": "UK South",
+                  "displayValue": "UK South"
+                },
+                {
+                  "value": "Japan East",
+                  "displayValue": "Japan East"
+                },
+                {
+                  "value": "UAE North",
+                  "displayValue": "UAE North"
+                },
+                {
+                  "value": "Canada Central",
+                  "displayValue": "Canada Central"
+                },
+                {
+                  "value": "West Europe",
+                  "displayValue": "West Europe"
+                }
+              ]
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "other",
+              "values": [
+                {
+                  "value": "unsubmitted",
+                  "displayValue": "unsubmitted"
+                },
+                {
+                  "value": "active",
+                  "displayValue": "active"
+                },
+                {
+                  "value": "success",
+                  "displayValue": "success"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                },
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "other",
+              "values": [
+                {
+                  "value": "Full",
+                  "displayValue": "Full"
+                },
+                {
+                  "value": "Calibration",
+                  "displayValue": "Calibration"
+                },
+                {
+                  "value": "Reconstruction",
+                  "displayValue": "Reconstruction"
+                }
+              ]
+            },
+            "workspaceId": {
+              "displayName": "workspaceId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "curated-content/cesium": {
+          "displayName": "Curated-Content Cesium",
+          "path": "curated-content/cesium",
+          "responseKey": "items",
+          "fields": {
+            "attribution": {
+              "displayName": "attribution",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "AWAITING_FILES",
+                  "displayValue": "AWAITING_FILES"
+                },
+                {
+                  "value": "NOT_STARTED",
+                  "displayValue": "NOT_STARTED"
+                },
+                {
+                  "value": "IN_PROGRESS",
+                  "displayValue": "IN_PROGRESS"
+                },
+                {
+                  "value": "COMPLETE",
+                  "displayValue": "COMPLETE"
+                },
+                {
+                  "value": "ERROR",
+                  "displayValue": "ERROR"
+                },
+                {
+                  "value": "DATA_ERROR",
+                  "displayValue": "DATA_ERROR"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "3DTILES",
+                  "displayValue": "3DTILES"
+                },
+                {
+                  "value": "GLTF",
+                  "displayValue": "GLTF"
+                },
+                {
+                  "value": "IMAGERY",
+                  "displayValue": "IMAGERY"
+                },
+                {
+                  "value": "TERRAIN",
+                  "displayValue": "TERRAIN"
+                },
+                {
+                  "value": "KML",
+                  "displayValue": "KML"
+                },
+                {
+                  "value": "CZML",
+                  "displayValue": "CZML"
+                },
+                {
+                  "value": "GEOJSON",
+                  "displayValue": "GEOJSON"
+                }
+              ]
+            }
+          }
+        },
+        "edfs/packages": {
+          "displayName": "Edfs Packages",
+          "path": "edfs/packages",
+          "responseKey": "packages",
+          "fields": {
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isOdata": {
+              "displayName": "isOdata",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "projectStage": {
+              "displayName": "projectStage",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Preview",
+                  "displayValue": "Preview"
+                },
+                {
+                  "value": "Current",
+                  "displayValue": "Current"
+                },
+                {
+                  "value": "Obsolete",
+                  "displayValue": "Obsolete"
+                }
+              ]
+            },
+            "subscribedBy": {
+              "displayName": "subscribedBy",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscribedByName": {
+              "displayName": "subscribedByName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscribedOn": {
+              "displayName": "subscribedOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscriptionId": {
+              "displayName": "subscriptionId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uniqueName": {
+              "displayName": "uniqueName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "itwins": {
+          "displayName": "Itwins",
+          "path": "itwins",
+          "responseKey": "iTwins",
+          "fields": {
+            "class": {
+              "displayName": "class",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Account",
+                  "displayValue": "Account"
+                },
+                {
+                  "value": "Thing",
+                  "displayValue": "Thing"
+                },
+                {
+                  "value": "Endeavor",
+                  "displayValue": "Endeavor"
+                }
+              ]
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number": {
+              "displayName": "number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Active",
+                  "displayValue": "Active"
+                },
+                {
+                  "value": "Inactive",
+                  "displayValue": "Inactive"
+                },
+                {
+                  "value": "Trial",
+                  "displayValue": "Trial"
+                }
+              ]
+            },
+            "subClass": {
+              "displayName": "subClass",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Account",
+                  "displayValue": "Account"
+                },
+                {
+                  "value": "Portfolio",
+                  "displayValue": "Portfolio"
+                },
+                {
+                  "value": "Asset",
+                  "displayValue": "Asset"
+                },
+                {
+                  "value": "Program",
+                  "displayValue": "Program"
+                },
+                {
+                  "value": "Project",
+                  "displayValue": "Project"
+                },
+                {
+                  "value": "WorkPackage",
+                  "displayValue": "WorkPackage"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "itwins/exports": {
+          "displayName": "Itwins Exports",
+          "path": "itwins/exports",
+          "responseKey": "exports",
+          "fields": {
+            "completedDateTime": {
+              "displayName": "completedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "createdBy",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdDateTime": {
+              "displayName": "createdDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "outputUrl": {
+              "displayName": "outputUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "request": {
+              "displayName": "request",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "startedDateTime": {
+              "displayName": "startedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Queued",
+                  "displayValue": "Queued"
+                },
+                {
+                  "value": "InProgress",
+                  "displayValue": "InProgress"
+                },
+                {
+                  "value": "Completed",
+                  "displayValue": "Completed"
+                },
+                {
+                  "value": "Failed",
+                  "displayValue": "Failed"
+                }
+              ]
+            }
+          }
+        },
+        "itwins/favorites": {
+          "displayName": "Itwins Favorites",
+          "path": "itwins/favorites",
+          "responseKey": "iTwins",
+          "fields": {
+            "class": {
+              "displayName": "class",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Account",
+                  "displayValue": "Account"
+                },
+                {
+                  "value": "Thing",
+                  "displayValue": "Thing"
+                },
+                {
+                  "value": "Endeavor",
+                  "displayValue": "Endeavor"
+                }
+              ]
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number": {
+              "displayName": "number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Active",
+                  "displayValue": "Active"
+                },
+                {
+                  "value": "Inactive",
+                  "displayValue": "Inactive"
+                },
+                {
+                  "value": "Trial",
+                  "displayValue": "Trial"
+                }
+              ]
+            },
+            "subClass": {
+              "displayName": "subClass",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Account",
+                  "displayValue": "Account"
+                },
+                {
+                  "value": "Portfolio",
+                  "displayValue": "Portfolio"
+                },
+                {
+                  "value": "Asset",
+                  "displayValue": "Asset"
+                },
+                {
+                  "value": "Program",
+                  "displayValue": "Program"
+                },
+                {
+                  "value": "Project",
+                  "displayValue": "Project"
+                },
+                {
+                  "value": "WorkPackage",
+                  "displayValue": "WorkPackage"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "itwins/recents": {
+          "displayName": "Itwins Recents",
+          "path": "itwins/recents",
+          "responseKey": "iTwins",
+          "fields": {
+            "class": {
+              "displayName": "class",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Account",
+                  "displayValue": "Account"
+                },
+                {
+                  "value": "Thing",
+                  "displayValue": "Thing"
+                },
+                {
+                  "value": "Endeavor",
+                  "displayValue": "Endeavor"
+                }
+              ]
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number": {
+              "displayName": "number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Active",
+                  "displayValue": "Active"
+                },
+                {
+                  "value": "Inactive",
+                  "displayValue": "Inactive"
+                },
+                {
+                  "value": "Trial",
+                  "displayValue": "Trial"
+                }
+              ]
+            },
+            "subClass": {
+              "displayName": "subClass",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Account",
+                  "displayValue": "Account"
+                },
+                {
+                  "value": "Portfolio",
+                  "displayValue": "Portfolio"
+                },
+                {
+                  "value": "Asset",
+                  "displayValue": "Asset"
+                },
+                {
+                  "value": "Program",
+                  "displayValue": "Program"
+                },
+                {
+                  "value": "Project",
+                  "displayValue": "Project"
+                },
+                {
+                  "value": "WorkPackage",
+                  "displayValue": "WorkPackage"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "library/applications": {
+          "displayName": "Library Applications",
+          "path": "library/applications",
+          "responseKey": "applications",
+          "fields": {
+            "createdDateTime": {
+              "displayName": "createdDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastModifiedDateTime": {
+              "displayName": "lastModifiedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "library/brands": {
+          "displayName": "Library Brands",
+          "path": "library/brands",
+          "responseKey": "brands",
+          "fields": {
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "library/catalogs": {
+          "displayName": "Library Catalogs",
+          "path": "library/catalogs",
+          "responseKey": "catalogs",
+          "fields": {
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "library/categories": {
+          "displayName": "Library Categories",
+          "path": "library/categories",
+          "responseKey": "categories",
+          "fields": {
+            "createdDateTime": {
+              "displayName": "createdDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastModifiedDateTime": {
+              "displayName": "lastModifiedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "library/components": {
+          "displayName": "Library Components",
+          "path": "library/components",
+          "responseKey": "components",
+          "fields": {
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "library/manufacturers": {
+          "displayName": "Library Manufacturers",
+          "path": "library/manufacturers",
+          "responseKey": "manufacturers",
+          "fields": {
+            "address": {
+              "displayName": "address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdDateTime": {
+              "displayName": "createdDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastModifiedDateTime": {
+              "displayName": "lastModifiedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone": {
+              "displayName": "phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "website": {
+              "displayName": "website",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "reality-analysis/detectors": {
+          "displayName": "Reality-Analysis Detectors",
+          "path": "reality-analysis/detectors",
+          "responseKey": "detectors",
+          "fields": {
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "documentationUrl": {
+              "displayName": "documentationUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "latestVersionNumber": {
+              "displayName": "latestVersionNumber",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "other",
+              "values": [
+                {
+                  "value": "PhotoObjectDetector",
+                  "displayValue": "PhotoObjectDetector"
+                },
+                {
+                  "value": "PhotoSegmentationDetector",
+                  "displayValue": "PhotoSegmentationDetector"
+                },
+                {
+                  "value": "OrthophotoSegmentationDetector",
+                  "displayValue": "OrthophotoSegmentationDetector"
+                },
+                {
+                  "value": "PointCloudSegmentationDetector",
+                  "displayValue": "PointCloudSegmentationDetector"
+                }
+              ]
+            }
+          }
+        },
+        "reality-analysis/files": {
+          "displayName": "Reality-Analysis Files",
+          "path": "reality-analysis/files",
+          "responseKey": "files",
+          "fields": {
+            "deprecated": {
+              "displayName": "deprecated",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Preset",
+                  "displayValue": "Preset"
+                }
+              ]
+            }
+          }
+        },
+        "reality-analysis/jobs": {
+          "displayName": "Reality-Analysis Jobs",
+          "path": "reality-analysis/jobs",
+          "responseKey": "jobs",
+          "fields": {
+            "executionInfo": {
+              "displayName": "executionInfo",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "iTwinId": {
+              "displayName": "iTwinId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "specifications": {
+              "displayName": "specifications",
+              "valueType": "other"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Queued",
+                  "displayValue": "Queued"
+                },
+                {
+                  "value": "Active",
+                  "displayValue": "Active"
+                },
+                {
+                  "value": "TerminatingOnCancel",
+                  "displayValue": "TerminatingOnCancel"
+                },
+                {
+                  "value": "TerminatingOnFailure",
+                  "displayValue": "TerminatingOnFailure"
+                },
+                {
+                  "value": "Cancelled",
+                  "displayValue": "Cancelled"
+                },
+                {
+                  "value": "Failed",
+                  "displayValue": "Failed"
+                },
+                {
+                  "value": "Success",
+                  "displayValue": "Success"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "other",
+              "values": [
+                {
+                  "value": "Objects2D",
+                  "displayValue": "Objects2D"
+                },
+                {
+                  "value": "Segmentation2D",
+                  "displayValue": "Segmentation2D"
+                },
+                {
+                  "value": "Segmentation3D",
+                  "displayValue": "Segmentation3D"
+                },
+                {
+                  "value": "SegmentationOrthophoto",
+                  "displayValue": "SegmentationOrthophoto"
+                },
+                {
+                  "value": "ChangeDetection",
+                  "displayValue": "ChangeDetection"
+                },
+                {
+                  "value": "EvalO2D",
+                  "displayValue": "EvalO2D"
+                },
+                {
+                  "value": "EvalO3D",
+                  "displayValue": "EvalO3D"
+                },
+                {
+                  "value": "EvalS2D",
+                  "displayValue": "EvalS2D"
+                },
+                {
+                  "value": "EvalS3D",
+                  "displayValue": "EvalS3D"
+                },
+                {
+                  "value": "EvalSOrtho",
+                  "displayValue": "EvalSOrtho"
+                },
+                {
+                  "value": "ClearanceCalculation",
+                  "displayValue": "ClearanceCalculation"
+                }
+              ]
+            },
+            "userId": {
+              "displayName": "userId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "reality-management/reality-data": {
+          "displayName": "Reality-Management/Reality-Data",
+          "path": "reality-management/reality-data",
+          "responseKey": "realityData",
+          "fields": {
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "realityconversion/jobs": {
+          "displayName": "Realityconversion Jobs",
+          "path": "realityconversion/jobs",
+          "responseKey": "jobs",
+          "fields": {
+            "costEstimation": {
+              "displayName": "costEstimation",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdDateTime": {
+              "displayName": "createdDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dataCenter": {
+              "displayName": "dataCenter",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "executionInformation": {
+              "displayName": "executionInformation",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "iTwinId": {
+              "displayName": "iTwinId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "inputs": {
+              "displayName": "inputs",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "lastModifiedDateTime": {
+              "displayName": "lastModifiedDateTime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "options": {
+              "displayName": "options",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "outputs": {
+              "displayName": "outputs",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "ownerId": {
+              "displayName": "ownerId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "unsubmitted",
+                  "displayValue": "unsubmitted"
+                },
+                {
+                  "value": "active",
+                  "displayValue": "active"
+                },
+                {
+                  "value": "success",
+                  "displayValue": "success"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                },
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Conversion",
+                  "displayValue": "Conversion"
+                },
+                {
+                  "value": "ImportFeatures",
+                  "displayValue": "ImportFeatures"
+                }
+              ]
+            }
+          }
+        },
+        "webhooks": {
+          "displayName": "Webhooks",
+          "path": "webhooks",
+          "responseKey": "webhooks",
+          "fields": {
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "callbackUrl": {
+              "displayName": "callbackUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "eventTypes": {
+              "displayName": "eventTypes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "modified": {
+              "displayName": "modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "scope": {
+              "displayName": "scope",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Account",
+                  "displayValue": "Account"
+                },
+                {
+                  "value": "iTwin",
+                  "displayValue": "iTwin"
+                }
+              ]
+            },
+            "scopeId": {
+              "displayName": "scopeId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

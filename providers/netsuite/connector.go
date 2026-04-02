@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"time"
+	_ "time/tzdata"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"

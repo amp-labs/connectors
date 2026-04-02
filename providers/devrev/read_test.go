@@ -21,6 +21,7 @@ func TestRead(t *testing.T) {
 	responseAccountsLastPage := testutils.DataFromFile(t, "read-accounts-last-page.json")
 	responseArticlesEmpty := testutils.DataFromFile(t, "read-articles-empty.json")
 	responseArticles := testutils.DataFromFile(t, "read-articles.json")
+	responseVistasGroups := testutils.DataFromFile(t, "read-vistas-groups.json")
 
 	tests := []testroutines.Read{
 		{
@@ -33,7 +34,8 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/accounts.list"),
-					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParam("sort_by", "modified_date:desc"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseAccountsEmpty),
 			}.Server(),
@@ -54,7 +56,8 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/accounts.list"),
-					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParam("sort_by", "modified_date:desc"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseAccountsFirstPage),
 			}.Server(),
@@ -73,7 +76,7 @@ func TestRead(t *testing.T) {
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/accounts.list?limit=100&cursor=cursor_page_2",
+				NextPage: testroutines.URLTestServer + "/accounts.list?limit=99&cursor=cursor_page_2&sort_by=modified_date%3Adesc",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -83,7 +86,7 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "accounts",
 				Fields:     connectors.Fields("id", "display_name", "modified_date"),
-				NextPage:   testroutines.URLTestServer + "/accounts.list?limit=100&cursor=cursor_page_2",
+				NextPage:   testroutines.URLTestServer + "/accounts.list?limit=99&cursor=cursor_page_2&sort_by=modified_date%3Adesc",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -127,6 +130,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/accounts.list"),
 					mockcond.QueryParam("limit", "50"),
+					mockcond.QueryParam("sort_by", "modified_date:desc"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseAccountsFirstPage),
 			}.Server(),
@@ -145,7 +149,7 @@ func TestRead(t *testing.T) {
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/accounts.list?limit=50&cursor=cursor_page_2",
+				NextPage: testroutines.URLTestServer + "/accounts.list?limit=50&cursor=cursor_page_2&sort_by=modified_date%3Adesc",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -161,7 +165,8 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/accounts.list"),
-					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParam("sort_by", "modified_date:desc"),
 					mockcond.QueryParam("modified_date.after", "2026-02-20T17:00:00Z"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseAccountsFirstPage),
@@ -181,7 +186,7 @@ func TestRead(t *testing.T) {
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/accounts.list?limit=100&cursor=cursor_page_2&modified_date.after=2026-02-20T17:00:00Z",
+				NextPage: testroutines.URLTestServer + "/accounts.list?limit=99&cursor=cursor_page_2&modified_date.after=2026-02-20T17:00:00Z&sort_by=modified_date%3Adesc",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -196,7 +201,8 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/articles.list"),
-					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParamsMissing("sort_by"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseArticlesEmpty),
 			}.Server(),
@@ -217,7 +223,8 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/articles.list"),
-					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParamsMissing("sort_by"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseArticles),
 			}.Server(),
@@ -245,7 +252,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read articles with Since filters connector-side (no server filter)",
+			Name: "Read articles with Since keeps in-window rows (Unordered client filter)",
 			Input: common.ReadParams{
 				ObjectName: "articles",
 				Fields:     connectors.Fields("id", "modified_date"),
@@ -255,7 +262,8 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/articles.list"),
-					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParamsMissing("sort_by"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseArticles),
 			}.Server(),
@@ -279,7 +287,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read articles with Since after all records returns empty",
+			Name: "Read articles with Since after modified_date returns empty (client filter, Unordered)",
 			Input: common.ReadParams{
 				ObjectName: "articles",
 				Fields:     connectors.Fields("id", "modified_date"),
@@ -289,11 +297,60 @@ func TestRead(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/articles.list"),
-					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParamsMissing("sort_by"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseArticles),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 0,
+				Data: []common.ReadResultRow{},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read vistas.groups with Since skips time filter (no modified_date)",
+			Input: common.ReadParams{
+				ObjectName: "vistas.groups",
+				Fields:     connectors.Fields("id", "object_type"),
+				Since:      time.Date(2026, 2, 20, 17, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/vistas.groups.list"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParamsMissing("modified_date.after"),
+					mockcond.QueryParamsMissing("sort_by"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseVistasGroups),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read accounts with PageSize exceeding max limit uses max limit",
+			Input: common.ReadParams{
+				ObjectName: "accounts",
+				Fields:     connectors.Fields("id", "modified_date"),
+				PageSize:   500,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/accounts.list"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParam("sort_by", "modified_date:desc"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccountsEmpty),
+			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 0,
 				Data: []common.ReadResultRow{},
