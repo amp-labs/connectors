@@ -146,7 +146,8 @@ func (a *Adapter) GetRecordsByIds(ctx context.Context, // nolint: revive
 	objectName string,
 	recordIds []string, //nolint:revive
 	fields []string,
-	associations []string) ([]common.ReadResultRow, error) {
+	associations []string,
+) ([]common.ReadResultRow, error) {
 	return nil, common.ErrGetRecordNotSupportedForObject
 }
 
