@@ -2,6 +2,7 @@ package fastspring
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -110,22 +111,37 @@ func (c *Connector) parseReadResponse(
 		resp,
 		records,
 		nextPageFromIntegerCounter(request.URL),
-		common.GetMarshaledData,
+		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField(stringIDFieldForListObject(params.ObjectName))),
 		params.Fields,
 	)
 }
 
-// recordsForRead extracts list rows: string IDs are wrapped to one-field maps by
-// object type; objects are left as-is. Uses ArrayOptional because FastSpring may
-// omit the array key when empty.
+// recordsForRead normalizes the list under the schema responseKey (e.g. "accounts", "events").
+// FastSpring returns either JSON objects or JSON string IDs depending on the endpoint; examples:
+//
+//	{ "accounts": [ {"id":"x","account":"y"} ] }
+//	{ "accounts": [ "id1", "id2" ] }
+//
+// Objects are returned as-is in Raw; string elements become { "<idField>": "<id>" } (idField from stringIDFieldForListObject).
+// The response key may be absent when empty — jsonquery.ArrayOptional yields an empty slice without error.
+// If the value is a single string instead of an array, we treat it as one row (fallback after ErrNotArray).
 func recordsForRead(objectName, recordsKey string) common.RecordsFunc {
 	idField := stringIDFieldForListObject(objectName)
 
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		// FastSpring often omits the array key when there are no rows (e.g. empty catalog);
-		// ArrayRequired would fail with ErrKeyNotFound.
 		arr, err := jsonquery.New(node).ArrayOptional(recordsKey)
 		if err != nil {
+			if errors.Is(err, jsonquery.ErrNotArray) {
+				str, serr := jsonquery.New(node).StringOptional(recordsKey)
+				if serr != nil {
+					return nil, err
+				}
+
+				if str != nil && *str != "" {
+					return []map[string]any{map[string]any{idField: *str}}, nil
+				}
+			}
+
 			return nil, err
 		}
 
