@@ -1,13 +1,43 @@
 package batch
 
 import (
+	"context"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
+func (a *Adapter) batchCreate(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error) {
+	url, err := a.getCreateURL(params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	payload, err := buildBatchCreatePayload(params)
+	if err != nil {
+		return nil, err
+	}
+
+	// Make an API call.
+	rsp, err := a.Client.Post(ctx, url.String(), payload)
+	if err != nil {
+		return nil, err
+	}
+
+	if httpkit.Status4xx(rsp.Code) {
+		// 4xx responses (e.g., 400 or 409) represent valid request outcomes
+		// that include structured issue details, not fatal API failures.
+		// Critical errors (5xx and the rest of 4xx) are handled by the HTTP client and returned as Go errors.
+		return parseBulkIssue(payload, rsp)
+	}
+
+	return parseBulkResponse(params, payload, rsp)
+}
+
+// https://developers.hubspot.com/docs/api-reference/crm-deals-v3/batch/post-crm-v3-objects-0-3-batch-create
 func buildBatchCreatePayload(params *common.BatchWriteParam) (*Payload, error) {
 	payloadItems := make([]PayloadItem, len(params.Batch))
 
