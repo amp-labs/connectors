@@ -15,12 +15,8 @@ import (
 )
 
 const (
-	defaultPageSize = "50"
-	// defaultEventDays is used for /events/processed and /events/unprocessed; both APIs
-	// require a "days" query parameter (max 30). See:
-	// https://developer.fastspring.com/reference/list-all-processed-events
-	// https://developer.fastspring.com/reference/list-all-unprocessed-events
-	defaultEventDays = "30"
+	defaultPageSize  = "50"
+	defaultEventDays = "30" // max 30 per API; used when requiresDaysParam is true
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -62,7 +58,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	if fastSpringEventsRequiresDaysParam(params.ObjectName) {
+	if requiresDaysParam(params.ObjectName) {
 		url.WithQueryParam("days", defaultEventDays)
 	}
 
@@ -75,7 +71,10 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 	return url, nil
 }
 
-func fastSpringEventsRequiresDaysParam(objectName string) bool {
+// requiresDaysParam reports whether the list request must include a "days" query parameter.
+// Processed events: https://developer.fastspring.com/reference/list-all-processed-events
+// Unprocessed events: https://developer.fastspring.com/reference/list-all-unprocessed-events
+func requiresDaysParam(objectName string) bool {
 	switch objectName {
 	case "events-processed", "events-unprocessed":
 		return true
