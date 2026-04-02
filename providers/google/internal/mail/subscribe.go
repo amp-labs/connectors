@@ -127,7 +127,7 @@ func (a *Adapter) DeleteSubscription(
 		return fmt.Errorf("delete subscribe: building watch URL: %w", err)
 	}
 
-	// The request body. ust be empty.
+	// The request body. must be empty.
 	// ref: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users/stop
 	response, err := a.JSONHTTPClient().Post(ctx, watchURL, nil)
 	if err != nil {

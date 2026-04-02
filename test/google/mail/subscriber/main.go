@@ -31,13 +31,13 @@ func main() {
 
 	subscribeResult, err := conn.Mail.Subscribe(ctx, subscribeParams)
 	if err != nil {
-		slog.Error("subscription connector", "sunscribe action", err)
+		slog.Error("subscription connector", "subscribe action", err)
 		return
 	}
 
 	utils.DumpJSON(subscribeResult, os.Stdout)
 
-	slog.Info("created a susbscriber")
+	slog.Info("created a subscriber")
 
 	subscribeResult, err = conn.Mail.RunScheduledMaintenance(ctx, subscribeParams, subscribeResult)
 	if err != nil {
