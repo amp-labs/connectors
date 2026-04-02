@@ -49,6 +49,7 @@ import (
 	"github.com/amp-labs/connectors/providers/fathom"
 	"github.com/amp-labs/connectors/providers/fireflies"
 	"github.com/amp-labs/connectors/providers/flatfile"
+	"github.com/amp-labs/connectors/providers/fourfour"
 	"github.com/amp-labs/connectors/providers/freshdesk"
 	"github.com/amp-labs/connectors/providers/front"
 	"github.com/amp-labs/connectors/providers/g2"
@@ -186,6 +187,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Fathom:                  wrapper(newFathomConnector),
 	providers.Fireflies:               wrapper(newFirefliesConnector),
 	providers.Flatfile:                wrapper(newFlatfileConnector),
+	providers.FourFour:                wrapper(newFourFourConnector),
 	providers.Freshdesk:               wrapper(newFreshdeskConnector),
 	providers.Front:                   wrapper(newFrontConnector),
 	providers.G2:                      wrapper(newG2Connector),
@@ -1059,4 +1061,8 @@ func newHousecallProConnector(params common.ConnectorParams) (*housecallpro.Conn
 
 func newBentleyConnector(params common.ConnectorParams) (*bentley.Connector, error) {
 	return bentley.NewConnector(params)
+}
+
+func newFourFourConnector(params common.ConnectorParams) (*fourfour.Connector, error) {
+	return fourfour.NewConnector(params)
 }
