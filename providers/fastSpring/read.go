@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
@@ -63,6 +64,15 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 
 	if requiresDaysParam(params.ObjectName) {
 		url.WithQueryParam("days", defaultEventDays)
+		// Incremental range for Events list APIs: optional begin/end (YYYY-MM-DD) alongside required days.
+		// https://developer.fastspring.com/reference/events
+		if !params.Since.IsZero() {
+			url.WithQueryParam("begin", params.Since.Format(time.DateOnly))
+		}
+
+		if !params.Until.IsZero() {
+			url.WithQueryParam("end", params.Until.Format(time.DateOnly))
+		}
 	}
 
 	// FastSpring list endpoints support basic cursor-like pagination via limit + page.
