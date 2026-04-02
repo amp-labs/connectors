@@ -48,7 +48,7 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/crm/v3/objects/butterflies/search"),
+				If:    mockcond.Path("/crm/objects/2026-03/butterflies/search"),
 				Then:  mockserver.Response(http.StatusBadRequest, responseInvalidObject),
 			}.Server(),
 			ExpectedErrs: []error{
@@ -68,7 +68,7 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 				Cases: []mockserver.Case{{
 					If: mockcond.And{
 						mockcond.MethodPOST(),
-						mockcond.Path("/crm/v3/objects/contacts/search"),
+						mockcond.Path("/crm/objects/2026-03/contacts/search"),
 						mockcond.PermuteJSONBody(`{
 								"limit":200,
 								"filterGroups": [{
@@ -142,7 +142,7 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/crm/v3/objects/contacts/search"),
+					If:   mockcond.Path("/crm/objects/2026-03/contacts/search"),
 					Then: mockserver.Response(http.StatusOK, responseContactsLastPage),
 				}, {
 					If: mockcond.And{
