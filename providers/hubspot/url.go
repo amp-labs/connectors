@@ -72,6 +72,11 @@ func (c *Connector) getObjectSchemaURL(objectName string) (*urlbuilder.URL, erro
 	return urlbuilder.New(c.getRootProviderURL(), "crm-object-schemas", core.APIVersion2026March, "schemas", objectName)
 }
 
+// https://developers.hubspot.com/docs/api-reference/latest/account/account-information/get-account-details
+func (c *Connector) getAccountDetailsURL() (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.getRootProviderURL(), "account-info", core.APIVersion2026March, "details")
+}
+
 func (c *Connector) getURLFromRoot(relativePath string) string {
 	return c.getRootProviderURL() + relativePath
 }

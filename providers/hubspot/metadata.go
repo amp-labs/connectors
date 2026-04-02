@@ -221,8 +221,12 @@ type AccountInfo struct {
 func (c *Connector) GetAccountInfo(ctx context.Context) (*AccountInfo, *common.JSONHTTPResponse, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
-	// https://developers.hubspot.com/docs/api-reference/account-account-info-v3/details/get-account-info-v3-details
-	resp, err := c.Client.Get(ctx, fmt.Sprintf("account-info/%v/details", core.APIVersion3))
+	url, err := c.getAccountDetailsURL()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	resp, err := c.Client.Get(ctx, url.String())
 	if err != nil {
 		return nil, resp, fmt.Errorf("error fetching HubSpot token info: %w", err)
 	}
