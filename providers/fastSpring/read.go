@@ -109,10 +109,6 @@ func (c *Connector) parseReadResponse(
 // object type; objects are left as-is. Uses ArrayOptional because FastSpring may
 // omit the array key when empty.
 func recordsForRead(objectName, recordsKey string) common.RecordsFunc {
-	return extractRecordsFromPathOrStringIDs(objectName, recordsKey)
-}
-
-func extractRecordsFromPathOrStringIDs(objectName, recordsKey string) common.RecordsFunc {
 	idField := stringIDFieldForListObject(objectName)
 
 	return func(node *ajson.Node) ([]map[string]any, error) {
