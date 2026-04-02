@@ -19,26 +19,26 @@ func NewAdapter(client *common.JSONHTTPClient, moduleInfo *providers.ModuleInfo)
 	}
 }
 
-// nolint:lll
-// https://developers.hubspot.com/docs/api-reference/crm-properties-v3/batch/post-crm-v3-properties-objectType-batch-create
+// https://developers.hubspot.com/docs/api-reference/latest/crm/properties/batch/create-properties
+// Note: Version APIVersion2026March is NOT FOUND at the moment for this endpoint. Using older V3.
 func (a *Adapter) getPropertyBatchCreateURL(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(a.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, "/batch/create")
 }
 
-// nolint:lll
-// https://developers.hubspot.com/docs/api-reference/crm-properties-v3/core/patch-crm-v3-properties-objectType-propertyName
+// https://developers.hubspot.com/docs/api-reference/latest/crm/properties/update-property
+// Note: Version APIVersion2026March is NOT FOUND at the moment for this endpoint. Using older V3.
 func (a *Adapter) getPropertyUpdateURL(objectName, propertyName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(a.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, propertyName)
 }
 
-// nolint:lll
-// https://developers.hubspot.com/docs/api-reference/crm-properties-v3/groups/get-crm-v3-properties-objectType-groups-groupName
+// https://developers.hubspot.com/docs/api-reference/latest/crm/properties/property-groups/get-property
+// Note: Version APIVersion2026March is NOT FOUND at the moment for this endpoint. Using older V3.
 func (a *Adapter) getPropertyGroupNameURL(objectName, groupName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(a.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, "groups", groupName)
 }
 
-// nolint:lll
-// https://developers.hubspot.com/docs/api-reference/crm-properties-v3/groups/post-crm-v3-properties-objectType-groups
+// https://developers.hubspot.com/docs/api-reference/latest/crm/properties/property-groups/create-property
+// Note: Version APIVersion2026March is NOT FOUND at the moment for this endpoint. Using older V3.
 func (a *Adapter) getPropertyGroupNameCreationURL(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(a.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, "groups")
 }
