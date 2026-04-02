@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
@@ -35,7 +36,68 @@ func ValidateCreateDelete[CP any](ctx context.Context, conn ConnectorCRUD, objec
 ) {
 	fmt.Println("> TEST Create/Delete", objectName)
 	fmt.Println("Creating", objectName)
-	createObject(ctx, conn, objectName, &createPayload)
+	_, objectID, err := createAndFindRecord(ctx, conn, objectName, createPayload, suite)
+	failOnError(err)
+
+	fmt.Println("Object record identifier is", objectID)
+
+	fmt.Println("Removing this", objectName)
+	err = removeObject(ctx, conn, objectName, objectID)
+	failOnError(err)
+	fmt.Println("> Successful test completion")
+}
+
+type RecordCreationRecipe CRDTestSuite
+
+// SetupRecord prepares a single record of the given object type in the provider,
+// returning both the read representation of the record and a cleanup function.
+// Use it to create temporary records used by your test case that should be removed after completion.
+//
+// Flow:
+// 1. Create an object using the "CP" payload.
+// 2. Read and locate the object using the criteria defined in creationRecipe (RecordCreationRecipe).
+// 3. Return:
+//   - The read result row (common.ReadResultRow) of the created object.
+//   - A cleanup function that, when called, deletes the object by its ID.
+//
+// Usage pattern:
+//
+//	record, cleanup := testscenario.SetupRecord(ctx, conn, "Users", CreatePayload{...}, suite)
+//	defer cleanup()
+//	userID := record.Fields["id"]
+func SetupRecord[CP any](ctx context.Context, conn ConnectorCRUD, objectName string,
+	createPayload CP, creationRecipe RecordCreationRecipe,
+) (record *common.ReadResultRow, cleanup func(), errOut error) {
+	fmt.Printf("[SETUP] Creating a record for object '%v'\n", objectName)
+	object, objectID, err := createAndFindRecord(ctx, conn, objectName, createPayload, CRDTestSuite(creationRecipe))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	fmt.Printf("Object %v(%v) is ready\n", objectName, objectID)
+
+	cleanup = func() {
+		removeErr := removeObject(ctx, conn, objectName, objectID)
+		if removeErr != nil {
+			fmt.Printf("[CLEANUP] Record removal FAILED! Please, remove object yourself.\n"+
+				"\tObject(%v)\n\tID(%v)\n\tReason: %v\n", objectName, objectID, removeErr)
+			return
+		}
+
+		fmt.Printf("[CLEANUP] Successful removal\n"+
+			"\tObject(%v)\n\tID(%v)\n", objectName, objectID)
+	}
+
+	return &object.ReadResultRow, cleanup, nil
+}
+
+func createAndFindRecord[CP any](
+	ctx context.Context, conn ConnectorCRUD, objectName string, createPayload CP, suite CRDTestSuite,
+) (*objectRecord, string, error) {
+	_, err := createObject(ctx, conn, objectName, &createPayload)
+	if err != nil {
+		return nil, "", err
+	}
 
 	if suite.WaitBeforeSearch != 0 {
 		fmt.Println("... waiting")
@@ -44,17 +106,20 @@ func ValidateCreateDelete[CP any](ctx context.Context, conn ConnectorCRUD, objec
 
 	fmt.Println("Reading", objectName)
 
-	res := readObjects(ctx, conn, objectName, suite.ReadFields, suite.SearchBy.Since)
+	res, err := readObjects(ctx, conn, objectName, suite.ReadFields, suite.SearchBy.Since)
+	if err != nil {
+		return nil, "", err
+	}
 
 	fmt.Println("Finding recently created", objectName)
 
 	search := suite.SearchBy
-	object := searchObjectRecord(res, search.Key, search.Value)
+	object, err := searchObjectRecord(res, search.Key, search.Value)
+	if err != nil {
+		return nil, "", err
+	}
+
 	objectID := object.getRecordIdentifierValue(suite.RecordIdentifierKey)
 
-	fmt.Println("Object record identifier is", objectID)
-
-	fmt.Println("Removing this", objectName)
-	removeObject(ctx, conn, objectName, objectID)
-	fmt.Println("> Successful test completion")
+	return object, objectID, nil
 }
