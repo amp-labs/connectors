@@ -43,12 +43,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				}, {
 					// Connector will make this API call, output is valid empty data.
 					// This is done to shrink the scope of a test. See tests below that focus on pipelines.
-					If:   mockcond.Path("/crm/v3/pipelines/contacts"),
+					If:   mockcond.Path("/crm/pipelines/2026-03/contacts"),
 					Then: mockserver.ResponseString(http.StatusOK, "{}"),
 				}, {
 					// Real-world scenario doesn't require any fields for contacts.
 					// For our mock unit test we require: "mobilephone".
-					If:   mockcond.Path("/crm-object-schemas/v3/schemas/contacts"),
+					If:   mockcond.Path("/crm-object-schemas/2026-03/schemas/contacts"),
 					Then: mockserver.ResponseString(http.StatusOK, `{"requiredProperties": ["mobilephone"]}`),
 				}},
 			}.Server(),
@@ -225,12 +225,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					If:   mockcond.Path("/crm/v3/properties/contacts"),
 					Then: mockserver.Response(http.StatusOK, metadataContactsProperties),
 				}, {
-					If:   mockcond.Path("/crm/v3/pipelines/contacts"),
+					If:   mockcond.Path("/crm/pipelines/2026-03/contacts"),
 					Then: mockserver.Response(http.StatusOK, metadataContactsPipelines),
 				}, {
 					// Required fields cannot be fetched. This is not a critical error.
 					// In this case each field will be set to null indicating this info cannot be known.
-					If:   mockcond.Path("/crm-object-schemas/v3/schemas/contacts"),
+					If:   mockcond.Path("/crm-object-schemas/2026-03/schemas/contacts"),
 					Then: mockserver.Response(http.StatusForbidden, metadataErrSchemaScopes),
 				}},
 			}.Server(),
@@ -269,10 +269,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					If:   mockcond.Path("/crm/v3/properties/deals"),
 					Then: mockserver.Response(http.StatusOK, metadataDealsProperties),
 				}, {
-					If:   mockcond.Path("/crm/v3/pipelines/deals"),
+					If:   mockcond.Path("/crm/pipelines/2026-03/deals"),
 					Then: mockserver.Response(http.StatusOK, metadataDealsPipelines),
 				}, {
-					If:   mockcond.Path("/crm-object-schemas/v3/schemas/deals"),
+					If:   mockcond.Path("/crm-object-schemas/2026-03/schemas/deals"),
 					Then: mockserver.ResponseString(http.StatusOK, `{}`),
 				}},
 			}.Server(),
