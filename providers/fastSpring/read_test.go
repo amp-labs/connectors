@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -107,6 +108,39 @@ func TestRead(t *testing.T) { // nolint:funlen
 						"account": "Account Three",
 					},
 				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name: "Read processed events maps Since and Until to begin and end query params",
+			Input: common.ReadParams{
+				ObjectName: "events-processed",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2025, 1, 31, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/events/processed"),
+							mockcond.QueryParam("days", defaultEventDays),
+							mockcond.QueryParam("begin", "2025-01-01"),
+							mockcond.QueryParam("end", "2025-01-31"),
+							mockcond.QueryParam("limit", defaultPageSize),
+							mockcond.QueryParam("page", "1"),
+						},
+						Then: mockserver.Response(http.StatusOK, []byte(`{"events":[],"nextPage":0}`)),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected request"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     0,
 				NextPage: "",
 				Done:     true,
 			},
