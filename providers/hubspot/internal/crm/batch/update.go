@@ -56,7 +56,7 @@ func (a *Adapter) batchUpdate(ctx context.Context, params *common.BatchWritePara
 // buildBatchUpdatePayload constructs a batch update Payload.
 // For all records that have associations defined, it also builds
 // a BatchCreateParams instance that can be used for follow‑up association creation.
-// https://developers.hubspot.com/docs/api-reference/crm-deals-v3/batch/post-crm-v3-objects-0-3-batch-create
+// https://developers.hubspot.com/docs/api-reference/latest/crm/objects/deals/batch/create-deals
 func buildBatchUpdatePayload(params *common.BatchWriteParam) (*Payload, *associations.BatchCreateParams, error) {
 	payloadItems := make([]PayloadItem, len(params.Batch))
 	batchCreateParams := associations.NewBatchCreateParams(params.ObjectName)
