@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"strings"
 	"sync"
 	"time"
@@ -55,6 +56,13 @@ type DeployResult = metadata.DeployResult
 const (
 	deployPollInterval = 10 * time.Second
 	deployPollTimeout  = 5 * time.Minute
+
+	// apexDeployMaxAttempts is the maximum number of attempts for deploying an apex trigger.
+	// Retries handle the race condition where a custom field was just created via Metadata API
+	// but the Apex compiler's metadata cache hasn't picked it up yet, causing
+	// "Variable does not exist" compilation errors.
+	apexDeployMaxAttempts  = 3
+	apexDeployRetryBackoff = 1 * time.Minute
 )
 
 // GenerateApexTriggerName returns the standard APEX trigger name for a given Salesforce object.
@@ -192,26 +200,64 @@ func (c *Connector) deployApexTrigger(ctx context.Context, params *ApexTriggerPa
 		return nil, fmt.Errorf("failed to construct apex trigger zip for %s: %w", params.ObjectName, err)
 	}
 
-	deployID, err := c.DeployMetadataZip(ctx, zipData)
-	if err != nil {
-		return nil, fmt.Errorf("failed to deploy apex trigger for %s: %w", params.ObjectName, err)
+	var lastDeployResult *DeployResult
+
+	for attempt := range apexDeployMaxAttempts {
+		deployID, err := c.DeployMetadataZip(ctx, zipData)
+		if err != nil {
+			return nil, fmt.Errorf("failed to deploy apex trigger for %s: %w", params.ObjectName, err)
+		}
+
+		deployResult, err := c.pollDeployStatus(ctx, deployID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to poll deploy status for %s: %w", params.ObjectName, err)
+		}
+
+		if deployResult.Success {
+			return &ApexTriggerResult{
+				ApexTriggerParams: *params,
+				DeployID:          deployID,
+				ZipData:           zipData,
+			}, nil
+		}
+
+		lastDeployResult = deployResult
+
+		// Retry on "Variable does not exist" errors, which indicate the Apex compiler's
+		// metadata cache hasn't picked up a recently created custom field yet.
+		if !isVariableNotExistError(deployResult) || attempt == apexDeployMaxAttempts-1 {
+			break
+		}
+
+		slog.Info("Apex trigger deploy failed with 'Variable does not exist', retrying after backoff",
+			"object", params.ObjectName,
+			"attempt", attempt+1,
+			"maxAttempts", apexDeployMaxAttempts,
+		)
+
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-time.After(apexDeployRetryBackoff):
+		}
 	}
 
-	deployResult, err := c.pollDeployStatus(ctx, deployID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to poll deploy status for %s: %w", params.ObjectName, err)
+	return nil, fmt.Errorf("%w for object %s: %s",
+		errDeployFailed, params.ObjectName, formatDeployFailureDetails(lastDeployResult))
+}
+
+// isVariableNotExistError checks if a failed deployment contains an Apex compilation
+// error indicating a variable (field) does not exist. This typically happens when a
+// custom field was just created via the Metadata API but the Apex compiler hasn't
+// picked it up yet due to metadata cache propagation delay.
+func isVariableNotExistError(result *DeployResult) bool {
+	for _, f := range result.ComponentFailures {
+		if strings.Contains(f.Problem, "Variable does not exist") {
+			return true
+		}
 	}
 
-	if !deployResult.Success {
-		return nil, fmt.Errorf("%w for object %s: %s",
-			errDeployFailed, params.ObjectName, formatDeployFailureDetails(deployResult))
-	}
-
-	return &ApexTriggerResult{
-		ApexTriggerParams: *params,
-		DeployID:          deployID,
-		ZipData:           zipData,
-	}, nil
+	return false
 }
 
 // rollbackApexTrigger deploys a destructive changes package to remove an apex trigger.

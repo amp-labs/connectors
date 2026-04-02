@@ -44,8 +44,8 @@ func NewAdapterForProvider(provider providers.Provider, params common.ConnectorP
 
 func newAdapter(provider providers.Provider, params common.ConnectorParams) (*Adapter, error) { //nolint:funlen
 	return components.Initialize(provider, params, func(base *components.Connector) (*Adapter, error) {
-
 		var scriptURL, scriptId, deployId string
+
 		var ok bool //nolint:varnamelen
 
 		// If scriptURL is provided, use it to build the restlet URL.
@@ -136,6 +136,7 @@ func buildRestletURL(baseURL, scriptURL, scriptId, deployId string) (string, err
 		if err != nil {
 			return "", err
 		}
+
 		return rurl.ResolveReference(ref).String(), nil
 	}
 
