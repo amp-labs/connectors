@@ -15,6 +15,9 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
 
+// TestRead duplicates default limit ("1000") and event "days" ("30") as string literals instead of
+// importing read.go constants so changing those defaults forces an explicit test update in review.
+
 func TestRead(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
@@ -52,7 +55,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 			Input: common.ReadParams{
 				ObjectName: "accounts",
 				Fields:     connectors.Fields("id", "account"),
-				PageSize:   0, // default (1000)
+				PageSize:   0, // unset → connector uses default limit (1000 in read.go at time of writing)
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -61,7 +64,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 						If: mockcond.And{
 							mockcond.MethodGET(),
 							mockcond.Path("/accounts"),
-							mockcond.QueryParam("limit", defaultPageSize),
+							mockcond.QueryParam("limit", "1000"),
 							mockcond.QueryParam("page", "1"),
 						},
 						Then: mockserver.Response(http.StatusOK, firstPage),
@@ -72,7 +75,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     2,
-				NextPage: testroutines.URLTestServer + "/accounts?limit=" + defaultPageSize + "&page=2",
+				NextPage: testroutines.URLTestServer + "/accounts?limit=1000&page=2",
 				Done:     false,
 			},
 		},
@@ -81,7 +84,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 			Input: common.ReadParams{
 				ObjectName: "accounts",
 				Fields:     datautils.NewStringSet("id"),
-				NextPage:   testroutines.URLTestServer + "/accounts?limit=" + defaultPageSize + "&page=2",
+				NextPage:   testroutines.URLTestServer + "/accounts?limit=1000&page=2",
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -90,7 +93,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 						If: mockcond.And{
 							mockcond.MethodGET(),
 							mockcond.Path("/accounts"),
-							mockcond.QueryParam("limit", defaultPageSize),
+							mockcond.QueryParam("limit", "1000"),
 							mockcond.QueryParam("page", "2"),
 						},
 						Then: mockserver.Response(http.StatusOK, lastPage),
@@ -127,10 +130,10 @@ func TestRead(t *testing.T) { // nolint:funlen
 						If: mockcond.And{
 							mockcond.MethodGET(),
 							mockcond.Path("/events/processed"),
-							mockcond.QueryParam("days", defaultEventDays),
+							mockcond.QueryParam("days", "30"),
 							mockcond.QueryParam("begin", "2025-01-01"),
 							mockcond.QueryParam("end", "2025-01-31"),
-							mockcond.QueryParam("limit", defaultPageSize),
+							mockcond.QueryParam("limit", "1000"),
 							mockcond.QueryParam("page", "1"),
 						},
 						Then: mockserver.Response(http.StatusOK, []byte(`{"events":[],"nextPage":0}`)),
