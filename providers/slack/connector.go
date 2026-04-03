@@ -16,9 +16,9 @@ type Connector struct {
 	common.RequireAuthenticatedClient
 	common.PostAuthInfo
 
-	teamId string
-
 	components.SchemaProvider
+
+	teamId string
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
