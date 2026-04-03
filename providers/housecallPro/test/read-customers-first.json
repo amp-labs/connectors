@@ -1,0 +1,41 @@
+{
+    "page": 1,
+    "page_size": 1,
+    "total_pages": 2,
+    "total_items": 2,
+    "customers": [
+        {
+            "id": "cus_b8ae7027a36848889d21d9e8d7567edc",
+            "first_name": "Updated Name",
+            "last_name": "Doe",
+            "email": "john.doe@example.com",
+            "mobile_number": "5551234567",
+            "home_number": "5557654321",
+            "work_number": "5559876543",
+            "company": "Doe Services LLC",
+            "notifications_enabled": true,
+            "lead_source": null,
+            "notes": "Customer prefers afternoon appointments.",
+            "created_at": "2026-03-20T16:04:08Z",
+            "updated_at": "2026-03-20T16:44:55Z",
+            "company_name": "Ampersand",
+            "company_id": "7141dca7-882d-427b-a9c0-0ba0d74c85cf",
+            "tags": [
+                "vip",
+                "new_customer"
+            ],
+            "addresses": [
+                {
+                    "id": "adr_f35e9623863b4d5daae2e23d58de5608",
+                    "type": "service",
+                    "street": "123 Main St",
+                    "street_line_2": "Apt 4B",
+                    "city": "New York",
+                    "state": "NY",
+                    "zip": "10001",
+                    "country": "USA"
+                }
+            ]
+        }
+    ]
+}

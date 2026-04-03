@@ -1,0 +1,68 @@
+{
+  "labels": {
+    "singular": "Contact",
+    "plural": "Contacts"
+  },
+  "requiredProperties": [],
+  "searchableProperties": [],
+  "primaryDisplayProperty": "firstname",
+  "secondaryDisplayProperties": [],
+  "description": "Any person who interacts with a HubSpot user’s business.",
+  "allowsSensitiveProperties": true,
+  "archived": false,
+  "restorable": true,
+  "metaType": "HUBSPOT",
+  "id": "1",
+  "fullyQualifiedName": "CONTACT",
+  "createdAt": "1970-01-01T00:00:00Z",
+  "updatedAt": "2025-03-05T18:12:37.434Z",
+  "createdByUserId": null,
+  "updatedByUserId": null,
+  "objectTypeId": "0-1",
+  "properties": [],
+  "associations": [
+    {
+      "fromObjectTypeId": "0-1",
+      "toObjectTypeId": "0-2",
+      "name": "BILLING_CONTACT_TO_COMPANY",
+      "cardinality": "ONE_TO_MANY",
+      "inverseCardinality": "ONE_TO_ONE",
+      "hasUserEnforcedMaxToObjectIds": false,
+      "hasUserEnforcedMaxFromObjectIds": false,
+      "maxToObjectIds": 10000,
+      "maxFromObjectIds": 1,
+      "id": "931",
+      "createdAt": null,
+      "updatedAt": null
+    },
+    {
+      "fromObjectTypeId": "0-1",
+      "toObjectTypeId": "0-2",
+      "name": "CONTACT_TO_COMPANY_UNLABELED",
+      "cardinality": "ONE_TO_MANY",
+      "inverseCardinality": "ONE_TO_MANY",
+      "hasUserEnforcedMaxToObjectIds": false,
+      "hasUserEnforcedMaxFromObjectIds": false,
+      "maxToObjectIds": 10000,
+      "maxFromObjectIds": 10000,
+      "id": "279",
+      "createdAt": null,
+      "updatedAt": null
+    },
+    {
+      "fromObjectTypeId": "0-1",
+      "toObjectTypeId": "0-3",
+      "name": "CONTACT_TO_DEAL",
+      "cardinality": "ONE_TO_MANY",
+      "inverseCardinality": "ONE_TO_MANY",
+      "hasUserEnforcedMaxToObjectIds": false,
+      "hasUserEnforcedMaxFromObjectIds": false,
+      "maxToObjectIds": 10000,
+      "maxFromObjectIds": 1000,
+      "id": "4",
+      "createdAt": null,
+      "updatedAt": null
+    }
+  ],
+  "name": "CONTACT"
+}

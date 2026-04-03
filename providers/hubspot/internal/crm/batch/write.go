@@ -3,14 +3,10 @@ package batch
 import (
 	"context"
 	"maps"
-	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/httpkit"
-	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 // BatchWrite performs a HubSpot batch create or update request.
@@ -36,35 +32,21 @@ import (
 // This is a HubSpot API limitation.
 //
 // Reference: https://developers.hubspot.com/changelog/simplifying-batch-update-response-codes-for-crm-v3-apis
+// nolint:cyclop
 func (a *Adapter) BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error) {
 	if err := params.ValidateParams(); err != nil {
 		return nil, err
 	}
 
-	url, err := a.buildBatchWriteURL(params)
-	if err != nil {
-		return nil, err
+	if params.IsCreate() {
+		return a.batchCreate(ctx, params)
 	}
 
-	payload, err := buildBatchWritePayload(params)
-	if err != nil {
-		return nil, err
+	if params.IsUpdate() {
+		return a.batchUpdate(ctx, params)
 	}
 
-	// Make an API call.
-	rsp, err := a.Client.Post(ctx, url.String(), payload)
-	if err != nil {
-		return nil, err
-	}
-
-	if httpkit.Status4xx(rsp.Code) {
-		// 4xx responses (e.g., 400 or 409) represent valid request outcomes
-		// that include structured issue details, not fatal API failures.
-		// Critical errors (5xx and the rest of 4xx) are handled by the HTTP client and returned as Go errors.
-		return parseBulkIssue(payload, rsp)
-	}
-
-	return parseBulkResponse(params, payload, rsp)
+	return nil, common.ErrUnsupportedWriteType
 }
 
 // parseBulkIssue converts structured HubSpot error responses (400, 409)
@@ -337,47 +319,6 @@ func sanitizeError(errObj Issue) Issue {
 	return sanitized
 }
 
-func (a *Adapter) buildBatchWriteURL(params *common.BatchWriteParam) (*urlbuilder.URL, error) {
-	if params.IsCreate() {
-		return a.getCreateURL(params.ObjectName)
-	}
-
-	if params.IsUpdate() {
-		return a.getUpdateURL(params.ObjectName)
-	}
-
-	return nil, common.ErrUnsupportedWriteType
-}
-
-func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
-	payloadItems := make([]PayloadItem, len(params.Batch))
-
-	// For creates, include objectWriteTraceId only when allOrNone is false (default).
-	// This enables partial success - HubSpot returns trace IDs in error responses for per-record matching.
-	// When allOrNone is true, omit objectWriteTraceId so HubSpot fails the entire batch if any record fails.
-	includeTraceId := params.IsCreate() && !params.GetAllOrNone()
-
-	for index, batchItem := range params.Batch {
-		record, err := batchItem.GetRecord()
-		if err != nil {
-			return nil, err
-		}
-
-		item, err := NewPayloadItem(record, batchItem.Associations)
-		if err != nil {
-			return nil, err
-		}
-
-		if includeTraceId {
-			item.ObjectWriteTraceId = formatTraceId(index)
-		}
-
-		payloadItems[index] = *item
-	}
-
-	return &Payload{Items: payloadItems}, nil
-}
-
 func createUnprocessableItem(identifier string) *common.WriteResult {
 	return &common.WriteResult{
 		Success:  false, // not processed
@@ -388,53 +329,6 @@ func createUnprocessableItem(identifier string) *common.WriteResult {
 		},
 		Data: nil,
 	}
-}
-
-// formatTraceId creates a trace ID string from an index.
-// Used for objectWriteTraceId in HubSpot create operations.
-func formatTraceId(index int) string {
-	return strconv.Itoa(index)
-}
-
-// Payload represents the HubSpot batch request body.
-type Payload struct {
-	Items []PayloadItem `json:"inputs"`
-}
-
-// PayloadItem represents a single item in the API payload.
-// Hubspot's payload is identical to what client supplies to the connector.
-// This is an alias.
-type PayloadItem struct {
-	ID                 string        `json:"id,omitempty"`
-	Properties         common.Record `json:"properties"`
-	Associations       any           `json:"associations,omitempty"`
-	ObjectWriteTraceId string        `json:"objectWriteTraceId,omitempty"` //nolint:tagliatelle
-}
-
-func NewPayloadItem(record common.Record, associations any) (*PayloadItem, error) {
-	node, err := jsonquery.Convertor.NodeFromMap(record)
-	if err != nil {
-		return nil, err
-	}
-
-	identifier, err := jsonquery.New(node).StrWithDefault("id", "")
-	if err != nil {
-		return nil, err
-	}
-
-	properties, err := datautils.FromMap(record).DeepCopy()
-	if err != nil {
-		return nil, err
-	}
-
-	// Hubspot will complain about unexpected fields, must cleanup
-	delete(properties, "id")
-
-	return &PayloadItem{
-		ID:           identifier,
-		Properties:   common.Record(properties),
-		Associations: associations,
-	}, nil
 }
 
 // Response models a HubSpot batch success response.

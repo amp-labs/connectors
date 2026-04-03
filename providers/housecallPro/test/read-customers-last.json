@@ -1,0 +1,38 @@
+{
+    "page": 2,
+    "page_size": 1,
+    "total_pages": 2,
+    "total_items": 2,
+    "customers": [
+        {
+            "id": "cus_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "first_name": "Alice",
+            "last_name": "Johnson",
+            "email": "alice.johnson@example.com",
+            "mobile_number": "5554443333",
+            "home_number": null,
+            "work_number": null,
+            "company": null,
+            "notifications_enabled": true,
+            "lead_source": null,
+            "notes": "Test customer created for demo purposes",
+            "created_at": "2026-02-01T10:30:00Z",
+            "updated_at": "2026-02-01T10:30:00Z",
+            "company_name": "ExampleCorp",
+            "company_id": "11111111-2222-3333-4444-555555555555",
+            "tags": [],
+            "addresses": [
+                {
+                    "id": "adr_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                    "type": "service",
+                    "street": "200 Demo Ave",
+                    "street_line_2": null,
+                    "city": "Testville",
+                    "state": "TX",
+                    "zip": "73301",
+                    "country": "USA"
+                }
+            ]
+        }
+    ]
+}

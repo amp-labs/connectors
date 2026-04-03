@@ -121,7 +121,7 @@ func (s Strategy) fetchObjectAssociations( //nolint:cyclop
 		return map[string][]common.Association{}, nil
 	}
 
-	url, err := s.getAssociationsURL(fromObject, toObject)
+	url, err := s.getReadAssociationsURL(fromObject, toObject)
 	if err != nil {
 		return nil, err
 	}
