@@ -52,7 +52,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 			Input: common.ReadParams{
 				ObjectName: "accounts",
 				Fields:     connectors.Fields("id", "account"),
-				PageSize:   0, // default (50)
+				PageSize:   0, // default (1000)
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),

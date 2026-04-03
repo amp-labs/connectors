@@ -17,10 +17,11 @@ import (
 )
 
 // List endpoints use limit + page; when ReadParams.PageSize is unset we send limit=defaultPageSize.
-// FastSpring documents a default of 50 for list operations (example: the "limit" query parameter on
-// List all accounts). https://developer.fastspring.com/reference/list-all-accounts
+// FastSpring documents a default of 50 for list operations (e.g. "limit" on List all accounts) and does
+// not document an upper bound. https://developer.fastspring.com/reference/list-all-accounts
+// We use 1000 here as an arbitrary larger page size to reduce round trips; callers can override via ReadParams.PageSize.
 const (
-	defaultPageSize  = "50"
+	defaultPageSize  = "1000"
 	defaultEventDays = "30" // max 30 per API; used when requiresDaysParam is true
 )
 
