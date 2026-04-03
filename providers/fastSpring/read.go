@@ -22,7 +22,7 @@ import (
 // We use 1000 here as an arbitrary larger page size to reduce round trips; callers can override via ReadParams.PageSize.
 const (
 	defaultPageSize  = "1000"
-	defaultEventDays = "30" // max 30 per API; used when requiresDaysParam is true
+	defaultEventDays = "30" // max 30 per API; used for event list reads (isEventObject)
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -64,9 +64,9 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	if requiresDaysParam(params.ObjectName) {
+	if isEventObject(params.ObjectName) {
 		url.WithQueryParam("days", defaultEventDays)
-		// Incremental range for Events list APIs: optional begin/end (YYYY-MM-DD) alongside required days.
+		// Event list APIs: required "days" plus optional begin/end (YYYY-MM-DD) from ReadParams.Since/Until.
 		// https://developer.fastspring.com/reference/events
 		if !params.Since.IsZero() {
 			url.WithQueryParam("begin", params.Since.Format(time.DateOnly))
@@ -86,10 +86,11 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 	return url, nil
 }
 
-// requiresDaysParam reports whether the list request must include a "days" query parameter.
-// Processed events: https://developer.fastspring.com/reference/list-all-processed-events
-// Unprocessed events: https://developer.fastspring.com/reference/list-all-unprocessed-events
-func requiresDaysParam(objectName string) bool {
+// isEventObject reports whether the object is a processed/unprocessed events list, which uses the
+// event query parameters: "days" (required), and optionally "begin" / "end" for incremental range.
+// Processed: https://developer.fastspring.com/reference/list-all-processed-events
+// Unprocessed: https://developer.fastspring.com/reference/list-all-unprocessed-events
+func isEventObject(objectName string) bool {
 	switch objectName {
 	case "events-processed", "events-unprocessed":
 		return true
