@@ -228,8 +228,8 @@ func resourceRecord(evt SubscriptionEvent) (objectName string, record map[string
 }
 
 func resolveEventObject(resource string) (payloadObject string, connectorObject string, err error) {
-	// job appointment is not supported.
-	if resource == "job.appointment" {
+	// job appointment and estimate option are not supported.
+	if resource == "job.appointment" || resource == "estimate.option" {
 		return "", "", fmt.Errorf("%w: %q", errUnsupportedWebhookResource, resource)
 	}
 
