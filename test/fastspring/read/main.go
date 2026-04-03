@@ -27,41 +27,41 @@ func main() {
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "accounts",
 		Fields:     connectors.Fields("id", "account", "language", "country"),
-		PageSize:   50,
+		PageSize:   2,
 	})
 
 	slog.Info("=== Reading orders ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "orders",
 		Fields:     connectors.Fields("order", "id", "reference"),
-		PageSize:   50,
+		PageSize:   2,
 	})
 
 	slog.Info("=== Reading products ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "products",
 		Fields:     connectors.Fields("path"),
-		PageSize:   50,
+		PageSize:   2,
 	})
 
 	slog.Info("=== Reading subscriptions ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "subscriptions",
 		Fields:     connectors.Fields("subscription", "id", "product", "state", "currency"),
-		PageSize:   50,
+		PageSize:   2,
 	})
 
 	slog.Info("=== Reading unprocessed events ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "events-unprocessed",
 		Fields:     connectors.Fields("id", "event", "type", "processed", "live", "created"),
-		PageSize:   50,
+		PageSize:   2,
 	})
 
 	slog.Info("=== Reading processed events ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "events-processed",
 		Fields:     connectors.Fields("id", "event", "type", "processed", "live", "created"),
-		PageSize:   50,
+		PageSize:   2,
 	})
 }

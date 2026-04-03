@@ -1,7 +1,6 @@
 package fastspring
 
 import (
-	"context"
 	"net/http"
 	"testing"
 	"time"
@@ -164,17 +163,10 @@ func TestRead(t *testing.T) { // nolint:funlen
 }
 
 func constructTestReadConnector(baseURL string) (*Connector, error) {
-	ctx := context.Background()
-
-	client, err := common.NewBasicAuthHTTPClient(ctx, "test-user", "test-password",
-		common.WithHeaderClient(mockutils.NewClient()),
-	)
-	if err != nil {
-		return nil, err
-	}
-
 	conn, err := NewConnector(common.ConnectorParams{
-		AuthenticatedClient: client,
+		Module:              common.ModuleRoot,
+		AuthenticatedClient: mockutils.NewClient(),
+		Workspace:           "test-workspace",
 	})
 	if err != nil {
 		return nil, err
