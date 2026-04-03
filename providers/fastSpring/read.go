@@ -196,7 +196,7 @@ func stringIDFieldForListObject(objectName string) readhelper.IdFieldQuery {
 }
 
 // nextPageFromIntegerCounter builds a NextPageFunc that reads a numeric "nextPage"
-// field from the response root and maps it to the "page" query parameter.
+// field from the response root and maps it to the "page" query parameter on the prior request URL.
 func nextPageFromIntegerCounter(previousRequestURL *url.URL) common.NextPageFunc {
 	return func(root *ajson.Node) (string, error) {
 		if previousRequestURL == nil {
@@ -208,11 +208,19 @@ func nextPageFromIntegerCounter(previousRequestURL *url.URL) common.NextPageFunc
 			return "", err
 		}
 
-		cloned := *previousRequestURL
-		q := cloned.Query()
-		q.Set("page", strconv.FormatInt(nextPage, 10))
-		cloned.RawQuery = q.Encode()
+		// Re-parse from string so we do not mutate the live request URL when the builder serializes (it sets RawQuery on the delegate).
+		cloned, err := url.Parse(previousRequestURL.String())
+		if err != nil {
+			return "", err
+		}
 
-		return cloned.String(), nil
+		u, err := urlbuilder.FromRawURL(cloned)
+		if err != nil {
+			return "", err
+		}
+
+		u.WithQueryParam("page", strconv.FormatInt(nextPage, 10))
+
+		return u.String(), nil
 	}
 }
