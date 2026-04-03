@@ -8,13 +8,12 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/scanning/credscanning"
-	"github.com/amp-labs/connectors/providers"
 	housecallpro "github.com/amp-labs/connectors/providers/housecallPro"
 	connTest "github.com/amp-labs/connectors/test/housecallPro"
 	"github.com/amp-labs/connectors/test/utils"
@@ -22,6 +21,8 @@ import (
 
 const (
 	serverAddr = ":8080"
+	// envWebhookSecret is the signing secret from Housecall Pro webhook settings (not the API key).
+	envWebhookSecret = "HOUSECALL_PRO_WEBHOOK_SECRET"
 )
 
 func main() {
@@ -45,7 +46,7 @@ func main() {
 	// verify signature -> parse webhook -> log parsed events.
 	secret, ok := loadWebhookSecret()
 	if !ok {
-		slog.Error("Webhook signing secret is required. Add `webhookSecret` to housecall credentials JSON")
+		slog.Error("Webhook signing secret is required", "env", envWebhookSecret, "hint", "export HOUSECALL_PRO_WEBHOOK_SECRET=<secret from Housecall Pro webhook settings>")
 		os.Exit(1)
 	}
 
@@ -139,18 +140,7 @@ func main() {
 }
 
 func loadWebhookSecret() (string, bool) {
-	// Credentials contract for this smoke script:
-	// - JSON field: webhookSecret
-	// - env override: HOUSECALL_PRO_WEBHOOK_SECRET
-	webhookSecretField := credscanning.Field{
-		Name:      "webhookSecret",
-		PathJSON:  "webhookSecret",
-		SuffixENV: "WEBHOOK_SECRET",
-	}
-
-	filePath := credscanning.LoadPath(providers.HousecallPro)
-	reader := utils.MustCreateProvCredJSON(filePath, false, webhookSecretField)
-	secret := reader.Get(webhookSecretField)
+	secret := strings.TrimSpace(os.Getenv(envWebhookSecret))
 
 	return secret, secret != ""
 }
