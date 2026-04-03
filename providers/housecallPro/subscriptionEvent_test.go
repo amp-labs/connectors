@@ -37,7 +37,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 			name:      "valid signature from fixture",
 			body:      testutils.DataFromFile(t, "webhook-job-created.json"),
 			timestamp: "1775143244",
-			secret:    "1f9ce2b43ca140c28446c9cbf54bfd6f",
+			secret:    "test-webhook-hmac-secret",
 			wantOK:    true,
 			wantErr:   false,
 		},
