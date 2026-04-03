@@ -10,6 +10,14 @@ import (
 	"github.com/amp-labs/connectors/providers/housecallPro/metadata"
 )
 
+func (c *Connector) urlPathForRecordByID(objectName string) (string, error) {
+	if objectName == "invoices" {
+		return "/api/invoices", nil
+	}
+
+	return metadata.Schemas.FindURLPath(c.Module(), objectName)
+}
+
 // GetRecordsByIds implements connectors.BatchRecordReaderConnector.
 func (c *Connector) GetRecordsByIds( //nolint:revive
 	ctx context.Context,
@@ -18,7 +26,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	fields []string,
 	associations []string,
 ) ([]common.ReadResultRow, error) {
-	path, err := metadata.Schemas.FindURLPath(c.Module(), objectName)
+	path, err := c.urlPathForRecordByID(objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -26,6 +34,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	marshal := readhelper.MakeGetMarshaledDataWithId(readIDFieldByObject.Get(objectName))
 	out := make([]common.ReadResultRow, 0, len(recordIDs))
 
+	// Single object returned per webhook
 	for _, recordID := range recordIDs {
 		url, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
 		if err != nil {

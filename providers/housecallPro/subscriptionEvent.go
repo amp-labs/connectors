@@ -126,11 +126,12 @@ func (evt SubscriptionEvent) RawEventName() (string, error) {
 }
 
 func (evt SubscriptionEvent) ObjectName() (string, error) {
-	if name, _, err := resourceRecord(evt); err == nil {
-		return name, nil
+	name, _, err := resourceRecord(evt)
+	if err != nil {
+		return "", err
 	}
 
-	return evt.extractObjectNameFromEventType()
+	return name, nil
 }
 
 func (evt SubscriptionEvent) Workspace() (string, error) {
@@ -224,21 +225,6 @@ func resourceRecord(evt SubscriptionEvent) (objectName string, record map[string
 	}
 
 	return connectorObject, v, nil
-}
-
-// extractObjectNameFromEventType maps the resource prefix from the event name (e.g. job.created -> jobs).
-func (evt SubscriptionEvent) extractObjectNameFromEventType() (string, error) {
-	resource, err := evt.eventResourcePrefix()
-	if err != nil {
-		return "", err
-	}
-
-	_, connectorObject, err := resolveEventObject(resource)
-	if err != nil {
-		return "", err
-	}
-
-	return connectorObject, nil
 }
 
 func resolveEventObject(resource string) (payloadObject string, connectorObject string, err error) {

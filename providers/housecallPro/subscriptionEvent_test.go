@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strings"
 	"testing"
@@ -170,6 +171,23 @@ func TestSubscriptionEvent_UnsupportedJobAppointmentPrefix(t *testing.T) {
 
 	_, err := evt.ObjectName()
 	assert.Assert(t, err != nil)
+
+	_, err = evt.RecordId()
+	assert.Assert(t, err != nil)
+}
+
+func TestSubscriptionEvent_ObjectNameRequiresPayload(t *testing.T) {
+	t.Parallel()
+
+	evt := SubscriptionEvent{
+		"event":             "job.created",
+		"event_occurred_at": "2026-04-03T14:20:38Z",
+		"company_id":        "7141dca7-882d-427b-a9c0-0ba0d74c85cf",
+	}
+
+	_, err := evt.ObjectName()
+	assert.Assert(t, err != nil)
+	assert.Assert(t, errors.Is(err, errMalformedWebhookEvent))
 
 	_, err = evt.RecordId()
 	assert.Assert(t, err != nil)
