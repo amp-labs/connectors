@@ -56,6 +56,10 @@ func ConstructApexTrigger(params ApexTriggerParams) ([]byte, error) {
 	}
 
 	triggerCode := generateTriggerCode(params)
+
+	//nolint:forbidigo
+	fmt.Println("triggerCode:", triggerCode)
+
 	triggerMetaXML := generateTriggerMetaXML()
 
 	return createTriggerDeployZip(params.TriggerName, triggerCode, triggerMetaXML)
