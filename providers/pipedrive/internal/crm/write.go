@@ -20,7 +20,7 @@ func (a *Adapter) Write(ctx context.Context, config common.WriteParams) (*common
 		return nil, err
 	}
 
-	url, err := a.getAPIURL(readAPIVersion, config.ObjectName)
+	url, err := a.getAPIURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
