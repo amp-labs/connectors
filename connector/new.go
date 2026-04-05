@@ -46,6 +46,7 @@ import (
 	"github.com/amp-labs/connectors/providers/dropboxsign"
 	"github.com/amp-labs/connectors/providers/dynamicsbusiness"
 	"github.com/amp-labs/connectors/providers/dynamicscrm"
+	"github.com/amp-labs/connectors/providers/fastspring"
 	"github.com/amp-labs/connectors/providers/fathom"
 	"github.com/amp-labs/connectors/providers/fireflies"
 	"github.com/amp-labs/connectors/providers/flatfile"
@@ -184,6 +185,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.DropboxSign:             wrapper(newDropboxSignConnector),
 	providers.DynamicsBusinessCentral: wrapper(newDynamicsBusinessCentral),
 	providers.DynamicsCRM:             wrapper(newDynamicsCRMConnector),
+	providers.FastSpring:              wrapper(newFastSpringConnector),
 	providers.Fathom:                  wrapper(newFathomConnector),
 	providers.Fireflies:               wrapper(newFirefliesConnector),
 	providers.Flatfile:                wrapper(newFlatfileConnector),
@@ -810,6 +812,10 @@ func newBrazeConnector(
 	params common.ConnectorParams,
 ) (*braze.Connector, error) {
 	return braze.NewConnector(params)
+}
+
+func newFastSpringConnector(params common.ConnectorParams) (*fastspring.Connector, error) {
+	return fastspring.NewConnector(params)
 }
 
 func newFathomConnector(
