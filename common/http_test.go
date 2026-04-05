@@ -3,10 +3,12 @@ package common
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -742,16 +744,26 @@ func TestHTTPClient_Post_Success(t *testing.T) {
 	assert.JSONEq(t, `{"id":"123"}`, string(body))
 }
 
-func TestHTTPClient_Post_URLEncoded(t *testing.T) {
+func TestHTTPClient_Post_URLEncoded_JSONValue(t *testing.T) {
 	t.Parallel()
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "application/x-www-form-urlencoded", r.Header.Get("Content-Type"))
 
-		body, _ := io.ReadAll(r.Body)
-		bodyStr := string(body)
-		assert.Contains(t, bodyStr, "key1=value1")
-		assert.Contains(t, bodyStr, "key2=value2")
+		// Parse the form data
+		err := r.ParseForm()
+		require.NoError(t, err)
+
+		// Get the JSON string value
+		jsonStr := r.Form.Get("data")
+		assert.Equal(t, `{"key1":"value1","key2":"value2"}`, jsonStr)
+
+		// Optionally, verify it's valid JSON
+		var jsonData map[string]string
+		err = json.Unmarshal([]byte(jsonStr), &jsonData)
+		require.NoError(t, err)
+		assert.Equal(t, "value1", jsonData["key1"])
+		assert.Equal(t, "value2", jsonData["key2"])
 
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -766,7 +778,10 @@ func TestHTTPClient_Post_URLEncoded(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	payload := []byte(`{"key1": "value1", "key2": "value2"}`)
+	// Create form data with JSON as a value
+	formData := url.Values{}
+	formData.Set("data", `{"key1":"value1","key2":"value2"}`)
+	payload := []byte(formData.Encode())
 
 	resp, _, err := client.Post(ctx, server.URL, payload, HeaderFormURLEncoded)
 
@@ -1047,7 +1062,7 @@ func TestBodyReader_FormURLEncoded(t *testing.T) {
 	t.Parallel()
 
 	headers := Headers{HeaderFormURLEncoded}
-	data := []byte(`{"key1":"value1","key2":"value2"}`)
+	data := []byte(`key1=value1&key2=value2`)
 
 	reader, length, err := bodyReader(headers, data)
 
