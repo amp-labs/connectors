@@ -60,6 +60,7 @@ import (
 	"github.com/amp-labs/connectors/providers/google"
 	"github.com/amp-labs/connectors/providers/gorgias"
 	"github.com/amp-labs/connectors/providers/granola"
+	"github.com/amp-labs/connectors/providers/greenhouse"
 	"github.com/amp-labs/connectors/providers/groove"
 	"github.com/amp-labs/connectors/providers/happyfox"
 	"github.com/amp-labs/connectors/providers/helpscoutmailbox"
@@ -198,6 +199,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Google:                  wrapper(newGoogleConnector),
 	providers.Gorgias:                 wrapper(newGorgiasConnector),
 	providers.Granola:                 wrapper(newGranolaConnector),
+	providers.Greenhouse:              wrapper(newGreenhouseConnector),
 	providers.Groove:                  wrapper(newGrooveConnector),
 	providers.HappyFox:                wrapper(newHappyFoxConnector),
 	providers.HelpScoutMailbox:        wrapper(newHelpScoutMailboxConnector),
@@ -762,6 +764,10 @@ func newHelpScoutMailboxConnector(
 	params common.ConnectorParams,
 ) (*helpscoutmailbox.Connector, error) {
 	return helpscoutmailbox.NewConnector(params)
+}
+
+func newGreenhouseConnector(params common.ConnectorParams) (*greenhouse.Connector, error) {
+	return greenhouse.NewConnector(params)
 }
 
 func newGrooveConnector(
