@@ -12,6 +12,8 @@ import (
 // nolint:gochecknoglobals
 var (
 	// Static file containing openapi spec.
+	//go:embed ads.json
+	adsAPI []byte
 	//go:embed calendar.json
 	calendarAPI []byte
 	//go:embed people.json
@@ -19,6 +21,9 @@ var (
 	//go:embed mail.json
 	mailAPI []byte
 
+	InputAds  = api3.NewOpenapiFileManager[any](calendarAPI)
+	OutputAds = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
+		fileconv.NewPath("providers/google/internal/ads"))
 	InputCalendar  = api3.NewOpenapiFileManager[any](calendarAPI)
 	OutputCalendar = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
 		fileconv.NewPath("providers/google/internal/calendar"))
