@@ -398,7 +398,7 @@ func validateSingleAssociation(actualAssoc, expectedAssoc common.Association) bo
 	return true
 }
 
-func TestReadWithCustomUpdatedAtField(t *testing.T) {
+func TestReadWithCustomTimestampColumn(t *testing.T) {
 	t.Parallel()
 
 	responseListContacts := testutils.DataFromFile(t, "read-list-contacts.json")
@@ -407,7 +407,7 @@ func TestReadWithCustomUpdatedAtField(t *testing.T) {
 
 	tests := []testroutines.Read{
 		{
-			Name: "Incremental read uses custom updated-at field in SOQL",
+			Name: "Incremental read uses custom timestamp column in SOQL",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("Department"),
@@ -430,7 +430,7 @@ func TestReadWithCustomUpdatedAtField(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Backfill read unaffected by custom updated-at field",
+			Name: "Backfill read unaffected by custom timestamp column",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("Department"),
@@ -457,7 +457,7 @@ func TestReadWithCustomUpdatedAtField(t *testing.T) {
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnectorWithUpdatedAtField(tt.Server.URL, "LastModifiedDate")
+				return constructTestConnectorWithTimestampColumn(tt.Server.URL, "LastModifiedDate")
 			})
 		})
 	}
@@ -627,12 +627,12 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	}
 }
 
-func constructTestConnectorWithUpdatedAtField(serverURL, field string) (*Connector, error) {
+func constructTestConnectorWithTimestampColumn(serverURL, field string) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),
 		WithWorkspace("test-workspace"),
 		WithModule(providers.ModuleSalesforceCRM),
-		WithUpdatedAtField(field),
+		WithTimestampColumn(field),
 	)
 	if err != nil {
 		return nil, err

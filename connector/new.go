@@ -292,8 +292,8 @@ func newSalesforceConnector(params common.ConnectorParams) (*salesforce.Connecto
 		salesforce.WithMetadata(params.Metadata),
 	}
 
-	if field, ok := params.Metadata["updatedAtField"]; ok && field != "" {
-		opts = append(opts, salesforce.WithUpdatedAtField(field))
+	if field, ok := params.Metadata["timestampColumn"]; ok && field != "" {
+		opts = append(opts, salesforce.WithTimestampColumn(field))
 	}
 
 	return salesforce.NewConnector(opts...)

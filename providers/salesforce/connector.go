@@ -35,10 +35,10 @@ type Connector struct {
 	// It provides dedicated support for Pardot-specific endpoints and metadata.
 	pardotAdapter *pardot.Adapter
 
-	// updatedAtField overrides the default "SystemModstamp" field used in
+	// timestampColumn overrides the default "SystemModstamp" field used in
 	// incremental read queries (Since/Until WHERE clauses). When empty,
 	// "SystemModstamp" is used.
-	updatedAtField string
+	timestampColumn string
 }
 
 // NewConnector returns a new Salesforce connector.
@@ -55,7 +55,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		return nil, err
 	}
 
-	conn.updatedAtField = params.updatedAtField
+	conn.timestampColumn = params.timestampColumn
 
 	connectorParams, err := newParams(opts)
 	if err != nil {
@@ -153,15 +153,15 @@ func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.U
 	return urlbuilder.New(crmcore.URISobjects, objectName, "describe")
 }
 
-const defaultUpdatedAtField = "SystemModstamp"
+const defaultTimestampColumn = "SystemModstamp"
 
-// getUpdatedAtField returns the field name used for incremental read queries.
-func (c *Connector) getUpdatedAtField() string {
-	if c.updatedAtField != "" {
-		return c.updatedAtField
+// getTimestampColumn returns the field name used for incremental read queries.
+func (c *Connector) getTimestampColumn() string {
+	if c.timestampColumn != "" {
+		return c.timestampColumn
 	}
 
-	return defaultUpdatedAtField
+	return defaultTimestampColumn
 }
 
 func (c *Connector) isPardotModule() bool {

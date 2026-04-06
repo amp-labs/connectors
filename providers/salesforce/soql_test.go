@@ -18,7 +18,7 @@ func TestSoqlBuilderWithIDs(t *testing.T) {
 		// Note: fields doesn't preserve order of elements.
 		// To simplify test only one element is included.
 		Fields: datautils.NewSet("shippingstreet"),
-	}, defaultUpdatedAtField)
+	}, defaultTimestampColumn)
 
 	{
 		// SOQL builder must produce query matching documentation.
@@ -53,7 +53,7 @@ func TestSoqlBuilderWithParentAssociation(t *testing.T) {
 		ObjectName:        "opportunity",
 		Fields:            datautils.NewSet("Name", "Amount"),
 		AssociatedObjects: []string{"accounts"},
-	}, defaultUpdatedAtField)
+	}, defaultTimestampColumn)
 
 	output := soql.String()
 	// AccountId should be included in the SELECT clause
@@ -74,7 +74,7 @@ func TestSoqlBuilderWithJunctionAssociation(t *testing.T) {
 		ObjectName:        "opportunity",
 		Fields:            datautils.NewSet("Name", "Amount"),
 		AssociatedObjects: []string{"contacts"},
-	}, defaultUpdatedAtField)
+	}, defaultTimestampColumn)
 
 	output := soql.String()
 	// OpportunityContactRoles subquery should be included in the SELECT clause
@@ -85,7 +85,7 @@ func TestSoqlBuilderWithJunctionAssociation(t *testing.T) {
 	assert.Assert(t, strings.Contains(output, "FROM opportunity"), "FROM clause should be present")
 }
 
-func TestMakeSOQLDefaultUpdatedAtField(t *testing.T) {
+func TestMakeSOQLDefaultTimestampColumn(t *testing.T) {
 	t.Parallel()
 
 	since := time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)
@@ -96,7 +96,7 @@ func TestMakeSOQLDefaultUpdatedAtField(t *testing.T) {
 		Fields:     datautils.NewSet("Name"),
 		Since:      since,
 		Until:      until,
-	}, defaultUpdatedAtField)
+	}, defaultTimestampColumn)
 
 	output := soql.String()
 	assert.Assert(t, strings.Contains(output, "SystemModstamp > 2024-01-15T00:00:00Z"),
@@ -105,7 +105,7 @@ func TestMakeSOQLDefaultUpdatedAtField(t *testing.T) {
 		"default field should use SystemModstamp for Until, got: %s", output)
 }
 
-func TestMakeSOQLCustomUpdatedAtField(t *testing.T) {
+func TestMakeSOQLCustomTimestampColumn(t *testing.T) {
 	t.Parallel()
 
 	since := time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)
@@ -127,7 +127,7 @@ func TestMakeSOQLCustomUpdatedAtField(t *testing.T) {
 		"custom field should not contain SystemModstamp, got: %s", output)
 }
 
-func TestMakeSOQLNoSinceUntilOmitsUpdatedAtField(t *testing.T) {
+func TestMakeSOQLNoSinceUntilOmitsTimestampColumn(t *testing.T) {
 	t.Parallel()
 
 	soql := makeSOQL(common.ReadParams{
@@ -137,7 +137,7 @@ func TestMakeSOQLNoSinceUntilOmitsUpdatedAtField(t *testing.T) {
 
 	output := soql.String()
 	assert.Assert(t, !strings.Contains(output, "LastModifiedDate"),
-		"should not include updated-at field when Since/Until are not set, got: %s", output)
+		"should not include timestamp column when Since/Until are not set, got: %s", output)
 	assert.Assert(t, !strings.Contains(output, "WHERE"),
 		"should not have WHERE clause when no filters set, got: %s", output)
 }

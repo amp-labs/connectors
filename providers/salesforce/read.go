@@ -59,31 +59,31 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	url.WithQueryParam("q", makeSOQL(config, c.getUpdatedAtField()).String())
+	url.WithQueryParam("q", makeSOQL(config, c.getTimestampColumn()).String())
 
 	return url, nil
 }
 
 // makeSOQL returns the SOQL query for the desired read operation.
-// The updatedAtField parameter specifies which field to use for Since/Until filtering
+// The timestampColumn parameter specifies which field to use for Since/Until filtering
 // (typically "SystemModstamp").
-func makeSOQL(params common.ReadParams, updatedAtField string) *core.SOQLBuilder {
+func makeSOQL(params common.ReadParams, timestampColumn string) *core.SOQLBuilder {
 	fields := associations.FieldsForSelectQueryRead(&params)
 	soql := (&core.SOQLBuilder{}).SelectFields(fields).From(params.ObjectName)
-	addWhereClauses(soql, params, updatedAtField)
+	addWhereClauses(soql, params, timestampColumn)
 
 	return soql
 }
 
 // addWhereClauses adds WHERE clauses to the SOQL query based on the config.
-func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams, updatedAtField string) {
+func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams, timestampColumn string) {
 	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 	if !config.Since.IsZero() {
-		soql.Where(updatedAtField + " > " + datautils.Time.FormatRFC3339inUTC(config.Since))
+		soql.Where(timestampColumn + " > " + datautils.Time.FormatRFC3339inUTC(config.Since))
 	}
 
 	if !config.Until.IsZero() {
-		soql.Where(updatedAtField + " <= " + datautils.Time.FormatRFC3339inUTC(config.Until))
+		soql.Where(timestampColumn + " <= " + datautils.Time.FormatRFC3339inUTC(config.Until))
 	}
 
 	if config.Deleted {
