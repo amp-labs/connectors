@@ -70,16 +70,23 @@ func GenerateApexTriggerName(objectName string) string {
 	return metadata.GenerateApexTriggerName(objectName)
 }
 
-// ConstructApexTriggerZip builds a zipped deployment package for an APEX trigger that sets
-// a boolean checkbox field to true when any of the specified watch fields change.
-// The returned zip bytes are ready for DeployMetadataZip.
+// ConstructApexTriggerZip builds a zipped deployment package for an APEX trigger
+// based on the IndicatorField type. The returned zip bytes are ready for DeployMetadataZip.
 func ConstructApexTriggerZip(params ApexTriggerParams) ([]byte, error) {
-	return metadata.ConstructApexTrigger(metadata.ApexTriggerParams{
-		ObjectName:     params.ObjectName,
-		TriggerName:    params.TriggerName,
-		IndicatorField: params.IndicatorField,
-		WatchFields:    params.WatchFields,
-	})
+	metaParams := metadata.ApexTriggerParams{
+		ObjectName:  params.ObjectName,
+		TriggerName: params.TriggerName,
+		WatchFields: params.WatchFields,
+	}
+
+	switch params.IndicatorField.ValueType { //nolint:exhaustive
+	case common.FieldTypeBoolean:
+		return metadata.ConstructApexTriggerForCDC(metaParams, params.IndicatorField.FieldName)
+	case common.FieldTypeDateTime:
+		return metadata.ConstructApexTriggerForFilteredRead(metaParams, params.IndicatorField.FieldName)
+	default:
+		return nil, fmt.Errorf("%w: %s", errUnsupportedIndicatorType, params.IndicatorField.ValueType)
+	}
 }
 
 // ConstructDestructiveApexTriggerZip builds a zipped destructive changes package to delete

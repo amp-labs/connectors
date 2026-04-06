@@ -4,12 +4,10 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/xml"
-	"errors"
 	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
 
@@ -50,78 +48,64 @@ func TestGenerateApexTriggerName(t *testing.T) {
 	}
 }
 
-func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
+func TestConstructApexTriggerForCDC(t *testing.T) { //nolint:funlen,cyclop
 	t.Parallel()
 
 	tests := []struct {
-		name        string
-		params      ApexTriggerParams
-		expectErr   error
-		expectFiles []string // expected file names inside the zip
+		name              string
+		params            ApexTriggerParams
+		checkboxFieldName string
+		expectErr         error
+		expectFiles       []string // expected file names inside the zip
 	}{
 		{
 			name: "Empty watch fields returns error",
 			params: ApexTriggerParams{
 				ObjectName:  "Lead",
 				TriggerName: "Lead",
-				IndicatorField: common.FieldDefinition{
-					FieldName: "AmpTriggerSubscription__c",
-					ValueType: common.FieldTypeBoolean,
-				},
 				WatchFields: nil,
 			},
-			expectErr: errWatchFieldsEmpty,
+			checkboxFieldName: "AmpTriggerSubscription__c",
+			expectErr:         errWatchFieldsEmpty,
 		},
 		{
 			name: "Empty object name returns error",
 			params: ApexTriggerParams{
 				ObjectName:  "",
 				TriggerName: "Lead",
-				IndicatorField: common.FieldDefinition{
-					FieldName: "AmpTriggerSubscription__c",
-					ValueType: common.FieldTypeBoolean,
-				},
 				WatchFields: []string{"Email"},
 			},
-			expectErr: errRequiredParamsMet,
+			checkboxFieldName: "AmpTriggerSubscription__c",
+			expectErr:         errRequiredParamsMet,
 		},
 		{
 			name: "Empty trigger name returns error",
 			params: ApexTriggerParams{
 				ObjectName:  "Lead",
 				TriggerName: "",
-				IndicatorField: common.FieldDefinition{
-					FieldName: "AmpTriggerSubscription__c",
-					ValueType: common.FieldTypeBoolean,
-				},
 				WatchFields: []string{"Email"},
 			},
-			expectErr: errRequiredParamsMet,
+			checkboxFieldName: "AmpTriggerSubscription__c",
+			expectErr:         errRequiredParamsMet,
 		},
 		{
 			name: "Empty indicator field name returns error",
 			params: ApexTriggerParams{
 				ObjectName:  "Lead",
 				TriggerName: "Lead",
-				IndicatorField: common.FieldDefinition{
-					FieldName: "",
-					ValueType: common.FieldTypeBoolean,
-				},
 				WatchFields: []string{"Email"},
 			},
-			expectErr: errRequiredParamsMet,
+			checkboxFieldName: "",
+			expectErr:         errRequiredParamsMet,
 		},
 		{
 			name: "Valid params with single watch field",
 			params: ApexTriggerParams{
 				ObjectName:  "Lead",
 				TriggerName: "Lead",
-				IndicatorField: common.FieldDefinition{
-					FieldName: "AmpTriggerSubscription__c",
-					ValueType: common.FieldTypeBoolean,
-				},
 				WatchFields: []string{"Email"},
 			},
+			checkboxFieldName: "AmpTriggerSubscription__c",
 			expectFiles: []string{
 				"package.xml",
 				"triggers/Lead.trigger",
@@ -133,12 +117,9 @@ func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
 			params: ApexTriggerParams{
 				ObjectName:  "Contact",
 				TriggerName: "Contact",
-				IndicatorField: common.FieldDefinition{
-					FieldName: "AmpTriggerSubscription__c",
-					ValueType: common.FieldTypeBoolean,
-				},
 				WatchFields: []string{"Email", "Phone", "LastName"},
 			},
+			checkboxFieldName: "AmpTriggerSubscription__c",
 			expectFiles: []string{
 				"package.xml",
 				"triggers/Contact.trigger",
@@ -151,7 +132,7 @@ func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			zipData, err := ConstructApexTrigger(tt.params)
+			zipData, err := ConstructApexTriggerForCDC(tt.params, tt.checkboxFieldName)
 
 			if tt.expectErr != nil {
 				if err == nil {
@@ -174,20 +155,16 @@ func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
 	}
 }
 
-func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
+func TestConstructApexTriggerForCDCContent(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	params := ApexTriggerParams{
 		ObjectName:  "Lead",
 		TriggerName: "Lead",
-		IndicatorField: common.FieldDefinition{
-			FieldName: "AmpTriggerSubscription__c",
-			ValueType: common.FieldTypeBoolean,
-		},
 		WatchFields: []string{"Email", "Phone"},
 	}
 
-	zipData, err := ConstructApexTrigger(params)
+	zipData, err := ConstructApexTriggerForCDC(params, "AmpTriggerSubscription__c")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -255,20 +232,16 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 	}
 }
 
-func TestConstructApexTriggerContentDatetime(t *testing.T) { //nolint:funlen
+func TestConstructApexTriggerForFilteredReadContent(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	params := ApexTriggerParams{
 		ObjectName:  "Lead",
 		TriggerName: "Lead",
-		IndicatorField: common.FieldDefinition{
-			FieldName: "AmpTimestamp__c",
-			ValueType: common.FieldTypeDateTime,
-		},
 		WatchFields: []string{"Email", "Phone"},
 	}
 
-	zipData, err := ConstructApexTrigger(params)
+	zipData, err := ConstructApexTriggerForFilteredRead(params, "AmpTimestamp__c")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -301,29 +274,6 @@ func TestConstructApexTriggerContentDatetime(t *testing.T) { //nolint:funlen
 `
 	if triggerCode != expectedTriggerCode {
 		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", triggerCode, expectedTriggerCode)
-	}
-}
-
-func TestConstructApexTriggerUnsupportedType(t *testing.T) {
-	t.Parallel()
-
-	params := ApexTriggerParams{
-		ObjectName:  "Lead",
-		TriggerName: "Lead",
-		IndicatorField: common.FieldDefinition{
-			FieldName: "SomeField__c",
-			ValueType: common.FieldTypeString,
-		},
-		WatchFields: []string{"Email"},
-	}
-
-	_, err := ConstructApexTrigger(params)
-	if err == nil {
-		t.Fatal("expected error for unsupported indicator type, got nil")
-	}
-
-	if !errors.Is(err, errUnsupportedIndicatorType) {
-		t.Fatalf("expected errUnsupportedIndicatorType, got %v", err)
 	}
 }
 
