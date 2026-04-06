@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
 
@@ -24,6 +25,10 @@ type ApexTriggerParams struct {
 	// TriggerName is the name of the APEX trigger (e.g., "AmpersandTrack_Lead").
 	// Use GenerateApexTriggerName() to generate this.
 	TriggerName string
+
+	// IndicatorField is the field definition for the indicator field that the trigger sets
+	// when watched fields change. Supported types: boolean and datetime.
+	IndicatorField common.FieldDefinition
 
 	// WatchFields is the list of field API names to monitor for changes.
 	WatchFields []string

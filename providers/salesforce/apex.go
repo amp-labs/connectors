@@ -14,22 +14,9 @@ import (
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/metadata"
 )
 
-// ApexTriggerParams contains the parameters for constructing and deploying an APEX trigger.
-type ApexTriggerParams struct {
-	// ObjectName is the Salesforce object the trigger runs on (e.g., "Lead").
-	ObjectName string
-
-	// TriggerName is the name of the APEX trigger (e.g., "AmpersandTrack_Lead").
-	// Use GenerateApexTriggerName() to generate this.
-	TriggerName string
-
-	// IndicatorField is the field definition for the indicator field that the trigger sets
-	// when watched fields change. Supported types: boolean and datetime.
-	IndicatorField common.FieldDefinition
-
-	// WatchFields is the list of field API names to monitor for changes.
-	WatchFields []string
-}
+// ApexTriggerParams is an alias for metadata.ApexTriggerParams, re-exported
+// because the metadata package is internal.
+type ApexTriggerParams = metadata.ApexTriggerParams
 
 // ApexTrigger represents a deployed apex trigger in the SubscribeResult.
 type ApexTrigger struct {
@@ -73,55 +60,41 @@ func GenerateApexTriggerName(objectName string) string {
 // ConstructApexTriggerZipForCDC builds a zipped deployment package for an APEX trigger that sets
 // a boolean checkbox field to true/false when any of the specified watch fields change.
 // The returned zip bytes are ready for DeployMetadataZip.
-func ConstructApexTriggerZipForCDC(params ApexTriggerParams, checkboxFieldName string) ([]byte, error) {
-	metaParams := toMetadataParams(params)
-
-	if err := metadata.ValidateApexTriggerParams(metaParams, checkboxFieldName); err != nil {
+func ConstructApexTriggerZipForCDC(params metadata.ApexTriggerParams, checkboxFieldName string) ([]byte, error) {
+	if err := metadata.ValidateApexTriggerParams(params, checkboxFieldName); err != nil {
 		return nil, err
 	}
 
-	triggerCode := metadata.GenerateTriggerCodeForCDC(metaParams, checkboxFieldName)
+	triggerCode := metadata.GenerateTriggerCodeForCDC(params, checkboxFieldName)
 
-	return metadata.ConstructApexTrigger(metaParams, triggerCode)
+	return metadata.ConstructApexTrigger(params, triggerCode)
 }
 
 // ConstructApexTriggerZipForFilteredRead builds a zipped deployment package for an APEX trigger
 // that sets a datetime field to System.now() when any of the specified watch fields change.
 // The returned zip bytes are ready for DeployMetadataZip.
-func ConstructApexTriggerZipForFilteredRead(params ApexTriggerParams, timestampFieldName string) ([]byte, error) {
-	metaParams := toMetadataParams(params)
-
-	if err := metadata.ValidateApexTriggerParams(metaParams, timestampFieldName); err != nil {
+func ConstructApexTriggerZipForFilteredRead(
+	params metadata.ApexTriggerParams, timestampFieldName string,
+) ([]byte, error) {
+	if err := metadata.ValidateApexTriggerParams(params, timestampFieldName); err != nil {
 		return nil, err
 	}
 
-	triggerCode := metadata.GenerateTriggerCodeForFilteredRead(metaParams, timestampFieldName)
+	triggerCode := metadata.GenerateTriggerCodeForFilteredRead(params, timestampFieldName)
 
-	return metadata.ConstructApexTrigger(metaParams, triggerCode)
-}
-
-func toMetadataParams(params ApexTriggerParams) metadata.ApexTriggerParams {
-	return metadata.ApexTriggerParams{
-		ObjectName:  params.ObjectName,
-		TriggerName: params.TriggerName,
-		WatchFields: params.WatchFields,
-	}
+	return metadata.ConstructApexTrigger(params, triggerCode)
 }
 
 // buildApexTriggerZips constructs zip deployment packages from pre-generated trigger code.
 // The triggerCodeMap keys must match the triggerParams keys.
 func buildApexTriggerZips(
-	triggerParams map[common.ObjectName]*ApexTriggerParams,
+	triggerParams map[common.ObjectName]*metadata.ApexTriggerParams,
 	triggerCodeMap map[common.ObjectName]string,
 ) (map[common.ObjectName][]byte, error) {
 	zipDataMap := make(map[common.ObjectName][]byte, len(triggerParams))
 
 	for objName, params := range triggerParams {
-		zipData, err := metadata.ConstructApexTrigger(metadata.ApexTriggerParams{
-			ObjectName:  params.ObjectName,
-			TriggerName: params.TriggerName,
-			WatchFields: params.WatchFields,
-		}, triggerCodeMap[objName])
+		zipData, err := metadata.ConstructApexTrigger(*params, triggerCodeMap[objName])
 		if err != nil {
 			return nil, fmt.Errorf("failed to construct apex trigger zip for %s: %w", objName, err)
 		}
@@ -155,11 +128,7 @@ func (c *Connector) deployApexTriggersForCDC(
 
 	triggerCodeMap := make(map[common.ObjectName]string, len(triggerParams))
 	for objName, p := range triggerParams {
-		triggerCodeMap[objName] = metadata.GenerateTriggerCodeForCDC(metadata.ApexTriggerParams{
-			ObjectName:  p.ObjectName,
-			TriggerName: p.TriggerName,
-			WatchFields: p.WatchFields,
-		}, p.IndicatorField.FieldName)
+		triggerCodeMap[objName] = metadata.GenerateTriggerCodeForCDC(*p, p.IndicatorField.FieldName)
 	}
 
 	zipDataMap, err := buildApexTriggerZips(triggerParams, triggerCodeMap)
@@ -191,16 +160,16 @@ func (c *Connector) CheckDeployStatus(ctx context.Context, deployID string) (*De
 	return nil, common.ErrNotImplemented
 }
 
-// buildApexTriggerParamsForSubscribe builds ApexTriggerParams for each object that has both a
+// buildApexTriggerParamsForSubscribe builds metadata.ApexTriggerParams for each object that has both a
 // quota optimization checkbox field and watch fields configured.
 func buildApexTriggerParamsForSubscribe(
 	params common.SubscribeParams, req *SubscriptionRequest,
-) map[common.ObjectName]*ApexTriggerParams {
+) map[common.ObjectName]*metadata.ApexTriggerParams {
 	if req == nil || len(req.QuotaOptimizationObjectFields) == 0 {
 		return nil
 	}
 
-	triggerParams := make(map[common.ObjectName]*ApexTriggerParams)
+	triggerParams := make(map[common.ObjectName]*metadata.ApexTriggerParams)
 
 	for objName, objEvents := range params.SubscriptionEvents {
 		checkboxField, hasQuotaField := lookupQuotaField(req.QuotaOptimizationObjectFields, objName)
@@ -208,7 +177,7 @@ func buildApexTriggerParamsForSubscribe(
 			continue
 		}
 
-		triggerParams[objName] = &ApexTriggerParams{
+		triggerParams[objName] = &metadata.ApexTriggerParams{
 			ObjectName:  string(objName),
 			TriggerName: GenerateApexTriggerName(string(objName)),
 			IndicatorField: common.FieldDefinition{
@@ -233,7 +202,9 @@ type deployApexTriggersResult struct {
 }
 
 func (c *Connector) deployApexTriggers(
-	ctx context.Context, triggerParams map[common.ObjectName]*ApexTriggerParams, zipDataMap map[common.ObjectName][]byte,
+	ctx context.Context,
+	triggerParams map[common.ObjectName]*metadata.ApexTriggerParams,
+	zipDataMap map[common.ObjectName][]byte,
 ) (*deployApexTriggersResult, error) {
 	var (
 		mutex       sync.Mutex
@@ -280,7 +251,7 @@ func (c *Connector) deployApexTriggers(
 }
 
 func (c *Connector) deployApexTrigger(
-	ctx context.Context, params *ApexTriggerParams, zipData []byte,
+	ctx context.Context, params *metadata.ApexTriggerParams, zipData []byte,
 ) (*ApexTriggerResult, error) {
 	var lastDeployResult *DeployResult
 
@@ -453,11 +424,7 @@ func (c *Connector) redeployKeptApexTriggers(
 
 	triggerCodeMap := make(map[common.ObjectName]string, len(triggerParams))
 	for objName, p := range triggerParams {
-		triggerCodeMap[objName] = metadata.GenerateTriggerCodeForCDC(metadata.ApexTriggerParams{
-			ObjectName:  p.ObjectName,
-			TriggerName: p.TriggerName,
-			WatchFields: p.WatchFields,
-		}, p.IndicatorField.FieldName)
+		triggerCodeMap[objName] = metadata.GenerateTriggerCodeForCDC(*p, p.IndicatorField.FieldName)
 	}
 
 	zipDataMap, err := buildApexTriggerZips(triggerParams, triggerCodeMap)
