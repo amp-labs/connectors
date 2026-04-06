@@ -53,6 +53,25 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrMissingExpectedValues
 	}
 
+	// Slack always returns HTTP 200, even for errors. The actual success or failure
+	// is indicated by the "ok" field in the response body. We check it here so that
+	// metadata calls fail clearly instead of trying to parse a response that has no records.
+	okStatus, okCast := (*res)["ok"].(bool)
+	if !okCast {
+		return nil, fmt.Errorf("couldn't cast 'ok' field to bool: %w", common.ErrMissingExpectedValues)
+	}
+
+	if !okStatus {
+		// When ok is false, Slack usually includes an "error" field with a short error code.
+		// Include it in the error message if present so the caller knows what went wrong.
+		errorMessage, ok := (*res)["error"].(string)
+		if ok {
+			return nil, fmt.Errorf("failed response: %s: %w", errorMessage, common.ErrMissingExpectedValues)
+		}
+
+		return nil, fmt.Errorf("failed response: %w", common.ErrMissingExpectedValues)
+	}
+
 	responseKey := objectResponseField.Get(objectName)
 
 	responseValue, exists := (*res)[responseKey]

@@ -18,6 +18,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	conversationsResponse := testutils.DataFromFile(t, "conversations-list.json")
 	conversationsFirstPageResponse := testutils.DataFromFile(t, "conversations-first-page.json")
 	usersResponse := testutils.DataFromFile(t, "users-list.json")
+	errorWithMessageResponse := testutils.DataFromFile(t, "error-with-message.json")
+	errorWithoutMessageResponse := testutils.DataFromFile(t, "error-without-message.json")
 
 	tests := []testroutines.Read{
 		{
@@ -100,6 +102,26 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Done:     false,
 			},
 			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Slack error response with message returns failure error",
+			Input: common.ReadParams{ObjectName: "conversations", Fields: connectors.Fields("id")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/conversations.list"),
+				Then:  mockserver.Response(http.StatusOK, errorWithMessageResponse),
+			}.Server(),
+			ExpectedErrs: []error{testutils.StringError("response indicated failure: not_authed")},
+		},
+		{
+			Name:  "Slack error response without message returns generic failure error",
+			Input: common.ReadParams{ObjectName: "conversations", Fields: connectors.Fields("id")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/conversations.list"),
+				Then:  mockserver.Response(http.StatusOK, errorWithoutMessageResponse),
+			}.Server(),
+			ExpectedErrs: []error{testutils.StringError("response indicated failure")},
 		},
 		{
 			Name: "Following cursor passes it as query param",
