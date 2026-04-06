@@ -1,6 +1,11 @@
 package slack
 
 import (
+	"fmt"
+	"strings"
+
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
@@ -32,3 +37,29 @@ var objectsWithoutListSuffix = datautils.NewSet( //nolint:gochecknoglobals
 	"conversations.listConnectInvites",
 	"users.conversations",
 )
+
+func supportedOperations() components.EndpointRegistryInput {
+	readSupport := []string{
+		"auth.teams",
+		"conversations",
+		"conversations.listConnectInvites",  //POST
+		"conversations.requestSharedInvite", // POST
+		"files",
+		"files.remote",
+		"reactions",
+		"team.externalTeams",
+		"usergroups",
+		"users.conversations",
+		"users",
+		"chat.scheduledMessages",
+	}
+
+	return components.EndpointRegistryInput{
+		common.ModuleRoot: {
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
+				Support:  components.ReadSupport,
+			},
+		},
+	}
+}

@@ -81,6 +81,41 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	return &objectMetadata, nil
 }
 
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	urlPath := params.ObjectName
+	if !objectsWithoutListSuffix.Has(params.ObjectName) {
+		urlPath = params.ObjectName + ".list"
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, urlPath)
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("limit", "200")
+
+	if params.NextPage != "" {
+		url.WithQueryParam("cursor", params.NextPage.String())
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse( //nolint:unparam
+	ctx context.Context, //nolint:revive
+	params common.ReadParams,
+	request *http.Request, //nolint:revive
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		records(params.ObjectName),
+		nextRecordsURL(),
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}
+
 func inferValueTypeFromData(value any) common.ValueType {
 	if value == nil {
 		return common.ValueTypeOther
