@@ -11,8 +11,6 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-const PageSize = 200
-
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	urlPath := objectName
 	if !objectsWithoutListSuffix.Has(objectName) {
@@ -117,7 +115,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	if postMethodObjects.Has(params.ObjectName) {
-		body := map[string]any{"limit": PageSize}
+		body := map[string]any{"limit": params.PageSize}
 		if params.NextPage != "" {
 			body["cursor"] = params.NextPage.String()
 		}
@@ -125,7 +123,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return jsonPostRequest(ctx, url.String(), body)
 	}
 
-	url.WithQueryParam("limit", strconv.Itoa(PageSize))
+	url.WithQueryParam("limit", strconv.Itoa(params.PageSize))
 
 	if params.NextPage != "" {
 		url.WithQueryParam("cursor", params.NextPage.String())
