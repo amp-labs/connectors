@@ -398,6 +398,71 @@ func validateSingleAssociation(actualAssoc, expectedAssoc common.Association) bo
 	return true
 }
 
+func TestReadWithCustomUpdatedAtField(t *testing.T) {
+	t.Parallel()
+
+	responseListContacts := testutils.DataFromFile(t, "read-list-contacts.json")
+
+	since := time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)
+
+	tests := []testroutines.Read{
+		{
+			Name: "Incremental read uses custom updated-at field in SOQL",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("Department"),
+				Since:      since,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/services/data/v60.0/query"),
+					mockcond.QueryParam("q",
+						"SELECT Id,Department FROM contacts WHERE LastModifiedDate > 2024-01-15T00:00:00Z"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseListContacts),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 20,
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Backfill read unaffected by custom updated-at field",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("Department"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/services/data/v60.0/query"),
+					mockcond.QueryParam("q", "SELECT Id,Department FROM contacts"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseListContacts),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 20,
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestConnectorWithUpdatedAtField(tt.Server.URL, "LastModifiedDate")
+			})
+		})
+	}
+}
+
 func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
@@ -560,6 +625,26 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			})
 		})
 	}
+}
+
+func constructTestConnectorWithUpdatedAtField(serverURL, field string) (*Connector, error) {
+	connector, err := NewConnector(
+		WithAuthenticatedClient(mockutils.NewClient()),
+		WithWorkspace("test-workspace"),
+		WithModule(providers.ModuleSalesforceCRM),
+		WithUpdatedAtField(field),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, serverURL))
+
+	if connector.crmAdapter != nil {
+		connector.crmAdapter.SetUnitTestBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
+	}
+
+	return connector, nil
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {

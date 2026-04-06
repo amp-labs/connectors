@@ -3,6 +3,7 @@ package salesforce
 import (
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -82,6 +83,63 @@ func TestSoqlBuilderWithJunctionAssociation(t *testing.T) {
 	assert.Assert(t, containsFieldInSOQL(output, "Name"), "Name should be in SOQL query")
 	assert.Assert(t, containsFieldInSOQL(output, "Amount"), "Amount should be in SOQL query")
 	assert.Assert(t, strings.Contains(output, "FROM opportunity"), "FROM clause should be present")
+}
+
+func TestMakeSOQLDefaultUpdatedAtField(t *testing.T) {
+	t.Parallel()
+
+	since := time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)
+	until := time.Date(2024, 6, 15, 0, 0, 0, 0, time.UTC)
+
+	soql := makeSOQL(common.ReadParams{
+		ObjectName: "Account",
+		Fields:     datautils.NewSet("Name"),
+		Since:      since,
+		Until:      until,
+	}, defaultUpdatedAtField)
+
+	output := soql.String()
+	assert.Assert(t, strings.Contains(output, "SystemModstamp > 2024-01-15T00:00:00Z"),
+		"default field should use SystemModstamp for Since, got: %s", output)
+	assert.Assert(t, strings.Contains(output, "SystemModstamp <= 2024-06-15T00:00:00Z"),
+		"default field should use SystemModstamp for Until, got: %s", output)
+}
+
+func TestMakeSOQLCustomUpdatedAtField(t *testing.T) {
+	t.Parallel()
+
+	since := time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)
+	until := time.Date(2024, 6, 15, 0, 0, 0, 0, time.UTC)
+
+	soql := makeSOQL(common.ReadParams{
+		ObjectName: "Account",
+		Fields:     datautils.NewSet("Name"),
+		Since:      since,
+		Until:      until,
+	}, "LastModifiedDate")
+
+	output := soql.String()
+	assert.Assert(t, strings.Contains(output, "LastModifiedDate > 2024-01-15T00:00:00Z"),
+		"custom field should use LastModifiedDate for Since, got: %s", output)
+	assert.Assert(t, strings.Contains(output, "LastModifiedDate <= 2024-06-15T00:00:00Z"),
+		"custom field should use LastModifiedDate for Until, got: %s", output)
+	assert.Assert(t, !strings.Contains(output, "SystemModstamp"),
+		"custom field should not contain SystemModstamp, got: %s", output)
+}
+
+func TestMakeSOQLNoSinceUntilOmitsUpdatedAtField(t *testing.T) {
+	t.Parallel()
+
+	soql := makeSOQL(common.ReadParams{
+		ObjectName: "Account",
+		Fields:     datautils.NewSet("Name"),
+	}, "LastModifiedDate")
+
+	output := soql.String()
+	assert.Assert(t, !strings.Contains(output, "LastModifiedDate"),
+		"should not include updated-at field when Since/Until are not set, got: %s", output)
+	assert.Assert(t, !strings.Contains(output, "WHERE"),
+		"should not have WHERE clause when no filters set, got: %s", output)
 }
 
 // containsFieldInSOQL checks if a field name appears in the SOQL SELECT clause.
