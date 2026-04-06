@@ -48,15 +48,15 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 func validateWriteParams(params common.WriteParams) error {
 	switch params.ObjectName {
-	case "accounts", "products":
+	case objectAccounts, objectProducts:
 		return nil
-	case "orders":
+	case objectOrders:
 		if params.IsCreate() {
 			return common.ErrOperationNotSupportedForObject
 		}
 
 		return nil
-	case "subscriptions":
+	case objectSubscriptions:
 		if params.IsCreate() {
 			return common.ErrOperationNotSupportedForObject
 		}
@@ -69,26 +69,26 @@ func validateWriteParams(params common.WriteParams) error {
 
 func buildWriteURL(baseURL string, params common.WriteParams) (*urlbuilder.URL, string, error) {
 	switch params.ObjectName {
-	case "accounts":
+	case objectAccounts:
 		if params.IsCreate() {
-			u, err := urlbuilder.New(baseURL, "accounts")
+			u, err := urlbuilder.New(baseURL, objectAccounts)
 
 			return u, http.MethodPost, err
 		}
 
-		u, err := urlbuilder.New(baseURL, "accounts", params.RecordId)
+		u, err := urlbuilder.New(baseURL, objectAccounts, params.RecordId)
 
 		return u, http.MethodPost, err
-	case "products":
-		u, err := urlbuilder.New(baseURL, "products")
+	case objectProducts:
+		u, err := urlbuilder.New(baseURL, objectProducts)
 
 		return u, http.MethodPost, err
-	case "orders":
-		u, err := urlbuilder.New(baseURL, "orders")
+	case objectOrders:
+		u, err := urlbuilder.New(baseURL, objectOrders)
 
 		return u, http.MethodPost, err
-	case "subscriptions":
-		u, err := urlbuilder.New(baseURL, "subscriptions", params.RecordId)
+	case objectSubscriptions:
+		u, err := urlbuilder.New(baseURL, objectSubscriptions, params.RecordId)
 
 		return u, http.MethodPost, err
 	default:
@@ -103,13 +103,13 @@ func buildWriteJSONBody(params common.WriteParams) ([]byte, error) {
 	}
 
 	switch params.ObjectName {
-	case "accounts":
+	case objectAccounts:
 		return json.Marshal(record)
-	case "products":
+	case objectProducts:
 		return marshalProductsWriteBody(record)
-	case "orders":
+	case objectOrders:
 		return marshalOrdersWriteBody(params, record)
-	case "subscriptions":
+	case objectSubscriptions:
 		return json.Marshal(record)
 	default:
 		return nil, common.ErrOperationNotSupportedForObject
@@ -173,7 +173,7 @@ func (c *Connector) parseWriteResponse(
 }
 
 func fallbackWriteRecordID(params common.WriteParams) string {
-	if params.ObjectName == "products" && params.IsCreate() {
+	if params.ObjectName == objectProducts && params.IsCreate() {
 		return ""
 	}
 
@@ -182,43 +182,62 @@ func fallbackWriteRecordID(params common.WriteParams) string {
 
 func extractWriteRecordID(params common.WriteParams, data map[string]any) string {
 	switch params.ObjectName {
-	case "accounts":
-		if s, ok := data["id"].(string); ok && s != "" {
-			return s
-		}
+	case objectAccounts:
+		return extractAccountWriteRecordID(data)
+	case objectProducts:
+		return extractProductWriteRecordID(data)
+	case objectOrders:
+		return extractOrderWriteRecordID(data)
+	case objectSubscriptions:
+		return extractSubscriptionWriteRecordID(data)
+	default:
+		return ""
+	}
+}
 
-		if s, ok := data["account"].(string); ok && s != "" {
-			return s
-		}
-	case "products":
-		if arr, ok := data["products"].([]any); ok && len(arr) > 0 {
-			if m, ok := arr[0].(map[string]any); ok {
-				if s, ok := m["product"].(string); ok && s != "" {
-					return s
-				}
-			}
-		}
-	case "orders":
-		if arr, ok := data["orders"].([]any); ok && len(arr) > 0 {
-			if m, ok := arr[0].(map[string]any); ok {
-				if s, ok := m["order"].(string); ok && s != "" {
-					return s
-				}
-			}
-		}
-	case "subscriptions":
-		if s, ok := data["subscription"].(string); ok && s != "" {
-			return s
-		}
-
-		if arr, ok := data["subscriptions"].([]any); ok && len(arr) > 0 {
-			if m, ok := arr[0].(map[string]any); ok {
-				if s, ok := m["subscription"].(string); ok && s != "" {
-					return s
-				}
-			}
-		}
+func stringFieldFromMap(m map[string]any, key string) string {
+	s, ok := m[key].(string)
+	if !ok || s == "" {
+		return ""
 	}
 
-	return ""
+	return s
+}
+
+func extractAccountWriteRecordID(data map[string]any) string {
+	if s := stringFieldFromMap(data, "id"); s != "" {
+		return s
+	}
+
+	return stringFieldFromMap(data, "account")
+}
+
+func extractRecordIDFromFirstSliceElement(data map[string]any, sliceKey, fieldName string) string {
+	arr, ok := data[sliceKey].([]any)
+	if !ok || len(arr) == 0 {
+		return ""
+	}
+
+	m, ok := arr[0].(map[string]any)
+	if !ok {
+		return ""
+	}
+
+	return stringFieldFromMap(m, fieldName)
+}
+
+func extractProductWriteRecordID(data map[string]any) string {
+	return extractRecordIDFromFirstSliceElement(data, "products", "product")
+}
+
+func extractOrderWriteRecordID(data map[string]any) string {
+	return extractRecordIDFromFirstSliceElement(data, "orders", "order")
+}
+
+func extractSubscriptionWriteRecordID(data map[string]any) string {
+	if s := stringFieldFromMap(data, "subscription"); s != "" {
+		return s
+	}
+
+	return extractRecordIDFromFirstSliceElement(data, "subscriptions", "subscription")
 }

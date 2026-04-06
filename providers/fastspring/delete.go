@@ -21,15 +21,15 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 	baseURL := c.ProviderInfo().BaseURL
 
 	var (
-		u   *urlbuilder.URL
-		err error
+		deleteURL *urlbuilder.URL
+		err       error
 	)
 
 	switch params.ObjectName {
-	case "products":
-		u, err = urlbuilder.New(baseURL, "products", params.RecordId)
-	case "subscriptions":
-		u, err = urlbuilder.New(baseURL, "subscriptions", params.RecordId)
+	case objectProducts:
+		deleteURL, err = urlbuilder.New(baseURL, objectProducts, params.RecordId)
+	case objectSubscriptions:
+		deleteURL, err = urlbuilder.New(baseURL, objectSubscriptions, params.RecordId)
 	default:
 		return nil, common.ErrOperationNotSupportedForObject
 	}
@@ -38,7 +38,7 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 		return nil, err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, deleteURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 
 func validateDeleteParams(params common.DeleteParams) error {
 	switch params.ObjectName {
-	case "products", "subscriptions":
+	case objectProducts, objectSubscriptions:
 		return nil
 	default:
 		return common.ErrOperationNotSupportedForObject
