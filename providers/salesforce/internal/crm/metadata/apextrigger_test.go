@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"strings"
 	"testing"
@@ -251,6 +252,78 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 </Package>`, core.APIVersion)
 	if packageXML != expectedPackageXML {
 		t.Errorf("package.xml mismatch.\nGot:\n%s\nWant:\n%s", packageXML, expectedPackageXML)
+	}
+}
+
+func TestConstructApexTriggerContentDatetime(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Lead",
+		TriggerName: "Lead",
+		IndicatorField: common.FieldDefinition{
+			FieldName: "AmpTimestamp__c",
+			ValueType: common.FieldTypeDateTime,
+		},
+		WatchFields: []string{"Email", "Phone"},
+	}
+
+	zipData, err := ConstructApexTrigger(params)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	files := readZipFiles(t, zipData)
+
+	triggerCode, ok := files["triggers/Lead.trigger"]
+	if !ok {
+		t.Fatal("trigger file not found in zip")
+	}
+
+	expectedTriggerCode := `trigger Lead on Lead (before insert, before update) {
+    if (Trigger.isBefore) {
+        for (Lead rec : Trigger.new) {
+            Boolean fieldChanged = false;
+
+            if (Trigger.isInsert) {
+                fieldChanged = (rec.Email != null) || (rec.Phone != null);
+            } else if (Trigger.isUpdate) {
+                Lead oldRec = Trigger.oldMap.get(rec.Id);
+                fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
+            }
+
+            if (fieldChanged) {
+                rec.AmpTimestamp__c = System.now();
+            }
+        }
+    }
+}
+`
+	if triggerCode != expectedTriggerCode {
+		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", triggerCode, expectedTriggerCode)
+	}
+}
+
+func TestConstructApexTriggerUnsupportedType(t *testing.T) {
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Lead",
+		TriggerName: "Lead",
+		IndicatorField: common.FieldDefinition{
+			FieldName: "SomeField__c",
+			ValueType: common.FieldTypeString,
+		},
+		WatchFields: []string{"Email"},
+	}
+
+	_, err := ConstructApexTrigger(params)
+	if err == nil {
+		t.Fatal("expected error for unsupported indicator type, got nil")
+	}
+
+	if !errors.Is(err, errUnsupportedIndicatorType) {
+		t.Fatalf("expected errUnsupportedIndicatorType, got %v", err)
 	}
 }
 
