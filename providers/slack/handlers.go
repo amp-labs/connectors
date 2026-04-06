@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
@@ -62,10 +62,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	if !okStatus {
 		// When ok is false, Slack usually includes an "error" field with a short error code.
-		// Include it in the error message if present so the caller knows what went wrong.
-		errorMessage, ok := (*res)["error"].(string)
+		// Map it to a sentinel error so callers can use errors.Is to react appropriately.
+		errorCode, ok := (*res)["error"].(string)
 		if ok {
-			return nil, fmt.Errorf("failed response: %s: %w", errorMessage, common.ErrMissingExpectedValues)
+			return nil, interpretSlackErrorCode(errorCode)
 		}
 
 		return nil, fmt.Errorf("failed response: %w", common.ErrMissingExpectedValues)
@@ -115,8 +115,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
+	pageSize := readhelper.PageSizeWithDefaultStr(params, "200")
+
 	if postMethodObjects.Has(params.ObjectName) {
-		body := map[string]any{"limit": params.PageSize}
+		body := map[string]any{"limit": pageSize}
 		if params.NextPage != "" {
 			body["cursor"] = params.NextPage.String()
 		}
@@ -124,7 +126,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return jsonPostRequest(ctx, url.String(), body)
 	}
 
-	url.WithQueryParam("limit", strconv.Itoa(params.PageSize))
+	url.WithQueryParam("limit", pageSize)
 
 	if params.NextPage != "" {
 		url.WithQueryParam("cursor", params.NextPage.String())

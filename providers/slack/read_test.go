@@ -111,7 +111,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/api/conversations.list"),
 				Then:  mockserver.Response(http.StatusOK, errorWithMessageResponse),
 			}.Server(),
-			ExpectedErrs: []error{testutils.StringError("response indicated failure: not_authed")},
+			ExpectedErrs: []error{common.ErrAccessToken},
 		},
 		{
 			Name:  "Slack error response without message returns generic failure error",

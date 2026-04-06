@@ -2,7 +2,6 @@ package slack
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -21,15 +20,15 @@ func records(objectName string) common.RecordsFunc {
 		}
 
 		if !ok {
-			// Slack usually includes a short error code in the "error" field.
-			// Include it in the message if present.
-			errorMessage, err := jsonquery.New(node).StringOptional("error")
+			// Map the Slack error code to a sentinel error so callers can use
+			// errors.Is to react appropriately (re-auth, retry, etc.).
+			errorCode, err := jsonquery.New(node).StringOptional("error")
 			if err != nil {
 				return nil, err
 			}
 
-			if errorMessage != nil {
-				return nil, fmt.Errorf("%w %s", errResponseIndicatesFailure, *errorMessage)
+			if errorCode != nil {
+				return nil, interpretSlackErrorCode(*errorCode)
 			}
 
 			return nil, errResponseIndicatesFailure
