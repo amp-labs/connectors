@@ -73,12 +73,12 @@ const (
 )
 
 // GenerateApexTriggerNameForCDC returns the APEX trigger name for CDC on a given Salesforce object.
-func GenerateApexTriggerNameForCDC(objectName string) string {
+func GenerateApexTriggerNameForCDC(objectName string) (string, error) {
 	return metadata.GenerateApexTriggerNameForCDC(objectName)
 }
 
 // GenerateApexTriggerNameForRead returns the APEX trigger name for filtered read on a given Salesforce object.
-func GenerateApexTriggerNameForRead(objectName string) string {
+func GenerateApexTriggerNameForRead(objectName string) (string, error) {
 	return metadata.GenerateApexTriggerNameForRead(objectName)
 }
 
@@ -143,7 +143,11 @@ func (c *Connector) deployApexTriggersForCDC(
 	params common.SubscribeParams,
 	req *SubscriptionRequest,
 ) (*deployApexTriggersResult, error) {
-	triggerParams := buildApexTriggerParamsForSubscribe(params, req)
+	triggerParams, err := buildApexTriggerParamsForSubscribe(params, req)
+	if err != nil {
+		return nil, err
+	}
+
 	if len(triggerParams) == 0 {
 		return &deployApexTriggersResult{
 			results: make(map[common.ObjectName]*ApexTriggerResult),
@@ -189,9 +193,9 @@ func (c *Connector) CheckDeployStatus(ctx context.Context, deployID string) (*De
 // quota optimization checkbox field and watch fields configured.
 func buildApexTriggerParamsForSubscribe(
 	params common.SubscribeParams, req *SubscriptionRequest,
-) map[common.ObjectName]*metadata.ApexTriggerParams {
+) (map[common.ObjectName]*metadata.ApexTriggerParams, error) {
 	if req == nil || len(req.QuotaOptimizationObjectFields) == 0 {
-		return nil
+		return nil, nil //nolint:nilnil
 	}
 
 	triggerParams := make(map[common.ObjectName]*metadata.ApexTriggerParams)
@@ -202,9 +206,14 @@ func buildApexTriggerParamsForSubscribe(
 			continue
 		}
 
+		triggerName, err := GenerateApexTriggerNameForCDC(string(objName))
+		if err != nil {
+			return nil, err
+		}
+
 		triggerParams[objName] = &metadata.ApexTriggerParams{
 			ObjectName:  string(objName),
-			TriggerName: GenerateApexTriggerNameForCDC(string(objName)),
+			TriggerName: triggerName,
 			IndicatorField: common.FieldDefinition{
 				FieldName: customFieldAPIName(checkboxField),
 				ValueType: common.FieldTypeBoolean,
@@ -214,10 +223,10 @@ func buildApexTriggerParamsForSubscribe(
 	}
 
 	if len(triggerParams) == 0 {
-		return nil
+		return nil, nil //nolint:nilnil
 	}
 
-	return triggerParams
+	return triggerParams, nil
 }
 
 // deployApexTriggersResult holds the per-object results and errors from concurrent deployment.
@@ -445,7 +454,11 @@ func (c *Connector) redeployKeptApexTriggers(
 
 	// Build trigger params from the kept objects' events (saved before diff mutation).
 	keptParams := common.SubscribeParams{SubscriptionEvents: diff.keptObjectEvents}
-	triggerParams := buildApexTriggerParamsForSubscribe(keptParams, req)
+
+	triggerParams, err := buildApexTriggerParamsForSubscribe(keptParams, req)
+	if err != nil {
+		return err
+	}
 
 	triggerCodeMap := make(map[common.ObjectName]string, len(triggerParams))
 	for objName, p := range triggerParams {

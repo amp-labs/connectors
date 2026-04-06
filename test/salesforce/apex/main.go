@@ -46,7 +46,10 @@ func main() {
 	ctx = common.WithAuthToken(ctx, connTest.GetSalesforceAccessToken())
 
 	objectName := "Lead"
-	triggerName := salesforce.GenerateApexTriggerNameForCDC(objectName)
+	triggerName, err := salesforce.GenerateApexTriggerNameForCDC(objectName)
+	if err != nil {
+		utils.Fail("failed to generate apex trigger name", "error", err)
+	}
 
 	// Deploy the apex trigger.
 	fmt.Println("====== Deploying Apex Trigger ======")

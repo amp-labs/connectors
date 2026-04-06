@@ -15,24 +15,25 @@ func TestGenerateApexTriggerNameForCDC(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name       string
-		objectName string
-		expected   string
+		name      string
+		object    string
+		expected  string
+		expectErr bool
 	}{
 		{
-			name:       "Standard object",
-			objectName: "Lead",
-			expected:   "Lead_CDC",
+			name:     "Standard object",
+			object:   "Lead",
+			expected: "CDC_Lead",
 		},
 		{
-			name:       "Custom object",
-			objectName: "MyObject__c",
-			expected:   "MyObject__c_CDC",
+			name:     "Custom object",
+			object:   "MyObject__c",
+			expected: "CDC_MyObject__c",
 		},
 		{
-			name:       "Empty object name",
-			objectName: "",
-			expected:   "_CDC",
+			name:      "Empty object name returns error",
+			object:    "",
+			expectErr: true,
 		},
 	}
 
@@ -40,9 +41,21 @@ func TestGenerateApexTriggerNameForCDC(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := GenerateApexTriggerNameForCDC(tt.objectName)
+			got, err := GenerateApexTriggerNameForCDC(tt.object)
+			if tt.expectErr {
+				if err == nil {
+					t.Fatal("expected error, got nil")
+				}
+
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
 			if got != tt.expected {
-				t.Errorf("GenerateApexTriggerNameForCDC(%q) = %q, want %q", tt.objectName, got, tt.expected)
+				t.Errorf("GenerateApexTriggerNameForCDC(%q) = %q, want %q", tt.object, got, tt.expected)
 			}
 		})
 	}
@@ -52,24 +65,25 @@ func TestGenerateApexTriggerNameForRead(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name       string
-		objectName string
-		expected   string
+		name      string
+		object    string
+		expected  string
+		expectErr bool
 	}{
 		{
-			name:       "Standard object",
-			objectName: "Lead",
-			expected:   "Lead_Read",
+			name:     "Standard object",
+			object:   "Lead",
+			expected: "Read_Lead",
 		},
 		{
-			name:       "Custom object",
-			objectName: "MyObject__c",
-			expected:   "MyObject__c_Read",
+			name:     "Custom object",
+			object:   "MyObject__c",
+			expected: "Read_MyObject__c",
 		},
 		{
-			name:       "Empty object name",
-			objectName: "",
-			expected:   "_Read",
+			name:      "Empty object name returns error",
+			object:    "",
+			expectErr: true,
 		},
 	}
 
@@ -77,9 +91,21 @@ func TestGenerateApexTriggerNameForRead(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := GenerateApexTriggerNameForRead(tt.objectName)
+			got, err := GenerateApexTriggerNameForRead(tt.object)
+			if tt.expectErr {
+				if err == nil {
+					t.Fatal("expected error, got nil")
+				}
+
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
 			if got != tt.expected {
-				t.Errorf("GenerateApexTriggerNameForRead(%q) = %q, want %q", tt.objectName, got, tt.expected)
+				t.Errorf("GenerateApexTriggerNameForRead(%q) = %q, want %q", tt.object, got, tt.expected)
 			}
 		})
 	}

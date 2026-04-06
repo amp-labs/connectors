@@ -15,6 +15,7 @@ import (
 var (
 	errWatchFieldsEmpty  = errors.New("watchFields must not be empty")
 	errRequiredParamsMet = errors.New("objectName, triggerName, and indicatorFieldName are required")
+	errEmptyObjectName   = errors.New("objectName must not be empty")
 )
 
 // ApexTriggerParams contains the parameters for constructing and deploying an APEX trigger.
@@ -35,13 +36,21 @@ type ApexTriggerParams struct {
 }
 
 // GenerateApexTriggerNameForCDC returns the APEX trigger name for CDC on a given Salesforce object.
-func GenerateApexTriggerNameForCDC(objectName string) string {
-	return objectName + "_CDC"
+func GenerateApexTriggerNameForCDC(objectName string) (string, error) {
+	if objectName == "" {
+		return "", errEmptyObjectName
+	}
+
+	return "CDC_" + objectName, nil
 }
 
 // GenerateApexTriggerNameForRead returns the APEX trigger name for filtered read on a given Salesforce object.
-func GenerateApexTriggerNameForRead(objectName string) string {
-	return objectName + "_Read"
+func GenerateApexTriggerNameForRead(objectName string) (string, error) {
+	if objectName == "" {
+		return "", errEmptyObjectName
+	}
+
+	return "Read_" + objectName, nil
 }
 
 // ValidateApexTriggerParams checks that all required fields are present.
