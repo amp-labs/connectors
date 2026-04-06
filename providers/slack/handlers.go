@@ -4,15 +4,16 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+const PageSize = 200
+
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	// Most Slack list endpoints are named "<resource>.list". Objects in objectsWithoutListSuffix
-	// are exceptions whose API method name does not end in ".list".
 	urlPath := objectName
 	if !objectsWithoutListSuffix.Has(objectName) {
 		urlPath = objectName + ".list"
@@ -21,6 +22,10 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, urlPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if postMethodObjects.Has(objectName) {
+		return jsonPostRequest(ctx, url.String(), map[string]any{"limit": 1})
 	}
 
 	url.WithQueryParam("limit", "1")
@@ -92,7 +97,16 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	url.WithQueryParam("limit", "200")
+	if postMethodObjects.Has(params.ObjectName) {
+		body := map[string]any{"limit": PageSize}
+		if params.NextPage != "" {
+			body["cursor"] = params.NextPage.String()
+		}
+
+		return jsonPostRequest(ctx, url.String(), body)
+	}
+
+	url.WithQueryParam("limit", strconv.Itoa(PageSize))
 
 	if params.NextPage != "" {
 		url.WithQueryParam("cursor", params.NextPage.String())
@@ -114,21 +128,4 @@ func (c *Connector) parseReadResponse( //nolint:unparam
 		common.GetMarshaledData,
 		params.Fields,
 	)
-}
-
-func inferValueTypeFromData(value any) common.ValueType {
-	if value == nil {
-		return common.ValueTypeOther
-	}
-
-	switch value.(type) {
-	case string:
-		return common.ValueTypeString
-	case float64, int, int64:
-		return common.ValueTypeFloat
-	case bool:
-		return common.ValueTypeBoolean
-	default:
-		return common.ValueTypeOther
-	}
 }

@@ -38,11 +38,21 @@ var objectsWithoutListSuffix = datautils.NewSet( //nolint:gochecknoglobals
 	"users.conversations",
 )
 
+// postMethodObjects contains objects whose Slack API endpoint uses HTTP POST instead of GET.
+// Pagination params (limit, cursor) are sent in the JSON request body for these objects.
+var postMethodObjects = datautils.NewSet( //nolint:gochecknoglobals
+	// Ref: https://docs.slack.dev/reference/methods/conversations.listConnectInvites
+	"conversations.listConnectInvites",
+
+	// Ref: https://docs.slack.dev/reference/methods/conversations.requestSharedInvite.list
+	"conversations.requestSharedInvite",
+)
+
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
 		"auth.teams",
 		"conversations",
-		"conversations.listConnectInvites",  //POST
+		"conversations.listConnectInvites",  // POST
 		"conversations.requestSharedInvite", // POST
 		"files",
 		"files.remote",
