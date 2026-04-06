@@ -285,12 +285,18 @@ func newSalesflareConnector(params common.ConnectorParams) (*salesflare.Connecto
 }
 
 func newSalesforceConnector(params common.ConnectorParams) (*salesforce.Connector, error) {
-	return salesforce.NewConnector(
+	opts := []salesforce.Option{
 		salesforce.WithAuthenticatedClient(params.AuthenticatedClient),
 		salesforce.WithWorkspace(params.Workspace),
 		salesforce.WithModule(params.Module),
 		salesforce.WithMetadata(params.Metadata),
-	)
+	}
+
+	if field, ok := params.Metadata["updatedAtField"]; ok && field != "" {
+		opts = append(opts, salesforce.WithUpdatedAtField(field))
+	}
+
+	return salesforce.NewConnector(opts...)
 }
 
 func newHubspotConnector(params common.ConnectorParams) (*hubspot.Connector, error) {
