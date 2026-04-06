@@ -114,11 +114,11 @@ func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams) {
 func (c *Connector) DeployApexTriggersForFilteredRead( //nolint:unused
 	ctx context.Context,
 	triggerParams map[common.ObjectName]*ApexTriggerParams,
-) (*deployApexTriggersResult, error) {
+) (*DeployApexTriggersResult, error) {
 	if len(triggerParams) == 0 {
-		return &deployApexTriggersResult{
-			results: make(map[common.ObjectName]*ApexTriggerResult),
-			errors:  make(map[common.ObjectName]error),
+		return &DeployApexTriggersResult{
+			Results: make(map[common.ObjectName]*ApexTriggerResult),
+			Errors:  make(map[common.ObjectName]error),
 		}, nil
 	}
 

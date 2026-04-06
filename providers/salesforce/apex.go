@@ -142,16 +142,16 @@ func (c *Connector) deployApexTriggersForCDC(
 	ctx context.Context,
 	params common.SubscribeParams,
 	req *SubscriptionRequest,
-) (*deployApexTriggersResult, error) {
+) (*DeployApexTriggersResult, error) {
 	triggerParams, err := buildApexTriggerParamsForSubscribe(params, req)
 	if err != nil {
 		return nil, err
 	}
 
 	if len(triggerParams) == 0 {
-		return &deployApexTriggersResult{
-			results: make(map[common.ObjectName]*ApexTriggerResult),
-			errors:  make(map[common.ObjectName]error),
+		return &DeployApexTriggersResult{
+			Results: make(map[common.ObjectName]*ApexTriggerResult),
+			Errors:  make(map[common.ObjectName]error),
 		}, nil
 	}
 
@@ -229,25 +229,25 @@ func buildApexTriggerParamsForSubscribe(
 	return triggerParams, nil
 }
 
-// deployApexTriggersResult holds the per-object results and errors from concurrent deployment.
-type deployApexTriggersResult struct {
-	results map[common.ObjectName]*ApexTriggerResult
-	errors  map[common.ObjectName]error
+// DeployApexTriggersResult holds the per-object results and errors from concurrent deployment.
+type DeployApexTriggersResult struct {
+	Results map[common.ObjectName]*ApexTriggerResult
+	Errors  map[common.ObjectName]error
 }
 
 func (c *Connector) deployApexTriggers(
 	ctx context.Context,
 	triggerParams map[common.ObjectName]*metadata.ApexTriggerParams,
 	zipDataMap map[common.ObjectName][]byte,
-) (*deployApexTriggersResult, error) {
+) (*DeployApexTriggersResult, error) {
 	var (
 		mutex       sync.Mutex
 		deployFuncs = make([]simultaneously.Job, 0, len(triggerParams))
 	)
 
-	out := &deployApexTriggersResult{
-		results: make(map[common.ObjectName]*ApexTriggerResult),
-		errors:  make(map[common.ObjectName]error),
+	out := &DeployApexTriggersResult{
+		Results: make(map[common.ObjectName]*ApexTriggerResult),
+		Errors:  make(map[common.ObjectName]error),
 	}
 
 	for objName, params := range triggerParams {
@@ -258,12 +258,12 @@ func (c *Connector) deployApexTriggers(
 			defer mutex.Unlock()
 
 			if err != nil {
-				out.errors[objName] = err
-				out.results[objName] = &ApexTriggerResult{
+				out.Errors[objName] = err
+				out.Results[objName] = &ApexTriggerResult{
 					ApexTriggerParams: *params,
 				}
 			} else {
-				out.results[objName] = triggerResult
+				out.Results[objName] = triggerResult
 			}
 
 			return nil
@@ -272,9 +272,9 @@ func (c *Connector) deployApexTriggers(
 
 	simultaneously.DoCtx(ctx, len(deployFuncs), deployFuncs...) //nolint:errcheck
 
-	if len(out.errors) > 0 {
-		errs := make([]error, 0, len(out.errors))
-		for _, err := range out.errors {
+	if len(out.Errors) > 0 {
+		errs := make([]error, 0, len(out.Errors))
+		for _, err := range out.Errors {
 			errs = append(errs, err)
 		}
 
@@ -399,11 +399,11 @@ func (c *Connector) pollDeployStatus(ctx context.Context, deployID string) (*Dep
 // filterSuccessfulTriggers returns only trigger results that deployed successfully
 // (have a non-empty DeployID).
 func filterSuccessfulTriggers(
-	out *deployApexTriggersResult,
+	out *DeployApexTriggersResult,
 ) map[common.ObjectName]*ApexTriggerResult {
 	successful := make(map[common.ObjectName]*ApexTriggerResult)
 
-	for objName, result := range out.results {
+	for objName, result := range out.Results {
 		if result.DeployID != "" {
 			successful[objName] = result
 		}
@@ -415,11 +415,11 @@ func filterSuccessfulTriggers(
 // toApexTriggers converts deploy results to the ApexTrigger type stored in SubscribeResult,
 // including per-object error details for failed deployments.
 func toApexTriggers(
-	out *deployApexTriggersResult,
+	out *DeployApexTriggersResult,
 ) map[common.ObjectName]*ApexTrigger {
-	triggers := make(map[common.ObjectName]*ApexTrigger, len(out.results))
+	triggers := make(map[common.ObjectName]*ApexTrigger, len(out.Results))
 
-	for objName, result := range out.results {
+	for objName, result := range out.Results {
 		trigger := &ApexTrigger{
 			ObjectName:     objName,
 			TriggerName:    result.TriggerName,
@@ -427,7 +427,7 @@ func toApexTriggers(
 			WatchFields:    result.WatchFields,
 		}
 
-		if err, ok := out.errors[objName]; ok {
+		if err, ok := out.Errors[objName]; ok {
 			trigger.Errors = []string{err.Error()}
 		}
 
