@@ -48,15 +48,14 @@ func TestGenerateApexTriggerName(t *testing.T) {
 	}
 }
 
-func TestConstructApexTriggerForCDC(t *testing.T) { //nolint:funlen,cyclop
+func TestValidateApexTriggerParams(t *testing.T) { //nolint:funlen,cyclop
 	t.Parallel()
 
 	tests := []struct {
-		name              string
-		params            ApexTriggerParams
-		checkboxFieldName string
-		expectErr         error
-		expectFiles       []string // expected file names inside the zip
+		name               string
+		params             ApexTriggerParams
+		indicatorFieldName string
+		expectErr          error
 	}{
 		{
 			name: "Empty watch fields returns error",
@@ -65,8 +64,8 @@ func TestConstructApexTriggerForCDC(t *testing.T) { //nolint:funlen,cyclop
 				TriggerName: "Lead",
 				WatchFields: nil,
 			},
-			checkboxFieldName: "AmpTriggerSubscription__c",
-			expectErr:         errWatchFieldsEmpty,
+			indicatorFieldName: "AmpTriggerSubscription__c",
+			expectErr:          errWatchFieldsEmpty,
 		},
 		{
 			name: "Empty object name returns error",
@@ -75,8 +74,8 @@ func TestConstructApexTriggerForCDC(t *testing.T) { //nolint:funlen,cyclop
 				TriggerName: "Lead",
 				WatchFields: []string{"Email"},
 			},
-			checkboxFieldName: "AmpTriggerSubscription__c",
-			expectErr:         errRequiredParamsMet,
+			indicatorFieldName: "AmpTriggerSubscription__c",
+			expectErr:          errRequiredParamsMet,
 		},
 		{
 			name: "Empty trigger name returns error",
@@ -85,8 +84,8 @@ func TestConstructApexTriggerForCDC(t *testing.T) { //nolint:funlen,cyclop
 				TriggerName: "",
 				WatchFields: []string{"Email"},
 			},
-			checkboxFieldName: "AmpTriggerSubscription__c",
-			expectErr:         errRequiredParamsMet,
+			indicatorFieldName: "AmpTriggerSubscription__c",
+			expectErr:          errRequiredParamsMet,
 		},
 		{
 			name: "Empty indicator field name returns error",
@@ -95,8 +94,8 @@ func TestConstructApexTriggerForCDC(t *testing.T) { //nolint:funlen,cyclop
 				TriggerName: "Lead",
 				WatchFields: []string{"Email"},
 			},
-			checkboxFieldName: "",
-			expectErr:         errRequiredParamsMet,
+			indicatorFieldName: "",
+			expectErr:          errRequiredParamsMet,
 		},
 		{
 			name: "Valid params with single watch field",
@@ -105,12 +104,7 @@ func TestConstructApexTriggerForCDC(t *testing.T) { //nolint:funlen,cyclop
 				TriggerName: "Lead",
 				WatchFields: []string{"Email"},
 			},
-			checkboxFieldName: "AmpTriggerSubscription__c",
-			expectFiles: []string{
-				"package.xml",
-				"triggers/Lead.trigger",
-				"triggers/Lead.trigger-meta.xml",
-			},
+			indicatorFieldName: "AmpTriggerSubscription__c",
 		},
 		{
 			name: "Valid params with multiple watch fields",
@@ -119,12 +113,7 @@ func TestConstructApexTriggerForCDC(t *testing.T) { //nolint:funlen,cyclop
 				TriggerName: "Contact",
 				WatchFields: []string{"Email", "Phone", "LastName"},
 			},
-			checkboxFieldName: "AmpTriggerSubscription__c",
-			expectFiles: []string{
-				"package.xml",
-				"triggers/Contact.trigger",
-				"triggers/Contact.trigger-meta.xml",
-			},
+			indicatorFieldName: "AmpTriggerSubscription__c",
 		},
 	}
 
@@ -132,7 +121,7 @@ func TestConstructApexTriggerForCDC(t *testing.T) { //nolint:funlen,cyclop
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			zipData, err := ConstructApexTriggerForCDC(tt.params, tt.checkboxFieldName)
+			err := ValidateApexTriggerParams(tt.params, tt.indicatorFieldName)
 
 			if tt.expectErr != nil {
 				if err == nil {
@@ -149,10 +138,31 @@ func TestConstructApexTriggerForCDC(t *testing.T) { //nolint:funlen,cyclop
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
-
-			assertZipContainsFiles(t, zipData, tt.expectFiles)
 		})
 	}
+}
+
+func TestConstructApexTriggerZip(t *testing.T) {
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Lead",
+		TriggerName: "Lead",
+		WatchFields: []string{"Email"},
+	}
+
+	triggerCode := GenerateTriggerCodeForCDC(params, "AmpTriggerSubscription__c")
+
+	zipData, err := ConstructApexTrigger(params, triggerCode)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	assertZipContainsFiles(t, zipData, []string{
+		"package.xml",
+		"triggers/Lead.trigger",
+		"triggers/Lead.trigger-meta.xml",
+	})
 }
 
 func TestConstructApexTriggerForCDCContent(t *testing.T) { //nolint:funlen
@@ -164,7 +174,9 @@ func TestConstructApexTriggerForCDCContent(t *testing.T) { //nolint:funlen
 		WatchFields: []string{"Email", "Phone"},
 	}
 
-	zipData, err := ConstructApexTriggerForCDC(params, "AmpTriggerSubscription__c")
+	triggerCode := GenerateTriggerCodeForCDC(params, "AmpTriggerSubscription__c")
+
+	zipData, err := ConstructApexTrigger(params, triggerCode)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -241,7 +253,9 @@ func TestConstructApexTriggerForFilteredReadContent(t *testing.T) { //nolint:fun
 		WatchFields: []string{"Email", "Phone"},
 	}
 
-	zipData, err := ConstructApexTriggerForFilteredRead(params, "AmpTimestamp__c")
+	triggerCode := GenerateTriggerCodeForFilteredRead(params, "AmpTimestamp__c")
+
+	zipData, err := ConstructApexTrigger(params, triggerCode)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

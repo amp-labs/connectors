@@ -74,22 +74,38 @@ func GenerateApexTriggerName(objectName string) string {
 // a boolean checkbox field to true/false when any of the specified watch fields change.
 // The returned zip bytes are ready for DeployMetadataZip.
 func ConstructApexTriggerZipForCDC(params ApexTriggerParams, checkboxFieldName string) ([]byte, error) {
-	return metadata.ConstructApexTriggerForCDC(metadata.ApexTriggerParams{
-		ObjectName:  params.ObjectName,
-		TriggerName: params.TriggerName,
-		WatchFields: params.WatchFields,
-	}, checkboxFieldName)
+	metaParams := toMetadataParams(params)
+
+	if err := metadata.ValidateApexTriggerParams(metaParams, checkboxFieldName); err != nil {
+		return nil, err
+	}
+
+	triggerCode := metadata.GenerateTriggerCodeForCDC(metaParams, checkboxFieldName)
+
+	return metadata.ConstructApexTrigger(metaParams, triggerCode)
 }
 
 // ConstructApexTriggerZipForFilteredRead builds a zipped deployment package for an APEX trigger
 // that sets a datetime field to System.now() when any of the specified watch fields change.
 // The returned zip bytes are ready for DeployMetadataZip.
 func ConstructApexTriggerZipForFilteredRead(params ApexTriggerParams, timestampFieldName string) ([]byte, error) {
-	return metadata.ConstructApexTriggerForFilteredRead(metadata.ApexTriggerParams{
+	metaParams := toMetadataParams(params)
+
+	if err := metadata.ValidateApexTriggerParams(metaParams, timestampFieldName); err != nil {
+		return nil, err
+	}
+
+	triggerCode := metadata.GenerateTriggerCodeForFilteredRead(metaParams, timestampFieldName)
+
+	return metadata.ConstructApexTrigger(metaParams, triggerCode)
+}
+
+func toMetadataParams(params ApexTriggerParams) metadata.ApexTriggerParams {
+	return metadata.ApexTriggerParams{
 		ObjectName:  params.ObjectName,
 		TriggerName: params.TriggerName,
 		WatchFields: params.WatchFields,
-	}, timestampFieldName)
+	}
 }
 
 // buildApexTriggerZips constructs zip deployment packages from pre-generated trigger code.

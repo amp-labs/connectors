@@ -34,33 +34,8 @@ func GenerateApexTriggerName(objectName string) string {
 	return objectName
 }
 
-// ConstructApexTriggerForCDC builds a zipped deployment package for an APEX trigger that sets
-// a boolean checkbox field to true/false when any of the specified watch fields change.
-// The returned zip bytes are ready for DeployMetadataZip.
-func ConstructApexTriggerForCDC(params ApexTriggerParams, checkboxFieldName string) ([]byte, error) {
-	if err := validateApexTriggerParams(params, checkboxFieldName); err != nil {
-		return nil, err
-	}
-
-	triggerCode := GenerateTriggerCodeForCDC(params, checkboxFieldName)
-
-	return ConstructApexTrigger(params, triggerCode)
-}
-
-// ConstructApexTriggerForFilteredRead builds a zipped deployment package for an APEX trigger
-// that sets a datetime field to System.now() when any of the specified watch fields change.
-// The returned zip bytes are ready for DeployMetadataZip.
-func ConstructApexTriggerForFilteredRead(params ApexTriggerParams, timestampFieldName string) ([]byte, error) {
-	if err := validateApexTriggerParams(params, timestampFieldName); err != nil {
-		return nil, err
-	}
-
-	triggerCode := GenerateTriggerCodeForFilteredRead(params, timestampFieldName)
-
-	return ConstructApexTrigger(params, triggerCode)
-}
-
-func validateApexTriggerParams(params ApexTriggerParams, indicatorFieldName string) error {
+// ValidateApexTriggerParams checks that all required fields are present.
+func ValidateApexTriggerParams(params ApexTriggerParams, indicatorFieldName string) error {
 	if len(params.WatchFields) == 0 {
 		return errWatchFieldsEmpty
 	}
