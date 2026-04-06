@@ -3,6 +3,7 @@ package salesforce
 import (
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -17,7 +18,7 @@ func TestSoqlBuilderWithIDs(t *testing.T) {
 		// Note: fields doesn't preserve order of elements.
 		// To simplify test only one element is included.
 		Fields: datautils.NewSet("shippingstreet"),
-	})
+	}, defaultTimestampColumn)
 
 	{
 		// SOQL builder must produce query matching documentation.
@@ -52,7 +53,7 @@ func TestSoqlBuilderWithParentAssociation(t *testing.T) {
 		ObjectName:        "opportunity",
 		Fields:            datautils.NewSet("Name", "Amount"),
 		AssociatedObjects: []string{"accounts"},
-	})
+	}, defaultTimestampColumn)
 
 	output := soql.String()
 	// AccountId should be included in the SELECT clause
@@ -73,7 +74,7 @@ func TestSoqlBuilderWithJunctionAssociation(t *testing.T) {
 		ObjectName:        "opportunity",
 		Fields:            datautils.NewSet("Name", "Amount"),
 		AssociatedObjects: []string{"contacts"},
-	})
+	}, defaultTimestampColumn)
 
 	output := soql.String()
 	// OpportunityContactRoles subquery should be included in the SELECT clause
@@ -82,6 +83,63 @@ func TestSoqlBuilderWithJunctionAssociation(t *testing.T) {
 	assert.Assert(t, containsFieldInSOQL(output, "Name"), "Name should be in SOQL query")
 	assert.Assert(t, containsFieldInSOQL(output, "Amount"), "Amount should be in SOQL query")
 	assert.Assert(t, strings.Contains(output, "FROM opportunity"), "FROM clause should be present")
+}
+
+func TestMakeSOQLDefaultTimestampColumn(t *testing.T) {
+	t.Parallel()
+
+	since := time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)
+	until := time.Date(2024, 6, 15, 0, 0, 0, 0, time.UTC)
+
+	soql := makeSOQL(common.ReadParams{
+		ObjectName: "Account",
+		Fields:     datautils.NewSet("Name"),
+		Since:      since,
+		Until:      until,
+	}, defaultTimestampColumn)
+
+	output := soql.String()
+	assert.Assert(t, strings.Contains(output, "SystemModstamp > 2024-01-15T00:00:00Z"),
+		"default field should use SystemModstamp for Since, got: %s", output)
+	assert.Assert(t, strings.Contains(output, "SystemModstamp <= 2024-06-15T00:00:00Z"),
+		"default field should use SystemModstamp for Until, got: %s", output)
+}
+
+func TestMakeSOQLCustomTimestampColumn(t *testing.T) {
+	t.Parallel()
+
+	since := time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)
+	until := time.Date(2024, 6, 15, 0, 0, 0, 0, time.UTC)
+
+	soql := makeSOQL(common.ReadParams{
+		ObjectName: "Account",
+		Fields:     datautils.NewSet("Name"),
+		Since:      since,
+		Until:      until,
+	}, "LastModifiedDate")
+
+	output := soql.String()
+	assert.Assert(t, strings.Contains(output, "LastModifiedDate > 2024-01-15T00:00:00Z"),
+		"custom field should use LastModifiedDate for Since, got: %s", output)
+	assert.Assert(t, strings.Contains(output, "LastModifiedDate <= 2024-06-15T00:00:00Z"),
+		"custom field should use LastModifiedDate for Until, got: %s", output)
+	assert.Assert(t, !strings.Contains(output, "SystemModstamp"),
+		"custom field should not contain SystemModstamp, got: %s", output)
+}
+
+func TestMakeSOQLNoSinceUntilOmitsTimestampColumn(t *testing.T) {
+	t.Parallel()
+
+	soql := makeSOQL(common.ReadParams{
+		ObjectName: "Account",
+		Fields:     datautils.NewSet("Name"),
+	}, "LastModifiedDate")
+
+	output := soql.String()
+	assert.Assert(t, !strings.Contains(output, "LastModifiedDate"),
+		"should not include timestamp column when Since/Until are not set, got: %s", output)
+	assert.Assert(t, !strings.Contains(output, "WHERE"),
+		"should not have WHERE clause when no filters set, got: %s", output)
 }
 
 // containsFieldInSOQL checks if a field name appears in the SOQL SELECT clause.
