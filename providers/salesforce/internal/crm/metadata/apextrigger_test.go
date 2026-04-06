@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
 
@@ -60,50 +61,65 @@ func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
 		{
 			name: "Empty watch fields returns error",
 			params: ApexTriggerParams{
-				ObjectName:        "Lead",
-				TriggerName:       "Lead",
-				CheckboxFieldName: "AmpTriggerSubscription__c",
-				WatchFields:       nil,
+				ObjectName:  "Lead",
+				TriggerName: "Lead",
+				IndicatorField: common.FieldDefinition{
+					FieldName: "AmpTriggerSubscription__c",
+					ValueType: common.FieldTypeBoolean,
+				},
+				WatchFields: nil,
 			},
 			expectErr: errWatchFieldsEmpty,
 		},
 		{
 			name: "Empty object name returns error",
 			params: ApexTriggerParams{
-				ObjectName:        "",
-				TriggerName:       "Lead",
-				CheckboxFieldName: "AmpTriggerSubscription__c",
-				WatchFields:       []string{"Email"},
+				ObjectName:  "",
+				TriggerName: "Lead",
+				IndicatorField: common.FieldDefinition{
+					FieldName: "AmpTriggerSubscription__c",
+					ValueType: common.FieldTypeBoolean,
+				},
+				WatchFields: []string{"Email"},
 			},
 			expectErr: errRequiredParamsMet,
 		},
 		{
 			name: "Empty trigger name returns error",
 			params: ApexTriggerParams{
-				ObjectName:        "Lead",
-				TriggerName:       "",
-				CheckboxFieldName: "AmpTriggerSubscription__c",
-				WatchFields:       []string{"Email"},
+				ObjectName:  "Lead",
+				TriggerName: "",
+				IndicatorField: common.FieldDefinition{
+					FieldName: "AmpTriggerSubscription__c",
+					ValueType: common.FieldTypeBoolean,
+				},
+				WatchFields: []string{"Email"},
 			},
 			expectErr: errRequiredParamsMet,
 		},
 		{
-			name: "Empty checkbox field name returns error",
+			name: "Empty indicator field name returns error",
 			params: ApexTriggerParams{
-				ObjectName:        "Lead",
-				TriggerName:       "Lead",
-				CheckboxFieldName: "",
-				WatchFields:       []string{"Email"},
+				ObjectName:  "Lead",
+				TriggerName: "Lead",
+				IndicatorField: common.FieldDefinition{
+					FieldName: "",
+					ValueType: common.FieldTypeBoolean,
+				},
+				WatchFields: []string{"Email"},
 			},
 			expectErr: errRequiredParamsMet,
 		},
 		{
 			name: "Valid params with single watch field",
 			params: ApexTriggerParams{
-				ObjectName:        "Lead",
-				TriggerName:       "Lead",
-				CheckboxFieldName: "AmpTriggerSubscription__c",
-				WatchFields:       []string{"Email"},
+				ObjectName:  "Lead",
+				TriggerName: "Lead",
+				IndicatorField: common.FieldDefinition{
+					FieldName: "AmpTriggerSubscription__c",
+					ValueType: common.FieldTypeBoolean,
+				},
+				WatchFields: []string{"Email"},
 			},
 			expectFiles: []string{
 				"package.xml",
@@ -114,10 +130,13 @@ func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
 		{
 			name: "Valid params with multiple watch fields",
 			params: ApexTriggerParams{
-				ObjectName:        "Contact",
-				TriggerName:       "Contact",
-				CheckboxFieldName: "AmpTriggerSubscription__c",
-				WatchFields:       []string{"Email", "Phone", "LastName"},
+				ObjectName:  "Contact",
+				TriggerName: "Contact",
+				IndicatorField: common.FieldDefinition{
+					FieldName: "AmpTriggerSubscription__c",
+					ValueType: common.FieldTypeBoolean,
+				},
+				WatchFields: []string{"Email", "Phone", "LastName"},
 			},
 			expectFiles: []string{
 				"package.xml",
@@ -158,10 +177,13 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	params := ApexTriggerParams{
-		ObjectName:        "Lead",
-		TriggerName:       "Lead",
-		CheckboxFieldName: "AmpTriggerSubscription__c",
-		WatchFields:       []string{"Email", "Phone"},
+		ObjectName:  "Lead",
+		TriggerName: "Lead",
+		IndicatorField: common.FieldDefinition{
+			FieldName: "AmpTriggerSubscription__c",
+			ValueType: common.FieldTypeBoolean,
+		},
+		WatchFields: []string{"Email", "Phone"},
 	}
 
 	zipData, err := ConstructApexTrigger(params)

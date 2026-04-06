@@ -52,10 +52,13 @@ func main() {
 	fmt.Println("====== Deploying Apex Trigger ======")
 
 	zipData, err := salesforce.ConstructApexTriggerZip(salesforce.ApexTriggerParams{
-		ObjectName:        objectName,
-		TriggerName:       triggerName,
-		CheckboxFieldName: *checkboxField,
-		WatchFields:       []string{"Email", "Phone"},
+		ObjectName:  objectName,
+		TriggerName: triggerName,
+		IndicatorField: common.FieldDefinition{
+			FieldName: *checkboxField,
+			ValueType: common.FieldTypeBoolean,
+		},
+		WatchFields: []string{"Email", "Phone"},
 	})
 	if err != nil {
 		utils.Fail("failed to construct apex trigger zip", "error", err)

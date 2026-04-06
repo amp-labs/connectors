@@ -23,9 +23,9 @@ type ApexTriggerParams struct {
 	// Use GenerateApexTriggerName() to generate this.
 	TriggerName string
 
-	// CheckboxFieldName is the API name of the boolean field that the trigger sets
-	// (e.g., "AmpTriggerSubscription__c").
-	CheckboxFieldName string
+	// IndicatorField is the field definition for the indicator field that the trigger sets
+	// when watched fields change. Supported types: boolean and datetime.
+	IndicatorField common.FieldDefinition
 
 	// WatchFields is the list of field API names to monitor for changes.
 	WatchFields []string
@@ -33,10 +33,10 @@ type ApexTriggerParams struct {
 
 // ApexTrigger represents a deployed apex trigger in the SubscribeResult.
 type ApexTrigger struct {
-	ObjectName    common.ObjectName
-	TriggerName   string
-	CheckboxField string
-	WatchFields   []string
+	ObjectName     common.ObjectName
+	TriggerName    string
+	IndicatorField common.FieldDefinition
+	WatchFields    []string
 	// Errors contains deployment error messages for this trigger.
 	// Empty when deployment succeeded.
 	Errors []string
@@ -75,10 +75,10 @@ func GenerateApexTriggerName(objectName string) string {
 // The returned zip bytes are ready for DeployMetadataZip.
 func ConstructApexTriggerZip(params ApexTriggerParams) ([]byte, error) {
 	return metadata.ConstructApexTrigger(metadata.ApexTriggerParams{
-		ObjectName:        params.ObjectName,
-		TriggerName:       params.TriggerName,
-		CheckboxFieldName: params.CheckboxFieldName,
-		WatchFields:       params.WatchFields,
+		ObjectName:     params.ObjectName,
+		TriggerName:    params.TriggerName,
+		IndicatorField: params.IndicatorField,
+		WatchFields:    params.WatchFields,
 	})
 }
 
@@ -127,10 +127,13 @@ func buildApexTriggerParams(
 		}
 
 		triggerParams[objName] = &ApexTriggerParams{
-			ObjectName:        string(objName),
-			TriggerName:       GenerateApexTriggerName(string(objName)),
-			CheckboxFieldName: customFieldAPIName(checkboxField),
-			WatchFields:       objEvents.WatchFields,
+			ObjectName:  string(objName),
+			TriggerName: GenerateApexTriggerName(string(objName)),
+			IndicatorField: common.FieldDefinition{
+				FieldName: customFieldAPIName(checkboxField),
+				ValueType: common.FieldTypeBoolean,
+			},
+			WatchFields: objEvents.WatchFields,
 		}
 	}
 
@@ -334,10 +337,10 @@ func toApexTriggers(
 
 	for objName, result := range out.results {
 		trigger := &ApexTrigger{
-			ObjectName:    objName,
-			TriggerName:   result.TriggerName,
-			CheckboxField: result.CheckboxFieldName,
-			WatchFields:   result.WatchFields,
+			ObjectName:     objName,
+			TriggerName:    result.TriggerName,
+			IndicatorField: result.IndicatorField,
+			WatchFields:    result.WatchFields,
 		}
 
 		if err, ok := out.errors[objName]; ok {
@@ -376,10 +379,10 @@ func (c *Connector) redeployKeptApexTriggers(
 		}
 
 		diff.apexTriggersToKeep[objName] = &ApexTrigger{
-			ObjectName:    objName,
-			TriggerName:   result.TriggerName,
-			CheckboxField: result.CheckboxFieldName,
-			WatchFields:   result.WatchFields,
+			ObjectName:     objName,
+			TriggerName:    result.TriggerName,
+			IndicatorField: result.IndicatorField,
+			WatchFields:    result.WatchFields,
 		}
 	}
 

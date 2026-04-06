@@ -8,12 +8,14 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
 
 var (
-	errWatchFieldsEmpty  = errors.New("watchFields must not be empty")
-	errRequiredParamsMet = errors.New("objectName, triggerName, and checkboxFieldName are required")
+	errWatchFieldsEmpty         = errors.New("watchFields must not be empty")
+	errRequiredParamsMet        = errors.New("objectName, triggerName, and indicatorField are required")
+	errUnsupportedIndicatorType = errors.New("unsupported indicator field type: only boolean and datetime are supported")
 )
 
 // ApexTriggerParams contains the parameters for constructing and deploying an APEX trigger.
@@ -25,9 +27,10 @@ type ApexTriggerParams struct {
 	// Use GenerateApexTriggerName() to generate this.
 	TriggerName string
 
-	// CheckboxFieldName is the API name of the boolean field that the trigger sets
-	// (e.g., "AmpTriggerSubscription__c").
-	CheckboxFieldName string
+	// IndicatorField is the field definition for the indicator field that the trigger sets
+	// when watched fields change. Supported types: boolean (sets to true/false) and
+	// datetime (sets to System.now()).
+	IndicatorField common.FieldDefinition
 
 	// WatchFields is the list of field API names to monitor for changes.
 	WatchFields []string
@@ -39,11 +42,15 @@ func GenerateApexTriggerName(objectName string) string {
 }
 
 // ConstructApexTrigger builds a zipped deployment package for an APEX trigger that sets
-// a boolean checkbox field to true when any of the specified watch fields change.
+// an indicator field when any of the specified watch fields change.
 //
 // The trigger handles both insert and update events:
-//   - On insert: sets checkbox to true if any watch field has a non-null/non-empty value.
-//   - On update: sets checkbox to true if any watch field's value differs from the old record.
+//   - On insert: sets indicator if any watch field has a non-null value.
+//   - On update: sets indicator if any watch field's value differs from the old record.
+//
+// Supported indicator field types:
+//   - boolean: sets field to true/false based on whether fields changed.
+//   - datetime: sets field to System.now() when fields changed.
 //
 // The returned zip bytes are ready for DeployMetadataZip.
 func ConstructApexTrigger(params ApexTriggerParams) ([]byte, error) {
@@ -51,11 +58,15 @@ func ConstructApexTrigger(params ApexTriggerParams) ([]byte, error) {
 		return nil, errWatchFieldsEmpty
 	}
 
-	if params.ObjectName == "" || params.TriggerName == "" || params.CheckboxFieldName == "" {
+	if params.ObjectName == "" || params.TriggerName == "" || params.IndicatorField.FieldName == "" {
 		return nil, errRequiredParamsMet
 	}
 
-	triggerCode := generateTriggerCode(params)
+	triggerCode, err := generateTriggerCode(params)
+	if err != nil {
+		return nil, err
+	}
+
 	triggerMetaXML := generateTriggerMetaXML()
 
 	return createTriggerDeployZip(params.TriggerName, triggerCode, triggerMetaXML)
@@ -68,7 +79,15 @@ func ConstructDestructiveApexTrigger(triggerName string) ([]byte, error) {
 }
 
 // generateTriggerCode dynamically generates APEX trigger code.
-func generateTriggerCode(params ApexTriggerParams) string {
+// The indicator assignment varies based on the IndicatorField type:
+//   - boolean: rec.field = fieldChanged
+//   - datetime: rec.field = System.now() (only when fieldChanged is true)
+func generateTriggerCode(params ApexTriggerParams) (string, error) {
+	indicatorAssignment, err := buildIndicatorAssignment(params.IndicatorField)
+	if err != nil {
+		return "", err
+	}
+
 	// Build insert condition: field != null
 	// We only check != null (not != '') because the empty-string check is invalid
 	// for non-String Apex types (Boolean, Datetime, Number, etc.) and would cause
@@ -102,12 +121,27 @@ func generateTriggerCode(params ApexTriggerParams) string {
                 fieldChanged = %s;
             }
 
-            rec.%s = fieldChanged;
+            %s
         }
     }
 }
 `, params.TriggerName, params.ObjectName, params.ObjectName,
-		insertExpr, params.ObjectName, updateExpr, params.CheckboxFieldName)
+		insertExpr, params.ObjectName, updateExpr, indicatorAssignment), nil
+}
+
+// buildIndicatorAssignment returns the Apex code snippet that sets the indicator field
+// based on whether watched fields changed.
+func buildIndicatorAssignment(field common.FieldDefinition) (string, error) {
+	switch field.ValueType { //nolint:exhaustive
+	case common.FieldTypeBoolean:
+		return fmt.Sprintf("rec.%s = fieldChanged;", field.FieldName), nil
+	case common.FieldTypeDateTime:
+		return fmt.Sprintf(`if (fieldChanged) {
+                rec.%s = System.now();
+            }`, field.FieldName), nil
+	default:
+		return "", fmt.Errorf("%w: %s", errUnsupportedIndicatorType, field.ValueType)
+	}
 }
 
 func generateTriggerMetaXML() string {
