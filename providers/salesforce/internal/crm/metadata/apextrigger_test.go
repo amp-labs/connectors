@@ -277,6 +277,122 @@ func TestConstructApexTriggerForFilteredReadContent(t *testing.T) { //nolint:fun
 	}
 }
 
+func TestGenerateTriggerCodeForCDC(t *testing.T) {
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Lead",
+		TriggerName: "Lead",
+		WatchFields: []string{"Email", "Phone"},
+	}
+
+	got := GenerateTriggerCodeForCDC(params, "AmpTriggerSubscription__c")
+
+	expected := `trigger Lead on Lead (before insert, before update) {
+    if (Trigger.isBefore) {
+        for (Lead rec : Trigger.new) {
+            Boolean fieldChanged = false;
+
+            if (Trigger.isInsert) {
+                fieldChanged = (rec.Email != null) || (rec.Phone != null);
+            } else if (Trigger.isUpdate) {
+                Lead oldRec = Trigger.oldMap.get(rec.Id);
+                fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
+            }
+
+            rec.AmpTriggerSubscription__c = fieldChanged;
+        }
+    }
+}
+`
+	if got != expected {
+		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", got, expected)
+	}
+}
+
+func TestGenerateTriggerCodeForCDCSingleField(t *testing.T) {
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Contact",
+		TriggerName: "Contact",
+		WatchFields: []string{"LastName"},
+	}
+
+	got := GenerateTriggerCodeForCDC(params, "AmpChanged__c")
+
+	if !strings.Contains(got, "rec.AmpChanged__c = fieldChanged;") {
+		t.Errorf("expected boolean assignment, got:\n%s", got)
+	}
+
+	if !strings.Contains(got, "(rec.LastName != null)") {
+		t.Errorf("expected insert condition for LastName, got:\n%s", got)
+	}
+
+	if !strings.Contains(got, "(rec.LastName != oldRec.LastName)") {
+		t.Errorf("expected update condition for LastName, got:\n%s", got)
+	}
+}
+
+func TestGenerateTriggerCodeForFilteredRead(t *testing.T) {
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Lead",
+		TriggerName: "Lead",
+		WatchFields: []string{"Email", "Phone"},
+	}
+
+	got := GenerateTriggerCodeForFilteredRead(params, "AmpTimestamp__c")
+
+	expected := `trigger Lead on Lead (before insert, before update) {
+    if (Trigger.isBefore) {
+        for (Lead rec : Trigger.new) {
+            Boolean fieldChanged = false;
+
+            if (Trigger.isInsert) {
+                fieldChanged = (rec.Email != null) || (rec.Phone != null);
+            } else if (Trigger.isUpdate) {
+                Lead oldRec = Trigger.oldMap.get(rec.Id);
+                fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
+            }
+
+            if (fieldChanged) {
+                rec.AmpTimestamp__c = System.now();
+            }
+        }
+    }
+}
+`
+	if got != expected {
+		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", got, expected)
+	}
+}
+
+func TestGenerateTriggerCodeForFilteredReadSingleField(t *testing.T) {
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Account",
+		TriggerName: "Account",
+		WatchFields: []string{"Name"},
+	}
+
+	got := GenerateTriggerCodeForFilteredRead(params, "AmpLastModified__c")
+
+	if !strings.Contains(got, "rec.AmpLastModified__c = System.now();") {
+		t.Errorf("expected timestamp assignment, got:\n%s", got)
+	}
+
+	if !strings.Contains(got, "if (fieldChanged)") {
+		t.Errorf("expected conditional guard, got:\n%s", got)
+	}
+
+	if !strings.Contains(got, "(rec.Name != null)") {
+		t.Errorf("expected insert condition for Name, got:\n%s", got)
+	}
+}
+
 func TestConstructDestructiveApexTrigger(t *testing.T) {
 	t.Parallel()
 

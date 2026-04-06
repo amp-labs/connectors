@@ -149,20 +149,13 @@ func (c *Connector) executeSubscribe(
 		sfRes.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
 	}
 
-	triggerParams := buildApexTriggerParams(params, req)
+	deployOut, err := c.deployApexTriggersForCDC(ctx, params, req)
 
-	if len(triggerParams) > 0 {
-		deployOut, err := c.deployApexTriggers(ctx, triggerParams)
+	progress.deployedTriggers = filterSuccessfulTriggers(deployOut)
+	sfRes.ApexTriggers = toApexTriggers(deployOut)
 
-		// Track successfully deployed triggers for rollback regardless of error.
-		progress.deployedTriggers = filterSuccessfulTriggers(deployOut)
-
-		// Always populate ApexTriggers so the caller can see per-object status.
-		sfRes.ApexTriggers = toApexTriggers(deployOut)
-
-		if err != nil {
-			return sfRes, progress, err
-		}
+	if err != nil {
+		return sfRes, progress, err
 	}
 
 	return sfRes, progress, nil

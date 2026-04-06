@@ -70,29 +70,88 @@ func GenerateApexTriggerName(objectName string) string {
 	return metadata.GenerateApexTriggerName(objectName)
 }
 
-// ConstructApexTriggerZip builds a zipped deployment package for an APEX trigger
-// based on the IndicatorField type. The returned zip bytes are ready for DeployMetadataZip.
-func ConstructApexTriggerZip(params ApexTriggerParams) ([]byte, error) {
-	metaParams := metadata.ApexTriggerParams{
+// ConstructApexTriggerZipForCDC builds a zipped deployment package for an APEX trigger that sets
+// a boolean checkbox field to true/false when any of the specified watch fields change.
+// The returned zip bytes are ready for DeployMetadataZip.
+func ConstructApexTriggerZipForCDC(params ApexTriggerParams, checkboxFieldName string) ([]byte, error) {
+	return metadata.ConstructApexTriggerForCDC(metadata.ApexTriggerParams{
 		ObjectName:  params.ObjectName,
 		TriggerName: params.TriggerName,
 		WatchFields: params.WatchFields,
+	}, checkboxFieldName)
+}
+
+// ConstructApexTriggerZipForFilteredRead builds a zipped deployment package for an APEX trigger
+// that sets a datetime field to System.now() when any of the specified watch fields change.
+// The returned zip bytes are ready for DeployMetadataZip.
+func ConstructApexTriggerZipForFilteredRead(params ApexTriggerParams, timestampFieldName string) ([]byte, error) {
+	return metadata.ConstructApexTriggerForFilteredRead(metadata.ApexTriggerParams{
+		ObjectName:  params.ObjectName,
+		TriggerName: params.TriggerName,
+		WatchFields: params.WatchFields,
+	}, timestampFieldName)
+}
+
+// buildApexTriggerZips constructs zip deployment packages from pre-generated trigger code.
+// The triggerCodeMap keys must match the triggerParams keys.
+func buildApexTriggerZips(
+	triggerParams map[common.ObjectName]*ApexTriggerParams,
+	triggerCodeMap map[common.ObjectName]string,
+) (map[common.ObjectName][]byte, error) {
+	zipDataMap := make(map[common.ObjectName][]byte, len(triggerParams))
+
+	for objName, params := range triggerParams {
+		zipData, err := metadata.ConstructApexTrigger(metadata.ApexTriggerParams{
+			ObjectName:  params.ObjectName,
+			TriggerName: params.TriggerName,
+			WatchFields: params.WatchFields,
+		}, triggerCodeMap[objName])
+		if err != nil {
+			return nil, fmt.Errorf("failed to construct apex trigger zip for %s: %w", objName, err)
+		}
+
+		zipDataMap[objName] = zipData
 	}
 
-	switch params.IndicatorField.ValueType { //nolint:exhaustive
-	case common.FieldTypeBoolean:
-		return metadata.ConstructApexTriggerForCDC(metaParams, params.IndicatorField.FieldName)
-	case common.FieldTypeDateTime:
-		return metadata.ConstructApexTriggerForFilteredRead(metaParams, params.IndicatorField.FieldName)
-	default:
-		return nil, fmt.Errorf("%w: %s", errUnsupportedIndicatorType, params.IndicatorField.ValueType)
-	}
+	return zipDataMap, nil
 }
 
 // ConstructDestructiveApexTriggerZip builds a zipped destructive changes package to delete
 // an APEX trigger from Salesforce. The returned zip bytes are ready for DeployMetadataZip.
 func ConstructDestructiveApexTriggerZip(triggerName string) ([]byte, error) {
 	return metadata.ConstructDestructiveApexTrigger(triggerName)
+}
+
+// deployApexTriggersForCDC builds and deploys CDC apex triggers (boolean indicator)
+// for objects that have quota optimization fields configured.
+func (c *Connector) deployApexTriggersForCDC(
+	ctx context.Context,
+	params common.SubscribeParams,
+	req *SubscriptionRequest,
+) (*deployApexTriggersResult, error) {
+	triggerParams := buildApexTriggerParamsForSubscribe(params, req)
+	if len(triggerParams) == 0 {
+		return &deployApexTriggersResult{
+			results: make(map[common.ObjectName]*ApexTriggerResult),
+			errors:  make(map[common.ObjectName]error),
+		}, nil
+	}
+
+	triggerCodeMap := make(map[common.ObjectName]string, len(triggerParams))
+	for objName, p := range triggerParams {
+		triggerCodeMap[objName] = metadata.GenerateTriggerCodeForCDC(metadata.ApexTriggerParams{
+			ObjectName:  p.ObjectName,
+			TriggerName: p.TriggerName,
+			WatchFields: p.WatchFields,
+		}, p.IndicatorField.FieldName)
+	}
+
+	zipDataMap, err := buildApexTriggerZips(triggerParams, triggerCodeMap)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.deployApexTriggers(ctx, triggerParams, zipDataMap)
 }
 
 // DeployMetadataZip initiates a deploy of a zip package to the connected Salesforce org
@@ -116,9 +175,9 @@ func (c *Connector) CheckDeployStatus(ctx context.Context, deployID string) (*De
 	return nil, common.ErrNotImplemented
 }
 
-// buildApexTriggerParams builds ApexTriggerParams for each object that has both a
+// buildApexTriggerParamsForSubscribe builds ApexTriggerParams for each object that has both a
 // quota optimization checkbox field and watch fields configured.
-func buildApexTriggerParams(
+func buildApexTriggerParamsForSubscribe(
 	params common.SubscribeParams, req *SubscriptionRequest,
 ) map[common.ObjectName]*ApexTriggerParams {
 	if req == nil || len(req.QuotaOptimizationObjectFields) == 0 {
@@ -158,7 +217,7 @@ type deployApexTriggersResult struct {
 }
 
 func (c *Connector) deployApexTriggers(
-	ctx context.Context, triggerParams map[common.ObjectName]*ApexTriggerParams,
+	ctx context.Context, triggerParams map[common.ObjectName]*ApexTriggerParams, zipDataMap map[common.ObjectName][]byte,
 ) (*deployApexTriggersResult, error) {
 	var (
 		mutex       sync.Mutex
@@ -172,7 +231,7 @@ func (c *Connector) deployApexTriggers(
 
 	for objName, params := range triggerParams {
 		deployFuncs = append(deployFuncs, func(ctx context.Context) error {
-			triggerResult, err := c.deployApexTrigger(ctx, params)
+			triggerResult, err := c.deployApexTrigger(ctx, params, zipDataMap[objName])
 
 			mutex.Lock()
 			defer mutex.Unlock()
@@ -204,12 +263,9 @@ func (c *Connector) deployApexTriggers(
 	return out, nil
 }
 
-func (c *Connector) deployApexTrigger(ctx context.Context, params *ApexTriggerParams) (*ApexTriggerResult, error) {
-	zipData, err := ConstructApexTriggerZip(*params)
-	if err != nil {
-		return nil, fmt.Errorf("failed to construct apex trigger zip for %s: %w", params.ObjectName, err)
-	}
-
+func (c *Connector) deployApexTrigger(
+	ctx context.Context, params *ApexTriggerParams, zipData []byte,
+) (*ApexTriggerResult, error) {
 	var lastDeployResult *DeployResult
 
 	for attempt := range apexDeployMaxAttempts {
@@ -377,10 +433,24 @@ func (c *Connector) redeployKeptApexTriggers(
 
 	// Build trigger params from the kept objects' events (saved before diff mutation).
 	keptParams := common.SubscribeParams{SubscriptionEvents: diff.keptObjectEvents}
-	triggerParams := buildApexTriggerParams(keptParams, req)
+	triggerParams := buildApexTriggerParamsForSubscribe(keptParams, req)
+
+	triggerCodeMap := make(map[common.ObjectName]string, len(triggerParams))
+	for objName, p := range triggerParams {
+		triggerCodeMap[objName] = metadata.GenerateTriggerCodeForCDC(metadata.ApexTriggerParams{
+			ObjectName:  p.ObjectName,
+			TriggerName: p.TriggerName,
+			WatchFields: p.WatchFields,
+		}, p.IndicatorField.FieldName)
+	}
+
+	zipDataMap, err := buildApexTriggerZips(triggerParams, triggerCodeMap)
+	if err != nil {
+		return err
+	}
 
 	for objName, tParams := range triggerParams {
-		result, err := c.deployApexTrigger(ctx, tParams)
+		result, err := c.deployApexTrigger(ctx, tParams, zipDataMap[objName])
 		if err != nil {
 			return fmt.Errorf("failed to redeploy apex trigger for object %s: %w", objName, err)
 		}

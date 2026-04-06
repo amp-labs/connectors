@@ -42,9 +42,9 @@ func ConstructApexTriggerForCDC(params ApexTriggerParams, checkboxFieldName stri
 		return nil, err
 	}
 
-	triggerCode := generateTriggerCodeForCDC(params, checkboxFieldName)
+	triggerCode := GenerateTriggerCodeForCDC(params, checkboxFieldName)
 
-	return constructApexTrigger(params, triggerCode)
+	return ConstructApexTrigger(params, triggerCode)
 }
 
 // ConstructApexTriggerForFilteredRead builds a zipped deployment package for an APEX trigger
@@ -55,9 +55,9 @@ func ConstructApexTriggerForFilteredRead(params ApexTriggerParams, timestampFiel
 		return nil, err
 	}
 
-	triggerCode := generateTriggerCodeForFilteredRead(params, timestampFieldName)
+	triggerCode := GenerateTriggerCodeForFilteredRead(params, timestampFieldName)
 
-	return constructApexTrigger(params, triggerCode)
+	return ConstructApexTrigger(params, triggerCode)
 }
 
 func validateApexTriggerParams(params ApexTriggerParams, indicatorFieldName string) error {
@@ -72,8 +72,8 @@ func validateApexTriggerParams(params ApexTriggerParams, indicatorFieldName stri
 	return nil
 }
 
-// constructApexTrigger builds the zip deployment package from pre-generated trigger code.
-func constructApexTrigger(params ApexTriggerParams, triggerCode string) ([]byte, error) {
+// ConstructApexTrigger builds the zip deployment package from pre-generated trigger code.
+func ConstructApexTrigger(params ApexTriggerParams, triggerCode string) ([]byte, error) {
 	triggerMetaXML := generateTriggerMetaXML()
 
 	return createTriggerDeployZip(params.TriggerName, triggerCode, triggerMetaXML)
@@ -85,17 +85,17 @@ func ConstructDestructiveApexTrigger(triggerName string) ([]byte, error) {
 	return createTriggerDestructiveZip(triggerName)
 }
 
-// generateTriggerCodeForCDC generates APEX trigger code that sets a boolean checkbox
+// GenerateTriggerCodeForCDC generates APEX trigger code that sets a boolean checkbox
 // field to true/false based on whether any watched fields changed.
-func generateTriggerCodeForCDC(params ApexTriggerParams, checkboxFieldName string) string {
+func GenerateTriggerCodeForCDC(params ApexTriggerParams, checkboxFieldName string) string {
 	assignment := fmt.Sprintf("rec.%s = fieldChanged;", checkboxFieldName)
 
 	return generateTriggerCode(params, assignment)
 }
 
-// generateTriggerCodeForFilteredRead generates APEX trigger code that sets a datetime
+// GenerateTriggerCodeForFilteredRead generates APEX trigger code that sets a datetime
 // field to System.now() when any watched fields change.
-func generateTriggerCodeForFilteredRead(params ApexTriggerParams, timestampFieldName string) string {
+func GenerateTriggerCodeForFilteredRead(params ApexTriggerParams, timestampFieldName string) string {
 	assignment := fmt.Sprintf(`if (fieldChanged) {
                 rec.%s = System.now();
             }`, timestampFieldName)

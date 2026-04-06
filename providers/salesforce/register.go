@@ -12,12 +12,11 @@ import (
 )
 
 var (
-	errInvalidRequestType       = errors.New("invalid request type")
-	errMissingParams            = errors.New("missing required parameters")
-	errDeployFailed             = errors.New("apex trigger deployment failed")
-	errDeployPollTimeout        = errors.New("deploy poll timeout")
-	errDestructiveDeployFailed  = errors.New("destructive apex trigger deployment failed")
-	errUnsupportedIndicatorType = errors.New("unsupported indicator field type")
+	errInvalidRequestType      = errors.New("invalid request type")
+	errMissingParams           = errors.New("missing required parameters")
+	errDeployFailed            = errors.New("apex trigger deployment failed")
+	errDeployPollTimeout       = errors.New("deploy poll timeout")
+	errDestructiveDeployFailed = errors.New("destructive apex trigger deployment failed")
 )
 
 type RegistrationParams struct {
