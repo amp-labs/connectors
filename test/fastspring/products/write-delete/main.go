@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
@@ -29,14 +30,29 @@ func mainFn() int {
 
 	slog.Info("=== products (create -> delete) ===")
 
-	productPath := fmt.Sprintf("amp.test.%s", gofakeit.UUID())
+	// Product path must look like a slug (e.g. "premium-laptop"); dots / odd shapes often fail validation.
+	// See: https://developer.fastspring.com/reference/create-or-update-products
+	productPath := fmt.Sprintf("amp-integration-%s", strings.ReplaceAll(gofakeit.UUID(), "-", ""))
 	slog.Info("Creating product", "product", productPath)
 
 	createRes, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "products",
 		RecordData: map[string]any{
 			"product": productPath,
-			"display": map[string]any{"en": fmt.Sprintf("Amp integration %s", gofakeit.Word())},
+			"display": map[string]any{
+				"en": fmt.Sprintf("Amp integration %s", gofakeit.Word()),
+			},
+			"format": "digital",
+			"description": map[string]any{
+				"summary": map[string]any{
+					"en": "Temporary connector integration test product.",
+				},
+			},
+			"pricing": map[string]any{
+				"price": map[string]any{
+					"USD": 1.00,
+				},
+			},
 		},
 	})
 	if err != nil {
@@ -45,10 +61,10 @@ func mainFn() int {
 	}
 	utils.DumpJSON(createRes, os.Stdout)
 
+	// Prefer API response id; FastSpring may omit `product` in some responses — delete uses the path.
 	recordID := createRes.RecordId
 	if recordID == "" {
-		slog.Error("Create returned empty RecordId")
-		return 1
+		recordID = productPath
 	}
 
 	defer func() {
