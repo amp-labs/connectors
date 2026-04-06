@@ -27,6 +27,26 @@ type ApexTrigger struct {
 	// Errors contains deployment error messages for this trigger.
 	// Empty when deployment succeeded.
 	Errors []string
+
+	// Deprecated: CheckboxField is kept for backwards compatibility with
+	// previously serialized SubscribeResults. New code should use IndicatorField.
+	// This field is migrated to IndicatorField on deserialization via migrateApexTriggers.
+	CheckboxField string `json:"CheckboxField,omitempty"`
+}
+
+// migrateApexTriggers migrates old ApexTrigger data where CheckboxField was used
+// instead of IndicatorField. If IndicatorField is empty but CheckboxField is set,
+// it populates IndicatorField from CheckboxField.
+func migrateApexTriggers(triggers map[common.ObjectName]*ApexTrigger) {
+	for _, trigger := range triggers {
+		if trigger.IndicatorField.FieldName == "" && trigger.CheckboxField != "" {
+			trigger.IndicatorField = common.FieldDefinition{
+				FieldName: trigger.CheckboxField,
+				ValueType: common.FieldTypeBoolean,
+			}
+			trigger.CheckboxField = ""
+		}
+	}
 }
 
 // ApexTriggerResult holds the result of a single apex trigger deployment.

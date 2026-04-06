@@ -217,6 +217,9 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 		)
 	}
 
+	// Migrate old CheckboxField to IndicatorField for backwards compatibility.
+	migrateApexTriggers(sfRes.ApexTriggers)
+
 	// Delete apex triggers first — they reference the quota optimization fields,
 	// so they must be removed before the custom fields can be deleted.
 	for objName, trigger := range sfRes.ApexTriggers {
@@ -280,6 +283,9 @@ func (c *Connector) UpdateSubscription(
 			previousResult.Result,
 		)
 	}
+
+	// Migrate old CheckboxField to IndicatorField for backwards compatibility.
+	migrateApexTriggers(prevState.ApexTriggers)
 
 	var req *SubscriptionRequest
 
