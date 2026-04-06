@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
 
-func TestGenerateApexTriggerName(t *testing.T) {
+func TestGenerateApexTriggerNameForCDC(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -22,17 +22,17 @@ func TestGenerateApexTriggerName(t *testing.T) {
 		{
 			name:       "Standard object",
 			objectName: "Lead",
-			expected:   "Lead",
+			expected:   "Lead_CDC",
 		},
 		{
 			name:       "Custom object",
 			objectName: "MyObject__c",
-			expected:   "MyObject__c",
+			expected:   "MyObject__c_CDC",
 		},
 		{
 			name:       "Empty object name",
 			objectName: "",
-			expected:   "",
+			expected:   "_CDC",
 		},
 	}
 
@@ -40,9 +40,46 @@ func TestGenerateApexTriggerName(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := GenerateApexTriggerName(tt.objectName)
+			got := GenerateApexTriggerNameForCDC(tt.objectName)
 			if got != tt.expected {
-				t.Errorf("GenerateApexTriggerName(%q) = %q, want %q", tt.objectName, got, tt.expected)
+				t.Errorf("GenerateApexTriggerNameForCDC(%q) = %q, want %q", tt.objectName, got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestGenerateApexTriggerNameForRead(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name       string
+		objectName string
+		expected   string
+	}{
+		{
+			name:       "Standard object",
+			objectName: "Lead",
+			expected:   "Lead_Read",
+		},
+		{
+			name:       "Custom object",
+			objectName: "MyObject__c",
+			expected:   "MyObject__c_Read",
+		},
+		{
+			name:       "Empty object name",
+			objectName: "",
+			expected:   "_Read",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := GenerateApexTriggerNameForRead(tt.objectName)
+			if got != tt.expected {
+				t.Errorf("GenerateApexTriggerNameForRead(%q) = %q, want %q", tt.objectName, got, tt.expected)
 			}
 		})
 	}

@@ -23,7 +23,7 @@ type ApexTriggerParams struct {
 	ObjectName string
 
 	// TriggerName is the name of the APEX trigger (e.g., "AmpersandTrack_Lead").
-	// Use GenerateApexTriggerName() to generate this.
+	// Use GenerateApexTriggerNameForCDC() or GenerateApexTriggerNameForRead() to generate this.
 	TriggerName string
 
 	// IndicatorField is the field definition for the indicator field that the trigger sets
@@ -34,9 +34,14 @@ type ApexTriggerParams struct {
 	WatchFields []string
 }
 
-// GenerateApexTriggerName returns the standard APEX trigger name for a given Salesforce object.
-func GenerateApexTriggerName(objectName string) string {
-	return objectName
+// GenerateApexTriggerNameForCDC returns the APEX trigger name for CDC on a given Salesforce object.
+func GenerateApexTriggerNameForCDC(objectName string) string {
+	return objectName + "_CDC"
+}
+
+// GenerateApexTriggerNameForRead returns the APEX trigger name for filtered read on a given Salesforce object.
+func GenerateApexTriggerNameForRead(objectName string) string {
+	return objectName + "_Read"
 }
 
 // ValidateApexTriggerParams checks that all required fields are present.

@@ -72,9 +72,14 @@ const (
 	apexDeployRetryBackoff = 1 * time.Minute
 )
 
-// GenerateApexTriggerName returns the standard APEX trigger name for a given Salesforce object.
-func GenerateApexTriggerName(objectName string) string {
-	return metadata.GenerateApexTriggerName(objectName)
+// GenerateApexTriggerNameForCDC returns the APEX trigger name for CDC on a given Salesforce object.
+func GenerateApexTriggerNameForCDC(objectName string) string {
+	return metadata.GenerateApexTriggerNameForCDC(objectName)
+}
+
+// GenerateApexTriggerNameForRead returns the APEX trigger name for filtered read on a given Salesforce object.
+func GenerateApexTriggerNameForRead(objectName string) string {
+	return metadata.GenerateApexTriggerNameForRead(objectName)
 }
 
 // ConstructApexTriggerZipForCDC builds a zipped deployment package for an APEX trigger that sets
@@ -199,7 +204,7 @@ func buildApexTriggerParamsForSubscribe(
 
 		triggerParams[objName] = &metadata.ApexTriggerParams{
 			ObjectName:  string(objName),
-			TriggerName: GenerateApexTriggerName(string(objName)),
+			TriggerName: GenerateApexTriggerNameForCDC(string(objName)),
 			IndicatorField: common.FieldDefinition{
 				FieldName: customFieldAPIName(checkboxField),
 				ValueType: common.FieldTypeBoolean,
