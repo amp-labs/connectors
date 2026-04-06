@@ -108,10 +108,10 @@ func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams) {
 	}
 }
 
-// deployApexTriggersForFilteredRead builds and deploys filtered-read apex triggers
+// DeployApexTriggersForFilteredRead builds and deploys filtered-read apex triggers
 // (datetime indicator) for the given trigger params. Each trigger sets a timestamp
 // field to System.now() when any watched field changes.
-func (c *Connector) deployApexTriggersForFilteredRead( //nolint:unused
+func (c *Connector) DeployApexTriggersForFilteredRead( //nolint:unused
 	ctx context.Context,
 	triggerParams map[common.ObjectName]*metadata.ApexTriggerParams,
 ) (*deployApexTriggersResult, error) {
