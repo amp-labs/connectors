@@ -31,6 +31,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
+//nolint:cyclop,funlen
 func (c *Connector) parseSingleObjectMetadataResponse(
 	ctx context.Context,
 	objectName string,
@@ -39,7 +40,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 ) (*common.ObjectMetadata, error) {
 	objectMetadata := common.ObjectMetadata{
 		Fields:      make(map[string]common.FieldMetadata),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
+		DisplayName: naming.CapitalizeFirstLetterEveryWord(naming.SeparateDotWords(objectName)),
 	}
 
 	res, err := common.UnmarshalJSON[map[string]any](response)

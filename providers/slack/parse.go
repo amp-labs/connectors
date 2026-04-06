@@ -1,12 +1,15 @@
 package slack
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
+
+var errResponseIndicatesFailure = errors.New("response indicated failure")
 
 func records(objectName string) common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
@@ -26,10 +29,10 @@ func records(objectName string) common.RecordsFunc {
 			}
 
 			if errorMessage != nil {
-				return nil, fmt.Errorf("response indicated failure: %s", *errorMessage)
+				return nil, fmt.Errorf("%w %s", errResponseIndicatesFailure, *errorMessage)
 			}
 
-			return nil, fmt.Errorf("response indicated failure")
+			return nil, errResponseIndicatesFailure
 		}
 
 		responseKey := objectResponseField.Get(objectName)
