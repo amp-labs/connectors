@@ -113,7 +113,7 @@ func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams) {
 // field to System.now() when any watched field changes.
 func (c *Connector) DeployApexTriggersForFilteredRead( //nolint:unused
 	ctx context.Context,
-	triggerParams map[common.ObjectName]*metadata.ApexTriggerParams,
+	triggerParams map[common.ObjectName]*ApexTriggerParams,
 ) (*deployApexTriggersResult, error) {
 	if len(triggerParams) == 0 {
 		return &deployApexTriggersResult{
