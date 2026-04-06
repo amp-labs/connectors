@@ -21,6 +21,7 @@ type parameters struct {
 	paramsbuilder.Workspace
 	paramsbuilder.Metadata
 	paramsbuilder.Module
+	updatedAtField string
 }
 
 func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
@@ -87,5 +88,14 @@ func WithModule(module common.ModuleID) Option {
 func WithMetadata(metadata map[string]string) Option {
 	return func(params *parameters) {
 		params.WithMetadata(metadata, nil)
+	}
+}
+
+// WithUpdatedAtField overrides the default "SystemModstamp" field used for
+// incremental read queries. When set, the given field name is used in the
+// Since/Until WHERE clauses instead of SystemModstamp.
+func WithUpdatedAtField(field string) Option {
+	return func(params *parameters) {
+		params.updatedAtField = field
 	}
 }

@@ -29,12 +29,14 @@ func (c *Connector) GetRecordCount(
 	soql := (&crmcore.SOQLBuilder{}).SelectCount().From(params.ObjectName)
 
 	// Add WHERE clauses based on timestamps
+	updatedAtField := c.getUpdatedAtField()
+
 	if params.SinceTimestamp != nil && !params.SinceTimestamp.IsZero() {
-		soql.Where("SystemModstamp > " + datautils.Time.FormatRFC3339inUTC(*params.SinceTimestamp))
+		soql.Where(updatedAtField + " > " + datautils.Time.FormatRFC3339inUTC(*params.SinceTimestamp))
 	}
 
 	if params.UntilTimestamp != nil && !params.UntilTimestamp.IsZero() {
-		soql.Where("SystemModstamp <= " + datautils.Time.FormatRFC3339inUTC(*params.UntilTimestamp))
+		soql.Where(updatedAtField + " <= " + datautils.Time.FormatRFC3339inUTC(*params.UntilTimestamp))
 	}
 
 	// Build the query URL

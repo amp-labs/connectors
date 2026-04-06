@@ -17,7 +17,7 @@ func TestSoqlBuilderWithIDs(t *testing.T) {
 		// Note: fields doesn't preserve order of elements.
 		// To simplify test only one element is included.
 		Fields: datautils.NewSet("shippingstreet"),
-	})
+	}, defaultUpdatedAtField)
 
 	{
 		// SOQL builder must produce query matching documentation.
@@ -52,7 +52,7 @@ func TestSoqlBuilderWithParentAssociation(t *testing.T) {
 		ObjectName:        "opportunity",
 		Fields:            datautils.NewSet("Name", "Amount"),
 		AssociatedObjects: []string{"accounts"},
-	})
+	}, defaultUpdatedAtField)
 
 	output := soql.String()
 	// AccountId should be included in the SELECT clause
@@ -73,7 +73,7 @@ func TestSoqlBuilderWithJunctionAssociation(t *testing.T) {
 		ObjectName:        "opportunity",
 		Fields:            datautils.NewSet("Name", "Amount"),
 		AssociatedObjects: []string{"contacts"},
-	})
+	}, defaultUpdatedAtField)
 
 	output := soql.String()
 	// OpportunityContactRoles subquery should be included in the SELECT clause
