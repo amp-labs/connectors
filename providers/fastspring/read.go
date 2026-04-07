@@ -165,7 +165,7 @@ func recordsFromSingleStringRow(
 	}
 
 	if str != nil && *str != "" {
-		return []map[string]any{map[string]any{idField: *str}}, nil
+		return []map[string]any{{idField: *str}}, nil
 	}
 
 	return nil, arrayErr
