@@ -157,8 +157,8 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	recordID := extractWriteRecordID(params, body)
-	if recordID == "" {
+	recordID, ambiguousMultiple := extractWriteRecordID(params, body)
+	if recordID == "" && !ambiguousMultiple {
 		recordID = fallbackWriteRecordID(params)
 	}
 
@@ -182,7 +182,10 @@ func fallbackWriteRecordID(params common.WriteParams) string {
 	return params.RecordId
 }
 
-func extractWriteRecordID(params common.WriteParams, body *ajson.Node) string {
+// extractWriteRecordID returns a response record id when it identifies exactly one record.
+// ambiguousMultiple is true when the relevant array in the payload has more than one element,
+// in which case the id is left empty and the caller must not substitute fallbackWriteRecordID.
+func extractWriteRecordID(params common.WriteParams, body *ajson.Node) (recordID string, ambiguousMultiple bool) {
 	switch params.ObjectName {
 	case objectAccounts:
 		return extractAccountWriteRecordID(body)
@@ -193,47 +196,51 @@ func extractWriteRecordID(params common.WriteParams, body *ajson.Node) string {
 	case objectSubscriptions:
 		return extractSubscriptionWriteRecordID(body)
 	default:
-		return ""
+		return "", false
 	}
 }
 
-func extractAccountWriteRecordID(body *ajson.Node) string {
+func extractAccountWriteRecordID(body *ajson.Node) (string, bool) {
 	if id, err := jsonquery.New(body).TextWithDefault("id", ""); err == nil && id != "" {
-		return id
+		return id, false
 	}
 
 	if id, err := jsonquery.New(body).TextWithDefault("account", ""); err == nil && id != "" {
-		return id
+		return id, false
 	}
 
-	return ""
+	return "", false
 }
 
-func firstArrayElementTextField(body *ajson.Node, arrayKey, fieldKey string) string {
+func firstArrayElementTextField(body *ajson.Node, arrayKey, fieldKey string) (string, bool) {
 	arr, err := jsonquery.New(body).ArrayOptional(arrayKey)
 	if err != nil || len(arr) == 0 {
-		return ""
+		return "", false
+	}
+
+	if len(arr) > 1 {
+		return "", true
 	}
 
 	id, err := jsonquery.New(arr[0]).TextWithDefault(fieldKey, "")
 	if err != nil {
-		return ""
+		return "", false
 	}
 
-	return id
+	return id, false
 }
 
-func extractProductWriteRecordID(body *ajson.Node) string {
+func extractProductWriteRecordID(body *ajson.Node) (string, bool) {
 	return firstArrayElementTextField(body, "products", "product")
 }
 
-func extractOrderWriteRecordID(body *ajson.Node) string {
+func extractOrderWriteRecordID(body *ajson.Node) (string, bool) {
 	return firstArrayElementTextField(body, "orders", "order")
 }
 
-func extractSubscriptionWriteRecordID(body *ajson.Node) string {
+func extractSubscriptionWriteRecordID(body *ajson.Node) (string, bool) {
 	if id, err := jsonquery.New(body).TextWithDefault("subscription", ""); err == nil && id != "" {
-		return id
+		return id, false
 	}
 
 	return firstArrayElementTextField(body, "subscriptions", "subscription")

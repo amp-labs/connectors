@@ -18,6 +18,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 	accountCreateResp := []byte(`{"id":"acc_new","account":"acc_new","action":"account.create","result":"success"}`)
 	accountUpdateResp := []byte(`{"id":"acc_1","account":"acc_1","action":"account.update","result":"success"}`)
 	productResp := []byte(`{"products":[{"product":"my-product","action":"product.create","result":"success"}]}`)
+	productBulkResp := []byte(`{"products":[{"product":"p-a","action":"product.create","result":"success"},{"product":"p-b","action":"product.create","result":"success"}]}`)
 	orderResp := []byte(`{"orders":[{"order":"ord_1","action":"order.update","result":"success"}]}`)
 	subscriptionResp := []byte(`{"subscription":"sub_1","action":"subscription.update","result":"success"}`)
 
@@ -147,6 +148,51 @@ func TestWrite(t *testing.T) { //nolint:funlen
 					"products": []any{
 						map[string]any{
 							"product": "my-product",
+							"action":  "product.create",
+							"result":  "success",
+						},
+					},
+				},
+			},
+		},
+		{
+			Name: "Create product with multiple products in response omits record id",
+			Input: common.WriteParams{
+				ObjectName: "products",
+				RecordData: map[string]any{
+					"product": "bulk-a",
+					"display": map[string]any{"en": "A"},
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/products"),
+					mockcond.Body(mustJSON(t, map[string]any{
+						"products": []any{
+							map[string]any{
+								"product": "bulk-a",
+								"display": map[string]any{"en": "A"},
+							},
+						},
+					})),
+				},
+				Then: mockserver.Response(http.StatusOK, productBulkResp),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "",
+				Data: map[string]any{
+					"products": []any{
+						map[string]any{
+							"product": "p-a",
+							"action":  "product.create",
+							"result":  "success",
+						},
+						map[string]any{
+							"product": "p-b",
 							"action":  "product.create",
 							"result":  "success",
 						},
