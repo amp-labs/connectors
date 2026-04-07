@@ -20,10 +20,10 @@ const (
 	EnvServiceAccountPath = "BIGQUERY_SERVICE_ACCOUNT_PATH"
 
 	// EnvProjectId is the GCP project ID (e.g., "my-project-id"), not the numeric project number.
-	EnvProjectId = "BIGQUERY_PROJECT_ID"
-	EnvDataset            = "BIGQUERY_DATASET"
-	EnvTimestampColumn    = "BIGQUERY_TIMESTAMP_COLUMN"
-	EnvLocation           = "BIGQUERY_LOCATION" // optional
+	EnvProjectId       = "BIGQUERY_PROJECT_ID"
+	EnvDataset         = "BIGQUERY_DATASET"
+	EnvTimestampColumn = "BIGQUERY_TIMESTAMP_COLUMN"
+	EnvLocation        = "BIGQUERY_LOCATION" // optional
 )
 
 // GetBigQueryConnector creates a BigQuery connector for testing.
