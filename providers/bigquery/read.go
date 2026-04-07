@@ -69,7 +69,7 @@ import (
 //   - We return the new session's token so subsequent pages use the fresh session
 //
 // This is acceptable because:
-//   - Each window is ~30 days, so sessions rarely expire (~2.3h for dense data)
+//   - Each window is ~30 days, so sessions rarely expire (session length is ~2.3h for dense data)
 //   - Re-reading a window wastes at most one window's worth of work
 //   - The server's deduplication guarantees correctness
 //
@@ -283,7 +283,7 @@ func (c *Connector) createSessionForToken(
 	}
 
 	req := &storagepb.CreateReadSessionRequest{
-		Parent: "projects/" + c.project,
+		Parent: "projects/" + c.projectID,
 		ReadSession: &storagepb.ReadSession{
 			Table:      c.tablePath(params.ObjectName),
 			DataFormat: storagepb.DataFormat_ARROW,

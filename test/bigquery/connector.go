@@ -15,8 +15,12 @@ import (
 
 // Environment variables for BigQuery configuration.
 const (
+	// EnvServiceAccountPath is the path to the service account JSON key file.
+	// Can be an absolute path or a path relative to the working directory.
 	EnvServiceAccountPath = "BIGQUERY_SERVICE_ACCOUNT_PATH"
-	EnvProject            = "BIGQUERY_PROJECT"
+
+	// EnvProject is the GCP project ID (e.g., "my-project-id"), not the numeric project number.
+	EnvProject = "BIGQUERY_PROJECT"
 	EnvDataset            = "BIGQUERY_DATASET"
 	EnvTimestampColumn    = "BIGQUERY_TIMESTAMP_COLUMN"
 	EnvLocation           = "BIGQUERY_LOCATION" // optional
@@ -79,7 +83,7 @@ func GetBigQueryConnector(ctx context.Context) *connectorbq.Connector {
 	conn, err := connectorbq.NewConnector(common.ConnectorParams{
 		CustomAuthenticatedClient: auth,
 		Metadata: map[string]string{
-			"project":         project,
+			"projectID":       project,
 			"dataset":         dataset,
 			"timestampColumn": timestampColumn,
 		},

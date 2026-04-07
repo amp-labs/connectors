@@ -55,8 +55,9 @@ type Connector struct {
 	// handle is the pre-authenticated BigQuery client for SQL/metadata operations.
 	handle *bigquery.Client
 
-	// project is the GCP project ID.
-	project string
+	// projectID is the GCP project ID (e.g., "my-project-id").
+	// This is the human-readable ID, not the numeric project number.
+	projectID string
 
 	// dataset is the BigQuery dataset name.
 	dataset string
@@ -81,7 +82,7 @@ type Connector struct {
 //	conn, err := bigquery.NewConnector(common.ConnectorParams{
 //	    CustomAuthenticatedClient: auth,
 //	    Metadata: map[string]string{
-//	        "project":         "my-gcp-project",
+//	        "projectID":       "my-project-id",
 //	        "dataset":         "analytics",
 //	        "timestampColumn": "updated_at",
 //	    },
@@ -106,8 +107,8 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	connector.storageClient = auth.StorageClient
 
 	// Extract required metadata.
-	connector.project, ok = params.Metadata["project"]
-	if !ok || connector.project == "" {
+	connector.projectID, ok = params.Metadata["projectID"]
+	if !ok || connector.projectID == "" {
 		return nil, errMissingProject
 	}
 

@@ -1,3 +1,15 @@
+// Command benchmark measures BigQuery Storage Read API throughput.
+//
+// It reads pages from a BigQuery table using the connector's Read() method,
+// reports per-page timing and throughput statistics, and extrapolates full-table
+// read time. Use this to validate performance tuning constants (page size,
+// stream count, field count).
+//
+// Usage:
+//
+//	go run ./test/bigquery/benchmark -table=my_table
+//	go run ./test/bigquery/benchmark -table=my_table -page-size=50000 -max-pages=20
+//	go run ./test/bigquery/benchmark -table=my_table -fields=id,name,email
 package main
 
 import (

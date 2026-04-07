@@ -151,7 +151,7 @@ func bigqueryTypeToValueType(bqType bigquery.FieldType) common.ValueType {
 
 func (c *Connector) tablePath(table string) string {
 	return fmt.Sprintf("projects/%s/datasets/%s/tables/%s",
-		c.project,
+		c.projectID,
 		c.dataset,
 		table,
 	)
