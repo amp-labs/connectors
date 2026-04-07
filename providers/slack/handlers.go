@@ -135,7 +135,7 @@ func (c *Connector) parseReadResponse( //nolint:unparam
 	)
 }
 
-// makeTimeFilter returns a RecordsFilterFunc that applies client-side time filtering
+// makeTimeFilter returns a RecordsFilterFunc that applies connector-side time filtering
 // using the timestamp field for the given object. Slack does not support server-side
 // date filtering, so we filter records in memory after fetching each page.
 // Records are unordered, so pagination continues until all pages are exhausted.
