@@ -14,9 +14,9 @@ import (
 )
 
 var (
-	errMissingProject         = errors.New("missing project in metadata")
+	errMissingProject         = errors.New("missing projectId in metadata")
 	errMissingDataset         = errors.New("missing dataset in metadata")
-	errMissingTimestampColumn = errors.New("missing timestampColumn in metadata: required for incremental reads and backfill windowing")
+	errMissingTimestampColumn = errors.New("missing timestampColumn in metadata")
 )
 
 // Connector provides BigQuery read operations using the Storage Read API.
@@ -30,7 +30,7 @@ var (
 //
 // # Required Metadata
 //
-//   - project: GCP project ID (e.g., "my-gcp-project")
+//   - projectId: GCP project ID (e.g., "my-project-id")
 //   - dataset: BigQuery dataset name (e.g., "analytics")
 //
 // # How reading works
@@ -93,36 +93,54 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		return nil, fmt.Errorf("failed to initialize connector: %w", err)
 	}
 
-	// Extract and validate the auth wrapper.
-	auth, ok := params.CustomAuthenticatedClient.(*BigQueryAuth)
-	if !ok || auth == nil {
-		return nil, errInvalidAuthClient
+	if err := validateAndApplyAuth(connector, params); err != nil {
+		return nil, err
+	}
+
+	if err := extractMetadata(connector, params); err != nil {
+		return nil, err
+	}
+
+	return connector, nil
+}
+
+func validateAndApplyAuth(connector *Connector, params common.ConnectorParams) error {
+	auth, valid := params.CustomAuthenticatedClient.(*BigQueryAuth)
+	if !valid || auth == nil {
+		return errInvalidAuthClient
 	}
 
 	if err := auth.Validate(); err != nil {
-		return nil, fmt.Errorf("invalid BigQueryAuth: %w", err)
+		return fmt.Errorf("invalid BigQueryAuth: %w", err)
 	}
 
 	connector.handle = auth.Client
 	connector.storageClient = auth.StorageClient
 
-	// Extract required metadata.
-	connector.projectId, ok = params.Metadata["projectId"]
-	if !ok || connector.projectId == "" {
-		return nil, errMissingProject
+	return nil
+}
+
+func extractMetadata(connector *Connector, params common.ConnectorParams) error {
+	projectId, hasProject := params.Metadata["projectId"]
+	if !hasProject || projectId == "" {
+		return errMissingProject
 	}
 
-	connector.dataset, ok = params.Metadata["dataset"]
-	if !ok || connector.dataset == "" {
-		return nil, errMissingDataset
+	dataset, hasDataset := params.Metadata["dataset"]
+	if !hasDataset || dataset == "" {
+		return errMissingDataset
 	}
 
-	connector.timestampColumn, ok = params.Metadata["timestampColumn"]
-	if !ok || connector.timestampColumn == "" {
-		return nil, errMissingTimestampColumn
+	tsCol, hasTSCol := params.Metadata["timestampColumn"]
+	if !hasTSCol || tsCol == "" {
+		return errMissingTimestampColumn
 	}
 
-	return connector, nil
+	connector.projectId = projectId
+	connector.dataset = dataset
+	connector.timestampColumn = tsCol
+
+	return nil
 }
 
 func constructor(base *components.Connector) (*Connector, error) {

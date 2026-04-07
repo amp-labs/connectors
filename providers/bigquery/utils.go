@@ -1,6 +1,7 @@
 package bigquery
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -90,6 +91,13 @@ type streamState struct {
 	Done bool `json:"done"`
 }
 
+var (
+	errTooManyFields    = errors.New("too many fields requested")
+	errBackfillComplete = errors.New("backfill complete")
+	errNoArrowSchema    = errors.New("no Arrow schema received before record batch")
+	errUnexpectedSchema = errors.New("expected schema message")
+)
+
 // backfillWindowSize is the duration of each time window during a backfill.
 //
 // Why 30 days: Storage API sessions expire after 6 hours. A 30-day window of a
@@ -103,7 +111,7 @@ const backfillWindowSize = 30 * 24 * time.Hour
 // We use 2000-01-01 as a reasonable lower bound — BigQuery was launched in 2010,
 // and most data timestamps post-date this. Windows before the actual data range
 // return 0 rows and are skipped instantly.
-var backfillEpoch = time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+var backfillEpoch = time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC) //nolint:gochecknoglobals
 
 // validateFieldCount enforces the MaxFields limit.
 // Returns a descriptive error if the limit is exceeded.
@@ -111,15 +119,18 @@ func validateFieldCount(fields datautils.StringSet) error {
 	fieldList := fields.List()
 
 	if len(fieldList) > MaxFields {
-		return fmt.Errorf("too many fields requested: %d (max %d). Reduce field count for better performance", len(fieldList), MaxFields)
+		return fmt.Errorf("%w: %d (max %d)",
+			errTooManyFields, len(fieldList), MaxFields)
 	}
 
 	return nil
 }
 
 // bigqueryTypeToValueType maps BigQuery field types to Ampersand ValueTypes.
+//
+//nolint:cyclop
 func bigqueryTypeToValueType(bqType bigquery.FieldType) common.ValueType {
-	switch bqType {
+	switch bqType { //nolint:exhaustive
 	case bigquery.StringFieldType:
 		return common.ValueTypeString
 	case bigquery.BytesFieldType:

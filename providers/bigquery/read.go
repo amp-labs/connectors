@@ -105,6 +105,8 @@ const (
 //
 // Subsequent calls (NextPage set):
 //   - Resume from the encoded session/window state
+//
+//nolint:cyclop,gocognit,nestif,funlen
 func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
 	if err := params.ValidateParams(true); err != nil {
 		return nil, err
@@ -140,10 +142,12 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 			if len(token.Streams) == 0 || token.ActiveStreams == 0 {
 				if token.IsBackfill {
 					// Advance to next window and retry.
-					token, err = c.advanceWindow(token)
-					if err != nil {
-						// advanceWindow returns nil token when all windows exhausted.
-						return &common.ReadResult{Done: true}, nil
+					var advErr error
+
+					token, advErr = c.advanceWindow(token)
+					if advErr != nil {
+						// advanceWindow returns error when all windows exhausted.
+						return &common.ReadResult{Done: true}, nil //nolint:nilerr
 					}
 
 					continue // Try next window.
@@ -176,7 +180,7 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 			advanced, advErr := c.advanceWindow(nextToken)
 			if advErr != nil {
 				// All windows exhausted — the entire backfill is complete.
-				return &common.ReadResult{
+				return &common.ReadResult{ //nolint:nilerr
 					Rows: int64(len(rows)),
 					Data: rows,
 					Done: true,
@@ -338,6 +342,8 @@ func (c *Connector) createSessionForToken(
 // The RowRestriction is applied server-side before stream creation, so only
 // matching rows are included in the session. This is what makes windowing work:
 // each window only contains its slice of the data.
+//
+//nolint:nestif
 func (c *Connector) buildRowRestriction(token *readSessionToken, params common.ReadParams) string {
 	var conditions []string
 
@@ -388,7 +394,7 @@ func (c *Connector) advanceWindow(token *readSessionToken) (*readSessionToken, e
 	now := time.Now().UTC()
 	if windowEnd.After(now) || windowEnd.Equal(now) {
 		// We've reached the present — backfill is complete.
-		return nil, fmt.Errorf("backfill complete: window end %s >= now", windowEnd.Format(time.RFC3339))
+		return nil, fmt.Errorf("%w: window end %s >= now", errBackfillComplete, windowEnd.Format(time.RFC3339))
 	}
 
 	newStart := windowEnd
@@ -454,6 +460,8 @@ type streamResult struct {
 //
 // Actual page sizes may exceed the target by up to one Arrow batch per stream
 // (~1K–10K rows) because we can't stop mid-batch without losing data.
+//
+//nolint:cyclop,funlen
 func (c *Connector) readFromStreams(
 	ctx context.Context,
 	client *bqstorage.BigQueryReadClient,
@@ -571,6 +579,8 @@ func (c *Connector) readFromStreams(
 
 // readStreamChunk reads a chunk of rows from a single stream.
 // Called concurrently — one goroutine per active stream.
+//
+//nolint:cyclop,funlen
 func (c *Connector) readStreamChunk(
 	ctx context.Context,
 	client *bqstorage.BigQueryReadClient,
@@ -589,7 +599,10 @@ func (c *Connector) readStreamChunk(
 		Offset:     stream.Offset,
 	})
 	if err != nil {
-		return streamResult{StreamIndex: streamIndex, Err: fmt.Errorf("failed to read rows from stream %d: %w", streamIndex, err)}
+		return streamResult{
+			StreamIndex: streamIndex,
+			Err:         fmt.Errorf("failed to read rows from stream %d: %w", streamIndex, err),
+		}
 	}
 
 	var (
@@ -605,7 +618,10 @@ func (c *Connector) readStreamChunk(
 		}
 
 		if err != nil {
-			return streamResult{StreamIndex: streamIndex, Err: fmt.Errorf("failed to receive rows from stream %d: %w", streamIndex, err)}
+			return streamResult{
+				StreamIndex: streamIndex,
+				Err:         fmt.Errorf("failed to receive rows from stream %d: %w", streamIndex, err),
+			}
 		}
 
 		if arrowSchema := response.GetArrowSchema(); arrowSchema != nil {
@@ -620,12 +636,18 @@ func (c *Connector) readStreamChunk(
 		}
 
 		if len(schemaBytes) == 0 {
-			return streamResult{StreamIndex: streamIndex, Err: fmt.Errorf("no Arrow schema received before record batch in stream %d", streamIndex)}
+			return streamResult{
+				StreamIndex: streamIndex,
+				Err:         fmt.Errorf("%w in stream %d", errNoArrowSchema, streamIndex),
+			}
 		}
 
 		batchRows, err := parseArrowBatch(allocator, schemaBytes, arrowData.GetSerializedRecordBatch(), requestedFields)
 		if err != nil {
-			return streamResult{StreamIndex: streamIndex, Err: fmt.Errorf("failed to parse Arrow batch in stream %d: %w", streamIndex, err)}
+			return streamResult{
+				StreamIndex: streamIndex,
+				Err:         fmt.Errorf("failed to parse Arrow batch in stream %d: %w", streamIndex, err),
+			}
 		}
 
 		rows = append(rows, batchRows...)
@@ -648,6 +670,8 @@ func (c *Connector) readStreamChunk(
 // The Storage API returns data as serialized Arrow record batches. Each batch
 // contains a schema message followed by a record batch message. We combine them
 // into a single reader and iterate over the rows.
+//
+//nolint:funlen
 func parseArrowBatch(
 	allocator memory.Allocator,
 	schemaBytes []byte,
@@ -668,7 +692,7 @@ func parseArrowBatch(
 	defer schemaMsg.Release()
 
 	if schemaMsg.Type() != ipc.MessageSchema {
-		return nil, fmt.Errorf("expected schema message, got %v", schemaMsg.Type())
+		return nil, fmt.Errorf("%w, got %v", errUnexpectedSchema, schemaMsg.Type())
 	}
 
 	// Combine schema + batch into a single IPC stream for the Arrow reader.
@@ -734,6 +758,8 @@ func parseArrowBatch(
 //	REPEATED/ARRAY   List             []any
 //
 // Temporal types are serialized as ISO 8601 strings for JSON compatibility.
+//
+//nolint:cyclop,funlen
 func getArrowValue(arr arrow.Array, idx int) any {
 	if arr.IsNull(idx) {
 		return nil
@@ -771,7 +797,9 @@ func getArrowValue(arr arrow.Array, idx int) any {
 	case *array.Date64:
 		return typed.Value(idx).ToTime().Format("2006-01-02")
 	case *array.Timestamp:
-		return typed.Value(idx).ToTime(typed.DataType().(*arrow.TimestampType).Unit).Format("2006-01-02T15:04:05Z07:00")
+		tsType, _ := typed.DataType().(*arrow.TimestampType) //nolint:forcetypeassert
+
+		return typed.Value(idx).ToTime(tsType.Unit).Format("2006-01-02T15:04:05Z07:00")
 	case *array.List:
 		if typed.IsNull(idx) {
 			return nil
@@ -791,10 +819,10 @@ func getArrowValue(arr arrow.Array, idx int) any {
 			return nil
 		}
 
-		structType := typed.DataType().(*arrow.StructType)
+		structType, _ := typed.DataType().(*arrow.StructType) //nolint:forcetypeassert
 		result := make(map[string]any, structType.NumFields())
 
-		for i := 0; i < structType.NumFields(); i++ {
+		for i := range structType.NumFields() {
 			field := structType.Field(i)
 			result[field.Name] = getArrowValue(typed.Field(i), idx)
 		}
