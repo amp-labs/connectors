@@ -36,20 +36,20 @@ func TestDelete(t *testing.T) {
 			Name: "Delete product",
 			Input: common.DeleteParams{
 				ObjectName: "products",
-				RecordId:   "my-product-path",
+				RecordId:   "my-product-id",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodDELETE(),
-					mockcond.Path("/products/my-product-path"),
+					mockcond.Path("/products/my-product-id"),
 				},
-				Then: mockserver.Response(http.StatusOK, []byte(`{"products":[{"product":"my-product-path","result":"success"}]}`)),
+				Then: mockserver.Response(http.StatusOK, []byte(`{"products":[{"product":"my-product-id","result":"success"}]}`)),
 			}.Server(),
 			Expected: &common.DeleteResult{Success: true},
 		},
 		{
-			Name: "Cancel subscription",
+			Name: "Remove subscription",
 			Input: common.DeleteParams{
 				ObjectName: "subscriptions",
 				RecordId:   "sub_abc",

@@ -17,7 +17,6 @@ import (
 // - Create or update products: https://developer.fastspring.com/reference/create-or-update-products
 // - Update order tags and attributes: https://developer.fastspring.com/reference/update-order-tags-and-attributes
 // - Update subscription: https://developer.fastspring.com/reference/update-a-subscription
-
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	if err := validateWriteParams(params); err != nil {
 		return nil, err
