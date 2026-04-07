@@ -32,3 +32,25 @@ var objectsWithoutListSuffix = datautils.NewSet( //nolint:gochecknoglobals
 	"conversations.listConnectInvites",
 	"users.conversations",
 )
+
+// postMethodObjects contains objects whose Slack API endpoint uses HTTP POST instead of GET.
+// Pagination params (limit, cursor) are sent in the JSON request body for these objects.
+var objectsReadViaPost = datautils.NewSet( //nolint:gochecknoglobals
+	// Ref: https://docs.slack.dev/reference/methods/conversations.listConnectInvites
+	"conversations.listConnectInvites",
+
+	// Ref: https://docs.slack.dev/reference/methods/conversations.requestSharedInvite.list
+	"conversations.requestSharedInvite",
+)
+
+// objectsWithConnectorSideFilter maps each object that supports connector-side time filtering
+// to the JSON field used for comparison. Slack has no server-side date filter params,
+// so filtering is done in memory after each page is fetched. All Slack timestamps are
+// Unix epoch seconds.
+var objectsWithConnectorSideFilter = datautils.Map[string, string]{ //nolint:gochecknoglobals
+	"conversations":       "updated",
+	"files":               "created",
+	"usergroups":          "date_update",
+	"users.conversations": "created",
+	"users":               "updated",
+}

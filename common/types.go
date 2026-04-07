@@ -137,6 +137,11 @@ var (
 	// It should be used to explicitly catch cases that would otherwise lead to panics (e.g., nil pointer dereference).
 	// This typically indicates a broken assumption or inconsistency in the implementation logic.
 	ErrImplementation = errors.New("code took invalid execution path")
+
+	// ErrBadProviderResponse is returned when the provider returns a response that doesn't match the expected format.
+	// This can be used when the provider returns a 200 OK status,
+	// but the body of the response indicates an error or is missing expected fields.
+	ErrBadProviderResponse = errors.New("bad response from provider")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.

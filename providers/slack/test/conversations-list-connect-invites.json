@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "invites": [
+    {
+      "id": "I0ABCDEF123",
+      "channel_id": "C0ABCDEF123",
+      "inviting_team": {
+        "id": "T012AB3C4",
+        "name": "Acme Corp"
+      }
+    }
+  ],
+  "response_metadata": {
+    "next_cursor": ""
+  }
+}
