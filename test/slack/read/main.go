@@ -31,6 +31,7 @@ func main() {
 
 	if err != nil {
 		slog.Error(err.Error())
+		return
 	}
 
 	fmt.Println("Read conversation result...")
@@ -43,6 +44,7 @@ func main() {
 
 	if err != nil {
 		slog.Error(err.Error())
+		return
 	}
 
 	fmt.Println("Read user result...")

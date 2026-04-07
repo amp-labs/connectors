@@ -1,14 +1,10 @@
 package slack
 
 import (
-	"errors"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
-
-var errResponseIndicatesFailure = errors.New("response indicated failure")
 
 // getSlackResponseRecords checks the Slack-specific "ok" field (Slack always returns HTTP 200,
 // even on failure), interprets any error code, and returns the records array for the given object.
@@ -32,7 +28,7 @@ func getSlackResponseRecords(node *ajson.Node, objectName string) ([]*ajson.Node
 			return nil, interpretSlackErrorCode(*errorCode)
 		}
 
-		return nil, errResponseIndicatesFailure
+		return nil, common.ErrBadProviderResponse
 	}
 
 	return jsonquery.New(node).ArrayRequired(objectResponseField.Get(objectName))
