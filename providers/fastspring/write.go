@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 // FastSpring write API references:
@@ -156,14 +157,14 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
+	recordID := extractWriteRecordID(params, body)
+	if recordID == "" {
+		recordID = fallbackWriteRecordID(params)
+	}
+
 	data, err := jsonquery.Convertor.ObjectToMap(body)
 	if err != nil {
 		return nil, err
-	}
-
-	recordID := extractWriteRecordID(params, data)
-	if recordID == "" {
-		recordID = fallbackWriteRecordID(params)
 	}
 
 	return &common.WriteResult{
@@ -181,64 +182,59 @@ func fallbackWriteRecordID(params common.WriteParams) string {
 	return params.RecordId
 }
 
-func extractWriteRecordID(params common.WriteParams, data map[string]any) string {
+func extractWriteRecordID(params common.WriteParams, body *ajson.Node) string {
 	switch params.ObjectName {
 	case objectAccounts:
-		return extractAccountWriteRecordID(data)
+		return extractAccountWriteRecordID(body)
 	case objectProducts:
-		return extractProductWriteRecordID(data)
+		return extractProductWriteRecordID(body)
 	case objectOrders:
-		return extractOrderWriteRecordID(data)
+		return extractOrderWriteRecordID(body)
 	case objectSubscriptions:
-		return extractSubscriptionWriteRecordID(data)
+		return extractSubscriptionWriteRecordID(body)
 	default:
 		return ""
 	}
 }
 
-func stringFieldFromMap(m map[string]any, key string) string {
-	s, ok := m[key].(string)
-	if !ok || s == "" {
+func extractAccountWriteRecordID(body *ajson.Node) string {
+	if id, err := jsonquery.New(body).TextWithDefault("id", ""); err == nil && id != "" {
+		return id
+	}
+
+	if id, err := jsonquery.New(body).TextWithDefault("account", ""); err == nil && id != "" {
+		return id
+	}
+
+	return ""
+}
+
+func firstArrayElementTextField(body *ajson.Node, arrayKey, fieldKey string) string {
+	arr, err := jsonquery.New(body).ArrayOptional(arrayKey)
+	if err != nil || len(arr) == 0 {
 		return ""
 	}
 
-	return s
-}
-
-func extractAccountWriteRecordID(data map[string]any) string {
-	if s := stringFieldFromMap(data, "id"); s != "" {
-		return s
-	}
-
-	return stringFieldFromMap(data, "account")
-}
-
-func extractRecordIDFromFirstSliceElement(data map[string]any, sliceKey, fieldName string) string {
-	arr, ok := data[sliceKey].([]any)
-	if !ok || len(arr) == 0 {
+	id, err := jsonquery.New(arr[0]).TextWithDefault(fieldKey, "")
+	if err != nil {
 		return ""
 	}
 
-	m, ok := arr[0].(map[string]any)
-	if !ok {
-		return ""
+	return id
+}
+
+func extractProductWriteRecordID(body *ajson.Node) string {
+	return firstArrayElementTextField(body, "products", "product")
+}
+
+func extractOrderWriteRecordID(body *ajson.Node) string {
+	return firstArrayElementTextField(body, "orders", "order")
+}
+
+func extractSubscriptionWriteRecordID(body *ajson.Node) string {
+	if id, err := jsonquery.New(body).TextWithDefault("subscription", ""); err == nil && id != "" {
+		return id
 	}
 
-	return stringFieldFromMap(m, fieldName)
-}
-
-func extractProductWriteRecordID(data map[string]any) string {
-	return extractRecordIDFromFirstSliceElement(data, "products", "product")
-}
-
-func extractOrderWriteRecordID(data map[string]any) string {
-	return extractRecordIDFromFirstSliceElement(data, "orders", "order")
-}
-
-func extractSubscriptionWriteRecordID(data map[string]any) string {
-	if s := stringFieldFromMap(data, "subscription"); s != "" {
-		return s
-	}
-
-	return extractRecordIDFromFirstSliceElement(data, "subscriptions", "subscription")
+	return firstArrayElementTextField(body, "subscriptions", "subscription")
 }
