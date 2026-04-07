@@ -34,6 +34,11 @@ type Connector struct {
 	// pardotAdapter handles the Salesforce Account Engagement (Pardot) module.
 	// It provides dedicated support for Pardot-specific endpoints and metadata.
 	pardotAdapter *pardot.Adapter
+
+	// timestampColumn overrides the default "SystemModstamp" field used in
+	// incremental read queries (Since/Until WHERE clauses). When empty,
+	// "SystemModstamp" is used.
+	timestampColumn string
 }
 
 // NewConnector returns a new Salesforce connector.
@@ -49,6 +54,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	conn.timestampColumn = params.timestampColumn
 
 	connectorParams, err := newParams(opts)
 	if err != nil {
@@ -144,6 +151,17 @@ func (c *Connector) getModuleURL() string {
 
 func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(crmcore.URISobjects, objectName, "describe")
+}
+
+const defaultTimestampColumn = "SystemModstamp"
+
+// getTimestampColumn returns the field name used for incremental read queries.
+func (c *Connector) getTimestampColumn() string {
+	if c.timestampColumn != "" {
+		return c.timestampColumn
+	}
+
+	return defaultTimestampColumn
 }
 
 func (c *Connector) isPardotModule() bool {

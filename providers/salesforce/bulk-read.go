@@ -21,7 +21,7 @@ func (c *Connector) BulkRead(ctx context.Context, params common.ReadParams) (*Ge
 		return nil, err
 	}
 
-	soql := makeSOQL(params)
+	soql := makeSOQL(params, c.getTimestampColumn())
 	// Note: if params.Deleted is set to true query will return only removed items.
 
 	query := soql.String()

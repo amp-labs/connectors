@@ -1,0 +1,25 @@
+{
+  "completedAt": "2026-03-31T14:10:41.167Z",
+  "status": "COMPLETE",
+  "startedAt": "2026-03-31T14:10:41.133Z",
+  "results": [],
+  "errors": [
+    {
+      "status": "error",
+      "category": "VALIDATION_ERROR",
+      "subCategory": "crm.associations.INVALID_IDENTIFIER",
+      "message": "unknown_id_123456798 is not a valid ID",
+      "context": {
+        "id": [
+          "unknown_id_123456798"
+        ]
+      }
+    },
+    {
+      "status": "error",
+      "category": "VALIDATION_ERROR",
+      "message": "Object 211762804612 cannot be associated to itself (211762804612)"
+    }
+  ],
+  "numErrors": 2
+}

@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // StrError is a marker error type used in tests to indicate that
@@ -113,4 +115,37 @@ func CheckErrors(t *testing.T, name string, expectedErrs []error, actualErr erro
 	for _, expectedErr := range expectedErrs {
 		CheckError(t, name, expectedErr, actualErr)
 	}
+}
+
+// ExpectedOneOfErr is a testutils wrapper for multiple errors that signals
+// AssertErrorIs should check if *any* contained error matches the actual error.
+// Enables flexible multi-error assertions.
+type ExpectedOneOfErr []error
+
+func (e ExpectedOneOfErr) Error() string {
+	return errors.Join(e).Error()
+}
+
+// AssertErrorIs asserts actual contains expected via errors.Is().
+// Special handling for testutils.ExpectedOneOfErr: succeeds if *any* listed error matches.
+//
+// Usage example:
+//
+//	var errs testutils.ExpectedOneOfErr
+//	errs = append(errs, ErrInvalidEmail, ErrMissingField)
+//	testutils.AssertErrorIs(t, errs, apiErr, "should include validation error")
+func AssertErrorIs(t *testing.T, expected, actual error, message string) {
+	t.Helper()
+
+	// Handle special ExpectedOneOfErr wrapper.
+	var expectedList ExpectedOneOfErr
+	if errors.As(expected, &expectedList) {
+		for _, expectedErr := range expectedList {
+			assert.ErrorIs(t, actual, expectedErr, message)
+		}
+
+		return
+	}
+
+	assert.ErrorIs(t, actual, expected, message)
 }

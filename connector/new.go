@@ -18,6 +18,7 @@ import (
 	"github.com/amp-labs/connectors/providers/avoma"
 	"github.com/amp-labs/connectors/providers/aws"
 	"github.com/amp-labs/connectors/providers/bentley"
+	"github.com/amp-labs/connectors/providers/bigquery"
 	"github.com/amp-labs/connectors/providers/bitbucket"
 	"github.com/amp-labs/connectors/providers/blackbaud"
 	"github.com/amp-labs/connectors/providers/blueshift"
@@ -155,6 +156,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Atlassian:               wrapper(newAtlassianConnector),
 	providers.Attio:                   wrapper(newAttioConnector),
 	providers.Avoma:                   wrapper(newAvomaConnector),
+	providers.BigQuery:                wrapper(newBigQueryConnector),
 	providers.Bentley:                 wrapper(newBentleyConnector),
 	providers.Bitbucket:               wrapper(newBitBucketConnector),
 	providers.Blackbaud:               wrapper(newBlackbaudConnector),
@@ -285,12 +287,18 @@ func newSalesflareConnector(params common.ConnectorParams) (*salesflare.Connecto
 }
 
 func newSalesforceConnector(params common.ConnectorParams) (*salesforce.Connector, error) {
-	return salesforce.NewConnector(
+	opts := []salesforce.Option{
 		salesforce.WithAuthenticatedClient(params.AuthenticatedClient),
 		salesforce.WithWorkspace(params.Workspace),
 		salesforce.WithModule(params.Module),
 		salesforce.WithMetadata(params.Metadata),
-	)
+	}
+
+	if field, ok := params.Metadata["timestampColumn"]; ok && field != "" {
+		opts = append(opts, salesforce.WithTimestampColumn(field))
+	}
+
+	return salesforce.NewConnector(opts...)
 }
 
 func newHubspotConnector(params common.ConnectorParams) (*hubspot.Connector, error) {
@@ -977,6 +985,11 @@ func newHappyFoxConnector(params common.ConnectorParams,
 func newSnowflakeConnector(params common.ConnectorParams,
 ) (*snowflake.Connector, error) {
 	return snowflake.NewConnector(params)
+}
+
+func newBigQueryConnector(params common.ConnectorParams,
+) (*bigquery.Connector, error) {
+	return bigquery.NewConnector(params)
 }
 
 func newAircallConnector(
