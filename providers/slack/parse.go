@@ -10,33 +10,37 @@ import (
 
 var errResponseIndicatesFailure = errors.New("response indicated failure")
 
-func records(objectName string) common.RecordsFunc {
-	return func(node *ajson.Node) ([]map[string]any, error) {
-		// Slack always returns HTTP 200, even when the request fails. The "ok" field
-		// in the response body is the real indicator of success or failure.
-		ok, err := jsonquery.New(node).BoolRequired("ok")
+// getSlackResponseRecords checks the Slack-specific "ok" field (Slack always returns HTTP 200,
+// even on failure), interprets any error code, and returns the records array for the given object.
+func getSlackResponseRecords(node *ajson.Node, objectName string) ([]*ajson.Node, error) {
+	// Slack always returns HTTP 200, even when the request fails. The "ok" field
+	// in the response body is the real indicator of success or failure.
+	ok, err := jsonquery.New(node).BoolRequired("ok")
+	if err != nil {
+		return nil, err
+	}
+
+	if !ok {
+		// Map the Slack error code to a sentinel error so callers can use
+		// errors.Is to react appropriately (re-auth, retry, etc.).
+		errorCode, err := jsonquery.New(node).StringOptional("error")
 		if err != nil {
 			return nil, err
 		}
 
-		if !ok {
-			// Map the Slack error code to a sentinel error so callers can use
-			// errors.Is to react appropriately (re-auth, retry, etc.).
-			errorCode, err := jsonquery.New(node).StringOptional("error")
-			if err != nil {
-				return nil, err
-			}
-
-			if errorCode != nil {
-				return nil, interpretSlackErrorCode(*errorCode)
-			}
-
-			return nil, errResponseIndicatesFailure
+		if errorCode != nil {
+			return nil, interpretSlackErrorCode(*errorCode)
 		}
 
-		responseKey := objectResponseField.Get(objectName)
+		return nil, errResponseIndicatesFailure
+	}
 
-		arr, err := jsonquery.New(node).ArrayRequired(responseKey)
+	return jsonquery.New(node).ArrayRequired(objectResponseField.Get(objectName))
+}
+
+func records(objectName string) common.RecordsFunc {
+	return func(node *ajson.Node) ([]map[string]any, error) {
+		arr, err := getSlackResponseRecords(node, objectName)
 		if err != nil {
 			return nil, err
 		}
@@ -47,15 +51,6 @@ func records(objectName string) common.RecordsFunc {
 
 func nextRecordsURL() common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		cursor, err := jsonquery.New(node, "response_metadata").StringOptional("next_cursor")
-		if err != nil {
-			return "", err
-		}
-
-		if cursor == nil || *cursor == "" {
-			return "", nil
-		}
-
-		return *cursor, nil
+		return jsonquery.New(node, "response_metadata").StrWithDefault("next_cursor", "")
 	}
 }

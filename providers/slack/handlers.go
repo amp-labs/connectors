@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -22,7 +23,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, err
 	}
 
-	if postMethodObjects.Has(objectName) {
+	if objectsReadViaPost.Has(objectName) {
 		return jsonPostRequest(ctx, url.String(), map[string]any{"limit": 1})
 	}
 
@@ -31,7 +32,6 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
-//nolint:cyclop,funlen
 func (c *Connector) parseSingleObjectMetadataResponse(
 	ctx context.Context,
 	objectName string,
@@ -43,53 +43,23 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(naming.SeparateDotWords(objectName)),
 	}
 
-	res, err := common.UnmarshalJSON[map[string]any](response)
-	if err != nil {
+	body, ok := response.Body()
+	if !ok {
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
-	if res == nil || len(*res) == 0 {
-		return nil, common.ErrMissingExpectedValues
+	recordsArr, err := getSlackResponseRecords(body, objectName)
+	if err != nil {
+		return nil, err
 	}
 
-	// Slack always returns HTTP 200, even for errors. The actual success or failure
-	// is indicated by the "ok" field in the response body. We check it here so that
-	// metadata calls fail clearly instead of trying to parse a response that has no records.
-	okStatus, okCast := (*res)["ok"].(bool)
-	if !okCast {
-		return nil, fmt.Errorf("couldn't cast 'ok' field to bool: %w", common.ErrMissingExpectedValues)
-	}
-
-	if !okStatus {
-		// When ok is false, Slack usually includes an "error" field with a short error code.
-		// Map it to a sentinel error so callers can use errors.Is to react appropriately.
-		errorCode, ok := (*res)["error"].(string)
-		if ok {
-			return nil, interpretSlackErrorCode(errorCode)
-		}
-
-		return nil, fmt.Errorf("failed response: %w", common.ErrMissingExpectedValues)
-	}
-
-	responseKey := objectResponseField.Get(objectName)
-
-	responseValue, exists := (*res)[responseKey]
-	if !exists {
-		return nil, fmt.Errorf("response key %q not found: %w", responseKey, common.ErrMissingExpectedValues)
-	}
-
-	records, ok := responseValue.([]any)
-	if !ok {
-		return nil, fmt.Errorf("couldn't convert response field %q to an array: %w", responseKey, common.ErrMissingExpectedValues) //nolint:lll
-	}
-
-	if len(records) == 0 {
+	if len(recordsArr) == 0 {
 		return nil, fmt.Errorf("%w: could not find a record to sample fields from", common.ErrMissingExpectedValues)
 	}
 
-	firstRecord, ok := records[0].(map[string]any)
-	if !ok {
-		return nil, fmt.Errorf("couldn't convert the first record to a map: %w", common.ErrMissingExpectedValues)
+	firstRecord, err := jsonquery.Convertor.ObjectToMap(recordsArr[0])
+	if err != nil {
+		return nil, fmt.Errorf("couldn't convert the first record to an object: %w", common.ErrMissingExpectedValues)
 	}
 
 	for field, value := range firstRecord {
@@ -115,9 +85,13 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
+	// Use 200 as the default page size, which is recommended by Slack.
+	// Although Slack can support up to 1000, not all methods support the same limit,
+	// and according to their docs this may change, so they recommend using 200.
+	// Ref: https://docs.slack.dev/apis/web-api/pagination/
 	pageSize := readhelper.PageSizeWithDefaultStr(params, "200")
 
-	if postMethodObjects.Has(params.ObjectName) {
+	if objectsReadViaPost.Has(params.ObjectName) {
 		body := map[string]any{"limit": pageSize}
 		if params.NextPage != "" {
 			body["cursor"] = params.NextPage.String()
@@ -145,7 +119,7 @@ func (c *Connector) parseReadResponse( //nolint:unparam
 		response,
 		records(params.ObjectName),
 		nextRecordsURL(),
-		common.GetMarshaledData,
+		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
 		params.Fields,
 	)
 }

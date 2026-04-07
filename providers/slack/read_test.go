@@ -20,6 +20,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	usersResponse := testutils.DataFromFile(t, "users-list.json")
 	errorWithMessageResponse := testutils.DataFromFile(t, "error-with-message.json")
 	errorWithoutMessageResponse := testutils.DataFromFile(t, "error-without-message.json")
+	listConnectInvitesResponse := testutils.DataFromFile(t, "conversations-list-connect-invites.json")
+	requestSharedInviteResponse := testutils.DataFromFile(t, "conversations-request-shared-invite.json")
 
 	tests := []testroutines.Read{
 		{
@@ -33,6 +35,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
+					mockcond.MethodGET(),
 					mockcond.Path("/api/conversations.list"),
 					mockcond.QueryParam("limit", "200"),
 				},
@@ -63,6 +66,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
+					mockcond.MethodGET(),
 					mockcond.Path("/api/users.list"),
 					mockcond.QueryParam("limit", "200"),
 				},
@@ -92,8 +96,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{ObjectName: "conversations", Fields: connectors.Fields("id", "name")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/api/conversations.list"),
-				Then:  mockserver.Response(http.StatusOK, conversationsFirstPageResponse),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/conversations.list"),
+				},
+				Then: mockserver.Response(http.StatusOK, conversationsFirstPageResponse),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
@@ -108,8 +115,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{ObjectName: "conversations", Fields: connectors.Fields("id")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/api/conversations.list"),
-				Then:  mockserver.Response(http.StatusOK, errorWithMessageResponse),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/conversations.list"),
+				},
+				Then: mockserver.Response(http.StatusOK, errorWithMessageResponse),
 			}.Server(),
 			ExpectedErrs: []error{common.ErrAccessToken},
 		},
@@ -118,10 +128,73 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{ObjectName: "conversations", Fields: connectors.Fields("id")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/api/conversations.list"),
-				Then:  mockserver.Response(http.StatusOK, errorWithoutMessageResponse),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/conversations.list"),
+				},
+				Then: mockserver.Response(http.StatusOK, errorWithoutMessageResponse),
 			}.Server(),
 			ExpectedErrs: []error{testutils.StringError("response indicated failure")},
+		},
+		{
+			Name:  "Read conversations.listConnectInvites via POST",
+			Input: common.ReadParams{ObjectName: "conversations.listConnectInvites", Fields: connectors.Fields("id", "channel_id")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/api/conversations.listConnectInvites"),
+				},
+				Then: mockserver.Response(http.StatusOK, listConnectInvitesResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":         "I0ABCDEF123",
+						"channel_id": "C0ABCDEF123",
+					},
+					Raw: map[string]any{
+						"inviting_team": map[string]any{
+							"id":   "T012AB3C4",
+							"name": "Acme Corp",
+						},
+					},
+				}},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Read conversations.requestSharedInvite via POST",
+			Input: common.ReadParams{ObjectName: "conversations.requestSharedInvite", Fields: connectors.Fields("id", "invite_id")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/api/conversations.requestSharedInvite.list"),
+				},
+				Then: mockserver.Response(http.StatusOK, requestSharedInviteResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":        "I0XYZ789",
+						"invite_id": "INV123",
+					},
+					Raw: map[string]any{
+						"channel": map[string]any{
+							"id":   "C0ABCDEF123",
+							"name": "general",
+						},
+					},
+				}},
+				Done: true,
+			},
+			ExpectedErrs: nil,
 		},
 		{
 			Name: "Following cursor passes it as query param",
@@ -133,6 +206,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
+					mockcond.MethodGET(),
 					mockcond.Path("/api/conversations.list"),
 					mockcond.QueryParam("cursor", "dGVhbS1jaGFubmVsOkM="),
 				},

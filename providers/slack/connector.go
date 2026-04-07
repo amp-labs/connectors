@@ -39,11 +39,6 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
-	registry, err := components.NewEndpointRegistry(supportedOperations())
-	if err != nil {
-		return nil, err
-	}
-
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(
 		connector.HTTPClient().Client,
 		schema.FetchModeParallel,
@@ -55,7 +50,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
-		registry,
+		components.NewEmptyEndpointRegistry(),
 		connector.ProviderContext.Module(),
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
