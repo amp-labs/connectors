@@ -1,7 +1,6 @@
 package fastspring
 
 import (
-	"encoding/json"
 	"net/http"
 	"testing"
 
@@ -129,14 +128,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/products"),
-					mockcond.Body(mustJSON(t, map[string]any{
-						"products": []any{
-							map[string]any{
-								"product": "my-product",
-								"display": map[string]any{"en": "Widget"},
-							},
-						},
-					})),
+					mockcond.Body(`{"products":[{"product":"my-product","display":{"en":"Widget"}}]}`),
 				},
 				Then: mockserver.Response(http.StatusOK, productResp),
 			}.Server(),
@@ -169,14 +161,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/products"),
-					mockcond.Body(mustJSON(t, map[string]any{
-						"products": []any{
-							map[string]any{
-								"product": "bulk-a",
-								"display": map[string]any{"en": "A"},
-							},
-						},
-					})),
+					mockcond.Body(`{"products":[{"product":"bulk-a","display":{"en":"A"}}]}`),
 				},
 				Then: mockserver.Response(http.StatusOK, productBulkResp),
 			}.Server(),
@@ -271,15 +256,4 @@ func TestWrite(t *testing.T) { //nolint:funlen
 			})
 		})
 	}
-}
-
-func mustJSON(t *testing.T, v any) string {
-	t.Helper()
-
-	b, err := json.Marshal(v)
-	if err != nil {
-		t.Fatalf("marshal: %v", err)
-	}
-
-	return string(b)
 }
