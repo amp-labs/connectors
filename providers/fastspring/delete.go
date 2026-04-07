@@ -13,10 +13,6 @@ import (
 // - Delete product: https://developer.fastspring.com/reference/delete-a-product
 // - Cancel subscription: https://developer.fastspring.com/reference/cancel-a-subscription
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	if err := validateDeleteParams(params); err != nil {
-		return nil, err
-	}
-
 	deleteURL, err := buildDeleteURL(c.ProviderInfo().BaseURL, params)
 	if err != nil {
 		return nil, err
@@ -40,15 +36,6 @@ func buildDeleteURL(baseURL string, params common.DeleteParams) (*urlbuilder.URL
 		return urlbuilder.New(baseURL, objectSubscriptions, params.RecordId)
 	default:
 		return nil, common.ErrOperationNotSupportedForObject
-	}
-}
-
-func validateDeleteParams(params common.DeleteParams) error {
-	switch params.ObjectName {
-	case objectProducts, objectSubscriptions:
-		return nil
-	default:
-		return common.ErrOperationNotSupportedForObject
 	}
 }
 
