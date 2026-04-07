@@ -1,0 +1,1180 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/v1",
+      "objects": {
+        "employees": {
+          "displayName": "Employees",
+          "path": "/companies/{company_id}/employees",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "middle_initial": {
+              "displayName": "middle_initial",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_uuid": {
+              "displayName": "company_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "manager_uuid": {
+              "displayName": "manager_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "current_employment_status": {
+              "displayName": "current_employment_status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "onboarding_status": {
+              "displayName": "onboarding_status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "preferred_first_name": {
+              "displayName": "preferred_first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "department_uuid": {
+              "displayName": "department_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "employee_code": {
+              "displayName": "employee_code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "payment_method": {
+              "displayName": "payment_method",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "department": {
+              "displayName": "department",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "terminated": {
+              "displayName": "terminated",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "two_percent_shareholder": {
+              "displayName": "two_percent_shareholder",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "onboarded": {
+              "displayName": "onboarded",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "historical": {
+              "displayName": "historical",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_ssn": {
+              "displayName": "has_ssn",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "phone": {
+              "displayName": "phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "onboarding_documents_config": {
+              "displayName": "onboarding_documents_config",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "jobs": {
+              "displayName": "jobs",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "eligible_paid_time_off": {
+              "displayName": "eligible_paid_time_off",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "companies": {
+          "displayName": "Companies",
+          "path": "/companies",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "trade_name": {
+              "displayName": "trade_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_partner_managed": {
+              "displayName": "is_partner_managed",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "tier": {
+              "displayName": "tier",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ein": {
+              "displayName": "ein",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "entity_type": {
+              "displayName": "entity_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pay_schedule_type": {
+              "displayName": "pay_schedule_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "join_date": {
+              "displayName": "join_date",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "funding_type": {
+              "displayName": "funding_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "slug": {
+              "displayName": "slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_suspended": {
+              "displayName": "is_suspended",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "company_status": {
+              "displayName": "company_status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_high_risk_business": {
+              "displayName": "is_high_risk_business",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_marijuana_business": {
+              "displayName": "is_marijuana_business",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "contractor_only": {
+              "displayName": "contractor_only",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "locations": {
+              "displayName": "locations",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "compensations": {
+              "displayName": "compensations",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "primary_signatory": {
+              "displayName": "primary_signatory",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "primary_payroll_admin": {
+              "displayName": "primary_payroll_admin",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "locations": {
+          "displayName": "Locations",
+          "path": "/companies/{company_id}/locations",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_uuid": {
+              "displayName": "company_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "street_1": {
+              "displayName": "street_1",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "street_2": {
+              "displayName": "street_2",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "city": {
+              "displayName": "city",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "zip": {
+              "displayName": "zip",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "country": {
+              "displayName": "country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "phone_number": {
+              "displayName": "phone_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "filing_address": {
+              "displayName": "filing_address",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "mailing_address": {
+              "displayName": "mailing_address",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "date-time"
+            }
+          }
+        },
+        "departments": {
+          "displayName": "Departments",
+          "path": "/companies/{company_id}/departments",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parent_uuid": {
+              "displayName": "parent_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_uuid": {
+              "displayName": "company_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contractors": {
+              "displayName": "contractors",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "employees": {
+              "displayName": "employees",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "contractors": {
+          "displayName": "Contractors",
+          "path": "/companies/{company_id}/contractors",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "middle_initial": {
+              "displayName": "middle_initial",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "business_name": {
+              "displayName": "business_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ein": {
+              "displayName": "ein",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "wage_type": {
+              "displayName": "wage_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_active": {
+              "displayName": "is_active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_uuid": {
+              "displayName": "company_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "payrolls": {
+          "displayName": "Payrolls",
+          "path": "/companies/{company_id}/payrolls",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "payroll_uuid": {
+              "displayName": "payroll_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_uuid": {
+              "displayName": "company_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "off_cycle": {
+              "displayName": "off_cycle",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "auto_payroll": {
+              "displayName": "auto_payroll",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "processed": {
+              "displayName": "processed",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "processed_date": {
+              "displayName": "processed_date",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "calculated_at": {
+              "displayName": "calculated_at",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "pay_period": {
+              "displayName": "pay_period",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "check_date": {
+              "displayName": "check_date",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "external": {
+              "displayName": "external",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "payroll_deadline": {
+              "displayName": "payroll_deadline",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "date-time"
+            },
+            "partner_owned_disbursement": {
+              "displayName": "partner_owned_disbursement",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "pay_schedules": {
+          "displayName": "Pay Schedules",
+          "path": "/companies/{company_id}/pay_schedules",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "frequency": {
+              "displayName": "frequency",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "anchor_pay_date": {
+              "displayName": "anchor_pay_date",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "anchor_end_of_pay_period": {
+              "displayName": "anchor_end_of_pay_period",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "day_1": {
+              "displayName": "day_1",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "day_2": {
+              "displayName": "day_2",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_name": {
+              "displayName": "custom_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "auto_pilot": {
+              "displayName": "auto_pilot",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "earning_types": {
+          "displayName": "Earning Types",
+          "path": "/companies/{company_id}/earning_types",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "multiple": {
+              "displayName": "multiple",
+              "valueType": "float",
+              "providerType": "number"
+            }
+          }
+        },
+        "company_benefits": {
+          "displayName": "Company Benefits",
+          "path": "/companies/{company_id}/company_benefits",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_uuid": {
+              "displayName": "company_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "benefit_type": {
+              "displayName": "benefit_type",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "responsible_for_employer_taxes": {
+              "displayName": "responsible_for_employer_taxes",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "responsible_for_employee_w2": {
+              "displayName": "responsible_for_employee_w2",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "admins": {
+          "displayName": "Admins",
+          "path": "/companies/{company_id}/admins",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "contractor_payments": {
+          "displayName": "Contractor Payments",
+          "path": "/companies/{company_id}/contractor_payments",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contractor_uuid": {
+              "displayName": "contractor_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "bonus": {
+              "displayName": "bonus",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date": {
+              "displayName": "date",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "hours": {
+              "displayName": "hours",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "payment_method": {
+              "displayName": "payment_method",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reimbursement": {
+              "displayName": "reimbursement",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "wage": {
+              "displayName": "wage",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "wage_type": {
+              "displayName": "wage_type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "custom_fields": {
+          "displayName": "Custom Fields",
+          "path": "/companies/{company_id}/custom_fields",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_custom_field_id": {
+              "displayName": "company_custom_field_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "selection_options": {
+              "displayName": "selection_options",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "jobs": {
+          "displayName": "Jobs",
+          "path": "/employees/{employee_id}/jobs",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "employee_uuid": {
+              "displayName": "employee_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primary": {
+              "displayName": "primary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "rate": {
+              "displayName": "rate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "payment_unit": {
+              "displayName": "payment_unit",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "current_compensation_uuid": {
+              "displayName": "current_compensation_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "two_percent_shareholder": {
+              "displayName": "two_percent_shareholder",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "hire_date": {
+              "displayName": "hire_date",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "compensations": {
+              "displayName": "compensations",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "compensations": {
+          "displayName": "Compensations",
+          "path": "/jobs/{job_id}/compensations",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "employee_uuid": {
+              "displayName": "employee_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "job_uuid": {
+              "displayName": "job_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "payment_unit": {
+              "displayName": "payment_unit",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "flsa_status": {
+              "displayName": "flsa_status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "rate": {
+              "displayName": "rate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "effective_date": {
+              "displayName": "effective_date",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "adjust_for_minimum_wage": {
+              "displayName": "adjust_for_minimum_wage",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "minimum_wages": {
+              "displayName": "minimum_wages",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "employee_benefits": {
+          "displayName": "Employee Benefits",
+          "path": "/employees/{employee_id}/employee_benefits",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "employee_uuid": {
+              "displayName": "employee_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_benefit_uuid": {
+              "displayName": "company_benefit_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "employee_deduction": {
+              "displayName": "employee_deduction",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_contribution": {
+              "displayName": "company_contribution",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "employee_deduction_annual_maximum": {
+              "displayName": "employee_deduction_annual_maximum",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_contribution_annual_maximum": {
+              "displayName": "company_contribution_annual_maximum",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deduct_as_percentage": {
+              "displayName": "deduct_as_percentage",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "contribute_as_percentage": {
+              "displayName": "contribute_as_percentage",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "garnishments": {
+          "displayName": "Garnishments",
+          "path": "/employees/{employee_id}/garnishments",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "employee_uuid": {
+              "displayName": "employee_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "amount": {
+              "displayName": "amount",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "court_ordered": {
+              "displayName": "court_ordered",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deduct_as_percentage": {
+              "displayName": "deduct_as_percentage",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "recurring": {
+              "displayName": "recurring",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "annual_maximum": {
+              "displayName": "annual_maximum",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pay_period_maximum": {
+              "displayName": "pay_period_maximum",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "times": {
+              "displayName": "times",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "home_addresses": {
+          "displayName": "Home Addresses",
+          "path": "/employees/{employee_id}/home_addresses",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "employee_uuid": {
+              "displayName": "employee_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "street_1": {
+              "displayName": "street_1",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "street_2": {
+              "displayName": "street_2",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "city": {
+              "displayName": "city",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "zip": {
+              "displayName": "zip",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "country": {
+              "displayName": "country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "work_addresses": {
+          "displayName": "Work Addresses",
+          "path": "/employees/{employee_id}/work_addresses",
+          "responseKey": "",
+          "fields": {
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "employee_uuid": {
+              "displayName": "employee_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location_uuid": {
+              "displayName": "location_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "street_1": {
+              "displayName": "street_1",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "street_2": {
+              "displayName": "street_2",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "city": {
+              "displayName": "city",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "zip": {
+              "displayName": "zip",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "country": {
+              "displayName": "country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "time_off_activities": {
+          "displayName": "Time Off Activities",
+          "path": "/employees/{employee_id}/time_off_activities",
+          "responseKey": "",
+          "fields": {
+            "policy_uuid": {
+              "displayName": "policy_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "policy_name": {
+              "displayName": "policy_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time_off_type": {
+              "displayName": "time_off_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hours": {
+              "displayName": "hours",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date": {
+              "displayName": "date",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "employee_note": {
+              "displayName": "employee_note",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "request_status": {
+              "displayName": "request_status",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "pay_periods": {
+          "displayName": "Pay Periods",
+          "path": "/companies/{company_id}/pay_periods",
+          "responseKey": "",
+          "fields": {
+            "start_date": {
+              "displayName": "start_date",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "end_date": {
+              "displayName": "end_date",
+              "valueType": "string",
+              "providerType": "date"
+            },
+            "pay_schedule_uuid": {
+              "displayName": "pay_schedule_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "eligible_employees": {
+              "displayName": "eligible_employees",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        }
+      }
+    }
+  }
+}
