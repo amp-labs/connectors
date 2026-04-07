@@ -3,6 +3,7 @@ package slack
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -193,6 +194,125 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 				}},
 				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// conversations.updated = 1449252889 (2015-12-04). Since is set before that,
+			// so the record should pass through the client-side filter.
+			Name: "Since filter includes record updated after threshold",
+			Input: common.ReadParams{
+				ObjectName: "conversations",
+				Fields:     connectors.Fields("id", "name"),
+				Since:      time.Unix(1449252800, 0),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/conversations.list"),
+				},
+				Then: mockserver.Response(http.StatusOK, conversationsResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":   "C0ABCDEF123",
+						"name": "general",
+					},
+					Raw: map[string]any{
+						"is_channel": true,
+						"is_member":  true,
+					},
+				}},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// conversations.updated = 1449252889 (2015-12-04). Since is set after that,
+			// so the record is too old and should be filtered out.
+			Name: "Since filter excludes record updated before threshold",
+			Input: common.ReadParams{
+				ObjectName: "conversations",
+				Fields:     connectors.Fields("id", "name"),
+				Since:      time.Unix(1449252900, 0),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/conversations.list"),
+				},
+				Then: mockserver.Response(http.StatusOK, conversationsResponse),
+			}.Server(),
+			Expected: &common.ReadResult{
+				Rows:     0,
+				Data:     []common.ReadResultRow{},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// users.updated = 1502138686 (2017-08-07). The Since/Until window contains
+			// that timestamp, so the record should be returned.
+			Name: "Since and Until range includes user record",
+			Input: common.ReadParams{
+				ObjectName: "users",
+				Fields:     connectors.Fields("id", "name"),
+				Since:      time.Unix(1502138600, 0), // just before updated
+				Until:      time.Unix(1502138700, 0), // just after updated
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/users.list"),
+				},
+				Then: mockserver.Response(http.StatusOK, usersResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":   "W012A3CDE",
+						"name": "spengler",
+					},
+					Raw: map[string]any{
+						"team_id":   "T012AB3C4",
+						"real_name": "Egon Spengler",
+					},
+				}},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// users.updated = 1502138686 (2017-08-07). The Until is set before that,
+			// so the record is too new and should be filtered out.
+			Name: "Until filter excludes record updated after threshold",
+			Input: common.ReadParams{
+				ObjectName: "users",
+				Fields:     connectors.Fields("id", "name"),
+				Until:      time.Unix(1502138600, 0), // just before updated
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/users.list"),
+				},
+				Then: mockserver.Response(http.StatusOK, usersResponse),
+			}.Server(),
+			Expected: &common.ReadResult{
+				Rows:     0,
+				Data:     []common.ReadResultRow{},
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},

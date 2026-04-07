@@ -45,6 +45,12 @@ func records(objectName string) common.RecordsFunc {
 	}
 }
 
+func nodeRecords(objectName string) common.NodeRecordsFunc {
+	return func(node *ajson.Node) ([]*ajson.Node, error) {
+		return getSlackResponseRecords(node, objectName)
+	}
+}
+
 func nextRecordsURL() common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		return jsonquery.New(node, "response_metadata").StrWithDefault("next_cursor", "")

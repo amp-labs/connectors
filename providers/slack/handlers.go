@@ -115,11 +115,38 @@ func (c *Connector) parseReadResponse( //nolint:unparam
 	request *http.Request, //nolint:revive
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	if objectsWithConnectorSideFilter.Has(params.ObjectName) {
+		return common.ParseResultFiltered(
+			params,
+			response,
+			nodeRecords(params.ObjectName),
+			makeTimeFilter(params.ObjectName),
+			readhelper.MakeMarshaledDataFuncWithId(nil, readhelper.NewIdField("id")),
+			params.Fields,
+		)
+	}
+
 	return common.ParseResult(
 		response,
 		records(params.ObjectName),
 		nextRecordsURL(),
 		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
 		params.Fields,
+	)
+}
+
+// makeTimeFilter returns a RecordsFilterFunc that applies client-side time filtering
+// using the timestamp field for the given object. Slack does not support server-side
+// date filtering, so we filter records in memory after fetching each page.
+// Records are unordered, so pagination continues until all pages are exhausted.
+func makeTimeFilter(objectName string) common.RecordsFilterFunc {
+	timestampField := objectsWithConnectorSideFilter[objectName]
+
+	return readhelper.MakeTimeFilterFunc(
+		readhelper.Unordered,
+		readhelper.NewTimeBoundary(),
+		timestampField,
+		readhelper.TimestampFormatUnixSec,
+		nextRecordsURL(),
 	)
 }
