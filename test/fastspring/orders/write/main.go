@@ -1,3 +1,6 @@
+// Orders integration write: lists orders, takes the first row, and updates its tags.
+// There is no create path for orders in this connector (FastSpring does not expose order create here),
+// so the script must pick an existing order instead of using a create-then-update flow.
 package main
 
 import (
