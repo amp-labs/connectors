@@ -134,7 +134,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, errorWithoutMessageResponse),
 			}.Server(),
-			ExpectedErrs: []error{testutils.StringError("response indicated failure")},
+			ExpectedErrs: []error{common.ErrBadProviderResponse},
 		},
 		{
 			Name:  "Read conversations.listConnectInvites via POST",
