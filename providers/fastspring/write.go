@@ -135,6 +135,8 @@ func marshalOrdersWriteBody(params common.WriteParams, record map[string]any) ([
 		order[k] = v
 	}
 
+	// API uses the JSON key "order" for the order id (not e.g. "id"); see payload shape:
+	// https://developer.fastspring.com/reference/update-order-tags-and-attributes
 	order["order"] = params.RecordId
 
 	return json.Marshal(map[string]any{"orders": []any{order}})
